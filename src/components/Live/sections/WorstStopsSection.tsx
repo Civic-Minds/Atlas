@@ -79,13 +79,13 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
             : map
               ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name} className="flex gap-2"><span className="w-5 shrink-0 whitespace-nowrap text-right font-bold tabular-nums text-[var(--text-muted)]">{rank.get(rankKey(s))}</span><span>{s.name}</span></span> }
               : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
-          ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, ...(map ? { width: 6 } : {}), cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
+          ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
             : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
           ...(full ? [
             { key: 'median', header: 'Typical delay', width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: map ? FIGURE : p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
+            { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
             { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
           ] : []),
         ]}
@@ -98,8 +98,8 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
     const dirs = [...new Set(data.stops.map(s => s.directionId))].filter(d => dir == null || d === dir);
     const lines = dirs.flatMap(d => routeMapModel(v3, d, map.band, 'late', uncertain).segments.map(g => g.coordinates));
     return (
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-        <LateStopsMap dots={dots} lines={lines} label={`Map of the route and the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(top.length, dots.length)} mapClassName={top.length > 12 ? 'h-72 lg:h-[30rem]' : 'h-72 lg:h-[19rem]'} className="lg:order-2 lg:sticky lg:top-20" />
+      <div className="mt-6 grid gap-6">
+        <LateStopsMap dots={dots} lines={lines} label={`Map of the route and the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(top.length, dots.length)} mapClassName="h-72 lg:h-80" />
         <div className="min-w-0 [&>*]:mt-0">{table}</div>
       </div>
     );

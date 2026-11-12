@@ -3,7 +3,7 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { getMapStyle } from '../../lib/mapStyle';
 import { LATE_SHARE_SWATCH } from './lateShare';
-import { groupLabel, groupOverlappingDots, markerWidth, type LateStopDot } from './lateStopsMapModel';
+import { numberedDots, type LateStopDot } from './lateStopsMapModel';
 
 /**
  * A small map of the stops most often late (CIV-1405 mock-up): the Atlas basemap with one numbered dot per stop, the
@@ -42,18 +42,19 @@ export default function LateStopsMap({ dots, lines = [], label, note, mapClassNa
         map.addSource('late-lines', { type: 'geojson', data: { type: 'FeatureCollection', features: ls.map(l => ({ type: 'Feature' as const, properties: {}, geometry: { type: 'LineString' as const, coordinates: l as [number, number][] } })) } });
         map.addLayer({ id: 'late-lines', type: 'line', source: 'late-lines', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': dim, 'line-width': 3, 'line-opacity': 0.7 } });
       }
-      // Dots that would overlap at this zoom become one marker naming every rank in it ("1, 7, 8"), so no dot hides
-      // another; zooming in redraws them and splits the group.
+      // Every dot sits at its own stop. Where dots crowd, only the best-ranked carry their number (drawn on top); the
+      // rest get theirs as zooming in makes room. Hover always names the stop.
       const draw = () => {
         markers.splice(0).forEach(m => m.remove());
-        const groups = groupOverlappingDots(ds, p => map.project(p));
-        for (const g of [...groups].sort((a, b) => b.dots[0].rank - a.dots[0].rank)) {
-          const lead = g.dots[0], size = Math.max(...g.dots.map(d => d.size));
+        const numbered = numberedDots(ds, p => map.project(p));
+        for (const d of [...ds].sort((a, b) => b.rank - a.rank)) {
+          const shown = numbered.has(d.key);
           const el = document.createElement('div');
-          el.textContent = g.dots.length === 1 ? String(lead.rank) : groupLabel(g.dots.map(d => d.rank));
-          el.title = g.dots.map(d => `${d.rank}. ${d.title}`).join('\n');
-          el.style.cssText = `width:${markerWidth(g.dots.map(d => d.rank), size)}px;height:${size}px;border-radius:9999px;background:${lead.color};border:2px solid var(--bg-app);box-shadow:0 0 0 1px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;white-space:nowrap;font:800 ${size >= 24 ? 12 : 10}px/1 Inter,system-ui,sans-serif;color:#111827;font-variant-numeric:tabular-nums;box-sizing:border-box;`;
-          markers.push(new maplibregl.Marker({ element: el }).setLngLat(g.lonLat).addTo(map));
+          el.textContent = shown ? String(d.rank) : '';
+          el.title = `${d.rank}. ${d.title}`;
+          el.style.cssText = `width:${d.size}px;height:${d.size}px;border-radius:9999px;background:${d.color};border:2px solid var(--bg-app);box-shadow:0 0 0 1px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font:800 ${d.size >= 24 ? 12 : 10}px/1 Inter,system-ui,sans-serif;color:#111827;font-variant-numeric:tabular-nums;box-sizing:border-box;`;
+          el.style.zIndex = String(shown ? 2000 - d.rank : 1000 - d.rank);
+          markers.push(new maplibregl.Marker({ element: el }).setLngLat(d.lonLat).addTo(map));
         }
       };
       map.on('zoomend', draw);
@@ -72,7 +73,7 @@ export default function LateStopsMap({ dots, lines = [], label, note, mapClassNa
     <figure className={`m-0 ${className}`}>
       <div ref={box} role="img" aria-label={label} className={`${mapClassName} isolate w-full overflow-hidden rounded-2xl border border-[var(--border-primary)]`} />
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs leading-5 text-[var(--text-muted)]">
-        <span>Numbers match the table. A bigger dot is late more often. Stops close together share a dot; zoom in to split them.{note ? ` ${note}` : ''}</span>
+        <span>Numbers match the table. A bigger dot is late more often. Zoom in to see the number on every dot.{note ? ` ${note}` : ''}</span>
         <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="inline-block h-2 w-9 rounded-full" style={{ background: LATE_SHARE_SWATCH }} />under 10%, 10–20%, 20% or more</span>
       </figcaption>
     </figure>

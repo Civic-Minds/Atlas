@@ -136,11 +136,8 @@ function RoutesTable({ s }: { s: AgencySummary }) {
   );
 }
 
-/** Widths of the late-stops table beside its map (rem): narrower than the page's shared grid, so the table fits its half. */
-const LATE_STOP_COL = 10, LATE_ROUTE_COL = 7, LATE_DIR_COL = 6, LATE_FIGURE_COL = 5, LATE_COUNT_COL = 5.5;
-
 /**
- * CIV-1405 mock-up: the stops most often late as a table and, beside it, a map of the same list. `mapRows` is the
+ * CIV-1405 mock-up: the stops most often late as a map and, under it, a table of the same list. `mapRows` is the
  * summary's list, worst first; the table shows its first `tableCount` rows. Each stop's rank in that list is the number
  * on its dot and in front of its name, whatever the table is sorted by.
  */
@@ -151,9 +148,9 @@ function StopsTable({ s, mapRows, tableCount }: { s: AgencySummary; mapRows: Age
   const rows = mapRows.slice(0, tableCount);
   const dots = lateStopDots(mapRows, r => ({ key: keyOf(r), lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, lateShare: r.lateShare, title: `${stop(r.name)} (${r.route} ${nameCase(r.direction, 'liveStop')}): ${pct(r.lateShare)} late` }));
   return (
-    <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-      <LateStopsMap dots={dots} label={`Map of the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(rows.length, dots.length)} mapClassName={rows.length > 12 ? 'h-72 lg:h-[30rem]' : 'h-72 lg:h-[19rem]'} className="lg:order-2 lg:sticky lg:top-20" />
-      <ScrollX className="min-w-0">
+    <>
+      <LateStopsMap dots={dots} label={`Map of the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(rows.length, dots.length)} mapClassName="h-72 lg:h-96" className="mt-6" />
+      <PageTable>
       <SortableDataTable
         narrowFit
         caption="Stops most often late, all analysed routes"
@@ -161,16 +158,16 @@ function StopsTable({ s, mapRows, tableCount }: { s: AgencySummary; mapRows: Age
         defaultSort="late"
         rowKey={r => `${r.route}-${r.directionId}-${r.stopId}`}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, width: LATE_STOP_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)} className="flex gap-2"><span className="w-5 shrink-0 whitespace-nowrap text-right font-bold tabular-nums text-[var(--text-muted)]">{rank.get(keyOf(r))}</span><span>{stop(r.name)}</span></span> },
-          { key: 'route', header: 'Route', width: LATE_ROUTE_COL, align: 'left', className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: LATE_DIR_COL, align: 'left', narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
-          { key: 'late', header: 'Late', width: LATE_COUNT_COL, className: 'whitespace-nowrap', worst: r => r.lateShare, cell: r => <LegendItem color={lateShareColor(r.lateShare)} className="gap-2">{pct(r.lateShare)}</LegendItem> },
-          { key: 'typical', header: 'Typical', width: LATE_FIGURE_COL, className: 'whitespace-nowrap', worst: r => r.medianMin, cell: r => mins(r.medianMin) },
-          { key: 'n', header: 'Departures', width: LATE_COUNT_COL, narrowHide: true, cell: r => r.n.toLocaleString() },
+          { key: 'stop', header: 'Stop', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => <span title={stop(r.name)} className="flex gap-2"><span className="w-5 shrink-0 whitespace-nowrap text-right font-bold tabular-nums text-[var(--text-muted)]">{rank.get(keyOf(r))}</span><span>{stop(r.name)}</span></span> },
+          { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left', className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left', narrowHide: true, cell: r => nameCase(r.direction, 'liveStop') },
+          { key: 'late', header: 'Late', width: FIGURE_COL, worst: r => r.lateShare, cell: r => <LegendItem color={lateShareColor(r.lateShare)} className="gap-2">{pct(r.lateShare)}</LegendItem> },
+          { key: 'typical', header: 'Typical', width: FIGURE_COL, worst: r => r.medianMin, cell: r => mins(r.medianMin) },
+          { key: 'n', header: 'Departures', width: FIGURE_COL, narrowHide: true, cell: r => r.n.toLocaleString() },
         ]}
       />
-      </ScrollX>
-    </div>
+      </PageTable>
+    </>
   );
 }
 

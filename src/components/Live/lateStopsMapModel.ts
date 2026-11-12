@@ -31,40 +31,21 @@ export function lateDotSize(share: number, highest: number): number {
   return Math.round(Math.max(LATE_DOT_MIN_PX, LATE_DOT_MAX_PX * Math.sqrt(Math.max(0, share) / highest)));
 }
 
-/** A group of dots drawn as one marker because they overlap at the map's zoom: the best-ranked dot first. */
-export interface LateDotGroup { dots: LateStopDot[]; lonLat: [number, number] }
-
-/** A marker's width in px: a round dot for one stop, a pill wide enough for its label for several. */
-export function markerWidth(ranks: readonly number[], size: number): number {
-  return ranks.length === 1 ? size : Math.max(size, groupLabel(ranks).length * 7.5 + 16);
-}
-
 /**
- * Joins dots that would overlap on screen, given each dot's position in pixels, so no marker hides another. Dots are
- * taken best rank first, each starting at its own position; any two markers whose boxes (with `gap` px around them)
- * touch are merged, at the better-ranked one's position, until none touch.
+ * Which dots carry their number at the map's zoom: best rank first, a dot is numbered when its circle clears every dot
+ * already numbered (by `gap` px). Every dot stays at its own stop; an unnumbered dot is drawn under the numbered ones and
+ * gets its number when zooming in gives it room.
  */
-export function groupOverlappingDots(dots: readonly LateStopDot[], toPx: (lonLat: [number, number]) => { x: number; y: number }, gap = 2): LateDotGroup[] {
-  type Box = { dots: LateStopDot[]; lonLat: [number, number]; x: number; y: number };
-  const boxes: Box[] = [...dots].sort((a, b) => a.rank - b.rank).map(d => ({ dots: [d], lonLat: d.lonLat, ...toPx(d.lonLat) }));
-  const size = (b: Box) => Math.max(...b.dots.map(d => d.size));
-  const width = (b: Box) => markerWidth(b.dots.map(d => d.rank), size(b));
-  const touch = (a: Box, b: Box) => Math.abs(a.x - b.x) < (width(a) + width(b)) / 2 + gap && Math.abs(a.y - b.y) < (size(a) + size(b)) / 2 + gap;
-  for (let merged = true; merged;) {
-    merged = false;
-    for (let i = 0; i < boxes.length && !merged; i++) for (let j = i + 1; j < boxes.length && !merged; j++) {
-      if (!touch(boxes[i], boxes[j])) continue;
-      boxes[i].dots = [...boxes[i].dots, ...boxes[j].dots].sort((a, b) => a.rank - b.rank);
-      boxes.splice(j, 1);
-      merged = true;
-    }
+export function numberedDots(dots: readonly LateStopDot[], toPx: (lonLat: [number, number]) => { x: number; y: number }, gap = 1): Set<string> {
+  const placed: Array<{ x: number; y: number; r: number }> = [];
+  const out = new Set<string>();
+  for (const d of [...dots].sort((a, b) => a.rank - b.rank)) {
+    const p = toPx(d.lonLat), r = d.size / 2;
+    if (placed.some(q => Math.hypot(q.x - p.x, q.y - p.y) < q.r + r + gap)) continue;
+    placed.push({ ...p, r });
+    out.add(d.key);
   }
-  return boxes.map(({ dots: ds, lonLat }) => ({ dots: ds, lonLat }));
-}
-
-/** A group's label: its ranks ("1, 7, 8"), or the first two and how many more ("2, 3 +4"). */
-export function groupLabel(ranks: readonly number[]): string {
-  return ranks.length <= 3 ? ranks.join(', ') : `${ranks.slice(0, 2).join(', ')} +${ranks.length - 2}`;
+  return out;
 }
 
 /**
