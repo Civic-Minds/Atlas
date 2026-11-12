@@ -22,7 +22,7 @@
     "Burlington, Ontario",
     "Hamilton, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -43,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -54,5 +54,6 @@
   "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "a3bce9675f0646df",
-  "feedObtainedAt": "20260928"
+  "feedObtainedAt": "20260928",
+  "lastFeedStart": "20261101"
 }

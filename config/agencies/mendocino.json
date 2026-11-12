@@ -18,7 +18,7 @@
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "UTC: 30-Oct-2026 17:15",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
@@ -39,7 +39,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -50,5 +50,6 @@
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip",
   "lastPeekedExpiry": "20270228",
   "lastServiceWeek": "ea7b0eb2b3d7a63f",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261030"
 }

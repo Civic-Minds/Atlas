@@ -12,7 +12,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2079/latest.zip",
   "lastRefreshedAt": "2026-11-02",
   "websiteUrl": "https://gobroomecounty.com/transit",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -36,16 +36,17 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2079/latest.zip",
+  "lastFeedSourceUrl": "https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS.zip",
   "lastPeekedExpiry": "20271231",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "c1be6777e669f221",
-  "feedObtainedAt": "20260824"
+  "feedObtainedAt": "20260824",
+  "lastFeedStart": "20260821"
 }

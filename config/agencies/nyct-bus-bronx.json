@@ -32,7 +32,7 @@
     "Yonkers, New York",
     "Morningside Heights, New York"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -54,7 +54,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
@@ -63,5 +63,6 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "c89c314c4beee52a"
+  "lastServiceWeek": "c89c314c4beee52a",
+  "lastFeedStart": "20261012"
 }

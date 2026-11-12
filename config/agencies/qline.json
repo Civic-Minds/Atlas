@@ -17,7 +17,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20251231-8926b6d5769c203c",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261223",
@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "modeOverrides": [
     {
@@ -54,5 +54,6 @@
       "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
     }
   ],
-  "lastPeekedExpiry": "20270523"
+  "lastPeekedExpiry": "20270523",
+  "lastFeedStart": "20250911"
 }

@@ -228,11 +228,37 @@ export function lineNamedByShortName(
   const m = longName.trim().match(new RegExp(`^(?:(.*\\S)\\s+)?(${escapeRe(short)}\\s+line)$`, 'iu'));
   if (!m) return null;
   if (!m[1] || /[-–—:]$/.test(m[1])) return m[2];
-  const norm = (x: string) => x.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-  // "Valley Metro (Phoenix)" and "dart": the name, the part in brackets, and the slug.
-  const names = agency.flatMap(a => (a ? [a, a.replace(/\s*\(.*\)\s*/g, ' '), a.match(/\(([^)]+)\)/)?.[1] ?? ''] : []))
-    .map(norm).filter(n => n.length >= 3);
-  return names.some(n => norm(m[1]).startsWith(n)) ? m[2] : null;
+  const names = agencyNameKeys(agency);
+  return names.some(n => normName(m[1]).startsWith(n)) ? m[2] : null;
+}
+
+const normName = (x: string) => x.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+
+/** "Valley Metro (Phoenix)" and "dart": the name, the part in brackets, and the slug, as lower-case letters and digits. */
+function agencyNameKeys(agency: (string | null | undefined)[]): string[] {
+  return agency.flatMap(a => (a ? [a, a.replace(/\s*\(.*\)\s*/g, ' '), a.match(/\(([^)]+)\)/)?.[1] ?? ''] : []))
+    .map(normName).filter(n => n.length >= 3);
+}
+
+/**
+ * A long name that starts with the agency's own name and goes on to name a line: "Metrolink Antelope Valley Line" on
+ * Metrolink's "AV Line" is the "Antelope Valley Line" (#1373). The agency name is dropped only when the short name is a
+ * line code ("AV Line") and two or more words follow, the last being "Line". So a place that shares the agency's name
+ * ("Niagara College NOTL Campus", "Nanaimo Rapid Line" on route 1) and a one-word name ("Metra Electric") stay as they are.
+ */
+export function withoutAgencyName(shortName: string | null | undefined, longName: string | null | undefined, agency: (string | null | undefined)[] = []): string | null | undefined {
+  if (!longName || !/\S\s+line$/i.test(shortName?.trim() ?? '')) return longName;
+  const names = agencyNameKeys(agency);
+  const words = longName.trim().split(/\s+/);
+  let seen = '';
+  for (let i = 0; i < words.length - 2; i++) {
+    seen += normName(words[i]);
+    if (!names.includes(seen)) continue;
+    const rest = words.slice(i + 1);
+    if (/^[-–—:|/]+$/.test(rest[0])) rest.shift();
+    return rest.length >= 2 && /^line$/i.test(rest[rest.length - 1]) ? rest.join(' ') : longName;
+  }
+  return longName;
 }
 
 export function routeDisplay(input: {
@@ -268,7 +294,7 @@ export function routeDisplay(input: {
   }
   const lineName = lineNamedByShortName(shortName, longName, [input.agencyName, input.agencySlug]);
   if (lineName) return { primary: lineName, text: lineName };
-  const parts = routeLabelParts(shortName, longName, agencyName);
+  const parts = routeLabelParts(shortName, withoutAgencyName(shortName, longName, [input.agencyName, input.agencySlug]), agencyName);
   // A letter code the card title leaves out ("MI" for Milton) stays as the bold part of a list row.
   if (parts.shortCode) {
     const t = withoutRepeatedShortName(parts.shortCode, parts.primary);

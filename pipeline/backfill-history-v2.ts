@@ -18,8 +18,11 @@
  * reprocess-derived-artifacts does. Agencies with supplemental feeds are refused unless
  *   --bus-only   run on the main feed only; the report is stamped busOnly + supplementalExcluded
  * (supplemental feeds such as rail have no archive, so they never enter a backfill).
+ *
+ * CIV-1101 Part B: each zip is read with the one service-day model (pickRiderWeek), anchored at the
+ * zip's own first full week in force, so a holiday is a day that loses the vote (no holiday list,
+ * no re-pick). Published sidecars are never rewritten: a sidecar that differs is a conflict.
  */
-import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { processAgencyFeeds } from './agencyFeeds.js';
@@ -28,11 +31,9 @@ import { backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, 
 import { readFeedEvidence } from './historyWeekend.js';
 import { buildPeriodShapes, shapeTripStats, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
-import { readRefDateQuality } from './historyRefQuality.js';
-import { chooseReferenceDate, readRepickRows, repickEligible } from './historyRefRepick.js';
-import { historyV2FromEnv } from './historyV2Flag.js';
+import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
+import { firstFullWeekAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
-import type { RefDateQuality } from '../shared/historyV2.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -57,7 +58,7 @@ async function main(): Promise<void> {
   const splitKeys = (JSON.parse(readFileSync(resolve('config/history-route-splits.json'), 'utf8')) as HistoryRouteSplits)[slug] ?? [];
   mkdirSync(outDir, { recursive: true });
 
-  const rows: Array<{ zip: string; periodKey?: string; refDate?: string; result?: string; report?: BuildV2Report; error?: string }> = [];
+  const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; error?: string }> = [];
   for (const zip of zips) {
     const stem = basename(zip, '.zip');
     try {
@@ -66,19 +67,13 @@ async function main(): Promise<void> {
       if (Object.keys(split.report.moved).length || Object.keys(split.report.unsplit).length) console.log(`${zip}: split lumped routes ${JSON.stringify(split.report)}`);
       const dates = await peekFeedDates(buf);
       const periodKey = periodKeyForZip(stem, dates);
-      // Under ATLAS_HISTORY_V2=1 a holiday-week or split-week reference date is replaced by a normal
-      // week of the SAME feed before processing (pipeline/historyRefRepick.ts); with no normal week the
-      // period keeps its date and the build drops it. The shared picker is not touched.
-      let chosen: { refDate: string; quality: RefDateQuality } | undefined;
-      if (historyV2FromEnv() && repickEligible(agency)) {
-        const picked = await readFeedEvidence(buf);
-        chosen = chooseReferenceDate(await readRepickRows(buf), picked.refDate);
-      }
-      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, chosen?.quality.repicked ? { referenceDate: chosen.refDate, legacyReferenceDate: true } : { legacyReferenceDate: true }, m => process.stdout.write(`  ${m}`));
-      const evidence = await readFeedEvidence(buf, chosen?.quality.repicked ? { referenceDate: chosen.refDate } : agency.referenceDateFromRunDate ? { referenceDate: pipelineRunDateYmd() } : {});
+      // The zip's own anchor: its first full week in force (CIV-1101 Part B), never the run date.
+      const anchor = firstFullWeekAnchor(await readQualityRows(buf));
+      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, anchor ? { serviceAnchor: anchor } : {}, m => process.stdout.write(`  ${m}`));
+      const evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence);
       const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
-      sidecar.refDateQuality = chosen ? chosen.quality : await readRefDateQuality(buf, evidence.refDate);
+      sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
       const result = await writeSidecar(sink, sidecar);
       let shapesNote = '';
       if (withShapes) {
@@ -88,8 +83,8 @@ async function main(): Promise<void> {
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
-      rows.push({ zip, periodKey, refDate: evidence.refDate, result, report: built.report });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}${sidecar.refDateQuality.repicked ? ` RE-PICKED from ${sidecar.refDateQuality.repicked.from}: ${sidecar.refDateQuality.repicked.reason}` : ''}${sidecar.refDateQuality.holiday ? ` HOLIDAY REF DATE (the build drops it): ${sidecar.refDateQuality.reason}` : ''}`);
+      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report });
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${sidecar.refDateQuality.reason} (anchor ${anchor ?? 'none'})`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });

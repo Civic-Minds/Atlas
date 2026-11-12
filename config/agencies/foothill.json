@@ -24,7 +24,7 @@
     "Los Angeles, California",
     "Upland, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270710",
@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -58,5 +58,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270710",
   "lastServiceWeek": "3263690b9d3cc1a5",
-  "feedObtainedAt": "20261101"
+  "feedObtainedAt": "20261101",
+  "lastFeedStart": "20261101"
 }

@@ -31,7 +31,7 @@
     "Saint-Léonard, Quebec",
     "Saint-Laurent, Quebec"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270108",
@@ -54,7 +54,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Montreal",
   "feedRefreshStatus": "current",
@@ -64,5 +64,6 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.stlaval.ca/datas/opendata/GTF_STL.zip",
   "lastPeekedExpiry": "20270108",
-  "refusedFeedSha256": "dcd4b5ce22390716d0081e832944255074178c898fdfe8b5703044f37f2c57b5"
+  "refusedFeedSha256": "42e0acdad36a55ebbdb22016e130f8746c798ee37a4d9202a2c1a3170547f022",
+  "lastFeedStart": "20260822"
 }

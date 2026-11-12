@@ -39,9 +39,9 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261210",
@@ -53,5 +53,6 @@
   "lastFeedSourceUrl": "https://rmwb-gtfsrt.civilia.ca/gtfs",
   "lastPeekedExpiry": "20261210",
   "lastServiceWeek": "c6578b891cd2ce19",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20260821"
 }

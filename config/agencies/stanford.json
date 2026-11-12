@@ -23,7 +23,7 @@
     "Palo Alto, California",
     "Mountain View, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -44,7 +44,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Los_Angeles",
   "feedRefreshStatus": "current",
@@ -55,5 +55,6 @@
   "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "lastPeekedExpiry": "20270926",
   "lastServiceWeek": "cf6582daa45f5883",
-  "feedObtainedAt": "20261016"
+  "feedObtainedAt": "20261016",
+  "lastFeedStart": "20260901"
 }

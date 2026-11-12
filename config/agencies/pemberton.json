@@ -10,10 +10,10 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
   "lastFeedExpiry": "20271126",
-  "lastFeedVersion": "202611020/20261101 21:00:00/20261102 03:00:00",
+  "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2470/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastRefreshedAt": "2026-11-09",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271126",
@@ -36,7 +36,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -47,5 +47,6 @@
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=50",
   "lastPeekedExpiry": "20271126",
   "lastServiceWeek": "794ea1d2f272eccb",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

@@ -45,3 +45,19 @@ describe('nightRoutesInView (#1233)', () => {
     expect(countNightRoutesInView(layers, 60, undefined)).toEqual({ routes: 0, agencies: 0 });
   });
 });
+
+describe('the 90 grade (CIV-1329)', () => {
+  const owl: Record<string, GeoJSON.FeatureCollection> = {
+    lacmta: {
+      type: 'FeatureCollection',
+      features: [
+        line([[-79.39, 43.65], [-79.38, 43.66]], { routeShortName: '240', nightService90: true }),
+        line([[-79.39, 43.65], [-79.38, 43.66]], { routeShortName: '4', nightService60: true, nightService90: true }),
+      ],
+    },
+  };
+  it('an owl every 61-90 minutes is listed at 90 only; 90 includes the 60 routes', () => {
+    expect(countNightRoutesInView(owl, 60, downtown)).toEqual({ routes: 1, agencies: 1 });
+    expect(countNightRoutesInView(owl, 90, downtown)).toEqual({ routes: 2, agencies: 1 });
+  });
+});

@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
   "timezone": "America/Los_Angeles",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -38,11 +38,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "UTC: 13-May-2026 10:51",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -50,6 +50,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-2289/latest.zip",
   "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "be956cf192c4c780",
-  "feedObtainedAt": "20260513"
+  "lastServiceWeek": "153c3fb9a11ba0ce",
+  "feedObtainedAt": "20260513",
+  "lastFeedStart": "20260513"
 }

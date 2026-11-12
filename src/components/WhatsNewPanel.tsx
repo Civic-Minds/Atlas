@@ -1,39 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
 import PanelHeader from './ui/PanelHeader';
-import { resolveDataRelease, type DataRelease } from '../lib/dataRelease';
 import { formatStoredDate } from '../utils/format';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
 
-/** "Oct 9, 2026" from the release manifest, or null when it carries no usable date. */
-export function dataUpdatedLabel(release: Pick<DataRelease, 'generatedAt'> | null | undefined): string | null {
-  const generatedAt = release?.generatedAt;
-  if (!generatedAt || Number.isNaN(Date.parse(generatedAt))) return null;
-  return formatStoredDate(generatedAt.slice(0, 10)) || null;
+/** "Released Nov 9, 2026" from the release's own date; the month when the date is unusable. */
+function releasedLabel(release: WhatsNewRelease): string {
+  const date = formatStoredDate(release.date);
+  return date ? `Released ${date}` : release.month;
 }
 
 interface Props {
   onClose: () => void;
   includeBeta: boolean;
   releases?: WhatsNewRelease[];
-  /** Injected in tests; defaults to the cached manifest the map already loads. */
-  loadRelease?: () => Promise<Pick<DataRelease, 'generatedAt'> | null>;
 }
 
-export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = resolveDataRelease }: Props) {
-  const [dataDate, setDataDate] = useState<string | null>(null);
+export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
   // Only the latest version here; older ones live on /changelog.
   const visible = visibleWhatsNew(includeBeta, releases).slice(0, 1);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadRelease()
-      .then(release => { if (!cancelled) setDataDate(dataUpdatedLabel(release)); })
-      .catch(() => { if (!cancelled) setDataDate(null); });
-    return () => { cancelled = true; };
-  }, [loadRelease]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
@@ -53,11 +40,11 @@ export function WhatsNewPanel({ onClose, includeBeta, releases, loadRelease = re
       >
         <PanelHeader titleId="whats-new-title" title="What's new" onClose={onClose} closeLabel="Close what's new" />
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
-          {visible.map((release, index) => (
+          {visible.map(release => (
             <section key={release.version} aria-label={`Version ${shortVersion(release.version)}`}>
               <h3 className="text-xs font-black text-[var(--text-primary)]">
                 Version {shortVersion(release.version)}
-                <span className="font-semibold text-[var(--text-dim)]"> · {index === 0 && dataDate ? `map data updated ${dataDate}` : release.month}</span>
+                <span className="font-semibold text-[var(--text-dim)]"> · {releasedLabel(release)}</span>
               </h3>
               <ul className="mt-2 space-y-2">
                 {release.items.map(item => (

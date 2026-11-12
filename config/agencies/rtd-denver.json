@@ -11,8 +11,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-178/latest.zip",
   "region": "Colorado",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "Sep26-37329-18-19-20261030-143459",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "Sep26-37355-20-21-20261105-153649",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Denver, Colorado",
     "Aurora, Colorado",
@@ -25,7 +25,7 @@
     "Broomfield, Colorado",
     "Westminster, Colorado"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Denver",
   "feedRefreshStatus": "current",
@@ -94,6 +94,7 @@
     }
   ],
   "lastPeekedExpiry": "20270102",
-  "lastServiceWeek": "215d0dd64e9d7698",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "5ab76e1cf74f050e",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20260927"
 }

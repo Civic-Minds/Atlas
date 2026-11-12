@@ -49,7 +49,7 @@
     "Bethesda, Maryland",
     "Rockville, Maryland"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -76,12 +76,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "e7fd190abb190b29",
-  "feedObtainedAt": "20261011"
+  "feedObtainedAt": "20261011",
+  "lastFeedStart": "20221114"
 }

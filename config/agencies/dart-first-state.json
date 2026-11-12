@@ -21,7 +21,7 @@
   "cities": [
     "Wilmington, Delaware"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261114",
@@ -46,12 +46,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "b06fdcc683e8009b",
-  "feedObtainedAt": "20260520"
+  "feedObtainedAt": "20260520",
+  "lastFeedStart": "20260517"
 }

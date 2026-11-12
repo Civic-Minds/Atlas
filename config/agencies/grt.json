@@ -25,7 +25,7 @@
   ],
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Waterloo, Ontario",
     "Kitchener, Ontario",
@@ -33,7 +33,7 @@
   ],
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "20260426-071369b92e6aeb7d",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -76,8 +76,9 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
-  "lastServiceWeek": "aac7fa750c740834",
-  "feedObtainedAt": "20261023"
+  "lastServiceWeek": "4e894f57adb47ed5",
+  "feedObtainedAt": "20261023",
+  "lastFeedStart": "20261109"
 }

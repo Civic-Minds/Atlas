@@ -1,0 +1,60 @@
+{
+  "slug": "tricounty-link",
+  "officialName": "TriCounty Link",
+  "websiteUrl": "https://ridetricountylink.com/",
+  "center": [
+    33.075,
+    -80.019
+  ],
+  "feedUrl": "http://data.trilliumtransit.com/gtfs/tricountylink-sc-us/tricountylink-sc-us.zip",
+  "region": "South Carolina",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40206/latest.zip",
+  "bbox": [
+    32.5693,
+    -80.5739,
+    33.5814,
+    -79.464
+  ],
+  "cities": [
+    "Moncks Corner, South Carolina",
+    "Summerville, South Carolina",
+    "Goose Creek, South Carolina"
+  ],
+  "timezone": "America/New_York",
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/tricountylink-sc-us/tricountylink-sc-us.zip",
+  "lastFeedCheckAt": "20261110",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270529",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 27,
+      "feedExpiry": "20270529",
+      "routeCount": 14,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-12"
+  },
+  "lastFeedExpiry": "20270529",
+  "lastPeekedExpiry": "20270529",
+  "lastFeedStart": "20261105",
+  "lastFeedVersion": "UTC: 05-Nov-2026 17:17",
+  "lastRefreshedAt": "2026-11-07",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "3f7e5fe597bc2690",
+  "feedObtainedAt": "20261107"
+}

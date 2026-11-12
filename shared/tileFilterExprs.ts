@@ -2,6 +2,7 @@ import type { PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
 import { buildEffectiveModeExpression } from './modes.js';
+import { tileNightServiceExpr } from './nightService.js';
 
 type PeriodFilter = PeriodKey | 'all';
 
@@ -128,7 +129,7 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       qualifiedCadence,
       coverage,
     ];
-    return [
+    const value = [
       'case',
       ['has', `rv_${period}`],
       ['case',
@@ -138,6 +139,10 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       ],
       legacy,
     ];
+    // #1322: Overnight counts only a row that runs through the night by the Night Service test
+    // (shared/nightService.ts), so a first trip of the morning at 3 AM never reads as overnight service.
+    if (period === 'overnight') return ['case', tileNightServiceExpr(), value, NO_PERIOD_SERVICE_TILE_VALUE];
+    return value;
   }
   return allDay;
 }
@@ -160,6 +165,10 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
   // Step 5a: a route stamped by the stretch selector runs in the period only when one of its
   // directions runs through it (rr_); stray or part-day trips alone (YRT Viva overnight) no longer
   // draw it under "All". The row must still run there itself.
+  // #1322: Overnight asks the Night Service test instead (shared/nightService.ts, the page's own rule): the
+  // 2-6 AM midpoint test (rr_) and the partial-weekday flag both let the first trips of the morning through
+  // (RTD A Line from 3:00 AM). The row must still run there itself.
+  if (period === 'overnight') return ['all', tileNightServiceExpr(), legacy];
   return ['case', ['has', `rr_${period}`], ['all', ['==', ['get', `rr_${period}`], true], legacy], legacy];
 }
 

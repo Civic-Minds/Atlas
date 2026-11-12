@@ -1,9 +1,9 @@
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { useOnDemandStatus } from '../hooks/useOnDemandData';
+import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { agencyNames, distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
@@ -20,7 +20,7 @@ import { MapErrorsPanel, MapErrorsPill } from '../components/Interval/MapErrorsP
 import { FilterPanel } from '../components/Interval/FilterPanel';
 import { FilterChips, getNowPeriodForTimezone } from '../components/Interval/FilterChips';
 import { AgencyCard } from '../components/Interval/AgencyCard';
-import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
+import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
@@ -30,6 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
+import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
 import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
@@ -40,11 +41,11 @@ import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlP
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
-import { encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
+import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
-import type { NightServiceFrequency } from '../../shared/nightService';
+import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
@@ -55,9 +56,13 @@ import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
 import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/onDemandSelection';
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { linkValueUnknown } from '../utils/linkSelection';
+import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
+import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
+import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
+import { NIGHT_LIST_TITLE } from '../content/researchRules';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -110,8 +115,6 @@ interface Props {
   onSelectionActiveChange?: (active: boolean) => void;
   /** Live mode: a live route picked here opens in Live's card instead of this one. */
   onLiveRouteSelected?: (slug: string, routeShortName: string) => void;
-  /** Start comparing once compare is available (Compare picked from Live or History). */
-  compareStartRequest?: number | null;
   /** Tells the top bar when compare is on, so the other mode tabs can shrink to icons. */
   onCompareActiveChange?: (active: boolean) => void;
   headerPortalContainer?: Element | null;
@@ -175,8 +178,11 @@ function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, compareStartRequest = null, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
+  // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [mapContextOpen, setMapContextOpen] = useState(false);
   const [mapContextView, setMapContextView] = useState<'agencies' | 'routes'>('routes');
   const [mapContextAgencyCount, setMapContextAgencyCount] = useState(0);
@@ -441,16 +447,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
   const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
-  const [compareSide, setCompareSide] = useState<CompareSide | null>(() => {
-    if (!compareAvailable) return null;
-    return parseCompareSideParams<DayTypeName, TimePeriod>(searchParams, {
+  // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.
+  const compareSideFromLink = (search: string | URLSearchParams, atComparePath: boolean): CompareSide | null => (
+    parseCompareSideParams<DayTypeName, TimePeriod>(search, {
       days: DAY_TYPES,
       periods: PERIOD_KEYS as readonly TimePeriod[],
       // CIV-239: no All day; a Compare link without map B's time opens B on map A's.
       allPeriod: period,
       fallbackHeadway: maxHeadway,
-    });
-  });
+    }) ?? (atComparePath ? defaultCompareSide({ day, period, maxHeadway }) : null)
+  );
+  const [compareSide, setCompareSide] = useState<CompareSide | null>(() => (
+    compareAvailable ? compareSideFromLink(searchParams, pathname === COMPARE_PATH) : null
+  ));
   const compareActive = compareAvailable && compareSide != null;
   const [compareLinked, setCompareLinked] = useState(true);
   // Switching to another app (History, Live, Fares...) leaves compare in the same step, so coming
@@ -461,6 +470,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setCompareWasAvailable(compareAvailable);
     if (!compareAvailable && compareSide != null) setCompareSide(null);
     if (!compareAvailable) setCompareLinked(true);
+  }
+  // Back and forward between the map and /apps/compare turn Compare on and off with the address. Done during
+  // render like the block above, so the link sync below never writes a stale side B into the new address.
+  const [comparePathSeen, setComparePathSeen] = useState(pathname);
+  if (comparePathSeen !== pathname) {
+    setComparePathSeen(pathname);
+    const step = compareStepForPathChange(comparePathSeen, pathname, compareActive);
+    if (step === 'start' && compareAvailable) {
+      setCompareLinked(true);
+      // The address bar, not the router: side B's settings are written outside the router (syncUrlParams).
+      setCompareSide(compareSideFromLink(window.location.search, true));
+    } else if (step === 'exit') {
+      setCompareLinked(true);
+      setCompareSide(null);
+    }
   }
 
   const previousAnalyticsFilters = useRef<{
@@ -628,12 +652,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     setNearYouRoute(key);
     setSelectedRoute(key);
   }, []);
-  const routeCardBack = useMemo(
-    () => (userLocation && nearYouRoute && selectedRoute === nearYouRoute
-      ? { to: 'Near You', onClick: () => setSelectedRoute(null) }
-      : undefined),
-    [userLocation, nearYouRoute, selectedRoute],
-  );
+  // A route opened from the Night Service list gets "← Overnight service", which closes the route and puts the
+  // map back where the list was (#1326). Other routes keep their agency card as the back target.
+  const [nightListRoute, setNightListRoute] = useState<ListOpenedRoute | null>(null);
+  useEffect(() => { if (!nightServiceView) setNightListRoute(null); }, [nightServiceView]);
+  // Once another route (or none) is open, the list no longer opened what is shown.
+  useEffect(() => {
+    setNightListRoute(current => (current && current.routeKey !== selectedRoute ? null : current));
+  }, [selectedRoute]);
 
   useEffect(() => {
     if (!nearYouShown) return;
@@ -710,6 +736,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Linked (the default), the two maps share one view: whichever one the user moves leads. Unlinked,
   // each map moves on its own. Linking again snaps B to A's view. Resets to linked whenever compare opens.
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
+  const routeCardBack = useMemo(() => {
+    const target = resolveRouteCardBack({ selectedRoute, nightServiceView, nightListRoute, nearYouRoute, hasUserLocation: !!userLocation });
+    if (target?.kind === 'nearYou') return { to: 'Near You', onClick: () => setSelectedRoute(null) };
+    if (target?.kind === 'nightList') {
+      return {
+        to: NIGHT_LIST_TITLE,
+        onClick: () => {
+          setSelectedRoute(null);
+          setNightListRoute(null);
+          if (target.camera) mapA?.jumpTo(target.camera);
+        },
+      };
+    }
+    return undefined;
+  }, [selectedRoute, nightServiceView, nightListRoute, nearYouRoute, userLocation, mapA]);
   const [mapB, setMapB] = useState<maplibregl.Map | null>(null);
   useEffect(() => {
     if (!compareActive || !compareLinked || !mapA || !mapB) return;
@@ -718,14 +759,28 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { onCompareActiveChange?.(compareActive); }, [compareActive, onCompareActiveChange]);
 
-  const startCompare = useCallback(() => { setCompareLinked(true); setCompareSide(defaultCompareSide(compareA)); }, [compareA]);
-  const exitCompare = useCallback(() => { setCompareLinked(true); setCompareSide(null); }, []);
-  const handledCompareStart = useRef<number | null>(null);
+  // Turning Compare on or off from the map moves the address between the map's path and /apps/compare (a new
+  // history entry, so Back undoes it).
+  const startCompare = useCallback(() => {
+    setCompareLinked(true);
+    setCompareSide(defaultCompareSide(compareA));
+    const to = compareAddress(window.location.pathname, window.location.search, true);
+    if (to) navigate(to);
+  }, [compareA, navigate]);
+  const exitCompare = useCallback(() => {
+    setCompareLinked(true);
+    setCompareSide(null);
+    const to = compareAddress(window.location.pathname, window.location.search, false);
+    if (to) navigate(to);
+  }, [navigate]);
+  // An old map link carrying side B's settings opens Compare; its address becomes /apps/compare in place.
   useEffect(() => {
-    if (!compareStartRequest || !compareAvailable || handledCompareStart.current === compareStartRequest) return;
-    handledCompareStart.current = compareStartRequest;
-    startCompare();
-  }, [compareStartRequest, compareAvailable, startCompare]);
+    if (!compareActive) return;
+    const to = compareAddress(window.location.pathname, window.location.search, true);
+    if (to) navigate(to, { replace: true });
+  // Only the address the page opened on.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Side labels: how many routes each map draws in view. Counted from what is on screen, the same
   // way as the route-count badge.
@@ -861,14 +916,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     prevPendingNightRoute.current = pendingNightRoute;
     const found = fc.features.find(f => {
       const p = f.properties as any;
-      return p.routeId === pendingNightRoute.routeId && (p[`nightService${pendingNightRoute.frequency}`] === true || (pendingNightRoute.frequency === 60 && p.nightService === true));
+      return p.routeId === pendingNightRoute.routeId && rowPassesNightGrade(p, pendingNightRoute.frequency);
     });
     if (found) {
       const p = found.properties as any;
-      setSelectedRoute(routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties));
+      const key = routeKey({ ...p, agencySlug: p.agencySlug ?? pendingNightRoute.slug } as ShapeProperties);
+      setNightListRoute({ routeKey: key, camera: mapA ? { center: mapA.getCenter(), zoom: mapA.getZoom(), bearing: mapA.getBearing(), pitch: mapA.getPitch() } : null });
+      setSelectedRoute(key);
     }
     onPendingNightRouteHandled?.();
-  }, [pendingNightRoute, layers, onPendingNightRouteHandled]);
+  }, [pendingNightRoute, layers, onPendingNightRouteHandled, mapA]);
 
   useEffect(() => {
     if (!pendingNightRoute) return;
@@ -940,8 +997,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // A route the card can't show (no service on this day, or not in the agency's data) says why in the card's place
   // (N17, N18) instead of the card vanishing; picking that route's day again brings the card back.
   const [missingRoute, setMissingRoute] = useState<{ key: string; found: boolean } | null>(null);
+  // Links whose route, stop or on-demand value names no agency Atlas has, or isn't in the agency::id form (#1191).
+  const linkCatalog = allAgencies ?? agencies;
+  const onDemandSlugs = useOnDemandServiceSlugs();
   useEffect(() => {
     if (!selectedRoute) return;
+    if (linkValueUnknown(selectedRoute, linkCatalog, 'route')) {
+      // N18 in the card's place, and the bad value leaves the address bar.
+      clearMapSelection();
+      setMissingRoute({ key: selectedRoute, found: false });
+      return;
+    }
     const [slug] = selectedRoute.split('::');
     const fc = layers[slug];
     if (!fc) return;
@@ -953,7 +1019,19 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       clearMapSelection();
       setMissingRoute(missing);
     }
-  }, [selectedRoute, layers, day, clearMapSelection]);
+  }, [selectedRoute, layers, day, clearMapSelection, linkCatalog]);
+  // The same for a stop (N36) or an on-demand service: the note shows and the value leaves the address bar (#1191).
+  const clearOnDemandLink = useCallback(() => setOnDemandStopAgencySlug(null), []);
+  const { missing: missingLinkCard, dismiss: dismissMissingLinkCard } = useMissingLinkCard({
+    selectedStop,
+    onDemandSelection: onDemandStopAgencySlug,
+    catalog: linkCatalog,
+    onDemandSlugs,
+    onDemandEnabled: FEATURES.onDemand,
+    clearSelection: clearMapSelection,
+    clearOnDemand: clearOnDemandLink,
+    otherSelectionOpen: !!(selectedRoute || selectedAgencySlug || searchFocused),
+  });
   useEffect(() => {
     if (!missingRoute) return;
     if (selectedRoute || selectedStop || selectedAgencySlug || searchFocused) { setMissingRoute(null); return; }
@@ -1059,7 +1137,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // A tab switch opens the new view on a bare path (App's setActiveApp), and the effects above write only on a change,
   // so coming back left the link without the map's filters and a copied link opened on the viewer's own (CIV-1139).
   // When the map's own view opens again it writes its whole link once; any view showing the map writes its position.
-  const { pathname } = useLocation();
   const linkPathRef = useRef(pathname);
   useEffect(() => {
     if (linkPathRef.current === pathname) return;
@@ -1292,7 +1369,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {(isLoading || isTilesLoading || isBasemapLoading) && (
             <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
               <Spinner />
@@ -1333,6 +1410,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           )}
           {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}
+          {/* CIV-1329: the night grades' three shades. */}
+          {nightServiceView && <ResearchLegend view="night" frequentFrequency={frequentServiceFrequency} nightFrequency={nightServiceFrequency} />}
           {/* N39: phones hide the counts, so a view the filters leave empty says so there. */}
           {!compareActive && !nightServiceView && !frequentServiceView && stats && (showMapContext || !isLoading)
             && (showMapContext ? (mapContextRouteCount ?? 0) : stats.matching) === 0 && (
@@ -1421,6 +1500,15 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         if (!fc || !stopId || fc.features.some(f => (f.properties as { stopId?: string } | null)?.stopId === stopId)) return null;
         return <SelectionNoticePanel message={STOP_NOT_FOUND} onClose={clearMapSelection} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} />;
       })()}
+
+      {(showUi || showSelectionUi) && missingLinkCard && !missingRoute && (
+        <SelectionNoticePanel
+          message={missingLinkCard === 'stop' ? STOP_NOT_FOUND : ON_DEMAND_NOT_FOUND}
+          onClose={dismissMissingLinkCard}
+          sidebarLeft={sidebarLeft}
+          searchBarWidth={searchBarWidth}
+        />
+      )}
 
       {(showUi || showSelectionUi) && missingRoute && !selectedRoute && !selectedStop && !selectedAgencySlug && (
         <SelectionNoticePanel

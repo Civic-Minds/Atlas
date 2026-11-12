@@ -32,11 +32,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -46,5 +46,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270301",
   "lastServiceWeek": "ebe30f7cd1b7892f",
-  "feedObtainedAt": "20260820"
+  "feedObtainedAt": "20260820",
+  "lastFeedStart": "20260820"
 }

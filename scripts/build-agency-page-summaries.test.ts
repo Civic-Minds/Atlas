@@ -129,7 +129,8 @@ describe('stretch filter fields (frequency focus step 7)', () => {
     expect(r.midday).toBeNull();
     expect(r.limited ?? []).not.toContain('midday');
     // #1249: kept, so the page says "Irregular" as the map list does, not a blank.
-    expect(r.noRegular).toEqual(['midday', 'evening', 'overnight']);
+    // #1322: Overnight is irregular only for a route that runs through the night (Night Service's test); these rows have no night flag.
+    expect(r.noRegular).toEqual(['midday', 'evening']);
   });
 
   it('a period the route does not run in is not irregular (#1249)', () => {

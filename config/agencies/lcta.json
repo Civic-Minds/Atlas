@@ -16,7 +16,7 @@
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301214",
@@ -40,7 +40,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
@@ -50,5 +50,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "62237f3469318790",
-  "feedObtainedAt": "20260828"
+  "feedObtainedAt": "20260828",
+  "lastFeedStart": "20260908"
 }

@@ -27,7 +27,7 @@
     "Near North Side, Illinois",
     "Oak Park, Illinois"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261130",
@@ -51,7 +51,7 @@
       "mismatchRoutes": 3,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -61,5 +61,6 @@
   "lastFeedSourceUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
   "lastPeekedExpiry": "20261130",
   "lastServiceWeek": "e1178613ae51961c",
-  "feedObtainedAt": "20260914"
+  "feedObtainedAt": "20260914",
+  "lastFeedStart": "20260911"
 }

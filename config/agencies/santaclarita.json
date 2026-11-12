@@ -8,9 +8,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-1256/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261011",
+  "lastFeedVersion": "20261108",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Santa Clarita, California",
     "Canyon Country, California",
@@ -23,7 +23,7 @@
     "Northridge, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -37,9 +37,9 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 2,
+      "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 119,
+      "featureCount": 120,
       "feedExpiry": "20271231",
       "routeCount": 38,
       "problemShapes": 0,
@@ -47,13 +47,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "bfd95ec0c63fdcc1",
-  "feedObtainedAt": "20261011"
+  "lastServiceWeek": "b5140e564c388a1e",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

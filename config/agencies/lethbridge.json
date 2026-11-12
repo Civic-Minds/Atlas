@@ -15,7 +15,7 @@
   "cities": [
     "Lethbridge, Alberta"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -47,5 +47,6 @@
   "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "d2fb6a0a088453a2",
-  "feedObtainedAt": "20260902"
+  "feedObtainedAt": "20260902",
+  "lastFeedStart": "20260904"
 }

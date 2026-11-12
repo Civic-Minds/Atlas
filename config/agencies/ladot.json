@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 439 and Metrolink v2,183-Downtown DASH eff 7-11-2026",
+  "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 142 Detour and Southeast Regular Route,183-Downtown DASH eff 7-11-2026",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Los Angeles, California",
     "Florence-Graham, California",
@@ -24,7 +24,7 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -48,13 +48,14 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "d29027b89561fe67",
-  "feedObtainedAt": "20261101"
+  "lastServiceWeek": "3c2a3704eb1547ef",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20260519"
 }

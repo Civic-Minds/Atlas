@@ -15,7 +15,7 @@
   "cities": [
     "Visalia, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270106",
@@ -42,12 +42,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "ec96f40743e3a300",
-  "feedObtainedAt": "20250102"
+  "feedObtainedAt": "20250102",
+  "lastFeedStart": "20250102"
 }

@@ -17,7 +17,7 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20231101-7a0b8231d16dd4b1",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -43,7 +43,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastPeekedExpiry": "20270213",
   "feedRefreshStatus": "current",
@@ -51,5 +51,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "b6b3dee36001f154",
-  "feedObtainedAt": "20261016"
+  "feedObtainedAt": "20261016",
+  "lastFeedStart": "20261016"
 }

@@ -25,7 +25,7 @@
     "Brentwood, California",
     "Concord, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -49,7 +49,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -57,5 +57,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "e485f080bf53f60f",
-  "feedObtainedAt": "20260810"
+  "feedObtainedAt": "20260810",
+  "lastFeedStart": "20260809"
 }

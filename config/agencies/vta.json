@@ -30,7 +30,7 @@
     "Gilroy, California",
     "Palo Alto, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -52,7 +52,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
@@ -82,5 +82,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "5c07d34969153187",
-  "feedObtainedAt": "20261027"
+  "feedObtainedAt": "20261027",
+  "lastFeedStart": "20261026"
 }

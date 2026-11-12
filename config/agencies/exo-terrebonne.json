@@ -32,7 +32,7 @@
     "Saint-Léonard, Quebec",
     "Mercier–Hochelaga-Maisonneuve, Quebec"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -60,9 +60,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "692e39935f5b700d",
-  "feedObtainedAt": "20261027"
+  "feedObtainedAt": "20261027",
+  "lastFeedStart": "20261027"
 }

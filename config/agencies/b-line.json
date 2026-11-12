@@ -17,20 +17,20 @@
   "region": "Texas",
   "lastFeedExpiry": "20270117",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "20260811",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Corpus Christi, Texas"
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20250531-11faaa728a80569c",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261115",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20250531)",
-  "feedRefreshErrorAt": "20261012",
-  "feedRefreshRetryCount": 3,
+  "expiredFeedCheckExpiry": "20270117",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip",
   "lastPeekedExpiry": "20270117",
@@ -43,7 +43,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 158,
+      "featureCount": 159,
       "feedExpiry": "20270117",
       "routeCount": 32,
       "problemShapes": 0,
@@ -51,6 +51,9 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
-  }
+    "checkedAt": "2026-11-12"
+  },
+  "lastFeedStart": "20261109",
+  "lastServiceWeek": "8ab1305d6e095ca5",
+  "feedObtainedAt": "20261109"
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
+import { candidateIsOlderThanActive, decideRefreshSkipUnchanged, feedFileDate, lowerStoredFeedExpiry, isFeedExpired, markFeedStale, rawArchiveKeyDigest, recordedFeedExpiry, routeLineCount, shouldReplaceExpiredFeed, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, stampReprocessedFeedExpiry, stampSupplementalFeedMeta } from '../refreshMeta.js';
 import { isCurrentProductionFeed, isStaleProductionFeed } from '../../shared/feedAvailability.js';
 
 describe('feed expiry checks', () => {
@@ -286,6 +286,86 @@ describe('decideRefreshSkipUnchanged with a run-date reference (#774)', () => {
   });
 });
 
+describe('unchanged-feed check by zip hash (#1423)', () => {
+  // Dutchess: a corrected feed republished with the same end date (and no new version) was skipped.
+  const base = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20510930', lastPeekedExpiry: '20510930', lastFeedExpiry: '20510930' };
+  const lastRawArchiveKey = '20510930-0123456789abcdef';
+
+  it('reprocesses a corrected zip with the same end date and an unknown version', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('reprocesses a corrected zip with the same end date and the same version', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('skips a byte-identical zip', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey })).toEqual({ skip: true, reason: 'skipped (same zip: 0123456789abcdef)' });
+  });
+  it('skips an identical zip even when no end date was read', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: null, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey }).skip).toBe(true);
+  });
+  it('still reprocesses an identical zip whose picked week moved or that has ended', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, feedExpired: true, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey }).skip).toBe(false);
+  });
+  it('keeps the end-date rule for a record without a hash', () => {
+    const legacy = { ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210' };
+    expect(decideRefreshSkipUnchanged(legacy).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: null }).skip).toBe(true);
+    // Older archive names carry only a label.
+    expect(decideRefreshSkipUnchanged({ ...legacy, lastRawArchiveKey: '20510930' }).skip).toBe(true);
+  });
+  it('without a recorded key, skips a zip matching the newest archived zip', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: '0123456789abcdef', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(true);
+  });
+  // #1144: a held timetable is archived before it is processed, so on its start date the newest
+  // archived zip matches the download; its new end date must still reprocess it.
+  it('without a recorded key, a matching archived zip with a new end date still reprocesses', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedExpiry: '20270630', peekedVersion: null, lastFeedVersion: null, zipDigest: '0123456789abcdef', archivedRawKey: '20270630-0123456789abcdef' }).skip).toBe(false);
+  });
+  it('without a recorded key, reprocesses a zip that differs from the newest archived zip (Dutchess)', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef' }).skip).toBe(false);
+  });
+  it('a recorded key wins over the archive', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, archivedRawKey: '20510930-fedcba9876543210' }).skip).toBe(true);
+  });
+  it('keeps the end-date rule when the archive is empty or unreadable', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: null }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: 'en' }).skip).toBe(true);
+  });
+  it('with content keys, skips a re-zipped copy of the same files even though the bytes differ', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: 'fedcba9876543210', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa', lastFeedContentKey: 'aaaaaaaaaaaaaaaa' })).toEqual({ skip: true, reason: 'skipped (same feed contents: aaaaaaaaaaaaaaaa)' });
+  });
+  it('with content keys, reprocesses when one file changed even though the bytes match an old key', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, contentKey: 'bbbbbbbbbbbbbbbb', lastFeedContentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+  });
+  it('without a recorded content key, keeps the byte-hash and archive checks', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: 'fedcba9876543210', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, zipDigest: '0123456789abcdef', lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(true);
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: '124', lastFeedVersion: '124', zipDigest: 'fedcba9876543210', archivedRawKey: '20510930-0123456789abcdef', contentKey: 'aaaaaaaaaaaaaaaa' }).skip).toBe(false);
+  });
+  it('a moved service week still reprocesses the same contents', () => {
+    expect(decideRefreshSkipUnchanged({ ...base, peekedVersion: null, contentKey: 'aaaaaaaaaaaaaaaa', lastFeedContentKey: 'aaaaaaaaaaaaaaaa', serviceWeek: 'b', lastServiceWeek: 'a' }).skip).toBe(false);
+  });
+  it('a refresh records the content key it processed', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: '20510930', feedVersion: '124', peekedExpiry: '20510930', peekedVersion: '124', todayYmd: '2026-11-11', rawArchiveKey: lastRawArchiveKey, contentKey: 'aaaaaaaaaaaaaaaa' });
+    expect(agency.lastFeedContentKey).toBe('aaaaaaaaaaaaaaaa');
+    expect(agency.lastRawArchiveKey).toBe(lastRawArchiveKey);
+  });
+  it('reads the hash from an archive key', () => {
+    expect(rawArchiveKeyDigest('20240630-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
+    expect(rawArchiveKeyDigest('v1-2-cc0eb0e68ef49960')).toBe('cc0eb0e68ef49960');
+    expect(rawArchiveKeyDigest('20240630')).toBeNull();
+    expect(rawArchiveKeyDigest(null)).toBeNull();
+  });
+  it('a refresh records the archive key it processed', () => {
+    const agency: Record<string, unknown> = { lastRawArchiveKey: '20240630-cc0eb0e68ef49960' };
+    stampFeedMeta(agency, { feedExpiry: '20510930', feedVersion: '124', peekedExpiry: '20510930', peekedVersion: '124', todayYmd: '2026-11-11', rawArchiveKey: lastRawArchiveKey });
+    expect(agency.lastRawArchiveKey).toBe(lastRawArchiveKey);
+  });
+});
+
 describe('unchanged-feed check with a placeholder calendar end (#688)', () => {
   // bc-ferries: calendar ends 20500101, recorded expiry is capped near today + 2 years.
   const base = { forceRefresh: false, hasSupplementals: false, feedExpired: false, peekedExpiry: '20500101', peekedVersion: null, lastFeedExpiry: '20281007', lastFeedVersion: null };
@@ -413,5 +493,89 @@ describe('feedFileDate (#1253)', () => {
   it('with no recorded date it takes the zip\'s own date, never the last refresh (Miami: April file, refreshed Sep 17)', () => {
     expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: null, zipDate: '20260421' })).toBe('20260421');
     expect(feedFileDate({ newFile: false, runDate: '20261102', feedObtainedAt: undefined, zipDate: null })).toBeNull();
+  });
+});
+
+describe('candidateIsOlderThanActive: a placeholder stamp sets no floor (CIV-1351)', () => {
+  const refreshed = '2026-11-02';
+
+  it('st-george: the city feed is not older than a stamp recorded from the 2031 placeholder', () => {
+    // The rebuild stamped the old timetable back: 20310130 capped to 20281106. The refresh of 2026-11-06 01:04 refused
+    // the city feed as "20271231 < 20310130"; with the cap it would still read 20271231 < 20281106.
+    const active = { lastFeedExpiry: '20281106', lastPeekedExpiry: '20310130', lastRefreshedAt: refreshed };
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20271231', existingExpiry: active.lastFeedExpiry, existingPeekedExpiry: active.lastPeekedExpiry, recordedAt: active.lastRefreshedAt })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20271231', existingExpiry: '20310130', existingPeekedExpiry: '20310130', recordedAt: refreshed })).toBe(false);
+  });
+
+  it('an uncapped feed_info placeholder (dutchess 20510930) and an old record without a peeked end (appleton 20991231) set no floor either', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20510930', existingPeekedExpiry: '20510930', recordedAt: refreshed })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270102', existingExpiry: '20991231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(false);
+    // No record date at all: read against today.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270102', existingExpiry: '20991231', todayYmd: '20261106' })).toBe(false);
+  });
+
+  it('a real stamp still refuses an older or undated download, and a stamp two years out to the day is still a floor', () => {
+    // tulsa-transit, 2026-11-03: 20261205 < 20261231, stamp recorded 2026-08-10.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', existingExpiry: '20261231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: null, existingExpiry: '20261231', existingPeekedExpiry: '20261231', recordedAt: refreshed })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20281102', existingPeekedExpiry: '20281102', recordedAt: refreshed })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', existingExpiry: '20281103', existingPeekedExpiry: '20281103', recordedAt: refreshed })).toBe(false);
+    // The record date, not today, decides: prince-albert's 20281229 stays a placeholder after 2026-12-30.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270630', existingExpiry: '20281106', existingPeekedExpiry: '20281229', recordedAt: refreshed, todayYmd: '20270115' })).toBe(false);
+  });
+
+  it('a placeholder candidate is never older, and no stamp means no floor, as before', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20991231', existingExpiry: '20261231', existingPeekedExpiry: '20261231', recordedAt: refreshed })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', existingExpiry: null })).toBe(false);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205' })).toBe(false);
+  });
+});
+
+describe('candidateIsOlderThanActive: a later period start is a newer feed, whatever its end (#1359)', () => {
+  // A period starts on feed_info's start date, else the earliest calendar start.
+  it('tulsa: the September feed (20260910-20261205) is not older than the April feed to 20261231', () => {
+    // No stored start yet (every record today): the period began after the live feed was obtained on 2026-08-10.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: '20260910', existingExpiry: '20261231', existingPeekedExpiry: null, recordedAt: '2026-08-10' })).toBe(false);
+    // With the live feed's start recorded (lastFeedStart 20260421), the same verdict by the stored start.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: '20260910', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(false);
+    // The obtained date is the more precise record date when the agency has it.
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261206', candidateStart: '20261105', existingExpiry: '20271231', existingPeekedExpiry: '20271231', existingObtainedAt: '20261102', recordedAt: '2026-11-02' })).toBe(false);
+  });
+
+  it('qline: an earlier edition with the same start (version 22 against 29) stays refused by its end', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261223', candidateStart: '20250911', existingExpiry: '20270523', existingStart: '20250911', recordedAt: '2026-10-12' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261223', candidateStart: '20250911', existingExpiry: '20270523', existingPeekedExpiry: '20270523', recordedAt: '2026-10-12' })).toBe(true);
+  });
+
+  it('marintransit: a transient older download (earlier start and end) stays refused', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260912', candidateStart: '20260613', existingExpiry: '20270110', existingStart: '20260913', recordedAt: '2026-11-02' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20260912', candidateStart: '20260613', existingExpiry: '20270110', existingPeekedExpiry: '20270110', existingObtainedAt: '20261020', recordedAt: '2026-11-02' })).toBe(true);
+  });
+
+  it('greeley: a newer feed starting before the record date is still refused until the live start is stored', () => {
+    const greeley = { candidateExpiry: '20270113', candidateStart: '20260820', existingExpiry: '20270228', existingPeekedExpiry: '20270228', recordedAt: '2026-08-27' };
+    expect(candidateIsOlderThanActive(greeley)).toBe(true);
+    expect(candidateIsOlderThanActive({ ...greeley, existingStart: '20260813' })).toBe(false);
+  });
+
+  it('an undated candidate, and one without a start, are judged as before', () => {
+    expect(candidateIsOlderThanActive({ candidateExpiry: null, candidateStart: '20261105', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20261205', candidateStart: null, existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(true);
+    expect(candidateIsOlderThanActive({ candidateExpiry: '20270601', candidateStart: '20270101', existingExpiry: '20261231', existingStart: '20260421', recordedAt: '2026-08-10' })).toBe(false);
+  });
+
+  it('the refresh and a reprocess record the live feed\'s period start', () => {
+    const agency: Record<string, unknown> = {};
+    stampFeedMeta(agency, { feedExpiry: '20261205', feedVersion: '20260910', peekedExpiry: '20261205', peekedVersion: '20260910', todayYmd: '20261106', feedStart: '20260910' });
+    expect(agency.lastFeedStart).toBe('20260910');
+    const reprocessed: Record<string, unknown> = { lastFeedExpiry: '20261231', lastPeekedExpiry: '20261231', lastFeedStart: '20260421' };
+    expect(stampReprocessedFeedExpiry(reprocessed, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(true);
+    expect(reprocessed.lastFeedStart).toBe('20260910');
+    // The same feed again: nothing changes, nothing is rewritten.
+    expect(stampReprocessedFeedExpiry(reprocessed, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(false);
+    // A start alone counts as a change, so a record without one gains it on the next rebuild.
+    const noStart: Record<string, unknown> = { lastFeedExpiry: '20261205', lastPeekedExpiry: '20261205' };
+    expect(stampReprocessedFeedExpiry(noStart, { feedExpiry: '20261205', calendarExpiry: '20261205', todayYmd: '20261106', feedStart: '20260910' })).toBe(true);
+    expect(noStart.lastFeedStart).toBe('20260910');
   });
 });

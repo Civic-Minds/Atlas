@@ -23,7 +23,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20250329-3f568bd33b3ddb28",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +56,6 @@
   "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip",
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "faad8a4c315f5c09",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261025"
 }

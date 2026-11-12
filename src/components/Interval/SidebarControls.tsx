@@ -1,3 +1,4 @@
+import { stopCardSiblings } from '../../utils/stopStation';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -33,14 +34,14 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
-import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
+import { collectStopHubSiblings, nearbyRouteClosestStops } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
 import type { CompareSide } from '../../utils/compareSides';
 import { FEATURES } from '../../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
-import { buildStopRoutes } from '../../utils/stopRoutes';
+import { buildStopRoutes, stopCardAgencies } from '../../utils/stopRoutes';
 import { compareAgencyName, compareHeadwayThenNumber, compareRouteNumber } from '../../utils/sortCompare';
 import { SIDEBAR_CARD_BODY } from './cardUi';
 import { useRecentSearches } from '../../hooks/useRecentSearches';
@@ -466,11 +467,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routesByAgency = hub.routesByAgency;
     }
 
-    // CIV-1052: each route's periods at the stop and its siblings, so the card can list a route with no trips here.
+    // CIV-1305: the card lists only what stops at the clicked stop or elsewhere in its station; the hub's other stops of
+    // the same agency (the stop across the road) stay in the hub for the map and Nearby. Other agencies keep the hub's
+    // grouping (GO and UP at TTC Union), since station ids don't cross feeds.
+    const ownSiblings = allFeatures
+      .filter(f => f.geometry.type === 'Point' && (f.properties as any).agencySlug === slug && siblingIdsByAgency[slug]?.has((f.properties as any).stopId))
+      .map(f => f.properties as any);
+    const toStation = (p: any) => ({ stopId: p.stopId, stopName: p.stopName, parentStation: p.parentStation, parentStationName: p.parentStationName, routeIds: Array.isArray(p.routeIds) ? p.routeIds : [] });
+    const { siblingIdsByAgency: cardSiblingIdsByAgency, routesByAgency: cardRoutesByAgency } = stopCardSiblings(
+      slug, toStation(props), ownSiblings.map(toStation), siblingIdsByAgency, routesByAgency,
+    );
+
+    // CIV-1052: each route's periods at the stop and its station, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
     for (const f of allFeatures) {
       const p = f.properties as any;
-      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !siblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
+      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !cardSiblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
       const rids: string[] = Array.isArray(p.routeIds) ? p.routeIds : [];
       const bits: unknown[] | undefined = Array.isArray(p.routePeriodBits) ? p.routePeriodBits : undefined;
       const byRoute = routePeriodBitsByAgency[p.agencySlug] ??= new Map();
@@ -485,6 +497,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ...props,
       siblingIdsByAgency,
       routesByAgency,
+      cardSiblingIdsByAgency,
+      cardRoutesByAgency,
       routePeriodBitsByAgency,
       lat: clickLat,
       lon: clickLon,
@@ -494,8 +508,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // The stop card's routes and destination rows, built in one tested place (utils/stopRoutes.ts, CIV-997).
   const stopRoutes = useMemo(() => (currentStop
     ? buildStopRoutes({
-      siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
-      routesByAgency: currentStop.routesByAgency || {},
+      siblingIdsByAgency: currentStop.cardSiblingIdsByAgency || {},
+      routesByAgency: currentStop.cardRoutesByAgency || {},
       routePeriodBitsByAgency: currentStop.routePeriodBitsByAgency,
       layers: nonCorridorLayers,
       day: currentDay,
@@ -503,12 +517,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     })
     : []), [currentStop, nonCorridorLayers, currentDay, period]);
 
-  const stopAgencies = useMemo(() => {
-    const seen = new Set<string>();
-    return stopRoutes
-      .map(r => r.agencyName)
-      .filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
-  }, [stopRoutes]);
+  const stopAgencies = useMemo(() => stopCardAgencies(stopRoutes, selectedStop, agencies), [stopRoutes, selectedStop, agencies]);
 
   const filteredStopRoutes = useMemo(() =>
     stopAgencyFilter ? stopRoutes.filter(r => r.agencyName === stopAgencyFilter) : stopRoutes,
@@ -538,27 +547,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const connectionRows = new Map<string, ShapeProperties[]>();
 
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      // Find stops in the transfer band (beyond sibling radius, within walking radius)
-      const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
-      // A route that serves this stop is never "nearby", even in a period it has no service here (#1117: MiWay 314 and
-      // 315 at stop 0814 showed as 423 m away at midday).
-      const ownRouteIds = currentStop.routesByAgency?.[slug];
-      for (const f of fc.features) {
-        if (f.geometry.type !== 'Point') continue;
-        const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
-        const d = getDistanceMeters(lat, lon, flat, flon);
-        const p = f.properties as any;
-        if (!p.stopId || !p.routeIds?.length) continue;
-        const isSibling = currentStop.siblingIdsByAgency?.[slug]?.has(p.stopId);
-        if (isSibling || d > TRANSFER_MAX_M) continue;
-        for (const rid of p.routeIds as string[]) {
-          if (ownRouteIds?.has(rid)) continue;
-          const existing = routeIdToClosest.get(rid);
-          if (!existing || d < existing.dist) {
-            routeIdToClosest.set(rid, { stopName: p.stopName ?? '', dist: d });
-          }
-        }
-      }
+      // Routes at stops within walking distance, other than the card's own stops and routes (CIV-1305, CIV-1345, #1117).
+      const routeIdToClosest = nearbyRouteClosestStops(
+        fc.features, lat, lon, currentStop.cardSiblingIdsByAgency?.[slug], currentStop.cardRoutesByAgency?.[slug], TRANSFER_MAX_M,
+      );
       if (routeIdToClosest.size === 0) continue;
 
       for (const f of fc.features) {

@@ -237,6 +237,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-10 — A night belongs to the service day it starts on
+Ryan, 2026-11-10 (#1416, Linear CIV-1384), on MiWay 2 and 17 (Sunday's last bus 0:32, Monday's first 2:19): "Technically, The gap would be "Sunday" because it is during the Sunday service day." Each day type's night is its own evening with the morning after it, whichever day the early trips are written on, and counts against that day (FREQUENCY_RULES.md rule 10).
+- Pending Ryan's OK: Friday evening into Saturday morning starts on a weekday, so it counts toward Weekday as the rule reads literally. MiWay 2 and 17 still fail Weekday on it (their Saturday buses start at 4:40 to 5:26, after Friday's last at about 2:00); without it they would pass at 30, 60 and 90.
+
 ### 2026-11-01 — A route that starts late or ends early in a period shows its frequency with the time
 Ryan, 2026-11-01 (#1277, Linear CIV-1248): a period the route covers only part of reads "every 30 from 7:52 AM" (TTC 110 Sunday AM) instead of "No frequency is shown".
 - The time and frequency are read on every stretch that starts or ends in the period, and the slowest decides (D1), as for the filter value: TTC 110's trunk runs every 15 from 7:52, its branches every 30, so it reads every 30. A branch with under three trips in the period does not count.

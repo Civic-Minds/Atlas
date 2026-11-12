@@ -20,13 +20,13 @@
   "feedUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
   "lastFeedExpiry": "20261226",
   "lastFeedVersion": "2026 Fall_20261001",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Hamilton, Ontario",
     "Stoney Creek, Ontario",
     "Burlington, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261226",
@@ -42,15 +42,15 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 240,
+      "featureCount": 238,
       "feedExpiry": "20261226",
-      "routeCount": 34,
+      "routeCount": 33,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -60,6 +60,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://opendata.hamilton.ca/GTFS-Static/google_transit.zip",
   "lastPeekedExpiry": "20261226",
-  "lastServiceWeek": "b365807d267f0fc5",
-  "feedObtainedAt": "20261001"
+  "lastServiceWeek": "6a9ec4b1acb575bc",
+  "feedObtainedAt": "20261001",
+  "lastFeedStart": "20260906"
 }

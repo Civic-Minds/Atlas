@@ -11,7 +11,7 @@
   "lastFeedVersion": "20260916",
   "region": "California",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270227",
@@ -35,7 +35,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -45,5 +45,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2201/latest.zip",
   "lastPeekedExpiry": "20270227",
   "lastServiceWeek": "d9fe33868aaa6789",
-  "feedObtainedAt": "20260916"
+  "feedObtainedAt": "20260916",
+  "lastFeedStart": "20260920"
 }

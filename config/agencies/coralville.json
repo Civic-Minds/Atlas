@@ -22,7 +22,7 @@
   "cities": [
     "Iowa City, Iowa"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270601",
@@ -45,7 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -55,5 +55,6 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-196/latest.zip",
   "lastPeekedExpiry": "20270601",
-  "refusedFeedSha256": "e231dafbbb77d7b574af81d96a2f30fa42c02e6531230b0a83ebbb105face947"
+  "refusedFeedSha256": "e231dafbbb77d7b574af81d96a2f30fa42c02e6531230b0a83ebbb105face947",
+  "lastFeedStart": "20260914"
 }

@@ -22,7 +22,7 @@
     "Calgary, Alberta",
     "Airdrie, Alberta"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -45,7 +45,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Edmonton",
   "lastFeedSourceKind": "configured",
@@ -56,5 +56,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "4d58a79e5837ea1f",
-  "feedObtainedAt": "20261013"
+  "feedObtainedAt": "20261013",
+  "lastFeedStart": "20261013"
 }

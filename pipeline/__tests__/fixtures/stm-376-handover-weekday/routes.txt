@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color,route_desc,route_desc_detail
+68,STM,68,Pierrefonds,3,https://www.stm.info/fr/infos/reseaux/bus,009EE0,FFFFFF,Jour,Lignes de jour seulement
+205,STM,205,Gouin,3,https://www.stm.info/fr/infos/reseaux/bus,009EE0,FFFFFF,Jour,Lignes de jour seulement
+215,STM,215,Henri-Bourassa / Brunswick,3,https://www.stm.info/fr/infos/reseaux/bus,009EE0,FFFFFF,Jour,Lignes de jour seulement
+376,STM,376,Pierrefonds / Centre-ville,3,https://www.stm.info/fr/infos/reseaux/bus,009EE0,FFFFFF,Nuit,Lignes de nuit seulement
+470,STM,470,Express Pierrefonds,3,https://www.stm.info/fr/infos/reseaux/bus,781B7D,FFFFFF,Fréquente pointe,Fréquence aux 2 à 12 minutes de 6h30 à 9h30 et de 15h à 18h du lundi au vendredi (dans la direction la plus achalandée)

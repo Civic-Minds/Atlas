@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isNewerBuild } from '../appUpdate';
+import { isNewerBuild, UPDATE_CHECK_COOLDOWN_MS } from '../appUpdate';
 
 describe('isNewerBuild', () => {
   it('detects a different published build', () => {
@@ -10,5 +10,11 @@ describe('isNewerBuild', () => {
     expect(isNewerBuild('same-sha', 'same-sha')).toBe(false);
     expect(isNewerBuild('local', null)).toBe(false);
     expect(isNewerBuild('', 'new-sha')).toBe(false);
+  });
+});
+
+describe('update check cooldown (CIV-977)', () => {
+  it('checks /api/version at most once every 6 hours per tab', () => {
+    expect(UPDATE_CHECK_COOLDOWN_MS).toBe(6 * 60 * 60 * 1000);
   });
 });

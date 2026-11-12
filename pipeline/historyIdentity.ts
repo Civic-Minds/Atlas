@@ -57,6 +57,30 @@ export type HistoryRouteAliases = Record<string, Record<string, HistoryAliasEntr
 const entryKey = (e: HistoryAliasEntry): string => typeof e === 'string' ? e : e.key;
 const isDirection = (e: HistoryAliasEntry): e is { key: string; direction: true } => typeof e !== 'string' && 'direction' in e;
 
+/**
+ * CIV-1275: the aliases a direction-split merge implies (#1285). Each half's old key folds into the
+ * merged route's key, direction by direction, exactly as a hand-written `{ key, direction: true }`
+ * entry does, so an agency the merge fires on needs no entry in config/history-route-aliases.json.
+ */
+export function aliasesFromDirectionSplits(splits: ReadonlyArray<{ base: string; halves: readonly string[] }>): Record<string, HistoryAliasEntry[]> {
+  const out: Record<string, HistoryAliasEntry[]> = {};
+  for (const split of splits) {
+    const halves = split.halves.filter(key => key && key !== split.base);
+    if (halves.length === 0) continue;
+    out[split.base] = [...(out[split.base] ?? []), ...halves.map(key => ({ key, direction: true as const }))];
+  }
+  return out;
+}
+
+/** The agency's aliases with the generated ones added: a canonical key the config lists keeps the config's entries. */
+export function withGeneratedAliases(
+  configured: Record<string, HistoryAliasEntry[]> | undefined,
+  generated: Record<string, HistoryAliasEntry[]>,
+): Record<string, HistoryAliasEntry[]> | undefined {
+  if (Object.keys(generated).length === 0) return configured;
+  return { ...generated, ...(configured ?? {}) };
+}
+
 /** Old keys that stand for `canonicalKey` in this agency (day-type entries included). */
 export function aliasesFor(aliases: HistoryRouteAliases, slug: string, canonicalKey: string): string[] {
   return (aliases[slug]?.[canonicalKey] ?? []).map(entryKey);

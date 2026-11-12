@@ -26,7 +26,7 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20260430-d4b24aea487f70da",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270129",
@@ -53,9 +53,10 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastPeekedExpiry": "20270129",
   "lastServiceWeek": "bfffedadaf64c15f",
-  "feedObtainedAt": "20260922"
+  "feedObtainedAt": "20260922",
+  "lastFeedStart": "20260921"
 }

@@ -22,7 +22,7 @@
     "Moncton, New Brunswick"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1111/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -43,16 +43,17 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Halifax",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www7.moncton.ca/opendata/google_transit.zip",
+  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1111/latest.zip",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "2ac573177de8791e",
-  "feedObtainedAt": "20261007"
+  "feedObtainedAt": "20261007",
+  "lastFeedStart": "20260930"
 }

@@ -26,7 +26,7 @@
     "Oakville, Ontario",
     "Milton, Ontario"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -52,7 +52,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -60,5 +60,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20261220",
   "lastServiceWeek": "699867ba51d02ace",
-  "feedObtainedAt": "20260922"
+  "feedObtainedAt": "20260922",
+  "lastFeedStart": "20260922"
 }

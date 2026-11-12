@@ -22,7 +22,7 @@
     "North Peoria, Illinois",
     "Peoria, Illinois"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -49,12 +49,13 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "1d5dbeb3d07247ad",
-  "feedObtainedAt": "20260806"
+  "feedObtainedAt": "20260806",
+  "lastFeedStart": "20260906"
 }

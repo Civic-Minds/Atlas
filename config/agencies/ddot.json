@@ -24,7 +24,7 @@
     "Windsor, Ontario"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-464/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270207",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +56,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-464/latest.zip",
   "lastPeekedExpiry": "20270207",
   "lastServiceWeek": "4989b93fd085098e",
-  "feedObtainedAt": "20260902"
+  "feedObtainedAt": "20260902",
+  "lastFeedStart": "20260907"
 }

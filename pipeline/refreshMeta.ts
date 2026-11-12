@@ -14,8 +14,12 @@ export interface FeedMetaFields {
   listingEndedOn?: string | null;
   /** The feed's own latest service date, uncapped. lastFeedExpiry caps placeholder dates, so it can't detect an unchanged feed (#688). */
   lastPeekedExpiry?: string | null;
+  /** The live feed's period start (feedPeriodStart), so a later-starting feed with an earlier end reads as newer (#1359). */
+  lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;
+  /** #1423: the processed zip's content key (zipContentKey); decides "unchanged" before the byte hash. */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   feedRefreshStatus?: 'current' | 'stale';
@@ -190,10 +194,20 @@ export function stampFeedMeta(
     serviceWeek?: string | null;
     /** When Atlas first obtained this file (YYYYMMDD), for the listing-end safeguard. */
     feedObtainedAt?: string | null;
+    /** The feed's period start (feedPeriodStart), for the older-feed check (#1359). */
+    feedStart?: string | null;
+    /** The raw zip's archive key, whose hash the next refresh's unchanged check compares (#1423). */
+    rawArchiveKey?: string | null;
+    /** The zip's content key (zipContentKey), which the next refresh's unchanged check compares first. */
+    contentKey?: string | null;
   },
 ): void {
+  if (opts.rawArchiveKey !== undefined) agency.lastRawArchiveKey = opts.rawArchiveKey;
+  if (opts.contentKey) agency.lastFeedContentKey = opts.contentKey;
+  else if (opts.contentKey === null) delete agency.lastFeedContentKey;
   agency.lastFeedExpiry = refreshedFeedExpiry(opts);
   agency.lastPeekedExpiry = opts.peekedExpiry;
+  if (opts.feedStart !== undefined) agency.lastFeedStart = opts.feedStart;
   agency.lastFeedVersion = opts.feedVersion ?? opts.peekedVersion ?? null;
   agency.lastRefreshedAt = opts.todayYmd;
   agency.feedRefreshStatus = 'current';
@@ -226,16 +240,21 @@ export function stampListingEnd(agency: Pick<FeedMetaFields, 'listingEndedOn'>, 
  * changed, so unchanged agencies leave their files alone.
  */
 export function stampReprocessedFeedExpiry(
-  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'listingEndedOn'>,
-  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null },
+  agency: Pick<FeedMetaFields, 'lastFeedExpiry' | 'lastPeekedExpiry' | 'lastFeedStart' | 'listingEndedOn'>,
+  opts: { feedExpiry: string | null; calendarExpiry: string | null; todayYmd: string; calendarOnlyEnd?: string | null; listingEnd?: string | null; feedStart?: string | null },
 ): boolean {
   const lastFeedExpiry = recordedFeedExpiry(opts.feedExpiry, opts.calendarExpiry, opts.todayYmd, opts.calendarOnlyEnd);
   if (lastFeedExpiry == null) return false;
   const listingChanged = opts.listingEnd !== undefined && stampListingEnd(agency, opts.listingEnd);
   const lastPeekedExpiry = opts.calendarExpiry ?? agency.lastPeekedExpiry ?? null;
-  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry) return listingChanged;
+  // The period start travels with the expiry (#1359); a record without one gains it.
+  const lastFeedStart = opts.feedStart !== undefined ? opts.feedStart : (agency.lastFeedStart ?? null);
+  const startChanged = (agency.lastFeedStart ?? null) !== lastFeedStart;
+  if (agency.lastFeedExpiry === lastFeedExpiry && (agency.lastPeekedExpiry ?? null) === lastPeekedExpiry && !startChanged) return listingChanged;
   agency.lastFeedExpiry = lastFeedExpiry;
   agency.lastPeekedExpiry = lastPeekedExpiry;
+  if (lastFeedStart) agency.lastFeedStart = lastFeedStart;
+  else delete agency.lastFeedStart;
   return true;
 }
 
@@ -265,13 +284,63 @@ export function markFeedStale(
   agency.feedRefreshRetryCount = (agency.feedRefreshRetryCount ?? 0) + 1;
 }
 
-/** Never replace a dated active snapshot with an older or undated candidate. */
+/**
+ * Never replace a dated active snapshot with an older or undated candidate. A stamp recorded from a
+ * placeholder end sets no floor (CIV-1351): when the active feed's own uncapped end (lastPeekedExpiry,
+ * else the recorded expiry) is more than PLACEHOLDER_EXPIRY_YEARS past the date it was recorded, it
+ * says nothing about when that service ends, and every real-dated feed would read as older (st-george,
+ * 2026-11-06: the city feed 20271231 refused against the old timetable's 20310130; CIV-1334 cleared the
+ * same stamp by hand). The record date, not today, keeps that verdict from drifting as today's horizon
+ * moves past a stamp.
+ */
 export function candidateIsOlderThanActive(opts: {
   candidateExpiry: string | null;
+  /** The candidate's period start (feedPeriodStart). */
+  candidateStart?: string | null;
   existingExpiry?: string | null;
+  /** The live feed's period start (lastFeedStart), when the record carries it. */
+  existingStart?: string | null;
+  /** When Atlas obtained the live feed file (feedObtainedAt); the record date stands in when absent. */
+  existingObtainedAt?: string | null;
+  /** The active feed's uncapped end (lastPeekedExpiry); the recorded expiry stands in when absent. */
+  existingPeekedExpiry?: string | null;
+  /** When the stamp was recorded (lastRefreshedAt, YYYY-MM-DD or YYYYMMDD); today stands in when absent. */
+  recordedAt?: string | null;
+  todayYmd?: string;
 }): boolean {
   if (!opts.existingExpiry) return false;
-  return !opts.candidateExpiry || opts.candidateExpiry < opts.existingExpiry;
+  const recordedAt = opts.recordedAt ?? opts.todayYmd;
+  if (recordedAt) {
+    const ownEnd = opts.existingPeekedExpiry ?? opts.existingExpiry;
+    if (isYmd(ownEnd) && ownEnd > addYearsYmd(recordedAt, PLACEHOLDER_EXPIRY_YEARS)) return false;
+  }
+  if (!opts.candidateExpiry) return true;
+  // #1359: a new timetable period usually ends sooner than the long calendar it replaces (tulsa's
+  // September feed to 20261205 against the April feed to 20261231), so a later period start is a newer
+  // feed whatever its end. Without a stored start, a period that began after Atlas obtained the live
+  // feed is newer too. A candidate starting the same day or earlier (qline's earlier edition, a transient
+  // older download) is judged by its end date as before.
+  if (isYmd(opts.candidateStart)) {
+    const liveStart = opts.existingStart ?? null;
+    if (isYmd(liveStart)) {
+      if (opts.candidateStart > liveStart) return false;
+    } else {
+      const obtained = (opts.existingObtainedAt ?? recordedAt ?? '').replace(/-/g, '');
+      if (isYmd(obtained) && opts.candidateStart > obtained) return false;
+    }
+  }
+  return opts.candidateExpiry < opts.existingExpiry;
+}
+
+/** A feed's period start: feed_info's start date, else the earliest calendar start (#1359). */
+export function feedPeriodStart(dates: { feedInfoStart?: string | null; feedStart: string | null }): string | null {
+  return dates.feedInfoStart ?? dates.feedStart ?? null;
+}
+
+/** The content hash at the end of a raw archive key (`<label>-<16 hex>`); null for older keys without one. */
+export function rawArchiveKeyDigest(key: string | null | undefined): string | null {
+  const match = key ? /-([0-9a-f]{16})$/.exec(key) : null;
+  return match ? match[1] : null;
 }
 
 export type RefreshSkipReason =
@@ -301,9 +370,39 @@ export function decideRefreshSkipUnchanged(opts: {
   /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
   serviceWeek?: string | null;
   lastServiceWeek?: string | null;
+  /** #1423: the downloaded zip's content hash (rawFeedDigest). */
+  zipDigest?: string | null;
+  /** #1423: the archive key of the zip the live artifacts were built from; its hash suffix is compared with zipDigest. */
+  lastRawArchiveKey?: string | null;
+  /** Without a recorded key: the stem of the newest zip in the agency's archive (newestArchivedZipStem). */
+  archivedRawKey?: string | null;
+  /** The downloaded zip's content key (zipContentKey) and the one recorded at the last processing. */
+  contentKey?: string | null;
+  lastFeedContentKey?: string | null;
 }): RefreshSkipReason {
   if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
+  // The files inside the zip decide when both content keys are known, so a publisher that re-zips the
+  // same files every download is not reprocessed weekly.
+  if (opts.contentKey && opts.lastFeedContentKey) {
+    return opts.contentKey === opts.lastFeedContentKey
+      ? { skip: true, reason: `skipped (same feed contents: ${opts.contentKey})` }
+      : { skip: false };
+  }
+  // #1423: when the last ingested zip's hash is recorded, it alone decides. Dutchess republished a
+  // corrected feed with the same end date and version, and the date rule below skipped it.
+  const lastDigest = rawArchiveKeyDigest(opts.lastRawArchiveKey);
+  if (opts.zipDigest && lastDigest) {
+    return opts.zipDigest === lastDigest
+      ? { skip: true, reason: `skipped (same zip: ${lastDigest})` }
+      : { skip: false };
+  }
+  // A record without a key compares against the newest archived zip, which can only veto a skip: the
+  // archive also holds zips refresh never processed (a held future timetable, backfills), so a match
+  // there falls through to the rule below rather than skipping a held feed on its start date (#1144).
+  const archivedDigest = rawArchiveKeyDigest(opts.archivedRawKey);
+  if (opts.zipDigest && archivedDigest && opts.zipDigest !== archivedDigest) return { skip: false };
+  // No recorded hash and no differing archived zip: the end-date / version rule.
   const { peekedExpiry, peekedVersion, lastFeedVersion } = opts;
   // Older records have no uncapped value; compare against the recorded one as before.
   const lastFeedExpiry = opts.lastPeekedExpiry ?? opts.lastFeedExpiry;

@@ -18,11 +18,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-170/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Bend, Oregon"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -50,12 +50,13 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "767d753088439448",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "919cb92ec414300a",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261018"
 }

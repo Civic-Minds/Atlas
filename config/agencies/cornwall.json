@@ -17,7 +17,7 @@
   "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-718/latest.zip",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -40,7 +40,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "e2fdbf075e864b32",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261101"
 }

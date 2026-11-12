@@ -56,9 +56,19 @@ export function periodSectionProps<P extends ShapeProperties>(p: P, period: Peri
   if (stops.length === 0 || values.length !== stops.length || typeof lineValue !== 'number') return null;
   const stopTiers: Record<string, string> = {};
   const stopHeadways: Record<string, number> = {};
+  // CIV-1350: an overnight stop inside the line with no value has no night service the night rule
+  // passes (CIV-1349: e.g. its first night bus is after 3:00 with nothing before it), so it reads
+  // infrequent rather than the worse of its neighbours, which can be better than its own service.
+  // Ends, the terminal and drop-off-only stops keep sectionRuns' rules.
+  const first = values.findIndex(v => v != null);
+  const last = values.findLastIndex(v => v != null);
+  const dropOffOnly = new Set(p.dropOffOnlyStops ?? []);
   stops.forEach((stopId, i) => {
     const v = values[i];
-    if (v == null) return;
+    if (v == null) {
+      if (period === 'overnight' && i > first && i < last && !dropOffOnly.has(stopId)) stopTiers[stopId] = 'infrequent';
+      return;
+    }
     stopHeadways[stopId] = v;
     stopTiers[stopId] = tierOfHeadway(v)!;
   });

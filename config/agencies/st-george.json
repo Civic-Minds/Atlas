@@ -7,10 +7,11 @@
     37.1,
     -113.58
   ],
-  "feedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
-  "lastFeedExpiry": "20310130",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-08-10",
+  "feedUrl": "https://apps.sgcityutah.gov/GTFS_2025-10-13.zip",
+  "preprocess": "st-george-labels",
+  "lastFeedExpiry": "20271231",
+  "lastFeedVersion": "20251013",
+  "lastRefreshedAt": "2026-11-06",
   "region": "Utah",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
   "bbox": [
@@ -22,12 +23,40 @@
   "cities": [
     "Saint George, Utah"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20310130",
+  "expiredFeedCheckExpiry": "20271231",
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-111/latest.zip",
-  "refusedFeedSha256": "570540a0b13667a02338358e19908e80f887308526b6952ffb05c167ec5a283f"
+  "lastFeedSourceUrl": "https://apps.sgcityutah.gov/GTFS_2025-10-13.zip",
+  "feedQuality": {
+    "status": "review",
+    "score": 87,
+    "reasons": [
+      "1 route has stops whose frequency differs from the overall route schedule."
+    ],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 2,
+      "featureCount": 21,
+      "feedExpiry": "20271231",
+      "routeCount": 8,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 1,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-12"
+  },
+  "lastPeekedExpiry": "20271231",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "246040b2c1df891f",
+  "feedObtainedAt": "20261106",
+  "lastFeedStart": "20240101"
 }

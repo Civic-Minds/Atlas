@@ -60,7 +60,7 @@ import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
-import { recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
+import { feedPeriodStart, recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import { runWithConcurrency } from './utils.js';
 import { AGENCY_ARTIFACT_SUFFIXES, parseRunPrefixArg } from './runArtifacts.js';
@@ -131,6 +131,7 @@ interface Agency {
   expiredFeedPin?: ExpiredFeedPin;
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
+  lastFeedStart?: string | null;
   lastRawArchiveKey?: string | null;
   lastRefreshedAt?: string | null;
   /** When Atlas first obtained the current main feed file (YYYYMMDD). */
@@ -170,7 +171,7 @@ const readBaseline = releaseBaselineReader(r2Get);
  * The processed feed's raw expiry dates (#837) and its quality rating (CIV-533) per agency, recorded in
  * index.json and the agency config once its artifacts are published.
  */
-const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedQuality: FeedQuality }>();
+const processedExpiries = new Map<string, { feedExpiry: string | null; calendarExpiry: string | null; calendarOnlyEnd: string | null; listingEnd: string | null; feedStart: string | null; feedQuality: FeedQuality }>();
 let qualityUpdates = 0;
 const expiryUpdates: string[] = [];
 
@@ -205,7 +206,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     const at = objects.find(o => o.key === p.key)?.lastModified;
     return { ...p, uploaded: at ? at.toISOString().slice(0, 10).replace(/-/g, '') : null };
   };
-  const selection = selectArchiveForAgency(objects, agency);
+  const selection = selectArchiveForAgency(objects, agency, agencyTodayYmd(agency));
   if (!selection.ok && selection.noArchive) return null;
   const zips = objects.filter(obj => obj.key.endsWith('.zip'));
   const peekAll = () => Promise.all(zips.map(async obj => {
@@ -220,7 +221,7 @@ async function selectArchiveKey(agency: Agency): Promise<{ key: string; reason: 
     // Key dates and upload order disagree: read each zip's own service dates instead (#859).
     const prior = selection.reason.replace(/^cannot tell which archived zip is newest: /, '');
     peeked = await peekAll();
-    const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior);
+    const byDates = selectByFeedDates(peeked, agencyTodayYmd(agency), prior, agency.lastFeedExpiry);
     if (!byDates.ok) throw new Refusal(byDates.reason);
     picked = { key: byDates.key, reason: byDates.reason };
   }
@@ -289,7 +290,8 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     console.log(`\n${agency.slug}: ${row.sourceKey} (${row.selection})`);
     // The same expiry the publish step reads from index.json (#875): a placeholder calendar
     // never keeps an expired feed_info in service here while the release gate calls it expired.
-    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = await peekFeedDates(body, agency.excludeRouteShortNames);
+    const processedDates = await peekFeedDates(body, agency.excludeRouteShortNames);
+    const { feedStart, feedExpiry: calendarEnd, feedInfoEnd, calendarOnlyEnd } = processedDates;
     const feedExpiry = recordedFeedExpiry(feedInfoEnd, calendarEnd, todayYmd, calendarOnlyEnd);
     row.feedExpiry = feedExpiry;
     const dateRefusal = feedDateRefusal(feedExpiry, agency.lastFeedExpiry, agencyTodayYmd(agency), pinned ? agency.expiredFeedPin!.feedExpiry : null, todayYmd);
@@ -310,7 +312,7 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     row.outputCounts = next.counts;
     row.liveCounts = live?.counts ?? null;
     gateInputs.set(agency.slug, { candidate: { slug: agency.slug, next, service: { start: feedStart, end: feedExpiry, calendarEnd, liveFeedExpiry: agency.lastFeedExpiry } }, live });
-    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedQuality: result.feedQuality });
+    processedExpiries.set(agency.slug, { feedExpiry: result.feedExpiry, calendarExpiry: result.calendarExpiry, calendarOnlyEnd: result.calendarOnlyEnd, listingEnd: result.listingEnd, feedStart: feedPeriodStart(processedDates), feedQuality: result.feedQuality });
     row.feedQuality = { status: result.feedQuality.status, score: result.feedQuality.score };
     const countRules = assessByCounts({ ...result.feedQuality.metrics, checkedAt: result.feedQuality.checkedAt });
     row.feedQualityCountRules = { status: countRules.status, score: countRules.score };

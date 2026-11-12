@@ -39,7 +39,8 @@ function ruleMinutes(row: RecheckRow): number | null {
   return override ? override.minutes : row.threshold;
 }
 const chartedRows = heldNumericRows.filter(row => ruleMinutes(row) !== null);
-const chartedRowsOct11 = recheckedNumericRows.filter(row => ruleMinutes(row) !== null);
+// The Oct 11 column counts only rows read on October 11: CATS and LADOT were blocked then and added later (CIV-1258).
+const chartedRowsOct11 = recheckedNumericRows.filter(row => ruleMinutes(row) !== null && row.quoteCheck2026_10_11 !== 'fetch-blocked');
 // Only the waits some agency uses (Fort McMurray's 25, CIV-1178, gets its own bar); no fixed steps, so no empty bar or table row.
 const storyThresholds = [...new Set([...chartedRows, ...chartedRowsOct11].map(row => ruleMinutes(row) as number))].sort((a, b) => a - b);
 

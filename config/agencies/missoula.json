@@ -21,7 +21,7 @@
   "cities": [
     "Missoula, Montana"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270215",
@@ -45,7 +45,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "lastPeekedExpiry": "20270215",
   "feedRefreshStatus": "current",
@@ -53,5 +53,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "1a98feb7ea15f723",
-  "feedObtainedAt": "20260708"
+  "feedObtainedAt": "20260708",
+  "lastFeedStart": "20260703"
 }

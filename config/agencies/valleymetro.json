@@ -26,7 +26,7 @@
     "Mesa, Arizona",
     "Ahwatukee Foothills, Arizona"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270124",
@@ -50,7 +50,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -58,5 +58,6 @@
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270124",
   "lastServiceWeek": "491962347dee0a81",
-  "feedObtainedAt": "20261020"
+  "feedObtainedAt": "20261020",
+  "lastFeedStart": "20261026"
 }

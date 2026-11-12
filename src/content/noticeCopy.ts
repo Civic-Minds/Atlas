@@ -124,6 +124,8 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 /** "This route couldn't load.": the thing first. */
 export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn't load.`;
 
+/** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
+export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
@@ -201,6 +203,8 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The full-day frequency chart's axis unit (CIV-1311, Ryan's wording 2026-11-03). */
+export const TRIPS_PER_HOUR_LABEL = 'Trips per hour';
 // The default title of an exported map image.
 export const DEFAULT_EXPORT_TITLE = 'Transit map';
 // The privacy settings title and the About panel link that opens it.
@@ -371,6 +375,8 @@ export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been r
 export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency's routes")} ${RETRY_HINT}`;
 // N30 agency-not-found (Ryan)
 export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
+// On-demand service from a link that Atlas doesn't have (#1191). Proposed wording, waiting on Ryan's word-for-word OK.
+export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn't be found.";
 
 // ---- Live ----
 // Live's notice, empty-state and error texts (CIV-1045), word for word as they were in the Live components.

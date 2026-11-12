@@ -16,7 +16,7 @@
   "cities": [
     "Scranton, Pennsylvania"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -38,7 +38,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -48,5 +48,6 @@
   "lastFeedSourceUrl": "https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "e329d365d2eda0e2",
-  "feedObtainedAt": "20260914"
+  "feedObtainedAt": "20260914",
+  "lastFeedStart": "20260915"
 }

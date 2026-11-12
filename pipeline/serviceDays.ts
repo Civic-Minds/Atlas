@@ -70,6 +70,19 @@ export function serviceAnchor(runDateYmd: string = pipelineRunDateYmd()): string
   return ymdOf(dayNumber(runDateYmd) + 1);
 }
 
+/**
+ * CIV-1101 Part B: the anchor for an archived zip (a History backfill), the Monday of its first
+ * full Monday-Sunday week in force: the first Monday on or after the first date any service with
+ * trips can run. The picker then reads the period in force from there, so a holiday is a day that
+ * loses the vote, with no holiday list. null when the calendar holds no service.
+ */
+export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips'>): string | null {
+  const { span } = buildServiceDayTable({ ...input, anchor: '20000103', weeksAfter: 1 });
+  if (!span) return null;
+  const start = dayNumber(span.start);
+  return ymdOf(start + ((7 - dayIndex(start)) % 7));
+}
+
 export interface ServiceDay {
   date: string;
   day: DayName;

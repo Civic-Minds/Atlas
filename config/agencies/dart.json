@@ -27,7 +27,7 @@
     "Frisco, Texas"
   ],
   "timezone": "America/Chicago",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",
@@ -50,7 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -98,5 +98,6 @@
   ],
   "lastPeekedExpiry": "20261206",
   "lastServiceWeek": "efd1f9648d10c6a9",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261029"
 }

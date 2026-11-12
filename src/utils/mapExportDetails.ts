@@ -1,5 +1,5 @@
 import type { Agency } from '../App';
-import { DEFAULT_EXPORT_TITLE, MAP_KEY_NIGHT } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -9,7 +9,7 @@ import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentSer
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { formatStoredDate } from './format';
 import { agencyNames } from './agencyName';
-import { getHeadwayTiers, getNightServiceColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
+import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
 /** One entry in the exported image's colour key. */
@@ -138,7 +138,7 @@ function filterLine(state: MapExportState): string | null {
 }
 
 /** Key candidates for the current view and colour mode, in display order. */
-export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' | 'frequentServiceFrequency'>): MapExportKeyItem[] {
+export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' | 'frequentServiceFrequency' | 'nightServiceFrequency'>): MapExportKeyItem[] {
   switch (state.view) {
     case 'frequency':
       return getHeadwayTiers(state.colorMode).map(tier => ({ color: tier.color, label: tier.label }));
@@ -150,7 +150,10 @@ export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' |
           { color: getTierColor('30', state.colorMode), label: headwayBandLabel(16, 30) },
         ];
     case 'night':
-      return [{ color: getNightServiceColor(state.colorMode), label: MAP_KEY_NIGHT }];
+      // CIV-1329: one shade per night grade up to the one selected (30 darker, 90 lighter); only the drawn ones are kept.
+      return ([30, 60, 90] as const)
+        .filter(grade => grade <= (state.nightServiceFrequency ?? 60))
+        .map(grade => ({ color: getNightServiceTierColor(grade, state.colorMode), label: headwayTierLabel(grade) }));
     default:
       return [];
   }
@@ -314,7 +317,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const filter = filterLine(state);
   if (filter) lines.push(filter);
   if (state.view === 'frequency') {
-    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push('Zoomed out. Some less frequent routes are hidden');
+    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push(ZOOMED_OUT_NOTICE);
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 

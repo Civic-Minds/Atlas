@@ -53,6 +53,14 @@ const pillSurface = (surface: string) => `h-8 max-sm:h-[32px] flex items-center 
 export const PILL_SURFACE = pillSurface(SURFACE);
 /** The same pill in the map top bar (the search bar). */
 export const TOP_BAR_PILL_SURFACE = pillSurface(TOP_BAR_SURFACE);
+/**
+ * Compare's grouping outline: the shared filters (Mode, Agencies) and each map's own filters (Frequency, Day,
+ * Time) sit in one of these, with the "Both maps" text or the A or B badge at the front, so it reads at a glance
+ * which controls change both maps and which change one. Outline only, no fill.
+ */
+export const COMPARE_GROUP = `flex items-center gap-2 rounded-full border ${TOP_BAR_OUTLINE} p-0.5`;
+/** Each compare map's group: the same outline on the map's glass, wrapping to a second line inside it when the half is narrow. */
+export const COMPARE_SIDE_GROUP = `flex items-center gap-x-2 gap-y-0.5 rounded-2xl border ${TOP_BAR_OUTLINE} bg-[var(--bg-panel)] backdrop-blur-md p-0.5`;
 /** Shared responsive width used by the top search bar */
 export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 
@@ -191,7 +199,7 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
  *  The desktop step is its own token for a phone layout that starts somewhere else (Compare's lower map). */
 // Map overlay slots: one layout table for every fixed overlay over the map (CIV-1136), kept in mapOverlayLayout.ts.
 export {
-  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
+  MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT,
   MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_CONSENT_SLOT, MAP_STATUS_SLOT,
 } from './mapOverlayLayout';
 import { SIDEBAR_CARD_BOTTOM_LIMIT, SIDEBAR_CARD_TOP_BELOW_CONSENT, SIDEBAR_CARD_MAX_H_BELOW_CONSENT } from './mapOverlayLayout';

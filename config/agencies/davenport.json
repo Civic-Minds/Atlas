@@ -7,9 +7,9 @@
     -90.5769
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20271005",
-  "lastFeedVersion": "59",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20271105",
+  "lastFeedVersion": "60",
+  "lastRefreshedAt": "2026-11-09",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
@@ -23,10 +23,10 @@
   ],
   "timezone": "America/Chicago",
   "lastRawArchiveKey": "20241231-19de367bf787d09c",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271005",
+  "expiredFeedCheckExpiry": "20271105",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,15 +36,15 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 42,
-      "feedExpiry": "20271005",
+      "featureCount": 41,
+      "feedExpiry": "20271105",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -52,7 +52,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271005",
-  "lastServiceWeek": "4acfd930510e3b8b",
-  "feedObtainedAt": "20261005"
+  "lastPeekedExpiry": "20271105",
+  "lastServiceWeek": "310d5346b1fc0bca",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20221015"
 }

@@ -22,14 +22,14 @@
   ],
   "timezone": "America/Toronto",
   "lastRawArchiveKey": "20241231-ab9230a3408482f5",
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 7,
+  "lastFeedCheckAt": "20261109",
+  "expiredFeedCheckCount": 8,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20241231",
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20241231)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 5,
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 6,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs-rt.infra-hubup.fr/lpdlestd/current/revision/gtfs"
 }

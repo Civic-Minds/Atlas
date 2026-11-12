@@ -334,16 +334,29 @@ export function headwayShift(live: ArtifactSummary, next: ArtifactSummary): Head
 export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shifted: string[]; lost: string[]; gained: string[]; liveDirections: number } {
   const [liveTiers, nextTiers] = [live.weekdayTiers, next.weekdayTiers];
   const ids = new Set([...Object.keys(live.weekdayHeadways), ...Object.keys(liveTiers)]);
+  // CIV-1162: the route's value as riders see it, the map filter's all-day value per day type (the worst direction), not
+  // a median over its rows: a headsign fix that splits one row in two moved SEPTA T5's median 10 -> 21 while every rider
+  // still saw every 10. Summaries without filterHeadways (older reports) compare the weekday medians as before.
+  const riderValues = (summary: ArtifactSummary, routeId: string): Array<[string, number | undefined]> =>
+    live.filterHeadways && next.filterHeadways
+      ? GATE_DAYS.map(day => [day, summary.filterHeadways![`${day}|all|${routeId}`]])
+      : [['Weekday', summary.weekdayHeadways[routeId]]];
   const shifted: string[] = [];
   for (const routeId of [...ids].sort()) {
     const parts: string[] = [];
     const [tierBefore, tierAfter] = [liveTiers[routeId], nextTiers[routeId]];
-    if (tierBefore != null && tierAfter != null && Math.abs(TIER_RANK[tierBefore] - TIER_RANK[tierAfter]) >= ROUTE_SHIFT_TIER_STEPS) {
-      parts.push(`tier ${tierBefore}->${tierAfter}`);
+    const tierMoved = tierBefore != null && tierAfter != null && Math.abs(TIER_RANK[tierBefore] - TIER_RANK[tierAfter]) >= ROUTE_SHIFT_TIER_STEPS;
+    if (tierMoved) parts.push(`tier ${tierBefore}->${tierAfter}`);
+    const before = riderValues(live, routeId), after = riderValues(next, routeId);
+    // Weekday reads as before ("60->25 min"); a weekend day is named ("Saturday 30->60 min").
+    const label = (day: string) => (day === 'Weekday' ? '' : `${day} `);
+    const moved = before.map(([day, b], i) => [day, b, after[i][1]] as const)
+      .filter(([, b, a]) => b != null && a != null && (a >= b * HEADWAY_SHIFT_RATIO || a * HEADWAY_SHIFT_RATIO <= b));
+    if (moved.length) parts.push(...moved.map(([day, b, a]) => `${label(day)}${b}->${a} min`));
+    else if (tierMoved) {
+      const [day, b] = before[0]; const a = after[0][1];
+      if (b != null && a != null) parts.push(`${label(day)}${b}->${a} min`);
     }
-    const [before, after] = [live.weekdayHeadways[routeId], next.weekdayHeadways[routeId]];
-    const halvedOrDoubled = before != null && after != null && (after >= before * HEADWAY_SHIFT_RATIO || after * HEADWAY_SHIFT_RATIO <= before);
-    if (halvedOrDoubled || (parts.length && before != null && after != null)) parts.push(`${before}->${after} min`);
     if (parts.length) shifted.push(`${routeId} ${parts.join(', ')}`);
   }
   const liveWithHeadway = Object.keys(live.weekdayDirectionHeadway).filter(key => live.weekdayDirectionHeadway[key]);

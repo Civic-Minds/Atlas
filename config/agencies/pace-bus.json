@@ -9,10 +9,10 @@
     -87.8
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2347/latest.zip",
-  "lastFeedExpiry": "20261226",
-  "lastFeedVersion": "20260816",
+  "lastFeedExpiry": "20261219",
+  "lastFeedVersion": "20261101",
   "region": "Illinois",
-  "lastRefreshedAt": "2026-10-03",
+  "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Waukegan, Illinois",
     "Des Plaines, Illinois",
@@ -25,7 +25,7 @@
     "Tinley Park, Illinois",
     "Wheaton, Illinois"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -34,22 +34,22 @@
     "status": "review",
     "score": 99,
     "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 5,
-      "featureCount": 676,
-      "feedExpiry": "20261226",
+      "routeHeadwayMismatches": 6,
+      "featureCount": 678,
+      "feedExpiry": "20261219",
       "routeCount": 134,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 1,
+      "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -57,5 +57,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2347/latest.zip",
-  "lastPeekedExpiry": "20261226"
+  "lastPeekedExpiry": "20261219",
+  "lastFeedStart": "20261101",
+  "lastServiceWeek": "4d70511791925345",
+  "feedObtainedAt": "20261106"
 }

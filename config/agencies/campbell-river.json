@@ -10,9 +10,9 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
   "lastFeedExpiry": "20270905",
-  "lastFeedVersion": "202611020/20261101 21:00:00/20261102 03:00:00",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
+  "lastRefreshedAt": "2026-11-09",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270905",
@@ -33,7 +33,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -44,5 +44,6 @@
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=12",
   "lastPeekedExpiry": "20270905",
   "lastServiceWeek": "239436e1a5b16e43",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

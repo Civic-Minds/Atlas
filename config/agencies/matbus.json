@@ -16,16 +16,16 @@
   "feedUrl": "https://ridematbus.com/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-80003/latest.zip",
   "region": "North Dakota",
-  "lastFeedExpiry": "20281103",
+  "lastFeedExpiry": "20281112",
   "lastFeedVersion": "9/7/2026 Schedule",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231",
+  "expiredFeedCheckExpiry": "20991230",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,14 +36,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 55,
-      "feedExpiry": "20281103",
+      "feedExpiry": "20281112",
       "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -52,7 +52,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://ridematbus.com/gtfs",
-  "lastPeekedExpiry": "20991231",
+  "lastPeekedExpiry": "20991230",
   "lastServiceWeek": "6641d82099091bee",
-  "feedObtainedAt": "20261101"
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20260906"
 }

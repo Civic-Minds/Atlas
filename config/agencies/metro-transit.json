@@ -8,10 +8,10 @@
     -93.27
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastFeedExpiry": "20261218",
-  "lastFeedVersion": "1793200170",
+  "lastFeedExpiry": "20261225",
+  "lastFeedVersion": "1793907594",
   "region": "Minnesota",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Minneapolis, Minnesota",
     "Saint Paul, Minnesota",
@@ -24,30 +24,30 @@
     "Plymouth, Minnesota",
     "West Coon Rapids, Minnesota"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261218",
+  "expiredFeedCheckExpiry": "20261225",
   "feedQuality": {
     "status": "review",
     "score": 98,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "3 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 2,
-      "routeHeadwayMismatches": 2,
-      "featureCount": 671,
-      "feedExpiry": "20261218",
+      "routeHeadwayMismatches": 3,
+      "featureCount": 668,
+      "feedExpiry": "20261225",
       "routeCount": 126,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 2,
+      "mismatchRoutes": 3,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Chicago",
   "feedRefreshStatus": "current",
@@ -56,7 +56,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-205/latest.zip",
-  "lastPeekedExpiry": "20261218",
-  "lastServiceWeek": "31fa6f21fa4a7a14",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20261225",
+  "lastServiceWeek": "93940da1f9448783",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

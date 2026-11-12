@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Agency } from '../../App';
-import { COLOR_VISION_HEADWAY_TIERS, HEADWAY_TIERS, getNightServiceColor } from '../colors';
+import { COLOR_VISION_HEADWAY_TIERS, HEADWAY_TIERS, getNightServiceColor, getNightServiceTierColor } from '../colors';
 import {
   buildExportKey,
   buildExportSourceLine,
@@ -96,8 +96,9 @@ describe('colour key', () => {
   });
 
   it('never shows headway tiers for night service', () => {
-    const key = buildExportKey(keyCandidates({ ...BASE, view: 'night' }), [getNightServiceColor('default'), HEADWAY_TIERS[0].color]);
-    expect(key).toEqual([{ color: getNightServiceColor('default'), label: 'Overnight service' }]);
+    // CIV-1329: one shade per night grade; only the drawn ones are listed.
+    const key = buildExportKey(keyCandidates({ ...BASE, view: 'night', nightServiceFrequency: 90 }), [getNightServiceColor('default'), getNightServiceTierColor(90, 'default'), HEADWAY_TIERS[0].color]);
+    expect(key).toEqual([{ color: getNightServiceColor('default'), label: '≤60 min' }, { color: getNightServiceTierColor(90, 'default'), label: '≤90 min' }]);
   });
 });
 

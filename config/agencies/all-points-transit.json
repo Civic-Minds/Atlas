@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20270201",
   "lastFeedVersion": "UTC: 19-Aug-2026 23:19",
   "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270201",
@@ -35,7 +35,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Denver",
   "lastFeedSourceKind": "configured",
@@ -46,5 +46,6 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "5a73fbf753bbc1ba",
-  "feedObtainedAt": "20260819"
+  "feedObtainedAt": "20260819",
+  "lastFeedStart": "20260819"
 }

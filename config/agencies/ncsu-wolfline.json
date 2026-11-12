@@ -15,7 +15,7 @@
     "FTB",
     "GRK"
   ],
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2245/latest.zip",
   "bbox": [
@@ -27,7 +27,7 @@
   "cities": [
     "West Raleigh, North Carolina"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -46,20 +46,21 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 20,
+      "featureCount": 21,
       "feedExpiry": "20271231",
-      "routeCount": 9,
+      "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "b387a2cd8e18b7e0",
-  "feedObtainedAt": "20261102"
+  "lastServiceWeek": "15a71499901d4c3f",
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261108"
 }

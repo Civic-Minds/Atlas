@@ -16,7 +16,7 @@
   "cities": [
     "Tampa, Florida"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -37,7 +37,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -48,5 +48,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-325/latest.zip",
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "a169120162f013fb",
-  "feedObtainedAt": "20260930"
+  "feedObtainedAt": "20260930",
+  "lastFeedStart": "20260816"
 }

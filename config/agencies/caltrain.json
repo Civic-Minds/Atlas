@@ -32,7 +32,7 @@
     "Daly City, California"
   ],
   "lastRawArchiveKey": "20270131-786de3fea43ef033",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -57,12 +57,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "cb56639392cc28ef",
-  "feedObtainedAt": "20260828"
+  "feedObtainedAt": "20260828",
+  "lastFeedStart": "20260131"
 }

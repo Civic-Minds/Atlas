@@ -11,64 +11,72 @@
   "sameNameRoutes": [
     {
       "shortName": "FCF",
-      "longName": "Green Line",
+      "longName": "Green Line Armsdale",
       "name": "Green Line"
     },
     {
       "shortName": "FCF",
-      "longName": "Orange Line",
+      "longName": "Orange Line Orange Park Mall",
       "name": "Orange Line"
     },
     {
       "shortName": "FCF",
-      "longName": "Blue Line",
+      "longName": "Blue Line Avenues Walk",
       "name": "Blue Line"
     },
     {
       "shortName": "FCF",
-      "longName": "Red Line",
+      "longName": "Red Line Arlington Beaches",
       "name": "Red Line"
     }
   ],
-  "lastFeedExpiry": "20261031",
-  "lastFeedVersion": null,
+  "lastFeedExpiry": "20270326",
+  "lastFeedVersion": "S1000222",
   "region": "Florida",
-  "lastRefreshedAt": "2026-08-10",
+  "lastRefreshedAt": "2026-11-10",
   "cities": [
     "Jacksonville, Florida"
   ],
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 1,
-  "expiredFeedCheckSince": "20260622",
-  "expiredFeedCheckExpiry": "20261031",
+  "lastFeedCheckAt": "20261110",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270326",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-764/latest.zip",
-  "lastPeekedExpiry": "20261031",
+  "lastPeekedExpiry": "20270326",
   "feedQuality": {
-    "status": "degraded",
-    "score": 65,
-    "reasons": [
-      "The schedule dates in this feed have passed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 242,
-      "feedExpiry": "20261031",
-      "routeCount": 44,
+      "featureCount": 229,
+      "feedExpiry": "20270326",
+      "routeCount": 40,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-10-31",
-    "scoredAt": "2026-11-02"
+    "checkedAt": "2026-11-12"
   },
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "all available feeds expired (latest 20261031)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 1
+  "modeOverrides": [
+    {
+      "routeType": 3,
+      "routeShortName": "500",
+      "mode": 4,
+      "reason": "The St. Johns River Ferry is a ferry, published by JTA as route_type 3 (bus) (#1422)"
+    }
+  ],
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastFeedStart": "20261102",
+  "lastServiceWeek": "2dba5bf33bb16ba2",
+  "feedObtainedAt": "20261109"
 }

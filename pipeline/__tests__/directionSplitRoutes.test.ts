@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mergeDirectionSplitRoutes } from '../directionSplitRoutes';
+import { directionSplitsOf, mergeDirectionSplitRoutes } from '../directionSplitRoutes';
 
 // Shapes of the #1285 sweep: BART publishes each line once per direction ("Yellow-S" Antioch to SFO,
 // "Yellow-N" SFO to Antioch), on direction-specific platforms under one parent station; SEPTA's
@@ -33,7 +33,9 @@ describe('direction-split routes (#1285)', () => {
       [trips('Y-S', '1', 10, '1'), trips('Y-N', '0', 8, '2'), trips('Y-N', '1', 2, '1')],
     );
     const { gtfs: out, merged } = mergeDirectionSplitRoutes(gtfs) as { gtfs: any; merged: any[] };
-    expect(merged).toEqual([{ base: 'Yellow', keptRouteId: 'Y-N', mergedRouteId: 'Y-S', overlap: 1 }]);
+    expect(merged).toEqual([{ base: 'Yellow', keptRouteId: 'Y-N', mergedRouteId: 'Y-S', overlap: 1, keptShortName: 'Yellow-N', mergedShortName: 'Yellow-S' }]);
+    // CIV-1275: the artifact records the halves' old keys for History.
+    expect(directionSplitsOf(merged)).toEqual([{ base: 'Yellow', halves: ['Yellow-N', 'Yellow-S'] }]);
     expect(out.routes).toEqual([expect.objectContaining({ route_id: 'Y-N', route_short_name: 'Yellow', route_long_name: "Millbrae/SF Int'l SFO ↔ Antioch" })]);
     expect(new Set(out.trips.map((t: any) => t.route_id))).toEqual(new Set(['Y-N']));
     // Each half is one travel direction: Yellow-N's two trips labelled direction 1 run its way too.

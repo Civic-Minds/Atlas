@@ -22,7 +22,7 @@
   "cities": [
     "Davis, California"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -38,7 +38,7 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 64,
+      "featureCount": 70,
       "feedExpiry": "20270103",
       "routeCount": 23,
       "problemShapes": 0,
@@ -46,7 +46,7 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -56,5 +56,6 @@
   "lastFeedSourceUrl": "https://unitrans.ucdavis.edu/media/gtfs/Unitrans_GTFS.zip",
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "f69873af17b2d22a",
-  "feedObtainedAt": "20261102"
+  "feedObtainedAt": "20261102",
+  "lastFeedStart": "20261023"
 }

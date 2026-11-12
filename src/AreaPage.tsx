@@ -69,7 +69,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <PageTitle>{areaPageH1(data)}</PageTitle>
               {subtitle && <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>}
             </div>
-            <ArrowLink href={areaMapHref(data)}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={areaMapHref(data)}>View on map</ArrowLink>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}

@@ -28,19 +28,19 @@
       "name": "611 Downtown"
     }
   ],
-  "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "261013_1337",
+  "lastFeedExpiry": "20261212",
+  "lastFeedVersion": "261023_1059",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-714/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-09",
   "cities": [
     "Edmonton, Alberta",
     "St. Albert, Alberta",
     "Sherwood Park, Alberta"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261128",
+  "expiredFeedCheckExpiry": "20261212",
   "feedQuality": {
     "status": "review",
     "score": 100,
@@ -53,14 +53,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
       "featureCount": 904,
-      "feedExpiry": "20261128",
+      "feedExpiry": "20261212",
       "routeCount": 240,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Edmonton",
   "feedRefreshStatus": "current",
@@ -69,7 +69,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip",
-  "lastPeekedExpiry": "20261128",
-  "lastServiceWeek": "2a37b2c0f3615998",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20261212",
+  "lastServiceWeek": "9e1435a54d91bc16",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261023"
 }

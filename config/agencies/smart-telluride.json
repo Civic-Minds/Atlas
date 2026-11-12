@@ -47,9 +47,9 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280503",
@@ -62,5 +62,6 @@
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
   "lastPeekedExpiry": "20280503",
   "lastServiceWeek": "02fa7d12a003b761",
-  "feedObtainedAt": "20261016"
+  "feedObtainedAt": "20261016",
+  "lastFeedStart": "20261016"
 }

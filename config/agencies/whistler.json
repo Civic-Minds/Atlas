@@ -10,14 +10,14 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
   "mergeEquivalentShapeVariantsAllModes": true,
-  "lastFeedExpiry": "20261122",
-  "lastFeedVersion": "202611020/20261101 21:00:00/20261102 03:00:00",
+  "lastFeedExpiry": "20270417",
+  "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2583/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261102",
+  "lastRefreshedAt": "2026-11-09",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261122",
+  "expiredFeedCheckExpiry": "20270417",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -28,14 +28,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 72,
-      "feedExpiry": "20261122",
+      "feedExpiry": "20270417",
       "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -44,7 +44,8 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=44",
-  "lastPeekedExpiry": "20261122",
-  "lastServiceWeek": "515e98404e6592de",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20270417",
+  "lastServiceWeek": "b837e4d9a658d429",
+  "feedObtainedAt": "20261109",
+  "lastFeedStart": "20261107"
 }

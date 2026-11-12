@@ -22,7 +22,7 @@
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -46,7 +46,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -57,5 +57,6 @@
   "lastFeedSourceUrl": "https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx",
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "fb14b2e1d4c5e904",
-  "feedObtainedAt": "20260908"
+  "feedObtainedAt": "20260908",
+  "lastFeedStart": "20260909"
 }

@@ -23,7 +23,7 @@
     "Olympia, Washington",
     "Lakewood, Washington"
   ],
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -47,7 +47,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-12"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -57,5 +57,6 @@
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/19_gtfs.zip",
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "c0e8f93b9486f234",
-  "feedObtainedAt": "20261016"
+  "feedObtainedAt": "20261016",
+  "lastFeedStart": "20260927"
 }
