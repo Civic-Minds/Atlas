@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
 - **The frequent service story map counts [weekday service](https://github.com/Civic-Minds/Atlas/issues/1433) only**: a route's Saturday or Sunday service could keep it on a map captioned weekday daytime
 - **Each on-demand service has its own link**: a link can open [Hamilton's Trans-Cab](https://github.com/Civic-Minds/Atlas/issues/1440) on its own card, where it had opened myRide, and a link to Grande Prairie's Late Night opens that service
+- **On-demand hours can give Friday its own row**: [CyRide's Moonlight Express](https://github.com/Civic-Minds/Atlas/issues/1440) reads Fri–Sat 10:30 PM–2 AM, where its card said "Hours unavailable" and showed Saturday only
 - **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
 - **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route

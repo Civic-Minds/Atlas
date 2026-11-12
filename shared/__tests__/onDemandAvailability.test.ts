@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   isOnDemandActive,
+  onDemandRunningState,
   formatOnDemandClock,
   formatOnDemandHoursLines,
   formatOnDemandHoursRange,
@@ -198,3 +199,27 @@ describe('stop-only services', () => {
   });
 });
 
+
+describe('Friday hours of their own (#1440)', () => {
+  const moonlight = { Friday: [{ startHour: 22.5, endHour: 26 }], Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] };
+
+  it('reads a Friday-and-Saturday night service as one Fri–Sat row', () => {
+    expect(formatOnDemandHoursLines(moonlight).map(line => line.text)).toEqual(['Fri–Sat 10:30 PM–2 AM', 'Sun: no service']);
+    // The Fri–Sat row is bold on a weekday (Friday is one) and on Saturday.
+    expect(formatOnDemandHoursLines(moonlight)[0].dayTypes).toEqual(['Weekday', 'Saturday']);
+  });
+
+  it('splits Mon–Thu from Fri when a weekday service runs longer on Fridays', () => {
+    const lines = formatOnDemandHoursLines({ Weekday: [{ startHour: 6, endHour: 21 }], Friday: [{ startHour: 6, endHour: 23 }], Saturday: [{ startHour: 6, endHour: 21 }], Sunday: [] });
+    expect(lines.map(line => line.text)).toEqual(['Mon–Thu, Sat 6 AM–9 PM', 'Fri 6 AM–11 PM', 'Sun: no service']);
+  });
+
+  it('never claims Monday to Thursday service from Friday hours', () => {
+    expect(onDemandRunningState(moonlight, 'Weekday', 'late')).toBe('unknown');
+    expect(isOnDemandActive(moonlight, 'Weekday', 'late')).toBe(isOnDemandActive({ Saturday: moonlight.Saturday, Sunday: [] }, 'Weekday', 'late'));
+  });
+
+  it('leaves services without Friday hours exactly as before', () => {
+    expect(formatOnDemandHoursLines({ Weekday: [{ startHour: 6, endHour: 18 }], Saturday: [], Sunday: [] }).map(line => line.text)).toEqual(['Mon–Fri 6 AM–6 PM', 'Sat–Sun: no service']);
+  });
+});
