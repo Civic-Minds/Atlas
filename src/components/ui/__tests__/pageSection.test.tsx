@@ -28,7 +28,8 @@ describe('SortableDataTable in the page layout', () => {
   it('uses the page layout by default, lets headers wrap, and still sorts worst first then reversed', () => {
     const { container } = render(<SortableDataTable narrowFit rows={rows} rowKey={r => r.id} columns={columns} defaultSort="v" />);
     expect(container.querySelector('table')!.className).toContain('sm:min-w-[var(--table-min)]');
-    expect(container.querySelector('thead')!.innerHTML).not.toContain('whitespace-nowrap');
+    // Headers wrap between words; only the sort arrow and the first word are held together (CIV-1404).
+    expect([...container.querySelectorAll('thead .whitespace-nowrap')].every(e => !e.textContent!.includes(' '))).toBe(true);
     expect(order(container)).toEqual(['b', 'c', 'a']);
     fireEvent.click(container.querySelector('thead button')!);
     expect(order(container)).toEqual(['a', 'c', 'b']);

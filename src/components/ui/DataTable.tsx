@@ -178,8 +178,13 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
                     before the words, in the line of text, and takes no room until the column is sorted. */}
                 {figure(i) ? (
                   <button type="button" onClick={() => onSort(col.key)} className="font-[inherit] hover:underline text-left sm:text-right">
-                    {sort?.key === col.key && <span aria-hidden="true" className="mr-1 inline-block text-[0.7em] align-[0.1em]">{sort.reversed ? '▲' : '▼'}</span>}
-                    {col.header}
+                    {(() => {
+                      const arrow = sort?.key === col.key && <span aria-hidden="true" className="mr-1 inline-block text-[0.7em] align-[0.1em]">{sort.reversed ? '▲' : '▼'}</span>;
+                      if (typeof col.header !== 'string') return <>{arrow}{col.header}</>;
+                      // The arrow stays on the line of the header's first word, even in a narrow column.
+                      const [first, ...rest] = col.header.split(' ');
+                      return <><span className="whitespace-nowrap">{arrow}{first}</span>{rest.length ? ` ${rest.join(' ')}` : ''}</>;
+                    })()}
                   </button>
                 ) : (
                 <button type="button" onClick={() => onSort(col.key)} className={`inline-flex items-center gap-1 font-[inherit] hover:underline${end ? ' text-left' : ''}`}>
