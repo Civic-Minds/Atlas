@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The [Jacksonville ferry](https://github.com/Civic-Minds/Atlas/issues/1422) shows as a ferry**: JTA's data lists it as a bus
 - **Night Service judges each night on [the day it starts](https://github.com/Civic-Minds/Atlas/issues/1416)**: the gap after Sunday's last bus now counts against Sunday, not weekdays, and Friday night's against weekdays
 - **[Rush-hour-only buses](https://github.com/Civic-Minds/Atlas/issues/1088) count at the stops they share with the rest of the route**: during the hours they run, so TTC 102's stretch to Warden reads every 15 in the PM peak, not 22
 - **Shared stops with uneven service show their longest wait instead of nothing**: the [TTC 102](https://github.com/Civic-Minds/Atlas/issues/1088) stretch to Warden had no rush-hour value, and a blank hid that buses still come
