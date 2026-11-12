@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage, stageCollection } from '../FrequentServiceStoryMap';
+import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity } from '../FrequentServiceStoryMap';
 
 const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday) => ({
   type: 'Feature',
@@ -43,5 +43,56 @@ describe('Frequent Service story stages', () => {
     const every15 = feature('regular', 10, true, true);
     const keep = stageCollection([rushOnly, nightOnly, every30, every15], 15).features.map(f => f.properties?.keep);
     expect(keep).toEqual([0, 1, 2, 3]);
+  });
+
+  // CIV-1408: what the map ends up drawing at each stage, from the layers' filters and end opacities.
+  describe('what is drawn at each stage', () => {
+    /** The `keep` values (0-3) drawn at a stage: on at least one layer that is lit and whose filter lets them through. */
+    const drawnKeeps = (stage: number) => {
+      const opacity = storyLayerOpacity(stage);
+      return [0, 1, 2, 3].filter(keep => STORY_LAYERS.some(layer => opacity[layer.id] > 0 && keep >= layer.minKeep));
+    };
+
+    it('draws only the routes that still qualify, and nothing else', () => {
+      expect(drawnKeeps(0)).toEqual([0, 1, 2, 3]);
+      expect(drawnKeeps(1)).toEqual([1, 2, 3]);
+      expect(drawnKeeps(2)).toEqual([2, 3]);
+      expect(drawnKeeps(3)).toEqual([3]);
+    });
+
+    it('draws at each stage exactly the routes the stage rules keep', () => {
+      const routes = [feature('time-limited', 20, true, true), feature('regular', null, false, false), feature('regular', 30, true, false), feature('regular', 10, true, true)];
+      const keeps = stageCollection(routes, 15).features.map(f => f.properties?.keep as number);
+      for (const stage of [0, 1, 2, 3]) {
+        const drawn = routes.filter((_, i) => drawnKeeps(stage).includes(keeps[i]));
+        expect(drawn).toEqual(featuresForStage(routes, stage, 15));
+      }
+    });
+
+    it('lights the grey base of every route only at the first stage: no grey ghost of removed routes after it', () => {
+      expect(storyLayerOpacity(0).routes).toBe(0.34);
+      for (const stage of [1, 2, 3]) expect(storyLayerOpacity(stage).routes).toBe(0);
+    });
+
+    it('lights one orange layer per stage, at the same strength, and gives every layer an end state', () => {
+      for (const stage of [0, 1, 2, 3]) {
+        const opacity = storyLayerOpacity(stage);
+        expect(Object.keys(opacity).sort()).toEqual(STORY_LAYERS.map(layer => layer.id).sort());
+        const lit = STORY_LAYERS.filter(layer => layer.id !== 'routes' && opacity[layer.id] > 0);
+        expect(lit.map(layer => layer.id)).toEqual([`stage-${stage}`]);
+        expect(opacity[`stage-${stage}`]).toBe(0.88);
+      }
+    });
+
+    it('scrolling back up gives the same picture as scrolling down did', () => {
+      // The end state depends on the stage alone, never on the stage before it.
+      const walk = [0, 1, 2, 3, 2, 1, 0].map(drawnKeeps);
+      expect(walk).toEqual([[0, 1, 2, 3], [1, 2, 3], [2, 3], [3], [2, 3], [1, 2, 3], [0, 1, 2, 3]]);
+    });
+
+    it('fades between stages, and not at all for reduced motion', () => {
+      expect(storyFade(false)).toEqual({ duration: 700, delay: 0 });
+      expect(storyFade(true)).toEqual({ duration: 0, delay: 0 });
+    });
   });
 });

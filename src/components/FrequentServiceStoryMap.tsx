@@ -78,7 +78,33 @@ export function stageCollection(features: StoryFeature[], frequencyMinutes: 15 |
 }
 
 const STAGES = [0, 1, 2, 3] as const;
-const FADE = { duration: 700, delay: 0 };
+const FADE_MS = 700;
+
+/**
+ * The map's layers. `routes` is the grey base of every route; each `stage-N` draws only the routes still kept at stage N
+ * (`keep >= N`). `minKeep` is the lowest `keep` a layer draws.
+ */
+export const STORY_LAYERS = [
+  { id: 'routes', minKeep: 0 },
+  ...STAGES.map(stage => ({ id: `stage-${stage}`, minKeep: stage })),
+] as const;
+
+/**
+ * CIV-1408: the opacity each layer ends at for a stage. Only the stage's own layer is lit, and the grey base only at stage 0,
+ * so a route that no longer qualifies is on no lit layer: it fades out with the layers it was on and is not drawn at all
+ * (MapLibre skips a line layer at opacity 0). Scrolling back up lights the earlier layers again, which fades it back in.
+ */
+export function storyLayerOpacity(stage: number): Record<string, number> {
+  const opacity: Record<string, number> = { routes: stage === 0 ? 0.34 : 0 };
+  for (const s of STAGES) opacity[`stage-${s}`] = stage === s ? 0.88 : 0;
+  return opacity;
+}
+
+/** The fade between stages; none for a reader who asked for reduced motion, as the page's CSS transitions do. */
+export function storyFade(reducedMotion: boolean) {
+  return { duration: reducedMotion ? 0 : FADE_MS, delay: 0 };
+}
+const prefersReducedMotion = () => typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
 const cssColor = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -128,9 +154,10 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     map.on('load', () => {
       map.addSource('story', { type: 'geojson', data: collection });
       const line = { 'line-cap': 'round', 'line-join': 'round' } as const;
-      map.addLayer({ id: 'routes', type: 'line', source: 'story', layout: line, paint: { 'line-color': cssColor('--text-dim'), 'line-width': 1.1, 'line-opacity': 0.34, 'line-opacity-transition': FADE } });
-      for (const s of STAGES) {
-        map.addLayer({ id: `stage-${s}`, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], s], layout: line, paint: { 'line-color': cssColor('--accent'), 'line-width': 2.1, 'line-opacity': 0, 'line-opacity-transition': FADE } });
+      const fade = storyFade(prefersReducedMotion());
+      for (const { id, minKeep } of STORY_LAYERS) {
+        const base = id === 'routes';
+        map.addLayer({ id, type: 'line', source: 'story', filter: ['>=', ['get', 'keep'], minKeep], layout: line, paint: { 'line-color': cssColor(base ? '--text-dim' : '--accent'), 'line-width': base ? 1.1 : 2.1, 'line-opacity': base ? storyLayerOpacity(0).routes : 0, 'line-opacity-transition': fade } });
       }
       // A theme switch while the style was loading was skipped: draw the theme the page has now.
       paint();
@@ -151,8 +178,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    map.setPaintProperty('routes', 'line-opacity', stage === 0 ? 0.34 : 0.16);
-    for (const s of STAGES) map.setPaintProperty(`stage-${s}`, 'line-opacity', stage === s ? 0.88 : 0);
+    for (const [id, opacity] of Object.entries(storyLayerOpacity(stage))) map.setPaintProperty(id, 'line-opacity', opacity);
   }, [stage, mapReady]);
 
   return (
