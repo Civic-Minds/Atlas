@@ -159,14 +159,14 @@ export const CYRIDE_EASE_SERVICE_AREA = {
     Sunday: [],
   } satisfies OnDemandAvailability,
   zoneMetadata: {
-    // Atlas counts a night after midnight as the day it started, and Weekday covers Monday-Friday,
-    // so Friday nights can't be told apart from Monday-Thursday: weekday hours stay unset (faded)
-    // rather than claiming service every night. Saturday night is exact.
+    // Atlas counts a night after midnight as the day it started. Friday has its own hours (#1440), so the
+    // card reads "Fri–Sat 10:30 PM–2 AM"; weekday hours stay unset, so the map and the running note never
+    // claim Monday-Thursday service.
     'Ames city limits': {
       serviceName: 'Moonlight Express',
       serviceHours: 'Friday and Saturday nights 10:30 PM\u20132 AM during the Iowa State school year',
       hoursNote: "Doesn't run on ISU break weekends, Thanksgiving, Easter or finals week.",
-      availability: { Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
+      availability: { Friday: [{ startHour: 22.5, endHour: 26 }], Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
       hoursSource: { url: 'https://www.cyride.com/schedules/school-year-schedule/moonlight-express', retrievedAt: '2026-10-11' },
       // Season end: CyRide GTFS 20260827 calendar `MLX,0,0,0,0,1,1,0,20260817,20270514`
       // (https://www.cyride.net/gtf/gtfs.zip), narrowed by the page's "Friday/Saturday of Finals

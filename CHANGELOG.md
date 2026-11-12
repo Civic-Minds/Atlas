@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Each on-demand service has its own link**: a link can open [Hamilton's Trans-Cab](https://github.com/Civic-Minds/Atlas/issues/1440) on its own card, where it had opened myRide, and a link to Grande Prairie's Late Night opens that service
+- **On-demand hours can give Friday its own row**: [CyRide's Moonlight Express](https://github.com/Civic-Minds/Atlas/issues/1440) reads Fri–Sat 10:30 PM–2 AM, where its card said "Hours unavailable" and showed Saturday only
 - **The map key and Mode menu say some on-demand zones aren't mapped yet**: so a place with no shaded zone isn't read as having no on-demand service
 - **An on-demand service's card lists every zone with its hours**: services whose hours differ by zone, like RTD FlexRide, read "Hours unavailable" until a zone was picked; each zone row opens that zone
 - **History shows [trip time](https://github.com/Civic-Minds/Atlas/issues/1431) for BART again**: it went missing when each line's two directions were merged into one route
