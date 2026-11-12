@@ -339,6 +339,22 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
   sections.forEach(sec => sec.stops.forEach(s => { if (!rowOf.has(s.stopId)) rowOf.set(s.stopId, rowOf.size); }));
   const routeFirst = model.starts.length === 0 ? model.trunk[0]?.stopId : null;
   const routeLast = model.ends.length === 0 ? model.trunk[model.trunk.length - 1]?.stopId : null;
+  const isNamed = (sec: (typeof sections)[number], s: (typeof sections)[number]['stops'][number], i: number) =>
+    allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretches.some(st => st && (st.firstId === s.stopId || st.lastId === s.stopId));
+  // Each stop is named once (a branch split starts every branch after it, #1473), and where two different stops would
+  // get the same short name (Cherry St at Front St East, its North Side stop), both show their full names.
+  const { firstNamedAt, shortTaken } = useMemo(() => {
+    const first = new Map<string, string>(), byShort = new Map<string, Set<string>>();
+    sections.forEach(sec => sec.stops.forEach((s, i) => {
+      if (!isNamed(sec, s, i)) return;
+      if (!first.has(s.stopId)) first.set(s.stopId, `${sec.key}:${i}`);
+      const short = shortStopName(s.name);
+      byShort.set(short, (byShort.get(short) ?? new Set()).add(s.stopId));
+    }));
+    return { firstNamedAt: first, shortTaken: byShort };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections, allStops, stretches]);
+  const nameOf = (name: string) => { const short = shortStopName(name); return (shortTaken.get(short)?.size ?? 0) > 1 ? name : short; };
   return (
     <div aria-hidden="true">
       <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]">
@@ -348,8 +364,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
         <div key={sec.key}>
           {sec.stops.map((s, i) => {
             const isEnd = (sec.branch && i === sec.terminal) || s.stopId === routeFirst || s.stopId === routeLast;
-            const stretchEnd = stretches.some(st => st && (st.firstId === s.stopId || st.lastId === s.stopId));
-            const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretchEnd;
+            const named = isNamed(sec, s, i) && firstNamedAt.get(s.stopId) === `${sec.key}:${i}`;
             const marked = stretches.some(st => st?.ids.has(s.stopId));
             const note = stretches.filter(st => st && st.firstId === s.stopId).map(st => st!.label).join(', ');
             const on = active === s.stopId;
@@ -370,7 +385,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
                 {sec.branch && i === sec.terminal && <span className="pointer-events-none absolute h-px w-2 bg-[var(--text-dim)]" style={{ left: NAME_LEFT - 10, top: '50%' }} />}
                 {named && (
                   <span className="flex min-w-0 flex-1 items-baseline gap-2">
-                    <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                    <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{nameOf(s.name)}</span>
                     {note && <StretchNote>{note}</StretchNote>}
                   </span>
                 )}
