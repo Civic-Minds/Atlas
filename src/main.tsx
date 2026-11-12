@@ -84,7 +84,7 @@ ReactDOM.createRoot(rootElement).render(
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
             </>
           )}
-          {/* Live is local-only: the route dashboard exists only where Live can run. */}
+          {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/tool" element={<LiveToolPage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency" element={<LiveAgencyPage />} />}
