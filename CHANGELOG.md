@@ -8,7 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
-- **Fresno 39 counts a line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) as one pattern**: toward the airport it read every 30 where a bus comes every 15
+- **A line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) counts as one pattern**: Fresno 39 toward the airport read every 30 where a bus comes every 15, and TriMet 72, Pace 381, CT Transit 914 and TTC 52 read slower than they run
 - **The frequent service story map's last step matches the main map**: routes the map shows at 15 minutes or better, like TTC 501 Queen, were dropped for a single longer gap
 - **The frequent service story map keeps [all-day routes](https://github.com/Civic-Minds/Atlas/issues/1434) like TTC Line 1**: the rush-hour-only step removed the subway, which the main map treats as all-day service
 - **The frequent service story map counts [weekday service](https://github.com/Civic-Minds/Atlas/issues/1433) only**: a route's Saturday or Sunday service could keep it on a map captioned weekday daytime
