@@ -349,6 +349,36 @@
     },
     {
       "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|redditbot|whatsapp|telegrambot|mastodon|bluesky|cardyb|skypeuripreview|pinterestbot|embedly|iframely).*"
+        },
+        {
+          "type": "query",
+          "key": "lat"
+        }
+      ],
+      "destination": "/api/share-preview"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(twitterbot|facebookexternalhit|linkedinbot|slackbot|discordbot|redditbot|whatsapp|telegrambot|mastodon|bluesky|cardyb|skypeuripreview|pinterestbot|embedly|iframely).*"
+        },
+        {
+          "type": "query",
+          "key": "area"
+        }
+      ],
+      "destination": "/api/share-preview"
+    },
+    {
+      "source": "/",
       "destination": "/index.html"
     },
     {
