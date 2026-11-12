@@ -9,6 +9,8 @@ export interface OnDemandFocusTarget {
   slug: string;
   /** Zone id (areaName, or the polygon id when unnamed). Null = the whole service. */
   zoneId: string | null;
+  /** A separately run service's zones (Trans-Cab, #1440): these stay at full strength instead of one zone. */
+  zoneIds?: readonly string[];
 }
 
 /** True when a zone polygon belongs to the focused selection. */
@@ -18,6 +20,7 @@ export function isOnDemandZoneFocused(
   zoneId: string | number | undefined,
 ): boolean {
   if (agencySlug !== target.slug) return false;
+  if (target.zoneIds) return zoneId !== undefined && target.zoneIds.includes(String(zoneId));
   if (target.zoneId === null) return true;
   return zoneId !== undefined && String(zoneId) === target.zoneId;
 }
@@ -29,6 +32,7 @@ export function isOnDemandStopFocused(
   zones: readonly string[],
 ): boolean {
   if (agencySlug !== target.slug) return false;
+  if (target.zoneIds) return zones.some(zone => target.zoneIds!.includes(zone));
   if (target.zoneId === null) return true;
   return zones.includes(target.zoneId);
 }
