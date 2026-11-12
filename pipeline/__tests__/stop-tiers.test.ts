@@ -37,7 +37,8 @@ describe('stopTiers', () => {
     // stop on, which grades 20: the line is every 20 by its own rule at 29 of 34 stops.
     const p = await line('cta-j14-saturday', 'cta', 'Saturday', '103rd Street & Stony Island Garage Terminal');
     expect(p.headway).toBe(10);
-    expect(tierRuns(p)).toEqual(['15', '20']);
+    // #773: the origin left 06:55, then 07:18, so the 07:00 window start cuts an 18-minute wait: 20 there too.
+    expect(tierRuns(p)).toEqual(['20']);
     expect(p.tier).toBe('20');
   });
 

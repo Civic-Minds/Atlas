@@ -425,6 +425,9 @@ export function railMiddayTier(times: readonly number[], day: DayType, routeType
   return tier === 'span' ? null : tier;
 }
 
+/** #773: how far past a grading-window edge a departure shows the service runs across it (the widest tier). */
+const WINDOW_EDGE_LOOKBACK_MINUTES = 60;
+
 export function scopedTerminalHeadline(
   times: readonly number[] | undefined,
   day: DayType,
@@ -449,11 +452,19 @@ export function scopedTerminalHeadline(
   const { start, end } = dayConfig.timeWindow;
   const windowed = sorted.filter(t => t >= start && t <= end);
   if (windowed.length < 3) return { headway, tier: null };
-  const gaps = windowed.slice(1).map((t, i) => t - windowed[i]);
+  // #773: the wait the window cuts at its start or end is graded when the stop also has a departure in the
+  // hour on the other side of that edge, so the service runs across it. Halifax 2 Saturday at its origin
+  // left 06:55 and then 07:55: windowed from 07:55 it graded 30 though riders at 07:00 wait 55. With no
+  // departure in that hour, the edge is the start or end of the stop's service, never a wait (#568, #728),
+  // as unevenWait reads a period's edges (CIV-1414).
+  const crossesStart = windowed[0] > start && sorted.some(t => t < start && t >= start - WINDOW_EDGE_LOOKBACK_MINUTES);
+  const crossesEnd = windowed[windowed.length - 1] < end && sorted.some(t => t > end && t <= end + WINDOW_EDGE_LOOKBACK_MINUTES);
+  const graded = [...(crossesStart ? [start] : []), ...windowed, ...(crossesEnd ? [end] : [])];
+  const gaps = graded.slice(1).map((t, i) => t - graded[i]);
   const determined = determineTierWithEdgeGapAllowance(
     gaps,
-    windowed.length,
-    windowed[windowed.length - 1] - windowed[0],
+    graded.length,
+    graded[graded.length - 1] - graded[0],
     getTiersForCriteria(routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides),
     DEFAULT_CRITERIA.graceMinutes,
     DEFAULT_CRITERIA.maxGraceViolations,
@@ -461,7 +472,7 @@ export function scopedTerminalHeadline(
     DEFAULT_CRITERIA.violationPercent,
     {
       rawDepartureTimes: sorted,
-      analysisTimes: windowed,
+      analysisTimes: graded,
       day: (day === 'Weekday' ? 'Wednesday' : day) as DayName,
       routeType,
       railLike,

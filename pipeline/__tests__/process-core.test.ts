@@ -524,6 +524,29 @@ describe('scopedTerminalHeadline', () => {
     expect(result?.tier).toBeNull();
   });
 
+  describe('a wait the grading window cuts (#773)', () => {
+    // Halifax 2 Saturday at stop 9104: hourly to 07:55, then every 15, every 30 after 19:30, until 22:00.
+    const halifax2 = [355, 415, 475, ...every(15, 490, 1170), ...every(30, 1200, 1320)];
+    it('counts the wait from 07:00 when the stop also left in the hour before (graded 60, not 30)', () => {
+      expect(scopedTerminalHeadline(halifax2, 'Saturday', '3', false)?.tier).toBe('60');
+      // Without the 06:55 departure, 07:55 is the start of the stop's service: not a wait (#568, #728).
+      expect(scopedTerminalHeadline(halifax2.filter(t => t !== 415), 'Saturday', '3', false)?.tier).toBe('30');
+    });
+    it('a departure more than an hour before the window does not make the edge a wait', () => {
+      // 05:55, then service from 07:55: a break, not a gap the window cuts.
+      expect(scopedTerminalHeadline([355, ...halifax2.slice(2)], 'Saturday', '3', false)?.tier).toBe('30');
+    });
+    it('counts the end of the window the same way, and leaves steady service crossing an edge alone', () => {
+      // Every 15 until 21:00, then 22:30: riders at 21:59 still wait, so the 21:00-22:00 hour is graded.
+      const evening = every(15, 420, 1260);
+      expect(scopedTerminalHeadline(evening, 'Weekday', '3', false)?.tier).toBe('15');
+      expect(scopedTerminalHeadline([...evening, 1350], 'Weekday', '3', false)?.tier).toBe('60');
+      expect(scopedTerminalHeadline([...evening, 1390], 'Weekday', '3', false)?.tier).toBe('15');
+      expect(scopedTerminalHeadline(every(15, 360, 1380), 'Weekday', '3', false)?.tier)
+        .toBe(scopedTerminalHeadline(every(15, 420, 1320), 'Weekday', '3', false)?.tier);
+    });
+  });
+
   it('does not depend on input order', () => {
     const times = every(20);
     expect(scopedTerminalHeadline([...times].reverse(), 'Weekday', '3', false))
