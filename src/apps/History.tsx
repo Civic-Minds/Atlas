@@ -36,7 +36,7 @@ import {
   agencyQualifiesForHistory,
   type HistoryTier,
 } from '../../shared/historyEligibility';
-import { capitalizeFirst, headwayEvery, headwayEveryRange, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
+import { headwayEvery, headwayEveryRange, headwayExactAmount, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
@@ -146,6 +146,18 @@ function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minut
     : headwayEvery(shownMinutes(minutes));
 }
 
+/**
+ * A change box's headline (CIV-1127, Ryan's wording 2026-11-12: "Frequency: 15 → 20 min", "Trip time: 73 → 76 min"):
+ * label, colon, first value, arrow, second value, with the unit once at the end. Both boxes' headlines come
+ * from here. The amounts are the shared formatters' ("15 min", "7.5 min"); should the two ever not share
+ * the unit, each keeps its own.
+ */
+export function changeHeadline(label: 'Frequency' | 'Trip time', firstAmount: string, lastAmount: string): string {
+  const unit = ' min';
+  const first = firstAmount.endsWith(unit) && lastAmount.endsWith(unit) ? firstAmount.slice(0, -unit.length) : firstAmount;
+  return `${label}: ${first} → ${lastAmount}`;
+}
+
 function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { text: string; subtext: string; worse: boolean } | null {
   // Only snapshots with a value in the period take part (CIV-389).
   const snaps = sortSnapshotsNewestFirst(entry.snapshots).filter(s => periodMinutes(s, period) != null);
@@ -159,10 +171,54 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all'): { 
   if (Math.abs(fHw - lHw) < 2) return null;
   const worse = lHw > fHw;
   return {
-    text: `${capitalizeFirst(headwayEvery(fHw))} → ${headwayEvery(lHw)}`,
+    text: changeHeadline('Frequency', headwayExactAmount(fHw), headwayExactAmount(lHw)),
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
+}
+
+/** The neutral callout's outline, for the tinted frequency box, so both History boxes have the same edge (CIV-1127). */
+const CALLOUT_OUTLINE = 'border border-[var(--border-primary)]';
+
+/** The one sentence in the frequency change box: Ryan's wording, 2026-11-12 (CIV-1127). */
+const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
+
+type ChangeTone = 'negative' | 'positive' | 'neutral';
+
+/** Ryan, 2026-11-12 (CIV-1127): a trip time change shows when it is at least about 2% of the earlier trip. */
+export const TRIP_TIME_MIN_CHANGE_SHARE = 0.02;
+
+/**
+ * Whether a trip time changed enough to show (CIV-1127): at least `TRIP_TIME_MIN_CHANGE_SHARE` of the earlier
+ * trip, longer or shorter, and at least 1 minute as displayed. So 20 to 21 min shows, 76 to 77 does not and
+ * 76 to 78 does. The minutes are the stored ones: History's trip times are whole minutes, the same as shown.
+ */
+export function tripTimeChangedEnough(firstMinutes: number, lastMinutes: number): boolean {
+  if (!(firstMinutes > 0) || !(lastMinutes > 0)) return false;
+  if (Math.abs(Math.round(lastMinutes) - Math.round(firstMinutes)) < 1) return false;
+  return Math.abs(lastMinutes - firstMinutes) >= firstMinutes * TRIP_TIME_MIN_CHANGE_SHARE;
+}
+
+/** The trip time box's lines, only when the trip time changed enough (`tripTimeChangedEnough`; Ryan 2026-10-29:
+ *  "why are we showing trip time if it iddint change"). A longer trip is the worse colour and a shorter one
+ *  the better colour, as the frequency box (Ryan 2026-11-12: "why is one red tbut not the other if both got worse"). */
+export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+  const trip = entry.tripDuration;
+  if (!trip || !tripTimeChangedEnough(trip.firstMinutes, trip.lastMinutes)) return null;
+  const tone: ChangeTone = trip.lastMinutes > trip.firstMinutes ? 'negative' : 'positive';
+  return { first: runTimeAmount(trip.firstMinutes), last: runTimeAmount(trip.lastMinutes), dates: `${trip.firstLabel} to ${trip.lastLabel}`, tone };
+}
+
+/** One change box on the History route card: both boxes (frequency, trip time) are this piece, so their tint,
+ *  headline colour and outline cannot differ (CIV-1127). Grey when a change is neither better nor worse. */
+function ChangeBox({ tone, headline, dates, note, testId }: { tone: ChangeTone; headline: string; dates: string; note: string; testId: string }) {
+  return (
+    <CardCallout tone={tone} className={tone === 'neutral' ? 'mt-3' : `mt-3 ${CALLOUT_OUTLINE}`} data-testid={`${testId}-box`} data-tone={tone}>
+      <p className={tone === 'neutral' ? CARD_CALLOUT_HEADLINE : CARD_CALLOUT_HEADLINE_TONE[tone]} data-testid={testId}>{headline}</p>
+      <p className={CARD_CALLOUT_TEXT}>{dates}</p>
+      <p className={`${CARD_NOTICE} mt-1`}>{note}</p>
+    </CardCallout>
+  );
 }
 
 /** The agency with only the snapshots History shows (#1030). */
@@ -238,6 +294,7 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period);
+  const tripTime = tripTimeChange(route);
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
@@ -336,28 +393,13 @@ function RouteHistoryCard({
         })}
       </SidebarCardListRows>
 
-        {/* One box (CIV-1127): the frequency change first, in its better or worse colour (CIV-971), then the trip time
-            as one line under it. A route with only one of the two shows that one. */}
-        {(summary || route.tripDuration) && (
-          <CardCallout tone={summary ? (summary.worse ? 'negative' : 'positive') : 'neutral'} className="mt-3">
-            {summary && (
-              <>
-                <p className={CARD_CALLOUT_HEADLINE_TONE[summary.worse ? 'negative' : 'positive']}>{summary.text}</p>
-                <p className={CARD_CALLOUT_TEXT}>{summary.subtext}</p>
-              </>
-            )}
-            {route.tripDuration && (
-              <>
-                <p className={summary ? `${CARD_CALLOUT_TEXT} mt-2` : CARD_CALLOUT_HEADLINE} data-testid="history-trip-time">
-                  Trip time: {runTimeAmount(route.tripDuration.firstMinutes)} ({route.tripDuration.firstLabel}) → {runTimeAmount(route.tripDuration.lastMinutes)} ({route.tripDuration.lastLabel})
-                </p>
-                {/* The long explanation stays here until Ryan picks where it goes: History has no explainer link (CIV-1127). */}
-                <p className={`${CARD_NOTICE} mt-1`}>
-                  {HISTORY_TRIP_TIME_NOTE}
-                </p>
-              </>
-            )}
-          </CardCallout>
+        {/* Two short boxes from one piece (CIV-1127): the frequency change, then the trip time, each in its better
+            or worse colour with its dates on their own line and one sentence. */}
+        {summary && (
+          <ChangeBox tone={summary.worse ? 'negative' : 'positive'} headline={summary.text} dates={summary.subtext} note={HISTORY_FREQUENCY_CHANGE_NOTE} testId="history-frequency" />
+        )}
+        {tripTime && (
+          <ChangeBox tone={tripTime.tone} headline={changeHeadline('Trip time', tripTime.first, tripTime.last)} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
         )}
     </SidebarCardShell>
     </div>
