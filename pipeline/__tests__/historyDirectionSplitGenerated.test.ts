@@ -26,6 +26,13 @@ vi.mock('../r2.js', async () => {
   fx.archive['history/delta/Yellow-S/20190901.json'] = j({ headway: 20, routeLongName: 'Antioch to SFO' });
   fx.archive['history/delta/Yellow-N/20230901.json'] = j({ headway: 12, routeLongName: 'SFO to Antioch' });
   fx.archive['history/delta/Yellow-S/20230901.json'] = j({ headway: 14, routeLongName: 'Antioch to SFO' });
+  // #1431: trip time files are under the halves' keys too. The longer direction each period: 73 (S), then 72 (N).
+  const north = ['a', 'b', 'c'];
+  const south = ['c', 'b', 'a'];
+  fx.archive['trip-duration/delta/Yellow-N/20190901.json'] = j({ durationMinutes: 70, refDate: '20190915', stopSequence: north });
+  fx.archive['trip-duration/delta/Yellow-S/20190901.json'] = j({ durationMinutes: 73, refDate: '20190915', stopSequence: south });
+  fx.archive['trip-duration/delta/Yellow-N/20230901.json'] = j({ durationMinutes: 72, refDate: '20230915', stopSequence: north });
+  fx.archive['trip-duration/delta/Yellow-S/20230901.json'] = j({ durationMinutes: 71, refDate: '20230915', stopSequence: south });
   (fx.index as { agencies: unknown[] }).agencies.push({ slug: 'delta', name: 'Delta Rail', region: 'California', center: [-122, 37] });
   const list = (store: Record<string, string>) => async (prefix: string) => Object.keys(store).filter(k => k.startsWith(prefix)).sort();
   (globalThis as unknown as { __deltaFixture?: unknown }).__deltaFixture = fx;
@@ -69,7 +76,7 @@ vi.mock('../../scripts/build-history-agency-list.js', async () => {
   };
 });
 
-type Row = { slug: string; routes: Array<{ routeShortName: string; snapshots: Array<{ year: number; weekdayHeadwayMin: number }> }> };
+type Row = { slug: string; routes: Array<{ routeShortName: string; tripDuration?: unknown; snapshots: Array<{ year: number; weekdayHeadwayMin: number }> }> };
 
 describe('History aliases generated from the artifact (CIV-1275)', () => {
   beforeAll(() => {
@@ -97,6 +104,8 @@ describe('History aliases generated from the artifact (CIV-1275)', () => {
     const pairs = delta.routes[0].snapshots.map(s => [s.year, s.weekdayHeadwayMin]);
     // The worse direction each period, then today's value.
     expect(pairs).toEqual([[2019, 20], [2023, 14], [2026, 10]]);
+    // #1431: the merged line keeps its trip time, the longer direction each period.
+    expect(delta.routes[0].tripDuration).toEqual({ firstLabel: 'Sep 2019', firstMinutes: 73, lastLabel: 'Sep 2023', lastMinutes: 72 });
     // The shared fixture's own agencies are untouched by the new rule.
     expect(rows.find(r => r.slug === 'alpha')!.routes.map(r => r.routeShortName)).toEqual(expect.arrayContaining(['10', '20', '40']));
   });
