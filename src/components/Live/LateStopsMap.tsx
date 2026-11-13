@@ -39,6 +39,7 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
 }) {
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const keyRef = useRef<HTMLDivElement | null>(null);
   const latest = useRef(spots);
   latest.current = spots;
   const [picked, setPicked] = useState<LateStopSpot | null>(null);
@@ -81,7 +82,9 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
         if (ss.length) {
           const bounds = ss.reduce((b, s) => b.extend(s.lonLat), new maplibregl.LngLatBounds(ss[0].lonLat, ss[0].lonLat));
           m.resize();
-          m.fitBounds(bounds, { padding: 40, maxZoom: 15, duration: 0 });
+          // The stops are framed above the key, so none sits under it.
+          const keyH = keyRef.current?.offsetHeight ?? 0;
+          m.fitBounds(bounds, { padding: { top: 40, left: 40, right: 40, bottom: 40 + keyH }, maxZoom: 15, duration: 0 });
         }
       });
       // The dots are small: a stop answers within 8 px of the pointer.
@@ -126,7 +129,7 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
           <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
         </div>
         {/* The Live map's Late key, at the bottom right clear of the zoom buttons, as on the Live map. Every stop here is measured. */}
-        <div className="pointer-events-none absolute bottom-3 left-3 right-14 z-10 flex justify-end max-sm:right-3"><LiveMapKey measure="late" notMeasured={false} /></div>
+        <div ref={keyRef} className="pointer-events-none absolute bottom-3 left-3 right-14 z-10 flex justify-end max-sm:right-3"><LiveMapKey measure="late" notMeasured={false} /></div>
         {at && picked && <FloatingMapCard at={at}><MapCard title={picked.name} lines={picked.lines} /></FloatingMapCard>}
         {tip && !picked && <MapHoverTip {...tip} />}
       </div>
