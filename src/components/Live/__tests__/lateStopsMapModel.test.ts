@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { lateStopSpots } from '../lateStopsMapModel';
 import { stopDotPaint } from '../../Interval/map/stopStyle';
 
-const row = (key: string, lonLat: [number, number] | null, line = key) => ({ key, lonLat, name: key, line });
+const row = (key: string, lonLat: [number, number] | null, line = key) => ({ key, lonLat, name: key, line, lateShare: 0.2 });
 
 describe('late stops map (CIV-1405)', () => {
   it('draws one stop per spot, its card listing every row at it worst first, and leaves out rows with no position', () => {
@@ -12,5 +12,12 @@ describe('late stops map (CIV-1405)', () => {
   it('draws its stops with the regular map\'s stop dot', () => {
     expect(stopDotPaint(true)['circle-radius']).toEqual(['interpolate', ['linear'], ['zoom'], 12, 1.5, 16, 4.5]);
     expect(stopDotPaint(false)['circle-color'][3]).toBe('rgba(255, 255, 255, 0.3)');
+  });
+});
+
+describe('late stops dots review switch (CIV-1405)', () => {
+  it('defaults to the bigger regular dots', async () => {
+    const { lateDotsOption } = await import('../lateStopsMapModel');
+    expect([lateDotsOption(''), lateDotsOption('?lateDots=2'), lateDotsOption('?lateDots=3')]).toEqual([1, 2, 3]);
   });
 });

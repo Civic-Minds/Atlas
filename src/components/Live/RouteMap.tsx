@@ -4,6 +4,7 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
+import { liveStopDotPaint } from '../Interval/map/stopStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from './routeMapModel';
 import type { HeatPoint } from './delayHeatModel';
 import { frameRoute } from '../Interval/map/routeFraming';
@@ -139,7 +140,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         'circle-opacity': ['case', ['>=', ['get', 'added'], 0.25], 0.85, 0.7],
       } });
       map.addLayer({ id: 'heat-dot', type: 'circle', source: 'heat', filter: ['all', ['==', ['get', 'dot'], 1], ['>=', ['get', 'added'], 0.25]], layout: { 'circle-sort-key': ['get', 'added'] }, paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 5], 'circle-stroke-color': halo, 'circle-stroke-width': 1 } });
-      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
+      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: liveStopDotPaint(light) as unknown as maplibregl.CircleLayerSpecification['paint'] });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
       ready.current = true;
       draw();

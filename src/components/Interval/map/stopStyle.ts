@@ -27,3 +27,16 @@ export function stopDotPaint(lightMode: boolean) {
     'circle-stroke-opacity': 0.6
   } as const;
 }
+
+/**
+ * CIV-1405 option 1: the regular map's stop dot, same colours and outline, drawn bigger so a handful of stops can be
+ * found on a zoomed-out map.
+ */
+export function bigStopDotPaint(lightMode: boolean) {
+  return { ...stopDotPaint(lightMode), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4, 16, 7] } as const;
+}
+
+/** The Live tool's route map stop dot: the stop's own colour (`color`), with a halo in the basemap's colour. */
+export function liveStopDotPaint(lightMode: boolean) {
+  return { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': lightMode ? '#ffffff' : '#111827', 'circle-stroke-width': 1.5 } as const;
+}
