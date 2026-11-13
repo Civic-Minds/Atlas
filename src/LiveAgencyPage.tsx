@@ -141,7 +141,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
  */
 function LateStops({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
-  const spots = lateStopSpots(rows.map(r => ({ key: `${r.route}-${r.directionId}-${r.stopId}`, lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, name: stop(r.name), line: `${r.route} ${nameCase(r.direction, 'liveStop')}: ${pct(r.lateShare)} late` })));
+  const spots = lateStopSpots(rows.map(r => ({ key: `${r.route}-${r.directionId}-${r.stopId}`, lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, name: stop(r.name), line: `${r.route} ${nameCase(r.direction, 'liveStop')}: ${pct(r.lateShare)} late`, lateShare: r.lateShare })));
   return <LateStopsMap spots={spots} routes={{ agency: s.agency }} label={`Map of the ${rows.length} stops most often late`} className="mt-6" />;
 }
 

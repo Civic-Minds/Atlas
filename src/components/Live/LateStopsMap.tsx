@@ -8,16 +8,21 @@ import { BasemapCredit } from '../BasemapCredit';
 import MapZoomButtons from '../MapZoomButtons';
 import { MAP_CONTROLS_SLOT } from '../../mapOverlayLayout';
 import { lateStopDotPaint } from '../Interval/map/stopStyle';
+import { lateShareColor } from './lateShare';
+import LiveMapKey from './LiveMapKey';
 import { contextLinePaint } from '../Interval/map/routeStyle';
 import { LIVE_CONTEXT_OPACITY } from '../Interval/map/mapLayers';
 import { FloatingMapCard, MapCard, MapHoverTip, type MapCardAt } from './MapCard';
 import { type LateStopSpot } from './lateStopsMapModel';
 
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
-const stopsData = (ss: readonly LateStopSpot[]) => ({ type: 'FeatureCollection' as const, features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) });
+/** A colour the map can draw: a CSS variable read for the current theme. */
+const resolve = (c: string) => c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1)).trim() || '#9ca3af' : c;
+const stopsData = (ss: readonly LateStopSpot[]) => ({ type: 'FeatureCollection' as const, features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name, color: resolve(lateShareColor(s.lateShare)) }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) });
 
 /**
- * The stops most often late, on the map (CIV-1405): the regular map's basemap, its stop dots and zoom buttons, and the
+ * The stops most often late, on the map (CIV-1405): the regular map's basemap, its stop dots (coloured by how often the
+ * stop is late, with the Live map's Late key) and zoom buttons, and the
  * Live map's grey route lines for `routes` (an agency, or one of its routes). Hovering a stop names it; clicking it opens
  * the Live map card with its figures. The page keeps scrolling over the map: it zooms with the buttons, a pinch or a
  * double click, never the scroll wheel.
@@ -101,6 +106,7 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
         const light = isLight();
         showBasemapTheme(m, light);
         if (!m.getLayer('late-stops')) return;
+        (m.getSource('late-stops') as maplibregl.GeoJSONSource).setData(stopsData(latest.current));
         for (const [k, v] of Object.entries(lateStopDotPaint(light))) (m.setPaintProperty as (layer: string, name: string, value: unknown) => void)('late-stops', k, v);
       };
       const theme = new MutationObserver(paintTheme);
@@ -119,6 +125,8 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
         <div className={`${MAP_CONTROLS_SLOT} z-10 max-sm:hidden`}>
           <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
         </div>
+        {/* The Live map's Late key, at the bottom right clear of the zoom buttons, as on the Live map. Every stop here is measured. */}
+        <div className="pointer-events-none absolute bottom-3 left-3 right-14 z-10 flex justify-end max-sm:right-3"><LiveMapKey measure="late" notMeasured={false} /></div>
         {at && picked && <FloatingMapCard at={at}><MapCard title={picked.name} lines={picked.lines} /></FloatingMapCard>}
         {tip && !picked && <MapHoverTip {...tip} />}
       </div>

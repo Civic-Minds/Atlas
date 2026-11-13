@@ -23,12 +23,12 @@ import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
-import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
+import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
 import { MapCard } from './components/Live/MapCard';
 import { BasemapCredit } from './components/BasemapCredit';
-import { STEP_LABELS, stepColor, type RouteStripStop, type Step } from './components/Live/routeStripModel';
+import { type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
 import OverviewList from './components/Live/tool/OverviewList';
@@ -42,22 +42,12 @@ import { WeekTable } from './LiveDashboardView';
 import { BANDS, mins, pct } from './components/Live/sections/figures';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
-import MapKey from './components/ui/MapKey';
-import { MAP_BADGE, MAP_BADGE_LABEL, PHONE_TAP_AREA } from './styles';
+import LiveMapKey from './components/Live/LiveMapKey';
+import { MAP_BADGE, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
 
-/** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
-function stepLabels(measure: MapMeasure): [string, string, string] {
-  if (measure === 'bunching') return [...STEP_LABELS.bunching] as [string, string, string];
-  const [a, b] = MAP_STEP_LIMITS[measure];
-  if (measure === 'late') return [`Under ${pct(a)}`, `${pct(a)}–${pct(b)}`, `${pct(b)} or more`];
-  const m = (x: number) => `${x} min`;
-  return [`Under ${m(a)}`, `${a}–${m(b)}`, `${m(b)} or more`];
-}
 
-/** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */
-const DELAY_STARTS_NOTE = 'delay added that lasts 3+ stops';
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
@@ -105,26 +95,6 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
   );
 }
 
-/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts' is its note. */
-const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled', delayStarts: DELAY_STARTS_NOTE };
-
-/** The map's key, as a row of pills at the bottom right of the map, clear of the zoom buttons (the regular map's legend pills). */
-function Key({ measure }: { measure: MapMeasure }) {
-  const labels = stepLabels(measure);
-  return (
-    // On a phone the pills wrap inside the map's width; each label keeps its words on one line (#1151).
-    <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
-      {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} min-h-8 max-w-full py-1`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
-      <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
-        <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
-        <MapKey steps={[
-          ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
-          { color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span> },
-        ]} />
-      </div>
-    </div>
-  );
-}
 
 /** The lines of a stop's card: the trimmed figures the strip's hover shows, then its extra wait where it has one. */
 function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStripStop, measure: MapMeasure, uncertain: readonly UncertainStart[]): CardGroup[] {
@@ -278,7 +248,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   const note = (
     <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2 max-sm:right-0">
       {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
-      <Key measure={measure} />
+      <LiveMapKey measure={measure} />
       {/* The basemap's credit, in the regular map's footer pill. */}
       <div className={`${MAP_BADGE} pointer-events-auto h-8`}><BasemapCredit /></div>
     </div>

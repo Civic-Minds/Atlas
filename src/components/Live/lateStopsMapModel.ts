@@ -4,10 +4,10 @@
  */
 
 /** One row of the late-stops list: where it is, its stop name, and its card line ("504 King westbound: 24% late"). */
-export interface LateStopRow { key: string; lonLat: [number, number] | null; name: string; line: string }
+export interface LateStopRow { key: string; lonLat: [number, number] | null; name: string; line: string; /** The row's late share, for the dot's colour. */ lateShare: number }
 
 /** One stop drawn on the map, with the card lines of every row at it, worst first. */
-export interface LateStopSpot { key: string; lonLat: [number, number]; name: string; lines: string[] }
+export interface LateStopSpot { key: string; lonLat: [number, number]; name: string; lines: string[]; /** The worst late share at the stop (rows come worst first): the dot's colour. */ lateShare: number }
 
 /** How many of the list's stops the map shows (Ryan: "more than 10 too maybe - 15 or 20"). */
 export const LATE_MAP_STOPS = 20;
@@ -30,7 +30,7 @@ export function lateStopSpots(rows: readonly LateStopRow[]): LateStopSpot[] {
     if (!r.lonLat) continue;
     const host = out.find(o => metres(o.lonLat, r.lonLat!) < SAME_SPOT_M);
     if (host) host.lines.push(r.line);
-    else out.push({ key: r.key, lonLat: r.lonLat, name: r.name, lines: [r.line] });
+    else out.push({ key: r.key, lonLat: r.lonLat, name: r.name, lines: [r.line], lateShare: r.lateShare });
   }
   return out;
 }
