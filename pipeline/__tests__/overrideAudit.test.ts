@@ -8,7 +8,9 @@ import {
   reconcileExcludeRouteShortNames,
   upstreamFeedChanged,
 } from '../overrideAudit.js';
-import { shouldReviewNextFeed } from '../feedReview.js';
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { reviewStatusForNewFeed, shouldReviewNextFeed } from '../feedReview.js';
 
 describe('data quality review threshold', () => {
   it('reviews the next feed after two flagged feeds in the last ten', () => {
@@ -27,6 +29,38 @@ describe('data quality review threshold', () => {
     const records = Array.from({ length: 10 }, () => ({ result: 'clean' as const }));
     records.unshift({ result: 'issue' });
     expect(shouldReviewNextFeed(records)).toBe(false);
+  });
+});
+
+describe('hand-set review for one feed file (CIV-828)', () => {
+  const VERSION = 'UTC: 21-Oct-2026 21:10';
+
+  it('puts the named file under review, with no review history', () => {
+    expect(reviewStatusForNewFeed([], VERSION, VERSION)).toBe('review');
+  });
+
+  it('drops the review when a different file arrives', () => {
+    expect(reviewStatusForNewFeed([], VERSION, 'UTC: 20-Nov-2026 18:02')).toBeUndefined();
+    expect(reviewStatusForNewFeed([], VERSION, null)).toBeUndefined();
+  });
+
+  it('changes nothing for an agency without the field: the review history alone decides', () => {
+    const flagged = Array.from({ length: 10 }, (_, i) => ({ result: i === 2 || i === 8 ? 'issue' as const : 'clean' as const }));
+    for (const records of [[], [{ result: 'issue' as const }], flagged]) {
+      for (const version of [VERSION, null, undefined]) {
+        const fromHistory = shouldReviewNextFeed(records) ? 'review' : undefined;
+        expect(reviewStatusForNewFeed(records, undefined, version)).toBe(fromHistory);
+        expect(reviewStatusForNewFeed(records, null, version)).toBe(fromHistory);
+      }
+    }
+  });
+
+  it('is never set alongside a correction note, which would hide the notice', () => {
+    const dir = resolve('config/agencies');
+    const handSet = readdirSync(dir).filter(file => file.endsWith('.json') && file !== 'order.json')
+      .map(file => JSON.parse(readFileSync(resolve(dir, file), 'utf8')) as { slug?: string; reviewFeedVersion?: string; overrideNote?: string })
+      .filter(agency => agency.reviewFeedVersion);
+    expect(handSet.filter(agency => agency.overrideNote).map(agency => agency.slug)).toEqual([]);
   });
 });
 
