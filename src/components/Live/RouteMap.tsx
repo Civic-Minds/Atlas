@@ -4,7 +4,7 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
-import { liveStopDotPaint } from '../Interval/map/stopStyle';
+import { stopDotPaint } from '../Interval/map/stopStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from './routeMapModel';
 import type { HeatPoint } from './delayHeatModel';
 import { frameRoute } from '../Interval/map/routeFraming';
@@ -140,7 +140,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         'circle-opacity': ['case', ['>=', ['get', 'added'], 0.25], 0.85, 0.7],
       } });
       map.addLayer({ id: 'heat-dot', type: 'circle', source: 'heat', filter: ['all', ['==', ['get', 'dot'], 1], ['>=', ['get', 'added'], 0.25]], layout: { 'circle-sort-key': ['get', 'added'] }, paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 5], 'circle-stroke-color': halo, 'circle-stroke-width': 1 } });
-      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: liveStopDotPaint(light) as unknown as maplibregl.CircleLayerSpecification['paint'] });
+      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: stopDotPaint(light) as unknown as maplibregl.CircleLayerSpecification['paint'] });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
       ready.current = true;
       draw();
@@ -175,7 +175,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
-      <div className="pointer-events-auto absolute bottom-6 z-20" style={{ right: controlsRight }}>
+      {/* Phones zoom by pinching, so the + and − buttons show only from sm up, as on the regular map. */}
+      <div className="pointer-events-auto absolute bottom-6 z-20 max-sm:hidden" style={{ right: controlsRight }}>
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
       </div>
       {at && card && <FloatingMapCard at={at} padding={padding}>{card}</FloatingMapCard>}

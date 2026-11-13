@@ -27,6 +27,7 @@ import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapMo
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
 import { MapCard } from './components/Live/MapCard';
+import { BasemapCredit } from './components/BasemapCredit';
 import { STEP_LABELS, stepColor, type RouteStripStop, type Step } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -275,9 +276,11 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
   const note = (
-    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2">
+    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2 max-sm:right-0">
       {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
       <Key measure={measure} />
+      {/* The basemap's credit, in the regular map's footer pill. */}
+      <div className={`${MAP_BADGE} pointer-events-auto h-8`}><BasemapCredit /></div>
     </div>
   );
   const mapEl = (
