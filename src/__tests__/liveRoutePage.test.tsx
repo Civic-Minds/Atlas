@@ -321,4 +321,19 @@ describe('Live route dashboard', () => {
     renderPage(new Error('down'));
     expect(await screen.findByText(/did not answer. Start Live with "npm run live"/)).toBeTruthy();
   });
+
+  it('every route page leads back to the agency page with the Live map\'s "← TTC", held and unknown routes too (CIV-1446)', async () => {
+    const back = () => screen.getByRole('link', { name: '← TTC' }).getAttribute('href');
+    const a = renderPage(ready);
+    await screen.findByRole('region', { name: /Late departures by hour/ });
+    expect(back()).toBe('/apps/live/ttc');
+    a.unmount();
+    const b = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
+    await screen.findByText("The 512 isn't included yet.");
+    expect(back()).toBe('/apps/live/ttc');
+    b.unmount();
+    renderPage({ status: 'unknown_route', reason: 'Live has no route 999 for TTC.' } as LiveDashboardResponse, '/apps/live/ttc/999');
+    await screen.findByText('Live has no route 999 for TTC.');
+    expect(back()).toBe('/apps/live/ttc');
+  });
 });

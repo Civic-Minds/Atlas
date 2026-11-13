@@ -6,7 +6,7 @@ import {
   dateRangeText, freshness, goodDayCounts,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
-import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
+import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
 import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
 import { RouteTitleName } from './components/RouteRowName';
@@ -25,6 +25,7 @@ import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
 import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
+import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
 import { LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
@@ -145,11 +146,13 @@ function AnalysisPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
-  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} />;
+  // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
+  const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
+  if (state.kind === 'loading') return <DocsPageLayout width="wide"><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} above={toAgency} />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} />;
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} above={toAgency} />;
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
@@ -157,6 +160,7 @@ function AnalysisPage() {
   const uncertain = data.uncertainStart ?? [];
   return (
     <DocsPageLayout width="wide">
+        <div className="mb-2">{toAgency}</div>
         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
           <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">

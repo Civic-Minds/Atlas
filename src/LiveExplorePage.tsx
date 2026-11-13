@@ -9,7 +9,7 @@ import {
 import { scheduledEveryText } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
-import { useLiveDashboard, liveToolPath } from './hooks/useLiveDashboard';
+import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
 import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
 import { RouteTitleName } from './components/RouteRowName';
 import { applySeoToDocument } from './lib/seoDom';
@@ -22,6 +22,7 @@ import PageShell from './components/ui/PageShell';
 import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
+import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
@@ -202,12 +203,14 @@ export default function LiveExplorePage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
+  const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
-  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p>);
-  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} maxWidth="max-w-[1600px]" />;
+  if (state.kind === 'loading') return shell(<><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></>);
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} above={toAgency} maxWidth="max-w-[1600px]" />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} maxWidth="max-w-[1600px]" />;
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} above={toAgency} maxWidth="max-w-[1600px]" />;
   }
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   const bandData = v3.bands?.[band] as DashboardBandData;
@@ -242,6 +245,7 @@ export default function LiveExplorePage() {
 
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
+      <div className="mb-2">{toAgency}</div>
       <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
         <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">

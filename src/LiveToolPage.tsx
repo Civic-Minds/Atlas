@@ -43,6 +43,7 @@ import { BANDS, mins, pct } from './components/Live/sections/figures';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LiveMapKey from './components/Live/LiveMapKey';
+import LiveBackLink from './components/Live/LiveBackLink';
 import { MAP_BADGE, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 
@@ -225,7 +226,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   const summary = useMemo(() => summaryWidgets(s), [s]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <button type="button" onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4 text-left text-sm font-bold text-[var(--text-primary)] hover:underline">← {agencyName}</button> };
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <LiveBackLink agencyName={agencyName} onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4" /> };
   const routePanel: PanelWidget[] | null = !route ? null
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
