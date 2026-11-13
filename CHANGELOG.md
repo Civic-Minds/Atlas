@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A branch that is its direction's only row on a route card shows its range**: NJ Transit 27 toward Irvington on Sunday midday read every 54 with no sign that the shared stretch runs every 15; it now reads every 15–54, coloured by the slower number, and route lists show the card's own range
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
 - **Fresno 39 counts a line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) as one pattern**: toward the airport it read every 30 where a bus comes every 15

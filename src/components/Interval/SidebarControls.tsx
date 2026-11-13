@@ -597,8 +597,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
 
-    // The same number the lists and the map use: the slower direction's filter value, not the best branch.
-    for (const [mapKey, rows] of connectionRows) seen.get(mapKey)!.headway = routeListDisplay(rows, period).headway;
+    // The same reading the other route lists use (CIV-1447: the route card's own range), not the best branch.
+    for (const [mapKey, rows] of connectionRows) {
+      const display = routeListDisplay(rows, period);
+      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
+    }
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))

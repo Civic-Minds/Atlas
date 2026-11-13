@@ -2,7 +2,7 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { buildDirectionGroups } from './routeCardDirectionGroups';
 import { buildRouteCardModel } from './routeCardRows';
 import { headwayRangeShown } from './headwayText';
-import { branchDisplayPeriodHeadway } from './routeFacts';
+import { routeCardDirectionOrder } from './routeCardRoute';
 
 /** The lowest and highest numbers the route card shows for a period. */
 export interface RouteCardRange {
@@ -44,7 +44,7 @@ const rangeCache = new WeakMap<ShapeProperties, WeakMap<ShapeProperties, Map<str
 
 function cardRange(features: readonly ShapeProperties[], period: TimePeriod): RouteCardRange | undefined {
   // The card's own order (buildCurrentRoute): its rows, and so its numbers, depend on it.
-  const directions = [...features].sort((a, b) => (branchDisplayPeriodHeadway(a, period) ?? Infinity) - (branchDisplayPeriodHeadway(b, period) ?? Infinity) || (a.directionId ?? 0) - (b.directionId ?? 0));
+  const directions = routeCardDirectionOrder(features, period);
   const route = { routeShortName: directions[0]?.routeShortName ?? null, routeLongName: directions[0]?.routeLongName ?? null, directions };
   const model = buildRouteCardModel({
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
