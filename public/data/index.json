@@ -7293,10 +7293,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261111",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261211",
+      "expiredFeedCheckExpiry": "20261213",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7312,7 +7312,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-11"
+        "scoredAt": "2026-11-13"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7321,7 +7321,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "d9ac495308d6e1ff1037e27f3ec843f93853da7f827820c28d18faf3a14d7b8a"
+      "refusedFeedSha256": "3846f83773dea82dcdf0a99aadb13b1b594ecee7e2dcd139e93d8653d6eb9056"
     },
     {
       "slug": "hocts",
@@ -11289,7 +11289,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-11",
+      "lastRefreshedAt": "2026-11-13",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11308,7 +11308,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261111",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11342,15 +11342,17 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261125",
+          "feedExpiry": "20261127",
           "feedVersion": null,
-          "rawArchiveKey": "20261125-d5384f0c0df337ce"
+          "rawArchiveKey": "20261127-9bf1118bc78add6e"
         }
       ],
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "8a5859505ca2916d",
-      "feedObtainedAt": "20261111",
-      "lastFeedStart": "20260607"
+      "feedObtainedAt": "20261113",
+      "lastFeedStart": "20260607",
+      "lastRawArchiveKey": "20261212-cb1a2283abecc0af",
+      "lastFeedContentKey": "d8c2060fa7403749"
     },
     {
       "slug": "metrolink",
