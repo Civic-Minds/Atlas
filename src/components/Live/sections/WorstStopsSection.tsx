@@ -82,7 +82,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
     </PageTable>
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const mapped = map && top.length ? (() => {
-    const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${pct(s.lateShare)} late`, lateShare: s.lateShare })));
+    const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${pct(s.lateShare)} late` })));
     return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${top.length} stops most often late`} className="mt-6" />;
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map

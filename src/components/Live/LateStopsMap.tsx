@@ -7,20 +7,14 @@ import { showBasemapTheme } from '../../lib/basemap';
 import { BasemapCredit } from '../BasemapCredit';
 import MapZoomButtons from '../MapZoomButtons';
 import { MAP_CONTROLS_SLOT } from '../../mapOverlayLayout';
-import { bigStopDotPaint, liveStopDotPaint, stopDotPaint } from '../Interval/map/stopStyle';
-import { lateShareColor } from './lateShare';
+import { lateStopDotPaint } from '../Interval/map/stopStyle';
 import { contextLinePaint } from '../Interval/map/routeStyle';
 import { LIVE_CONTEXT_OPACITY } from '../Interval/map/mapLayers';
 import { FloatingMapCard, MapCard, MapHoverTip, type MapCardAt } from './MapCard';
-import { lateDotsOption, type LateStopSpot } from './lateStopsMapModel';
-
-/** The dot paint for the review option picked (see lateDotsOption). */
-const dotPaint = (light: boolean) => { const o = lateDotsOption(); return o === 2 ? liveStopDotPaint(light) : o === 3 ? stopDotPaint(light) : bigStopDotPaint(light); };
+import { type LateStopSpot } from './lateStopsMapModel';
 
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
-/** A colour the map can draw: a CSS variable read for the current theme. */
-const resolve = (c: string) => c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1)).trim() || '#9ca3af' : c;
-const stopsData = (ss: readonly LateStopSpot[]) => ({ type: 'FeatureCollection' as const, features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name, color: resolve(lateShareColor(s.lateShare)) }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) });
+const stopsData = (ss: readonly LateStopSpot[]) => ({ type: 'FeatureCollection' as const, features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) });
 
 /**
  * The stops most often late, on the map (CIV-1405): the regular map's basemap, its stop dots and zoom buttons, and the
@@ -78,7 +72,7 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
         m.addLayer({ id: 'context-overview', type: 'line', source: 'atlas-overview-pmtiles', 'source-layer': 'routes', maxzoom: 8, filter, layout: line, paint: contextLinePaint(LIVE_CONTEXT_OPACITY) as unknown as maplibregl.LineLayerSpecification['paint'] });
         m.addLayer({ id: 'context-routes', type: 'line', source: 'atlas-pmtiles', 'source-layer': 'routes', minzoom: 8, filter, layout: line, paint: contextLinePaint(LIVE_CONTEXT_OPACITY) as unknown as maplibregl.LineLayerSpecification['paint'] });
         m.addSource('late-stops', { type: 'geojson', data: stopsData(ss) });
-        m.addLayer({ id: 'late-stops', type: 'circle', source: 'late-stops', paint: dotPaint(isLight()) as unknown as maplibregl.CircleLayerSpecification['paint'] });
+        m.addLayer({ id: 'late-stops', type: 'circle', source: 'late-stops', paint: lateStopDotPaint(isLight()) as unknown as maplibregl.CircleLayerSpecification['paint'] });
         if (ss.length) {
           const bounds = ss.reduce((b, s) => b.extend(s.lonLat), new maplibregl.LngLatBounds(ss[0].lonLat, ss[0].lonLat));
           m.resize();
@@ -107,8 +101,7 @@ export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-8
         const light = isLight();
         showBasemapTheme(m, light);
         if (!m.getLayer('late-stops')) return;
-        (m.getSource('late-stops') as maplibregl.GeoJSONSource).setData(stopsData(latest.current));
-        for (const [k, v] of Object.entries(dotPaint(light))) (m.setPaintProperty as (layer: string, name: string, value: unknown) => void)('late-stops', k, v);
+        for (const [k, v] of Object.entries(lateStopDotPaint(light))) (m.setPaintProperty as (layer: string, name: string, value: unknown) => void)('late-stops', k, v);
       };
       const theme = new MutationObserver(paintTheme);
       theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
