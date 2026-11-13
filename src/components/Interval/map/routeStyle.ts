@@ -10,6 +10,13 @@ import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
 export const ROUTE_LINE_WIDTH_STOPS = [8, 1.5, 11, 2, 14, 2.5, 17, 3.5] as const;
 export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ...ROUTE_LINE_WIDTH_STOPS] as const;
 
+/** The Live map's grey context lines (CIV-326), shared with the Live report maps (CIV-1405). */
+export const contextLinePaint = (opacity: number) => ({
+  'line-color': '#6b7280',
+  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
+  'line-opacity': opacity,
+} as const);
+
 /** Night Service overlay line width by zoom (no route selected). */
 export const NIGHT_SERVICE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], 8, 2, 11, 2.5, 14, 3.2, 17, 4.5] as const;
 

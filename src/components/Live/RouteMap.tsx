@@ -1,5 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { cardTop } from './cardPlacement';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { FloatingMapCard, MapHoverTip, type MapCardAt } from './MapCard';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
@@ -57,10 +57,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   const latest = useRef({ model, measure, selected, frameKey, padding, heat });
   latest.current = { model, measure, selected, frameKey, padding, heat };
   const framed = useRef<string | null>(null);
-  const [at, setAt] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-  // The card's own height, so it is placed wholly inside the map (#1151: on a phone it ran off the bottom).
-  const [cardH, setCardH] = useState(0);
-  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [at, setAt] = useState<MapCardAt | null>(null);
   const anchorRef = useRef(anchor);
   anchorRef.current = anchor;
   const place = () => {
@@ -171,7 +168,6 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
 
   useEffect(draw, [model, measure, selected, frameKey, heat]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => { const h = cardRef.current?.offsetHeight ?? 0; if (h !== cardH) setCardH(h); });
   useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (centerOn && mapRef.current) mapRef.current.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -181,15 +177,8 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       <div className="pointer-events-auto absolute bottom-6 z-20" style={{ right: controlsRight }}>
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
       </div>
-      {at && card && (
-        <div ref={cardRef} className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: cardTop(at.y, cardH, at.h, padding?.top ?? 8, padding?.bottom ?? 8), width: 260 }}>
-          {card}
-        </div>
-      )}
-      {tip && !card && (
-        <div className="pointer-events-none absolute z-20 whitespace-nowrap rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 text-xs font-bold shadow-sm" style={{ left: tip.x + 12, top: tip.y + 12 }}>{tip.text}</div>
-      )}
+      {at && card && <FloatingMapCard at={at} padding={padding}>{card}</FloatingMapCard>}
+      {tip && !card && <MapHoverTip {...tip} />}
     </div>
   );
 }

@@ -1,82 +1,128 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { getMapStyle } from '../../lib/mapStyle';
-import { LATE_SHARE_SWATCH } from './lateShare';
-import { dotLabel, dotWidth, mergeSameSpot, numberedDots, type LateStopDot } from './lateStopsMapModel';
+import '../../lib/maplibreWorker';
+import { getMapStyle, registerProtocol, getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../lib/mapStyle';
+import { showBasemapTheme } from '../../lib/basemap';
+import { BasemapCredit } from '../BasemapCredit';
+import MapZoomButtons from '../MapZoomButtons';
+import { MAP_CONTROLS_SLOT } from '../../mapOverlayLayout';
+import { stopDotPaint } from '../Interval/map/stopStyle';
+import { contextLinePaint } from '../Interval/map/routeStyle';
+import { LIVE_CONTEXT_OPACITY } from '../Interval/map/mapLayers';
+import { FloatingMapCard, MapCard, MapHoverTip, type MapCardAt } from './MapCard';
+import type { LateStopSpot } from './lateStopsMapModel';
+
+const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
 
 /**
- * A small map of the stops most often late (CIV-1405 mock-up): the Atlas basemap with one numbered dot per stop, the
- * number being the stop's rank in the table beside it. A bigger dot is late more often. `lines` draws a route under the
- * dots (the route page). It frames the dots and lines once drawn; it can be dragged, and zooms with a pinch or double
- * click, never with the scroll wheel, so the page keeps scrolling over it.
+ * The stops most often late, on the map (CIV-1405): the regular map's basemap, its stop dots and zoom buttons, and the
+ * Live map's grey route lines for `routes` (an agency, or one of its routes). Hovering a stop names it; clicking it opens
+ * the Live map card with its figures. The page keeps scrolling over the map: it zooms with the buttons, a pinch or a
+ * double click, never the scroll wheel.
  */
-export default function LateStopsMap({ dots, lines = [], label, note, mapClassName = 'h-72', className = '' }: {
-  dots: readonly LateStopDot[];
-  /** Route lines to draw under the dots, each a list of [longitude, latitude]. */
-  lines?: ReadonlyArray<ReadonlyArray<[number, number]>>;
-  /** What the map shows, for screen readers (the table beside it holds the same stops and figures). */
+export default function LateStopsMap({ spots, routes, label, mapClassName = 'h-80 lg:h-[28rem]', className = '' }: {
+  spots: readonly LateStopSpot[];
+  /** The routes drawn under the stops: every route of `agency`, or only `route`. */
+  routes: { agency: string; route?: string };
+  /** What the map shows, for screen readers. */
   label: string;
-  /** A line added to the caption (which dots have no table row). */
-  note?: string;
   /** The map's height (Tailwind classes). */
   mapClassName?: string;
   className?: string;
 }) {
   const box = useRef<HTMLDivElement | null>(null);
-  const latest = useRef({ dots, lines });
-  latest.current = { dots, lines };
-  const key = `${dots.map(d => `${d.key}:${d.size}`).join('|')}#${lines.length}`;
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const latest = useRef(spots);
+  latest.current = spots;
+  const [picked, setPicked] = useState<LateStopSpot | null>(null);
+  const [at, setAt] = useState<MapCardAt | null>(null);
+  const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const pickedRef = useRef(picked);
+  pickedRef.current = picked;
+  const key = `${spots.map(s => s.key).join('|')}#${routes.agency}/${routes.route ?? ''}`;
 
   useEffect(() => {
     if (!box.current) return;
-    const light = document.documentElement.getAttribute('data-theme') !== 'dark';
-    const map = new maplibregl.Map({ container: box.current, style: getMapStyle(light), center: [-79.38, 43.65], zoom: 11, attributionControl: false, scrollZoom: false, dragRotate: false, pitchWithRotate: false });
-    map.touchZoomRotate.disableRotation();
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    const markers: maplibregl.Marker[] = [];
-    map.on('load', () => {
-      const { dots: ds, lines: ls } = latest.current;
-      const dim = getComputedStyle(document.documentElement).getPropertyValue('--text-dim').trim() || '#6b7280';
-      if (ls.length) {
-        map.addSource('late-lines', { type: 'geojson', data: { type: 'FeatureCollection', features: ls.map(l => ({ type: 'Feature' as const, properties: {}, geometry: { type: 'LineString' as const, coordinates: l as [number, number][] } })) } });
-        map.addLayer({ id: 'late-lines', type: 'line', source: 'late-lines', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': dim, 'line-width': 3, 'line-opacity': 0.7 } });
-      }
-      // Every dot sits at its own stop. Where dots crowd, only the best-ranked carry their number (drawn on top); the
-      // rest get theirs as zooming in makes room. Hover always names the stop.
-      const draw = () => {
-        markers.splice(0).forEach(m => m.remove());
-        const spots = mergeSameSpot(ds);
-        const numbered = numberedDots(spots, p => map.project(p));
-        for (const d of [...spots].sort((a, b) => b.rank - a.rank)) {
-          const shown = numbered.has(d.key);
-          const el = document.createElement('div');
-          const label = dotLabel(d);
-          el.textContent = shown ? label : '';
-          el.title = [`${d.rank}. ${d.title}`, ...(d.alsoAt ?? []).map(a => `${a.rank}. ${a.title}`)].join('\n');
-          el.style.cssText = `width:${dotWidth(d)}px;height:${d.size}px;border-radius:9999px;background:${d.color};border:2px solid var(--bg-app);box-shadow:0 0 0 1px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font:800 ${d.size >= 24 ? 12 : 10}px/1 Inter,system-ui,sans-serif;color:#111827;font-variant-numeric:tabular-nums;box-sizing:border-box;`;
-          el.style.zIndex = String(shown ? 2000 - d.rank : 1000 - d.rank);
-          markers.push(new maplibregl.Marker({ element: el }).setLngLat(d.lonLat).addTo(map));
+    let map: maplibregl.Map | null = null;
+    let cancelled = false;
+    const cleanups: Array<() => void> = [];
+    const place = () => {
+      const p = pickedRef.current;
+      if (!map || !p) { setAt(null); return; }
+      const pt = map.project(p.lonLat);
+      setAt({ x: pt.x, y: pt.y, w: map.getContainer().clientWidth, h: map.getContainer().clientHeight });
+    };
+    registerProtocol().catch(() => undefined).then(() => {
+      if (cancelled || !box.current) return;
+      const m = new maplibregl.Map({ container: box.current, style: getMapStyle(isLight()), center: [-79.38, 43.65], zoom: 11, attributionControl: false, scrollZoom: false, dragRotate: false, pitchWithRotate: false });
+      map = m;
+      mapRef.current = m;
+      if (import.meta.env.DEV) (window as unknown as { __lateStopsMap?: maplibregl.Map }).__lateStopsMap = m;
+      m.touchZoomRotate.disableRotation();
+      m.on('load', () => {
+        const ss = latest.current;
+        const filter = (routes.route
+          ? ['all', ['==', ['get', 'agencySlug'], routes.agency], ['==', ['get', 'routeShortName'], routes.route]]
+          : ['==', ['get', 'agencySlug'], routes.agency]) as maplibregl.FilterSpecification;
+        const line = { 'line-cap': 'round', 'line-join': 'round' } as const;
+        m.addSource('atlas-overview-pmtiles', { type: 'vector', url: `pmtiles://${getAtlasOverviewPmtilesUrl()}` });
+        m.addSource('atlas-pmtiles', { type: 'vector', url: `pmtiles://${getAtlasPmtilesUrl()}` });
+        m.addLayer({ id: 'context-overview', type: 'line', source: 'atlas-overview-pmtiles', 'source-layer': 'routes', maxzoom: 8, filter, layout: line, paint: contextLinePaint(LIVE_CONTEXT_OPACITY) as unknown as maplibregl.LineLayerSpecification['paint'] });
+        m.addLayer({ id: 'context-routes', type: 'line', source: 'atlas-pmtiles', 'source-layer': 'routes', minzoom: 8, filter, layout: line, paint: contextLinePaint(LIVE_CONTEXT_OPACITY) as unknown as maplibregl.LineLayerSpecification['paint'] });
+        m.addSource('late-stops', { type: 'geojson', data: { type: 'FeatureCollection', features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) } });
+        m.addLayer({ id: 'late-stops', type: 'circle', source: 'late-stops', paint: stopDotPaint(isLight()) as unknown as maplibregl.CircleLayerSpecification['paint'] });
+        if (ss.length) {
+          const bounds = ss.reduce((b, s) => b.extend(s.lonLat), new maplibregl.LngLatBounds(ss[0].lonLat, ss[0].lonLat));
+          m.resize();
+          m.fitBounds(bounds, { padding: 40, maxZoom: 15, duration: 0 });
         }
+      });
+      // The dots are small: a stop answers within 8 px of the pointer.
+      const hitAt = (p: maplibregl.Point) => m.getLayer('late-stops') ? m.queryRenderedFeatures([[p.x - 8, p.y - 8], [p.x + 8, p.y + 8]], { layers: ['late-stops'] })[0] : undefined;
+      m.on('mousemove', e => {
+        const hit = hitAt(e.point);
+        m.getCanvas().style.cursor = hit ? 'pointer' : '';
+        setTip(hit ? { x: e.point.x, y: e.point.y, text: String(hit.properties?.name ?? '') } : null);
+      });
+      m.on('mouseout', () => setTip(null));
+      m.on('click', e => {
+        const hit = hitAt(e.point);
+        const spot = hit ? latest.current.find(s => s.key === hit.properties?.key) ?? null : null;
+        pickedRef.current = spot;
+        setPicked(spot);
+        place();
+      });
+      m.on('move', place);
+      m.on('resize', place);
+      const paintTheme = () => {
+        if (!m.isStyleLoaded()) return;
+        const light = isLight();
+        showBasemapTheme(m, light);
+        if (!m.getLayer('late-stops')) return;
+        for (const [k, v] of Object.entries(stopDotPaint(light))) (m.setPaintProperty as (layer: string, name: string, value: unknown) => void)('late-stops', k, v);
       };
-      map.on('zoomend', draw);
-      const points = [...ds.map(d => d.lonLat), ...ls.flat()];
-      if (points.length) {
-        const bounds = points.reduce((b, p) => b.extend(p), new maplibregl.LngLatBounds(points[0], points[0]));
-        map.resize();
-        map.fitBounds(bounds, { padding: { top: 28, bottom: 28, left: 56, right: 56 }, maxZoom: 15, duration: 0 });
-      }
-      draw();
+      const theme = new MutationObserver(paintTheme);
+      theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      const ro = new ResizeObserver(() => { if (!m.isMoving()) m.resize(); });
+      ro.observe(box.current);
+      cleanups.push(() => { theme.disconnect(); ro.disconnect(); });
     });
-    return () => { markers.forEach(m => m.remove()); map.remove(); };
-  }, [key]);
+    return () => { cancelled = true; cleanups.forEach(f => f()); map?.remove(); mapRef.current = null; setPicked(null); setAt(null); };
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <figure className={`m-0 ${className}`}>
-      <div ref={box} role="img" aria-label={label} className={`${mapClassName} isolate w-full overflow-hidden rounded-2xl border border-[var(--border-primary)]`} />
+      <div className={`${mapClassName} relative isolate w-full overflow-hidden rounded-2xl border border-[var(--border-primary)]`}>
+        <div ref={box} role="img" aria-label={label} className="h-full w-full" />
+        <div className={`${MAP_CONTROLS_SLOT} z-10 max-sm:hidden`}>
+          <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
+        </div>
+        {at && picked && <FloatingMapCard at={at}><MapCard title={picked.name} lines={picked.lines} /></FloatingMapCard>}
+        {tip && !picked && <MapHoverTip {...tip} />}
+      </div>
       <figcaption className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs leading-5 text-[var(--text-muted)]">
-        <span>Numbers match the table. A bigger dot is late more often. Zoom in to see the number on every dot; one dot can carry two numbers when routes share a stop.{note ? ` ${note}` : ''}</span>
-        <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="inline-block h-2 w-9 rounded-full" style={{ background: LATE_SHARE_SWATCH }} />under 10%, 10–20%, 20% or more</span>
+        <BasemapCredit />
       </figcaption>
     </figure>
   );

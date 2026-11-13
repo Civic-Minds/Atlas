@@ -3,8 +3,9 @@ import { nightServiceTierColorExpression, type ColorVisionMode } from '../../../
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
-import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression } from './routeStyle';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
+import { stopDotPaint } from './stopStyle';
 
 const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
@@ -123,11 +124,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
 // Width matches the regular map's base route class (buildFriendlyRouteWidthExpression): one even weight.
 /** The context lines' opacity with no route picked; a picked route fades the others (useRouteStyling). */
 export const LIVE_CONTEXT_OPACITY = 0.85;
-const LIVE_CONTEXT_PAINT = {
-  'line-color': '#6b7280',
-  'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
-  'line-opacity': LIVE_CONTEXT_OPACITY,
-} as const;
+const LIVE_CONTEXT_PAINT = contextLinePaint(LIVE_CONTEXT_OPACITY);
 export const LIVE_CONTEXT_LAYER_IDS = ['live-context-overview-layer', 'live-context-routes-layer', 'live-context-local-layer'] as const;
 function addLiveContextLayers(map: maplibregl.Map) {
   const paint = LIVE_CONTEXT_PAINT;
@@ -382,35 +379,12 @@ function addDebugHighlightLayer(map: maplibregl.Map, highlightRoutes: string[]) 
 
 /** Stop points from PMTiles. */
 function addStopsLayer(map: maplibregl.Map, lightMode: boolean) {
-  const accent = lightMode ? '#3f3f46' : '#e4e4e7';
-  const textDim = lightMode ? '#9ca3af' : 'rgba(255, 255, 255, 0.3)';
-  const borderPrimary = lightMode ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-  // Stops points layer
   map.addLayer({
     id: 'stops-layer',
     type: 'circle',
     source: 'atlas-pmtiles',
     'source-layer': 'stops',
-    paint: {
-      'circle-radius': [
-        'interpolate', ['linear'], ['zoom'],
-        12, 1.5,
-        16, 4.5
-      ],
-      'circle-color': [
-        'case',
-        ['boolean', ['feature-state', 'selected'], false], accent,
-        textDim
-      ],
-      'circle-stroke-color': [
-        'case',
-        ['boolean', ['feature-state', 'selected'], false], '#ffffff',
-        borderPrimary
-      ],
-      'circle-stroke-width': 1,
-      'circle-opacity': 0.75,
-      'circle-stroke-opacity': 0.6
-    }
+    paint: stopDotPaint(lightMode) as any,
   });
 }
 

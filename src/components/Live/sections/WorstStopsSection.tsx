@@ -14,9 +14,7 @@ import { lateShareColor } from '../lateShare';
 import LegendItem from '../../ui/LegendItem';
 import { LIVE_NO_STOP_TO_RANK } from '../../../content/noticeCopy';
 import LateStopsMap from '../LateStopsMapLazy';
-import { lateStopDots } from '../lateStopsMapModel';
-import { lateMapNote } from '../lateStopsMock';
-import { routeMapModel } from '../routeMapModel';
+import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -49,17 +47,10 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   footerLink?: { text: string; href: string; onClick: () => void };
   /** The 1-in-10 column's set width (Full analysis sets one; Explore does not). */
   p90Width?: number;
-  /**
-   * CIV-1405 mock-up: a map of the first `stops` of the list beside the table, the table listing `limit` of them. Each
-   * stop's rank is the number on its dot and in front of its name; the route's stops draw its line under the dots.
-   */
-  map?: { stops: number; band: DashboardBand };
+  /** CIV-1405: the list shown as a map of the route instead of a table; each stop's card holds its figures. */
+  map?: { agency: string; route: string };
 }): ReactNode {
-  const listLimit = map ? Math.max(map.stops, limit) : limit;
-  const { top: listed, hidden, both, directionLabels } = useMemo(() => worstStopsModel(v3, data, dir, uncertain, listLimit), [v3, data, dir, uncertain, listLimit]);
-  const top = listed.slice(0, limit);
-  const rankKey = (s: { stopId: string; directionId: number }) => `${s.stopId}-${s.directionId}`;
-  const rank = new Map(listed.map((s, i) => [rankKey(s), i + 1]));
+  const { top, hidden, both, directionLabels } = useMemo(() => worstStopsModel(v3, data, dir, uncertain, limit), [v3, data, dir, uncertain, limit]);
   const dirText = (d: number) => directionLabels[String(d)];
   const full = columns === 'full';
   // The share, with the strip's three late colours as a dot (the Full analysis: no bar repeating the number).
@@ -76,9 +67,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
         columns={[
           onPick && canPick
             ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
-            : map
-              ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name} className="flex gap-2"><span className="w-5 shrink-0 whitespace-nowrap text-right font-bold tabular-nums text-[var(--text-muted)]">{rank.get(rankKey(s))}</span><span>{s.name}</span></span> }
-              : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
+            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
@@ -93,18 +82,12 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
     </PageTable>
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const mapped = map && top.length ? (() => {
-    const dots = lateStopDots(listed.slice(0, map.stops), s => ({ key: rankKey(s), lonLat: s.lonLat ?? null, lateShare: s.lateShare, title: `${s.name}${both ? ` (${dirText(s.directionId)})` : ''}: ${pct(s.lateShare)} late` }));
-    // The route's line: the planner map's segments (its regular patterns) for each direction shown.
-    const dirs = [...new Set(data.stops.map(s => s.directionId))].filter(d => dir == null || d === dir);
-    const lines = dirs.flatMap(d => routeMapModel(v3, d, map.band, 'late', uncertain).segments.map(g => g.coordinates));
-    return (
-      <div className="mt-6 grid gap-6">
-        <LateStopsMap dots={dots} lines={lines} label={`Map of the route and the ${dots.length} stops most often late; the table lists the same stops with their figures`} note={lateMapNote(top.length, dots.length)} mapClassName="h-72 lg:h-80" />
-        <div className="min-w-0 [&>*]:mt-0">{table}</div>
-      </div>
-    );
+    const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${pct(s.lateShare)} late` })));
+    return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${top.length} stops most often late`} className="mt-6" />;
   })() : null;
-  const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</p>;
+  const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map
+    ? `The ${top.length} stops where vehicles most often leave ${LATE_THRESHOLD} (stops with 30+ departures). ${LATE_MAP_HINT}`
+    : <>Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</>}</p>;
   const note = notRanked && hidden.length > 0 && (
     <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
       Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).

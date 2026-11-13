@@ -82,10 +82,10 @@ describe('Live route dashboard', () => {
     expect(screen.getByTitle(/^Delay stays about the same from end to end/)).toBeTruthy();
     // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
     for (const t of screen.getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
-    // B2: ranked by late share, one table, with the sample size.
+    // B2: a map of the stops most often late (CIV-1405), no table.
     const b2 = screen.getByRole('region', { name: /Stops most often late/ });
-    expect(within(b2).getAllByRole('row').length).toBeGreaterThan(2);
-    expect(within(b2).queryByRole('list')).toBeNull();
+    expect(within(b2).queryByRole('table')).toBeNull();
+    expect(within(b2).getByText(/Click or tap a stop for its figures\./)).toBeTruthy();
     // B4: forms sentence, every link with its number, linked wording.
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
     // Four compact chips per direction (the thing, then Linked or Not linked with its number); the caveat is said once, in the method.

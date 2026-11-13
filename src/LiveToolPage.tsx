@@ -26,6 +26,7 @@ import { directionStopsById } from './components/Live/DirectionStrip';
 import { DELAY_STARTS_LABEL, MAP_STEP_LIMITS, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
+import { MapCard } from './components/Live/MapCard';
 import { STEP_LABELS, stepColor, type RouteStripStop, type Step } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -144,22 +145,6 @@ function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, 
 function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string, fromStopId: string, uncertain: readonly UncertainStart[]): string[] {
   const p = delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(x => x.stopId === toStopId && x.fromStopId === fromStopId);
   return p ? [`${DELAY_STAYS} ${mins(p.addedMin)}`] : [];
-}
-
-/** The compact card shown on the map at the picked stop or segment. */
-function MapCard({ title, lines = [], groups = [] }: { title: string; lines?: string[]; /** Labelled groups of lines (the stop card). */ groups?: CardGroup[] }) {
-  return (
-    <div className="space-y-0.5 p-3 text-xs">
-      <div className="text-sm font-bold leading-snug">{title}</div>
-      {lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
-      {groups.map((g, i) => (
-        <div key={g.heading ?? i} className="pt-1.5">
-          {g.heading && <div className="font-bold text-[var(--text-muted)]">{g.heading}</div>}
-          {g.lines.map(l => <div key={l} className="text-[var(--text-secondary)]">{l}</div>)}
-        </div>
-      ))}
-    </div>
-  );
 }
 
 const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
