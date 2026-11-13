@@ -258,8 +258,9 @@ export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowRe
 
 /**
  * CIV-995 (b): the stretch reading a main or tail row's value uses, or null to keep the row's own values. Only where the
- * stretch publishes its rows, runs through the period (a cadence), has a regular cadence in it and carries every trip of
- * the row; a limited (span-tier) row keeps reading limited. rowTrips then applies the row's display guards (rowStretchValue).
+ * stretch publishes a cadence for the period (steady, runs through, the map's value), has a regular cadence in it and every one
+ * of the row's trips in the period runs it; a limited (span-tier) row keeps reading limited. rowTrips then applies the row's
+ * display guards (rowStretchValue).
  */
 export function rowStretchReading(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
   if (f.tier === 'span' || period === 'all') return null;
@@ -268,9 +269,8 @@ export function rowStretchReading(f: ShapeProperties, period: TimePeriod): Stret
   // A stretch whose row reads Irregular in the period (one gap, or under three departures, #955) gives no cadence.
   const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchMeta?.tails[f.stretchIndex ?? 0];
   if (!slot || slot.noRegular?.includes(period as PeriodKey)) return null;
-  // The stretch must carry every trip of the row, so its number never stands for a row that also runs elsewhere: a row
-  // with more trips than its stretch (TTC 73 weekday to Royal York: 129 trips on a 54-trip branch) keeps its own.
-  const rowTrips = Object.values(f.departuresByHour ?? {}).reduce((sum, n) => sum + (n ?? 0), 0);
-  return f.departuresByHour && rowTrips <= slot.trips ? r : null;
+  // Every one of the row's own trips in the period runs its stretch (the pipeline's stretchRowPeriods, from trip ids), so the
+  // stretch's number never stands for a row that also runs elsewhere (TTC 73 weekday to Royal York). Data without it: own trips.
+  return f.stretchRowPeriods?.includes(period as PeriodKey) ? r : null;
 }
 

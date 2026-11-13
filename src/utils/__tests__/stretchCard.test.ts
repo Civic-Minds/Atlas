@@ -214,12 +214,13 @@ describe('stretchRow (CIV-995 a): the shared selector for a row\'s period values
 describe('rowStretchReading (CIV-995 b): when a row reads its stretch', () => {
   const rows = { cadence: { midday: 8 }, longestGap: { midday: 12 }, steady: ['midday'], hourly: { 12: 8 } };
   const meta = (noRegular: string[] = []) => ({ main: { stops: 10, refStop: 'm', trips: 90, noRegular, rows }, tails: [] });
-  const own = { departuresByHour: { 12: 30 } };
+  const own = { stretchRowPeriods: ['midday', 'amPeak'] };
   it('reads the stretch where it runs through the period with a regular cadence', () => {
     expect(rowStretchReading(f({ ...own, stretchRole: 'main', stretchMeta: meta() }), 'midday')).toMatchObject({ source: 'stretch', cadence: 8 });
   });
-  it('keeps the row\'s own trips when the row runs more trips than its stretch (TTC 73 to Royal York)', () => {
-    expect(rowStretchReading(f({ departuresByHour: { 12: 129 }, stretchRole: 'main', stretchMeta: meta() }), 'midday')).toBeNull();
+  it('keeps the row\'s own trips where not every one of its trips runs the stretch (TTC 73 to Royal York)', () => {
+    expect(rowStretchReading(f({ stretchRowPeriods: ['amPeak'], stretchRole: 'main', stretchMeta: meta() }), 'midday')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta() }), 'midday')).toBeNull();
   });
   it('keeps the row\'s own values where the stretch has no cadence, reads Irregular, or the row is limited', () => {
     expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta() }), 'amPeak')).toBeNull();
