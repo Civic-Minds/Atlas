@@ -17144,6 +17144,7 @@
         "0",
         "2"
       ],
+      "mergeIdenticalShapeIds": true,
       "cities": [
         "Trenton, New Jersey",
         "Passaic, New Jersey",
