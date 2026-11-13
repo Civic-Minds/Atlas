@@ -175,7 +175,7 @@ jobs:
         run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
 
       # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
-      # (The release manifest is written by the tile build, which the publish job runs with the switch refused.)
+      # (The release manifest is written by the tile build, which only the publish job runs.)
       - name: Record the build settings
         if: always()
         continue-on-error: true
