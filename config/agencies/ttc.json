@@ -22,7 +22,7 @@
   "lastFeedExpiry": "20261221",
   "lastFeedVersion": "S1000544",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2253/latest.zip",
-  "lastRefreshedAt": "2026-11-01",
+  "lastRefreshedAt": "2026-11-13",
   "cities": [
     "Toronto, Ontario",
     "Etobicoke, Ontario",
@@ -34,7 +34,7 @@
     "Vaughan, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
+  "lastRawArchiveKey": "20261219-a2c8d495bf7b06fe",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -42,9 +42,9 @@
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 4,
+      "shapeAnomalies": 0,
       "routeHeadwayMismatches": 4,
-      "featureCount": 1906,
+      "featureCount": 1877,
       "feedExpiry": "20261221",
       "routeCount": 230,
       "problemShapes": 0,
@@ -54,7 +54,7 @@
     },
     "checkedAt": "2026-11-13"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261113",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261221",
@@ -66,6 +66,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "c5d251493ebf8760",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261101"
+  "feedObtainedAt": "20261113",
+  "lastFeedStart": "20261101",
+  "lastFeedContentKey": "393971d31c421e20"
 }

@@ -20,39 +20,47 @@
     "SMI-BC"
   ],
   "reviewFeedVersion": "UTC: 21-Oct-2026 21:10",
-  "lastFeedExpiry": "20260920",
-  "lastFeedVersion": "UTC: 27-May-2026 19:57",
-  "lastRefreshedAt": "2026-08-27",
+  "lastFeedExpiry": "20261125",
+  "lastFeedVersion": "UTC: 21-Oct-2026 21:10",
+  "lastRefreshedAt": "2026-11-13",
   "cities": [
     "Snowmass Village, Colorado"
   ],
   "feedQuality": {
-    "status": "degraded",
-    "score": 65,
-    "reasons": [
-      "The schedule dates in this feed have passed."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 6,
-      "feedExpiry": "20260920"
+      "featureCount": 3,
+      "feedExpiry": "20261125",
+      "routeCount": 1,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
     },
-    "checkedAt": "2026-08-27",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-13"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261113",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270129",
   "timezone": "America/Denver",
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "GTFS validation failed (4 error(s))",
-  "feedRefreshErrorAt": "20261019",
-  "feedRefreshRetryCount": 5,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip",
-  "refusedFeedSha256": "ee761c854d335a47240bdf8249ada3146987b9106bda2020cbfa50949c638fc8"
+  "feedReviewStatus": "review",
+  "lastRawArchiveKey": "20270129-931f468e7ee25dc3",
+  "lastFeedContentKey": "3fd9eb8bd7cf3bfb",
+  "lastPeekedExpiry": "20270129",
+  "lastFeedStart": "20261019",
+  "lastServiceWeek": "3451d72eb8fa7a31",
+  "feedObtainedAt": "20261113"
 }
