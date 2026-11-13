@@ -1721,6 +1721,7 @@
         "Toronto"
       ],
       "region": "Ontario",
+      "mergeIdenticalShapeIds": true,
       "center": [
         43.7187,
         -79.4077
@@ -5689,6 +5690,7 @@
       "name": "CTtransit",
       "officialName": "CTtransit",
       "region": "Connecticut",
+      "mergeIdenticalShapeIds": true,
       "center": [
         41.765,
         -72.682
@@ -7754,6 +7756,7 @@
         -122.6593
       ],
       "region": "Oregon",
+      "mergeIdenticalShapeIds": true,
       "bbox": [
         45.29,
         -123.12,
@@ -15376,6 +15379,7 @@
       "lastFeedExpiry": "20261219",
       "lastFeedVersion": "20261101",
       "region": "Illinois",
+      "mergeIdenticalShapeIds": true,
       "lastRefreshedAt": "2026-11-06",
       "cities": [
         "Waukegan, Illinois",
