@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListHeadwayText, routeListLowEnd } from '../effectiveHeadway';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 import ttc102json from './fixtures/ttc-102-weekday.json';
+import brampton1json from './fixtures/brampton-1-weekday.json';
+import { buildDirectionGroups } from '../routeCardDirectionGroups';
+import { buildRouteCardModel, reportRowValueText } from '../routeCardRows';
 
 // TTC 102 Markham Rd, weekday (properties only).
 const ttc102 = (ttc102json as unknown as GeoJSON.FeatureCollection).features.map(f => f.properties as unknown as ShapeProperties);
@@ -25,5 +28,20 @@ describe('route list range from the card', () => {
     const limited = ttc102.map(d => ({ ...d, tier: 'span' }) as ShapeProperties);
     expect(routeListDisplay(limited, 'midday')).toMatchObject({ headway: null, noRegular: true });
     expect(routeListDisplay(limited, 'midday').sharedHeadway).toBeUndefined();
+  });
+});
+
+// Brampton 1 Queen, weekday (public release, per-stop fields left out).
+const brampton1 = (brampton1json as unknown as GeoJSON.FeatureCollection).features.map(f => f.properties as unknown as ShapeProperties);
+
+// CIV-1447: a card row reading a range ("every 13–23") starts the list's range too.
+describe('route list range from a card row\'s own range', () => {
+  it('Brampton 1 weekday AM peak: the card reads every 13–23 and 13–25, so the list starts at 13, not 23', () => {
+    const route = { routeShortName: '1', routeLongName: 'Queen', directions: brampton1 };
+    const card = buildRouteCardModel({ ...route, directionGroups: buildDirectionGroups(route, 'amPeak'), agencyFeatures: undefined, period: 'amPeak', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false });
+    expect(card.groups.flatMap(g => g.rows.map(r => reportRowValueText(r))).sort()).toEqual(['every 13–23 min', 'every 13–25 min']);
+    const list = routeListDisplay(brampton1, 'amPeak');
+    expect(list.sharedHeadway).toBe(13);
+    expect(routeListHeadwayText(list.headway!, list.sharedHeadway)).toBe(`every 13–${list.headway} min`);
   });
 });

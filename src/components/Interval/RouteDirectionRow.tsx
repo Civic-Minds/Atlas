@@ -147,8 +147,9 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
-          {/* The trunk-to-branch range ("every 6–12 min") is the shared badge, coloured by the trunk (CIV-1000). */}
-          {!limited && rangeText && <HeadwayBadge headway={trunkHeadway!} label={rangeText} />}
+          {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
+              the main stretch's: it must never look better than riders get (Ryan, CIV-1447). The lists colour theirs the same. */}
+          {!limited && rangeText && <HeadwayBadge headway={headway!} label={rangeText} />}
         </span>}
       </div>
       {subLabel && (subLabelTrailing ? (
