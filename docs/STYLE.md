@@ -44,6 +44,7 @@ Live
 Agencies
 
 - Agencies with an expired feed stay visible with the existing expired-feed notice. Switch to a newer feed if one exists; never hide the agency without Ryan's explicit yes.
+- Every hidden-agency note uses one pattern: "This agency’s [what] can’t be shown because its data [why]." Approved word for word: "This agency’s trips can’t be shown because its data doesn’t say which days they run." and "This agency’s route lines can’t be shown because its data doesn’t include them." A new [what] or [why] still needs Ryan's OK on its wording. CIV-1060.
 
 ## How Atlas talks
 
@@ -92,6 +93,11 @@ Less text
 
 - Info panels are data first: labelled figures, short rows, a small chart, at most one caption line. No paragraphs. On the main map's route card, evidence such as sample sizes and methods goes on a details screen, not the card. Live pages follow the Live rule instead: the math explanations stay visible.
 - No text that explains what the UI already shows. For example, no "Paler bars are service outside..." line under a chart.
+
+Research pages
+
+- Every research page ends with the "Method" section (`ResearchMethod`, `src/components/research/ResearchMethod.tsx`), in its fixed parts and order. CIV-1167.
+- New data is an update, not a correction: it only changes the page's "Date updated". A "Corrections:" part is added to the method section only when we fix a mistake we published, saying what was wrong and when it was fixed (Ryan, 2026-11-13, asked "Is it a correction or just updated data though"). CIV-1171.
 
 Card notices
 
