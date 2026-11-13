@@ -148,8 +148,9 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
-              the main stretch's: it must never look better than riders get (Ryan, CIV-1447). The lists colour theirs the same. */}
-          {!limited && rangeText && <HeadwayBadge headway={headway!} label={rangeText} />}
+              the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour
+              number (the filter's, as a one-number row uses), the slower of the two, so a range never looks better than that row would. */}
+          {!limited && rangeText && <HeadwayBadge headway={headway!} colorHeadway={Math.max(headway!, colorHeadway ?? headway!)} label={rangeText} />}
         </span>}
       </div>
       {subLabel && (subLabelTrailing ? (

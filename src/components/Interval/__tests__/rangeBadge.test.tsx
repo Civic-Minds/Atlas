@@ -20,4 +20,9 @@ describe('route row range badge', () => {
     const dot = container.querySelector('span.rounded-full') as HTMLElement;
     expect(dot.style.background).toBe(render(<span style={{ background: headwayToTierColor(54) }} />).container.querySelector('span')!.style.background);
   });
+  it('takes the row\'s own colour number where it is slower, as a one-number row would (LA Metro 53: every 10–20 beside every 20)', () => {
+    const { container } = render(<RouteDirectionRow label="to Downtown" headway={20} trunkHeadway={10} colorHeadway={22} />);
+    const dot = container.querySelector('span.rounded-full') as HTMLElement;
+    expect(dot.style.background).toBe(render(<span style={{ background: headwayToTierColor(22) }} />).container.querySelector('span')!.style.background);
+  });
 });
