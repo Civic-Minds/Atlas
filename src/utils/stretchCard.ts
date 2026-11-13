@@ -213,3 +213,45 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
   const key = period as PeriodKey;
   return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }
+
+/** CIV-995 (a): the values one card row reads for a period, from its stretch or, on older data, from its own feature. */
+export interface StretchRowReading {
+  /** 'stretch': over every trip at the row's stretch reference stop; 'feature': the feature's own headsign values (old data). */
+  source: 'stretch' | 'feature';
+  /** The median headway, only where the row runs through the period ('feature': headwayByPeriod). */
+  cadence: number | null;
+  /** The longest gap inside the period ('stretch': no clipped window edges; 'feature': maxGapByPeriod, edges included). */
+  longestGap: number | null;
+  /** Whether the settled steadiness test calls the period steady (null when unknown). */
+  steady: boolean | null;
+  /** Sparkline hour headways. */
+  hourly: Partial<Record<number, number | null>> | undefined;
+}
+
+/** The row's stable slot ID: "main:0" or "tail:<index>"; null for a variant or a feature without a stretch role. */
+export function stretchSlotKey(f: ShapeProperties): string | null {
+  return f.stretchRole === 'main' || f.stretchRole === 'tail' ? `${f.stretchRole}:${f.stretchIndex ?? 0}` : null;
+}
+
+/**
+ * CIV-995 (a): the shared selector for a row's period values. It reads the stretch's own values (stretchMeta rows) for the
+ * row's slot, and falls back to the feature's own values when the data has none (before the CIV-995 rebuild, or a
+ * variant). Nothing on the card reads it yet; step (b) switches the rows, hover and notices over to it.
+ */
+export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
+  if (period === 'all') return null;
+  const key = period as PeriodKey;
+  const meta = f.stretchMeta;
+  const slot = f.stretchRole === 'main' ? meta?.main : f.stretchRole === 'tail' ? meta?.tails[f.stretchIndex ?? 0] : undefined;
+  const rows = slot?.rows;
+  if (rows) {
+    return { source: 'stretch', cadence: rows.cadence[key] ?? null, longestGap: rows.longestGap[key] ?? null, steady: rows.steady.includes(key), hourly: rows.hourly };
+  }
+  return {
+    source: 'feature',
+    cadence: f.headwayByPeriod?.[key] ?? null,
+    longestGap: f.maxGapByPeriod?.[key] ?? null,
+    steady: f.headwayByPeriodSustained?.[key] ?? null,
+    hourly: f.headwayByHour,
+  };
+}

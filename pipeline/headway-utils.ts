@@ -714,6 +714,22 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
   return result;
 }
 
+/**
+ * CIV-995: the longest gap between two departures inside each period, without the clipped run from the
+ * window's start to its first departure or from its last departure to the window's end (CIV-990). Null
+ * with under two departures in the period.
+ */
+export function computePeriodInnerMaxGaps(departureTimes: readonly number[]): HeadwayByPeriodMaxGap {
+  const result: HeadwayByPeriodMaxGap = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+    let longest: number | null = null;
+    for (let i = 1; i < t.length; i++) longest = Math.max(longest ?? 0, t[i] - t[i - 1]);
+    result[key] = longest;
+  }
+  return result;
+}
+
 /** Return the largest gap that starts during each 60-minute sparkline hour. */
 export function computeHourMaxGaps(departureTimes: number[], hours: readonly number[]): HeadwayByHourMaxGap {
   const times = [...new Set(departureTimes)].sort((a, b) => a - b);

@@ -14,12 +14,15 @@
  */
 import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
+  adaptiveMedianHeadwayInWindow,
   computeHourDepartureCounts,
+  computePeriodInnerMaxGaps,
   computePeriodCoverageHeadways,
   computePeriodMaxGaps,
   computePeriodHeadways,
@@ -704,7 +707,36 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * section needs the usual three departures for a value, then the same filter and limited-service
  * handling; no thresholds of its own).
  */
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number> } {
+/**
+ * CIV-995 step (a): a stretch's own per-period values for its card row, read over every trip at its reference
+ * stop under the settled rules, so a row stops reading one headsign's trips. Published on the route file; no card
+ * reads them yet (step b). Empty periods are left out to keep the file small.
+ * - cadence: the median headway, only where the stretch runs through the period (runsThroughPeriod).
+ * - longestGap: the longest gap between two departures inside the period, no clipped window edges (CIV-990).
+ * - steady: the periods the settled steadiness test calls steady.
+ * - hourly: the sparkline hour headways, as a feature's headwayByHour reads them.
+ */
+export function stretchRowValues(s: Stretch): StretchRowValues {
+  const own = stretchPeriods(s);
+  const inner = computePeriodInnerMaxGaps(s.times);
+  const cadence: StretchRowValues['cadence'] = {};
+  const longestGap: StretchRowValues['longestGap'] = {};
+  const steady: PeriodKey[] = [];
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    const p = own[key];
+    if (p.headway != null && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = p.headway;
+    if (inner[key] != null) longestGap[key] = inner[key]!;
+    if (p.sustained === true) steady.push(key);
+  }
+  const hourly: StretchRowValues['hourly'] = {};
+  for (const h of SPARKLINE_HOURS) {
+    const v = adaptiveMedianHeadwayInWindow([...s.times], h * 60, 3);
+    if (v != null) hourly[h] = v;
+  }
+  return { cadence, longestGap, steady, hourly };
+}
+
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number>; rows: StretchRowValues } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
@@ -735,6 +767,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
     // end-of-line counts (Bustang South's last evening bus passes mid-route about 8:45 PM but reaches Colorado Springs
     // at 10:20, so the card said "runs only from 7–11 PM").
     departuresByHour: computeHourDepartureCounts([...s.times], SPARKLINE_HOURS),
+    rows: stretchRowValues(s),
   };
 }
 
