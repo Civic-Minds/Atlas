@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A period that starts slowly says when steady service starts**: TTC Line 5's AM peak read every 20 from two early gaps, though trains come every few minutes from 7:27; its card now names that time and the longest wait after it
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
 - **Fresno 39 counts a line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) as one pattern**: toward the airport it read every 30 where a bus comes every 15

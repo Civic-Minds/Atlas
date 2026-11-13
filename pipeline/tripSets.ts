@@ -1178,11 +1178,11 @@ function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, v
 }
 
 /**
- * CIV-1411 (Ryan, 2026-11-13), under evaluation: off unless ATLAS_SLOW_START_FROM=1. Card wording
- * only; the filter value and the map are unchanged.
+ * CIV-1411 (Ryan, 2026-11-13): on by default; ATLAS_SLOW_START_FROM=0 turns it off for comparisons.
+ * Card wording only; the filter value and the map are unchanged.
  */
 export function slowStartFromEnabled(): boolean {
-  return typeof process !== 'undefined' && process.env?.ATLAS_SLOW_START_FROM === '1';
+  return !(typeof process !== 'undefined' && process.env?.ATLAS_SLOW_START_FROM === '0');
 }
 
 /** A slow start's steady run must cover at least this many departures (#571: 4 after an allowance). */
@@ -1199,14 +1199,16 @@ export const SLOW_START_STEADY_RATIO = 1.5;
  * CIV-1411 (Ryan, 2026-11-13: "dont we have a 'x mins from x time' fix for this"): the #1277 / #934
  * "every N from <time>" reading, extended from a period with no service before that time to one
  * that starts slowly. TTC Line 5 westbound AM at Laird leaves 6:06, 6:26, 6:46, every 8.5 to 7:27,
- * then every 3.6 to 9:00: the period reads its longest wait (20), and the card can say "every 4
- * from 7:27 AM" instead of a bare 20. A period starts slowly when all of these hold:
+ * then every 3.6 to 9:00: the period reads its longest wait (20), and the card can say "every N
+ * from 7:27 AM" instead of a bare 20, N being the longest wait from 7:27 to 9:00. A period starts slowly when all of these hold:
  * - the period's value (its longest wait) is set before the time T: by the wait from the period's
  *   start to its first departure or by a gap between departures before T;
  * - from T to the period's end, SLOW_START_MIN_DEPARTURES departures or more, and no gap (the
  *   wait after the last departure to the period's end included) over SLOW_START_STEADY_RATIO (1.5)
  *   times their own typical gap: steady service to the end, no slowdown and no early end;
- * - the value is over UNEVEN_GAP_RATIO times that typical gap (a real slow start, not noise);
+ * - the value is over UNEVEN_GAP_RATIO times that typical gap (a real slow start, not noise), and the
+ *   service before T is slow too: its middle wait (the wait to the first departure included) is over
+ *   SLOW_START_STEADY_RATIO times that gap. A single hole in steady service keeps the one-gap reading;
  * - T is at or before the period's midpoint: the steady run covers at least half of it (D8's
  *   midpoint, as periodPartialEdge). A start that stays slow longer keeps its plain longest wait
  *   (Hamilton 51 AM: every 20 until 7:54).
@@ -1220,10 +1222,16 @@ export function slowStartEdge(t: readonly number[], start: number, end: number, 
     const every = medianHeadwayInWindow([...rest], rest[0], end, HEADLINE_MIN_DEPARTURES, true);
     if (every == null || every <= 0) continue;
     const gaps = rest.slice(1).map((x, i) => x - rest[i]);
-    if (Math.max(...gaps, end - rest[rest.length - 1]) > SLOW_START_STEADY_RATIO * every) continue;
+    const longest = Math.max(...gaps, end - rest[rest.length - 1]);
+    if (longest > SLOW_START_STEADY_RATIO * every) continue;
     if (value <= UNEVEN_GAP_RATIO * every) return null;
     const before = [t[0] - start, ...t.slice(1, k + 1).map((x, i) => x - t[i])];
-    return Math.ceil(Math.max(...before)) === value ? { from: t[k], every } : null;
+    // A hole in service that already ran at that pace is not a slow start; it keeps the one-gap reading.
+    const sorted = [...before].sort((a, b) => a - b);
+    if (sorted[Math.floor(sorted.length / 2)] <= SLOW_START_STEADY_RATIO * every) return null;
+    // Ryan (2026-11-13): the card names the longest wait from T on, rounded up like the period's own
+    // value, not the typical gap, so it never reads better than the service runs.
+    return Math.ceil(Math.max(...before)) === value ? { from: t[k], every: Math.ceil(longest) } : null;
   }
   return null;
 }

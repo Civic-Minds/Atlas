@@ -58,11 +58,6 @@ on:
         description: 'Dry run only. Space-separated agency slugs (e.g. "ttc translink") whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as an artifact.'
         required: false
         type: string
-      slow_start_from:
-        description: 'Dry run only (CIV-1411, under evaluation). true processes with ATLAS_SLOW_START_FROM=1: a period that starts slowly says "every N from <time>" on the card (card wording only). Compare the period-figures.json of a run with it on and a run with it off (scripts/diff-period-figures.ts).'
-        required: false
-        default: false
-        type: boolean
       resume_run_id:
         description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded, and its staged agency files under atlas/runs/<id>/ are used). Required for every start_at after reprocess.'
         required: false
@@ -171,8 +166,6 @@ jobs:
           MUNI_511_API_KEY: ${{ secrets.MUNI_511_API_KEY }}
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
-          # CIV-1411: a rule under evaluation, dry run only. The publish job refuses the input and never sets it.
-          ATLAS_SLOW_START_FROM: ${{ inputs.slow_start_from && '1' || '' }}
 
       # Every route's and direction's period figures, small enough to upload for every agency, so
       # two dry runs (an old rule and a new one) compare with scripts/diff-period-figures.ts.
@@ -186,11 +179,9 @@ jobs:
       - name: Record the build settings
         if: always()
         continue-on-error: true
-        env:
-          SLOW_START_INPUT: ${{ inputs.slow_start_from }}
         run: |
           mkdir -p tmp/derived-reprocess
-          printf '{"commit":"%s","slowStartFrom":%s}\n' "$(git rev-parse HEAD)" "$([ "$SLOW_START_INPUT" = "true" ] && echo true || echo false)" > tmp/derived-reprocess/build-settings.json
+          printf '{"commit":"%s"}\n' "$(git rev-parse HEAD)" > tmp/derived-reprocess/build-settings.json
 
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
@@ -346,15 +337,7 @@ jobs:
       RUN_PREFIX: atlas/runs/${{ inputs.resume_run_id || github.run_id }}
     steps:
       - name: Check the inputs
-        env:
-          SLOW_START_INPUT: ${{ inputs.slow_start_from }}
         run: |
-          # CIV-1411: the slow-start rule is under evaluation. A release never carries it.
-          if [ "$SLOW_START_INPUT" = "true" ]; then
-            echo "slow_start_from is a dry-run comparison switch (CIV-1411, not approved for the public map)."
-            echo "Publish mode refuses it. Run again with slow_start_from=false, or use mode=dry-run to compare."
-            exit 1
-          fi
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
           [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
