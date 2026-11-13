@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { computeHourHeadways, computePeriodInnerMaxGaps, innerMaxGapInWindow } from '../headway-utils';
-import { featureStretchMeta, runsThroughPeriod, stretchRowValues, type Stretch } from '../tripSets';
+import { featureStretchMeta, runsThroughPeriod, stretchPeriods, stretchRowValues, type Stretch } from '../tripSets';
 
 // CIV-995 (a): each stretch publishes its own row values, read over every trip at its reference stop.
 const stretch = (times: number[]): Stretch => ({ kind: 'main', stops: ['x'], refStop: 'x', lengthKm: 0, times, nightTimes: [], tripCount: times.length });
@@ -24,6 +24,15 @@ describe('stretch row values (CIV-995 a)', () => {
     const r = stretchRowValues(stretch(every(9 * 60, 11 * 60, 10)));
     expect(r.cadence.midday).toBeUndefined();
     expect(r.longestGap.midday).toBe(10);
+  });
+
+  it('an uneven period publishes its settled reading, the longest wait, not the typical gap (TTC 52 Saturday AM)', () => {
+    // Midday: every 5 from 9:00 to 11:00, then every 15 to 15:00 (#1142's uneven shape).
+    const s = stretch([...every(9 * 60, 11 * 60, 5), ...every(11 * 60 + 15, 15 * 60, 15)]);
+    const p = stretchPeriods(s).midday;
+    expect(p.uneven).toBe(true);
+    expect(stretchRowValues(s).cadence.midday).toBe(p.value);
+    expect(p.value).toBeGreaterThan(p.headway!);
   });
 
   it('longestGap leaves out the clipped window edges (CIV-990)', () => {

@@ -14,7 +14,7 @@ export type HeadwayByHour = Partial<Record<number, number | null>>;
 /** Published route-feature properties shared by the pipeline and clients. */
 /** CIV-995 (a): a stretch's own per-period row values, over every trip at its reference stop (pipeline/tripSets.ts stretchRowValues). */
 export interface StretchRowValues {
-  /** The median headway, only where the stretch runs through the period. */
+  /** The stretch's settled reading (median where steady and even, else its longest wait), only where it runs through the period. */
   cadence: Partial<Record<PeriodKey, number>>;
   /** The longest gap between two departures inside the period, without clipped window edges. */
   longestGap: Partial<Record<PeriodKey, number>>;

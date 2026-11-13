@@ -163,7 +163,7 @@ describe('rowTrips reads the stretch\'s own values where it publishes them (CIV-
   const rows = { cadence: { midday: 5, amPeak: 10 }, longestGap: { midday: 9, amPeak: 14 }, steady: ['midday'], hourly: { 12: 5, 13: 6 } };
   // TTC 927 shape: one destination's own trips every 10, the shared stretch every 5.
   const main = row({ stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 10, amPeak: 12 }, maxGapByPeriod: { midday: 30, amPeak: 20 }, headwayByPeriodSustained: { midday: true, amPeak: false },
-    headwayByHour: { 12: 10 }, stretchMeta: { main: { stops: 8, refStop: 's', trips: 120, rows }, tails: [] } } as Partial<ShapeProperties>);
+    headwayByHour: { 12: 10 }, departuresByHour: { 12: 30 }, stretchMeta: { main: { stops: 8, refStop: 's', trips: 120, rows }, tails: [] } } as Partial<ShapeProperties>);
 
   it('value, longest gap and steadiness come from every trip on the stretch', () => {
     expect(rowTrips(main, 'midday')).toMatchObject({ value: 5, longestGap: 9 });
@@ -174,6 +174,18 @@ describe('rowTrips reads the stretch\'s own values where it publishes them (CIV-
   it('the hovered hour reads the stretch\'s hour', () => {
     const v = routeCardRowValue(main, { period: 'midday', hoveredHour: 13, stretchMode: true, noRegularService: false, maxHeadway: Infinity });
     expect(v.displayH).toBe(6);
+  });
+  it('a row with more trips than its stretch keeps its own (TTC 73 to Royal York)', () => {
+    expect(rowTrips(row({ ...main, departuresByHour: { 12: 129 } } as Partial<ShapeProperties>), 'midday').value).toBe(10);
+  });
+  it('the row\'s display guards apply to the stretch value: an infrequent row with a gap over 1.5x its cadence keeps its own (MBTA SLW)', () => {
+    const slw = row({ ...main, tier: 'infrequent', stretchMeta: { main: { stops: 8, refStop: 's', trips: 120, rows: { ...rows, cadence: { midday: 100 }, longestGap: { midday: 162 } } }, tails: [] } } as Partial<ShapeProperties>);
+    expect(rowTrips(slw, 'midday').value).not.toBe(100);
+    const v = routeCardRowValue(slw, { period: 'midday', hoveredHour: 12, stretchMode: true, noRegularService: false, maxHeadway: Infinity });
+    expect(v.displayH).toBe(10);
+  });
+  it('lists and the stop card keep the row\'s own trips (stretchValues false)', () => {
+    expect(routeCardRowValue(main, { period: 'midday', hoveredHour: null, stretchMode: true, noRegularService: false, maxHeadway: Infinity, stretchValues: false }).displayH).toBe(10);
   });
   it('older data without the rows keeps the row\'s own values', () => {
     const old = row({ ...main, stretchMeta: { main: { stops: 8, refStop: 's', trips: 120 }, tails: [] } } as Partial<ShapeProperties>);

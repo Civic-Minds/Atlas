@@ -712,7 +712,8 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * CIV-995 step (a): a stretch's own per-period values for its card row, read over every trip at its reference
  * stop under the settled rules, so a row stops reading one headsign's trips. Published on the route file; no card
  * reads them yet (step b). Empty periods are left out to keep the file small.
- * - cadence: the median headway, only where the stretch runs through the period (runsThroughPeriod).
+ * - cadence: the stretch's settled reading (median where steady and even, else its longest wait), only where it runs
+ *   through the period (runsThroughPeriod).
  * - longestGap: the longest gap between two departures inside the period, no clipped window edges (CIV-990).
  * - steady: the periods the settled steadiness test calls steady.
  * - hourly: the sparkline hour headways, as a feature's headwayByHour reads them.
@@ -725,7 +726,9 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
   const steady: PeriodKey[] = [];
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const p = own[key];
-    if (p.headway != null && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = p.headway;
+    // The stretch's own settled reading: its median where steady and even, its longest wait where uneven (#1142) or not
+    // steady, so a row never reads a typical gap the map and the Shared stretch row don't (TTC 52 Saturday AM: 6, not 13).
+    if (p.value != null && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = p.value;
     if (inner[key] != null) longestGap[key] = inner[key]!;
     if (p.sustained === true) steady.push(key);
   }

@@ -218,7 +218,7 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
 export interface StretchRowReading {
   /** 'stretch': over every trip at the row's stretch reference stop; 'feature': the feature's own headsign values (old data). */
   source: 'stretch' | 'feature';
-  /** The median headway, only where the row runs through the period ('feature': headwayByPeriod). */
+  /** The row's settled reading, only where it runs through the period ('feature': headwayByPeriod). */
   cadence: number | null;
   /** The longest gap inside the period ('stretch': no clipped window edges; 'feature': maxGapByPeriod, edges included). */
   longestGap: number | null;
@@ -258,8 +258,8 @@ export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowRe
 
 /**
  * CIV-995 (b): the stretch reading a main or tail row's value uses, or null to keep the row's own values. Only where the
- * stretch publishes its rows, runs through the period (a cadence) and has a regular cadence in it; a limited (span-tier)
- * row keeps reading limited.
+ * stretch publishes its rows, runs through the period (a cadence), has a regular cadence in it and carries every trip of
+ * the row; a limited (span-tier) row keeps reading limited. rowTrips then applies the row's display guards (rowStretchValue).
  */
 export function rowStretchReading(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
   if (f.tier === 'span' || period === 'all') return null;
@@ -267,11 +267,10 @@ export function rowStretchReading(f: ShapeProperties, period: TimePeriod): Stret
   if (r?.source !== 'stretch' || r.cadence == null) return null;
   // A stretch whose row reads Irregular in the period (one gap, or under three departures, #955) gives no cadence.
   const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchMeta?.tails[f.stretchIndex ?? 0];
-  return slot?.noRegular?.includes(period as PeriodKey) ? null : r;
+  if (!slot || slot.noRegular?.includes(period as PeriodKey)) return null;
+  // The stretch must carry every trip of the row, so its number never stands for a row that also runs elsewhere: a row
+  // with more trips than its stretch (TTC 73 weekday to Royal York: 129 trips on a 54-trip branch) keeps its own.
+  const rowTrips = Object.values(f.departuresByHour ?? {}).reduce((sum, n) => sum + (n ?? 0), 0);
+  return f.departuresByHour && rowTrips <= slot.trips ? r : null;
 }
 
-/** CIV-995 (b): a main or tail row's sparkline hour headways from its stretch, or undefined on data without them. */
-export function rowStretchHourly(f: ShapeProperties): Partial<Record<number, number | null>> | undefined {
-  const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchRole === 'tail' ? f.stretchMeta?.tails[f.stretchIndex ?? 0] : undefined;
-  return f.tier === 'span' ? undefined : slot?.rows?.hourly;
-}
