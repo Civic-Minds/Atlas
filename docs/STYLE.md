@@ -31,7 +31,7 @@ Colour and shape
 
 - No dark fills. Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`). No solid near-black pills with white text.
 - Nothing has a shadow. Keep the flat look.
-- No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
+- Sentence case for headings and labels ("Near you"). No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written, and an agency's short name is shown as the agency writes it ("MiWay", not "MIWAY"). CIV-1160, CIV-1448.
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
 - Map overlays (the header row, footer pills, counts, map controls, notice and status pills, the analytics prompt) take their position from the "Map overlay slots" in `src/styles.ts`, never a hand-set `bottom-*`/`right-*`, and each carries `data-map-overlay`. After moving one, run `npm run check:overlays -- <dev server URL>`: it fails if any two overlap or one runs off the screen at 360, 640, 820, 1024 or 1440 wide. CIV-1011.
 
@@ -39,6 +39,7 @@ Live
 
 - The "Along the route" strip (`src/components/Live/RouteStrip.tsx`) is the model for every Live visual: stops as dots on a line, a three-step colour scale (the `--strip-delay-*` and `--strip-bunching-*` tokens), the marked stretch drawn as a bracket, "less exact" stops hatched, and on phones a compact line with only the key stops named. Reach for this before bar charts or prose.
 - Live pages offer no CSV downloads. Commit 697af467.
+- Live writes minutes in the map's shared minutes format (`shared/headwayText.ts`): "every 8–10 min", "7.5 min", "2 min late". CIV-1160.
 
 Agencies
 
@@ -59,6 +60,10 @@ Frequencies
 - The frequency comes first, then its limit: "every 12 min until 9:40 PM", not "until 9:40 PM, every 12 min" (Ryan, 2026-10-30). #962.
 - Frequencies are always in minutes, never hours ("every 90 min", "every 120 min"), so a column never mixes units. #938.
 - Waits over 60 minutes print their exact minutes ("every 63 min"), never rounded to the half hour, so the words match the number the filter reads (Ryan, 2026-10-31). #1239.
+- The frequency definition is written "every 15 min or better": "No stop on this route has a vehicle every 15 min or better at this time of day." CIV-1160.
+- A route that starts slowly reads "every N from <time>", where N is the longest wait after that time. CIV-1411.
+- Route lists and agency pages use the same words and range as the route card, from the same function, with the "Irregular" badge where the card shows no number. A range's dot takes the slower number's colour. CIV-1300, CIV-1447.
+- There is no "All day" option. Never describe one in any text. CIV-1097, CIV-1451.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 
@@ -68,10 +73,19 @@ Words
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933.
 - "Irregular" for a period with no regular cadence where the route still runs: "Runs irregularly in this period" on cards, "Irregular" in table cells and list values. Never "no regular service", which reads as if nothing runs. CIV-1238.
 - "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238.
-- "Schedule", not "timetable", in all UI text, on the map and in Live, including approved texts (Ryan, CIV-1079). Code names (`noTimetableTrip` and the like) stay.
+- "Schedule", not "timetable", in all rider-facing text, on the map and in Live, including approved texts (Ryan, CIV-1079, CIV-1160). Code names (`noTimetableTrip` and the like) stay.
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
+- Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160.
+- One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
+- Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Search routes…". CIV-1160.
+- A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
+- "The" before agency names (CIV-1103):
+  - Names ending in Authority, Commission, District, Agency, Company, Corporation, Department, Board, Railway, Railroad, System or Service take "the". So do The Staten Island Ferry, The Cheyenne Transit Program, The Fayetteville Area System of Transit and The Yamhill County Transit Area.
+  - Acronyms said letter by letter take "the" (the TTC, the MBTA, the CTA). Acronyms said as a word (MARTA, SEPTA) and brands (MiWay) don't.
+  - Possessives: a plural name takes only an apostrophe ("BC Ferries’ schedule"); a singular name ending in s takes ’s ("Cherriots’s schedule").
+  - In sentences, use "Lawrence Transit", not the slash name.
 - Internal terms and the UI words for them are listed in `docs/GLOSSARY.md`. Use the UI wording given there.
 
 Less text
