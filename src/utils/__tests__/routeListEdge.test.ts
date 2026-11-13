@@ -10,9 +10,10 @@ const dir = (directionId: number, value: number | null, edge?: object) => ({
 }) as any;
 
 describe('route lists read the edge that sets the value (#1292)', () => {
-  it('NYC B: "every 72" becomes the card\'s "every 9 min from 7:12 AM"; the number stays the filter value', () => {
+  it('NYC B: "every 72" becomes the card\'s "every 9 min from 7:12 AM", its dot coloured for 72 as the card\'s is (CIV-1447)', () => {
     const d = routeListDisplay([dir(0, 72, { from: 432, every: 9, stretch: 0 }), dir(1, 10)], 'amPeak');
-    expect(d.headway).toBe(72);
+    expect(d.headway).toBe(9);
+    expect(d.colorHeadway).toBe(72);
     expect(d.edgeText).toBe(periodEdgeText({ from: 432, every: 9 }));
     expect(d.edgeText).toMatch(/9 min from 7:12/);
     expect(d.edge).toEqual({ from: 432, every: 9 });

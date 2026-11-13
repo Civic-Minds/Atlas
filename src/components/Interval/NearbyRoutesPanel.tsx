@@ -104,6 +104,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   {r.headway != null ? (
                     <HeadwayBadge
                       headway={r.headway}
+                      colorHeadway={r.colorHeadway}
                       label={r.edgeText ?? (r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined)}
                       className="ml-auto"
                     />
