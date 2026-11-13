@@ -20,9 +20,10 @@ import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
-  adaptiveMedianHeadwayInWindow,
   computeHourDepartureCounts,
+  computeHourHeadways,
   computePeriodInnerMaxGaps,
+  innerMaxGapInWindow,
   computePeriodCoverageHeadways,
   computePeriodMaxGaps,
   computePeriodHeadways,
@@ -728,15 +729,11 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
     if (inner[key] != null) longestGap[key] = inner[key]!;
     if (p.sustained === true) steady.push(key);
   }
-  const hourly: StretchRowValues['hourly'] = {};
-  for (const h of SPARKLINE_HOURS) {
-    const v = adaptiveMedianHeadwayInWindow([...s.times], h * 60, 3);
-    if (v != null) hourly[h] = v;
-  }
+  const hourly = Object.fromEntries(Object.entries(computeHourHeadways([...s.times], SPARKLINE_HOURS)).filter(([, v]) => v != null)) as StretchRowValues['hourly'];
   return { cadence, longestGap, steady, hourly };
 }
 
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number>; rows: StretchRowValues } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number> } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
@@ -767,7 +764,23 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
     // end-of-line counts (Bustang South's last evening bus passes mid-route about 8:45 PM but reaches Colorado Springs
     // at 10:20, so the card said "runs only from 7–11 PM").
     departuresByHour: computeHourDepartureCounts([...s.times], SPARKLINE_HOURS),
-    rows: stretchRowValues(s),
+  };
+}
+
+/**
+ * A feature's stretchMeta: every stretch of its direction and day, and the row values (CIV-995) only on the
+ * feature's own slot, the one stretchRow reads, so the route file does not carry every stretch's rows on every
+ * feature.
+ */
+export function featureStretchMeta(
+  stretches: Pick<DirectionStretches, 'main' | 'tails'>,
+  role: 'main' | 'tail' | 'variant' | undefined,
+  index: number | undefined,
+  rowsOf: (s: Stretch) => StretchRowValues = stretchRowValues,
+) {
+  return {
+    main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main), ...(role === 'main' ? { rows: rowsOf(stretches.main) } : {}) } : null,
+    tails: stretches.tails.map((t, i) => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t), ...(role === 'tail' && index === i ? { rows: rowsOf(t) } : {}) })),
   };
 }
 
@@ -785,9 +798,7 @@ export function runsThroughPeriod(times: readonly number[], start: number, end: 
   if (sustained !== false) return true;
   const median = medianHeadwayInWindow(forCrossMidnightWindow([...times], end), start, end, 3);
   if (median == null || median <= 0) return true;
-  const t = inWindow.sort((a, b) => a - b);
-  let longest = 0;
-  for (let i = 1; i < t.length; i++) longest = Math.max(longest, t[i] - t[i - 1]);
+  const longest = innerMaxGapInWindow(times, start, end) ?? 0;
   return !(longest / median > BOUNDARY_DOMINANT_RATIO);
 }
 
@@ -1575,6 +1586,13 @@ export function stampStretchShadow(
   /** A feature's own drawn stops, for its stretch role (5b card rows). */
   stopsOf: (feature: ShadowFeature) => readonly string[] = () => [],
 ): void {
+  // CIV-995: each stretch's row values once, for the features whose own slot it is.
+  const rowValues = new Map<Stretch, StretchRowValues>();
+  const rowsOf = (s: Stretch): StretchRowValues => {
+    let v = rowValues.get(s);
+    if (!v) { v = stretchRowValues(s); rowValues.set(s, v); }
+    return v;
+  };
   const rollups = new Map<string, DirectionRollup | null>();
   const rollupOf = (key: string): DirectionRollup | null => {
     if (!rollups.has(key)) {
@@ -1684,10 +1702,7 @@ export function stampStretchShadow(
       if (coversAll.length > 0) p.stretchCovers = coversAll;
       else delete p.stretchCovers;
     }
-    p.stretchMeta = {
-      main: stretches.main ? { stops: stretches.main.stops.length, refStop: stretches.main.refStop, trips: stretches.main.tripCount, ...stretchMetaPeriods(stretches.main) } : null,
-      tails: stretches.tails.map(t => ({ refStop: t.refStop, stops: t.stops.length, km: Math.round(t.lengthKm * 100) / 100, trips: t.tripCount, ...stretchMetaPeriods(t), ...tailNotThrough(t) })),
-    };
+    p.stretchMeta = featureStretchMeta(stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined, rowsOf);
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
   const complete = new Map<string, boolean>();

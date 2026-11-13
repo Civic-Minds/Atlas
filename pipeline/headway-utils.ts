@@ -1,4 +1,5 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
+import type { HeadwayByHour } from '../shared/routeProperties.js';
 import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 
@@ -715,19 +716,35 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
 }
 
 /**
- * CIV-995: the longest gap between two departures inside each period, without the clipped run from the
- * window's start to its first departure or from its last departure to the window's end (CIV-990). Null
- * with under two departures in the period.
+ * The longest gap between two departures inside [start, end], without the clipped run from the window's start to its
+ * first departure or from its last departure to the window's end (CIV-990). Null with under two departures. One
+ * calculation for the published longest gap (CIV-995) and runsThroughPeriod's hole check.
  */
+export function innerMaxGapInWindow(departureTimes: readonly number[], start: number, end: number): number | null {
+  const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+  let longest: number | null = null;
+  for (let i = 1; i < t.length; i++) longest = Math.max(longest ?? 0, t[i] - t[i - 1]);
+  return longest;
+}
+
+/** CIV-995: innerMaxGapInWindow for each period. */
 export function computePeriodInnerMaxGaps(departureTimes: readonly number[]): HeadwayByPeriodMaxGap {
   const result: HeadwayByPeriodMaxGap = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
-    let longest: number | null = null;
-    for (let i = 1; i < t.length; i++) longest = Math.max(longest ?? 0, t[i] - t[i - 1]);
-    result[key] = longest;
+    result[key] = innerMaxGapInWindow(departureTimes, start, end);
   }
   return result;
+}
+
+/**
+ * The sparkline hour headways: per hour, the median over at least three departures, widening past the strict hour
+ * only when it has fewer than three on its own (#282; two departures can be an accidental cluster, HRT 967). One
+ * calculation for a feature's headwayByHour, the per-stop hours, the headsign terminal's hours and a stretch's rows.
+ */
+export function computeHourHeadways(departureTimes: number[], hours: readonly number[]): HeadwayByHour {
+  const byHour: HeadwayByHour = {};
+  for (const h of hours) byHour[h] = adaptiveMedianHeadwayInWindow(departureTimes, h * 60, 3);
+  return byHour;
 }
 
 /** Return the largest gap that starts during each 60-minute sparkline hour. */
