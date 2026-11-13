@@ -32,7 +32,7 @@ import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListDisplay } from '../src/utils/effectiveHeadway';
+import { routeListFilterDisplay } from '../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPageSummaries } from '../shared/agencyPages';
 import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
@@ -173,7 +173,8 @@ export function summarize(
     const shared: NonNullable<AgencyPageRoute['shared']> = {};
     const edge: NonNullable<AgencyPageRoute['edge']> = {};
     for (const [col, period] of cols) {
-      const d = routeListDisplay(ps, period);
+      // The agency pages' bands and summaries read the filter's number (CIV-1447 left them on it; the lists read the card).
+      const d = routeListFilterDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);

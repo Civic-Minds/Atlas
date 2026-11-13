@@ -23,6 +23,7 @@ import RouteRowName from '../../RouteRowName';
 import { stopRouteBestHeadway, type StopRoute } from '../../../utils/stopRoutes';
 import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
+import { routeListHeadwayText } from '../../../utils/effectiveHeadway';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { BACK_TO_MAP_LABEL, stopNoRoutesNotice } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
@@ -40,6 +41,10 @@ export interface NearbyConnection {
   agencySlug?: string;
   routeType?: number;
   headway: number | null;
+  /** CIV-1447: the low end of the route card's range, its dot's slower number and its edge words (routeListDisplay). */
+  sharedHeadway?: number;
+  colorHeadway?: number;
+  edgeText?: string;
   nearestStopName: string;
   distanceMeters: number;
 }
@@ -191,7 +196,7 @@ export const StopCard: React.FC<StopCardProps> = ({
 
       {nearbyConnections.length > 0 && (
         <SidebarCardSection label="Nearby routes">
-          {nearbyConnections.map(({ rKey, label: route, headway, nearestStopName, distanceMeters }) => {
+          {nearbyConnections.map(({ rKey, label: route, headway, sharedHeadway, colorHeadway, edgeText, nearestStopName, distanceMeters }) => {
             // Hovering shows the whole route on the map, as the stop's own route lines do (CIV-1053).
             const hovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;
             return (
@@ -205,6 +210,8 @@ export const StopCard: React.FC<StopCardProps> = ({
                 subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
+                colorHeadway={colorHeadway}
+                headwayLabel={headway != null ? edgeText ?? routeListHeadwayText(headway, sharedHeadway) : undefined}
                 onClick={() => openRoute(rKey)}
                 {...(setHoveredBranch ? {
                   onHoverStart: () => setHoveredBranch({ routeKey: rKey }),

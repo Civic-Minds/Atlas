@@ -9,6 +9,8 @@ export interface CardRouteListRow {
   headwayLabel?: string;
   /** A fixed dot colour for the headway (the Night list's night shades, CIV-1329). */
   dotColor?: string;
+  /** The number the dot is coloured by, where slower than `headway` (CIV-1447). */
+  colorHeadway?: number;
   limited?: boolean;
   limitedLabel?: string;
   subLabel?: string;
@@ -38,6 +40,7 @@ export default function CardRouteList({ rows, onSelect, dimmed = false }: {
             routeName={{ shortName: row.route.primary, name: row.route.secondary }}
             headway={row.headway}
             dotColor={row.dotColor}
+            colorHeadway={row.colorHeadway}
             headwayLabel={row.headwayLabel}
             limited={row.limited}
             limitedLabel={row.limitedLabel}
