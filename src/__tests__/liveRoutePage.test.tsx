@@ -194,13 +194,13 @@ describe('Live route dashboard', () => {
 
   it('shows run time, extra wait, service delivered and this week against last week, in plain words', async () => {
     const fig = { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 };
-    const week = (late: number, delivered: number) => ({ days: 7, dates: ['2026-10-01', '2026-10-07'], healthyDates: ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05'], late: { share: late, n: 900 }, tripTime: { n: 100, scheduledMin: 22, typicalMin: 27, overMin: 5 }, extraWait: { minutes: 1.5, gaps: 900 }, bunching: { share: 0.2, gaps: 900 }, delivered: { share: delivered, seen: 95, notSeen: 5, unknown: 0 } });
+    const week = (late: number, delivered: number, dates = ['2026-10-01', '2026-10-07']) => ({ days: 7, dates, healthyDates: ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05'], late: { share: late, n: 900 }, tripTime: { n: 100, scheduledMin: 22, typicalMin: 27, overMin: 5 }, extraWait: { minutes: 1.5, gaps: 900 }, bunching: { share: 0.2, gaps: 900 }, delivered: { share: delivered, seen: 95, notSeen: 5, unknown: 0 } });
     const rich: LiveV3 = {
       ...v3,
       runningTime: { bands: { all: { '0': fig, '1': null }, amPeak: { '0': fig, '1': null }, midday: { '0': fig, '1': null }, pmPeak: { '0': fig, '1': null }, evening: { '0': fig, '1': null } }, byHour: { '0': [8, 9, 10].map(hour => ({ hour, ...fig })), '1': [] } },
       extraWait: { all: [{ directionId: 0, stopId: 's1', name: 'Spadina & Queens Quay', order: 1, scheduledGapMin: 6, extraWaitMin: 2.1, gaps: 400 }, { directionId: 0, stopId: 's2', name: 'Stop two', order: 2, scheduledGapMin: 6, extraWaitMin: 0.8, gaps: 400 }, { directionId: 0, stopId: 's3', name: 'Stop three', order: 3, scheduledGapMin: 6, extraWaitMin: 1, gaps: 400 }], amPeak: [], midday: [], pmPeak: [], evening: [] },
       serviceDelivered: { byDay: [{ date: '2026-10-08', healthy: true, share: 0.96, seen: 96, notSeen: 4, unknown: 0, byDirection: { '0': 0.96 } }, { date: '2026-10-09', healthy: true, share: 0.98, seen: 98, notSeen: 2, unknown: 0, byDirection: { '0': 0.98 } }, { date: '2026-10-14', healthy: false, share: 1, seen: 10, notSeen: 0, unknown: 0, byDirection: { '0': 1 } }], overall: { seen: 194, notSeen: 6, unknown: 3, share: 0.97, byDirection: {} } },
-      weekly: { minHealthyDays: 4, health: [], comparable: true, thisWeek: week(0.09, 0.96), lastWeek: week(0.12, 0.99) },
+      weekly: { minHealthyDays: 4, health: [], comparable: true, thisWeek: week(0.09, 0.96, ['2026-10-08', '2026-10-14']), lastWeek: week(0.12, 0.99) },
     };
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { level: 1 });
@@ -208,9 +208,9 @@ describe('Live route dashboard', () => {
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
     for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
-    // The subtitle names both weeks; no separate line under the tiles. The method says it once, in groups.
+    // The subtitle names both weeks, and counts this week's trips only (CIV-1445); no separate line under the tiles. The method says it once, in groups.
     // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
-    expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Week of Oct 8–14, compared with Oct 1–7 · 900 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14')).toBeTruthy();
     expect(screen.queryByText(/^Changes compared with the week before/)).toBeNull();
     // The weeks, then the days counted, running on in the "Where the data comes from" paragraph (layout A, CIV-1075);
     // the method is open (no disclosure).
