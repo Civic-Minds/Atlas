@@ -32,6 +32,7 @@ import {
   isSustainedHeadway,
   isUnevenPeriod,
   medianHeadwayInWindow,
+  UNEVEN_GAP_RATIO,
   headlineDeparturesInWindow,
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
@@ -1159,17 +1160,80 @@ export function periodEdge(stretchTimes: readonly number[], start: number, end: 
   if (value == null) return null;
   const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
+  return lateStartOrEarlyEnd(t, start, end, value) ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null);
+}
+
+function lateStartOrEarlyEnd(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   const lead = t[0] - start;
   const trail = end - t[t.length - 1];
   const inner = Math.max(...gaps);
   if (Math.ceil(Math.max(lead, trail, inner)) !== value || inner >= value) return null;
-  const every = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
+  const every = medianHeadwayInWindow([...t], start, end, HEADLINE_MIN_DEPARTURES, true);
   if (every == null || every <= 0 || !isSustainedHeadway(gaps, every)) return null;
   // The wait is rounded up to whole minutes; frequencies.txt spacing can leave fractional times.
   const fromEdge = Math.ceil(lead) === value, untilEdge = Math.ceil(trail) === value;
   if (fromEdge === untilEdge) return null;
   return fromEdge ? { from: t[0], every } : { until: t[t.length - 1], every };
+}
+
+/**
+ * CIV-1411 (Ryan, 2026-11-13): on by default; ATLAS_SLOW_START_FROM=0 turns it off for comparisons.
+ * Card wording only; the filter value and the map are unchanged.
+ */
+export function slowStartFromEnabled(): boolean {
+  return !(typeof process !== 'undefined' && process.env?.ATLAS_SLOW_START_FROM === '0');
+}
+
+/** A slow start's steady run must cover at least this many departures (#571: 4 after an allowance). */
+export const SLOW_START_MIN_DEPARTURES = 4;
+/**
+ * No gap in the steady run is over this many times its typical gap. Tighter than the settled steadiness
+ * test, which lets LA Metro 165 AM's every 15 from 8:17 pass against every 8 from 7:04: the card would
+ * say "every 8 from 7:04" for a run that slows again. Stop times are whole minutes, so Line 5's every 3.6
+ * reads gaps of 3 to 5 against 4.
+ */
+export const SLOW_START_STEADY_RATIO = 1.5;
+
+/**
+ * CIV-1411 (Ryan, 2026-11-13: "dont we have a 'x mins from x time' fix for this"): the #1277 / #934
+ * "every N from <time>" reading, extended from a period with no service before that time to one
+ * that starts slowly. TTC Line 5 westbound AM at Laird leaves 6:06, 6:26, 6:46, every 8.5 to 7:27,
+ * then every 3.6 to 9:00: the period reads its longest wait (20), and the card can say "every N
+ * from 7:27 AM" instead of a bare 20, N being the longest wait from 7:27 to 9:00. A period starts slowly when all of these hold:
+ * - the period's value (its longest wait) is set before the time T: by the wait from the period's
+ *   start to its first departure or by a gap between departures before T;
+ * - from T to the period's end, SLOW_START_MIN_DEPARTURES departures or more, and no gap (the
+ *   wait after the last departure to the period's end included) over SLOW_START_STEADY_RATIO (1.5)
+ *   times their own typical gap: steady service to the end, no slowdown and no early end;
+ * - the value is over UNEVEN_GAP_RATIO times that typical gap (a real slow start, not noise), and the
+ *   service before T is slow too: its middle wait (the wait to the first departure included) is over
+ *   SLOW_START_STEADY_RATIO times that gap. A single hole in steady service keeps the one-gap reading;
+ * - T is at or before the period's midpoint: the steady run covers at least half of it (D8's
+ *   midpoint, as periodPartialEdge). A start that stays slow longer keeps its plain longest wait
+ *   (Hamilton 51 AM: every 20 until 7:54).
+ * T is the earliest departure that passes, so the card names the first time it holds.
+ */
+export function slowStartEdge(t: readonly number[], start: number, end: number, value: number): StretchPeriodEdge | null {
+  const mid = (start + end) / 2;
+  for (let k = 1; k < t.length && t[k] <= mid; k++) {
+    const rest = t.slice(k);
+    if (rest.length < SLOW_START_MIN_DEPARTURES) return null;
+    const every = medianHeadwayInWindow([...rest], rest[0], end, HEADLINE_MIN_DEPARTURES, true);
+    if (every == null || every <= 0) continue;
+    const gaps = rest.slice(1).map((x, i) => x - rest[i]);
+    const longest = Math.max(...gaps, end - rest[rest.length - 1]);
+    if (longest > SLOW_START_STEADY_RATIO * every) continue;
+    if (value <= UNEVEN_GAP_RATIO * every) return null;
+    const before = [t[0] - start, ...t.slice(1, k + 1).map((x, i) => x - t[i])];
+    // A hole in service that already ran at that pace is not a slow start; it keeps the one-gap reading.
+    const sorted = [...before].sort((a, b) => a - b);
+    if (sorted[Math.floor(sorted.length / 2)] <= SLOW_START_STEADY_RATIO * every) return null;
+    // Ryan (2026-11-13): the card names the longest wait from T on, rounded up like the period's own
+    // value, not the typical gap, so it never reads better than the service runs.
+    return Math.ceil(Math.max(...before)) === value ? { from: t[k], every: Math.ceil(longest) } : null;
+  }
+  return null;
 }
 
 /**

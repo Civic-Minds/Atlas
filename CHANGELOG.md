@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Snowmass shows the "still being verified" notice on its new schedule**: route 3 now reads every 30 all week; the notice turns off by itself when the next schedule file arrives
 - **The frequent service story map's steps say what the map now draws, with a route count under each**: the text still described rush-hour-only cuts after the map switched to weekday routes and the main map's limited-service rule
+- **A period that starts slowly says when steady service starts**: TTC Line 5's AM peak read every 20 from two early gaps, though trains come every few minutes from 7:27; its card now names that time and the longest wait after it
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
 - **A line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) counts as one pattern**: Fresno 39 toward the airport read every 30 where a bus comes every 15, and TriMet 72, Pace 381, CT Transit 914 and TTC 52 read slower than they run
