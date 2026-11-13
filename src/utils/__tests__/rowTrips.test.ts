@@ -158,3 +158,25 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
     });
   });
 });
+
+describe('rowTrips reads the stretch\'s own values where it publishes them (CIV-995 b)', () => {
+  const rows = { cadence: { midday: 5, amPeak: 10 }, longestGap: { midday: 9, amPeak: 14 }, steady: ['midday'], hourly: { 12: 5, 13: 6 } };
+  // TTC 927 shape: one destination's own trips every 10, the shared stretch every 5.
+  const main = row({ stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 10, amPeak: 12 }, maxGapByPeriod: { midday: 30, amPeak: 20 }, headwayByPeriodSustained: { midday: true, amPeak: false },
+    headwayByHour: { 12: 10 }, stretchMeta: { main: { stops: 8, refStop: 's', trips: 120, rows }, tails: [] } } as Partial<ShapeProperties>);
+
+  it('value, longest gap and steadiness come from every trip on the stretch', () => {
+    expect(rowTrips(main, 'midday')).toMatchObject({ value: 5, longestGap: 9 });
+  });
+  it('an unsteady stretch period still takes the settled path (its cadence, not the row\'s own)', () => {
+    expect(rowTrips(main, 'amPeak').longestGap).toBe(14);
+  });
+  it('the hovered hour reads the stretch\'s hour', () => {
+    const v = routeCardRowValue(main, { period: 'midday', hoveredHour: 13, stretchMode: true, noRegularService: false, maxHeadway: Infinity });
+    expect(v.displayH).toBe(6);
+  });
+  it('older data without the rows keeps the row\'s own values', () => {
+    const old = row({ ...main, stretchMeta: { main: { stops: 8, refStop: 's', trips: 120 }, tails: [] } } as Partial<ShapeProperties>);
+    expect(rowTrips(old, 'midday').value).toBe(10);
+  });
+});

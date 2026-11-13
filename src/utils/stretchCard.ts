@@ -255,3 +255,23 @@ export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowRe
     hourly: f.headwayByHour,
   };
 }
+
+/**
+ * CIV-995 (b): the stretch reading a main or tail row's value uses, or null to keep the row's own values. Only where the
+ * stretch publishes its rows, runs through the period (a cadence) and has a regular cadence in it; a limited (span-tier)
+ * row keeps reading limited.
+ */
+export function rowStretchReading(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
+  if (f.tier === 'span' || period === 'all') return null;
+  const r = stretchRow(f, period);
+  if (r?.source !== 'stretch' || r.cadence == null) return null;
+  // A stretch whose row reads Irregular in the period (one gap, or under three departures, #955) gives no cadence.
+  const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchMeta?.tails[f.stretchIndex ?? 0];
+  return slot?.noRegular?.includes(period as PeriodKey) ? null : r;
+}
+
+/** CIV-995 (b): a main or tail row's sparkline hour headways from its stretch, or undefined on data without them. */
+export function rowStretchHourly(f: ShapeProperties): Partial<Record<number, number | null>> | undefined {
+  const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchRole === 'tail' ? f.stretchMeta?.tails[f.stretchIndex ?? 0] : undefined;
+  return f.tier === 'span' ? undefined : slot?.rows?.hourly;
+}

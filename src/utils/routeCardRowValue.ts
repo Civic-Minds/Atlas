@@ -4,7 +4,7 @@ import { routeCardDisplayLimited } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
-import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
+import { hasRegularServiceInPeriod, isOneGapRow, rowStretchHourly, variantRowHeadway, type RouteContract } from './stretchCard';
 import { rowRunsThroughNight } from '../../shared/nightService';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
@@ -59,8 +59,9 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // value. A tail never does: that value is the trunk's (#1115, Ryan 2026-10-26).
   // CIV-1069: the row's value, gap and part-period words come from the same trips.
   const trips = rowTrips(d, period);
+  // CIV-995 (b): the hovered hour reads the row's stretch where it publishes its hours, as the row's value does.
   const ownH = hoveredHour != null
-    ? branchDisplayHourHeadway(d, hoveredHour) ?? trips.value
+    ? (rowStretchHourly(d) ? rowStretchHourly(d)![hoveredHour] ?? null : branchDisplayHourHeadway(d, hoveredHour)) ?? trips.value
     : trips.value;
   const directionH = stretchMode && hoveredHour == null && ownH == null && period !== 'all' && d.stretchRole !== 'tail'
     ? d.directionFilterHeadwayByPeriod?.[period as keyof NonNullable<ShapeProperties['directionFilterHeadwayByPeriod']>]
