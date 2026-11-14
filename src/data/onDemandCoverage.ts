@@ -37,6 +37,9 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // Confirmed 2026-10-27 (CIV-1063): https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx
   'yrt': { serviceName: 'On-Request', url: 'https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx' },
   'calgary': { serviceName: 'Calgary Transit On Demand' },
+  // Hidden again in CIV-1479 (Ryan, 2026-11-14): only Woodland has a file (CIV-1452); shown once YoloTD sends
+  // Knights Landing, Winters and Yolo. The Woodland source is in b889d1db2 (config/on-demand/yolobus.json).
+  'yolobus': { serviceName: 'BeeLine' },
   'dcta': { serviceName: 'GoZone' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.durhamregiontransit.com/routes-and-schedules/on-demand-and-specialized-services/
   'drt': { serviceName: 'DRT On Demand', url: 'https://www.durhamregiontransit.com/routes-and-schedules/on-demand-and-specialized-services/' },
@@ -96,7 +99,7 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/ (zone map is a JPG only)
   'kelowna': { serviceName: 'OnDemand', url: 'https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/' },
 };
-// Mapped in CIV-1452 (agency-supplied zones): metrohouston, yolobus (Woodland), dart.
+// Mapped in CIV-1452 (agency-supplied zones): metrohouston, dart (yolobus too, hidden again in CIV-1479).
 // Removed in CIV-1063: rts (RTS Gainesville; Rochester's RTS On Demand is rgrta, not confirmed yet), dutchess (Flex
 // needs a registration), cornwall (an on-request stop on a fixed route), sjsr (Taxibus picks up at fixed points on a schedule);
 // then codiac (run by the City of Dieppe), mcts (FlexRide is run by MobiliSE), trimet (SPOT is run by Washington County) and
