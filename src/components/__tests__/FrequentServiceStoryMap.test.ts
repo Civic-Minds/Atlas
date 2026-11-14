@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
+import { featuresForStage, routeCountForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
 
 // `midday` is the route's wait in AM peak, midday and PM peak alike, as the main map's filter reads it; `daytime` sets the three apart.
 const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday, daytime: { amPeak?: number | null; pmPeak?: number | null } = {}) => ({
@@ -148,5 +148,18 @@ describe('Frequent Service story stages', () => {
       expect(storyFade(false)).toEqual({ duration: 700, delay: 0 });
       expect(storyFade(true)).toEqual({ duration: 0, delay: 0 });
     });
+  });
+
+  it('counts routes, not rows, from the rows the map draws at each stage (CIV-1424)', () => {
+    const withRoute = (row: any, routeId: string, directionId: number) => ({ ...row, properties: { ...row.properties, routeId, directionId } });
+    const frequent = feature('regular', 10, true, true);
+    const daytime = feature('regular', 20, true, false);
+    const rushOnly = feature('time-limited', 20, true, true);
+    const rows = [
+      withRoute(frequent, '501', 0), withRoute(frequent, '501', 1),
+      withRoute(daytime, '52', 0), withRoute(daytime, '52', 1),
+      withRoute(rushOnly, '900', 0),
+    ];
+    expect([0, 1, 2, 3].map(stage => routeCountForStage(rows, stage, 15))).toEqual([3, 2, 2, 1]);
   });
 });

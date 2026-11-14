@@ -25,6 +25,20 @@ export function shouldReviewNextFeed(records: FeedReviewRecord[]): boolean {
   return recent.filter(record => record.result === 'issue').length >= FEED_REVIEW_ISSUE_THRESHOLD;
 }
 
+/**
+ * The review status a newly arrived feed file gets (CIV-828). `reviewFeedVersion` is a feed_version
+ * hand-set in the agency's config: that one file shows the "still being verified" notice, and any
+ * other file falls back to the review history, so the notice drops when the next file arrives.
+ */
+export function reviewStatusForNewFeed(
+  records: FeedReviewRecord[],
+  reviewFeedVersion: string | null | undefined,
+  feedVersion: string | null | undefined,
+): 'review' | undefined {
+  if (reviewFeedVersion && feedVersion && reviewFeedVersion === feedVersion) return 'review';
+  return shouldReviewNextFeed(records) ? 'review' : undefined;
+}
+
 export function feedReviewHistoryPath(root = resolve('.')): string {
   return resolve(root, 'config/feed-review-history.json');
 }

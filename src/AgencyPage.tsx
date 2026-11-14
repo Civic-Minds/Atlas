@@ -107,6 +107,9 @@ function Intro({ data }: { data: AgencyPageData }) {
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
+  // CIV-1300 (#1311): the route card's own reading, as the map's lists show it.
+  const shown = r.text?.[col];
+  if (shown) return shown;
   const edge = r.edge?.[col];
   if (v != null && edge) return periodEdgeText(edge);
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);

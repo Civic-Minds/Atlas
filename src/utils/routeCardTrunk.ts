@@ -192,6 +192,26 @@ export function stretchSharedHeadway(
 }
 
 /**
+ * CIV-1447 (Ryan, 2026-11-13): a direction whose card has one row, and that row is a branch (a tail: its pattern runs the
+ * main stretch and on past it), reads the range from the main stretch to the row ("every 15–54 min": NJ Transit 27 Sunday
+ * midday toward Irvington, main stretch every 15, the branch every 54). This returns the main stretch's value for that row;
+ * the row shows the range only where it is slower (headwayRangeShown). A direction with two or more rows keeps the
+ * "Shared stretch every N" row instead (stretchSharedHeadway), and a one-row direction with no branch keeps one number.
+ * Null for All day and Overnight, for a period the main stretch has no regular cadence in, and on data without the value.
+ */
+export function oneRowMainStretchHeadway(
+  group: { realTier: ShapeProperties[]; span: ShapeProperties[] },
+  period: TimePeriod,
+): number | null {
+  if (period === 'all' || period === 'overnight') return null;
+  if (group.realTier.length !== 1 || group.span.length > 0) return null;
+  const row = group.realTier[0];
+  if (row.stretchRole !== 'tail') return null;
+  const main = stretchRowsFromMeta(row, period).find(r => r.role === 'main');
+  return main?.value != null && !main.noRegular ? main.value : null;
+}
+
+/**
  * Trunk hourly curve from combined stop headways (flat within each period). An hour no branch runs in stays empty
  * (CIV-1106): the period's value covers only the hours with service, so TTC 504 westbound shows no bar at 3 AM, when
  * no streetcar runs, beside the Overnight value at 2 AM. Data without hourly fields keeps the flat curve.

@@ -5,7 +5,7 @@ import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
 import { rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
-import { dirIdNum, groupTrunkHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
+import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, type RouteContract } from './stretchCard';
@@ -91,6 +91,9 @@ export interface RouteCardModelInput {
   stableColors: boolean;
   /** Not read: the card and its report show span rows whether or not the irregular-service filter is on (#1230). */
   hideSpan: boolean;
+  /** CIV-995 (b): rows read their stretch's values (default). false keeps each row's own trips: the lists' range and History
+   * (routeCardLowestHeadway) and the stop card's no-number words (routeCardNoNumberWords) don't change with the card. */
+  stretchValues?: boolean;
 }
 
 export interface RouteCardModel {
@@ -158,6 +161,7 @@ export function reportRowValueText(row: CardRow): string {
 
 export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel {
   const { directions, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors } = input;
+  const stretchValues = input.stretchValues !== false;
   // Frequency focus: rows come from the stretches, and the route-level number is the filter's own value with its range.
   const stretchMode = hasStretchRoles(directions);
   const contract = routeFilterContract(directions, period);
@@ -168,7 +172,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noRegularLabel = noNumberRowLabel({ nightView });
   const limitedWord = noRegularLabel;
   const hasPeriodService = period === 'all' || directionGroups.some(group =>
-    group.realTier.some(direction => rowTrips(direction, period).value != null) ||
+    group.realTier.some(direction => rowTrips(direction, period, { stretch: stretchValues }).value != null) ||
     group.span.length > 0,
   );
   const hasPartialPeriodService = period !== 'all' && !hasPeriodService && directions.some(direction =>
@@ -193,7 +197,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noFilterValue = contract != null && contract.filterValue == null && !contract.runs;
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period).partPeriod != null), span: [] }))
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues }).partPeriod != null), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
@@ -211,9 +215,9 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   });
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
     rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway };
-  const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean) => (hoveredHour: number | null): CardRowDisplay => {
-    const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown });
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues };
+  const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
+    const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {
       value,
       limitedLabel: value.isLimited && value.edgeText ? value.edgeText : value.rowNoRegular || value.isLimited
@@ -248,7 +252,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
       .map(d => d.headsign)
       .filter((headsign): headsign is string => !!headsign);
-    const shared: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
+    const sharedRow: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
       ? {
         // CIV-1251: one name for the shared part of a route; how its number was worked out belongs in the glossary.
         label: SHARED_STRETCH_LABEL,
@@ -257,6 +261,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         hover: { directionId: group.dirId, headsigns: coreHeadsigns, sharedStopIds: groupSharedStopIds, sharedHeadway: groupCoreHeadway, isCore: true },
       }
       : null;
+    // CIV-1447: a direction whose only row is a branch reads the range from the main stretch to that branch.
+    const oneRowMainH = stretchMode && !nightView && sharedRow == null ? oneRowMainStretchHeadway(group, period) ?? undefined : undefined;
 
     const rows: CardRow[] = group.realTier.map((d, i) => {
       const base = {
@@ -272,8 +278,18 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         const grade = rowNightGrade(d);
         return { ...base, night: { grade, partOfRoute: d.nightServicePartOfRoute === true }, display: rowDisplay(d) };
       }
-      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, shared != null) };
+      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, sharedRow != null, oneRowMainH) };
     });
+    // CIV-995 Q2 (Ryan, 2026-11-13): now that a direction's main row reads every bus on its stretch, the Shared stretch row
+    // often repeats its number. It is left out when it shows exactly the same number as a main row of the group, and kept
+    // whenever they differ (or it words a late start or early end). Only on the card (stretchValues): the stop card's
+    // no-number words and the lists read the model as before.
+    const repeats = sharedRow != null && stretchValues && !sharedRow.edgeText && rows.some(row => {
+      if (row.feature.stretchRole !== 'main' || row.night) return false;
+      const v = row.display(null).value;
+      return !v.isLimited && !v.headwayLabel && v.headway === sharedRow.headway;
+    });
+    const shared = repeats ? null : sharedRow;
 
     const realHeadsignKeys = new Set(
       group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),

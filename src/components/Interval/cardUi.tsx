@@ -574,6 +574,20 @@ function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: st
   );
 }
 
+/**
+ * CIV-1300: a two-part value as two lines in a route list's value column, both ending at the row's right edge like every
+ * other value (Ryan, 2026-11-13), the dot beside the first line.
+ */
+function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
+  const [first, second] = twoPartSplit(text) ?? [text, ''];
+  return (
+    <span className="inline-flex flex-col items-end min-w-0">
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
+      <span className="whitespace-nowrap">{second}</span>
+    </span>
+  );
+}
+
 export function HeadwayBadge({
   headway,
   colorHeadway,
@@ -584,6 +598,7 @@ export function HeadwayBadge({
   suffixTone = 'dim',
   className = '',
   secondLine = false,
+  stacked = false,
 }: {
   headway: number;
   colorHeadway?: number | null;
@@ -597,6 +612,11 @@ export function HeadwayBadge({
   className?: string;
   /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
   secondLine?: boolean;
+  /**
+   * A route list's value column (CIV-1300, Ryan): words in two parts ("every 15 min," "with one 32 min gap") always sit on
+   * two lines, both right-aligned like the other rows' values, the dot beside the first, so the value keeps its column.
+   */
+  stacked?: boolean;
 }) {
   const colorMode = useColorMode();
   const words = label ?? fmtHeadway(headway);
@@ -607,7 +627,7 @@ export function HeadwayBadge({
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
+      {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );
