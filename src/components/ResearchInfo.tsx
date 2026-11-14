@@ -1,3 +1,4 @@
+import { BACK_PLACES } from '../content/backLinks';
 import type { ReactNode } from 'react';
 import Panel from './ui/Panel';
 import { CARD_HEADER_ONLY, CARD_SUMMARY, CARD_TITLE } from './Interval/cardUi';
@@ -29,7 +30,7 @@ export default function ResearchInfo({ heading, children, onBack, sidebarLeft, s
     >
       <Panel enter sidebarSurface className="shrink-0">
         <div className={CARD_HEADER_ONLY}>
-          <CardBackLink onClick={onBack}>Frequency map</CardBackLink>
+          <CardBackLink onClick={onBack}>{BACK_PLACES.frequencyMap}</CardBackLink>
           <p className={CARD_TITLE}>{heading}</p>
           {/* The rule reads like a card's facts line under its title (CIV-971). */}
           <p className={CARD_SUMMARY}>{children}</p>

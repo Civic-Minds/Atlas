@@ -7,6 +7,7 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { joinList, plural } from '../../shared/overflowText';
 import { METHOD_TITLE } from '../../shared/liveWording';
 import { formatStoredDate } from '../utils/format';
@@ -195,8 +196,8 @@ export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', descript
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
 // ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
-// The back link from an agency or stop card to the map.
-export const BACK_TO_MAP_LABEL = 'Map';
+// The back link from an agency or stop card to the map (CIV-1462: the words live in backLinks.ts).
+export const BACK_TO_MAP_LABEL = BACK_PLACES.map;
 // The region pill and group for an agency with no region.
 export const OTHER_REGION_LABEL = 'Other';
 // The row for the shared main stretch above a direction's branch rows (route card, stop card).
@@ -301,9 +302,9 @@ export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 export const HISTORY_TITLE = 'Historical service';
 /** The History button's screen-reader name, off and on. */
 export const HISTORY_BUTTON_LABEL = 'History';
-export const HISTORY_BUTTON_ACTIVE_LABEL = 'Back to frequency map';
-/** The agency card's back link in History. */
-export const HISTORY_BACK_TO_AGENCIES = 'All agencies';
+export const HISTORY_BUTTON_ACTIVE_LABEL = backLinkLabel(BACK_PLACES.frequencyMap);
+/** The agency card's back link in History: the map's word for the agency list (CIV-1462). */
+export const HISTORY_BACK_TO_AGENCIES = BACK_PLACES.agencies;
 /** The year slider's hover hint and screen-reader name. */
 export const HISTORY_YEAR_HINT = 'Older to newer';
 export const HISTORY_YEAR_LABEL = 'History year';

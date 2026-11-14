@@ -1,3 +1,4 @@
+import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import { useCallback, useEffect, useState } from 'react';
 import { setConsentPrompt, useConsentPrompt } from '../lib/consentPrompt';
 import { getAnalyticsConsent, initAnalytics, setAnalyticsConsent, type AnalyticsConsent } from '../lib/analytics';
@@ -18,7 +19,7 @@ function Controls({ onClose }: { onClose: () => void }) {
   const choose = (value: AnalyticsConsent) => { setAnalyticsConsent(value); setConsent(value); };
   return <div className={`fixed inset-0 ${Z_MODAL_TOP}`} onClick={onClose}>
     <div className={`${DROPDOWN_PANEL} ${dropdownAnim(true)}`} onClick={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="privacy-settings-title">
-      <PanelHeader titleId="privacy-settings-title" title={PRIVACY_SETTINGS_TITLE} onBack={onClose} backLabel="Back to About Atlas" onClose={onClose} closeLabel="Close privacy and analytics settings" />
+      <PanelHeader titleId="privacy-settings-title" title={PRIVACY_SETTINGS_TITLE} onBack={onClose} backLabel={backLinkLabel(BACK_PLACES.aboutAtlas)} onClose={onClose} closeLabel="Close privacy and analytics settings" />
       <div className="overflow-y-auto px-5 py-4 space-y-5 text-xs">
         <p className="leading-relaxed text-[var(--text-dim)]">When enabled, Atlas sends page views and basic usage information to Google Analytics. Atlas does not use this information for advertising or account profiling.</p>
         <div className="space-y-2">

@@ -22,8 +22,8 @@ describe('AgencyCardTop', () => {
 
   it('shows the back link as the arrow plus its destination and calls it on click', () => {
     const onBack = vi.fn();
-    render(<AgencyCardTop name="MARTA" place="Atlanta" back={{ to: 'All agencies', onClick: onBack }} />);
-    fireEvent.click(screen.getByRole('button', { name: '← All agencies' }));
+    render(<AgencyCardTop name="MARTA" place="Atlanta" back={{ to: 'Agencies', onClick: onBack }} />);
+    fireEvent.click(screen.getByRole('button', { name: '← Back to agencies' }));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 

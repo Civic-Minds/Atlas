@@ -16,7 +16,7 @@ const SURFACES = [
   { name: 'content-about', path: '/about' },
   { name: 'content-research-index', path: '/research' },
 ];
-const LOGO = 'button[aria-label="Atlas home"], button[aria-label="Back to frequency map"], a[aria-label="Back to the frequency map"], a[aria-label="Atlas by Civic Minds"]';
+const LOGO = 'button[aria-label="Atlas home"], button[aria-label="Back to frequency map"], a[aria-label="Back to frequency map"], a[aria-label="Atlas by Civic Minds"]';
 
 const browser = await chromium.launch();
 const failures = [];

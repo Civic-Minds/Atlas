@@ -40,6 +40,7 @@ Live
 - The "Along the route" strip (`src/components/Live/RouteStrip.tsx`) is the model for every Live visual: stops as dots on a line, a three-step colour scale (the `--strip-delay-*` and `--strip-bunching-*` tokens), the marked stretch drawn as a bracket, "less exact" stops hatched, and on phones a compact line with only the key stops named. Reach for this before bar charts or prose.
 - Live pages offer no CSV downloads. Commit 697af467.
 - Live writes minutes in the map's shared minutes format (`shared/headwayText.ts`): "every 8–10 min", "7.5 min", "2 min late". CIV-1160.
+- Added time keeps its plus sign: an increase reads "+0.5 min", as in "Where delays start": "starts at Broadview Ave (+0.5 min)" (Ryan, 2026-11-14). The no-plus rule above is for lateness ("2 min late"). CIV-1470.
 
 Agencies
 
@@ -48,6 +49,8 @@ Agencies
 - A Live route card whose route has no Live analysis (its "Right now" section can't show) reads one grey line, word for word (Ryan, 2026-11-14): "Live figures for this route aren’t available yet." Nothing shows while the analysis is still loading. Changing the sentence needs Ryan's OK. CIV-1413.
 
 ## How Atlas talks
+
+- Every back control says "Back to " + the place it returns to, from one source (`src/content/backLinks.ts`): a text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies"); an arrow-only control or the logo says the same words to screen readers ("Back to About Atlas"). Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies"). CIV-1462.
 
 Frequencies
 

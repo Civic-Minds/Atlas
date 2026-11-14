@@ -1,3 +1,4 @@
+import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
@@ -369,7 +370,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}

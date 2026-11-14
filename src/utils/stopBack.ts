@@ -1,3 +1,4 @@
+import { BACK_PLACES } from '../content/backLinks';
 import type { OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 import { cleanRouteShortName, routeLabels } from './format';
 import { agencyNames } from './agencyName';
@@ -45,7 +46,7 @@ export interface StopBack {
   target: StopBackTarget;
 }
 
-const MAP: StopBack = { to: 'Map', target: { kind: 'map' } };
+const MAP: StopBack = { to: BACK_PLACES.map, target: { kind: 'map' } };
 
 /** Which card was open when the stop was clicked. No snapshot (keyboard, a shared link) means the map. */
 export function stopBackTarget(snapshot: StopBackSnapshot | null): StopBackTarget {
