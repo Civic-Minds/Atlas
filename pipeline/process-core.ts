@@ -3868,7 +3868,23 @@ export async function processGtfsBuffer(
     stampStretchShadow(features, stretchesByKey, feature => {
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
-    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}), feature => {
+      // CIV-995 (b): the row's own trips, its headsign group's trip ids (the key the pool lift reads, tripsByHsKey).
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      const headsign = featureMetricHeadsign(feature as GeoJsonFeature);
+      if (!slot || !headsign) return null;
+      if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
+      const key = `${slot.shortName}::${slot.dirId}::${slot.day}::${headsign}`;
+      // A weekday row's trips are its headsign's trips on every weekday, not only the representative one, so a trip that runs
+      // on another weekday and misses the stop still keeps the row on its own trips.
+      const own = tripsByHsKey!.get(key);
+      const ids = own && slot.day === 'Weekday' ? [...new Set([...own, ...(weekdayTripsByHsKey!.get(key) ?? []).map(([tid]) => tid)])] : own;
+      const span = (id: string): [number, number] | undefined => {
+        const a = firstDepartureByTripId.get(id), b = lastDepartureByTripId.get(id);
+        return a == null || b == null ? undefined : [a, b];
+      };
+      return ids ? { ids, span, frequencyTrip: id => frequencyTemplateTripIds.has(id) } : null;
+    });
     // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
     // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
     // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the

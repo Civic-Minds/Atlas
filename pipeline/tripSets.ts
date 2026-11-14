@@ -89,6 +89,10 @@ export interface Stretch {
   nightTimes: readonly number[];
   /** Trips serving refStop. */
   tripCount: number;
+  /** CIV-995 (b): the ids of the trips the reading counts at refStop (a frequencies trip as tripId@offset). */
+  countedTrips?: ReadonlySet<string>;
+  /** CIV-995 (b): those of countedTrips that leave refStop (it is not their last stop). */
+  departingTrips?: ReadonlySet<string>;
   /** CIV-1332: whether other service picks up riders at refStop (or within 400 m) soon after a night-only route's last bus (nightHandover). */
   handover?: NightHandover;
   /** CIV-1384: the mornings after this service day's evening at refStop (nightServicePasses nextDays). */
@@ -408,15 +412,19 @@ export function directionStretches(
       const visit = trip.visits.find(v => v.stopId === stop);
       return visit != null && visit.counted !== false && visit.final !== true;
     });
+    const countedTrips = new Set<string>();
+    const departingTrips = new Set<string>();
     for (const trip of measureTrips) {
       const visit = trip.visits.find(v => v.stopId === stop);
       if (!visit || visit.counted === false || (departsHere && arrivesOnly(trip, visit))) continue;
       count++;
+      countedTrips.add(trip.tripId);
+      if (visit.final !== true) departingTrips.add(trip.tripId);
       times.add(visit.minutes);
       if (visit.overnightOnly) overnight.push(visit.minutes + 1440);
     }
     const sorted = [...times].sort((a, b) => a - b);
-    return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count };
+    return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count, countedTrips, departingTrips };
   };
   const stretch = (kind: Stretch['kind'], stops: readonly string[], lengthKm: number): Stretch => {
     const refStop = kind === 'main' && mainRefStop != null && stops.includes(mainRefStop) ? mainRefStop : middleStop(stops, tripStops);
@@ -712,7 +720,8 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * CIV-995 step (a): a stretch's own per-period values for its card row, read over every trip at its reference
  * stop under the settled rules, so a row stops reading one headsign's trips. Published on the route file; no card
  * reads them yet (step b). Empty periods are left out to keep the file small.
- * - cadence: the median headway, only where the stretch runs through the period (runsThroughPeriod).
+ * - cadence: the map's value for the stretch (stretchFilterValue), only where the period is steady, runs through
+ *   (runsThroughPeriod) and reads PERIOD_COVERAGE_MAX_HEADWAY or less.
  * - longestGap: the longest gap between two departures inside the period, no clipped window edges (CIV-990).
  * - steady: the periods the settled steadiness test calls steady.
  * - hourly: the sparkline hour headways, as a feature's headwayByHour reads them.
@@ -725,7 +734,12 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
   const steady: PeriodKey[] = [];
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const p = own[key];
-    if (p.headway != null && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = p.headway;
+    // The map's own value for the stretch (stretchFilterValue, the settled reader: its median where steady and even, its
+    // longest wait where uneven with unevenWait's neighbouring-period rule for window edges), only where the period is steady,
+    // runs through and reads PERIOD_COVERAGE_MAX_HEADWAY or less. A period that is not steady, or whose value is a full-period
+    // wait over that limit, publishes none: the row keeps its own reading (#962 untouched), never an unchecked edge.
+    const value = stretchFilterValue(p);
+    if (p.sustained === true && value != null && value <= PERIOD_COVERAGE_MAX_HEADWAY && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = value;
     if (inner[key] != null) longestGap[key] = inner[key]!;
     if (p.sustained === true) steady.push(key);
   }
@@ -765,6 +779,37 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
     // at 10:20, so the card said "runs only from 7–11 PM").
     departuresByHour: computeHourDepartureCounts([...s.times], SPARKLINE_HOURS),
   };
+}
+
+/**
+ * CIV-995 (b): the periods in which a row's own trips all run its stretch: each of the row's trips with a time in the period
+ * is one the stretch's reading counts at its reference stop and that leaves it there (departingTrips: not its last stop),
+ * and the period has at least one. A row with a frequencies trip, or no trips, gets none. Trip ids, not counts: a row whose trips also run another
+ * branch (TTC 73 to Royal York) or only arrive at the stop (#1425) never reads the stretch.
+ */
+export function stretchRowPeriods(
+  s: Stretch,
+  row: { ids: readonly string[]; span: (id: string) => [number, number] | undefined; frequencyTrip: (id: string) => boolean } | null,
+): PeriodKey[] {
+  const leaves = s.departingTrips;
+  if (!row || row.ids.length === 0 || !leaves || row.ids.some(id => row.frequencyTrip(id))) return [];
+  const out: PeriodKey[] = [];
+  // A trip is in a period when any of its times falls in it (its first to last departure overlaps the window, on the
+  // service day or the night after), so a trip that starts before the PM peak and runs into it counts there too.
+  const overlaps = ([a, b]: [number, number], start: number, end: number) => (a < end && b >= start) || (a + 1440 < end && b + 1440 >= start);
+  for (const { key, start, end } of PERIOD_WINDOWS) {
+    let any = false;
+    let all = true;
+    for (const id of row.ids) {
+      const span = row.span(id);
+      if (span == null) { all = false; break; }
+      if (!overlaps(span, start, end)) continue;
+      any = true;
+      if (!leaves.has(id)) { all = false; break; }
+    }
+    if (any && all) out.push(key);
+  }
+  return out;
 }
 
 /**
@@ -1566,6 +1611,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchFrequentService',
   'stretchResearchFrequentService',
   'stretchMeta',
+  'stretchRowPeriods',
   'stretchRole',
   'stretchIndex',
   'stretchCovers',
@@ -1585,6 +1631,8 @@ export function stampStretchShadow(
   slotOf: (feature: ShadowFeature) => { group: string; dirId: string; day: string } | null,
   /** A feature's own drawn stops, for its stretch role (5b card rows). */
   stopsOf: (feature: ShadowFeature) => readonly string[] = () => [],
+  /** CIV-995 (b): the row's own trips (its headsign's trip ids) and each trip's first departure; null when unknown. */
+  rowTripsOf: (feature: ShadowFeature) => { ids: readonly string[]; span: (id: string) => [number, number] | undefined; frequencyTrip: (id: string) => boolean } | null = () => null,
 ): void {
   // CIV-995: each stretch's row values once, for the features whose own slot it is.
   const rowValues = new Map<Stretch, StretchRowValues>();
@@ -1703,6 +1751,12 @@ export function stampStretchShadow(
       else delete p.stretchCovers;
     }
     p.stretchMeta = featureStretchMeta(stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined, rowsOf);
+    // CIV-995 (b): the periods in which every one of the row's own trips is counted at its stretch's reference stop, from
+    // the trip ids (not counts). Only there may the card read the stretch's values for the row; elsewhere, its own trips.
+    const ownSlot = p.stretchRole === 'main' ? stretches.main : p.stretchRole === 'tail' ? stretches.tails[p.stretchIndex as number] : null;
+    const rowPeriods = ownSlot ? stretchRowPeriods(ownSlot, rowTripsOf(feature)) : [];
+    if (rowPeriods.length > 0) p.stretchRowPeriods = rowPeriods;
+    else delete p.stretchRowPeriods;
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
   const complete = new Map<string, boolean>();

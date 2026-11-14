@@ -32,6 +32,8 @@ function cardLowest(features: readonly ShapeProperties[], period: TimePeriod): n
   const model = buildRouteCardModel({
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
     period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+    // CIV-995 (b): each row's own trips, so this stays as before the card read its stretches.
+    stretchValues: false,
   });
   let lowest: number | undefined;
   for (const group of model.groups) {

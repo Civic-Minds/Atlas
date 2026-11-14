@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { routeListDisplay, routeListDisplayLimited, routeListNoRegularService } from '../effectiveHeadway';
 import { selectedRouteFilterNotice } from '../../content/noticeCopy';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
-import { hasStretchRoles, routeContract, stretchRow, stretchRowFeatures, stretchRowsFromMeta, stretchSlotKey, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
+import { hasStretchRoles, routeContract, rowStretchReading, stretchRow, stretchRowFeatures, stretchRowsFromMeta, stretchSlotKey, variantOnlyRow, variantRowHeadway, hasRegularServiceInPeriod } from '../stretchCard';
 
 const f = (over: Record<string, unknown>) => ({ routeId: 'r', directionId: 0, tier: 'frequent', headway: 6, routeShortName: '1', routeLongName: null, ...over }) as unknown as ShapeProperties;
 
@@ -208,5 +208,25 @@ describe('stretchRow (CIV-995 a): the shared selector for a row\'s period values
     expect(stretchSlotKey(f({ stretchRole: 'main', stretchIndex: 0 }))).toBe('main:0');
     expect(stretchSlotKey(f({ stretchRole: 'tail', stretchIndex: 2 }))).toBe('tail:2');
     expect(stretchSlotKey(f({ stretchRole: 'variant' }))).toBeNull();
+  });
+});
+
+describe('rowStretchReading (CIV-995 b): when a row reads its stretch', () => {
+  const rows = { cadence: { midday: 8 }, longestGap: { midday: 12 }, steady: ['midday'], hourly: { 12: 8 } };
+  const meta = (noRegular: string[] = []) => ({ main: { stops: 10, refStop: 'm', trips: 90, noRegular, rows }, tails: [] });
+  const own = { stretchRowPeriods: ['midday', 'amPeak'] };
+  it('reads the stretch where it runs through the period with a regular cadence', () => {
+    expect(rowStretchReading(f({ ...own, stretchRole: 'main', stretchMeta: meta() }), 'midday')).toMatchObject({ source: 'stretch', cadence: 8 });
+  });
+  it('keeps the row\'s own trips where not every one of its trips runs the stretch (TTC 73 to Royal York)', () => {
+    expect(rowStretchReading(f({ stretchRowPeriods: ['amPeak'], stretchRole: 'main', stretchMeta: meta() }), 'midday')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta() }), 'midday')).toBeNull();
+  });
+  it('keeps the row\'s own values where the stretch has no cadence, reads Irregular, or the row is limited', () => {
+    expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta() }), 'amPeak')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta(['midday']) }), 'midday')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'main', tier: 'span', stretchMeta: meta() }), 'midday')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'variant', stretchMeta: meta() }), 'midday')).toBeNull();
+    expect(rowStretchReading(f({ stretchRole: 'main', stretchMeta: meta() }), 'all')).toBeNull();
   });
 });
