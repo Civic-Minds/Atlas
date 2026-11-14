@@ -84,8 +84,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // Confirmed 2026-10-27 (CIV-1063): https://www.sonomamarintrain.org/shuttleFAQs
   'smart-ca': { serviceName: 'SMART Connect', url: 'https://www.sonomamarintrain.org/shuttleFAQs' },
   'torrance-transit': { serviceName: 'Connect Torrance' },
-  // Confirmed 2026-10-27 (CIV-1063): https://ridetrinitymetro.org/rider-services/ondemand/
-  'trinitymetro': { serviceName: 'ZIPZONE', url: 'https://ridetrinitymetro.org/rider-services/ondemand/' },
   // Confirmed 2026-10-27 (CIV-1063): https://vinetransit.com/?p=1180
   'vine': { serviceName: 'On-demand service', url: 'https://vinetransit.com/?p=1180' },
   // CIV-1063 (checked 2026-10-27), general public and running, with no zone source:
@@ -96,7 +94,7 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/ (zone map is a JPG only)
   'kelowna': { serviceName: 'OnDemand', url: 'https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/' },
 };
-// Mapped in CIV-1452 (agency-supplied zones): metrohouston, dart (yolobus too, hidden again in CIV-1479).
+// Mapped in CIV-1452 (agency-supplied zones): metrohouston, dart (yolobus too, hidden again in CIV-1479). Mapped in CIV-1547: trinitymetro.
 // Removed in CIV-1063: rts (RTS Gainesville; Rochester's RTS On Demand is rgrta, not confirmed yet), dutchess (Flex
 // needs a registration), cornwall (an on-request stop on a fixed route), sjsr (Taxibus picks up at fixed points on a schedule);
 // then codiac (run by the City of Dieppe), mcts (FlexRide is run by MobiliSE), trimet (SPOT is run by Washington County) and
