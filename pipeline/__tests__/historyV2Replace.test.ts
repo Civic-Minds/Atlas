@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkWeekendOnlyAddition, mergeWeekendFields, replacementBackupKey } from '../historyV2Replace.js';
+import { assertReplacementApproved, checkFullReplacement, checkReplacement, checkWeekendOnlyAddition, mergeWeekendFields, replacementBackupKey } from '../historyV2Replace.js';
 
 // CIV-1430: the approved-replacement check (history:upload --replace-approved).
 describe('checkWeekendOnlyAddition (CIV-1430)', () => {
@@ -51,5 +51,30 @@ describe('mergeWeekendFields (CIV-1430)', () => {
   });
   it('refuses a published file that is not in compact form (its bytes could not be kept)', () => {
     expect(() => mergeWeekendFields(JSON.stringify(JSON.parse(pub), null, 2), rebuilt)).toThrow(/compact form/);
+  });
+});
+
+// CIV-1430 (2026-11-14): Ryan chose the full redo, so the approval's mode is 'full'.
+describe('checkFullReplacement (CIV-1430 full redo)', () => {
+  const pub = JSON.stringify({ version: 2, slug: 'mbta', periodKey: 'p', refDate: '20181129', routes: { 1: { rep: { h: 12 } }, 9: { rep: { h: 20 } } }, refDateQuality: { holiday: false, reason: 'r' } });
+  it('allows any route change while every top-level field stays byte-identical', () => {
+    const next = pub.replace('"h":12', '"h":11').replace('"9":{"rep":{"h":20}}', '"9":{"rep":{"h":20},"sat":{"h":30,"p":{"midday":30}}},"NEW":{"rep":{"h":5}}');
+    const c = checkFullReplacement(pub, next);
+    expect(c.ok).toBe(true);
+    expect(c.changes.map(x => x.path)).toEqual(expect.arrayContaining(['routes.1.rep.h', 'routes.9.sat', 'routes.NEW']));
+    expect(checkReplacement('full', pub, next).ok).toBe(true);
+    expect(checkReplacement('weekend', pub, next).ok).toBe(false);
+  });
+  it('refuses a changed reference date, quality record or period, and a reordered top level', () => {
+    expect(checkFullReplacement(pub, pub.replace('"refDate":"20181129"', '"refDate":"20181130"'))).toMatchObject({ ok: false, reason: expect.stringContaining('refDate') });
+    expect(checkFullReplacement(pub, pub.replace('"reason":"r"', '"reason":"s"')).ok).toBe(false);
+    expect(checkFullReplacement(pub, pub.replace('"periodKey":"p"', '"periodKey":"q"')).ok).toBe(false);
+    const o = JSON.parse(pub);
+    const { refDateQuality, ...rest } = o;
+    expect(checkFullReplacement(pub, JSON.stringify({ refDateQuality, ...rest })).ok).toBe(false);
+  });
+  it('CIV-1430 is approved for mbta in full mode, and no other agency', () => {
+    expect(assertReplacementApproved('CIV-1430', 'mbta')).toBe('full');
+    expect(() => assertReplacementApproved('CIV-1430', 'ttc')).toThrow();
   });
 });

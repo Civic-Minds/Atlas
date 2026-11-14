@@ -33,7 +33,8 @@
  *                       sidecar, or one the processor reads at a different date, is reported as not pinnable
  *                       and nothing is written for it. The written sidecar is the PUBLISHED file plus only the
  *                       rebuilt weekend p / t / tp (mergeWeekendFields; weekday fields are never taken from the
- *                       rebuild); the full rebuild goes to <out-dir>/full-rebuild/ for comparison only.
+ *                       rebuild); the full rebuild (today's routes) goes to <out-dir>/full-rebuild/, which is
+ *                       what history-rebuild.yml uploads since Ryan chose the full redo for CIV-1430 (2026-11-14).
  *                       Check the result with history-v2-diff.ts.
  */
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -113,8 +114,9 @@ async function main(): Promise<void> {
       let result: Awaited<ReturnType<typeof writeSidecar>>;
       let mergeNote = '';
       if (published) {
-        // CIV-1430 option 1: the published file, byte for byte, plus ONLY the rebuilt weekend p / t / tp. The full
-        // rebuild (today's weekday values too) is kept beside it under full-rebuild/ for comparison, never uploaded.
+        // CIV-1430: the full rebuild (the published top-level fields, today's routes) goes under full-rebuild/; it is
+        // what history-rebuild.yml uploads since Ryan chose the full redo (2026-11-14). The weekend-only merge (option
+        // 1: the published file plus ONLY the rebuilt weekend p / t / tp) stays in the main out dir for reference.
         sidecar = { ...published, routes: built.routes };
         await fullSink!.put(`history-v2/${slug}/${periodKey}.json`, JSON.stringify(sidecar));
         const merged = mergeWeekendFields(pinnedBodies!.get(periodKey)!, built.routes as Record<string, unknown>);

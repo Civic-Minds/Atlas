@@ -343,7 +343,8 @@ describe('history:upload', () => {
   });
 });
 
-// CIV-1430: the one approved exception to "never overwritten": MBTA sidecars that only add weekend p / t / tp.
+// CIV-1430: the one approved exception to "never overwritten". Ryan chose the full redo (2026-11-14): mode 'full',
+// so MBTA sidecars may take today's values on every route field; top-level fields must not move.
 describe('history:upload --replace-approved (CIV-1430)', () => {
   const KEY = 'history-v2/mbta/20181202.json';
   const sc = (routes: Record<string, unknown>, extra: Record<string, unknown> = {}) => JSON.stringify({ version: 2, slug: 'mbta', periodKey: '20181202', refDate: '20181129', routes, ...extra });
@@ -388,33 +389,39 @@ describe('history:upload --replace-approved (CIV-1430)', () => {
     expect(lines.join('\n')).toMatch(/1 replaced under CIV-1430/);
   });
 
-  it('dry run lists the replacement and the added-field counts, and writes nothing', async () => {
+  it('dry run lists the full replacement with its changed-field count, and writes nothing', async () => {
     const r = new Remote2(); r.store.set(KEY, OLD);
     lines.length = 0;
     expect(await runUpload({ log, argv: ['--slug', 'mbta', '--dir', mk(ADDS), '--replace-approved', 'CIV-1430'], env: {}, makeRemote: async () => r })).toBe(0);
     expect(r.writes).toEqual([]);
-    expect(lines.join('\n')).toMatch(/REPLACE \(CIV-1430: adds weekend fields only \{"sat.p":2,"sat.t":1,"sat.tp":1\}/);
+    expect(lines.join('\n')).toMatch(/REPLACE \(CIV-1430: full, 4 route field\(s\) differ; backup history-v2-replaced\/CIV-1430\//);
   });
 
-  it('refuses a key with any other change, reports the field, and writes nothing at all', async () => {
-    const r = new Remote2(); r.store.set(KEY, OLD);
-    lines.length = 0;
-    expect(await run(mk(WEEKDAY), r)).toBe(1);
-    expect(r.writes).toEqual([]);
-    expect(r.store.get(KEY)).toBe(OLD);
-    expect(lines.join('\n')).toMatch(/CONFLICT \(CIV-1430 refused/);
-    expect(lines.join('\n')).toContain('routes.1.rep.h: 12 -> 13');
-  });
-
-  it('refuses a changed weekend headline, a removed day and a changed top-level field', async () => {
+  it('full mode replaces changed weekday values and changed or removed weekend days, backup first', async () => {
     for (const body of [
+      WEEKDAY,
       ADDS.replace('"sat":{"h":15,', '"sat":{"h":16,'),
       sc({ 1: { name: 'One', rep: { h: 12, p: { midday: 12 }, tp: { midday: 8 } }, sat: { h: 15 }, sun: { none: true } }, 7: { rep: { lim: true } } }, { refDateQuality: { holiday: false, reason: 'r' } }),
-      ADDS.replace('"refDate":"20181129"', '"refDate":"20181128"'),
     ]) {
       const r = new Remote2(); r.store.set(KEY, OLD);
+      expect(await run(mk(body), r)).toBe(0);
+      expect(r.store.get(KEY)).toBe(body);
+      expect(r.writes[0]).toMatch(/^history-v2-replaced\/CIV-1430\/mbta\/20181202\./);
+      expect(r.writes[1]).toBe(`overwrite ${KEY}`);
+    }
+  });
+
+  it('refuses a changed top-level field (reference date or quality record), reports it, and writes nothing at all', async () => {
+    for (const body of [
+      WEEKDAY.replace('"refDate":"20181129"', '"refDate":"20181128"'),
+      WEEKDAY.replace('"reason":"r"', '"reason":"s"'),
+    ]) {
+      const r = new Remote2(); r.store.set(KEY, OLD);
+      lines.length = 0;
       expect(await run(mk(body), r)).toBe(1);
       expect(r.writes).toEqual([]);
+      expect(r.store.get(KEY)).toBe(OLD);
+      expect(lines.join('\n')).toMatch(/CONFLICT \(CIV-1430 refused: a top-level field differs/);
     }
   });
 

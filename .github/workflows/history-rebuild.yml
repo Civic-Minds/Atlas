@@ -1,18 +1,20 @@
 name: Rebuild History v2 sidecars
 
-# CIV-1430: rebuild one agency's published History v2 sidecars with weekend values, each period pinned to its
-# ORIGINAL reference date, so weekday fields stay byte-identical and only Saturday/Sunday p / t / tp are added.
+# CIV-1430: rebuild one agency's published History v2 sidecars with today's code, each period pinned to its
+# ORIGINAL reference date: every route field (weekday corrected, weekend p / t / tp added) comes from today's rules,
+# every top-level field (refDate, refDateQuality, ...) stays byte-identical. Ryan chose the full redo on 2026-11-14
+# (historyV2Replace.ts APPROVED_REPLACEMENTS, mode 'full'); all periods go in one run, then build-history once.
 # Manual only; see docs/data/DATA_HISTORY.md "Publishing History v2 (runbook)".
 #
 #   gh workflow run history-rebuild.yml -f ref=<branch, tag or SHA> -f slug=mbta              (dry run, the default)
 #   gh workflow run history-rebuild.yml -f ref=main -f slug=mbta -f mode=write -f ticket=CIV-1430
 #
 # dry-run: downloads the published sidecars and each period's zip read-only (read-only R2 keys), runs the pinned
-#          backfill, diffs every period and route against the published sidecars, prints the upload plan with
-#          the approved-replacement check, and uploads all of it as artifacts. It cannot write R2.
-# write:   the same, from the tip of main only, then `history:upload --write --replace-approved <ticket>`: only
-#          sidecars whose ONLY differences are added weekend fields are replaced (each backed up first and read
-#          back); any other change refuses the whole run. Needs Ryan's explicit go-ahead, like any R2 write.
+#          backfill, diffs every period and route of the full rebuild against the published sidecars, prints the
+#          upload plan with the approved-replacement check, and uploads all of it as artifacts. It cannot write R2.
+# write:   the same, from the tip of main only, then `history:upload --write --replace-approved <ticket>` on the
+#          full rebuild: each differing sidecar passing the ticket's check is replaced (backed up first and read
+#          back); any refusal stops the run. Needs Ryan's explicit go-ahead, like any R2 write.
 #
 # A workflow that is not on the default branch cannot be dispatched (HTTP 404), so pushing a tag named
 # dryrun/civ-1430-* also starts a DRY RUN of mbta at that tag (never write mode).
@@ -135,13 +137,14 @@ jobs:
           done
           exit $rc
 
+      # The full rebuild (today's rules on every route field) is what uploads; the weekend-only merge in rebuilt/
+      # stays as a reference diff.
       - name: Diff every period and route against the published sidecars
         if: always()
         run: |
-          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff.json" --md "$OUT/diff.md"
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/full-rebuild" --out "$OUT/diff.json" --md "$OUT/diff.md"
           cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
-          # For reference only: today's rules on every field (the weekday drift the merge leaves out).
-          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/full-rebuild" --out "$OUT/diff-full-rebuild.json" --md "$OUT/diff-full-rebuild.md" > /dev/null || true
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff-weekend-merge.json" --md "$OUT/diff-weekend-merge.md" > /dev/null || true
 
       - name: Upload plan (dry run, with the approved-replacement check)
         if: always()
@@ -149,7 +152,7 @@ jobs:
         run: |
           ticket="$TICKET"
           if [ -z "$ticket" ] && [ "$SLUG" = mbta ]; then ticket=CIV-1430; fi
-          args=(--slug "$SLUG" --dir "$OUT/rebuilt")
+          args=(--slug "$SLUG" --dir "$OUT/full-rebuild")
           [ -n "$ticket" ] && args+=(--replace-approved "$ticket")
           set -o pipefail
           npx tsx pipeline/history-v2-upload.ts "${args[@]}" 2>&1 | tee "$OUT/upload-plan.txt"
@@ -166,8 +169,8 @@ jobs:
             ${{ env.OUT }}/full-rebuild/
             ${{ env.OUT }}/diff.json
             ${{ env.OUT }}/diff.md
-            ${{ env.OUT }}/diff-full-rebuild.json
-            ${{ env.OUT }}/diff-full-rebuild.md
+            ${{ env.OUT }}/diff-weekend-merge.json
+            ${{ env.OUT }}/diff-weekend-merge.md
             ${{ env.OUT }}/upload-plan.txt
             ${{ env.OUT }}/backfill-*.log
           retention-days: 30
@@ -243,17 +246,18 @@ jobs:
 
       - name: Diff every period and route against the published sidecars
         run: |
-          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff.json" --md "$OUT/diff.md"
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt/full-rebuild" --out "$OUT/diff.json" --md "$OUT/diff.md"
           cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
 
-      # Replaces only sidecars whose only differences are added weekend fields; any other change stops the run
-      # before the first write. Each replaced file is backed up under history-v2-replaced/<ticket>/ first.
+      # The full rebuild (backfill writes it under rebuilt/full-rebuild/). Replaces each differing sidecar that passes
+      # the ticket's check; any refusal stops the run before the first write. Each replaced file is backed up under
+      # history-v2-replaced/<ticket>/ first.
       - name: Upload (write, approved replacement only)
         env:
           ATLAS_HISTORY_V2: '1'
         run: |
           set -o pipefail
-          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/rebuilt" --replace-approved "$TICKET" --write 2>&1 | tee "$OUT/upload.txt"
+          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/rebuilt/full-rebuild" --replace-approved "$TICKET" --write 2>&1 | tee "$OUT/upload.txt"
 
       - name: Upload the report
         if: always()

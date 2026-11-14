@@ -22,8 +22,10 @@
  *
  *   --replace-approved <ticket>   CIV-1430, the one exception to "never overwritten": the ticket must approve
  *                                 exactly this slug (historyV2Replace.ts APPROVED_REPLACEMENTS). A differing
- *                                 sidecar is then replaced only when its ONLY differences are added weekend
- *                                 p / t / tp (checkWeekendOnlyAddition); any other change stays a CONFLICT,
+ *                                 sidecar is then replaced only when the approval's check passes: mode
+ *                                 'weekend' allows only added weekend p / t / tp (checkWeekendOnlyAddition),
+ *                                 mode 'full' any route change with every top-level field unchanged
+ *                                 (checkFullReplacement); anything else stays a CONFLICT,
  *                                 is reported field by field, and stops the run with nothing written. Shapes
  *                                 files are never replaced. Before each replacement the old body is copied to
  *                                 an immutable backup key (history-v2-replaced/<ticket>/...), read back and
@@ -35,7 +37,7 @@ import { resolve } from 'node:path';
 import { parseHistoryV2Sidecar } from '../shared/historyV2Reader.js';
 import type { HistoryV2Sink } from './historyV2.js';
 import { assertWriteGate, byteLength, hasR2Credentials, isEntryPoint, parseFlags, type Env } from './historyPublishLib.js';
-import { assertReplacementApproved, checkWeekendOnlyAddition, countAdded, replacementBackupKey, sha256Hex, type ReplacementCheck } from './historyV2Replace.js';
+import { assertReplacementApproved, checkReplacement, countAdded, replacementBackupKey, sha256Hex, type ReplacementCheck, type ReplacementMode } from './historyV2Replace.js';
 
 export type UploadState = 'new' | 'identical' | 'conflict' | 'replace' | 'unknown';
 
@@ -174,7 +176,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   const period = values['--period'];
   if (period && !PERIOD_RE.test(period)) throw new Error(`bad --period "${period}"`);
   const ticket = values['--replace-approved'];
-  if (ticket) assertReplacementApproved(ticket, slug);
+  const mode: ReplacementMode | null = ticket ? assertReplacementApproved(ticket, slug) : null;
 
   const scan = scanLocal(dir, slug, period);
   if (scan.errors.length > 0) {
@@ -198,7 +200,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
       item.state = existing == null ? 'new' : existing === item.body ? 'identical' : 'conflict';
       if (item.state === 'conflict' && ticket && item.kind === 'sidecar') {
         item.existing = existing!;
-        item.check = checkWeekendOnlyAddition(existing!, item.body);
+        item.check = checkReplacement(mode!, existing!, item.body);
         if (item.check.ok) item.state = 'replace';
       }
     }
@@ -208,7 +210,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   if (!remote) log('remote state unknown (no credentials; dry-run listing skipped)');
   for (const i of scan.items) {
     const verb = i.state === 'new' ? 'put (new)' : i.state === 'identical' ? 'no-op (identical)'
-      : i.state === 'replace' ? `REPLACE (${ticket}: adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
+      : i.state === 'replace' ? `REPLACE (${ticket}: ${mode === 'full' ? `full, ${i.check!.changes.length} route field(s) differ` : `adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}`}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
       : i.state === 'conflict' ? (i.check ? `CONFLICT (${ticket} refused: ${i.check.reason})` : 'CONFLICT (differs, never overwritten)') : 'put or no-op (state unknown)';
     log(`  ${i.key}  ${i.bytes} bytes  ${verb}`);
     if (i.state === 'conflict' && i.check) for (const c of i.check.changes.slice(0, 20)) log(`      ${c.path}: ${c.before ?? '(absent)'} -> ${c.after ?? '(absent)'}`);
@@ -236,7 +238,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   for (const item of scan.items) {
     if (item.state === 'identical') { unchanged++; continue; }
     if (item.state === 'replace') {
-      const err = await replaceOne(remote!, ticket!, item);
+      const err = await replaceOne(remote!, ticket!, item, mode!);
       if (err) {
         log(`STOPPED at ${item.key}: ${err}. ${written} written and ${replaced} replaced before it, later keys untouched.`);
         return 1;
@@ -261,10 +263,10 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
  * read the backup back, re-read the key (it must still hold the old body), write, read the new body back.
  * Returns an error message, or null when the key now holds the new body.
  */
-export async function replaceOne(remote: Remote, ticket: string, item: UploadItem): Promise<string | null> {
+export async function replaceOne(remote: Remote, ticket: string, item: UploadItem, mode: ReplacementMode = 'weekend'): Promise<string | null> {
   if (!remote.overwrite) return 'this remote cannot overwrite';
   const old = item.existing!;
-  const check = checkWeekendOnlyAddition(old, item.body);
+  const check = checkReplacement(mode, old, item.body);
   if (!check.ok) return `refused: ${check.reason}`;
   const backupKey = replacementBackupKey(ticket, item.key, old);
   const backed = await remote.sink.put(backupKey, old);

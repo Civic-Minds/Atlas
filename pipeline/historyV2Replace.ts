@@ -1,5 +1,6 @@
 /**
  * CIV-1430: the one approved exception to "History v2 sidecars are never overwritten".
+ * (Mode 'full', 2026-11-14, also allows today's values on every route field; see APPROVED_REPLACEMENTS.)
  *
  * A published sidecar may be replaced only when the new body is the old body plus weekend fields the old one
  * did not have: Saturday/Sunday `p` (per-period values, CIV-1425) and `t` / `tp` (shared-stretch values,
@@ -12,22 +13,35 @@
  */
 import { createHash } from 'node:crypto';
 
-/** Ticket -> the one agency slug it approves (Ryan's decision on CIV-1430, 2026-11-13: "1", MBTA). */
-export const APPROVED_REPLACEMENTS: Readonly<Record<string, string>> = { 'CIV-1430': 'mbta' };
+/**
+ * How much of a published sidecar an approval lets a replacement change:
+ * - 'weekend': only added weekend p / t / tp (checkWeekendOnlyAddition);
+ * - 'full': the routes object may change entirely (today's code on every field), every top-level field stays
+ *   byte-identical (checkFullReplacement).
+ */
+export type ReplacementMode = 'weekend' | 'full';
+
+/**
+ * Ticket -> the one agency slug it approves, and how much may change. CIV-1430: Ryan first chose "1" (weekend fields
+ * only, 2026-11-13), then on 2026-11-14 chose to redo every MBTA period with today's code ("But 11 is more accurate
+ * right?", then "1"), each file backed up first, all periods in one run ("But bunch the reruns together").
+ */
+export const APPROVED_REPLACEMENTS: Readonly<Record<string, { slug: string; mode: ReplacementMode }>> = { 'CIV-1430': { slug: 'mbta', mode: 'full' } };
 
 /** Weekend fields a replacement may add. */
 export const ADDABLE_WEEKEND_FIELDS = ['p', 't', 'tp'] as const;
 const WEEKEND_DAYS = ['sat', 'sun'] as const;
 
 export function approvedSlugFor(ticket: string): string | null {
-  return Object.prototype.hasOwnProperty.call(APPROVED_REPLACEMENTS, ticket) ? APPROVED_REPLACEMENTS[ticket] : null;
+  return Object.prototype.hasOwnProperty.call(APPROVED_REPLACEMENTS, ticket) ? APPROVED_REPLACEMENTS[ticket].slug : null;
 }
 
-/** Throws unless `ticket` approves replacements for exactly `slug`. */
-export function assertReplacementApproved(ticket: string, slug: string): void {
+/** Throws unless `ticket` approves replacements for exactly `slug`; returns the approved mode. */
+export function assertReplacementApproved(ticket: string, slug: string): ReplacementMode {
   const approved = approvedSlugFor(ticket);
   if (!approved) throw new Error(`--replace-approved ${ticket}: no such approval (known: ${Object.keys(APPROVED_REPLACEMENTS).join(', ')})`);
   if (approved !== slug) throw new Error(`--replace-approved ${ticket} covers only ${approved}, not ${slug}`);
+  return APPROVED_REPLACEMENTS[ticket].mode;
 }
 
 /** One added field: route key, day and field name. */
@@ -101,6 +115,34 @@ export function checkWeekendOnlyAddition(oldBody: string, newBody: string): Repl
       ? `${changes.length} field(s) other than added weekend p/t/tp differ (first: ${changes[0].path})`
       : 'bytes differ outside the added weekend fields (key order or number formatting)',
   };
+}
+
+/**
+ * A full replacement (mode 'full'): the routes object may differ in any way, but every top-level field other than
+ * `routes` (version, slug, periodKey, refDate, refDateQuality, ...) must be byte-identical, in the same order, so the
+ * period, its reference date and its quality record never move. `changes` lists every differing route field.
+ */
+export function checkFullReplacement(oldBody: string, newBody: string): ReplacementCheck {
+  let oldJson: unknown;
+  let newJson: unknown;
+  try { oldJson = JSON.parse(oldBody); newJson = JSON.parse(newBody); } catch {
+    return { ok: false, added: [], changes: [], reason: 'not valid JSON' };
+  }
+  if (!isObj(oldJson) || !isObj(newJson) || !isObj(oldJson.routes) || !isObj(newJson.routes)) {
+    return { ok: false, added: [], changes: diffJson(oldJson, newJson), reason: 'not a sidecar (no routes object)' };
+  }
+  const changes = diffJson(oldJson, newJson);
+  const withoutRoutes = (o: Obj) => JSON.stringify(Object.fromEntries(Object.entries(o).map(([k, v]) => [k, k === 'routes' ? null : v])));
+  if (withoutRoutes(oldJson) !== withoutRoutes(newJson)) {
+    const top = changes.filter(c => !c.path.startsWith('routes.') && c.path !== 'routes');
+    return { ok: false, added: [], changes: top, reason: top.length ? `a top-level field differs (first: ${top[0].path})` : 'top-level fields are in a different order' };
+  }
+  return { ok: true, added: [], changes };
+}
+
+/** The check an approval's mode applies. */
+export function checkReplacement(mode: ReplacementMode, oldBody: string, newBody: string): ReplacementCheck {
+  return mode === 'full' ? checkFullReplacement(oldBody, newBody) : checkWeekendOnlyAddition(oldBody, newBody);
 }
 
 export function sha256Hex(body: string): string {
