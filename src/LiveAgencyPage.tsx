@@ -69,13 +69,15 @@ export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'er
     if (!agency) return;
     let live = true;
     fetch(liveAgencyDataUrl(agency))
-      .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: liveNoAgencyAnalysis(agency) } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
+      .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: '' } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
       // #1486: an answer for another agency (a local review stub serves TTC's file for any agency) is "no analysis", never shown under this name.
-      .then(data => { if (live) setState({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: liveNoAgencyAnalysis(agency) } : data }); })
+      .then(data => { if (live) setState({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: '' } : data }); })
       .catch(() => { if (live) setState({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }); });
     return () => { live = false; };
   }, [agency]);
-  return state;
+  // CIV-1160: an agency Live has no analysis for is named by its own short name ("MiWay"), never the address's slug.
+  const name = useLiveAgencyName(agency);
+  return state.kind === 'done' && state.data.status === 'unknown_agency' ? { kind: 'done', data: { status: 'unknown_agency', reason: liveNoAgencyAnalysis(name) } } : state;
 }
 
 function Section({ id, title, intro, children }: { id: string; title: string; intro?: string; children: React.ReactNode }) {
