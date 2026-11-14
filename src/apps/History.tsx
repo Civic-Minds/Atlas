@@ -59,7 +59,7 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history), and per period. */
+  /** CIV-555: the route's shared-stretch value per period when better than its own (build-history); trunkHeadwayMin is the internal all-day one (no screen shows it). */
   trunkHeadwayMin?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];

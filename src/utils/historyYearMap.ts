@@ -28,8 +28,10 @@ export interface HistoryYearRoute {
 type Snapshot = HistorySnapshotLike & { headwayByPeriod?: HeadwayByPeriod };
 
 /**
- * What History shows: a time period ('all' = the day's all-day value), a frequency limit (Infinity = All) and the
- * day (CIV-1425: Weekday unless the beta-only day picker is on and set to Saturday or Sunday).
+ * What History shows: a time period, a frequency limit (Infinity = All) and the
+ * day (CIV-1425: Weekday unless the beta-only day picker is on and set to Saturday or Sunday). History has no
+ * "All day" option (CIV-1097); 'all' is only the internal default (HISTORY_VIEW_ALL), which no screen reaches
+ * (docs/product/FREQUENCY_RULES.md).
  */
 export interface HistoryView {
   period: TimePeriod;
@@ -39,7 +41,7 @@ export interface HistoryView {
 export const HISTORY_VIEW_ALL: HistoryView = { period: 'all', maxHeadway: Infinity, day: 'Weekday' };
 
 /**
- * A snapshot's value in a period (CIV-389): 'all' is the weekday all-day value (snapshotValue);
+ * A snapshot's value in a period (CIV-389): internal 'all' is the weekday all-day value (snapshotValue);
  * a period reads the snapshot's own per-period headway (v2 rep.p, else the v1 headwayByPeriod).
  * A period the snapshot doesn't have is blank, never borrowed from another period or day.
  */
@@ -53,7 +55,7 @@ export function historyPeriodValue(snapshot: Snapshot, period: TimePeriod): Snap
  * A snapshot's value on a day in a period (CIV-1425). Weekday is `historyPeriodValue`, unchanged. Saturday and
  * Sunday read only that day's own stored value: an old v1 snapshot is blank; a day with no trips ({none}) is
  * 'none' in every period (it fails any frequency limit); otherwise the day's per-period value `p[period]` when
- * stored, else blank. 'all' is the day's all-day value (snapshotValue). Never borrowed from the weekday
+ * stored, else blank. Internal 'all' is the day's all-day value (snapshotValue). Never borrowed from the weekday
  * (rep.p, headwayByPeriod) or, for a period, from the day's all-day h.
  */
 export function historyDayPeriodValue(snapshot: Snapshot, day: DayType, period: TimePeriod): SnapshotValue {
@@ -68,7 +70,7 @@ export function historyDayPeriodValue(snapshot: Snapshot, day: DayType, period: 
 }
 
 /**
- * CIV-1431: a weekend day's shared-stretch low end in a period ('all' = the day's `t`, else `tp[period]`), stored the
+ * CIV-1431: a weekend day's shared-stretch low end in a period (`tp[period]`; internal 'all' reads the day's `t`), stored the
  * same way as the weekday's. Undefined when the day has none (never borrowed from the weekday or another period).
  */
 export function historyDayTrunk(snapshot: Snapshot, day: 'Saturday' | 'Sunday', period: TimePeriod): number | undefined {
