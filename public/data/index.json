@@ -7307,10 +7307,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261113",
+      "lastFeedCheckAt": "20261114",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261213",
+      "expiredFeedCheckExpiry": "20261214",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7326,7 +7326,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-13"
+        "scoredAt": "2026-11-14"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7335,7 +7335,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "3846f83773dea82dcdf0a99aadb13b1b594ecee7e2dcd139e93d8653d6eb9056"
+      "refusedFeedSha256": "7a4da92c702712012e10c06baccd4040cb73d8dc8295e071df2e9c3a9ec99233"
     },
     {
       "slug": "hocts",
@@ -11303,7 +11303,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-13",
+      "lastRefreshedAt": "2026-11-14",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11322,7 +11322,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261113",
+      "lastFeedCheckAt": "20261114",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11356,9 +11356,9 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261127",
+          "feedExpiry": "20261128",
           "feedVersion": null,
-          "rawArchiveKey": "20261127-9bf1118bc78add6e"
+          "rawArchiveKey": "20261128-7f60d006c782ef11"
         }
       ],
       "lastPeekedExpiry": "20270401",
