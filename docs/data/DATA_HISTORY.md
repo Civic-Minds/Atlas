@@ -2,6 +2,19 @@
 
 Atlas's **History** app displays route frequency changes over a 10-year period. This document details the history model, the status of audited systems, and deferred agencies.
 
+## Candidates for more agencies (2026-11-13)
+
+17 agencies have 10 or more real snapshot years. The research on adding more is in [History archive candidates, 2026-11](../research/history-archive-candidates-2026-11/REPORT.md), with its evidence JSON beside it. Nothing there is published yet.
+
+| Agency | Real years today | Archive found | Next step |
+| --- | ---: | --- | --- |
+| Brampton Transit | 9 | Mobility Database (mdb-729, mdb-1994) | Backfill a missing year and upload (R2 go-ahead) |
+| Kingston Transit | 9 | Mobility Database (mdb-733) | Backfill 2017 or 2020 and upload (R2 go-ahead) |
+| Pittsburgh Regional Transit | 0 | Official WPRDC archive, 2012–2026 | Pick periods, check route continuity, upload (R2 go-ahead) |
+| Winnipeg Transit | 0 | WT Live community mirror, 2012–2025 | Separate route identities across the 2025 redesign first |
+| SEPTA | 0 | SEPTA GitHub releases, 2015–2026 | Backfill support for a second (rail) feed first; 2025 line renaming |
+| TriMet, King County Metro | 0 | Mobility Database, 2013–2026 (calendars only) | Download and process full feeds |
+
 ---
 
 ## Archive policy
