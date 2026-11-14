@@ -16,6 +16,7 @@ import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { isRailReplacementBus } from '../../../shared/modes';
+import { hiddenAgencyNoteFor } from '../../../shared/hiddenAgencyNote';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
 import { agencyCardTitle } from '../../utils/agencyName';
@@ -489,6 +490,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
   ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
+  // CIV-1060: a hidden agency's note says why nothing shows, in the one approved pattern; no Learn more.
+  const hiddenNote = hiddenAgencyNoteFor(agency.hiddenReason);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
@@ -736,8 +739,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </ModeFilterPillRow>
           )}
-          {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice || hiddenNote) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              {hiddenNote && <CardHelpNotice message={hiddenNote} />}
               {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE || rolloutNotice === BETA_ROLLOUT_NOTICE ? (
                 // N20 and N108 (Ryan): a beta-only agency or service points to the same page on beta, never preview; on beta itself, no link.
                 <CardHelpNotice

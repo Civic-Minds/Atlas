@@ -112,6 +112,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: never show wrong or misleading information; hide or hold first, fix after.
   - Why: a wrong number on the map costs more trust than a missing one.
   - Source: Ryan, standing rule (data integrity first: "never show wrong or misleading info"); [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md) (Why this matters)
+- **Manual corrections only fix errors inside the feed**
+  - What: a manual correction only fixes an error inside the agency's GTFS file, and Atlas adds no note carrying information that is only on the agency's website.
+  - Why: Ryan: "The GTFS is live. It is the truth."
+  - Source: Ryan, 2026-10-27 (Linear CIV-1060, the FXBGO! note)
 - **Narrow fixes, and stop after two rule attempts**
   - What: write pass criteria first, count every change outside the target, hand-check all day types, then stop and report after two rule attempts.
   - Why: broad fixes built from one case regressed other agencies (#263, 32 routes in 18 cities).

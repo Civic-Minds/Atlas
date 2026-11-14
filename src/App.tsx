@@ -54,6 +54,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
+import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
 import { loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
@@ -102,6 +103,8 @@ export interface Agency {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  /** CIV-1060: why a hidden agency shows nothing; the agency card shows hiddenAgencyNoteFor(hiddenReason). */
+  hiddenReason?: HiddenAgencyReason;
   feedReviewStatus?: 'review' | 'verified';
   feedQuality?: FeedQuality;
   fare?: number;
