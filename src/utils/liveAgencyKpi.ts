@@ -4,7 +4,7 @@
  * very different lengths means nothing, so the network's run time is the typical trip against the timetable, as a share
  * ("7% faster"), and the route's own minutes show only when a route is picked.
  */
-import { FIXED_NOISE, dailyNoise } from '../../shared/liveDashboard';
+import { FIXED_NOISE, dailyNoise, weekForBand, type DashboardBand } from '../../shared/liveDashboard';
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
@@ -18,15 +18,18 @@ export const NETWORK_RUN_TIME_LABEL = 'Run time vs schedule';
 /** The tile's caption and hover text (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_SUB = 'typical trip against the schedule, all routes';
 
-export function agencyKpiTiles(s: AgencySummary): Kpi[] {
-  const w = s.weekly;
+/** `band` is the time of day picked (CIV-1459): no tiles when the file has no figures for it, never the whole day's in its place. */
+export function agencyKpiTiles(s: AgencySummary, band: DashboardBand = 'all'): Kpi[] {
+  const w = weekForBand(s.weekly, band);
   if (!w) return [];
-  const tiles = kpiTiles({ ...w, health: [] }, s.daily);
+  // The daily values behind the noise are the whole day's: a time of day uses the fixed stand-in.
+  const daily = band === 'all' ? s.daily : { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] };
+  const tiles = kpiTiles({ ...w, health: [] }, daily);
   const t = w.thisWeek.tripTime, l = w.lastWeek.tripTime;
   const now = runTimeOver(t), before = runTimeOver(l);
   if (now == null) return tiles;
   // The day-to-day noise in minutes, as a share of the scheduled trip: the arrow and its colour follow the share shown.
-  const noiseMin = dailyNoise(s.daily?.tripTime ?? [], w.thisWeek.healthyDates.length, w.lastWeek.healthyDates.length);
+  const noiseMin = dailyNoise(daily?.tripTime ?? [], w.thisWeek.healthyDates.length, w.lastWeek.healthyDates.length);
   // Too few days for a spread: the fixed minute stand-in, as the same share.
   const noise = t && t.scheduledMin > 0 ? (noiseMin ?? FIXED_NOISE.tripTime) / t.scheduledMin : null;
   const nowText = runTimeShareText(now), lastText = before != null ? runTimeShareText(before) : null;

@@ -346,7 +346,7 @@ const runTimes: { date: string; directionId: number; startHour: number; schedSec
 /** Per run: when it left each stop (25 m past) and reached each stop, and the timetable's times there, for run time over the main stretch. */
 const stretchRuns: { date: string; directionId: number; patternId: string; dep: Map<string, number>; arr: Map<string, number>; sched: Map<string, { dep: number; arr: number }>; base: number }[] = [];
 /** One entry per scheduled trip: did a vehicle run it, was it not seen, or can't we tell (data gap)? */
-const tripOutcomes: { date: string; directionId: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
+const tripOutcomes: { date: string; directionId: number; /** Local hour the trip is scheduled to start (its time of day, CIV-1459). */ startHour: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
 let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
@@ -787,7 +787,7 @@ for (const { svcDate, trip, base } of tripInstanceList) {
   }
   if (statuses.every(st => st === 'not_seen')) tripsNotSeen++;
   tripOutcomes.push({
-    date: svcDate, directionId: Number(trip.direction_id),
+    date: svcDate, directionId: Number(trip.direction_id), startHour: hourOf(scheduledT[0]),
     outcome: statuses.every(st => st === 'not_seen') ? 'not_seen' : statuses.every(st => st === 'feed_gap' || st === 'unlisted_cover' || st === 'not_seen') ? 'unknown' : 'seen',
   });
   if (statuses.every(st => st === 'unlisted_cover')) tripsUnlistedCover++;
@@ -1199,20 +1199,26 @@ const extraWaitV3 = Object.fromEntries(BANDS.map(band => [band, [...headwayBySto
 // Which days of the archive are healthy, then the same measures for this week and last week.
 const allValidDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort();
 const weeks = weekSplit(allValidDates, healthV3);
-function weekMetrics(days: readonly string[]) {
+/**
+ * The week's figures over `days`, for the whole day or one time of day (CIV-1459: the Live map's week tables follow the
+ * period picked). A trip's time of day is the hour it starts, as the late-by-hour chart and run time count it.
+ */
+function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all') {
   const ds = new Set(days);
-  const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { tripStartsOnly: true }).overall;
+  const inBand = (hour: number) => band === 'all' || bandForHour(hour) === band;
+  const runs = runDelays.filter(r => ds.has(r.date)).map(r => (band === 'all' ? r : { ...r, stops: r.stops.filter(x => inBand(x.hour)) })).filter(r => r.stops.length > 0);
+  const tp = adherenceReport(runs, { tripStartsOnly: true }).overall;
   let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0, close = 0, far = 0;
   for (const [key, m] of headwayByStop) {
-    const wins = (m.get('all') ?? []).filter(w => ds.has(w.date));
+    const wins = (m.get(band) ?? []).filter(w => ds.has(w.date));
     const stat = headwayBandStat(wins);
     if (stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 10) { ewtSum += stat.excessWaitSec * stat.gaps; ewtW += stat.gaps; }
     const sb = stopBunching(key.split('|')[0], wins);
     bad += sb.badShare * sb.n; gaps += sb.n; close += sb.bunchedShare * sb.n; far += sb.gappedShare * sb.n;
   }
-  const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date)));
-  const mp = runTimeStat(mainPatternRows.filter(r => ds.has(r.date)));
-  const dv = delivered(tripOutcomes.filter(o => ds.has(o.date)));
+  const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date) && inBand(r.startHour)));
+  const mp = runTimeStat(mainPatternRows.filter(r => ds.has(r.date) && inBand(r.startHour)));
+  const dv = delivered(tripOutcomes.filter(o => ds.has(o.date) && inBand(o.startHour)));
   return {
     days: days.length,
     late: tp.n ? { share: r3(tp.lateShare), n: tp.n } : null,
@@ -1249,6 +1255,11 @@ const weeklyV3 = {
   thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy) },
   lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy) },
   comparable: weeks.thisHealthy.length >= MIN_HEALTHY_DAYS && weeks.lastHealthy.length >= MIN_HEALTHY_DAYS,
+  // The same two weeks for each time of day (CIV-1459), on the same days.
+  bands: Object.fromEntries(BANDS.filter((b): b is TimeBand => b !== 'all').map(band => [band, {
+    thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy, band) },
+    lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy, band) },
+  }])),
 };
 
 // Regular patterns per direction (20%+ of the direction's trips), each as its ordered stops, so the page can draw the

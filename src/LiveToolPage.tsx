@@ -8,7 +8,7 @@ import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { FEATURES } from '../shared/config';
 
 import type { AgencySummary } from '../shared/liveAgency';
-import { NOISE_RULE, weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
+import { NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { liveAgencyPath, useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
@@ -132,14 +132,15 @@ const BOTH_DIRECTIONS = 'both directions';
  * it; each has its own row in the Run time card), where the file has it.
  */
 // Run time is already the main pattern's (fetchLiveDashboard, #1149).
-const weekly = (v3: LiveV3) => (v3.weekly ? kpiTiles(v3.weekly, weekDailyValues(v3)) : []);
+// CIV-1459: the picked time of day's two weeks; none when the file has no figures for it (never the whole day's in their place).
+const weekly = (v3: LiveV3, band: DashboardBand) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}) : []; };
 
 /** Under the left panel's tiles; the full rule is its hover text. */
 const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
-function summaryWidgets(s: AgencySummary): PanelWidget[] {
+function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const weekLeft = excludingDays(s.weekly);
-  const tiles = agencyKpiTiles(s);
+  const tiles = agencyKpiTiles(s, band);
   return [
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope="All routes" caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
   ];
@@ -154,7 +155,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
   const hours = routeLateHours(v3);
   const hasRunTime = !!v3.runningTime?.bands[band]?.[String(dir)];
-  const tiles = weekly(v3);
+  const tiles = weekly(v3, band);
   const weekLeft = excludingDays(v3.weekly);
   // #1490: the panel names the left-out days once; late by hour adds its own note only when its days differ from the week table's.
   const hourLeft = routeLeftOut(v3);
@@ -229,7 +230,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
-  const summary = useMemo(() => summaryWidgets(s), [s]);
+  const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   const back: PanelWidget = { key: 'back', size: 'medium', node: <LiveBackLink agencyName={agencyName} onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4" /> };

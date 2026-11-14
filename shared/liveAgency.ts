@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekBands, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -61,6 +61,8 @@ export interface AgencySummary {
     thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number;
     /** The days every route left out (the footer names only these; each route page lists its own). Older files: absent. */
     leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] };
+    /** The same two weeks for each time of day (CIV-1459; older files: absent). */
+    bands?: WeekBands;
   } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
   daily: Required<DailyValues>;
@@ -161,7 +163,14 @@ export function agencySummary(input: {
       thisWeek: everywhere(withWeekly.map(r => r.v3.weekly!.thisWeek)),
       lastWeek: everywhere(withWeekly.map(r => r.v3.weekly!.lastWeek)),
     };
-    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays, leftOutEverywhere };
+    // Each time of day across routes, only where every route's file has it (CIV-1459): a period missing on some routes would
+    // otherwise read as the network's.
+    const periods = (['amPeak', 'midday', 'pmPeak', 'evening'] as const).filter(b => withWeekly.every(r => r.v3.weekly!.bands?.[b]));
+    const bands: WeekBands = Object.fromEntries(periods.map(b => [b, {
+      thisWeek: combineWeeks(withWeekly.map(r => r.v3.weekly!.bands![b]!.thisWeek)),
+      lastWeek: combineWeeks(withWeekly.map(r => r.v3.weekly!.bands![b]!.lastWeek)),
+    }]));
+    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays, leftOutEverywhere, ...(periods.length ? { bands } : {}) };
   })() : null;
 
   const rows: AgencyRouteRow[] = routes.map(({ route, label, titleLabel, mode, longName, v3 }) => {

@@ -88,6 +88,19 @@ export interface WeekMetrics {
   bunching: { share: number; gaps: number; /** Too close (CIV-302); absent in older files. */ bunched?: number; /** Too far apart. */ gapped?: number } | null;
   delivered: { share: number; seen: number; notSeen: number; unknown: number } | null;
 }
+/** The two weeks for each time of day (CIV-1459), on the same days as the whole day's. */
+export type WeekBands = Partial<Record<Exclude<DashboardBand, 'all'>, { thisWeek: WeekMetrics; lastWeek: WeekMetrics }>>;
+
+/**
+ * The week comparison for the time of day picked (CIV-1459: every number follows the period, CIV-1097/CIV-1451). Null when
+ * the file has no figures for that period, so a page never shows the whole day's numbers as if they were the period's.
+ */
+export function weekForBand<W extends { thisWeek: WeekMetrics; lastWeek: WeekMetrics; bands?: WeekBands }>(w: W | null | undefined, band: DashboardBand): W | null {
+  if (!w) return null;
+  if (band === 'all') return w;
+  const b = w.bands?.[band];
+  return b ? { ...w, thisWeek: b.thisWeek, lastWeek: b.lastWeek } : null;
+}
 export interface DeliveredFigures { seen: number; notSeen: number; unknown: number; share: number | null }
 /** Time-of-day keys: the whole day, then the map's periods. */
 export type DashboardBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
@@ -157,7 +170,11 @@ export interface LiveV3 {
   };
   /** One day at a time, the same figures as a week (CIV-278): each day's measures and whether it was a good day. */
   daily?: Record<string, { healthy: boolean; lateByHour?: Array<{ hour: number; n: number; lateShare: number }> } & Pick<WeekMetrics, 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'delivered' | 'mainPatternTrip'>>;
-  weekly?: { minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean };
+  weekly?: {
+    minHealthyDays: number; health: Array<{ date: string; snapshots: number; healthy: boolean }>; thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean;
+    /** The same two weeks for each time of day (CIV-1459; older files: absent). */
+    bands?: WeekBands;
+  };
   /** Stops, build-up and adherence for each time of day. The top-level `adherence`, `stops` and `buildup` are the 'all' entry. */
   bands: Record<DashboardBand, DashboardBandData>;
   bunching: Array<{ directionId: number; bands: Record<string, DashboardBunchingBand> }>;
@@ -455,7 +472,8 @@ export function dailyValuesOf(days: ReadonlyArray<Pick<NonNullable<LiveV3['daily
 export function withMainPatternTrip(v3: LiveV3): LiveV3 {
   if (!v3.weekly || v3.weekly.thisWeek.mainPatternTrip === undefined) return v3;
   const main = <T extends { tripTime: unknown; mainPatternTrip?: WeekMetrics['mainPatternTrip'] }>(x: T): T => ({ ...x, tripTime: x.mainPatternTrip ?? null });
-  return { ...v3, weekly: { ...v3.weekly, thisWeek: main(v3.weekly.thisWeek), lastWeek: main(v3.weekly.lastWeek) }, daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, main(x)])) };
+  const bands = v3.weekly.bands && Object.fromEntries(Object.entries(v3.weekly.bands).map(([b, x]) => [b, { thisWeek: main(x!.thisWeek), lastWeek: main(x!.lastWeek) }])) as WeekBands;
+  return { ...v3, weekly: { ...v3.weekly, thisWeek: main(v3.weekly.thisWeek), lastWeek: main(v3.weekly.lastWeek), ...(bands ? { bands } : {}) }, daily: v3.daily && Object.fromEntries(Object.entries(v3.daily).map(([d, x]) => [d, main(x)])) };
 }
 
 /** This week's daily values on days with good recordings, where the file has them. */
