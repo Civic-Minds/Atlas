@@ -1507,7 +1507,7 @@
    "batch": "B16",
    "slug": "septa",
    "programId": "septa-reduced",
-   "sourceUrl": "https://wwww.septa.org/fares/reduced-fare-program/",
+   "sourceUrl": "https://www.septa.org/fares/reduced-fare-program/",
    "http": "200",
    "verdict": "verbatim",
    "shifted": false

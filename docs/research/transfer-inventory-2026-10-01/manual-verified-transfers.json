@@ -1053,7 +1053,7 @@
       "transferLimit": "up to 2 transfers",
       "transferCost": "free with SEPTA Key or contactless",
       "paymentMethod": "SEPTA Key or contactless",
-      "sourceUrl": "https://wwww.septa.org/fares/",
+      "sourceUrl": "https://www.septa.org/fares/",
       "confidence": "high",
       "status": "confirmed",
       "evidence": "The official fare page states that SEPTA Key or contactless riders can make up to two transfers for free within two hours of the first tap."
