@@ -13,6 +13,10 @@ describe('Live station names', () => {
     expect(nameCase('King St West at Yonge St West Side - King Station', 'liveStop')).toBe('King St West at Yonge St West Side - King Station');
     expect(nameCase('Queens Quay/Ferry Docks Station', 'liveStop')).toBe('Queens Quay/Ferry Docks Station');
     expect(nameCase('King St West at Bathurst St', 'liveStop')).toBe('King St West at Bathurst St');
+    // A street called Bay, or a platform not at a station, is not a station's bay or platform.
+    expect(nameCase('Union Station at Bay St', 'liveStop')).toBe('Union Station at Bay St');
+    expect(nameCase('Main St at Eastbound Platform', 'liveStop')).toBe('Main St at Eastbound Platform');
+    expect(nameCase('Queens Quay W at Spadina Ave East Side Streetcar Platform', 'liveStop')).toBe('Queens Quay W at Spadina Ave East Side Streetcar Platform');
     // The map's own mode keeps the full name.
     expect(nameCase('Broadview Station at Bay 6', 'stop')).toBe('Broadview Station at Bay 6');
   });

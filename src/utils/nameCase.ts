@@ -376,9 +376,14 @@ function routeLabelCase(part: string): string {
  * "Dundas West Station". Every other name is left as it is.
  */
 export function liveStationName(name: string): string {
-  const atStation = /^(.+?\bStation)\s+(?:at\s+)?(?:Bay\s+\w+|(?:\w+\s+)?Platform)$/i.exec(name);
+  // A bay is a number or a letter ("Bay 6", "Bay 4A", "Bay C"), never a street such as Bay St.
+  const atStation = /^(.+?\bStation)\s+(?:at\s+)?(?:Bay\s+(?:\d+[A-Z]?|[A-Z])|(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+Platform|Platform(?:\s+\d+)?)$/i.exec(name);
   if (atStation) return atStation[1];
-  const platform = /^.+?\s+at\s+(.+?)\s+(?:(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+)?Platform$/i.exec(name);
-  if (platform) return /\bStation$/i.test(platform[1]) ? platform[1] : `${platform[1]} Station`;
+  // "<street> at <station> Outer Platform": only a platform named by its kind, at a place with no street word in it, so
+  // "Main St at Eastbound Platform" or "… at Spadina Ave East Side Platform" stay as they are.
+  const platform = /^.+?\s+at\s+(.+?)\s+(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+Platform$/i.exec(name);
+  if (platform && !/\b(St|Ave|Rd|Blvd|Dr|Side|Hwy|Pkwy|Cres|Crt|Ln)\b/i.test(platform[1])) {
+    return /\bStation$/i.test(platform[1]) ? platform[1] : `${platform[1]} Station`;
+  }
   return name;
 }
