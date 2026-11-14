@@ -33,7 +33,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
     <ProfileBars
       ariaLabel="Share of scheduled trips that ran, day by day"
       points={points}
-      formatY={y => `${Math.round(y * 1000) / 10}%`}
+      formatY={pctTenth}
       unit="trips"
       valueHeader="Ran"
       rowHeader="Day"
