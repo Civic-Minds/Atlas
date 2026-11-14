@@ -60,7 +60,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'milton': { serviceName: 'On-demand service' },
   // Confirmed 2026-10-27 (CIV-1063): https://northbay.ca/services-payments/north-bay-transit/dynamic-dispatching/
   'north-bay': { serviceName: 'On-demand service', url: 'https://northbay.ca/services-payments/north-bay-transit/dynamic-dispatching/' },
-  'chatham-kent': { serviceName: 'Ride CK' },
   // Confirmed 2026-10-27 (CIV-1063): https://rrmetro.org/services/metro-connect
   'rockregion': { serviceName: 'METRO Connect', url: 'https://rrmetro.org/services/metro-connect' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.rtl-longueuil.qc.ca/rtl-demande
