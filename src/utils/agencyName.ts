@@ -322,7 +322,6 @@ function shortenedName(name: string): string {
   if (lower.includes('hamilton street')) return 'HSR';
   if (lower.includes('blue water area')) return 'Blue Water';
   if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
-  if (lower.includes('santa maria area')) return 'SMAT';
   if (lower.includes('redding area')) return 'RABA';
   if (lower.includes('rockford mass') || hasWord(lower, 'rmtd')) return 'RMTD';
 
