@@ -86,7 +86,7 @@ function stopHeadwayAt(p: ShapeProperties, period: TimePeriod, stopId: string): 
     // the route's scheduled frequency and can be much larger near the first/last
     // trip of a period (for example DART 25/57 are scheduled every 20 minutes at
     // every stop but have large period-coverage gaps). Use the same scheduled
-    // per-stop metric that the all-day view uses for segment highlighting.
+    // per-stop metric that the internal 'all' path uses for segment highlighting.
     const v = p.stopPeriodHeadways?.[stopId]?.[period as PeriodKey];
     return v ?? null;
   }
