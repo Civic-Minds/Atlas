@@ -305,7 +305,8 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   const stale = daysOld > STALE_AFTER_DAYS;
   return {
     upTo, daysOld, stale,
-    text: stale ? `Data up to ${upTo}, ${daysOld} days ago.` : `Data up to ${upTo}.`,
+    // #1489: the short date every Live page writes ("Oct 14"), not the file's YYYY-MM-DD.
+    text: stale ? `Data up to ${dateRangeText(upTo, upTo)}, ${daysOld} days ago.` : `Data up to ${dateRangeText(upTo, upTo)}.`,
     devHint: stale ? `npm run live:analyze -- ${route} (needs fresh saved vehicle locations)` : undefined,
   };
 }

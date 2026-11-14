@@ -237,6 +237,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-13 — A period that starts slowly says when steady service starts
+Ryan, 2026-11-13 (Linear CIV-1411), on TTC Line 5 westbound's AM peak (two 20-minute gaps at Laird before 7:27, then every 3.6): "dont we have a 'x mins from x time' fix for this laready". A slow start doesn't set the card's figure on its own. The card says "every N from <time>", where N is the longest wait from that time to the period's end, so it never reads better than the service runs. Without a steady run from that time, the period keeps its longest wait.
+- A period starts slowly when its longest wait comes before the time, and from the time on there are at least 4 departures, no gap over 1.5 times their typical gap (to the period's end included), the earlier longest wait is over twice that typical gap, and the time is at or before the period's midpoint. The earliest time that passes is named.
+- It replaces the one-gap reading (D6) where both apply: Halifax 1 weekday AM read "every 11, one 30-minute gap" and now reads "every 15 from 6:30". One hole in service that already ran at the steady pace before it is not a slow start and keeps the one-gap reading.
+- Card wording only. The filter value, the map line colour and every other figure are unchanged (same as #1277).
+
 ### 2026-11-10 — A night belongs to the service day it starts on
 Ryan, 2026-11-10 (#1416, Linear CIV-1384), on MiWay 2 and 17 (Sunday's last bus 0:32, Monday's first 2:19): "Technically, The gap would be "Sunday" because it is during the Sunday service day." Each day type's night is its own evening with the morning after it, whichever day the early trips are written on, and counts against that day (FREQUENCY_RULES.md rule 10).
 - Pending Ryan's OK: Friday evening into Saturday morning starts on a weekday, so it counts toward Weekday as the rule reads literally. MiWay 2 and 17 still fail Weekday on it (their Saturday buses start at 4:40 to 5:26, after Friday's last at about 2:00); without it they would pass at 30, 60 and 90.

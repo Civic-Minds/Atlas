@@ -491,6 +491,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
+                            wrapLongValue
                             label={row.label}
                             headway={grade ?? undefined}
                             limited={grade == null}
@@ -532,6 +533,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     <CardDirectionRow
                       labelWeight="regular"
                       singleLine
+                      wrapLongValue
                       key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited

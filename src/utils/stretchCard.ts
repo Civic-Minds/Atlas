@@ -213,3 +213,64 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
   const key = period as PeriodKey;
   return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }
+
+/** CIV-995 (a): the values one card row reads for a period, from its stretch or, on older data, from its own feature. */
+export interface StretchRowReading {
+  /** 'stretch': over every trip at the row's stretch reference stop; 'feature': the feature's own headsign values (old data). */
+  source: 'stretch' | 'feature';
+  /** The row's settled reading, only where it runs through the period ('feature': headwayByPeriod). */
+  cadence: number | null;
+  /** The longest gap inside the period ('stretch': no clipped window edges; 'feature': maxGapByPeriod, edges included). */
+  longestGap: number | null;
+  /** Whether the settled steadiness test calls the period steady (null when unknown). */
+  consistent: boolean | null;
+  /** Sparkline hour headways. */
+  hourly: Partial<Record<number, number | null>> | undefined;
+}
+
+/** The row's stable slot ID: "main:0" or "tail:<index>"; null for a variant or a feature without a stretch role. */
+export function stretchSlotKey(f: ShapeProperties): string | null {
+  return f.stretchRole === 'main' || f.stretchRole === 'tail' ? `${f.stretchRole}:${f.stretchIndex ?? 0}` : null;
+}
+
+/**
+ * CIV-995 (a): the shared selector for a row's period values. It reads the stretch's own values (stretchMeta rows) for the
+ * row's slot, and falls back to the feature's own values when the data has none (before the CIV-995 rebuild, or a
+ * variant). Nothing on the card reads it yet; step (b) switches the rows, hover and notices over to it.
+ */
+export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
+  if (period === 'all') return null;
+  const key = period as PeriodKey;
+  const meta = f.stretchMeta;
+  const slot = f.stretchRole === 'main' ? meta?.main : f.stretchRole === 'tail' ? meta?.tails[f.stretchIndex ?? 0] : undefined;
+  const rows = slot?.rows;
+  if (rows) {
+    return { source: 'stretch', cadence: rows.cadence[key] ?? null, longestGap: rows.longestGap[key] ?? null, consistent: rows.consistent.includes(key), hourly: rows.hourly };
+  }
+  return {
+    source: 'feature',
+    cadence: f.headwayByPeriod?.[key] ?? null,
+    longestGap: f.maxGapByPeriod?.[key] ?? null,
+    consistent: f.headwayByPeriodSustained?.[key] ?? null,
+    hourly: f.headwayByHour,
+  };
+}
+
+/**
+ * CIV-995 (b): the stretch reading a main or tail row's value uses, or null to keep the row's own values. Only where the
+ * stretch publishes a cadence for the period (steady, runs through, the map's value), has a regular cadence in it and every one
+ * of the row's trips in the period runs it; a limited (span-tier) row keeps reading limited. rowTrips then applies the row's
+ * display guards (rowStretchValue).
+ */
+export function rowStretchReading(f: ShapeProperties, period: TimePeriod): StretchRowReading | null {
+  if (f.tier === 'span' || period === 'all') return null;
+  const r = stretchRow(f, period);
+  if (r?.source !== 'stretch' || r.cadence == null) return null;
+  // A stretch whose row reads Irregular in the period (one gap, or under three departures, #955) gives no cadence.
+  const slot = f.stretchRole === 'main' ? f.stretchMeta?.main : f.stretchMeta?.tails[f.stretchIndex ?? 0];
+  if (!slot || slot.noRegular?.includes(period as PeriodKey)) return null;
+  // Every one of the row's own trips in the period runs its stretch (the pipeline's stretchRowPeriods, from trip ids), so the
+  // stretch's number never stands for a row that also runs elsewhere (TTC 73 weekday to Royal York). Data without it: own trips.
+  return f.stretchRowPeriods?.includes(period as PeriodKey) ? r : null;
+}
+

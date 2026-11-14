@@ -31,6 +31,12 @@ const round1 = (x: number) => Math.round(x * 10) / 10;
 const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
 const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
 
+/** The first number a tile writes ("30 min" → 30, "99.9%" → 99.9, "7% · 21%" → 7), or null. */
+const leadingNumber = (text: string | null): number | null => {
+  const m = text?.match(/-?\d+(?:\.\d+)?/);
+  return m ? Number(m[0]) : null;
+};
+
 /**
  * The change line: "last week 10%" (label first, then last week's value as the tile writes it, `lastText`) or "same as
  * last week". The direction is the separate `arrow`, drawn as a small mark coloured by `tone`. Without `lastText` the
@@ -45,12 +51,16 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   if (mag === 0 || (lastText != null && nowText === lastText) || (sameAs != null && sameAs[0] != null && sameAs[0] === sameAs[1])) return { arrow: 'none', text: lastText ? 'same as last week' : 'same', tone: 'same', spoken: 'same as last week' };
   const up = diff > 0;
   const { tone, big, measured } = weekChangeTone(key, now, before, lowerIsBetter, noise);
-  const word = isShare ? (mag === 1 ? 'point' : 'points') : 'min';
+  // #1487: the spoken size is the change between the two numbers as the tile writes them ("30 min", last week "32 min": 2 min),
+  // never the unrounded one ("1.2 min") that a listener cannot square with what the card shows.
+  const shownNow = leadingNumber(nowText), shownLast = leadingNumber(lastText);
+  const said = shownNow != null && shownLast != null ? round1(Math.abs(shownNow - shownLast)) : mag;
+  const word = isShare ? (said === 1 ? 'point' : 'points') : 'min';
   return {
     arrow: up ? 'up' : 'down',
     text: lastText ? `last week ${lastText}` : `${clean(mag)} ${unit}`,
     tone,
-    spoken: `${lastText ? `last week ${lastText}, ${up ? 'up' : 'down'} ${clean(mag)} ${word}` : `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week`}${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
+    spoken: `${lastText ? `last week ${lastText}, ${up ? 'up' : 'down'} ${clean(said)} ${word}` : `${up ? 'up' : 'down'} ${clean(mag)} ${word} from last week`}${big ? (measured ? ', a bigger change than usual day to day' : '') : (measured ? ', within the usual day-to-day change' : ', a small change')}`,
   };
 }
 

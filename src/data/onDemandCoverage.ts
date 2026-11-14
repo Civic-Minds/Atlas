@@ -37,8 +37,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // Confirmed 2026-10-27 (CIV-1063): https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx
   'yrt': { serviceName: 'On-Request', url: 'https://www.yrt.ca/en/schedules-and-maps/on-request-service.aspx' },
   'calgary': { serviceName: 'Calgary Transit On Demand' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.dart.org/guide/transit-and-use/golink
-  'dart': { serviceName: 'GoLink', url: 'https://www.dart.org/guide/transit-and-use/golink' },
   'dcta': { serviceName: 'GoZone' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.durhamregiontransit.com/routes-and-schedules/on-demand-and-specialized-services/
   'drt': { serviceName: 'DRT On Demand', url: 'https://www.durhamregiontransit.com/routes-and-schedules/on-demand-and-specialized-services/' },
@@ -77,7 +75,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'lacmta': { serviceName: 'Metro Micro', url: 'https://www.metro.net/riding/micro/' },
   // Confirmed 2026-10-27 (CIV-1063): https://itsmarta.com/reach
   'marta': { serviceName: 'MARTA Reach', url: 'https://itsmarta.com/reach' },
-  'metrohouston': { serviceName: 'curb2curb' },
   // Unclear (CIV-1063, 2026-10-27): Mini MILE is a fixed route with on-demand stops (a deviated route). The page also lists Mini South Shore and Greater Syosset on-demand, but the page i
   'nice': { serviceName: 'NICE Mini' },
   // Unclear (CIV-1063, 2026-10-27): Missing: any readable current official page.
@@ -91,7 +88,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'trinitymetro': { serviceName: 'ZIPZONE', url: 'https://ridetrinitymetro.org/rider-services/ondemand/' },
   // Confirmed 2026-10-27 (CIV-1063): https://vinetransit.com/?p=1180
   'vine': { serviceName: 'On-demand service', url: 'https://vinetransit.com/?p=1180' },
-  'yolobus': { serviceName: 'BeeLine' },
   // CIV-1063 (checked 2026-10-27), general public and running, with no zone source:
   // https://www.dartfirststate.com/Programs/dartconnect/ (zone maps are PDFs only)
   'dart-first-state': { serviceName: 'DART Connect', url: 'https://www.dartfirststate.com/Programs/dartconnect/' },
@@ -100,6 +96,7 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   // https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/ (zone map is a JPG only)
   'kelowna': { serviceName: 'OnDemand', url: 'https://www.bctransit.com/kelowna/schedules-and-maps/ondemand/' },
 };
+// Mapped in CIV-1452 (agency-supplied zones): metrohouston, yolobus (Woodland), dart.
 // Removed in CIV-1063: rts (RTS Gainesville; Rochester's RTS On Demand is rgrta, not confirmed yet), dutchess (Flex
 // needs a registration), cornwall (an on-request stop on a fixed route), sjsr (Taxibus picks up at fixed points on a schedule);
 // then codiac (run by the City of Dieppe), mcts (FlexRide is run by MobiliSE), trimet (SPOT is run by Washington County) and

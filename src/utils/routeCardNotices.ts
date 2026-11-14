@@ -296,6 +296,8 @@ export function routeCardNoNumberWords(features: readonly ShapeProperties[], per
   const model = buildRouteCardModel({
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
     period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+    // CIV-995 (b): each row's own trips, so this stays as before the card read its stretches.
+    stretchValues: false,
   });
   const rows = model.groups.flatMap(group => group.rows.filter(row => !row.night).map(row => row.display(null).value));
   if (model.groups.some(group => group.shared) || rows.some(value => !value.rowNoRegular)) return null;
