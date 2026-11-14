@@ -5,7 +5,7 @@
  *
  * Reads ../_live-data/out/<agency>-<route>-segments.json for every route with Live analysis (shared/livePollingConfig
  * LIVE_ANALYSIS_ROUTES), leaves held routes out (LIVE_DASHBOARD_HOLD) and lists them, counts the agency's routes in its
- * timetable (gtfs/candidates/surface/routes.txt) and adds stop positions for the map. Writes
+ * timetable (gtfs/candidates/surface, or the newest feed under surface-feeds/) and adds stop positions for the map. Writes
  * ../_live-data/out/<agency>-agency.json, which /api/live-agency serves. Light: it reads a few small files, no analysis.
  * Set LIVE_DATA to use another data folder.
  */
@@ -86,10 +86,22 @@ export function writeAgencySummary(agency: string, gtfs: string, out: string): s
   return `live-agency-summary: ${summary.covered.length} of ${totalRoutes} ${agency} routes (${held.length} held${missing.length ? `, no analysis file: ${missing.join(', ')}` : ''}) -> ${file}`;
 }
 
+/**
+ * The timetable the summary reads (#1491): gtfs/candidates/surface when it holds one, else the newest feed under
+ * gtfs/candidates/surface-feeds/ (the folders live:analyze reads; the analysis itself passes its newest feed too).
+ */
+export function summaryTimetable(data: string): string {
+  const surface = resolve(data, 'gtfs/candidates/surface');
+  if (existsSync(resolve(surface, 'routes.txt'))) return surface;
+  const feeds = resolve(data, 'gtfs/candidates/surface-feeds');
+  const newest = existsSync(feeds) ? readdirSync(feeds).filter(d => existsSync(resolve(feeds, d, 'routes.txt'))).sort().pop() : undefined;
+  return newest ? resolve(feeds, newest) : surface;
+}
+
 function main() {
   const agency = process.argv[2] ?? 'ttc';
   const data = resolve(process.env.LIVE_DATA ?? '../_live-data');
-  console.log(writeAgencySummary(agency, resolve(data, 'gtfs/candidates/surface'), resolve(data, 'out')));
+  console.log(writeAgencySummary(agency, summaryTimetable(data), resolve(data, 'out')));
 }
 
 if (process.argv[1] && resolve(process.argv[1]).endsWith('live-agency-summary.ts')) main();
