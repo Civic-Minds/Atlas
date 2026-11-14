@@ -122,3 +122,49 @@ export function countAdded(added: AddedField[]): Record<string, number> {
   for (const a of added) out[`${a.day}.${a.field}`] = (out[`${a.day}.${a.field}`] ?? 0) + 1;
   return out;
 }
+
+/** A weekend day the merge left alone, and why. */
+export interface MergeSkip { route: string; day: 'sat' | 'sun'; reason: string }
+
+export interface WeekendMerge {
+  /** The published body with only the rebuilt weekend p / t / tp added. */
+  body: string;
+  added: AddedField[];
+  skipped: MergeSkip[];
+}
+
+const headlineKey = (d: Obj): string => d.none === true ? 'none' : d.lim === true ? 'lim' : typeof d.h === 'number' ? `h:${d.h}` : 'blank';
+
+/**
+ * CIV-1430 (option 1): keep every byte of the published sidecar and add ONLY the rebuilt weekend fields p, t and tp.
+ * A field is added to a published Saturday/Sunday only when the published day lacks it, the rebuilt day has it, and
+ * both days have the same headline (same h, or both limited); t / tp only beside a number. Routes, days and every other
+ * field come from the published file; rebuilt-only routes and days are ignored. Anything not added is listed in
+ * `skipped` with a reason. The result passes checkWeekendOnlyAddition against the published body by construction.
+ */
+export function mergeWeekendFields(publishedBody: string, rebuiltRoutes: Record<string, unknown>): WeekendMerge {
+  const out = JSON.parse(publishedBody) as Obj;
+  if (!isObj(out.routes)) throw new Error('published sidecar has no routes object');
+  if (JSON.stringify(out) !== publishedBody) throw new Error('published sidecar is not in the compact form JSON.stringify writes; a merge could not keep its bytes');
+  const added: AddedField[] = [];
+  const skipped: MergeSkip[] = [];
+  for (const [route, rec] of Object.entries(out.routes as Obj)) {
+    if (!isObj(rec)) continue;
+    const re = rebuiltRoutes[route];
+    for (const day of WEEKEND_DAYS) {
+      const pd = rec[day];
+      if (!isObj(pd)) continue;
+      const rd = isObj(re) ? re[day] : undefined;
+      if (!isObj(rd)) { skipped.push({ route, day, reason: isObj(re) ? 'no rebuilt value for this day' : 'route not in the rebuild' }); continue; }
+      if (headlineKey(pd) !== headlineKey(rd)) { skipped.push({ route, day, reason: `headline differs (published ${headlineKey(pd)}, rebuilt ${headlineKey(rd)})` }); continue; }
+      if (pd.none === true) continue;
+      for (const field of ADDABLE_WEEKEND_FIELDS) {
+        if (rd[field] === undefined || pd[field] !== undefined) continue;
+        if (field !== 'p' && typeof pd.h !== 'number') continue;
+        pd[field] = rd[field];
+        added.push({ route, day, field });
+      }
+    }
+  }
+  return { body: JSON.stringify(out), added, skipped };
+}

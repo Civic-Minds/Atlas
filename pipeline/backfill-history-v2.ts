@@ -31,7 +31,10 @@
  *                       (refDate, refDateQuality, ...) with freshly built routes, so weekday fields come out
  *                       byte-identical when nothing but the weekend switch changed. A zip with no published
  *                       sidecar, or one the processor reads at a different date, is reported as not pinnable
- *                       and nothing is written for it. Check the result with history-v2-diff.ts.
+ *                       and nothing is written for it. The written sidecar is the PUBLISHED file plus only the
+ *                       rebuilt weekend p / t / tp (mergeWeekendFields; weekday fields are never taken from the
+ *                       rebuild); the full rebuild goes to <out-dir>/full-rebuild/ for comparison only.
+ *                       Check the result with history-v2-diff.ts.
  */
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
@@ -45,7 +48,8 @@ import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
 import { historyWeekendPeriodsFor } from './historyV2Flag.js';
-import { pinnedReadFor, readPinnedSidecars } from './historyV2Pin.js';
+import { pinnedReadFor, readPinnedBodies, readPinnedSidecars } from './historyV2Pin.js';
+import { countAdded, mergeWeekendFields, type MergeSkip } from './historyV2Replace.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -72,6 +76,9 @@ async function main(): Promise<void> {
 
   const pinFrom = arg('--pin-from');
   const pinned = pinFrom ? readPinnedSidecars(resolve(pinFrom), slug) : null;
+  const pinnedBodies = pinFrom ? readPinnedBodies(resolve(pinFrom), slug) : null;
+  const fullSink = pinFrom ? localDirSink(resolve(outDir, 'full-rebuild'), { overwrite: process.argv.includes('--overwrite') }) : null;
+  const mergeNotes: Array<{ periodKey: string; added: Record<string, number>; skipped: MergeSkip[] }> = [];
   if (pinned) console.log(`${slug}: pinning to ${pinned.size} published sidecar(s) from ${resolve(pinFrom!)}`);
 
   const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
@@ -103,13 +110,21 @@ async function main(): Promise<void> {
       const evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
       let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
+      let result: Awaited<ReturnType<typeof writeSidecar>>;
+      let mergeNote = '';
       if (published) {
-        // Same top-level fields and order as the published file; only routes are rebuilt.
+        // CIV-1430 option 1: the published file, byte for byte, plus ONLY the rebuilt weekend p / t / tp. The full
+        // rebuild (today's weekday values too) is kept beside it under full-rebuild/ for comparison, never uploaded.
         sidecar = { ...published, routes: built.routes };
+        await fullSink!.put(`history-v2/${slug}/${periodKey}.json`, JSON.stringify(sidecar));
+        const merged = mergeWeekendFields(pinnedBodies!.get(periodKey)!, built.routes as Record<string, unknown>);
+        result = await sink.put(`history-v2/${slug}/${periodKey}.json`, merged.body);
+        mergeNotes.push({ periodKey, added: countAdded(merged.added), skipped: merged.skipped });
+        mergeNote = `, merged ${merged.added.length} weekend field(s) into the published file (${merged.skipped.length} day(s) skipped)`;
       } else {
         sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
+        result = await writeSidecar(sink, sidecar);
       }
-      const result = await writeSidecar(sink, sidecar);
       let shapesNote = '';
       if (withShapes) {
         const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer);
@@ -119,7 +134,7 @@ async function main(): Promise<void> {
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
       rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report, ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${pin ? `PINNED to the published ${pin.refDate} (${pin.how})` : `${sidecar.refDateQuality?.reason} (anchor ${anchor ?? 'none'})`}`);
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${pin ? `PINNED to the published ${pin.refDate} (${pin.how})${mergeNote}` : `${sidecar.refDateQuality?.reason} (anchor ${anchor ?? 'none'})`}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });
@@ -129,7 +144,7 @@ async function main(): Promise<void> {
   // CIV-1430: published periods with no zip in this run cannot be pinned either.
   const missingZips = pinned ? [...pinned.keys()].filter(pk => !zips.includes(`${pk}.zip`)) : [];
   for (const pk of missingZips) console.log(`${pk}: NOT PINNABLE (published sidecar, no zip ${pk}.zip in ${zipDir})`);
-  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips } : {}), rows }, null, 2));
+  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips, weekendMerge: mergeNotes } : {}), rows }, null, 2));
   console.log(`\nReport: ${resolve(outDir, `${slug}-report.json`)}`);
   if (rows.some(r => r.error || r.result === 'conflict')) process.exitCode = 1;
   if (pinned) console.log(`Pinned: ${rows.filter(r => r.pin && !r.notPinnable && !r.error).length} rebuilt, ${rows.filter(r => r.notPinnable).length + missingZips.length} not pinnable, ${rows.filter(r => r.error).length} failed`);

@@ -50,3 +50,11 @@ export function pinnedReadFor(sc: Pick<HistoryV2Sidecar, 'refDate' | 'refDateQua
   }
   return { refDate: sc.refDate, how: 'old picker at the published refDate', overrides: { referenceDate: sc.refDate, legacyReferenceDate: true } };
 }
+
+/** The published sidecars' raw bodies by period key (the bytes a merge must keep). */
+export function readPinnedBodies(dir: string, slug: string): Map<string, string> {
+  const sidecarDir = resolve(dir, 'history-v2', slug);
+  const out = new Map<string, string>();
+  for (const f of readdirSync(sidecarDir).filter(n => n.endsWith('.json')).sort()) out.set(f.slice(0, -'.json'.length), readFileSync(resolve(sidecarDir, f), 'utf8'));
+  return out;
+}

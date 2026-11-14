@@ -129,6 +129,8 @@ jobs:
             [ -d "$OUT/rebuilt-$s" ] || continue
             cp "$OUT/rebuilt-$s"/history-v2/"$SLUG"/*.json "$OUT/rebuilt/history-v2/$SLUG/" 2>/dev/null || true
             cp "$OUT/rebuilt-$s/$SLUG-report.json" "$OUT/rebuilt/$SLUG-report-$s.json" 2>/dev/null || true
+            mkdir -p "$OUT/full-rebuild/history-v2/$SLUG"
+            cp "$OUT/rebuilt-$s"/full-rebuild/history-v2/"$SLUG"/*.json "$OUT/full-rebuild/history-v2/$SLUG/" 2>/dev/null || true
             grep -E "PINNED|NOT PINNABLE|FAILED|^Pinned:" "$OUT/backfill-$s.log" || true
           done
           exit $rc
@@ -138,6 +140,8 @@ jobs:
         run: |
           npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff.json" --md "$OUT/diff.md"
           cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
+          # For reference only: today's rules on every field (the weekday drift the merge leaves out).
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/full-rebuild" --out "$OUT/diff-full-rebuild.json" --md "$OUT/diff-full-rebuild.md" > /dev/null || true
 
       - name: Upload plan (dry run, with the approved-replacement check)
         if: always()
@@ -159,8 +163,11 @@ jobs:
             ${{ env.OUT }}/sources.json
             ${{ env.OUT }}/published/
             ${{ env.OUT }}/rebuilt/
+            ${{ env.OUT }}/full-rebuild/
             ${{ env.OUT }}/diff.json
             ${{ env.OUT }}/diff.md
+            ${{ env.OUT }}/diff-full-rebuild.json
+            ${{ env.OUT }}/diff-full-rebuild.md
             ${{ env.OUT }}/upload-plan.txt
             ${{ env.OUT }}/backfill-*.log
           retention-days: 30
