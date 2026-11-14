@@ -1,3 +1,4 @@
+import { BACK_PLACES, backLinkLabel } from '../../content/backLinks';
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
@@ -378,7 +379,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
                   : isFilters ? 'Filters' : 'Settings'}
               onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
-              backLabel="Back to settings"
+              backLabel={backLinkLabel(BACK_PLACES.settings)}
               onClose={close}
               closeLabel={isFilters ? 'Close filters' : 'Close settings'}
             />

@@ -336,7 +336,7 @@ describe('Live route dashboard', () => {
   });
 
   it('every route page leads back to the agency page with the Live map’s "← TTC", held and unknown routes too (CIV-1446)', async () => {
-    const back = () => screen.getByRole('link', { name: '← TTC' }).getAttribute('href');
+    const back = () => screen.getByRole('link', { name: '← Back to TTC' }).getAttribute('href');
     const a = renderPage(ready);
     await screen.findByRole('region', { name: /Late departures by hour/ });
     expect(back()).toBe('/apps/live/ttc');

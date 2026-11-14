@@ -85,7 +85,7 @@ describe('on-demand card back link', () => {
   it('a zone card goes back to its agency card, and the agency line is dropped because the link names it', () => {
     const onBack = vi.fn();
     renderZoneCard('West Glanbrook', 'Saturday', 'midday', hamilton, onBack);
-    const link = screen.getByRole('button', { name: /^← Hamilton Street Railway$/ });
+    const link = screen.getByRole('button', { name: /^← Back to Hamilton Street Railway$/ });
     fireEvent.click(link);
     expect(onBack).toHaveBeenCalledTimes(1);
     expect(screen.getAllByText(/Hamilton Street Railway/)).toHaveLength(1);
@@ -95,7 +95,7 @@ describe('on-demand card back link', () => {
     const onClose = vi.fn();
     const onBack = vi.fn();
     renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, onBack, onClose);
-    fireEvent.click(screen.getByRole('button', { name: /^← Map$/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^← Back to map$/ }));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onBack).not.toHaveBeenCalled();
     // Named by its service, once, and "On-demand service" only as the section label (CIV-929).
@@ -106,7 +106,7 @@ describe('on-demand card back link', () => {
 
   it("an on-demand-only agency’s zone card goes back to the service name its agency card shows", () => {
     renderZoneCard('West Glanbrook', 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
-    expect(screen.getByRole('button', { name: `← ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `← Back to ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
   });
 });
 

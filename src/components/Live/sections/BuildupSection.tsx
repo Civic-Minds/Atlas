@@ -84,7 +84,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
                     const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
                     if (!pb) return [];
-                    const text = pb.kind === 'forms' && pb.forms ? `builds up by ${shortStopName(pb.forms.toName)} (${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
+                    const text = pb.kind === 'forms' && pb.forms ? `starts at ${shortStopName(pb.forms.toName)} (+${mins(pb.forms.medianAddedMin)})` : pb.kind === 'gradual' ? 'builds slowly, no single stretch' : pb.kind === 'none' ? 'stays about level' : 'too few trips';
                     return [{ key: k, label: name, text }];
                   })}
                 />
