@@ -9,6 +9,7 @@ import {
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
+import { countOf } from '../../../shared/overflowText';
 
 export interface BranchStripProps {
   model: BranchModel;
@@ -118,7 +119,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const flags = stripLegendFlags(stops, modes, minN);
   const activeStop = stops.find(s => s.stopId === active) ?? null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
-  const summary = `${model.label}: ${model.trunk.length} stops on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
+  const summary = `${model.label}: ${countOf(model.trunk.length, 'stop')} on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
 
   const onKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     const at = stops.findIndex(s => s.stopId === active);

@@ -58,7 +58,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -738,7 +738,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
   const routeCardBack = useMemo(() => {
     const target = resolveRouteCardBack({ selectedRoute, nightServiceView, nightListRoute, nearYouRoute, hasUserLocation: !!userLocation });
-    if (target?.kind === 'nearYou') return { to: 'Near You', onClick: () => setSelectedRoute(null) };
+    if (target?.kind === 'nearYou') return { to: NEAR_YOU_TITLE, onClick: () => setSelectedRoute(null) };
     if (target?.kind === 'nightList') {
       return {
         to: NIGHT_LIST_TITLE,

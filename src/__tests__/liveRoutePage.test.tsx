@@ -78,7 +78,7 @@ describe('Live route dashboard', () => {
     expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekends', { selector: 'div' }).length).toBeGreaterThan(0);
     // B3: the route strip carries the delay; the takeaway's figures are its hover text, and the table of stretches follows.
-    expect(screen.getByTitle(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
+    expect(screen.getByTitle(/^Delay jumps by 2\.4 min between Stop 2 and Stop 3, and stays up/)).toBeTruthy();
     expect(screen.getByTitle(/^Delay stays about the same from end to end/)).toBeTruthy();
     // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
     for (const t of screen.getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
@@ -158,7 +158,7 @@ describe('Live route dashboard', () => {
     expect(within(b1).getAllByRole('img').length).toBe(3);
     expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
-    expect(screen.queryByText(/^Delay jumps by \+2\.4 min between Stop 2 and Stop 3/)).toBeNull();
+    expect(screen.queryByText(/^Delay jumps by 2\.4 min between Stop 2 and Stop 3/)).toBeNull();
     expect(new URLSearchParams(window.location.search).get('dir')).toBe('1');
   });
 
@@ -206,7 +206,7 @@ describe('Live route dashboard', () => {
     await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
     const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
-    for (const label of ['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
+    for (const label of ['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks, and counts this week's trips only (CIV-1445); no separate line under the tiles. The method says it once, in groups.
     // (The page is stale by the real clock here, so the last segment is its own element; the line reads the same.)
@@ -224,7 +224,8 @@ describe('Live route dashboard', () => {
     expect(screen.getAllByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').split('Recording gaps are times our recording missed').length === 2).length).toBe(1);
     // Layout A (CIV-1075): each group's heading on its own line, no trailing period, then one paragraph.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
-    expect(screen.queryByText(/trip time/i)).toBeNull();
+    // One name for it (CIV-1160 question 6): "Trip time", never "Run time".
+    expect(screen.queryByText(/\brun time/i)).toBeNull();
     expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.

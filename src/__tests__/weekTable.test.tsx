@@ -18,7 +18,7 @@ describe('WeekTable', () => {
     view();
     const table = screen.getByRole('table');
     expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure TTC', 'This week', 'Last week']);
-    expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
+    expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
   });
   it('puts this week and last week in their own columns, bunching in two parts that add up to the total', () => {
     view();
@@ -30,7 +30,7 @@ describe('WeekTable', () => {
     const { container } = view();
     expect(container.querySelectorAll('[data-tone]').length).toBe(2); // late and bunching moved; the other three match
     const rows = screen.getAllByRole('row');
-    const runTime = rows.find(r => r.textContent?.startsWith('Run time'))!;
+    const runTime = rows.find(r => r.textContent?.startsWith('Trip time'))!;
     expect(runTime.querySelector('[data-tone]')).toBeNull();
     expect(runTime.getAttribute('title')).toMatch(/same as last week/);
   });
@@ -53,7 +53,7 @@ describe('one arrow rule for all five rows', () => {
     render(<WeekTable tiles={kpiTiles(w, noisy)} />);
     const arrows = Object.fromEntries(screen.getAllByRole('row').slice(1).map(r => [r.querySelector('th')!.textContent, r.querySelector('[data-tone]')?.textContent ?? '']));
     // Late 7% and 7%, Extra wait 1.2 and 1.2 and Bunching 21% (14% · 7% against 12% · 9%: the same total) show nothing; Run time 31 against 32 and Delivered 99.8 against 99.9 always do.
-    expect(arrows).toEqual({ Late: '', 'Run time': '▼', 'Extra wait': '', Bunching: '', 'Service delivered': '▼' });
+    expect(arrows).toEqual({ Late: '', 'Trip time': '▼', 'Extra wait': '', Bunching: '', 'Service delivered': '▼' });
     // None of them beats the day-to-day spread here, so every arrow is grey.
     expect([...document.querySelectorAll('[data-tone]')].every(a => a.getAttribute('data-tone') === 'same')).toBe(true);
   });

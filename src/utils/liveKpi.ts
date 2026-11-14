@@ -4,7 +4,7 @@
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
 import { runTimeDiffMin, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
-import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
+import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText, TRIP_TIME_LABEL } from '../../shared/liveWording';
 import { minutesText, pct as pct0, pctTenth as pct1, tenth as clean } from '../../shared/liveFormat';
 import { runTimeAmount } from '../../shared/headwayText';
 
@@ -74,7 +74,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const tiles = [
     mk('late', 'Late', t.late ? pct0(t.late.share) : '–', LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, noise('late'), l.late ? pct0(l.late.share) : null, lateT) : null, l.late ? pct0(l.late.share) : null),
-    mk('tripTime', 'Run time', t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : '–', t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
+    mk('tripTime', TRIP_TIME_LABEL, t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : '–', t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null, tripT) : null, l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null),
     mk('extraWait', 'Extra wait', t.extraWait ? minutesText(t.extraWait.minutes) : '–', 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? minutesText(l.extraWait.minutes) : null, waitT) : null, l.extraWait ? minutesText(l.extraWait.minutes) : null),

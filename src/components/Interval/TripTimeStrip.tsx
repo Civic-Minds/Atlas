@@ -3,6 +3,7 @@ import { SPARKLINE_HOURS } from '../../../shared/config';
 import { tripTimeBarHeight, type TripTimeSeries } from '../../utils/tripTime';
 import { CHART_HEADING } from '../../styles';
 import { runTimeAmount } from '../../utils/headwayText';
+import { TRIP_TIME_LABEL } from '../../../shared/liveWording';
 import { FullDayPeriodBands } from './FullDayPeriodBands';
 
 /**
@@ -11,7 +12,7 @@ import { FullDayPeriodBands } from './FullDayPeriodBands';
  * The bar takes 40% of its hour column (CIV-510; was 55%), but never less than the card chart's
  * 7px, so phones keep the card's bar width.
  */
-export const TRIP_TIME_LABEL = 'Trip time';
+export { TRIP_TIME_LABEL };
 /** The header text for a trip time chart: the label, plus the loop note when each value is one full loop. */
 export function tripTimeHeading(loop?: boolean, label: string = TRIP_TIME_LABEL): string {
   return `${label}${loop ? ' (one full loop)' : ''}`;

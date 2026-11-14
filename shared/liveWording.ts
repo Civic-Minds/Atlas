@@ -1,5 +1,6 @@
 import { dateRangeText } from './liveDashboard';
 import { clockTime } from './timeText';
+import { countOf } from './overflowText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -8,6 +9,8 @@ import { clockTime } from './timeText';
 
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
 /** The route strip's delay legend (E22, Ryan, CIV-1075): "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
+/** The name of how long a trip takes end to end, on Live and the map alike (Ryan, CIV-1160 question 6, 2026-11-13: "Trip time", not "Run time"). */
+export const TRIP_TIME_LABEL = 'Trip time';
 export const DELAY_LEGEND_TITLE = 'Typical delay';
 export const EARLY_STEP_LABEL = '1+ min ahead';
 /** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
@@ -32,7 +35,7 @@ export const TYPICAL_ADDED = 'Typical added';
 export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
   const d = o.dates ?? [];
   const days = d.length ? `, ${dateRangeText(d[0], d[d.length - 1])}` : '';
-  return `The ${count} stops where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ' (stops with 30+ departures)'}.`;
+  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ' (stops with 30+ departures)'}.`;
 };
 
 /** The faded-mark note under a chart, one sentence everywhere (CIV-1448): "Paler bars rest on fewer than 30 trips." */

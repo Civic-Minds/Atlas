@@ -41,7 +41,7 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/se
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED, TRIP_TIME_LABEL } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -273,7 +273,7 @@ export default function LiveExplorePage() {
 
       <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
         before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
-      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY('Run time')} />
+      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />

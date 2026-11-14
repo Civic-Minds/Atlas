@@ -125,7 +125,7 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn’t load.`;
 
 /** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
-export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden';
+export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden.';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
@@ -203,6 +203,16 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
+export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
+export const NEAR_YOU_TITLE = 'Near you';
+/** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
+export const REPORT_A_PROBLEM = 'Report a problem';
+/** The day, time and mode pickers' names, the same on every filter surface (Ryan, CIV-1160 question 6, 2026-11-13). */
+export const DAY_LABEL = 'Day';
+export const TIME_LABEL = 'Time';
+export const MODE_LABEL = 'Mode';
 /** The full-day frequency chart's axis unit (CIV-1311, Ryan's wording 2026-11-03). */
 export const TRIPS_PER_HOUR_LABEL = 'Trips per hour';
 // The default title of an exported map image.
@@ -397,7 +407,9 @@ export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn’t be found."
 /** A Live section that failed to draw (its error boundary). */
 export const liveDrawError = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
 export const LIVE_METHOD_DRAW_ERROR = `${METHOD_TITLE} could not be drawn.`;
+/** `agency`: the agency's short name (useLiveAgencyName), never the address in capitals (CIV-1160 question 7). */
 export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
+export const liveNoRoute = (route: string, agency: string) => `Live has no route ${route} for ${agency}.`;
 export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
 export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
@@ -430,7 +442,10 @@ export const LIVE_NO_STOPS_MEASURED = 'No stops were measured.';
 export const LIVE_NO_STOP_TO_RANK = 'No stop has enough departures to rank.';
 export const LIVE_NO_STOP_TO_RANK_YET = 'No stop has enough departures to rank yet.';
 export const LIVE_NO_STRETCH_STANDS_OUT = 'No stretch stands out on the analysed routes.';
-export const LIVE_NO_FREQUENT_STOP = `No stop on this route has a vehicle ${headwayOrBetter(15)} in this time of day.`;
+/** Extra wait's empty message: the measure's definition, kept with its 15 min (Ryan, CIV-1160 question 3, 2026-11-13). */
+export const LIVE_NO_FREQUENT_STOP = `No stop on this route has a vehicle ${headwayOrBetter(15)} at this time of day.`;
+/** The Extra wait section's intro: what the measure is and where it applies. */
+export const LIVE_EXTRA_WAIT_INTRO = `How much longer riders wait than scheduled, where a vehicle is due ${headwayOrBetter(15)}.`;
 export const LIVE_NOTHING_LINKED = 'Nothing measured here is linked to it';
 export const LIVE_LESS_EXACT_HERE = 'Less exact here: vehicles report their location less often';
 export const LIVE_FEW_MEASUREMENTS = 'Few measurements: treat with care.';

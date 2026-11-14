@@ -8,10 +8,10 @@ import { FIXED_NOISE, dailyNoise } from '../../shared/liveDashboard';
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
-import { runTimeShareText } from '../../shared/liveWording';
+import { runTimeShareText, TRIP_TIME_LABEL } from '../../shared/liveWording';
 export { runTimeShareText };
 /** The row's name on All routes, so the share reads against the timetable (wording to confirm, CIV-945). */
-export const NETWORK_RUN_TIME_LABEL = 'Run time vs schedule';
+export const NETWORK_RUN_TIME_LABEL = `${TRIP_TIME_LABEL} vs schedule`;
 /** The tile's caption and hover text (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_SUB = 'typical trip against the schedule, all routes';
 

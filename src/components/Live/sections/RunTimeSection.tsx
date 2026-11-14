@@ -8,6 +8,7 @@ import Section from './Section';
 import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
 import { liveTooFewTrips } from '../../../content/noticeCopy';
+import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -139,8 +140,8 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
   const m = runTimeModel(v3, band, dir);
   const { rt, dirs, hoursOf, scale, axis } = m;
   const frame = (children: ReactNode) => id
-    ? <Section id={id} title="Run time" shrink={shrink} boundary={boundary}>{children}</Section>
-    : <Section id="dash-runtime" title="Run time">{children}</Section>;
+    ? <Section id={id} title={TRIP_TIME_LABEL} shrink={shrink} boundary={boundary}>{children}</Section>
+    : <Section id="dash-runtime" title={TRIP_TIME_LABEL}>{children}</Section>;
   if (!rt && detail !== 'brief') return id && detail === 'compact' ? frame(null) : null;
   const full = detail === 'full', compact = detail === 'compact';
   const rowsByDir = runTimeRows(v3, band, dirs, liveStopName);
@@ -165,12 +166,12 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
             {full && mainThin && <p className="mt-1 text-sm leading-6">{sentence}</p>}
             <PatternRows rows={rowsByDir[d] ?? []} scale={rowScale} hideMainLabel={!!stretch} />
             {compact ? (
-              hours.length > 1 && <div className="mt-4"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts.`} /></div>
+              hours.length > 1 && <div className="mt-4"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: trip time against the schedule by the hour the trip starts.`} /></div>
             ) : hours.length > 1 ? (
               <>
                 {/* Full analysis: the chart says it (the usual and scheduled times, the slow end are on it); the Dashboard keeps its one-line takeaway. */}
                 {!full && <p className="mt-4 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>}
-                <div className={full ? 'mt-4' : 'mt-2'}><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
+                <div className={full ? 'mt-4' : 'mt-2'}><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: trip time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
               </>
             ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">{liveTooFewTrips(BAND_WORDS[band])}</p>}
           </div>

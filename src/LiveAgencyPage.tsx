@@ -29,7 +29,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { DELAY_STARTS_TITLE, TYPICAL_ADDED, coveredRoutesText, lateStopsIntro, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, TYPICAL_ADDED, coveredRoutesText, lateStopsIntro, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText, TRIP_TIME_LABEL } from '../shared/liveWording';
 import { pct as pctOf, pctTenth } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
@@ -38,6 +38,7 @@ import LegendItem from './components/ui/LegendItem';
 import { lateShareColor } from './components/Live/lateShare';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
+import { countOf } from '../shared/overflowText';
 
 /**
  * One column grid for every table on the page (widths in rem), in the area page's table layout: the figure columns sit
@@ -49,7 +50,7 @@ const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5, FIGURE_COL = PAGE_FIGURE_CO
 const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
 
 type Sort = LiveSort;
-const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', 'Run time'], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
+const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', TRIP_TIME_LABEL], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
 /** The value a route is sorted by, highest first. A switch, not an object lookup, so no outside value picks a method. */
 function sortValue(sort: Sort, r: AgencyRouteRow): number {
   switch (sort) {
@@ -122,7 +123,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
               { key: 'late', sortable: true, header: 'Late', width: FIGURE_COL, cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: 'Run time', width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? '–' : runTimeShareText(r.runTimeOver)) },
+              { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? '–' : runTimeShareText(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: 'Delivered', width: FIGURE_COL, cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
             ]}
@@ -141,7 +142,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
 function LateStops({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
   const spots = lateStopSpots(rows.map(r => ({ key: `${r.route}-${r.directionId}-${r.stopId}`, lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, name: stop(r.name), line: `${r.route} ${nameCase(r.direction, 'liveStop')}: ${pct(r.lateShare)} late`, lateShare: r.lateShare })));
-  return <LateStopsMap spots={spots} routes={{ agency: s.agency }} label={`Map of the ${rows.length} stops most often late`} className="mt-6" />;
+  return <LateStopsMap spots={spots} routes={{ agency: s.agency }} label={`Map of the ${countOf(rows.length, 'stop')} most often late`} className="mt-6" />;
 }
 
 /** Without `valueHeader` the table has no value column and keeps the summary's order (largest first). */
@@ -183,7 +184,7 @@ export default function LiveAgencyPage() {
   const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p></DocsPageLayout>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
-    const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : (state.data as { reason: string }).reason;
+    const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.status === 'unknown_agency' ? liveNoAgencyAnalysis(agencyName) : (state.data as { reason: string }).reason;
     return <EmptyPage title={name} body={reason} action={back} />;
   }
   const s = state.data.summary;

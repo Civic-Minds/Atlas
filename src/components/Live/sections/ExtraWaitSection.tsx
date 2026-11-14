@@ -6,9 +6,9 @@ import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/Profil
 import SortableDataTable from '../../ui/SortableDataTable';
 import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
-import { headwayExactAmount, headwayOrBetter } from '../../../utils/headwayText';
-import { dirsOf, num } from './figures';
-import { LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
+import { headwayExactAmount } from '../../../utils/headwayText';
+import { dirsOf, mins } from './figures';
+import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
 
 /** The one derivation of the extra-wait figures, so every surface draws the same numbers. */
 export function extraWaitModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -40,12 +40,12 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
   const points0 = Math.max(0, ...dirs.map(d => pointsOf(d).length));
   if (all.length === 0) {
     return frame(<>
-      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than scheduled, where a vehicle is due {headwayOrBetter(15)}.</p>}
+      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">{LIVE_EXTRA_WAIT_INTRO}</p>}
       <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>
     </>);
   }
   return frame(<>
-    {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How much longer riders wait than scheduled, where a vehicle is due {headwayOrBetter(15)}.</p>}
+    {full && <p className="mt-2 text-sm text-[var(--text-muted)]">{LIVE_EXTRA_WAIT_INTRO}</p>}
     <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>
       {dirs.map(d => {
         const label = v3.directionLabels[String(d)];
@@ -57,7 +57,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
               <ProfileBars
                 ariaLabel={`${label}: extra wait at each stop along the route.`}
                 points={points}
-                formatY={y => `${num(y)} min`}
+                formatY={mins}
                 unit="gaps"
                 valueHeader="Extra wait"
                 caption={full ? undefined : 'How much longer riders wait than the schedule says, at each stop.'}
@@ -84,7 +84,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           columns={[
             { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-            { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => `${num(s.extraWaitMin)} min` },
+            { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
             { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
           ]}

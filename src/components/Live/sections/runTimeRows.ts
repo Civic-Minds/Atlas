@@ -1,4 +1,5 @@
 import { branchFigures, runningTimeFigures, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
+import { countOf } from '../../../../shared/overflowText';
 
 /** A pattern with fewer trips than this is too thin to draw (the main stretch) or drawn dim with a care note (a longer pattern). */
 export const MIN_PATTERN_TRIPS = 30;
@@ -21,7 +22,7 @@ export interface RunTimeRow {
 }
 
 const finite = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
-export const patternLabel = (from: string, to: string, stops: number) => `${from} → ${to} · ${stops} stops`;
+export const patternLabel = (from: string, to: string, stops: number) => `${from} → ${to} · ${countOf(stops, 'stop')}`;
 
 /** Rows for the Run time section: per direction the main stretch first, then the longer patterns in the file's order. */
 export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly number[], nice: (name: string) => string): Record<number, RunTimeRow[]> {

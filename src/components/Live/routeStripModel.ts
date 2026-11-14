@@ -5,8 +5,9 @@
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { pct, signedMinutes, tenth } from '../../../shared/liveFormat';
+import { minutesText, pct, tenth } from '../../../shared/liveFormat';
 import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { countOf } from '../../../shared/overflowText';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -71,7 +72,7 @@ export const STRIP_COLUMNS = { stop: 'Stop', delay: 'Typical delay', late: 'Late
 export const NOT_MEASURED_CELL = 'not measured';
 /** The phone list's switch between key stops and every stop. */
 export const SHOW_KEY_STOPS = 'Show key stops only';
-export const showAllStopsText = (n: number): string => `Show all ${n} stops`;
+export const showAllStopsText = (n: number): string => `Show all ${countOf(n, 'stop')}`;
 /** What a screen reader calls the strip. */
 export const STRIP_ROLE = 'route strip';
 /** The legend's extra keys. */
@@ -121,10 +122,10 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
 }
 
 export { pct };
-/** "+3.1 min late", "−2.0 min early", "on time": signedMinutes, so a column of them reads at one precision (CIV-1448). */
+/** "3.1 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5). */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
-  return `${signedMinutes(min)} ${min > 0 ? 'late' : 'early'}`;
+  return `${minutesText(Math.abs(min))} ${min > 0 ? 'late' : 'early'}`;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
@@ -233,7 +234,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   }
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${countOf(stops.length, 'stop')}: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');

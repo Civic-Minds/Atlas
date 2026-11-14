@@ -26,7 +26,7 @@ describe.runIf(FEATURES.onDemand)('agency card On-Demand pill (zone not on the m
     card(marta);
     expect(screen.queryByText('MARTA Reach')).toBeNull();
     expect(screen.queryByText('On-demand service')).toBeNull();
-    const pill = screen.getByRole('button', { name: 'On-Demand' });
+    const pill = screen.getByRole('button', { name: 'On-demand' });
     expect(screen.getByText("This agency’s on-demand service runs by request in a zone that isn’t on the map yet.")).toBeInTheDocument();
     fireEvent.click(pill);
     expect(screen.queryByText("This agency’s on-demand service runs by request in a zone that isn’t on the map yet.")).toBeNull();
@@ -37,7 +37,7 @@ describe.runIf(FEATURES.onDemand)('agency card On-Demand pill (zone not on the m
 
   it('gives no pill to an agency whose zone is on the map', () => {
     card({ slug: 'hamilton', name: 'Hamilton Street Railway', region: 'Ontario', center: [43.25, -79.87], url: '', onDemandServiceArea: HAMILTON_MY_RIDE_SERVICE_AREA } as unknown as Agency);
-    expect(screen.queryByRole('button', { name: 'On-Demand' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'On-demand' })).toBeNull();
     expect(screen.getByText('On-demand service')).toBeInTheDocument();
   });
 });

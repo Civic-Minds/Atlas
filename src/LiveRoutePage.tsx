@@ -27,7 +27,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, liveSubtitle, TRIP_TIME_LABEL } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
@@ -38,7 +38,7 @@ import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { LIVE_METHOD_DRAW_ERROR, liveDrawError, loadingText } from './content/noticeCopy';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
 
 
@@ -152,7 +152,7 @@ function AnalysisPage() {
   if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} above={toAgency} />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} above={toAgency} />;
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.status === 'unknown_route' ? liveNoRoute(route, agencyName) : data.reason} action={back} above={toAgency} />;
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
@@ -182,7 +182,7 @@ function AnalysisPage() {
         ) : (<>
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title="Stops most often late" id="b2" intro notRanked /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>

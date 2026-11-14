@@ -4,8 +4,10 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { pct, signedMinutes as min } from './liveFormat.js';
+import { minutesText as min, pct } from './liveFormat.js';
 import { hourTime } from './timeText.js';
+import { TRIP_TIME_LABEL } from './liveWording.js';
+import { countOf } from './overflowText.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -48,7 +50,7 @@ export interface DashboardBuildup {
 export interface RunTimeStretch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; /** Stops on the longest pattern (older files: absent). */ routeStops?: number; fullRoute: boolean; mainPatternTrips: number; trips: number }
 /** "Run time from Spadina Station to Queens Quay, all trips", or null for an older file. */
 export function runTimeStretchLabel(s: RunTimeStretch | undefined, nice: (name: string) => string = x => x): string | null {
-  return s ? `Run time over ${s.stops} stops, ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
+  return s ? `${TRIP_TIME_LABEL} over ${countOf(s.stops, 'stop')}, ${nice(s.fromName)} to ${nice(s.toName)}, all trips` : null;
 }
 /**
  * The run-time tile's subject, so it never reads as the whole route: "over 7 stops, Humber Loop to Park Lawn".
@@ -58,9 +60,9 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   const dirs = Object.keys(stretch ?? {}).sort();
   if (!stretch || !dirs.length) return null;
   const counts = [...new Set(dirs.map(d => stretch[d].stops))].sort((a, b) => a - b);
-  const n = counts.length > 1 ? `${counts[0]}–${counts[counts.length - 1]}` : String(counts[0]);
+  const n = counts.length > 1 ? `${counts[0]}–${counts[counts.length - 1]} stops` : countOf(counts[0], 'stop');
   const ends = dirs.map(d => `${nice(stretch[d].fromName)} to ${nice(stretch[d].toName)}`);
-  return dirs.length === 1 ? `over ${n} stops, ${ends[0]}` : `over ${n} stops: ${ends.join('; ')}`;
+  return dirs.length === 1 ? `over ${n}, ${ends[0]}` : `over ${n}: ${ends.join('; ')}`;
 }
 export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
 /** A direction's name from the file ("Eastbound"), or "Direction 1" where the file has none. */
@@ -216,7 +218,7 @@ export function dashboardUnavailable(agency: string, route: string, analysed = h
   const hold = dashboardHold(agency, route);
   if (hold) return { status: 'held', reason: hold };
   if (!analysed) {
-    return { status: 'no_analysis', reason: `No analysis is built for ${agency.toUpperCase()} ${route} yet. It needs saved vehicle locations and the schedule for the route.`, devHint: `npm run live:analyze -- ${route}` };
+    return { status: 'no_analysis', reason: `No analysis is built for ${agency} ${route} yet. It needs saved vehicle locations and the schedule for the route.`, devHint: `npm run live:analyze -- ${route}` };
   }
   return null;
 }
@@ -305,7 +307,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   const stale = daysOld > STALE_AFTER_DAYS;
   return {
     upTo, daysOld, stale,
-    text: stale ? `Data up to ${upTo}, ${daysOld} days ago.` : `Data up to ${upTo}.`,
+    text: stale ? `Data up to ${upTo}, ${countOf(daysOld, 'day')} ago.` : `Data up to ${upTo}.`,
     devHint: stale ? `npm run live:analyze -- ${route} (needs fresh saved vehicle locations)` : undefined,
   };
 }

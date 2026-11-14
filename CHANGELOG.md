@@ -6,6 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live writes minutes the way the map does**: "every 8–10 min", "7.5 min", "2 min late", where it had half minutes, numbers with no unit and "+2 min late"
+- **One name for each thing**: "Report a problem", "Trip time" on Live (it was also "Run time"), "Day / Time / Mode" on the phone filters and "On-demand" on the agency card
+- **Live names agencies by their own short name in link previews and missing-route messages**: "MiWay", not "MIWAY"
+- **Small wording fixes**: "Near you", "1 match" and "1 stop" instead of "1 matches" and "1 stops", "Search routes…" like the other search boxes, and the Extra wait empty message reads "at this time of day"
 - **Apostrophes are curly everywhere on the site**: notices, errors and Live text used straight ones while the About and story pages used ’
 - **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
 - **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")
