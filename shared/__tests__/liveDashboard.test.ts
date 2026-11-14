@@ -46,12 +46,12 @@ describe('freshness', () => {
   const v3 = (dates: string[]) => ({ window: { days: dates.length, dates, requestedDays: 7 } }) as unknown as LiveV3;
   const noon = (d: string) => Date.parse(`${d}T20:00:00Z`);
   it('is quiet when the newest day is recent', () => {
-    expect(freshness(v3(['2026-10-13', '2026-10-14']), '505', noon('2026-10-15'))).toMatchObject({ stale: false, text: 'Data up to 2026-10-14.' });
+    expect(freshness(v3(['2026-10-13', '2026-10-14']), '505', noon('2026-10-15'))).toMatchObject({ stale: false, text: 'Data up to Oct 14.' });
   });
   it('warns, with the rebuild command kept apart as a developer hint, after more than two days', () => {
     const f = freshness(v3(['2026-10-10']), '505', noon('2026-10-15'));
     expect(f.stale).toBe(true);
-    expect(f.text).toBe('Data up to 2026-10-10, 5 days ago.');
+    expect(f.text).toBe('Data up to Oct 10, 5 days ago.');
     expect(f.text).not.toMatch(/npm run/);
     expect(f.devHint).toMatch(/npm run live:analyze -- 505/);
   });

@@ -1,0 +1,209 @@
+{
+  "slug": "yolobus",
+  "area": {
+    "serviceName": "BeeLine",
+    "sourceUrl": "https://yolobus.com/beeline/",
+    "sourceLabel": "BeeLine page and Woodland zone KML (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-13",
+    "bookingInfo": "Book in the BeeLine by Yolobus app or call 530-666-2877.",
+    "bookingUrl": "https://yolobus.com/beeline/",
+    "tripRules": "Trips can start and end anywhere in Woodland.",
+    "zoneMetadata": {
+      "Woodland": {
+        "serviceName": "BeeLine",
+        "serviceHours": "Mon–Thu 7 AM–7 PM; Fri 7 AM–11 PM; Sat 9 AM–11 PM; Sun 8 AM–7 PM.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7,
+              "endHour": 19
+            }
+          ],
+          "Friday": [
+            {
+              "startHour": 7,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 9,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8,
+              "endHour": 19
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://yolobus.com/beeline/",
+          "retrievedAt": "2026-11-13"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "yolobus",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://yolobus.com/beeline/",
+        "sourceLabel": "BeeLine Woodland zone KML (agency-supplied)",
+        "sourceRetrievedAt": "2026-11-13",
+        "areaName": "Woodland"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -121.80252010000028,
+              38.694778799999966
+            ],
+            [
+              -121.80308800000007,
+              38.65515180000003
+            ],
+            [
+              -121.76669590000004,
+              38.65515180000003
+            ],
+            [
+              -121.76652479999983,
+              38.65139779999997
+            ],
+            [
+              -121.7601728,
+              38.65153179999997
+            ],
+            [
+              -121.7601728,
+              38.65515180000003
+            ],
+            [
+              -121.75304880000012,
+              38.65515180000003
+            ],
+            [
+              -121.7592928,
+              38.64083979999996
+            ],
+            [
+              -121.72841580000022,
+              38.64023579999997
+            ],
+            [
+              -121.72822280000042,
+              38.64764379999996
+            ],
+            [
+              -121.72801680000045,
+              38.66120880000002
+            ],
+            [
+              -121.72802680000035,
+              38.663411799999984
+            ],
+            [
+              -121.72793780000018,
+              38.66837979999997
+            ],
+            [
+              -121.72111990000002,
+              38.668299799999964
+            ],
+            [
+              -121.7210559000001,
+              38.674234799999965
+            ],
+            [
+              -121.72104630080422,
+              38.67731434642925
+            ],
+            [
+              -121.72106153898027,
+              38.678891365413385
+            ],
+            [
+              -121.72104008130037,
+              38.68013094062273
+            ],
+            [
+              -121.72104008130037,
+              38.68147099777894
+            ],
+            [
+              -121.72099716595852,
+              38.68523977400056
+            ],
+            [
+              -121.72095425061671,
+              38.68905859809425
+            ],
+            [
+              -121.74288399151476,
+              38.68911721880571
+            ],
+            [
+              -121.74288399151476,
+              38.69337127933799
+            ],
+            [
+              -121.74284107616393,
+              38.69665376730339
+            ],
+            [
+              -121.74279816083109,
+              38.69886433757921
+            ],
+            [
+              -121.76297459213701,
+              38.69901984136623
+            ],
+            [
+              -121.77598690000043,
+              38.69940880000001
+            ],
+            [
+              -121.7758478999997,
+              38.6923328
+            ],
+            [
+              -121.78338990000003,
+              38.69233779999997
+            ],
+            [
+              -121.78344390000001,
+              38.695808799999995
+            ],
+            [
+              -121.79296880000041,
+              38.695919799999956
+            ],
+            [
+              -121.79304679999964,
+              38.694285799999975
+            ],
+            [
+              -121.79733289999974,
+              38.69433079999995
+            ],
+            [
+              -121.79739889999982,
+              38.69465979999995
+            ],
+            [
+              -121.80252010000028,
+              38.694778799999966
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Woodland zone from Woodland.kml, sent by Yolobus to Atlas Outreach on 2026-11-13 (CIV-1452); its placemark is 'Yolo - Woodland Zone - After Sept 28 2025' (the industrial-area expansion launched that day). BeeLine also runs Knights Landing, Winters and Yolo zones (yolobus.com/beeline); those are not drawn yet (no file). Hours from the BeeLine FAQ; no BeeLine holiday hours are stated."
+}

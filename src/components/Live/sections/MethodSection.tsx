@@ -10,8 +10,14 @@ import MethodFootnote, { Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
-/** The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). */
-const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <span key="days" title={p.reason ?? undefined}>{p.days}</span>] : [p.weeks]; };
+/**
+ * The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). `namedAbove`
+ * is the same note when the page already shows it ("Excluding Oct 14"): the days are not named a second time (#1490).
+ */
+const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0], namedAbove?: string | null): ReactNode[] => {
+  const p = weekWindowParts(w);
+  return p.days && p.days !== `${namedAbove}.` ? [p.weeks, <span key="days" title={p.reason ?? undefined}>{p.days}</span>] : [p.weeks];
+};
 
 
 /**
@@ -20,7 +26,7 @@ const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] 
  * still anchors.
  */
 export type MethodSectionProps =
-  | { scope: 'route'; data: Ready }
+  | { scope: 'route'; data: Ready; /** The left-out days' note the page already shows above, if any (#1490). */ namedAbove?: string | null }
   | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
@@ -49,7 +55,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       ] },
       { label: METHOD_GROUPS.data, items: [
         `Last ${good.days} service days, ${dateRangeText(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
-        ...(v3.weekly ? weekWindowItems(v3.weekly) : []),
+        ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),
         data.replacementBuses && <Term t="Replacement buses">run this route in this schedule, so every figure describes the buses.</Term>,

@@ -12,6 +12,7 @@
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "20261101",
   "region": "Illinois",
+  "mergeIdenticalShapeIds": true,
   "lastRefreshedAt": "2026-11-06",
   "cities": [
     "Waukegan, Illinois",
@@ -25,7 +26,7 @@
     "Tinley Park, Illinois",
     "Wheaton, Illinois"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261113",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -49,7 +50,7 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-12"
+    "checkedAt": "2026-11-14"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

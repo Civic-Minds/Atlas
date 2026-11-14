@@ -46,7 +46,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
-import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
+import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
 import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
@@ -310,6 +310,8 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  /** CIV-828: a hand-set feed_version whose file shows the "still being verified" notice; any other file retires it. */
+  reviewFeedVersion?: string;
   lastFeedSourceKind?: FeedCandidate['kind'] | null;
   lastFeedSourceUrl?: string | null;
   feedQuality?: FeedQuality;
@@ -513,7 +515,9 @@ async function refreshAgency(
   const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion, contentsChanged);
   const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion, contentsChanged);
   if (feedChanged) {
-    agency.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[agency.slug] ?? []) ? 'review' : undefined;
+    agency.feedReviewStatus = reviewStatusForNewFeed(readFeedReviewHistory().agencies[agency.slug] ?? [], agency.reviewFeedVersion, peekedVersion);
+    // CIV-828: the hand-set version is for one file; a different file retires it.
+    if (agency.reviewFeedVersion && agency.reviewFeedVersion !== peekedVersion) delete agency.reviewFeedVersion;
   }
   if (clearedOverrideNote) {
     writeLog(`\n  ${formatOverrideUserFacingClearedLog(agency.slug)}\n  `);

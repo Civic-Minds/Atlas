@@ -137,7 +137,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       // words ("every 12 min until 9:37 AM") instead of a cadence, at a stop its shape serves.
       // #1228: only where the route card's row has the words too (rowTrips): a destination with no trips of its own
       // in the period never reads its stretch's "from 5:34 AM" (TTC 100 to Pape, weekday overnight).
-      const trips = rowTrips(p, period);
+      // CIV-995 (b): the stop card keeps the row's own trips; only the route card reads the stretch's values.
+      const trips = rowTrips(p, period, { stretch: false });
       const periodText = trips.partPeriod != null ? partPeriodText(p, period) : undefined;
       // No cadence at the stop for a period the route card says has no regular cadence (#750), where the
       // destination has no service of its own and its value is other headsigns' trips (CIV-1069, rowTrips), or where the

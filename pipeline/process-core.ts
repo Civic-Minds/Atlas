@@ -31,7 +31,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { adaptiveMedianHeadwayInWindow, computeHourMaxGaps, computeHourDepartureCounts, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1497,16 +1497,7 @@ export async function processGtfsBuffer(
         partialWeekdayServiceByPeriod: result.partialWeekday
           ? Object.fromEntries(PERIOD_KEYS.map(key => [key, result.partialWeekdayPeriods?.includes(key) ?? false]))
           : undefined,
-        headwayByHour: (() => {
-          const byHour: HeadwayByHour = {};
-          for (const h of SPARKLINE_HOURS) {
-            // Two departures can be an accidental cluster on a sparse route (e.g. HRT 967).
-            // Require three before exposing an hourly sparkline headway -- but only widen past a
-            // strict hour when that hour doesn't already have 3 on its own (issue #282).
-            byHour[h] = adaptiveMedianHeadwayInWindow(result.times, h * 60, 3);
-          }
-          return byHour;
-        })(),
+        headwayByHour: computeHourHeadways(result.times, SPARKLINE_HOURS),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
         departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
@@ -2725,12 +2716,7 @@ export async function processGtfsBuffer(
         }
         // Hourly: widen past a strict hour only when it doesn't already have >=3 departures on its
         // own, up to a 90-min window [h*60, h*60+90] so 30-min routes still show up (issue #282).
-        const byHour: HeadwayByHour = {};
-        for (const h of SPARKLINE_HOURS) {
-          const hh = adaptiveMedianHeadwayInWindow(times, h * 60, 3);
-          byHour[h] = hh;
-        }
-        allStopHourHw[stopId] = byHour;
+        allStopHourHw[stopId] = computeHourHeadways(times, SPARKLINE_HOURS);
       }
       return { allStopHw, allStopHwPlain, allStopMiddayHwPlain, allStopPeriodHw, sparseOvernightStopHw, allStopPeriodCoverageHw, allStopPeriodMaxGaps, allStopPeriodSustained, allStopHourHw, ownFallbackHw, ownFallbackPeriodHw, thinPoolFallbackPeriodHw, worstWaitPeriodHw };
     };
@@ -3756,10 +3742,11 @@ export async function processGtfsBuffer(
     // maxGapByHour follows the value; under a stand-in the clock hour alone can read a gap
     // shorter than the period value it stands in for, so the gap is the larger of the two.
     const flooredHourGap: Record<number, number | null> = {};
+    const terminalHours = terminalScopedTimes ? computeHourHeadways(terminalScopedTimes, SPARKLINE_HOURS) : null;
     const headsignTerminalHourHw = terminalScopedTimes
       ? Object.fromEntries(
           SPARKLINE_HOURS.map(h => {
-            const v = adaptiveMedianHeadwayInWindow(terminalScopedTimes, h * 60, 3);
+            const v = terminalHours![h] ?? null;
             const floor = hourFloor(h);
             if (v != null && floor != null && floor.headway > v) {
               const pk = periodKeyForHour(h);
@@ -3881,7 +3868,23 @@ export async function processGtfsBuffer(
     stampStretchShadow(features, stretchesByKey, feature => {
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
       return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
-    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}));
+    }, feature => Object.keys((feature.properties.stopPeriodCoverageHeadways as Record<string, unknown> | undefined) ?? {}), feature => {
+      // CIV-995 (b): the row's own trips, its headsign group's trip ids (the key the pool lift reads, tripsByHsKey).
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      const headsign = featureMetricHeadsign(feature as GeoJsonFeature);
+      if (!slot || !headsign) return null;
+      if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
+      const key = `${slot.shortName}::${slot.dirId}::${slot.day}::${headsign}`;
+      // A weekday row's trips are its headsign's trips on every weekday, not only the representative one, so a trip that runs
+      // on another weekday and misses the stop still keeps the row on its own trips.
+      const own = tripsByHsKey!.get(key);
+      const ids = own && slot.day === 'Weekday' ? [...new Set([...own, ...(weekdayTripsByHsKey!.get(key) ?? []).map(([tid]) => tid)])] : own;
+      const span = (id: string): [number, number] | undefined => {
+        const a = firstDepartureByTripId.get(id), b = lastDepartureByTripId.get(id);
+        return a == null || b == null ? undefined : [a, b];
+      };
+      return ids ? { ids, span, frequencyTrip: id => frequencyTemplateTripIds.has(id) } : null;
+    });
     // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
     // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
     // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the

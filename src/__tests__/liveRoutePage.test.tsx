@@ -117,6 +117,18 @@ describe('Live route dashboard', () => {
     expect(document.body.textContent).not.toMatch(/2,693/);
   });
 
+  it('Summary names the left-out days once: on late by hour, not again in the method (#1490)', async () => {
+    const dates = ['2026-10-10', '2026-10-11', '2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16'];
+    const good = dates.filter(d => d !== '2026-10-14');
+    const wk = (ds: string[], healthy: string[]) => ({ dates: ds, healthyDates: healthy }) as unknown as NonNullable<LiveV3['weekly']>['thisWeek'];
+    const last = ['2026-10-03', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09'];
+    const weekly = { comparable: true, minHealthyDays: 4, thisWeek: wk(dates, good), lastWeek: wk(last, last) } as unknown as LiveV3['weekly'];
+    window.history.replaceState(null, '', '/apps/live/ttc/505');
+    renderPage({ ...ready, v3: { ...v3, window: { days: 7, dates, requestedDays: 7, goodDates: good }, totals: { runs: 2693, stopPassages: 80000, droppedOffTimetable: 0, goodRuns: 2368, goodStopPassages: 70000 }, weekly } });
+    await screen.findByText(/This week is Oct 10–16/);
+    expect(document.body.textContent?.match(/Excluding Oct 14/g)?.length).toBe(1);
+  });
+
   it('the Limits shares (unscheduled trips, mismatched trip numbers, near a limit) count only the good days; older files keep the whole window (CIV-910)', async () => {
     const dates = ['2026-10-10', '2026-10-11', '2026-10-12', '2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16'];
     const good = dates.filter(d => d !== '2026-10-11');
@@ -270,7 +282,7 @@ describe('Live route dashboard', () => {
       // Staleness is the header line's own "data up to" segment (caution colour, role=status); the age is its hover text. No second line.
       const status = await screen.findByRole('status');
       expect(status.textContent).toBe('data up to Oct 14');
-      expect(status.getAttribute('title')).toBe('Data up to 2026-10-14, 11 days ago.');
+      expect(status.getAttribute('title')).toBe('Data up to Oct 14, 11 days ago.');
       expect(status.className).toContain('status-caution');
       expect(status.parentElement?.textContent).toBe('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
       expect(document.body.textContent).not.toMatch(/11 days ago/);
