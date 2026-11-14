@@ -47,7 +47,7 @@ const VARIANTS = {
     table: 'w-full min-w-[34rem] text-left text-sm',
     thead: 'border-b border-[var(--border-primary)] text-xs text-[var(--text-dim)]',
     headRow: '',
-    th: 'pb-3 font-black',
+    th: 'pb-3 font-bold',
     td: 'py-4',
     row: 'border-b border-[var(--border-primary)] last:border-0',
     gap: true,
