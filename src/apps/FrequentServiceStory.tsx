@@ -39,9 +39,10 @@ const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 
 type CoverageRow = (typeof frequentServiceCoverageStats)[number];
 const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
-  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
+  // Same type as the agency and area tables: names in regular weight, figures in the plain body digits (no tabular-nums).
+  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-normal text-[var(--text-primary)]' },
+  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'text-[var(--text-muted)]' },
+  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'text-[var(--text-muted)]' },
   { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
 ];
 
