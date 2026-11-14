@@ -74,6 +74,42 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
   };
 }
 
+let measureCanvas: HTMLCanvasElement | null = null;
+
+/**
+ * CIV-1165: whether the row's name is wider than the room beside its value on one line (the row's inner width less the
+ * value and the 0.5rem gap), from the name's own font. Measured as text, so the answer is the same in either layout; held
+ * while the sparkline is hovered. False where the browser can't measure text (tests).
+ */
+function useNameTooLong(
+  on: boolean, label: string, valueWords: string | undefined, held: boolean,
+  rowRef: React.RefObject<HTMLDivElement | null>, valueRef: React.RefObject<HTMLSpanElement | null>, labelRef: React.RefObject<HTMLSpanElement | null>,
+): boolean {
+  const [tooLong, setTooLong] = React.useState(false);
+  React.useLayoutEffect(() => {
+    if (!on) { setTooLong(false); return; }
+    if (held) return;
+    const row = rowRef.current, name = labelRef.current;
+    if (!row || !name) return;
+    const measure = () => {
+      let ctx: CanvasRenderingContext2D | null = null;
+      try { ctx = (measureCanvas ??= document.createElement('canvas')).getContext('2d'); } catch { /* no canvas */ }
+      if (!ctx) return;
+      ctx.font = getComputedStyle(name).font;
+      const style = getComputedStyle(row);
+      const room = row.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0)
+        - (valueRef.current?.getBoundingClientRect().width ?? 0) - 8;
+      setTooLong(ctx.measureText(label).width > room + 0.5);
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(row);
+    return () => ro.disconnect();
+  }, [on, label, valueWords, held]); // eslint-disable-line react-hooks/exhaustive-deps
+  return tooLong;
+}
+
 /**
  * Single direction row in the route card panel.
  * Owns label color, headway display, and limited-service variants
@@ -92,14 +128,18 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     : null;
   const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText;
   const valueWords = limited ? limitedLabel : rangeText ?? (headway != null ? headwayLabel : undefined);
-  const longValue = wrapLongValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const valueRef = React.useRef<HTMLSpanElement>(null);
+  const labelRef = React.useRef<HTMLSpanElement>(null);
+  // CIV-1165 (Ryan, 2026-11-13): a destination name never gets cut. When it doesn't fit beside its value on one line, the
+  // row takes the long-value layout (the value under the whole name, CIV-1143), however short the value is.
+  const nameTooLong = useNameTooLong(wrapLongValue && singleLineProp && !routeName, label, valueWords, holdLayout, rowRef, valueRef, labelRef);
+  const longValue = wrapLongValue && ((valueWords?.length ?? 0) > LONG_VALUE_CHARS || nameTooLong);
   const singleLine = singleLineProp && !longValue;
   const valueEnd = valueEndProp || longValue;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
   // Measured only while not held, so the held size is always the pre-hover layout.
-  const rowRef = React.useRef<HTMLDivElement>(null);
-  const valueRef = React.useRef<HTMLSpanElement>(null);
   const heldSize = React.useRef<HeldSize | null>(null);
   React.useLayoutEffect(() => {
     if (holdLayout || !rowRef.current) return;
@@ -125,6 +165,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
     >
       <div className={`flex ${singleLine || listRow ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
+          ref={labelRef}
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >

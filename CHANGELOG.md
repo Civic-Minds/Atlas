@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route cards never cut a destination name**: a row like TTC 52's "to Pearson Airport via Di…" now shows the whole name with its frequency on the line under it, as long values already did
 - **Snowmass shows the "still being verified" notice on its new schedule**: route 3 now reads every 30 all week; the notice turns off by itself when the next schedule file arrives
 - **The frequent service story map's steps say what the map now draws, with a route count under each**: the text still described rush-hour-only cuts after the map switched to weekday routes and the main map's limited-service rule
 - **A period that starts slowly says when steady service starts**: TTC Line 5's AM peak read every 20 from two early gaps, though trains come every few minutes from 7:27; its card now names that time and the longest wait after it
