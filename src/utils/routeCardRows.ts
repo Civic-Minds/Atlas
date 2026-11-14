@@ -345,7 +345,12 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     return [...section, ...sharedLines, ...branchLines, ...spanLines];
   });
 
-  const rowHeadways = groups.flatMap(g => g.source.realTier).map(d => routeCardRowValue(d, rowContext).headway)
+  // CIV-1199 (one calculation per fact): the numbers the rows show, read from the shown rows like the issue report above,
+  // so the part-period notice never names a number no row shows (Metro Transit 10 Saturday late read "every 26 min"
+  // beside its one row's "every 31 min, with one 56 min gap").
+  const rowHeadways = groups.flatMap(g => g.rows)
+    .map(row => (row.night ? null : row.display(null).value))
+    .map(value => (value && !value.isLimited ? value.shownHeadway ?? value.headway : null))
     .filter((h): h is number => typeof h === 'number');
 
   return {

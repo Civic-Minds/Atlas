@@ -46,6 +46,8 @@ export interface RouteCardRowValue {
   edgeText: string | undefined;
   /** The text beside or under the number. */
   headwayLabel: string | undefined;
+  /** The number the row shows: its words' number where its words name one (CIV-1199), else its headway. */
+  shownHeadway?: number;
   /** The filter's colour for the row's dot. */
   colorHeadway: number | null | undefined;
   trunkHeadway: number | null | undefined;
@@ -123,6 +125,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   return {
     displayH,
     headway: rowNoRegular ? undefined : displayH ?? undefined,
+    shownHeadway: rowNoRegular ? undefined : (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined),
     isLimited,
     rowNoRegular,
     edgeText,

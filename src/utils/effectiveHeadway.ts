@@ -130,6 +130,19 @@ export function hasDirectionPeriodService(p: ShapeProperties, period: TimePeriod
  * or one gap inside steady service ("every 5 min, with a 169 min gap") instead of a long wait or
  * "limited". Wording: headwayPeriodShape. An edge goes on the rows that cover its stretch (#1276).
  */
+/** The number routeCardPeriodShapeText's words name ("every 31 min, with one 56 min gap" -> 31), from the same branch (CIV-1199). */
+export function routeCardPeriodShapeEvery(p: ShapeProperties, period: TimePeriod): number | undefined {
+  if (period === 'all') return undefined;
+  const own = tailOwnEdge(p, period);
+  if (own) return own.every ?? undefined;
+  const edge = p.stretchPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) {
+    if (edge.stretch !== undefined && !rowReadsPeriodEdge(p, period)) return undefined;
+    return edge.every ?? undefined;
+  }
+  return p.stretchPeriodGap?.[period]?.every ?? undefined;
+}
+
 export function routeCardPeriodShapeText(p: ShapeProperties, period: TimePeriod): string | undefined {
   if (period === 'all') return undefined;
   const own = tailOwnEdge(p, period);
