@@ -561,7 +561,8 @@ function twoPartSplit(text: string | undefined): [string, string] | null {
   const limit = text.search(/ (from|until) /);
   return limit > 0 ? [text.slice(0, limit), text.slice(limit + 1)] : null;
 }
-const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
+/** Whether a value splits into two parts ("every 15 min," / "with one 32 min gap"; "every 60 min" / "until 5:05 PM"). */
+export const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
 
 function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
   const [first, second] = twoPartSplit(text) ?? [text, ''];
@@ -583,6 +584,8 @@ function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
   return (
     <span className="inline-flex flex-col items-end min-w-0">
       <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
+      {/* Read as one phrase ("every 9 min from 7:17 AM"); the space takes no room between the lines. */}
+      {' '}
       <span className="whitespace-nowrap">{second}</span>
     </span>
   );
