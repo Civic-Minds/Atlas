@@ -81,7 +81,7 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, anyEarl
     <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
       {modes.map(mode => (
         <span key={mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
-          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
+          <span className="w-full font-bold text-[var(--text-secondary)] sm:w-auto">{LEGEND_TITLE[mode]}:</span>
           {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map((step, i, shown) => (
             <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}{i === shown.length - 1 ? LEGEND_LAST_STEP_TAIL[mode] ?? '' : ''}</span>
           ))}
