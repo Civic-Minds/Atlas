@@ -319,7 +319,8 @@ export function buildHeaderSummary(
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
   const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
-  if (maxHeadway !== Infinity) parts.push(`${matching} match filters`);
+  // CIV-1471: correct singulars (STYLE.md): "1 matches filters", "3 match filters".
+  if (maxHeadway !== Infinity) parts.push(`${matching} ${plural(matching, 'matches', 'match')} filters`);
   return parts.join(' · ');
 }
 
