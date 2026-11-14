@@ -195,7 +195,8 @@ export function useRouteStyling(
     const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['==', ['get', 'agencySlug'], historyOverlay.slug] : null;
     if (historyYearAgencyMatch) {
       const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
-      const yearClause = ['all', historyYearAgencyMatch, ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      // That day's line only, by the map's own day clause (buildRouteTileFilter); without it every day's copy drew.
+      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
       routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
     }
 

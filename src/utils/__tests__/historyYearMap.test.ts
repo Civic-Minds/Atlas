@@ -65,10 +65,10 @@ describe('History period and frequency limit (CIV-389, CIV-392)', () => {
   });
 
   it('the limit compares like the map filter; All passes everything, limited or unknown fail a limit', () => {
-    expect(passesHistoryLimit({ kind: 'value', min: 15 }, 15)).toBe(true);
-    expect(passesHistoryLimit({ kind: 'value', min: 16 }, 15)).toBe(false);
-    expect(passesHistoryLimit({ kind: 'limited' }, 60)).toBe(false);
-    expect(passesHistoryLimit({ kind: 'blank' }, Infinity)).toBe(true);
+    expect(passesHistoryLimit({ kind: 'value', min: 15 }, 15, 'midday')).toBe(true);
+    expect(passesHistoryLimit({ kind: 'value', min: 16 }, 15, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'limited' }, 60, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'blank' }, Infinity, 'midday')).toBe(true);
   });
 
   it("the year's map routes follow the period and the limit", () => {
@@ -100,8 +100,10 @@ describe('History weekend days (CIV-1425)', () => {
     for (const period of ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight', 'all'] as const) {
       expect(historyDayPeriodValue(none, 'Saturday', period)).toEqual({ kind: 'none' });
     }
-    expect(passesHistoryLimit({ kind: 'none' }, 60)).toBe(false);
-    expect(passesHistoryLimit({ kind: 'none' }, Infinity)).toBe(true);
+    expect(passesHistoryLimit({ kind: 'none' }, 60, 'midday')).toBe(false);
+    // CIV-1434: under All with a period picked, no trips that day is dropped, as the main map drops it.
+    expect(passesHistoryLimit({ kind: 'none' }, Infinity, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'limited' }, Infinity, 'midday')).toBe(true);
   });
 
   it('an old v1 snapshot is blank on the weekend', () => {
@@ -141,8 +143,8 @@ describe('History weekend days (CIV-1425)', () => {
       ],
     };
     const sat = historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Saturday' });
-    expect(sat.map(r => [r.routeShortName, r.headway])).toEqual([['A', 25], ['N', null]]);
-    expect(sat[1].color).toBe(localRouteHeadwayColor(null, 'default'));
+    // CIV-1434: N has no Saturday trips, so it isn't drawn, as the main map drops a route with no service then.
+    expect(sat.map(r => [r.routeShortName, r.headway])).toEqual([['A', 25]]);
     expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: 30, day: 'Saturday' }).map(r => r.routeShortName)).toEqual(['A']);
     expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Weekday' })[0].headway).toBe(10);
   });

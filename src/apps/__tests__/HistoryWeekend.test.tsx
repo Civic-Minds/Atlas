@@ -72,12 +72,13 @@ describe('History on Saturday (CIV-1425)', () => {
     expect(c.textContent).toContain('no trips');
   });
 
-  it('the agency list reads Saturday values, "no trips" rows, and no missing-values notice for a pilot agency', async () => {
+  it('the agency list reads Saturday values, leaves out routes with no trips that day, and has no missing-values notice for a pilot agency', async () => {
     // Waits for a row, not the list heading: the rows can render a moment after it (CI, PR #1457).
-    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Nightless');
+    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Alpha');
     const text = c.textContent ?? '';
     expect(text).toContain('Biggest changes first');
-    expect(text).toContain('no trips');
+    // CIV-1434: even under All, as the main map drops a route with no service then.
+    expect(text).not.toContain('Nightless');
     expect(text).toContain('30 min');
     expect(text).toContain('+6');
     expect(text).not.toContain('12 min');

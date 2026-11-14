@@ -663,7 +663,7 @@ function HistoryAgencyPanel({
     // "Biggest change" order as before, among the routes that ran in the selected year.
     return yearRoutes
       // Only routes within the Frequency limit in the chosen period, as on the map (CIV-392).
-      .filter(({ snapshot }) => passesHistoryLimit(historyDayPeriodValue(snapshot, view.day, view.period), view.maxHeadway))
+      .filter(({ snapshot }) => passesHistoryLimit(historyDayPeriodValue(snapshot, view.day, view.period), view.maxHeadway, view.period))
       .map(({ route, snapshot: yearSnapshot }) => {
         if (route.snapshots.length === 0) return null;
         const valued = routeHistorySnapshots(route).newestFirst.filter(s => periodMinutes(s, view.period, view.day) != null);
@@ -920,6 +920,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       routeGeometry: yearRoutes.find(r => r.routeShortName === selectedRouteShortName)?.coordinates,
       selectedYear: selectedYear > 0 ? selectedYear : undefined,
       yearRoutes,
+      day: view.day,
     });
   }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view]);
 

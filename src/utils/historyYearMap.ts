@@ -5,13 +5,14 @@ import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { localRouteHeadwayColor } from '../components/Interval/map/routeStyle';
 import type { ColorVisionMode } from './colors';
 import type { DayType } from '../../shared/dayTypes';
+import { headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 
 /**
  * One route drawn in History's year view (#1028 batch A). Only routes with a snapshot in the year
  * are drawn (routesForYear: no fallback to another year). The colour is that year's value on the view's day
- * (Weekday unless History's day picker says otherwise, CIV-1425) in the shared tier colours; a limited,
- * no-trips or unknown value takes the map's no-value colour (never hidden,
- * per the reader contract). `coordinates` is that year's own line from the shapes file (CIV-456) when it
+ * (Weekday unless History's day picker says otherwise, CIV-1425) in the shared tier colours; a limited
+ * or unknown value takes the map's no-value colour (never hidden, per the reader contract). A route with
+ * no trips that day is not drawn, as on the main map (CIV-1434, passesHistoryLimit). `coordinates` is that year's own line from the shapes file (CIV-456) when it
  * has one; otherwise, and always for the latest year, the route is drawn on today's map line.
  */
 export interface HistoryYearRoute {
@@ -93,9 +94,12 @@ export function historyDayHasPeriods(snapshot: Snapshot, day: 'Saturday' | 'Sund
 
 /**
  * Whether a value passes the frequency limit (CIV-392), by the map filter's comparison (frequency at
- * or under the limit). "All" passes everything; a limited, no-trips or unknown value fails any limit.
+ * or under the limit). A limited, no-trips or unknown value fails any limit. Under "All", a route with
+ * no trips that day is dropped wherever the map's filter applies (headwayFilterApplies: a period is
+ * picked), as the main map drops a route with no service then (CIV-1434); limited and unknown pass.
  */
-export function passesHistoryLimit(value: SnapshotValue, maxHeadway: number): boolean {
+export function passesHistoryLimit(value: SnapshotValue, maxHeadway: number, period: TimePeriod): boolean {
+  if (value.kind === 'none' && headwayFilterApplies(period, maxHeadway)) return false;
   if (!Number.isFinite(maxHeadway)) return true;
   return value.kind === 'value' && value.min <= maxHeadway;
 }
@@ -113,7 +117,7 @@ export function historyYearRoutes(
   const out: HistoryYearRoute[] = [];
   for (const { route, snapshot } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
     const value = historyDayPeriodValue(snapshot, view.day, view.period);
-    if (!passesHistoryLimit(value, view.maxHeadway)) continue;
+    if (!passesHistoryLimit(value, view.maxHeadway, view.period)) continue;
     const headway = value.kind === 'value' ? value.min : null;
     out.push({
       routeShortName: route.routeShortName,
