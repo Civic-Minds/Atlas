@@ -269,7 +269,7 @@ describe('Live route dashboard', () => {
       // Staleness is the header line's own "data up to" segment (caution colour, role=status); the age is its hover text. No second line.
       const status = await screen.findByRole('status');
       expect(status.textContent).toBe('data up to Oct 14');
-      expect(status.getAttribute('title')).toBe('Data up to 2026-10-14, 11 days ago.');
+      expect(status.getAttribute('title')).toBe('Data up to Oct 14, 11 days ago.');
       expect(status.className).toContain('status-caution');
       expect(status.parentElement?.textContent).toBe('Week of Oct 8–14 · 1,234 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
       expect(document.body.textContent).not.toMatch(/11 days ago/);

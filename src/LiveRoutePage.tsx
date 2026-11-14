@@ -86,7 +86,7 @@ export function routeSubtitle(v3: LiveV3, agency: string): string {
 
 /**
  * The subtitle line. When the analysis is stale, its "data up to Oct 14" segment takes the caution colour and carries
- * role=status; the age ("Data up to 2026-10-14, 3 days ago.") is that segment's hover text, not a line of its own.
+ * role=status; the age ("Data up to Oct 14, 3 days ago.") is that segment's hover text, not a line of its own.
  */
 export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
   const f = freshness(v3, route, Date.now());
