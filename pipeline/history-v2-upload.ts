@@ -19,14 +19,25 @@
  * (the build would drop it anyway), together with its shapes file.
  * The dry run reads the archive bucket only when credentials are configured
  * (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ARCHIVE_BUCKET_NAME).
+ *
+ *   --replace-approved <ticket>   CIV-1430, the one exception to "never overwritten": the ticket must approve
+ *                                 exactly this slug (historyV2Replace.ts APPROVED_REPLACEMENTS). A differing
+ *                                 sidecar is then replaced only when its ONLY differences are added weekend
+ *                                 p / t / tp (checkWeekendOnlyAddition); any other change stays a CONFLICT,
+ *                                 is reported field by field, and stops the run with nothing written. Shapes
+ *                                 files are never replaced. Before each replacement the old body is copied to
+ *                                 an immutable backup key (history-v2-replaced/<ticket>/...), read back and
+ *                                 compared; the key is re-read just before the write (it must still hold the old
+ *                                 body) and the new body is read back after it.
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parseHistoryV2Sidecar } from '../shared/historyV2Reader.js';
 import type { HistoryV2Sink } from './historyV2.js';
 import { assertWriteGate, byteLength, hasR2Credentials, isEntryPoint, parseFlags, type Env } from './historyPublishLib.js';
+import { assertReplacementApproved, checkWeekendOnlyAddition, countAdded, replacementBackupKey, sha256Hex, type ReplacementCheck } from './historyV2Replace.js';
 
-export type UploadState = 'new' | 'identical' | 'conflict' | 'unknown';
+export type UploadState = 'new' | 'identical' | 'conflict' | 'replace' | 'unknown';
 
 export interface UploadItem {
   key: string;
@@ -35,6 +46,9 @@ export interface UploadItem {
   body: string;
   bytes: number;
   state: UploadState;
+  /** CIV-1430: the published body and the check, for a differing sidecar under --replace-approved. */
+  existing?: string;
+  check?: ReplacementCheck;
 }
 
 export interface Remote {
@@ -42,6 +56,8 @@ export interface Remote {
   peek(key: string): Promise<string | null>;
   /** r2ArchiveSink semantics: written | unchanged | conflict. */
   sink: HistoryV2Sink;
+  /** CIV-1430 only: an unconditional put, used for an approved replacement after its checks. */
+  overwrite?(key: string, body: string): Promise<void>;
 }
 
 export interface UploadRunOptions {
@@ -57,7 +73,7 @@ const PERIOD_RE = /^[A-Za-z0-9][A-Za-z0-9_.-]*$/;
 
 export async function realRemote(): Promise<Remote> {
   const [{ r2ArchiveSink }, r2] = await Promise.all([import('./historyV2.js'), import('./r2.js')]);
-  return { peek: key => r2.r2GetArchive(key), sink: await r2ArchiveSink() };
+  return { peek: key => r2.r2GetArchive(key), sink: await r2ArchiveSink(), overwrite: (key, body) => r2.r2PutArchiveJson(key, body) };
 }
 
 function isCoord(c: unknown): boolean {
@@ -135,9 +151,10 @@ export function scanLocal(dir: string, slug: string, period?: string): Scan {
 }
 
 function totals(items: UploadItem[]) {
-  const t = { objects: items.length, bytes: 0, newObjects: 0, newBytes: 0, identicalObjects: 0, identicalBytes: 0, conflictObjects: 0, conflictBytes: 0 };
+  const t = { objects: items.length, bytes: 0, newObjects: 0, newBytes: 0, identicalObjects: 0, identicalBytes: 0, conflictObjects: 0, conflictBytes: 0, replaceObjects: 0 };
   for (const i of items) {
     t.bytes += i.bytes;
+    if (i.state === 'replace') t.replaceObjects++;
     if (i.state === 'new') { t.newObjects++; t.newBytes += i.bytes; }
     else if (i.state === 'identical') { t.identicalObjects++; t.identicalBytes += i.bytes; }
     else if (i.state === 'conflict') { t.conflictObjects++; t.conflictBytes += i.bytes; }
@@ -147,7 +164,7 @@ function totals(items: UploadItem[]) {
 
 export async function runUpload(opts: UploadRunOptions): Promise<number> {
   const log = opts.log ?? (l => console.log(l));
-  const { values, bools } = parseFlags(opts.argv, ['--slug', '--dir', '--period'], ['--write']);
+  const { values, bools } = parseFlags(opts.argv, ['--slug', '--dir', '--period', '--replace-approved'], ['--write']);
   const write = bools.has('--write');
   assertWriteGate(write, opts.env);
   const slug = values['--slug'];
@@ -156,6 +173,8 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   if (!SLUG_RE.test(slug)) throw new Error(`--slug must be exactly one agency slug (got "${slug}")`);
   const period = values['--period'];
   if (period && !PERIOD_RE.test(period)) throw new Error(`bad --period "${period}"`);
+  const ticket = values['--replace-approved'];
+  if (ticket) assertReplacementApproved(ticket, slug);
 
   const scan = scanLocal(dir, slug, period);
   if (scan.errors.length > 0) {
@@ -177,19 +196,28 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
     for (const item of scan.items) {
       const existing = await remote.peek(item.key);
       item.state = existing == null ? 'new' : existing === item.body ? 'identical' : 'conflict';
+      if (item.state === 'conflict' && ticket && item.kind === 'sidecar') {
+        item.existing = existing!;
+        item.check = checkWeekendOnlyAddition(existing!, item.body);
+        if (item.check.ok) item.state = 'replace';
+      }
     }
   }
 
   log(write ? `WRITE: about to upload ${slug} to the PRIVATE archive bucket` : 'DRY RUN (nothing will be written)');
   if (!remote) log('remote state unknown (no credentials; dry-run listing skipped)');
   for (const i of scan.items) {
-    const verb = i.state === 'new' ? 'put (new)' : i.state === 'identical' ? 'no-op (identical)' : i.state === 'conflict' ? 'CONFLICT (differs, never overwritten)' : 'put or no-op (state unknown)';
+    const verb = i.state === 'new' ? 'put (new)' : i.state === 'identical' ? 'no-op (identical)'
+      : i.state === 'replace' ? `REPLACE (${ticket}: adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
+      : i.state === 'conflict' ? (i.check ? `CONFLICT (${ticket} refused: ${i.check.reason})` : 'CONFLICT (differs, never overwritten)') : 'put or no-op (state unknown)';
     log(`  ${i.key}  ${i.bytes} bytes  ${verb}`);
+    if (i.state === 'conflict' && i.check) for (const c of i.check.changes.slice(0, 20)) log(`      ${c.path}: ${c.before ?? '(absent)'} -> ${c.after ?? '(absent)'}`);
+    if (i.state === 'conflict' && i.check && i.check.changes.length > 20) log(`      ... ${i.check.changes.length - 20} more`);
   }
   for (const s of scan.skipped) log(`  SKIPPED period ${s.periodKey}: ${s.reason}`);
   for (const w of scan.warnings) log(`  warning: ${w}`);
   const t = totals(scan.items);
-  log(`Totals: ${t.objects} objects, ${t.bytes} bytes; new ${t.newObjects} (${t.newBytes} bytes), identical ${t.identicalObjects} (${t.identicalBytes} bytes), conflict ${t.conflictObjects} (${t.conflictBytes} bytes), skipped periods ${scan.skipped.length}`);
+  log(`Totals: ${t.objects} objects, ${t.bytes} bytes; new ${t.newObjects} (${t.newBytes} bytes), identical ${t.identicalObjects} (${t.identicalBytes} bytes), conflict ${t.conflictObjects} (${t.conflictBytes} bytes), ${ticket ? `replace ${t.replaceObjects}, ` : ''}skipped periods ${scan.skipped.length}`);
 
   const conflicts = scan.items.filter(i => i.state === 'conflict');
   if (conflicts.length > 0) {
@@ -204,8 +232,19 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
 
   let written = 0;
   let unchanged = 0;
+  let replaced = 0;
   for (const item of scan.items) {
     if (item.state === 'identical') { unchanged++; continue; }
+    if (item.state === 'replace') {
+      const err = await replaceOne(remote!, ticket!, item);
+      if (err) {
+        log(`STOPPED at ${item.key}: ${err}. ${written} written and ${replaced} replaced before it, later keys untouched.`);
+        return 1;
+      }
+      replaced++;
+      log(`  replaced ${item.key} (backup ${replacementBackupKey(ticket!, item.key, item.existing!)})`);
+      continue;
+    }
     const res = await remote!.sink.put(item.key, item.body);
     if (res === 'conflict') {
       log(`CONFLICT while writing ${item.key} (it changed after the check). Stopped: ${written} written before it, later keys untouched.`);
@@ -213,8 +252,31 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
     }
     if (res === 'written') written++; else unchanged++;
   }
-  log(`Uploaded ${slug}: ${written} written, ${unchanged} already identical.`);
+  log(`Uploaded ${slug}: ${written} written, ${unchanged} already identical${ticket ? `, ${replaced} replaced under ${ticket}` : ''}.`);
   return 0;
+}
+
+/**
+ * CIV-1430: one approved replacement. Backup first (immutable: an existing backup must hold exactly the old body),
+ * read the backup back, re-read the key (it must still hold the old body), write, read the new body back.
+ * Returns an error message, or null when the key now holds the new body.
+ */
+export async function replaceOne(remote: Remote, ticket: string, item: UploadItem): Promise<string | null> {
+  if (!remote.overwrite) return 'this remote cannot overwrite';
+  const old = item.existing!;
+  const check = checkWeekendOnlyAddition(old, item.body);
+  if (!check.ok) return `refused: ${check.reason}`;
+  const backupKey = replacementBackupKey(ticket, item.key, old);
+  const backed = await remote.sink.put(backupKey, old);
+  if (backed === 'conflict') return `backup key ${backupKey} already holds different content`;
+  const back = await remote.peek(backupKey);
+  if (back !== old) return `backup read-back mismatch at ${backupKey} (expected sha256 ${sha256Hex(old)}, got ${back == null ? 'nothing' : sha256Hex(back)})`;
+  const current = await remote.peek(item.key);
+  if (current !== old) return 'the key changed after the check (not the body that was checked); not replaced';
+  await remote.overwrite(item.key, item.body);
+  const after = await remote.peek(item.key);
+  if (after !== item.body) return `read-back mismatch after writing ${item.key}; the backup ${backupKey} holds the old body`;
+  return null;
 }
 
 if (isEntryPoint(import.meta.url)) {
