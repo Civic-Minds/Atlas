@@ -205,10 +205,16 @@ export function tripTimeChangedEnough(firstMinutes: number, lastMinutes: number)
   return Math.abs(lastMinutes - firstMinutes) >= firstMinutes * TRIP_TIME_MIN_CHANGE_SHARE;
 }
 
+/** The day the archived trip times describe: one typical weekday trip (HISTORY_TRIP_TIME_NOTE). */
+export const TRIP_DURATION_DAY: DayType = 'Weekday';
+
 /** The trip time box's lines, only when the trip time changed enough (`tripTimeChangedEnough`; Ryan 2026-10-29:
  *  "why are we showing trip time if it iddint change"). A longer trip is the worse colour and a shorter one
  *  the better colour, as the frequency box (Ryan 2026-11-12: "why is one red tbut not the other if both got worse"). */
-export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+export function tripTimeChange(entry: RouteHistoryEntry, day: DayType = 'Weekday'): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+  // A day the trip time wasn't measured on has no box, as a main-map route card piece with no data for the
+  // chosen day isn't drawn (CIV-1435).
+  if (day !== TRIP_DURATION_DAY) return null;
   const trip = entry.tripDuration;
   if (!trip || !tripTimeChangedEnough(trip.firstMinutes, trip.lastMinutes)) return null;
   const tone: ChangeTone = trip.lastMinutes > trip.firstMinutes ? 'negative' : 'positive';
@@ -303,8 +309,7 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period, day);
-  // The trip time is a weekday trip's, so it shows on Weekday only (CIV-1425).
-  const tripTime = day === 'Weekday' ? tripTimeChange(route) : null;
+  const tripTime = tripTimeChange(route, day);
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
