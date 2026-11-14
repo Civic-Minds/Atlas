@@ -43,8 +43,7 @@ const BRANDS = new Set([
   'SacRT', 'SamTrans', 'Santa Cruz METRO', 'Santa Rosa CityBus', 'Simcoe County LINX', 'SolTrans', 'SporTran', 'StarMetro',
   'StarTran', 'SunLine Transit Agency', 'SunRail', 'SunTran', 'The COMET', 'TheBus', 'TheRide', 'TransLink', 'TriCounty Link',
   'TriMet', 'UGA Campus Transit', 'UP Express', 'VIA Metropolitan Transit', 'VINE Transit', 'WeGo', 'WestCAT',
-  // Still unclear, guessed as a brand.
-  'CCTA / Green Mountain Transit',
+  // Still unclear, guessed as a brand: CCTA / Green Mountain Transit, since renamed Green Mountain Transit (CIV-1103).
 ]);
 
 /** Names that take "the" though no rule word ends them (Ryan, CIV-1103 Q1). */
@@ -76,14 +75,21 @@ export function agencyArticle(name: string): string {
   return takesThe(name) ? 'the ' : '';
 }
 
-export function agencyInSentence(name: string): string {
+/** A slash name reads as its first name in a sentence (STYLE.md: "Lawrence Transit", not "Lawrence Transit / KU on Wheels"). */
+function sentenceName(name: string): string {
   const n = name.trim();
+  // Only a spaced " / " joins two names; "LADOT/DASH" is one name (the approved list reads "The LADOT/DASH’s").
+  return n.includes(' / ') ? n.split(' / ')[0].trim() : n;
+}
+
+export function agencyInSentence(name: string): string {
+  const n = sentenceName(name);
   return takesThe(n) ? `the ${n}` : n;
 }
 
 /** The same at the start of a sentence: "The TTC", "MiWay" (a name keeps its own casing). */
 export function agencySentenceStart(name: string): string {
-  const n = name.trim();
+  const n = sentenceName(name);
   return takesThe(n) ? `The ${n}` : n;
 }
 
@@ -92,8 +98,7 @@ export function agencySentenceStart(name: string): string {
  * name ending in s still takes ’s). A slash name uses its first name: "Lawrence Transit’s".
  */
 export function agencyPossessive(name: string): string {
-  const n = name.trim();
-  const own = n.includes('/') ? n.split('/')[0].trim() : n;
+  const own = sentenceName(name);
   return `${agencyInSentence(own)}${PLURAL_NAMES.has(own) ? '’' : '’s'}`;
 }
 

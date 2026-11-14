@@ -29,7 +29,7 @@ describe('agencyInSentence (CIV-1103)', () => {
   });
   it('the "Still unclear" rows follow their guess', () => {
     for (const n of ['OCTA', 'AVTA', 'LADOT', 'LADOT/DASH', 'TOR']) expect(agencyInSentence(n)).toBe(`the ${n}`);
-    for (const n of ['TCAT', 'LAVTA', 'RABA', 'SLORTA', 'NORTA', 'WATA', 'ECAT', 'CCTA / Green Mountain Transit']) expect(agencyInSentence(n)).toBe(n);
+    for (const n of ['TCAT', 'LAVTA', 'RABA', 'SLORTA', 'NORTA', 'WATA', 'ECAT']) expect(agencyInSentence(n)).toBe(n);
   });
   it('an all-caps name in no list keeps the default, letter by letter', () => {
     expect(agencyInSentence('XYZT')).toBe('the XYZT');
@@ -74,7 +74,7 @@ describe('agencyPossessive (CIV-1103)', () => {
   });
   it('a slash name uses its first name', () => {
     expect(agencyPossessive('Lawrence Transit / KU on Wheels')).toBe('Lawrence Transit’s');
-    expect(agencyPossessive('LADOT/DASH')).toBe('the LADOT’s');
+    expect(agencyPossessive('LADOT/DASH')).toBe('the LADOT/DASH’s');
   });
   it('carries the article, capitalised at the start of a sentence', () => {
     expect(agencyPossessive('TTC')).toBe('the TTC’s');
@@ -82,5 +82,13 @@ describe('agencyPossessive (CIV-1103)', () => {
     expect(agencyPossessiveSentenceStart('Toronto Transit Commission')).toBe('The Toronto Transit Commission’s');
     expect(agencyPossessiveSentenceStart('BC Ferries')).toBe('BC Ferries’');
     expect(agencyPossessiveSentenceStart('Staten Island Ferry')).toBe('The Staten Island Ferry’s');
+  });
+});
+
+describe('slash names read as their first name in any sentence (STYLE.md)', () => {
+  it('uses the first name', async () => {
+    const { agencyInSentence, agencySentenceStart } = await import('../agencyArticle');
+    expect(agencyInSentence('Lawrence Transit / KU on Wheels')).toBe('Lawrence Transit');
+    expect(agencySentenceStart('Lawrence Transit / KU on Wheels')).toBe('Lawrence Transit');
   });
 });
