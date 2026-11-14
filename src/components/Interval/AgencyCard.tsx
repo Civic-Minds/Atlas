@@ -397,6 +397,22 @@ function RouteListSection({
   return <CardRouteList rows={rows} onSelect={onRouteSelect} dimmed={dimmed} />;
 }
 
+/**
+ * The agency card's message when no route rows show. A hidden agency's note (CIV-1060) already says why nothing
+ * shows, so its card leaves out the "couldn't load" error; every other agency keeps it.
+ */
+export function agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, noServiceToday, day }: {
+  activeFilterLabel: string | null | undefined;
+  loadFailed: boolean;
+  hiddenNote: string | null;
+  noServiceToday: boolean;
+  day: string;
+}): { text: string; kind?: 'error' } | null {
+  if (activeFilterLabel) return { text: noRoutesMatchText(activeFilterLabel), ...(loadFailed ? { kind: 'error' as const } : {}) };
+  if (loadFailed) return hiddenNote ? null : { text: AGENCY_ROUTES_FAILED, kind: 'error' };
+  return { text: noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED };
+}
+
 export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard({
   agency,
   layers,
@@ -773,7 +789,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : filteredRoutes.length === 0 ? (
-          <PanelEmpty kind={loadFailed ? 'error' : undefined}>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : loadFailed ? AGENCY_ROUTES_FAILED : noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED}</PanelEmpty>
+          (() => {
+            const empty = agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, noServiceToday, day });
+            return empty ? <PanelEmpty kind={empty.kind}>{empty.text}</PanelEmpty> : null;
+          })()
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (
