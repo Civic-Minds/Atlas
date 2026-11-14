@@ -21,6 +21,9 @@ describe('kpiDelta', () => {
 describe('kpiDelta wording', () => {
   it('reads label first, then last week\'s value, with the direction kept apart as the arrow', () => {
     expect(kpiDelta('tripTime', 31, 32, true, false, null, '32 min')).toMatchObject({ text: 'last week 32 min', arrow: 'down', spoken: expect.stringMatching(/^last week 32 min, down 1 min/) });
+    // #1487: TTC 504 read "30 min, last week 32" while the spoken change said "down 1.2 min"; it now says the shown 2 min.
+    expect(kpiDelta('tripTime', 30.4, 31.6, true, false, null, '32 min', '30 min')?.spoken).toMatch(/^last week 32 min, down 2 min/);
+    expect(kpiDelta('delivered', 0.9994, 1, false, true, null, '100.0%', '99.9%')?.spoken).toMatch(/^last week 100.0%, down 0.1 points/);
     expect(kpiDelta('late', 0.3, 0.2, true, true, null, '20%')).toMatchObject({ text: 'last week 20%', arrow: 'up', tone: 'worse' });
     expect(kpiDelta('late', 0.2, 0.2, true, true, null, '20%')).toMatchObject({ text: 'same as last week', arrow: 'none' });
   });
