@@ -241,3 +241,96 @@ describe('#1343: a part-period notice that would name the whole period names the
     expect(plain(n.period?.text)).toBe('This route runs only from 7–11 PM.');
   });
 });
+
+describe('CIV-1199: each fact once (Ryan, 2026-11-14), on the audit\'s cards', () => {
+  const plain = (t?: string | null) => (t ?? '').replace(/[⁠]/g, '').replace(/[  ]/g, ' ');
+  const outOf = (m: RouteCardNoticeInput['model'], extra: Partial<RouteCardNoticeInput>) => routeCardNotices({ ...base, model: m, selectedRouteOutOfFilter: true, ...extra });
+
+  it('N10: drops where a row names the gap (OC Transpo 6 midday, CTA 171 AM) or says until/from; stays where it adds the gap', () => {
+    const oc6 = routeCardNotices({ ...base, model: withRows([{ headway: 15, label: 'every 15 min, with one 32 min gap' }, { headway: 15 }], { unevenGap: () => 32 }) });
+    expect([oc6.period, oc6.dropped]).toEqual([null, [{ code: 'N10', why: 'a row names that gap or a longer one' }]]);
+    const cta171 = routeCardNotices({ ...base, model: withRows([{ headway: 15, label: 'every 15 min, with one 30 min gap' }, { headway: 15, label: 'every 15 min, with one 30 min gap' }], { unevenGap: () => 30 }) });
+    expect(cta171.period).toBeNull();
+    const until = routeCardNotices({ ...base, model: withRows([{ headway: 15, label: 'every 15 min until 1:10 PM' }, { headway: 15 }], { unevenGap: () => 32 }) });
+    expect(until.dropped).toEqual([{ code: 'N10', why: 'a row gives its hours, so the route does not run all period' }]);
+    expect(routeCardNotices({ ...base, model: withRows([{ headway: 15 }, { headway: 15 }], { unevenGap: () => 32 }) }).period?.text).toBe('Gaps between trips can be up to 32 min.');
+  });
+
+  it('N8/N11: one "no trips" sentence per card (AC Transit 702 weekday AM at All)', () => {
+    const none = { ...model, hasPeriodService: false } as unknown as RouteCardNoticeInput['model'];
+    const n = outOf(none, { period: 'amPeak', maxHeadway: Infinity });
+    expect([n.filter?.code, n.period]).toEqual(['N11', null]);
+    expect(plain(n.filter?.text)).toBe('This route has no trips from 6–9 AM.');
+  });
+
+  it('N12: drops beside "no trips" (AC Transit 702 at ≤60) and where every row shows a longer wait', () => {
+    const none = { ...model, hasPeriodService: false } as unknown as RouteCardNoticeInput['model'];
+    const n702 = outOf(none, { period: 'amPeak', maxHeadway: 60 });
+    expect([n702.filter, n702.period?.code]).toEqual([null, 'N8']);
+    expect(n702.dropped).toEqual([{ code: 'N12', why: 'the period line says when it runs' }]);
+    expect(outOf(withRows([{ headway: 63 }, { headway: 75 }]), { maxHeadway: 60 }).dropped).toEqual([{ code: 'N12', why: 'every row shows a longer wait' }]);
+  });
+
+  it('N12: every row meets the filter but the route runs only part of the period: the existing part-period line says when (question 2)', () => {
+    // CTA 66 weekday late at ≤15: rows every 12 and 10; after 1 AM only a few trips, so the route's value is 30.
+    const a = { headsign: 'A', headwayByHour: { 23: 10, 24: 11 }, maxGapByHour: { 23: 11, 24: 15 }, departuresByHour: { 23: 6, 24: 4 } } as any;
+    const b = { headsign: 'B', headwayByHour: { 23: 8, 24: 10, 25: 2 }, departuresByHour: { 23: 4, 24: 1 } } as any;
+    const dir = [a, b];
+    const m = withRows([{ headway: 12 }, { headway: 10 }], { activeRangeDirections: dir, rowHeadways: [12, 10], contract: { filterValue: 30 } });
+    const n = outOf(m, { directions: dir, period: 'late', maxHeadway: 15 });
+    expect(n.filter?.code).toBe('N13');
+    expect(plain(n.filter?.text)).toBe('This route runs every 12 min, only from 11 PM–1 AM. It runs less often after 1 AM.');
+    expect(n.dropped).toEqual([{ code: 'N12', why: 'every row meets the filter; the part-period line says when it runs' }]);
+    // Rows every 15 that run all period, nothing else on the card saying why: the filter line stays.
+    expect(outOf(withRows([{ headway: 15 }]), { maxHeadway: 15 }).filter?.code).toBe('N12');
+    // A row slower than the filter: no swap.
+    expect(outOf(withRows([{ headway: 12 }, { headway: 20 }], { activeRangeDirections: dir, rowHeadways: [12, 20], contract: { filterValue: 30 } }), { directions: dir, period: 'late', maxHeadway: 15 }).filter?.code).toBe('N12');
+  });
+
+  it('N12: rows every 15 beside a row naming its gap read no filter line (OC Transpo 6 midday, AC Transit 1T late at ≤15)', () => {
+    expect(outOf(withRows([{ headway: 15, label: 'every 15 min, with one 32 min gap' }, { headway: 15 }]), { maxHeadway: 15 }).filter).toBeNull();
+  });
+
+  // AC Transit 70 weekday AM: both directions start at 7 AM; one row reads "every 30 min from 7:14 AM".
+  const ac70 = { headsign: 'A', headwayByHour: { 7: 30, 8: 30 }, maxGapByHour: { 7: 30, 8: 30 }, departuresByHour: { 7: 2, 8: 2 } } as any;
+  const ac70Card = (edge: string) => outOf(
+    withRows([{ headway: 30 }, { headway: 33, label: edge }], { activeRangeDirections: [ac70], rowHeadways: [30, 33], contract: { filterValue: 74 } }),
+    { directions: [ac70], period: 'amPeak', maxHeadway: 15 },
+  );
+
+  it('N13: drops where a row gives the same hours with "from"/"until" (AC Transit 70 AM)', () => {
+    const n = ac70Card('every 30 min from 7:14 AM');
+    expect(n.filter).toBeNull();
+    expect(n.dropped).toEqual([{ code: 'N13', why: 'a row gives the same hours' }]);
+  });
+
+  it('N13: stays where the row\'s hours are not the line\'s', () => {
+    const n = ac70Card('every 30 min from 8:10 AM');
+    expect(plain(n.filter?.text)).toBe('This route runs every 33 min, only from 7–9 AM. It has no trips from 6–7 AM.');
+  });
+
+  it('N9: keeps "runs only from" beside a row showing a frequency (CTA X4 AM)', () => {
+    const x4 = { headsign: 'A', headwayByHour: { 7: 12, 8: 12 }, departuresByHour: { 7: 5, 8: 5 } } as any;
+    const m = withRows([{ headway: 63, label: 'every 13 min from 7:03 AM' }, { headway: 12 }], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [x4] });
+    const n = routeCardNotices({ ...base, directions: [x4], model: m, period: 'amPeak', maxHeadway: Infinity });
+    expect(plain(n.period?.text)).toBe('This route runs only from 7–9 AM.');
+  });
+
+  it('N9: with no number on the rows, drops where a row gives the same hours', () => {
+    const d = { headsign: 'A', departuresByHour: { 10: 3, 11: 3 } } as any;
+    const partial = (rows: Parameters<typeof withRows>[0]) => withRows(rows, { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [d] });
+    const same = routeCardNotices({ ...base, directions: [d], model: partial([{ headway: null, limited: true, label: 'from 10:04 AM' }, { headway: null, limited: true, label: 'until 11:50 AM' }, { headway: null, limited: true }]) });
+    expect([same.period, same.dropped]).toEqual([null, [{ code: 'N9', why: 'a row gives the same hours' }]]);
+    // Only its start: the line still says when it ends.
+    expect(routeCardNotices({ ...base, directions: [d], model: partial([{ headway: null, limited: true, label: 'from 10:04 AM' }, { headway: null, limited: true }]) }).period?.code).toBe('N9');
+  });
+
+  it('N9 beside N13 naming the same hours shows once (CTA 80 Sunday late)', () => {
+    const d = { headsign: 'A', headwayByHour: { 23: 20 }, maxGapByHour: { 23: 20 }, departuresByHour: { 23: 3 } } as any;
+    const m = withRows([{ headway: 20 }], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [d], rowHeadways: [20], contract: { filterValue: 80 } });
+    const n = outOf(m, { directions: [d], period: 'late', maxHeadway: 60 });
+    expect(n.filter?.code).toBe('N13');
+    expect(n.period).toBeNull();
+    expect(n.dropped).toContainEqual({ code: 'N9', why: 'the filter line says the same' });
+  });
+});
