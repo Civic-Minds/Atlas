@@ -2,6 +2,54 @@
 
 Atlas's **History** app displays route frequency changes over a 10-year period. This document details the history model, the status of audited systems, and deferred agencies.
 
+## Research refresh — 2026-11-13
+
+Read-only count of [the published History catalog](https://data.transitatlas.fyi/atlas/history-config.json), compared with `shared/data/history-agencies.json` at `6596b5dca`: **17 agencies have at least 10 distinct snapshot years through 2026**, exactly matching the committed agency list. These are distinct years with a route snapshot, not the elapsed span between the earliest and latest records; missing years and future years do not count. This catalog check does not independently revalidate the source calendar of each snapshot.
+
+| Real snapshot years | Agencies |
+| ---: | --- |
+| 16 | MBTA |
+| 14 | GCRTA, MARTA |
+| 12 | Halifax Transit, Miami-Dade Transit, RTD Denver |
+| 11 | CDTA, DDOT, Grand River Transit, IndyGo, Metro Transit, Metro St. Louis, Spokane Transit, STM |
+| 10 | Burlington Transit, Community Transit, LA Metro |
+
+**MBTA is already in the club.** The September research pool and prepared-batch notes below are historical evidence, not the current membership or publication status.
+
+### Existing candidates: recover missing snapshots before finding new archives
+
+The published catalog already carries historical `coverageYears` for five agencies that have fewer than ten snapshot years. Coverage metadata establishes a sourcing lead; it does not supply route values for those years. The legacy eligibility rule counts the union, while real-year eligibility counts snapshots alone.
+
+| Agency | Real snapshot years through 2026 | Years with only coverage metadata | Next check |
+| --- | --- | --- | --- |
+| Brampton Transit | **9:** 2016–2023, 2026 | 2014, 2015 | Recover a route-bearing period from either older year; legacy union is already 11 years. |
+| Kingston Transit | **9:** 2016, 2018, 2019, 2021–2026 | None | Find a usable missing year such as 2017 or 2020. |
+| NORTA | **7:** 2012–2015, 2020, 2021, 2026 | None | Reconcile the previously prepared 2012–2021 source batch with the missing route snapshot years. |
+| SacRT | **5:** 2012, 2020, 2023, 2025, 2026 | 2013, 2014, 2018, 2019, 2024 | Check whether archived periods can supply actual route snapshots for the five coverage-only years. |
+| Caltrain | **4:** 2017, 2020, 2025, 2026 | 2018, 2019, 2021–2024 | Check annual period materialization; metadata already covers ten years. |
+| NFTA | **3:** 2011, 2015, 2026 | 2017–2023 | Recover route-bearing periods from the seven coverage-only years. |
+| Worcester RTA | **2:** 2020, 2026 | 2013, 2014, 2016–2019, 2021, 2023–2025 | Check annual period materialization; metadata already covers twelve years. |
+
+The November 12 local `history/tmp/history-config.dry-run.json` has the same counts for these seven candidates as today's public catalog. Re-publishing that existing output alone would not fill the gaps.
+
+### New archive shortlist
+
+All three agencies already have Atlas agency configs. These are archive leads, not newly qualified History agencies: a file's publication year does not establish its service year, and a valid ZIP does not yet establish usable route history.
+
+| Agency | Verified archive evidence | Sample checked | Remaining validation |
+| --- | --- | --- | --- |
+| **Pittsburgh Regional Transit** (`port-authority-pa`) | [Official WPRDC archive](https://data.wprdc.org/en/dataset/gtfs-archive): metadata lists each year **2012–2026** (15 candidate years). The [technical documentation](https://data.wprdc.org/dataset/d0175115-c16b-48a0-b2cc-ca967b23bd40/resource/b07e2fd6-95fa-4310-93b5-4b89fabc9c49/download/prt-gtfs-tech-doc-20260312.pdf) also describes selected 2007–2011 periods, which lack shapes. | Four downloaded feeds have calendars, shapes, and stop times: 2012-03-25–2012-06-09 (**103 routes**), 2016-03-27–2016-06-18 (**106**), 2020-03-15–2020-09-05 (**101**), 2025-02-23–2025-06-28 (**101**). | Follow the documentation's authoritative-feed table for each schedule period; generally Hastus early, HastusClever during 2012–2019, Clever from 2020. Check remaining calendars and process locally; 15 materialized years are not yet confirmed. |
+| **SEPTA** (`septa`) | [Official GitHub release archive](https://github.com/septadev/GTFS/releases): 375 releases enumerated; `gtfs_public.zip` assets occur in **every release year 2015–2026** (12 years). Public downloads need no authentication. | `v20150720`: nested `google_bus.zip` calendar 2015-06-10–2015-09-05, rail 2015-06-14–2015-08-29. `v20160104`: bus 2015-11-29–2016-02-20, rail 2015-12-13–2016-02-27. | Unpack both bus and rail feeds; verify an actual service period in each remaining year, then dry-run the processor and reconcile supplemental rail routes. |
+| **Winnipeg Transit** (`winnipeg`) | [WT Live community archive](https://wtlivewpg.com/Pages/gtfs/): explicit ZIP links in **each archive year 2010–2025** (16 years). Public downloads need no authentication; this is a community mirror, not an agency-hosted archive. | [2015-09-06 ZIP](https://wtlivewpg.com/Pages/gtfs/2015-09-06.zip): flat GTFS, 100 calendar rows spanning 2015-09-06–2015-12-19. | Check provenance and calendars for each selected annual ZIP, then process locally. Treat the other 15 archive years as unvalidated service-year candidates. |
+
+### Research follow-ups
+
+1. Inspect archived periods and existing build-drop reports for Brampton and Kingston, distinguishing missing source data from periods lost during processing.
+2. Validate one annual ZIP per candidate year for Pittsburgh, SEPTA, and Winnipeg, then run bounded local processor dry runs one agency at a time. Count only years that produce usable route snapshots; retain failures and missing years explicitly.
+3. Review source licensing and route identity continuity before proposing an upload. Keep SEPTA bus and rail coverage separate where source periods differ.
+
+No archive writes, processor runs, or membership changes were made by this research. Preserve the archive policy: no invented years or copied route values. Linear was unavailable in this session; these follow-ups remain recorded here for queue capture when reconnected.
+
 ---
 
 ## Archive policy
