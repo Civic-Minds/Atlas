@@ -9,7 +9,7 @@ import { FEATURES } from '../shared/config';
 
 import type { AgencySummary } from '../shared/liveAgency';
 import { NOISE_RULE, weekDailyValues, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
-import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { liveAgencyPath, useLiveDashboard } from './hooks/useLiveDashboard';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
@@ -345,9 +345,19 @@ export default function LiveToolPage() {
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
-  if (state.kind === 'loading') return shell(<p className="p-6 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p>);
-  if (state.kind === 'error') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.reason}</p>);
-  if (state.data.status !== 'ready') return shell(<p className="p-6 text-sm text-[var(--text-muted)]">{state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.reason}</p>);
+  // CIV-1413 C: a page without figures keeps the top bar's Atlas logo and the "← agency" link every Live page has in all states (CIV-1446).
+  const bare = (line: ReactNode, busy = false) => shell(
+    <>
+      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} /></header>
+      <div className="p-6">
+        <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />
+        <p className="mt-3 text-sm text-[var(--text-muted)]" aria-busy={busy || undefined}>{line}</p>
+      </div>
+    </>,
+  );
+  if (state.kind === 'loading') return bare(loadingText(agencyName), true);
+  if (state.kind === 'error') return bare(state.reason);
+  if (state.data.status !== 'ready') return bare(state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.reason);
   const s = state.data.summary;
   return shell(
     <>
