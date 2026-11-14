@@ -296,12 +296,29 @@ export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 export const HISTORY_TRIP_TIME_NOTE = 'This compares one typical weekday trip, end to end, over the same stops and path.';
 // N56 history-order
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
+// History's own labels, moved here with the same words (CIV-451, approved by Ryan 2026-11-13).
+/** The History panel's title. */
+export const HISTORY_TITLE = 'Historical service';
+/** The History button's screen-reader name, off and on. */
+export const HISTORY_BUTTON_LABEL = 'History';
+export const HISTORY_BUTTON_ACTIVE_LABEL = 'Back to frequency map';
+/** The agency card's back link in History. */
+export const HISTORY_BACK_TO_AGENCIES = 'All agencies';
+/** The year slider's hover hint and screen-reader name. */
+export const HISTORY_YEAR_HINT = 'Older to newer';
+export const HISTORY_YEAR_LABEL = 'History year';
+/** The route chart's expand button and its window's screen-reader name. */
+export const HISTORY_EXPAND_CHART = 'Expand chart';
+export const HISTORY_CHART_LABEL = 'Route history chart';
+/** The search box in History before an agency is open. */
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+/** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
+export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 // CIV-1425: pending Ryan's word-for-word OK
 /** The frequency change box's sentence on Saturday or Sunday (the weekday sentence stays Ryan's CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
   `This compares the oldest and newest ${day} schedules available for this route.`;
-// CIV-1425: pending Ryan's word-for-word OK
-/** A History row whose weekend day has no trips at all. */
+/** A History row whose weekend day has no trips at all (STYLE.md card notices, CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
 // CIV-1425: pending Ryan's word-for-word OK
 /** Above an agency's History list when no route has the picked weekend day's values by time of day. */

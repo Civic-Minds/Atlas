@@ -54,7 +54,7 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
+import { HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -524,7 +524,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   });
   const searchPlaceholder = inFrequency
     ? SEARCH_ROUTES_PLACEHOLDER
-    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : 'Find an agency…')
+    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -749,7 +749,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
-            ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
+            ariaLabel={inHistory ? HISTORY_BUTTON_ACTIVE_LABEL : HISTORY_BUTTON_LABEL}
             active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
             onWarm={preloadHistory}
