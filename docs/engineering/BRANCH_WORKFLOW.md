@@ -39,6 +39,8 @@ CI runs on every pull request into `main` and every push to `main`: the normal b
 
 CI builds the full checkout, but Vercel builds only what `.vercelignore` lets through, so a build-time import of an ignored file passes CI and fails every deploy (#1301). Before pushing to `main`, commit and run `npm run check:vercel`: it copies HEAD minus the ignored files to a temp folder and runs `npm ci` plus the public and beta builds there.
 
+Vercel skips a build when nothing that can change the site changed since the branch's last successful deploy, so docs, research, pipeline, workflow and changelog-only pushes don't use up the 24h deploy limit. `vercel.json`'s `ignoreCommand` runs `scripts/vercel-ignore-build.sh`, which diffs `VERCEL_GIT_PREVIOUS_SHA` against the pushed commit over an allowlist of site paths: `src/`, `shared/`, `public/`, `api/`, `config/`, `docs/legal/`, `index.html`, `vite.config.ts`, the package and site tsconfig files, `vercel.json`, `.vercelignore`, and every file `.vercelignore` re-includes with a `!path` line (the build scripts). A missing or unreachable previous SHA always builds. When a new file starts affecting the build from outside those paths (say, `src/` imports a doc), add it to the script's list; a new build script only needs its `.vercelignore` line. To force a build, redeploy from the Vercel dashboard. `scripts/__tests__/vercelIgnoreBuild.test.ts` covers the skip and build cases.
+
 ## Feature work
 
 1. Create an issue when the work needs a durable record.
