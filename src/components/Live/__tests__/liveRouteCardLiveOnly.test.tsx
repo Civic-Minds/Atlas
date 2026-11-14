@@ -10,7 +10,9 @@ const segmentData = {
   agency: 'ttc', route: '505', generatedAt: '', dates: ['2026-10-08', '2026-10-14'], observations: 0, directionLabels: { 0: 'Westbound', 1: 'Eastbound' },
   segments: [0, 1, 2, 3].map(seg), headways: [], tripDirections: { 0: ['t1', 't2'] },
 };
-vi.mock('../../../hooks/useSegmentDelay', () => ({ useSegmentDelay: () => segmentData }));
+// The analysis file's load: loaded (the default), still loading, or loaded and missing.
+const status: { data: typeof segmentData | null; settled: boolean } = { data: segmentData, settled: true };
+vi.mock('../../../hooks/useSegmentDelay', () => ({ useSegmentDelayStatus: () => status }));
 
 import LiveRoutePerformance, { agencyHour, agencyTime } from '../LiveRoutePerformance';
 
@@ -129,5 +131,22 @@ describe('agency clock (CIV-899 item 13)', () => {
     expect(agencyTime('sfmta', d)).toBe('6 AM');
     expect(agencyHour('sfmta', d)).toBe(6);
     expect(agencyHour('halifax', d)).toBe(10);
+  });
+});
+
+describe('a route with no Live analysis (CIV-1413 B)', () => {
+  afterEach(() => { status.data = segmentData; status.settled = true; });
+
+  it('says so in one grey line once loading has finished', () => {
+    status.data = null; status.settled = true;
+    card();
+    expect(screen.getByText('Live figures for this route aren’t available yet.')).toBeInTheDocument();
+    expect(screen.queryByText(/Right now/)).toBeNull();
+  });
+
+  it('shows nothing while the file is still loading', () => {
+    status.data = null; status.settled = false;
+    const view = card();
+    expect(view.container.textContent).toBe('');
   });
 });

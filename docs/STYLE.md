@@ -45,6 +45,7 @@ Agencies
 
 - Agencies with an expired feed stay visible with the existing expired-feed notice. Switch to a newer feed if one exists; never hide the agency without Ryan's explicit yes.
 - Every hidden agency shows the same one note, word for word (Ryan, 2026-11-13): "Schedules for this agency aren’t available yet." Its card adds no second message (no "couldn’t load" error, no no-routes text). Changing the sentence needs Ryan's OK. CIV-1060.
+- A Live route card whose route has no Live analysis (its "Right now" section can't show) reads one grey line, word for word (Ryan, 2026-11-14): "Live figures for this route aren’t available yet." Nothing shows while the analysis is still loading. Changing the sentence needs Ryan's OK. CIV-1413.
 
 ## How Atlas talks
 

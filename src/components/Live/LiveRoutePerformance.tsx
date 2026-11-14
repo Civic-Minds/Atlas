@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import PillGroup from '../ui/PillGroup';
-import { SidebarCardSection } from '../Interval/cardUi';
-import { useSegmentDelay } from '../../hooks/useSegmentDelay';
+import { CardHelpNotice, SidebarCardSection } from '../Interval/cardUi';
+import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
@@ -12,7 +12,7 @@ import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
 import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
-import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES } from '../../content/noticeCopy';
+import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE } from '../../content/noticeCopy';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
 const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
@@ -98,7 +98,8 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
 export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
-  const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
+  const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
+  const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
   const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
   const [dir, setDir] = useState<number | null>(() => readLink(currentSearch(), LIVE_MAP_URL).dir ?? null);
@@ -138,7 +139,10 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   useEffect(() => () => onCounted?.(null), [onCounted]);
 
 
-  if (!data || !line) return null;
+  // Loaded and still missing: Live has no analysis for this route, so "Right now" can't show; one grey line says so (CIV-1413 B).
+  // While it loads, nothing.
+  if (!data) return settled ? <CardHelpNotice message={LIVE_ROUTE_FIGURES_UNAVAILABLE} /> : null;
+  if (!line) return null;
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
