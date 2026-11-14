@@ -5,7 +5,7 @@ import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
-import DirectionStrip from './components/Live/DirectionStrip';
+import DirectionStrip, { StripsLegend } from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { shortStopName } from './utils/stopLabel';
@@ -184,13 +184,15 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             return (
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
+                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} legend={false} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{d.label}: {n}</p>)}
               </div>
             );
           })}
         </div>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOPS_MEASURED}</p>}
+      {/* One key for every direction shown, as the map's route card shows its key once (CIV-1448). */}
+      <StripsLegend v3={v3} directionIds={dirs.map(d => d.directionId)} band="all" uncertain={uncertain} />
     </Section>
   );
 }

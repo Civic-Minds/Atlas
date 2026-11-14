@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { LATE_THRESHOLD, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -86,7 +86,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
     return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${top.length} stops most often late`} className="mt-6" />;
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map
-    ? `The ${top.length} stops where vehicles most often leave ${LATE_THRESHOLD} (stops with 30+ departures). ${LATE_MAP_HINT}`
+    ? `${lateStopsIntro(top.length, { scope: 'route' })} ${LATE_MAP_HINT}`
     : <>Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</>}</p>;
   const note = notRanked && hidden.length > 0 && (
     <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">

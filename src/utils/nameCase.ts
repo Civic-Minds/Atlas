@@ -365,3 +365,17 @@ function routeLabelCase(part: string): string {
       return /\d/.test(tok) ? up : tok;
     });
 }
+
+/**
+ * A destination or origin name from the feed as every label shows it (CIV-1448): the row's "to …", the chart key under
+ * the schedule bars, and the variants line all case it here, so a feed in capitals never reaches one of them unchanged.
+ */
+export function feedPlaceName(text: string): string {
+  return nameCase(text.trim(), 'stop');
+}
+
+/** A row's "from A" origin label with A cased like any destination ("from IVY HILL LOOP" → "from Ivy Hill Loop"); any other variant is returned as it is. */
+export function originVariantText(variant: string): string {
+  const m = variant.trim().match(/^from\s+(.+)$/i);
+  return m ? `from ${feedPlaceName(m[1])}` : variant;
+}

@@ -8,11 +8,8 @@ import { FIXED_NOISE, dailyNoise } from '../../shared/liveDashboard';
 import { runTimeOver, type AgencySummary } from '../../shared/liveAgency';
 import { kpiDelta, kpiTiles, type Kpi } from './liveKpi';
 
-/** "7% faster", "3% slower", or "on time" when it rounds to 0% (wording to confirm, CIV-945). */
-export function runTimeShareText(over: number): string {
-  const p = Math.round(Math.abs(over) * 100);
-  return p === 0 ? 'on time' : `${p}% ${over < 0 ? 'faster' : 'slower'}`;
-}
+import { runTimeShareText } from '../../shared/liveWording';
+export { runTimeShareText };
 /** The row's name on All routes, so the share reads against the timetable (wording to confirm, CIV-945). */
 export const NETWORK_RUN_TIME_LABEL = 'Run time vs schedule';
 /** The tile's caption and hover text (wording to confirm, CIV-945). */

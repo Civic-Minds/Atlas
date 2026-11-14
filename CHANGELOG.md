@@ -6,6 +6,11 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
+- **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")
+- **Live's Routes table writes run time as the tile does**: "6% faster" instead of a bare "−6%", and added minutes always show one decimal, so a column doesn't mix "+3 min" with "+1.6 min"
+- **Live shows the stop-strip colour key once per section**: it repeated under every direction
+- **Route cards no longer show feed names in capitals**: NJ Transit 1's variants line and the chart key read "Ivy Hill Loop", as the rows do
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone
 - **Fresno 39 counts a line written under two [identical shapes](https://github.com/Civic-Minds/Atlas/issues/1446) as one pattern**: toward the airport it read every 30 where a bus comes every 15

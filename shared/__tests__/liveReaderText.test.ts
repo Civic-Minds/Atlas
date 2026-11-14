@@ -15,7 +15,7 @@ describe('reader-facing Live text', () => {
     runningTimeSentence('Eastbound', null),
     runningTimeSentence('Eastbound', { n: 5, scheduledMin: 1, typicalMin: 1, p90Min: 1, overMin: 0 }),
     runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }),
-    liveSubtitle({ thisWeek: ['2026-10-08', '2026-10-14'], lastWeek: null, middle: '1 trip', agency: 'ttc', upTo: '2026-10-14' }),
+    liveSubtitle({ thisWeek: ['2026-10-08', '2026-10-14'], lastWeek: null, middle: '1 trip', agency: 'TTC', upTo: '2026-10-14' }),
   ];
   it('never mentions npm run or rebuilding', () => {
     for (const t of texts) {

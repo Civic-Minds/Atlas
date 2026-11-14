@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
+import { fadedNoteText } from '../../../../shared/liveWording';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
@@ -70,7 +71,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
         );
       })}
     </div>
-    {full && points0 > 1 && <p className="mt-2 text-xs text-[var(--text-dim)]">Paler bars rest on fewer than 30 gaps.</p>}
+    {full && points0 > 1 && <p className="mt-2 text-xs text-[var(--text-dim)]">{fadedNoteText(30, 'gaps')}</p>}
     {worst.length > 0 && (
       <PageTable>
         <SortableDataTable

@@ -313,3 +313,17 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
     bunchingForms: bForms ? { fromStopId: bForms.fromStopId, toStopId: bForms.toStopId } : null,
   };
 }
+
+/**
+ * What the strip key lists for a set of stops (one direction, or every direction a section draws): the less exact,
+ * faded, not measured and early keys show only when a stop needs them. The straight strip, the branch strip and the
+ * one key under a section of strips all read it here (CIV-1448).
+ */
+export function stripLegendFlags(stops: readonly RouteStripStop[], modes: readonly RouteStripMode[], minN: number): { anyUncertain: boolean; anyFaded: boolean; anyMissing: boolean; anyEarly: boolean } {
+  return {
+    anyUncertain: modes.length > 0 && stops.some(s => !!s.uncertain),
+    anyFaded: stops.some(s => modes.some(m => stopN(s, m) > 0 && stopN(s, m) < minN)),
+    anyMissing: stops.some(s => modes.some(m => stopStep(s, m) == null)),
+    anyEarly: modes.includes('delay') && stops.some(s => stopStep(s, 'delay') === 'early'),
+  };
+}

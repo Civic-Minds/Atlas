@@ -27,7 +27,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
@@ -75,13 +75,13 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 }
 
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
-export function routeSubtitle(v3: LiveV3, agency: string): string {
+export function routeSubtitle(v3: LiveV3, /** The agency's short name (useLiveAgencyName). */ agencyName: string): string {
   const w = v3.weekly;
   // CIV-1445: "Week of" and its trip count cover this week only, the trips the Late tile counts. A file with no weekly
   // figures still names its whole window.
   const thisWeek = w?.thisWeek.dates.length ? w.thisWeek.dates : v3.window.dates;
   const trips = w?.thisWeek.late ? w.thisWeek.late.n : goodDayCounts(v3).runs;
-  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**
@@ -90,7 +90,7 @@ export function routeSubtitle(v3: LiveV3, agency: string): string {
  */
 export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
   const f = freshness(v3, route, Date.now());
-  const line = routeSubtitle(v3, agency);
+  const line = routeSubtitle(v3, useLiveAgencyName(agency));
   const at = line.lastIndexOf(' · data up to ');
   if (!f.stale) return <>{line}</>;
   const stale = 'font-bold text-[var(--status-caution-text)]';
@@ -183,7 +183,7 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title="Stops most often late" id="b2" intro notRanked /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>

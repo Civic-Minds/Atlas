@@ -10,16 +10,16 @@ describe('Live wording', () => {
   });
 
   it('counts the covered routes with no mode word, since replacement buses can run a streetcar route (CIV-1075)', () => {
-    expect(coveredRoutesText('ttc', Array.from({ length: 9 }, () => ({ mode: 0 })))).toBe('9 TTC routes');
-    expect(coveredRoutesText('ttc', [{ mode: 0 }, { mode: 3 }])).toBe('2 TTC routes');
-    expect(coveredRoutesText('ttc', [{ mode: 0 }])).toBe('1 TTC route');
+    expect(coveredRoutesText('TTC', Array.from({ length: 9 }, () => ({ mode: 0 })))).toBe('9 TTC routes');
+    expect(coveredRoutesText('TTC', [{ mode: 0 }, { mode: 3 }])).toBe('2 TTC routes');
+    expect(coveredRoutesText('TTC', [{ mode: 0 }])).toBe('1 TTC route');
   });
 
   it('builds the subtitle with the comparison week only when there is one', () => {
     const t = ['2026-10-08', '2026-10-14'], l = ['2026-10-01', '2026-10-07'];
-    expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '9 TTC routes', agency: 'ttc' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 9 TTC routes · estimated from vehicle positions, not reported by the TTC');
-    expect(liveSubtitle({ thisWeek: t, lastWeek: null, middle: '2,553 trips', agency: 'ttc' })).toBe('Week of Oct 8–14 · 2,553 trips · estimated from vehicle positions, not reported by the TTC');
-    expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '3,454 trips', agency: 'ttc', upTo: '2026-10-14' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 3,454 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
+    expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '9 TTC routes', agency: 'TTC' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 9 TTC routes · estimated from vehicle positions, not reported by the TTC');
+    expect(liveSubtitle({ thisWeek: t, lastWeek: null, middle: '2,553 trips', agency: 'TTC' })).toBe('Week of Oct 8–14 · 2,553 trips · estimated from vehicle positions, not reported by the TTC');
+    expect(liveSubtitle({ thisWeek: t, lastWeek: l, middle: '3,454 trips', agency: 'TTC', upTo: '2026-10-14' })).toBe('Week of Oct 8–14, compared with Oct 1–7 · 3,454 trips · estimated from vehicle positions, not reported by the TTC · data up to Oct 14');
   });
 
   it('says 5½ min, never 5 min, wherever Late is named', () => {
@@ -44,14 +44,15 @@ describe('bunching total and parts', () => {
   });
 });
 
-describe('lateStopsIntro (CIV-1405)', () => {
-  it('says how many stops, what late means, and the first and last day of the figures', async () => {
+describe('lateStopsIntro (CIV-1405, CIV-1448)', () => {
+  it('says how many stops, what late means, and the days of the figures as one range', async () => {
     const { lateStopsIntro } = await import('../liveWording');
-    expect(lateStopsIntro(10, ['2026-10-08', '2026-10-09', '2026-10-14'])).toBe('The 10 stops where buses and streetcars most often left more than 5½ min late, Oct 8 to Oct 14, across all analysed routes.');
-    expect(lateStopsIntro(7, ['2026-10-30', '2026-11-05'])).toBe('The 7 stops where buses and streetcars most often left more than 5½ min late, Oct 30 to Nov 5, across all analysed routes.');
+    expect(lateStopsIntro(10, { scope: 'agency', dates: ['2026-10-08', '2026-10-09', '2026-10-14'] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across all analysed routes.');
+    expect(lateStopsIntro(7, { scope: 'agency', dates: ['2026-10-30', '2026-11-05'] })).toBe('The 7 stops where vehicles most often leave more than 5½ min late, Oct 30–Nov 5, across all analysed routes.');
   });
-  it('leaves the days out when the file has none', async () => {
+  it('leaves the days out when the file has none, and a route says which stops count', async () => {
     const { lateStopsIntro } = await import('../liveWording');
-    expect(lateStopsIntro(10, [])).toBe('The 10 stops where buses and streetcars most often left more than 5½ min late, across all analysed routes.');
+    expect(lateStopsIntro(10, { scope: 'agency', dates: [] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, across all analysed routes.');
+    expect(lateStopsIntro(10, { scope: 'route' })).toBe('The 10 stops where vehicles most often leave more than 5½ min late (stops with 30+ departures).');
   });
 });

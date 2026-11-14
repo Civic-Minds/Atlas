@@ -3,7 +3,7 @@ import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { pct } from '../../../../shared/liveFormat';
 import { joinList } from '../../../../shared/overflowText';
-import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
+import { builtText, coveredRoutesText, DELAY_STARTS_TITLE, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -21,7 +21,7 @@ const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0]): ReactNode[] 
  */
 export type MethodSectionProps =
   | { scope: 'route'; data: Ready }
-  | { scope: 'agency'; s: AgencySummary };
+  | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
   if (props.scope === 'route') {
@@ -44,7 +44,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
         deliveredLine(true),
-        <Term t="Where delay builds up">is the stop where vehicles fall furthest behind and don't catch up over the next 3 stops (about 1 km).</Term>,
+        <Term t={DELAY_STARTS_TITLE}>is the stop where vehicles fall furthest behind and don't catch up over the next 3 stops (about 1 km).</Term>,
         <Term t="Linked to">shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
@@ -70,8 +70,8 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       ]} />
     );
   }
-  const { s } = props;
-  const coverage = coveredRoutesText(s.agency, s.routes);
+  const { s, agencyName } = props;
+  const coverage = coveredRoutesText(agencyName, s.routes);
   const w = s.weekly;
   return (
     <MethodFootnote id="agency-method" groups={[

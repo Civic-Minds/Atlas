@@ -4,7 +4,7 @@ import type { LiveGaps, StopGaps } from '../../../hooks/useLiveGaps';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import GapsChart from '../../charts/GapsChart';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
-import DirectionStrip from '../DirectionStrip';
+import DirectionStrip, { StripsLegend } from '../DirectionStrip';
 import { branchNamesWrap } from '../BranchStrip';
 import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
@@ -52,6 +52,9 @@ function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: R
  * day); `compact` is the Explore section (the chart only), which keeps its own section id and guards the content
  * with `boundary`. `gaps` is only used by `full`.
  */
+/** The track the bunching strips draw (a constant, so the key's memo holds). */
+const BUNCHING_ONLY = ['bunching'] as const;
+
 export default function BunchingSection({ v3, dir, band, gaps, detail, boundary, uncertain = [] }: { v3: LiveV3; dir: number | null; band: DashboardBand; gaps?: LiveGaps | null; detail: 'full' | 'compact'; boundary?: string; uncertain?: UncertainStart[] }): ReactNode {
   const full = detail === 'full';
   // Full analysis draws the route strip at every width; on phones it is the strip's own compact vertical line (CIV-502).
@@ -74,6 +77,8 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
   return (
     <Section id={full ? 'b4' : 'x-bunching'} title="Where bunching forms" shrink={!full} boundary={boundary}>
       {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How often vehicles come too close together or too far apart, stop by stop, and where that starts.</p>}
+      {/* One key above the directions' strips, not one under each (CIV-1448). */}
+      {full && <StripsLegend v3={v3} directionIds={rows.filter(b => b.bands[band]).map(b => b.directionId)} band={band} uncertain={uncertain} modes={BUNCHING_ONLY} />}
       <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
         {rows.map(b => {
           const label = v3.directionLabels[String(b.directionId)];
@@ -87,7 +92,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
           return (
             <div key={b.directionId} className="min-w-0">
               <h3 className="text-base font-black">{label}</h3>
-              {full && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />}
+              {full && <DirectionStrip className="mt-2" v3={v3} directionId={b.directionId} band={band} uncertain={uncertain} modes={['bunching']} legend={false} reserveBracket={reserveBracket} twoLineNames={twoLineNames} />}
               {!full && points.length > 1 && (
                 <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}

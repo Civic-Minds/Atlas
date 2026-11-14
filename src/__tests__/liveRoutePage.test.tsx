@@ -58,7 +58,7 @@ describe('Live route dashboard', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
-    for (const name of [/Where delays build up/, /Where bunching forms/]) {
+    for (const name of [/Where delays start/, /Where bunching forms/]) {
       const section = screen.getByRole('region', { name });
       expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
       expect(within(section).queryByRole('img', { name: /typical delay at each stop|share of gaps that are too close/ })).toBeNull();
@@ -177,7 +177,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByText(/RONCESVALLES/)).toBeNull();
     expect(screen.getAllByText(/Roncesvalles Ave at Queen St W/).length).toBeGreaterThan(0);
     // One plain caption per chart (no ranges), merged with what the bars are.
-    expect(screen.getByText(/^Faded bars are based on fewer than 30 departures\./)).toBeTruthy();
+    expect(screen.getByText(/^Paler bars rest on fewer than 30 departures\./)).toBeTruthy();
     // The faded-bar rule is said once per section row, not under every chart.
     expect(screen.queryAllByText(/Paler bars rest on fewer than 30 trips\./).length).toBeLessThanOrEqual(1);
     expect(screen.queryAllByText(/Paler bars rest on fewer than 30 gaps\./).length).toBeLessThanOrEqual(1);
@@ -234,7 +234,7 @@ describe('Live route dashboard', () => {
     // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
     expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();
     expect(screen.queryByText(/of scheduled trips ran \(194 of 200\)/)).toBeNull(); // the week tile says it; the section keeps the chart and the skipped-days note
-    expect(screen.getByText(/Not counted: Oct 14/)).toBeTruthy();
+    expect(screen.getByTitle('Oct 14 left out: gaps in our recordings that day', { exact: false }).textContent).toBe('Excluding Oct 14');
   });
 
   it('says how many runs were left out and why, so the figures are honest about what they cover', async () => {
@@ -284,7 +284,7 @@ describe('Live route dashboard', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const broken = { ...ready, v3: { ...v3, bands: { ...v3.bands, all: { ...v3.bands.all, buildup: undefined as unknown as LiveV3['buildup'] } } }, uncertainStart: undefined as unknown as UncertainStart[] };
     renderPage(broken);
-    expect(await screen.findByText(/Where delays build up could not be drawn/)).toBeTruthy();
+    expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
     expect(screen.getByRole('region', { name: /Late departures by hour/ })).toBeTruthy();
     expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();

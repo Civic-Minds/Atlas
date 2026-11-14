@@ -20,5 +20,8 @@ export const pctTenth = (x: number): string => {
 /** "+12%", "−4%", "0%": a change in share, with a real minus sign; a change that rounds to 0 has no sign. */
 export const signedPct = (x: number): string => { const r = Math.round(x * 100); return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r)}%`; };
 
-/** "+3.2 min", "−1 min": a signed minutes value, `tenth` with its unit. */
-export const signedMinutes = (x: number): string => `${x > 0 ? '+' : ''}${tenth(x)} min`;
+/**
+ * "+3.2 min", "−1.0 min": a signed minutes value to a tenth, always with one decimal, so a column of them reads at one
+ * precision ("+3.0 min" beside "+1.6 min", CIV-1448), as pctTenth does for shares.
+ */
+export const signedMinutes = (x: number): string => { const r = Math.round(x * 10) / 10; return `${r > 0 ? '+' : ''}${(r === 0 ? 0 : r).toFixed(1).replace('-', '−')} min`; };

@@ -1,3 +1,4 @@
+import { feedPlaceName } from './nameCase';
 import type { AxisTick } from '../components/Interval/TripTimeStrip';
 import type { HeadwayByPeriod } from '../hooks/useAgencyData';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
@@ -184,7 +185,7 @@ export function branchHourStack(
 ): HourStackSegment[] {
   return branches
     .map((branch, i) => ({
-      label: branch.headsign ?? `Branch ${i + 1}`,
+      label: branch.headsign?.trim() ? feedPlaceName(branch.headsign) : `Branch ${i + 1}`,
       headway: branchDisplayHourHeadway(branch, hour),
       color: colorOf?.(branch, i) ?? branchStackColor(i),
       ...(isSelected ? { faded: !isSelected(branch) } : {}),
