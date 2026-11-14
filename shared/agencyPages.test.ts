@@ -209,22 +209,22 @@ describe('agencyIntroSentence', () => {
 
   it('names routes, place, stops and the first three connections', () => {
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10], [3, 12]) }, 'Hamilton', conns('GO Transit', 'Burlington Transit')))
-      .toBe('Hamilton Street Railway operates 2 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit.');
+      .toBe('The Hamilton Street Railway operates 2 routes in Hamilton with 1,980 stops and connects with GO Transit and Burlington Transit.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D', 'E')))
-      .toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops and connects with A, B, C and 2 other agencies.');
+      .toBe('The Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops and connects with A, B, C and 2 other agencies.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton', conns('A', 'B', 'C', 'D'))).toContain('A, B, C and 1 other agency.');
   });
 
   it('adds the mode split only with more than one mode', () => {
     const modes = [{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }];
-    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('Hamilton Street Railway operates 1 route (3 subway/metro, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], modes)).toBe('The Hamilton Street Railway operates 1 route (3 subway/metro, 2 light rail, 209 bus) in Toronto with 1,980 stops.');
     expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Toronto', [], [{ label: 'Bus', routes: 1 }])).not.toContain('(');
   });
 
   it('drops the connects-with clause and the stops when there are none', () => {
-    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton')).toBe('Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops.');
-    expect(agencyIntroSentence({ ...base, stops: undefined, routes: rs([3, 10]) }, 'the Bay Area')).toBe('Hamilton Street Railway operates 1 route in the Bay Area.');
-    expect(agencyIntroSentence({ ...base, routes: [] }, 'Hamilton')).toBe('Hamilton Street Railway has no weekday routes in the data.');
+    expect(agencyIntroSentence({ ...base, routes: rs([3, 10]) }, 'Hamilton')).toBe('The Hamilton Street Railway operates 1 route in Hamilton with 1,980 stops.');
+    expect(agencyIntroSentence({ ...base, stops: undefined, routes: rs([3, 10]) }, 'the Bay Area')).toBe('The Hamilton Street Railway operates 1 route in the Bay Area.');
+    expect(agencyIntroSentence({ ...base, routes: [] }, 'Hamilton')).toBe('The Hamilton Street Railway has no weekday routes in the data.');
   });
 
   it('lists names', () => {

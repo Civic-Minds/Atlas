@@ -16,6 +16,7 @@ import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtW
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
+import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
@@ -265,10 +266,10 @@ export function agencyIntroSentence(
   parentName?: string,
 ): string {
   const n = a.routes.length;
-  if (n === 0) return `${title} has no weekday routes in the data.`;
+  if (n === 0) return `${agencySentenceStart(title)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes, title, parentName)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
-  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
+  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
 
@@ -332,7 +333,7 @@ export function introLead(
 ): string {
   const n = a.routes.length;
   // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
-  return `${title}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -599,7 +600,7 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
 
 /** The fuller sentence for structured data: the intro plus what the page is. */
 export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): string {
-  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${agencyInSentence(a.displayName)}, from the published schedule.`;
 }
 
 /**

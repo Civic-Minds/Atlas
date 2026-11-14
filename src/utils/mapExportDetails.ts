@@ -9,6 +9,7 @@ import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentSer
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { formatStoredDate } from './format';
 import { agencyNames } from './agencyName';
+import { agencyInSentence } from '../../shared/agencyArticle';
 import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
@@ -291,7 +292,7 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   const known = inView.filter((agency): agency is Agency => !!agency);
 
   let source = 'Transit schedules';
-  if (!unknownAgency && known.length === 1) source = `Schedules from ${known[0].name}`;
+  if (!unknownAgency && known.length === 1) source = `Schedules from ${agencyInSentence(known[0].name)}`;
   else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
 
   const day = isoDay(releaseGeneratedAt);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { OutboundLink } from './OutboundLink';
+import { agencyInSentence } from '../../shared/agencyArticle';
 
 interface MapFrame {
   agency: string;
@@ -51,7 +52,7 @@ export default function FrequentServicePublishedMapMontage() {
           <img
             key={frame.image}
             src={frame.image}
-            alt={index === activeFrame ? `Published system map from ${frame.agency}.` : ''}
+            alt={index === activeFrame ? `Published system map from ${agencyInSentence(frame.agency)}.` : ''}
             aria-hidden={index !== activeFrame}
             className="absolute inset-0 h-full w-full object-cover"
             style={{ opacity: index === activeFrame ? 1 : 0 }}
