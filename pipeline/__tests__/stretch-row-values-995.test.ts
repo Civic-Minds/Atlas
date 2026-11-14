@@ -11,7 +11,7 @@ describe('stretch row values (CIV-995 a)', () => {
     const r = stretchRowValues(stretch(every(6 * 60, 22 * 60 + 50, 10)));
     expect(r.cadence.midday).toBe(10);
     expect(r.cadence.amPeak).toBe(10);
-    expect(r.steady).toEqual(expect.arrayContaining(['amPeak', 'midday', 'pmPeak', 'evening']));
+    expect(r.consistent).toEqual(expect.arrayContaining(['amPeak', 'midday', 'pmPeak', 'evening']));
     expect(r.longestGap.midday).toBe(10);
     expect(r.hourly[12]).toBe(10);
     // No service overnight: nothing published for it.

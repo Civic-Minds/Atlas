@@ -185,19 +185,19 @@ describe('stretch rows from stretchMeta (CIV-321 S2)', () => {
 });
 
 describe('stretchRow (CIV-995 a): the shared selector for a row\'s period values', () => {
-  const rows = (cadence: number) => ({ cadence: { midday: cadence }, longestGap: { midday: cadence + 4 }, steady: ['midday'], hourly: { 12: cadence } });
+  const rows = (cadence: number) => ({ cadence: { midday: cadence }, longestGap: { midday: cadence + 4 }, consistent: ['midday'], hourly: { 12: cadence } });
   const meta = { main: { stops: 10, refStop: 'm', trips: 90, rows: rows(8) }, tails: [{ refStop: 't0', stops: 6, km: 2, trips: 30, rows: rows(20) }] };
   const own = { headwayByPeriod: { midday: 30 }, maxGapByPeriod: { midday: 315 }, headwayByPeriodSustained: { midday: false }, headwayByHour: { 12: 30 } };
 
   it('reads the stretch values for the row\'s slot (main, then a tail by index)', () => {
-    expect(stretchRow(f({ ...own, stretchRole: 'main', stretchIndex: 0, stretchMeta: meta }), 'midday')).toEqual({ source: 'stretch', cadence: 8, longestGap: 12, steady: true, hourly: { 12: 8 } });
+    expect(stretchRow(f({ ...own, stretchRole: 'main', stretchIndex: 0, stretchMeta: meta }), 'midday')).toEqual({ source: 'stretch', cadence: 8, longestGap: 12, consistent: true, hourly: { 12: 8 } });
     expect(stretchRow(f({ ...own, stretchRole: 'tail', stretchIndex: 0, stretchMeta: meta }), 'midday')).toMatchObject({ source: 'stretch', cadence: 20, longestGap: 24 });
-    expect(stretchRow(f({ ...own, stretchRole: 'main', stretchMeta: meta }), 'amPeak')).toMatchObject({ source: 'stretch', cadence: null, longestGap: null, steady: false });
+    expect(stretchRow(f({ ...own, stretchRole: 'main', stretchMeta: meta }), 'amPeak')).toMatchObject({ source: 'stretch', cadence: null, longestGap: null, consistent: false });
   });
 
   it('falls back to the feature\'s own values on old data and for variants', () => {
     const oldMeta = { main: { stops: 10, refStop: 'm', trips: 90 }, tails: [] };
-    const fallback = { source: 'feature', cadence: 30, longestGap: 315, steady: false, hourly: { 12: 30 } };
+    const fallback = { source: 'feature', cadence: 30, longestGap: 315, consistent: false, hourly: { 12: 30 } };
     expect(stretchRow(f({ ...own, stretchRole: 'main', stretchMeta: oldMeta }), 'midday')).toEqual(fallback);
     expect(stretchRow(f({ ...own, stretchRole: 'variant', stretchMeta: meta }), 'midday')).toEqual(fallback);
     expect(stretchRow(f({ ...own }), 'midday')).toEqual(fallback);
@@ -212,7 +212,7 @@ describe('stretchRow (CIV-995 a): the shared selector for a row\'s period values
 });
 
 describe('rowStretchReading (CIV-995 b): when a row reads its stretch', () => {
-  const rows = { cadence: { midday: 8 }, longestGap: { midday: 12 }, steady: ['midday'], hourly: { 12: 8 } };
+  const rows = { cadence: { midday: 8 }, longestGap: { midday: 12 }, consistent: ['midday'], hourly: { 12: 8 } };
   const meta = (noRegular: string[] = []) => ({ main: { stops: 10, refStop: 'm', trips: 90, noRegular, rows }, tails: [] });
   const own = { stretchRowPeriods: ['midday', 'amPeak'] };
   it('reads the stretch where it runs through the period with a regular cadence', () => {

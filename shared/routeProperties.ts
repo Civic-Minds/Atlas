@@ -18,8 +18,8 @@ export interface StretchRowValues {
   cadence: Partial<Record<PeriodKey, number>>;
   /** The longest gap between two departures inside the period, without clipped window edges. */
   longestGap: Partial<Record<PeriodKey, number>>;
-  /** The periods the settled steadiness test calls steady. */
-  steady: PeriodKey[];
+  /** The periods the settled steadiness test calls consistent. */
+  consistent: PeriodKey[];
   /** Sparkline hour headways, as headwayByHour. */
   hourly: Partial<Record<number, number>>;
 }

@@ -724,7 +724,7 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
  * - cadence: the map's value for the stretch (stretchFilterValue), only where the period is steady, runs through
  *   (runsThroughPeriod) and reads PERIOD_COVERAGE_MAX_HEADWAY or less.
  * - longestGap: the longest gap between two departures inside the period, no clipped window edges (CIV-990).
- * - steady: the periods the settled steadiness test calls steady.
+ * - consistent: the periods the settled steadiness test calls steady (consistent).
  * - hourly: the sparkline hour headways, as a feature's headwayByHour reads them.
  */
 export function stretchRowValues(s: Stretch): StretchRowValues {
@@ -732,7 +732,7 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
   const inner = computePeriodInnerMaxGaps(s.times);
   const cadence: StretchRowValues['cadence'] = {};
   const longestGap: StretchRowValues['longestGap'] = {};
-  const steady: PeriodKey[] = [];
+  const consistent: PeriodKey[] = [];
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const p = own[key];
     // The map's own value for the stretch (stretchFilterValue, the settled reader: its median where steady and even, its
@@ -742,10 +742,10 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
     const value = stretchFilterValue(p);
     if (p.sustained === true && value != null && value <= PERIOD_COVERAGE_MAX_HEADWAY && runsThroughPeriod(s.times, start, end, p.sustained)) cadence[key] = value;
     if (inner[key] != null) longestGap[key] = inner[key]!;
-    if (p.sustained === true) steady.push(key);
+    if (p.sustained === true) consistent.push(key);
   }
   const hourly = Object.fromEntries(Object.entries(computeHourHeadways([...s.times], SPARKLINE_HOURS)).filter(([, v]) => v != null)) as StretchRowValues['hourly'];
-  return { cadence, longestGap, steady, hourly };
+  return { cadence, longestGap, consistent, hourly };
 }
 
 export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number> } {

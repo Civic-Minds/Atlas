@@ -55,7 +55,7 @@ export function unevenPeriodMaxGap(
       .filter(direction => {
         // CIV-995 (b): a row on a stretch that runs through the period reads the stretch's steadiness.
         const stretch = rowStretchValue(direction, period);
-        if ((stretch ? stretch.steady : direction.headwayByPeriodSustained?.[period]) !== false) return false;
+        if ((stretch ? stretch.consistent : direction.headwayByPeriodSustained?.[period]) !== false) return false;
         if (primaryHw === Infinity) return true;
         // Keep primary / near-primary; drop branches clearly sparser short-turns.
         return direction.headway == null || direction.headway <= primaryHw * 1.5;

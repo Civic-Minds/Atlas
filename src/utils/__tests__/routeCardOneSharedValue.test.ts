@@ -40,7 +40,7 @@ describe('one shared value per card group (#1232)', () => {
 describe('the Shared stretch row is left out when a main row shows its exact number (CIV-995 Q2)', () => {
   // TTC 102 PM: the main rows read their stretch (CIV-995) once the data carries its rows and trip check.
   const withStretch = (cadence: number) => directions.map(d => d.stretchRole === 'main' && d.stretchMeta?.main
-    ? { ...d, stretchRowPeriods: ['pmPeak'], stretchMeta: { ...d.stretchMeta, main: { ...d.stretchMeta.main, noRegular: [], rows: { cadence: { pmPeak: cadence }, longestGap: { pmPeak: cadence }, steady: ['pmPeak'], hourly: {} } } } }
+    ? { ...d, stretchRowPeriods: ['pmPeak'], stretchMeta: { ...d.stretchMeta, main: { ...d.stretchMeta.main, noRegular: [], rows: { cadence: { pmPeak: cadence }, longestGap: { pmPeak: cadence }, consistent: ['pmPeak'], hourly: {} } } } }
     : d) as ShapeProperties[];
   const model = (dirs: ShapeProperties[], stretchValues?: boolean) => buildRouteCardModel({
     directions: dirs, routeShortName: '102', routeLongName: 'Markham Rd', directionGroups: buildDirectionGroups({ directions: dirs }, 'pmPeak'),

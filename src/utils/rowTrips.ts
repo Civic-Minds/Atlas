@@ -121,7 +121,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // CIV-1074 2a: a period that is not steady for the row's own trips reads the trips its riders get. A main or tail row on a
   // stretch with regular service reads the stretch (CTA 9 Ashland & 95th midday: every 10 at 74th-95th, where its own 8 trips
   // start at 13:04); any other row reads its full-window wait (the settled rule, #567-#571), not the median of its gaps.
-  const unsteady = value != null && !partPeriod && !filterReading && (stretch ? stretch.steady === false : d.headwayByPeriodSustained?.[key] === false);
+  const unsteady = value != null && !partPeriod && !filterReading && (stretch ? stretch.consistent === false : d.headwayByPeriodSustained?.[key] === false);
   const wait = d.periodCoverageHeadway?.[key];
   if (unsteady && typeof slotValue === 'number' && !slot?.noRegular?.includes(key)) {
     // A short burst can't take the shared stretch's number. Where the stretch is materially better than the row's own trips

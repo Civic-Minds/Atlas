@@ -223,7 +223,7 @@ export interface StretchRowReading {
   /** The longest gap inside the period ('stretch': no clipped window edges; 'feature': maxGapByPeriod, edges included). */
   longestGap: number | null;
   /** Whether the settled steadiness test calls the period steady (null when unknown). */
-  steady: boolean | null;
+  consistent: boolean | null;
   /** Sparkline hour headways. */
   hourly: Partial<Record<number, number | null>> | undefined;
 }
@@ -245,13 +245,13 @@ export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowRe
   const slot = f.stretchRole === 'main' ? meta?.main : f.stretchRole === 'tail' ? meta?.tails[f.stretchIndex ?? 0] : undefined;
   const rows = slot?.rows;
   if (rows) {
-    return { source: 'stretch', cadence: rows.cadence[key] ?? null, longestGap: rows.longestGap[key] ?? null, steady: rows.steady.includes(key), hourly: rows.hourly };
+    return { source: 'stretch', cadence: rows.cadence[key] ?? null, longestGap: rows.longestGap[key] ?? null, consistent: rows.consistent.includes(key), hourly: rows.hourly };
   }
   return {
     source: 'feature',
     cadence: f.headwayByPeriod?.[key] ?? null,
     longestGap: f.maxGapByPeriod?.[key] ?? null,
-    steady: f.headwayByPeriodSustained?.[key] ?? null,
+    consistent: f.headwayByPeriodSustained?.[key] ?? null,
     hourly: f.headwayByHour,
   };
 }

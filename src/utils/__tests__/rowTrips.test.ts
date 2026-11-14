@@ -160,7 +160,7 @@ describe('rowTrips (CIV-1069): a row reads its value, gap and part-period words 
 });
 
 describe('rowTrips reads the stretch\'s own values where it publishes them (CIV-995 b)', () => {
-  const rows = { cadence: { midday: 5, amPeak: 10 }, longestGap: { midday: 9, amPeak: 14 }, steady: ['midday'], hourly: { 12: 5, 13: 6 } };
+  const rows = { cadence: { midday: 5, amPeak: 10 }, longestGap: { midday: 9, amPeak: 14 }, consistent: ['midday'], hourly: { 12: 5, 13: 6 } };
   // TTC 927 shape: one destination's own trips every 10, the shared stretch every 5.
   const main = row({ stretchRole: 'main', stretchIndex: 0, headwayByPeriod: { midday: 10, amPeak: 12 }, maxGapByPeriod: { midday: 30, amPeak: 20 }, headwayByPeriodSustained: { midday: true, amPeak: false },
     headwayByHour: { 12: 10 }, departuresByHour: { 12: 30 }, stretchRowPeriods: ['midday', 'amPeak'], stretchMeta: { main: { stops: 8, refStop: 's', trips: 120, rows }, tails: [] } } as Partial<ShapeProperties>);
