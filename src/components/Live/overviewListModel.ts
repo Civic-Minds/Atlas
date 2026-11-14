@@ -5,41 +5,32 @@
 import { minutesText, pct, signedPct } from '../../../shared/liveFormat';
 import { runTimeDiffText } from '../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../shared/liveAgency';
-import { branchFigures, runTimeDiffMin, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
+import { runTimeDiffMin, weekForBand, withMainPatternTrip, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
 import { mapStep, type MapMeasure } from './routeMapModel';
 import { delayHeatPoints } from './delayHeatModel';
 
 /**
- * A route's figure for one time of day (#1150), on the same basis as its all-day figure: late departures at the
- * timepoints, run time over each direction's main pattern, extra wait over every gap. Null when the file has none.
- * Bunching has no time-of-day figure on that basis, so it stays all day.
+ * A route's figure for one time of day (#1150, CIV-1459): this week's figure for that period, from the same week
+ * comparison the panel's table reads (weekForBand), so the list and the table never disagree. Run time is over each
+ * direction's main pattern, as the all-day row. Null when the file has no figures for that period, never the whole day's.
  */
-export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' | 'extraWait', band: DashboardBand): { value: number; text: string } | null {
-  if (!v3) return null;
-  if (measure === 'late') {
-    const o = v3.bands[band]?.adherence.timepoints.all.overall;
-    return o && o.n > 0 ? { value: o.lateShare, text: pct(o.lateShare) } : null;
-  }
+export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' | 'extraWait' | 'bunching', band: DashboardBand): { value: number; text: string } | null {
+  const t = v3 ? weekForBand(withMainPatternTrip(v3).weekly, band)?.thisWeek : null;
+  if (!t) return null;
+  if (measure === 'late') return t.late && t.late.n > 0 ? { value: t.late.share, text: pct(t.late.share) } : null;
   if (measure === 'runTime') {
-    const mains = Object.values(v3.runningTime?.patterns ?? {}).flatMap(list => list.filter(p => p.kind === 'main'))
-      .map(p => branchFigures(p, band)).filter((f): f is NonNullable<typeof f> => !!f && f.n > 0);
-    const n = mains.reduce((a, f) => a + f.n, 0);
-    if (!n) return null;
-    const typical = mains.reduce((a, f) => a + f.typicalMin * f.n, 0) / n, scheduled = mains.reduce((a, f) => a + f.scheduledMin * f.n, 0) / n;
-    const diff = runTimeDiffMin(typical, scheduled);
+    if (!t.tripTime || !(t.tripTime.n > 0)) return null;
+    const diff = runTimeDiffMin(t.tripTime.typicalMin, t.tripTime.scheduledMin);
     return { value: diff, text: runTimeDiffText(diff, false) };
   }
-  const stops = v3.extraWait?.[band] ?? [];
-  const gaps = stops.reduce((a, x) => a + x.gaps, 0);
-  if (!gaps) return null;
-  const minutes = stops.reduce((a, x) => a + x.extraWaitMin * x.gaps, 0) / gaps;
-  return { value: minutes, text: minutesText(minutes) };
+  if (measure === 'bunching') return t.bunching && t.bunching.gaps > 0 ? { value: t.bunching.share, text: pct(t.bunching.share) } : null;
+  return t.extraWait && t.extraWait.gaps > 0 ? { value: t.extraWait.minutes, text: minutesText(t.extraWait.minutes) } : null;
 }
 
 /** A route's figure for the chosen measure, as a number to sort by and the text to show. Null when it has none. */
 export function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, band: DashboardBand = 'all'): { value: number; text: string } | null {
-  // A time of day other than all day reads that period's own figure (#1150).
-  if (band !== 'all' && (measure === 'late' || measure === 'runTime' || measure === 'extraWait')) return bandFigure(v3, measure, band);
+  // A time of day reads that period's own figure (#1150, CIV-1459).
+  if (band !== 'all' && measure !== 'delayStarts') return bandFigure(v3, measure, band);
   switch (measure) {
     case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
     // Sorted by the minutes it shows (a share would put "4 min faster" above "8 min faster").
