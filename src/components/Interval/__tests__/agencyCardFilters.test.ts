@@ -41,6 +41,13 @@ describe('agency card filters', () => {
     expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
   });
 
+  it('uses the singular verb for exactly one matching route (CIV-1471)', () => {
+    const only = (n: number) => routes.map((route, i) => ({ ...route, matchesFilter: i < n }));
+    expect(buildHeaderSummary(only(1), 60)).toBe('4 routes · 1 matches filters');
+    expect(buildHeaderSummary(only(0), 60)).toBe('4 routes · 0 match filters');
+    expect(buildHeaderSummary(only(3), 60)).toBe('4 routes · 3 match filters');
+  });
+
   it('keeps routes outside the frequency filter collapsed when nothing matches', () => {
     const buckets = buildAgencyRouteBuckets(routes.map(route => ({ ...route, matchesFilter: false })));
     expect(buckets.matching).toHaveLength(0);

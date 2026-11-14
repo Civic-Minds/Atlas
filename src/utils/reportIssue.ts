@@ -68,7 +68,7 @@ export function openAtlasProblemEmail(title: string, details: string, context: I
     ...(context.reasons.length > 0 ? context.reasons.map(reason => `- ${reason}`) : ['- None selected']),
     ...(context.frequencyReasons.length > 0 ? ['', '**Frequency details:**', ...context.frequencyReasons.map(reason => `- ${reason}`)] : []),
     '',
-    "**What's wrong:**",
+    "**What’s wrong:**",
     context.description.trim(),
   ].join('\n');
   const body = `${plainDetails}\n\nDiagnostics above — please do not edit\n\n${reportSection}\n`;

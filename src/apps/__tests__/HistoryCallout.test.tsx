@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import History, { changeHeadline, tripTimeChangedEnough, type AgencyHistory, type RouteHistoryEntry } from '../History';
+import History, { changeHeadline, tripTimeChange, tripTimeChangedEnough, type AgencyHistory, type RouteHistoryEntry } from '../History';
 import { HistoryMapOverlayProvider } from '../../context/HistoryMapOverlay';
 
 const trip = { firstMinutes: 52, firstLabel: 'Feb 2022', lastMinutes: 58, lastLabel: 'Aug 2024' };
@@ -106,6 +106,15 @@ describe('trip time changed enough to show (CIV-1127: about 2% of the earlier tr
     [64, 64, false], [50, 51, true], [51, 52, false], [0, 5, false], [5, 0, false],
   ])('%i to %i min: %s', (first, last, shown) => {
     expect(tripTimeChangedEnough(first, last)).toBe(shown);
+  });
+});
+
+describe('trip time box on a day it was not measured (CIV-1435)', () => {
+  it('shows on Weekday only, as a route card piece with no data for the chosen day is not drawn', () => {
+    const r = route('7', changed, trip);
+    expect(tripTimeChange(r, 'Weekday')).not.toBeNull();
+    expect(tripTimeChange(r, 'Saturday')).toBeNull();
+    expect(tripTimeChange(r, 'Sunday')).toBeNull();
   });
 });
 

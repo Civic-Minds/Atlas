@@ -24,6 +24,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
 import { directionStopsById } from './components/Live/DirectionStrip';
+import { TYPICAL_ADDED } from '../shared/liveWording';
 import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
@@ -113,7 +114,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
 /** The lines of a segment's card: only the segment, never its start stop. */
 function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string): string[] {
   const x = data.buildup.find(b => b.directionId === dir)?.stretches.find(t => t.fromStopId === fromStopId && t.toStopId === toStopId);
-  return x && x.n > 0 ? [`Typical added ${mins(x.medianAddedMin)}`, `Trips where it grows ${pct(x.growShare)} of ${x.n.toLocaleString()}`] : [];
+  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `Trips where it grows ${pct(x.growShare)} of ${x.n.toLocaleString()}`] : [];
 }
 
 /** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */

@@ -3,7 +3,7 @@ import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { pct } from '../../../../shared/liveFormat';
 import { joinList } from '../../../../shared/overflowText';
-import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
+import { builtText, coveredRoutesText, DELAY_STARTS_TITLE, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -27,7 +27,7 @@ const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0], namedAbove?: 
  */
 export type MethodSectionProps =
   | { scope: 'route'; data: Ready; /** The left-out days' note the page already shows above, if any (#1490). */ namedAbove?: string | null }
-  | { scope: 'agency'; s: AgencySummary };
+  | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
   if (props.scope === 'route') {
@@ -50,7 +50,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
         deliveredLine(true),
-        <Term t="Where delay builds up">is the stop where vehicles fall furthest behind and don't catch up over the next 3 stops (about 1 km).</Term>,
+        <Term t={DELAY_STARTS_TITLE}>is the stop where vehicles fall furthest behind and don’t catch up over the next 3 stops (about 1 km).</Term>,
         <Term t="Linked to">shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
@@ -66,18 +66,18 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         recordingGapsLine,
         <Term t="Near a limit" colon>{pct(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
-        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn't on the schedule, such as extra buses. We left out {glo.noTimetableTrip.toLocaleString()} of them ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {good.runs.toLocaleString()} scheduled trips.</Term>,
+        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn’t on the schedule, such as extra buses. We left out {glo.noTimetableTrip.toLocaleString()} of them ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {good.runs.toLocaleString()} scheduled trips.</Term>,
         // Counted over the good days, like every other figure (Ryan, CIV-910 Q4).
         glo && glo.excluded > 0 && <Term t="Other services">are runs by {lo?.excludedLabel ?? 'another service'} that shares this route number. We left out {glo.excluded.toLocaleString()} of them.</Term>,
         <Term t="Mismatched trip numbers">are trips that ran far from the time their trip number is scheduled for ({pct(lim.swaps.rate)} of trips). We matched {lim.swaps.reassigned} to the trip they fit and left out {lim.swaps.dropped}.</Term>,
-        unknown > 0 && <Term t="Unjudged trips">are trips we couldn't judge as run or not run. We left out {unknown.toLocaleString()} of them from Delivered.</Term>,
+        unknown > 0 && <Term t="Unjudged trips">are trips we couldn’t judge as run or not run. We left out {unknown.toLocaleString()} of them from Delivered.</Term>,
       ] },
     
       ]} />
     );
   }
-  const { s } = props;
-  const coverage = coveredRoutesText(s.agency, s.routes);
+  const { s, agencyName } = props;
+  const coverage = coveredRoutesText(agencyName, s.routes);
   const w = s.weekly;
   return (
     <MethodFootnote id="agency-method" groups={[

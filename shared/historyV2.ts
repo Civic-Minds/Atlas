@@ -18,8 +18,13 @@ export type HistoryFlag = 'fast' | 'slow' | 'limited';
 /**
  * A weekend day's headline: a number, limited (no all-day value), or positively no service.
  * CIV-1425: a known day may carry its per-period values `p` (worst direction, like rep.p).
+ * CIV-1431: a day with a number may carry its shared-stretch values `t` / `tp`, read the same way as
+ * the weekday's (rep.t, rep.tp): `t` only when better than h, `tp` only where better than p's value.
  */
-export type HistoryDayValue = { h: number; p?: HeadwayByPeriod } | { lim: true; p?: HeadwayByPeriod } | { none: true };
+export type HistoryDayValue =
+  | { h: number; p?: HeadwayByPeriod; t?: number; tp?: HeadwayByPeriod }
+  | { lim: true; p?: HeadwayByPeriod }
+  | { none: true };
 
 /** The representative weekday value: `h` (minutes), or `lim` when the route has no all-day value. Neither = blank. */
 export interface HistoryRep {

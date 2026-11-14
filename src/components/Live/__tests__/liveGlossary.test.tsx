@@ -12,7 +12,7 @@ const text = (node: unknown) => {
 /** The Docs glossary must say the same as the Live agency page's "How this is measured". */
 describe('Live glossary', () => {
   const lines: Record<string, unknown> = {
-    Late: lateLine, 'Run time': runTimeLine(), 'Extra wait': extraWaitLine, Bunching: bunchingLine(), Delivered: deliveredLine(),
+    Late: lateLine, 'Trip time': runTimeLine(), 'Extra wait': extraWaitLine, Bunching: bunchingLine(), Delivered: deliveredLine(),
     'Vehicle positions': positionsLine, 'Trip matching': tripMatchLine(), 'Network figures': networkFiguresLine, Stops: stopsLine, 'Recording gaps': recordingGapsLine,
     'Coloured changes': colourLine,
   };

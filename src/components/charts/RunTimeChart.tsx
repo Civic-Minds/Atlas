@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
+import { fadedNoteText } from '../../../shared/liveWording';
 import { hourTime as clock } from '../../../shared/timeText';
 import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
@@ -145,7 +146,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
         )}
         {width === 0 && <div style={{ height: H }} />}
       </div>
-      {caption && <figcaption className="mt-1 text-xs text-[var(--text-dim)]">By the hour the trip starts. Faded dots are hours with fewer than {minN} trips.</figcaption>}
+      {caption && <figcaption className="mt-1 text-xs text-[var(--text-dim)]">By the hour the trip starts. {fadedNoteText(minN, 'trips', 'dots')}</figcaption>}
       <div id={tableId} className="sr-only">
           <DataTable
             caption={ariaLabel}

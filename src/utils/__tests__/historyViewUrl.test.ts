@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { encodeHistoryView, historyDefaultPeriod, historyDefaultView, parseHistoryView } from '../historyViewUrl';
+import { DAY_PREF_KEY, openingDay, saveDayPref } from '../openingDay';
 
 const at = (hour: number) => new Date(2026, 9, 28, hour, 30);
 
@@ -47,22 +48,55 @@ describe('the period History opens on (CIV-1097)', () => {
 });
 
 describe("History's day in the link (CIV-1425)", () => {
-  it('with the day picker on, round-trips hday and leaves Weekday out', () => {
+  it('with the day picker on, round-trips hday and always writes it, like the map writes day (CIV-1433)', () => {
     const sat = { maxHeadway: 15, period: 'midday' as const, day: 'Saturday' as const };
     const encoded = encodeHistoryView(sat, true);
     expect(encoded).toEqual({ h: '15', p: 'midday', hday: 'Saturday' });
     expect(parseHistoryView(`?h=15&p=midday&hday=${encoded.hday}`, undefined, true)).toEqual(sat);
-    expect(encodeHistoryView({ ...sat, day: 'Weekday' }, true)).toEqual({ h: '15', p: 'midday', hday: null });
-    expect(parseHistoryView('?h=15&p=midday', undefined, true).day).toBe('Weekday');
-    expect(parseHistoryView('?h=15&p=midday&hday=Funday', undefined, true).day).toBe('Weekday');
-  });
-
-  it("reads History's own hday, never the map's day", () => {
-    expect(parseHistoryView('?h=15&p=midday&day=Sunday', undefined, true).day).toBe('Weekday');
+    expect(encodeHistoryView({ ...sat, day: 'Weekday' }, true)).toEqual({ h: '15', p: 'midday', hday: 'Weekday' });
+    expect(parseHistoryView('?h=15&p=midday&hday=Weekday', undefined, true).day).toBe('Weekday');
   });
 
   it('with the day picker off, ignores hday and writes only h and p', () => {
     expect(parseHistoryView('?h=15&p=midday&hday=Sunday', undefined, false).day).toBe('Weekday');
     expect(encodeHistoryView({ maxHeadway: 15, period: 'midday', day: 'Sunday' }, false)).toEqual({ h: '15', p: 'midday' });
+    expect(historyDefaultView(at(13), false).day).toBe('Weekday');
+  });
+});
+
+describe('the day History opens on (CIV-1433: the map\'s own logic, openingDay)', () => {
+  const store = new Map<string, string>();
+  beforeEach(() => {
+    store.clear();
+    vi.stubGlobal('localStorage', { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => { store.set(k, v); } });
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 14, 12)); // a Saturday
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("a link's hday wins", () => {
+    store.set(DAY_PREF_KEY, 'Sunday');
+    expect(parseHistoryView('?h=15&p=midday&hday=Weekday', undefined, true).day).toBe('Weekday');
+  });
+
+  it("without hday, the viewer's saved day (the map's own), never the map's day param", () => {
+    store.set(DAY_PREF_KEY, 'Sunday');
+    expect(parseHistoryView('?h=15&p=midday&day=Weekday', undefined, true).day).toBe('Sunday');
+    expect(historyDefaultView(undefined, true).day).toBe('Sunday');
+  });
+
+  it("with no link day and nothing saved, today's day type, as on the map", () => {
+    expect(parseHistoryView('?h=15&p=midday', undefined, true).day).toBe('Saturday');
+    expect(parseHistoryView('?h=15&p=midday&hday=Funday', undefined, true).day).toBe('Saturday');
+    expect(historyDefaultView(undefined, true).day).toBe('Saturday');
+    expect(openingDay(undefined)).toBe('Saturday');
+  });
+
+  it('saveDayPref stores the day the map reads', () => {
+    saveDayPref('Sunday');
+    expect(openingDay(null)).toBe('Sunday');
   });
 });

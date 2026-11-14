@@ -342,3 +342,96 @@ describe('history:upload', () => {
     expect(lines.join('\n')).toMatch(/Totals: 3 objects/);
   });
 });
+
+// CIV-1430: the one approved exception to "never overwritten": MBTA sidecars that only add weekend p / t / tp.
+describe('history:upload --replace-approved (CIV-1430)', () => {
+  const KEY = 'history-v2/mbta/20181202.json';
+  const sc = (routes: Record<string, unknown>, extra: Record<string, unknown> = {}) => JSON.stringify({ version: 2, slug: 'mbta', periodKey: '20181202', refDate: '20181129', routes, ...extra });
+  const OLD = sc({ 1: { name: 'One', rep: { h: 12, p: { midday: 12 }, tp: { midday: 8 } }, sat: { h: 15 }, sun: { none: true } }, 7: { rep: { lim: true }, sat: { lim: true } } }, { refDateQuality: { holiday: false, reason: 'r' } });
+  const ADDS = sc({ 1: { name: 'One', rep: { h: 12, p: { midday: 12 }, tp: { midday: 8 } }, sat: { h: 15, p: { midday: 15 }, t: 9, tp: { midday: 9 } }, sun: { none: true } }, 7: { rep: { lim: true }, sat: { lim: true, p: { midday: 60 } } } }, { refDateQuality: { holiday: false, reason: 'r' } });
+  const WEEKDAY = sc({ 1: { name: 'One', rep: { h: 13, p: { midday: 12 }, tp: { midday: 8 } }, sat: { h: 15, p: { midday: 15 } }, sun: { none: true } }, 7: { rep: { lim: true }, sat: { lim: true } } }, { refDateQuality: { holiday: false, reason: 'r' } });
+  const mk = (body: string) => {
+    const dir = mkdtempSync(join(tmpdir(), 'hist-rep-'));
+    mkdirSync(join(dir, 'history-v2', 'mbta'), { recursive: true });
+    writeFileSync(join(dir, 'history-v2', 'mbta', '20181202.json'), body);
+    return dir;
+  };
+  class Remote2 implements Remote {
+    store = new Map<string, string>();
+    writes: string[] = [];
+    corruptBackup = false;
+    peek = async (key: string) => {
+      const v = this.store.get(key) ?? null;
+      return v != null && this.corruptBackup && key.startsWith('history-v2-replaced/') ? v + 'x' : v;
+    };
+    sink = {
+      put: async (key: string, body: string): Promise<PutResult> => {
+        const ex = this.store.get(key);
+        if (ex != null) return ex === body ? 'unchanged' : 'conflict';
+        this.writes.push(key); this.store.set(key, body); return 'written';
+      },
+    };
+    overwrite = async (key: string, body: string) => { this.writes.push(`overwrite ${key}`); this.store.set(key, body); };
+  }
+  const run = (dir: string, r: Remote2, extra: string[] = ['--write']) =>
+    runUpload({ log, argv: ['--slug', 'mbta', '--dir', dir, '--replace-approved', 'CIV-1430', ...extra], env: ENV_ON, makeRemote: async () => r });
+
+  it('allows a key whose only differences are added weekend p / t / tp: backs up, verifies, then replaces', async () => {
+    const r = new Remote2(); r.store.set(KEY, OLD);
+    lines.length = 0;
+    expect(await run(mk(ADDS), r)).toBe(0);
+    expect(r.store.get(KEY)).toBe(ADDS);
+    const backups = [...r.store.keys()].filter(k => k.startsWith('history-v2-replaced/CIV-1430/mbta/20181202.'));
+    expect(backups).toHaveLength(1);
+    expect(r.store.get(backups[0])).toBe(OLD);
+    expect(r.writes).toEqual([backups[0], `overwrite ${KEY}`]); // backup strictly before the overwrite
+    expect(lines.join('\n')).toMatch(/1 replaced under CIV-1430/);
+  });
+
+  it('dry run lists the replacement and the added-field counts, and writes nothing', async () => {
+    const r = new Remote2(); r.store.set(KEY, OLD);
+    lines.length = 0;
+    expect(await runUpload({ log, argv: ['--slug', 'mbta', '--dir', mk(ADDS), '--replace-approved', 'CIV-1430'], env: {}, makeRemote: async () => r })).toBe(0);
+    expect(r.writes).toEqual([]);
+    expect(lines.join('\n')).toMatch(/REPLACE \(CIV-1430: adds weekend fields only \{"sat.p":2,"sat.t":1,"sat.tp":1\}/);
+  });
+
+  it('refuses a key with any other change, reports the field, and writes nothing at all', async () => {
+    const r = new Remote2(); r.store.set(KEY, OLD);
+    lines.length = 0;
+    expect(await run(mk(WEEKDAY), r)).toBe(1);
+    expect(r.writes).toEqual([]);
+    expect(r.store.get(KEY)).toBe(OLD);
+    expect(lines.join('\n')).toMatch(/CONFLICT \(CIV-1430 refused/);
+    expect(lines.join('\n')).toContain('routes.1.rep.h: 12 -> 13');
+  });
+
+  it('refuses a changed weekend headline, a removed day and a changed top-level field', async () => {
+    for (const body of [
+      ADDS.replace('"sat":{"h":15,', '"sat":{"h":16,'),
+      sc({ 1: { name: 'One', rep: { h: 12, p: { midday: 12 }, tp: { midday: 8 } }, sat: { h: 15 }, sun: { none: true } }, 7: { rep: { lim: true } } }, { refDateQuality: { holiday: false, reason: 'r' } }),
+      ADDS.replace('"refDate":"20181129"', '"refDate":"20181128"'),
+    ]) {
+      const r = new Remote2(); r.store.set(KEY, OLD);
+      expect(await run(mk(body), r)).toBe(1);
+      expect(r.writes).toEqual([]);
+    }
+  });
+
+  it('stops before overwriting when the backup does not read back the same', async () => {
+    const r = new Remote2(); r.store.set(KEY, OLD); r.corruptBackup = true;
+    lines.length = 0;
+    expect(await run(mk(ADDS), r)).toBe(1);
+    expect(r.store.get(KEY)).toBe(OLD);
+    expect(r.writes.some(w => w.startsWith('overwrite'))).toBe(false);
+    expect(lines.join('\n')).toMatch(/backup read-back mismatch/);
+  });
+
+  it('only the approved ticket and slug can use it; without it a differing key is still a plain conflict', async () => {
+    await expect(runUpload({ log, argv: ['--slug', 'marta', '--dir', mk(ADDS), '--replace-approved', 'CIV-1430'], env: {}, makeRemote: async () => new Remote2() })).rejects.toThrow(/covers only mbta/);
+    await expect(runUpload({ log, argv: ['--slug', 'mbta', '--dir', mk(ADDS), '--replace-approved', 'CIV-9999'], env: {}, makeRemote: async () => new Remote2() })).rejects.toThrow(/no such approval/);
+    const r = new Remote2(); r.store.set(KEY, OLD);
+    expect(await runUpload({ log, argv: ['--slug', 'mbta', '--dir', mk(ADDS), '--write'], env: ENV_ON, makeRemote: async () => r })).toBe(1);
+    expect(r.writes).toEqual([]);
+  });
+});

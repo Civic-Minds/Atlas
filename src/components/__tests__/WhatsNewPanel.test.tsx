@@ -20,7 +20,7 @@ const RELEASES: WhatsNewRelease[] = [
   { version: '3.2.0', month: 'September 2026', date: '2026-09-22', items: [{ text: 'Only beta here.', beta: true }] },
 ];
 
-describe('What\'s new link', () => {
+describe('What’s new link', () => {
   it('is hidden when the flag is off', () => {
     render(<MapAttribution whatsNewEnabled={false} />);
     expect(screen.queryByRole('button', { name: /What's new/ })).toBeNull();
@@ -29,18 +29,18 @@ describe('What\'s new link', () => {
   it('shows the app version and opens the panel when the flag is on', async () => {
     render(<MapAttribution whatsNewEnabled />);
     const [major, minor] = version.split('.');
-    const button = screen.getByRole('button', { name: `v${major}.${minor} · What's new` });
+    const button = screen.getByRole('button', { name: `v${major}.${minor} · What’s new` });
     expect(button.className).toContain('text-xs');
     const pills = [...button.parentElement!.children].map(el => el.textContent);
     expect(pills.indexOf(button.textContent)).toBeLessThan(pills.indexOf('Feedback'));
     fireEvent.click(button);
-    expect(await screen.findByRole('dialog', { name: "What's new" })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: "What’s new" })).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   });
 });
 
-describe('What\'s new flag', () => {
+describe('What’s new flag', () => {
   it('is on in every build, public included', () => {
     expect(whatsNewEnabledFor('public')).toBe(true);
     expect(whatsNewEnabledFor('preview')).toBe(true);

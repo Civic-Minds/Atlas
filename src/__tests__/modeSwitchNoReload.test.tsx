@@ -57,7 +57,7 @@ describe('switching modes (#888)', () => {
     await screen.findByTestId('map', undefined, { timeout: 5000 });
     const live = await screen.findByRole('button', { name: 'Live vehicles' });
     agencyLists.clear(); // count lists from here, once the catalog has loaded
-    const historyTab = () => screen.getByRole('button', { name: /Historical service|Back to frequency map/ });
+    const historyTab = () => screen.getByRole('button', { name: /^History$|Back to frequency map/ });
     await waitFor(() => historyTab());
 
     // No mode tab is a link, so none can trigger a full page load.
@@ -95,7 +95,7 @@ describe('switching modes (#888)', () => {
     const onGoHome = vi.fn();
     render(<BrowserRouter><App onGoHome={onGoHome} /></BrowserRouter>);
     await screen.findByTestId('map', undefined, { timeout: 5000 });
-    const historyTab = () => screen.getByRole('button', { name: /Historical service|Back to frequency map/ });
+    const historyTab = () => screen.getByRole('button', { name: /^History$|Back to frequency map/ });
     await waitFor(() => historyTab());
 
     for (const open of [() => screen.getByRole('button', { name: 'Live vehicles' }), historyTab]) {

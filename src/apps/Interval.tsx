@@ -41,6 +41,7 @@ import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlP
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
+import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
@@ -58,7 +59,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -738,7 +739,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
   const routeCardBack = useMemo(() => {
     const target = resolveRouteCardBack({ selectedRoute, nightServiceView, nightListRoute, nearYouRoute, hasUserLocation: !!userLocation });
-    if (target?.kind === 'nearYou') return { to: 'Near You', onClick: () => setSelectedRoute(null) };
+    if (target?.kind === 'nearYou') return { to: NEAR_YOU_TITLE, onClick: () => setSelectedRoute(null) };
     if (target?.kind === 'nightList') {
       return {
         to: NIGHT_LIST_TITLE,
@@ -850,7 +851,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     };
   });
   usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
-  usePersistedFilterPref('atlas_pref_day', day, filtersFromUrl.day);
+  usePersistedFilterPref(DAY_PREF_KEY, day, filtersFromUrl.day);
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {

@@ -1,8 +1,9 @@
 import { isAgencyVisibleInBrowser, type BrowserAgencyVisibility } from './agencyVisibility';
 import type { AtlasMode } from './config';
 import type { SupplementalFeedMeta } from './feedAvailability';
+import type { HiddenAgencyReason } from './hiddenAgencyNote';
 
-/** Fields the browser needs; pipeline feed URLs and source credentials never ship here. */
+/** Fields the browser needs; pipeline feed URLs, source credentials and internal notes never ship here. */
 export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   slug: string;
   name: string;
@@ -31,6 +32,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  /** CIV-1060: why a hidden agency shows nothing; the card shows hiddenAgencyNoteFor(hiddenReason). */
+  hiddenReason?: HiddenAgencyReason;
   feedReviewStatus?: 'review' | 'verified';
   feedQuality?: unknown;
   fare?: number;
@@ -54,6 +57,7 @@ export interface AgencyCatalogFile {
 /**
  * Build the browser catalog from the full pipeline registry without leaking source fields.
  * `shortName` and `labelPlace` are read only by the agency page build, so it stays out of the catalog.
+ * `internalNote` is engineering detail for maintainers (CIV-1060), never shown to users.
  */
 export function buildAgencyCatalog(
   source: Array<Record<string, unknown>>,
@@ -61,7 +65,7 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, internalNote: _internalNote, ...agency }) => agency as unknown as AgencyCatalogEntry);
 
   return { mode, agencyCount: agencies.length, agencies };
 }

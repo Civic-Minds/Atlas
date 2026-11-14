@@ -93,7 +93,7 @@ describe('buildAreaPageData', () => {
   });
 
   it('names the dates', () => {
-    expect(areaDatesText(d)).toBe("Based on the agencies' published schedules, not live arrivals. Newest schedule published Sep 1, 2026. This page was last updated Oct 13, 2026.");
+    expect(areaDatesText(d)).toBe("Based on the agencies’ published schedules, not live arrivals. Newest schedule published Sep 1, 2026. This page was last updated Oct 13, 2026.");
   });
 });
 
@@ -137,7 +137,7 @@ describe('naming', () => {
     expect(isLargeMetro({ country: 'United States', officialName: 'Columbus, GA-AL' })).toBe(false);
     expect(isLargeMetro({ country: 'United States', officialName: 'Portland-South Portland, ME' })).toBe(false);
     expect(isLargeMetro({ country: 'United States', officialName: 'Portland-Vancouver-Hillsboro, OR-WA' })).toBe(true);
-    expect(isLargeMetro({ country: 'Canada', officialName: "Ottawa - Gatineau (Ontario part / partie de l'Ontario)" })).toBe(true);
+    expect(isLargeMetro({ country: 'Canada', officialName: "Ottawa - Gatineau (Ontario part / partie de l’Ontario)" })).toBe(true);
     expect(isLargeMetro({ country: 'Canada', officialName: 'Toronto + Hamilton + Oshawa' })).toBe(true);
     expect(isLargeMetro({ country: 'Canada', officialName: 'London' })).toBe(false);
   });
@@ -152,7 +152,7 @@ describe('naming', () => {
 
   it('reads main cities from official names and makes slugs', () => {
     expect(mainCities('Boston-Cambridge-Newton, MA-NH')).toEqual(['Boston', 'Cambridge', 'Newton']);
-    expect(mainCities("Ottawa - Gatineau (Ontario part / partie de l'Ontario)")).toEqual(['Ottawa', 'Gatineau']);
+    expect(mainCities("Ottawa - Gatineau (Ontario part / partie de l’Ontario)")).toEqual(['Ottawa', 'Gatineau']);
     expect(areaSlug('Montréal')).toBe('montreal');
     expect(areaSlug('St. Louis')).toBe('st-louis');
   });
@@ -201,7 +201,7 @@ describe('committed areas (config/areas)', () => {
 });
 
 describe('agencyRegionTitle', () => {
-  it("names the agency's region as a title, or null outside every area", () => {
+  it("names the agency’s region as a title, or null outside every area", () => {
     const map = { ttc: ['toronto', 'Toronto'], calgary: ['calgary', 'Calgary'] } as Record<string, [string, string]>;
     expect(agencyRegionTitle('ttc', map)).toBe('Greater Toronto and Hamilton Area');
     expect(agencyRegionTitle('calgary', map)).toBe('Calgary area');

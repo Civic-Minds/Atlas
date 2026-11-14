@@ -31,8 +31,8 @@ act on?
 
 Results are grouped by Atlas's shared periods, the same ones the map uses:
 AM Peak (6 to 9), Midday (9 to 3), PM Peak (3 to 7), Evening (7 to 11), Late
-(11 to 2) and Overnight (2 to 6). The card offers All day, AM Peak, Midday, PM
-Peak and Evening.
+(11 to 2) and Overnight (2 to 6). The Live route card offers All day, AM Peak,
+Midday, PM Peak and Evening (the main map has no All day).
 
 ## How a pass is timed
 

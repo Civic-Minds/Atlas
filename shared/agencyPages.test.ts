@@ -131,7 +131,7 @@ describe('trimRedundantCity', () => {
 
 describe('dates', () => {
   it('names each date for what it is', () => {
-    const lead = "Based on the agency's published schedule, not live arrivals.";
+    const lead = "Based on the agency’s published schedule, not live arrivals.";
     expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z', '20261013'))
       .toBe(`${lead} This schedule was published Aug 27, 2026 and covers service until Oct 31, 2026. This page was last updated Oct 13, 2026.`);
     expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null, '20261013')).toBe(lead);
@@ -141,10 +141,10 @@ describe('dates', () => {
 
   it('says plainly when the timetable has ended', () => {
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z', '20261013'))
-      .toBe("Based on the agency's published schedule, not live arrivals. This schedule ended on Sep 1, 2026; the agency hasn't published a newer one yet. This page was last updated Oct 13, 2026.");
+      .toBe("Based on the agency’s published schedule, not live arrivals. This schedule ended on Sep 1, 2026; the agency hasn’t published a newer one yet. This page was last updated Oct 13, 2026.");
   });
 
-  it('ends on the map\'s date: the day after the last day, in the agency\'s own time zone (#1229)', () => {
+  it('ends on the map’s date: the day after the last day, in the agency’s own time zone (#1229)', () => {
     // LA Metro: the rail feed's Oct 31 ends the page's schedule, as on the map.
     const lacmta = { lastRefreshedAt: '2026-10-19', validThrough: '20261031', timezone: 'America/Los_Angeles' };
     expect(agencyDatesText(lacmta, '2026-10-27', '20261031')).toContain('This schedule was published Oct 19, 2026 and covers service until Oct 31, 2026.');
@@ -164,12 +164,12 @@ describe('dates', () => {
     const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
     // Ryan: "ended is past but ends is upcoming".
     expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
-      .toBe("Based on the agency's published schedule, not live arrivals. This schedule covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. This page was last updated Oct 27, 2026.");
+      .toBe("Based on the agency’s published schedule, not live arrivals. This schedule covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. This page was last updated Oct 27, 2026.");
     expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This schedule covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
     expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
     // No through date: N25 as on the cards.
     expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261027'))
-      .toContain("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+      .toContain("This agency’s scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
     expect(agencyDatesText({ ...dutchess, validThrough: null }, '2026-10-27', '20261028')).toContain('for most routes ended Oct 28, 2026,');
     // An ended timetable says more, so it wins.
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901', listingEndedOn: '20260814' }, '2026-10-13', '20261013'))
@@ -179,8 +179,8 @@ describe('dates', () => {
   it('N25: switches tense on the agency-local listing-end date', () => {
     expect(listingEndHasPassed('20261028', '20261027')).toBe(false);
     expect(listingEndHasPassed('20261028', '20261028')).toBe(true);
-    expect(listingEndedNotice('Oct 28, 2026', false)).toBe("This agency's scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
-    expect(listingEndedNotice('Oct 28, 2026', true)).toBe("This agency's scheduled service for most routes ended Oct 28, 2026, and they have not released updated data.");
+    expect(listingEndedNotice('Oct 28, 2026', false)).toBe("This agency’s scheduled service for most routes ends Oct 28, 2026, and they have not released updated data.");
+    expect(listingEndedNotice('Oct 28, 2026', true)).toBe("This agency’s scheduled service for most routes ended Oct 28, 2026, and they have not released updated data.");
     // Agency-local: 11 PM Oct 27 in New York is already Oct 28 in UTC, but still "ends".
     expect(listingEndHasPassed('20261028', agencyTodayYmd({ timezone: 'America/New_York' }, new Date('2026-10-28T03:00:00Z')))).toBe(false);
   });

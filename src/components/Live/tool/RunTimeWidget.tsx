@@ -3,6 +3,7 @@ import { liveStopName as nice } from '../../../utils/stopLabel';
 import { PatternRows, RowLegend, runTimeStretchOf } from '../sections/RunTimeSection';
 import { patternRunTimeRows, runTimeRowScale, runTimeRows } from '../sections/runTimeRows';
 import Widget from './Widget';
+import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 
 
 /**
@@ -15,7 +16,7 @@ export default function RunTimeWidget({ v3, dir, band }: { v3: LiveV3; dir: numb
   const rows = own?.length ? own : (runTimeRows(v3, band, [dir], nice)[dir] ?? []).filter(r => r.main);
   const stretch = own?.length ? null : runTimeStretchOf(v3, dir);
   return (
-    <Widget title="Run time" size="medium" className="!p-2.5 [&>div:last-child]:!mt-0.5" action={<RowLegend dense inline />}>
+    <Widget title={TRIP_TIME_LABEL} size="medium" className="!p-2.5 [&>div:last-child]:!mt-0.5" action={<RowLegend dense inline />}>
       <div className="text-xs font-bold leading-[14px] text-[var(--text-secondary)]">{v3.directionLabels[String(dir)]}</div>
       {stretch && <div className="text-xs leading-[14px] text-[var(--text-muted)]">{stretch}</div>}
       <PatternRows rows={rows} scale={runTimeRowScale(rows)} dense unitOnNumbers hideMainLabel={!!stretch} />

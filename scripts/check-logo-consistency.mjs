@@ -9,7 +9,7 @@ const [baseUrl = 'http://localhost:5181', outDir] = process.argv.slice(2);
 const WIDTHS = [390, 768, 1024, 1440];
 const SURFACES = [
   { name: 'map', path: '/' },
-  { name: 'history', path: '/', click: 'button[aria-label="Back to frequency map"], button[aria-label="Historical service"]', logo: 'button[aria-label="Atlas home"], button[aria-label="Back to frequency map"]' },
+  { name: 'history', path: '/', click: 'button[aria-label="Back to frequency map"], button[aria-label="History"]', logo: 'button[aria-label="Atlas home"], button[aria-label="Back to frequency map"]' },
   { name: 'research', path: '/research/frequent-service' },
   { name: 'diag-uneven', path: '/dev/diagnostics/uneven-headway' },
   { name: 'diag-perf', path: '/dev/diagnostics/performance' },
@@ -33,7 +33,7 @@ try {
         const logo = page.locator(LOGO).first();
         try { await logo.waitFor({ timeout: 30000 }); } catch { results.push({ width, missing: true }); await ctx.close(); continue; }
         if (surface.click) {
-          const tab = page.locator('button[aria-label="Historical service"]').first();
+          const tab = page.locator('button[aria-label="History"]').first();
           if (await tab.count()) { await tab.click(); await page.waitForTimeout(1500); }
         }
         await page.waitForTimeout(1200);

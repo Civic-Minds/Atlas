@@ -60,14 +60,14 @@ This is deliberately a **separate field**, not a change to `headwayByPeriod`'s v
 
 Validated via dry-run reprocess: TTC route 10 midday reports `headwayByPeriod.midday: 173`, `maxGapByPeriod.midday: 315`, and `headwayByPeriodSustained.midday: false`; the full trusted-feed spot check covered TTC, Rennes, Bordeaux, and Dijon.
 
-### All-day per-stop headway — midday, then PM Peak, then sustained-check raw all-day
+### All-day per-stop headway (internal) — midday, then PM Peak, then sustained-check raw all-day
 
 `process-core.ts`'s per-stop `allStopHw` calculation is `medianHeadwayInWindow(9-15h) ?? medianHeadwayInWindow(15-19h) ?? sustainedMedianHeadwayInWindow(6-22h)`. The third step, added in #279 (2026-07-25) and validated against Halifax/TTC/Madison dry-run reprocesses, rescues routes with real all-day service that happens to fall outside 9 AM–7 PM (e.g. TTC 32, 5-15min gaps all day) without reintroducing the original AI-217 bug (Halifax 330, a peak-only commuter express whose all-day median would otherwise look misleadingly frequent) — `sustainedMedianHeadwayInWindow` rejects the raw all-day median whenever one gap dominates disproportionately (>4x the median gap), which is the actual signature distinguishing the two cases. Returning `null` when none of the three steps qualify is intentional — it's what prevents a peak-only route from showing a misleading frequency dot.
 
 ## Canonical projections
 
-- `display`: the destination/branch cadence shown on route cards, agency cards, search, Recent routes, Near You, and live scheduled comparisons. It uses the period summary, then hourly data, then the all-day branch summary.
-- The frequency filter is not a `RouteFacts.service` projection: `tileEffectiveHeadwayExpr` (`shared/tileFilterExprs.ts`) is its single definition, and `shared/routeHeadwayFilter.ts` runs that same expression in the app. It reads the stretch-selector values (`rv_*`, `routeAllDayHeadway`), then the worst-direction fields, and never the minimum-stop value. See [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md).
+- `display`: the destination/branch cadence shown on route cards, agency cards, search, Recent routes, Near You, and live scheduled comparisons. It uses the period summary, then hourly data, then the headline (`headway`).
+- The frequency filter is not a `RouteFacts.service` projection: `tileEffectiveHeadwayExpr` (`shared/tileFilterExprs.ts`) is its single definition, and `shared/routeHeadwayFilter.ts` runs that same expression in the app. It reads the stretch-selector values (`rv_*`, and the internal `routeAllDayHeadway`), then the worst-direction fields, and never the minimum-stop value. See [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md).
 - `branch`: destination-specific branch cadence used by route rows and branch sparklines.
 - `shared`: combined cadence on shared stops/sections, including headsign-scoped trunk values used for branch ranges and shared-section sparklines.
 - stop-specific metric: `buildRouteStopMetric()` projects a route's cadence at one named stop for stop cards and transfer rows.

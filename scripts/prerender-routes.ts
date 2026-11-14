@@ -145,7 +145,7 @@ if (mod.BUILD_LIVE_REPORTS) {
     if (!summary) console.warn(`!!! Live link previews for ${agency}: no published summary; pages get the title only.`);
     for (const path of paths.filter(p => p.split('/')[3] === agency)) {
       const route = path.split('/')[4] ?? null;
-      const preview = liveLinkPreview(agency, route, summary);
+      const preview = liveLinkPreview(mod.liveAgencyShortName(agencyPageSummaries().find(a => a.slug === agency), agency), route, summary);
       const seo = { title: preview.title, description: preview.description, canonicalUrl: `${origin}${path}`, noindex: true, matchedPath: path };
       const file = join(dist, path, 'index.html');
       mkdirSync(dirname(file), { recursive: true });

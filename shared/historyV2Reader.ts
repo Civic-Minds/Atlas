@@ -93,14 +93,19 @@ function checkDay(v: unknown, path: string): HistoryV2Error | null {
   if (v === undefined) return null; // absent = blank
   if (!isObj(v)) return { code: 'bad-field', path, message: 'day value must be an object' };
   if (v.none !== undefined) {
-    return v.none === true && v.h === undefined && v.lim === undefined && v.p === undefined ? null
+    return v.none === true && v.h === undefined && v.lim === undefined && v.p === undefined && v.t === undefined && v.tp === undefined ? null
       : { code: 'bad-field', path, message: 'none must be exactly {none:true}' };
   }
   if (v.p !== undefined && !isObj(v.p)) return { code: 'bad-field', path: `${path}.p`, message: 'p must be an object' };
   if (v.lim !== undefined) {
-    return v.lim === true && v.h === undefined ? null : { code: 'bad-field', path, message: 'lim must be exactly {lim:true}' };
+    return v.lim === true && v.h === undefined && v.t === undefined && v.tp === undefined ? null
+      : { code: 'bad-field', path, message: 'lim must be exactly {lim:true} (with optional p)' };
   }
-  return isMinutes(v.h) ? null : { code: 'bad-field', path, message: 'day value needs h > 0, lim:true or none:true' };
+  if (!isMinutes(v.h)) return { code: 'bad-field', path, message: 'day value needs h > 0, lim:true or none:true' };
+  // CIV-1431: the day's shared-stretch values, as on rep: t beside h, tp an object.
+  if (v.t !== undefined && !isMinutes(v.t)) return { code: 'bad-field', path: `${path}.t`, message: 't must be a positive number of minutes beside h' };
+  if (v.tp !== undefined && !isObj(v.tp)) return { code: 'bad-field', path: `${path}.tp`, message: 'tp must be an object' };
+  return null;
 }
 
 function checkFlag(v: unknown, path: string): HistoryV2Error | null {

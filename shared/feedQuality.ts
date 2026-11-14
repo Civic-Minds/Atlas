@@ -62,8 +62,8 @@ export function feedQualityReasonForHeadwayMismatches(count: number): string {
 
 export const FEED_QUALITY_EXPIRED_REASON = 'The schedule dates in this feed have passed.';
 // N79, N80
-export const FEED_QUALITY_NO_ROUTES_REASON = "This agency's schedule file has no routes we can show.";
-export const FEED_QUALITY_VALIDATION_ERROR_REASON = "This agency's schedule file has errors.";
+export const FEED_QUALITY_NO_ROUTES_REASON = "This agency’s schedule file has no routes we can show.";
+export const FEED_QUALITY_VALIDATION_ERROR_REASON = "This agency’s schedule file has errors.";
 
 function isExpired(expiry: string | null | undefined, today: string): boolean {
   return isExpiredFeedExpiry(expiry, today.replaceAll('-', ''));

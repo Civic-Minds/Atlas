@@ -102,7 +102,7 @@ describe('run-time stretch wording', () => {
     expect(runTimeTileStretch({ '0': st(7, 'Humber Loop', 'Park Lawn'), '1': st(5, 'Park Lawn', 'Stephen Dr') })).toBe('over 5–7 stops: Humber Loop to Park Lawn; Park Lawn to Stephen Dr');
     expect(runTimeTileStretch({ '0': st(22, 'Sackville', 'Dufferin') })).toBe('over 22 stops, Sackville to Dufferin');
     expect(runTimeTileStretch(undefined)).toBeNull();
-    expect(runTimeStretchLabel(st(7, 'Humber Loop', 'Park Lawn'))).toBe('Run time over 7 stops, Humber Loop to Park Lawn, all trips');
+    expect(runTimeStretchLabel(st(7, 'Humber Loop', 'Park Lawn'))).toBe('Trip time over 7 stops, Humber Loop to Park Lawn, all trips');
   });
 });
 

@@ -29,7 +29,7 @@ describe('Live agency page', () => {
     expect(bunching.getByRole('columnheader', { name: /Added/ })).toBeTruthy();
     expect(bunching.getByText('+33 pt')).toBeTruthy();
     const delays = within(screen.getByRole('region', { name: 'Where delays start' }));
-    expect(delays.getByText('+2.4 min')).toBeTruthy();
+    expect(delays.getByText('2.4 min')).toBeTruthy();
   });
   it('keeps how this is measured open, with no disclosure to click', async () => {
     const { container } = render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);

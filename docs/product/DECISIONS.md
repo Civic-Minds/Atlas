@@ -40,7 +40,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A route with no all-day value stays without one**
-  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route.
+  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route. The all-day value is internal (the map has no All day option); riders see only the "limited".
   - Why: a peak-only route is not all-day service.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rules 7, 8 and 11, [#899](https://github.com/Civic-Minds/Atlas/issues/899)
 - **The route grade follows the existing branch and steady filter rule**
@@ -112,6 +112,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: never show wrong or misleading information; hide or hold first, fix after.
   - Why: a wrong number on the map costs more trust than a missing one.
   - Source: Ryan, standing rule (data integrity first: "never show wrong or misleading info"); [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md) (Why this matters)
+- **Manual corrections only fix errors inside the feed**
+  - What: a manual correction only fixes an error inside the agency's GTFS file, and Atlas adds no note carrying information that is only on the agency's website.
+  - Why: Ryan: "The GTFS is live. It is the truth."
+  - Source: Ryan, 2026-10-27 (Linear CIV-1060, the FXBGO! note)
 - **Narrow fixes, and stop after two rule attempts**
   - What: write pass criteria first, count every change outside the target, hand-check all day types, then stop and report after two rule attempts.
   - Why: broad fixes built from one case regressed other agencies (#263, 32 routes in 18 cities).
@@ -276,7 +280,7 @@ Implementation choices, confirmed by Ryan on 2026-11-01:
 Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, recommendations 1, 2 and 4 of the run-shape study. A row's headline is replaced by the wait a rider arriving at random faces on the main stretch (CIV-1161: the time-weighted median gap, in the headline's own window: midday, then PM peak, then all day) only when that wait is 10+ minutes longer than the headline, and only when the direction runs through that window at every boarding stop with a reading, by the settled verdicts.
 - Midday: the midpoint and hole test (FREQUENCY_RULES rule 5) and the #899 midday test (rule 7).
 - PM peak: the midpoint and hole test.
-- All day: the direction is not limited (rule 7).
+- All day (the internal 07:00-22:00 window, not a map option): the direction is not limited (rule 7).
 
 Why: a peak route's last morning and first afternoon trips reaching into midday are not a five-hour wait. Examples are TTC 945 (every 10 to 9:28, then 14:40) and CAT Harrisburg 14 (five trips a day).
 - A blocked row keeps its headline and tier. It is marked as having no regular cadence in the headline's window, so no fallback prints the headline as "every N". Route cards already read "Runs irregularly in this period" there (wording from CIV-1238).

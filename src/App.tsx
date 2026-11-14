@@ -35,12 +35,13 @@ import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/hist
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
 import { type HistoryView } from './utils/historyYearMap';
 import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
+import { openingDay, saveDayPref } from './utils/openingDay';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
 import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
-import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+import { type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
@@ -54,7 +55,8 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import { loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL } from './content/noticeCopy';
+import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
+import { HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -102,6 +104,8 @@ export interface Agency {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  /** CIV-1060: why a hidden agency shows nothing; the agency card shows hiddenAgencyNoteFor(hiddenReason). */
+  hiddenReason?: HiddenAgencyReason;
   feedReviewStatus?: 'review' | 'verified';
   feedQuality?: FeedQuality;
   fare?: number;
@@ -403,15 +407,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [intervalSelectionActive, setIntervalSelectionActive] = useState(false);
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
-    try {
-      const fromLink = readUrlParam(currentSearch(), MAP_URL.day);
-      if (fromLink != null) return fromLink;
-    } catch {}
-    try {
-      const s = localStorage.getItem('atlas_pref_day');
-      if (s && (DAY_TYPES as readonly string[]).includes(s)) return s as DayType;
-    } catch {}
-    return getNowDay();
+    let fromLink: DayType | undefined;
+    try { fromLink = readUrlParam(currentSearch(), MAP_URL.day); } catch {}
+    return openingDay(fromLink);
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
@@ -430,7 +428,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
-  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
+  // CIV-1433: with the day picker on, a day the viewer picks in History is saved as their day, as the map saves it.
+  const setHistoryViewSavingDay = useCallback((next: HistoryView) => {
+    if (FEATURES.historyDayPicker && next.day !== historyView.day) saveDayPref(next.day);
+    setHistoryView(next);
+  }, [historyView.day]);
+  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryViewSavingDay }), [historyView, setHistoryViewSavingDay]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
   const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);
@@ -523,8 +526,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     userMovedMap,
   });
   const searchPlaceholder = inFrequency
-    ? 'Search routes'
-    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : 'Find an agency…')
+    ? SEARCH_ROUTES_PLACEHOLDER
+    : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
     : inNight ? 'Search agencies or routes…'
     : 'Search vehicles…';
 
@@ -749,7 +752,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
-            ariaLabel={inHistory ? 'Back to frequency map' : 'Historical service'}
+            ariaLabel={inHistory ? HISTORY_BUTTON_ACTIVE_LABEL : HISTORY_BUTTON_LABEL}
             active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
             onWarm={preloadHistory}

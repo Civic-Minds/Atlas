@@ -20,6 +20,7 @@ import type { AreaPageData } from '../shared/areaPages';
 import RegionPage from './RegionPage';
 import type { RegionPageData } from '../shared/regionPages';
 import AgenciesIndexPage from './AgenciesIndexPage';
+import { agencyNames } from './utils/agencyName';
 import type { AgencyIndexData } from '../shared/agencyIndex';
 import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, regionPagePath } from '../shared/pagePaths';
 
@@ -38,6 +39,11 @@ export const BUILD_FLAGS: SeoFlags = seoFlags();
 
 /** The Live report pages are in this build (their link-preview pages are written by scripts/prerender-routes.ts). */
 export const BUILD_LIVE_REPORTS = FEATURES.liveReports;
+
+/** A Live link preview's agency name: the short name the Live pages use (useLiveAgencyName), or the address as written. */
+export function liveAgencyShortName(agency: { name: string; cities?: string[]; displayArea?: string } | undefined, slug: string): string {
+  return agency ? agencyNames(agency).name : slug;
+}
 
 export function renderPage(path: string): string {
   const page = PAGES[path];

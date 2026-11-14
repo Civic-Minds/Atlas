@@ -62,7 +62,7 @@ Atlas uses sustained service thresholds to assign frequency tiers. It tests the 
 - **≤60 minutes**
 - **Infrequent:** worse than 60 minutes or no finite tier qualifies
 
-These thresholds determine the colors and line weights shown on the map. Median headways remain useful as route and stop-level display metrics, but a median alone does not determine the tier.
+The same thresholds colour the map, applied to the chosen period's value; the tier itself reaches the screen only as "Infrequent" or "limited" ([FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md)). Median headways remain useful as route and stop-level display metrics, but a median alone does not determine the tier.
 
 ### 7. Separating coverage from irregularity
 

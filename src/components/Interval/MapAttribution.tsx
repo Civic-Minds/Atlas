@@ -65,7 +65,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
                 aria-haspopup="dialog"
                 className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl text-left flex items-center justify-between gap-4 hover:text-[var(--text-primary)]`}
               >
-                <span>What's new</span>
+                <span>What’s new</span>
                 <span className="text-[var(--text-muted)]">v{shortVersion(appVersion)}</span>
               </button>
             )}
@@ -93,7 +93,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
           aria-haspopup="dialog"
           className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
         >
-          v{shortVersion(appVersion)} · What's new
+          v{shortVersion(appVersion)} · What’s new
         </button>
       )}
       <a

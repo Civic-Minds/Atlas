@@ -78,6 +78,8 @@ jobs:
           fi
         env:
           ALLOW_INPUT: ${{ inputs.allow }}
+          # CIV-1425/CIV-1431: MBTA's History sidecars also store Saturday/Sunday per-period and shared-stretch values.
+          ATLAS_HISTORY_WEEKEND_PERIODS: mbta
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}

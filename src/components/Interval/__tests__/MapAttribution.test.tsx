@@ -27,14 +27,14 @@ describe('MapAttribution', () => {
     expect(feedback.getAttribute('href')).toContain(encodeURIComponent('Feedback:\n\n\nPage:'));
   });
 
-  it('folds About, What\'s new and Feedback into one About card on phones', () => {
+  it('folds About, What’s new and Feedback into one About card on phones', () => {
     render(<MapAttribution whatsNewEnabled />);
     const about = screen.getByRole('button', { name: 'About' });
     expect(screen.getAllByRole('link', { name: 'About Atlas' })).toHaveLength(1);
     fireEvent.click(about);
     expect(screen.getAllByRole('link', { name: 'About Atlas' })).toHaveLength(2);
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(2);
-    expect(screen.getByText("What's new")).toBeInTheDocument();
+    expect(screen.getByText("What’s new")).toBeInTheDocument();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(1);
     fireEvent.click(about);

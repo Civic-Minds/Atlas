@@ -50,7 +50,8 @@ const cityCollege = {
 
 // A part-period value is drawn in two parts that may wrap after the comma (#1128); match the whole badge. A row whose
 // value is long also wraps (CIV-1143), so the row itself (justify-between) is left out.
-const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el?.classList.contains('flex-wrap') && !el.classList.contains('justify-between') && re.test(el.textContent ?? '');
+// The value's badge: two parts on two right-aligned lines in the value column (CIV-1465, the CIV-1300 list rule).
+const partPeriodBadge = (re: RegExp) => (_: string, el: Element | null) => !!el && ((el.classList.contains('flex-wrap') && !el.classList.contains('justify-between')) || (el.classList.contains('flex-col') && el.classList.contains('items-end'))) && re.test(el.textContent ?? '');
 
 describe('route card rows when the route has no regular cadence (#954)', () => {
   it("shows a row's own direction value; a row without one still reads Irregular", () => {
