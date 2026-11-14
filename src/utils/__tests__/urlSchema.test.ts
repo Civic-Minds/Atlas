@@ -14,9 +14,8 @@ import { mergeUrlSearchParams } from '../syncUrlParams';
 import { parseHistoryView, encodeHistoryView } from '../historyViewUrl';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_KEYS } from '../../../shared/config';
-import { BANDS } from '../../components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
 import { MEASURES } from '../../components/Live/routeMapModel';
-import { SEGMENT_BAND_OPTIONS } from '../segmentDelayView';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Table = Record<string, UrlParam<any>>;
@@ -141,8 +140,8 @@ describe('older names and odd values still read', () => {
 
 describe('the schema matches the controls', () => {
   it('Live band, measure and route-performance band lists', () => {
-    expect(LIVE_BAND_IDS).toEqual(BANDS.map(([id]) => id));
-    expect(LIVE_BAND_IDS).toEqual(SEGMENT_BAND_OPTIONS.map(o => o.id));
+    // No All day anywhere (CIV-1097, CIV-1451): links carry the periods the Live map's menu offers.
+    expect(LIVE_BAND_IDS).toEqual(PERIOD_BANDS_ONLY.map(([id]) => id));
     expect(LIVE_MEASURE_IDS).toEqual(MEASURES.map(([id]) => id));
   });
 });

@@ -55,8 +55,8 @@ const direction: UrlParam<number> = {
   serialize: value => String(value),
 };
 
-/** Live's time bands: all day and the four daytime periods (late night and overnight have too few trips). */
-export const LIVE_BAND_IDS: readonly DashboardBand[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+/** Live's time bands in links: the four daytime periods (late night and overnight have too few trips). No All day (CIV-1097, CIV-1451). */
+export const LIVE_BAND_IDS: readonly DashboardBand[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
 export const LIVE_MEASURE_IDS: readonly MapMeasure[] = ['late', 'runTime', 'extraWait', 'bunching'];
 export const LIVE_SORT_IDS = ['late', 'runTime', 'bunching', 'delivered'] as const;
 export type LiveSort = typeof LIVE_SORT_IDS[number];
@@ -182,7 +182,7 @@ export const LIVE_ROUTE_URL = {
   day: oneOf<'all' | 'weekday' | 'weekend'>('day', ['weekday', 'weekend'], 'all'),
   /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
    * opens on the agency's current period, as the map does. The Live map shares it. */
-  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS.filter(b => b !== 'all'), null),
+  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS, null),
 } as const;
 
 /** The Live tool page: its route, direction, band, measure and the picked stop or stretch. */
