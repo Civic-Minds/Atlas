@@ -1,3 +1,4 @@
+import { agencyInSentence } from './agencyArticle';
 import { dateRangeText } from './liveDashboard';
 import { clockTime } from './timeText';
 
@@ -58,15 +59,18 @@ export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.
 /** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */
 export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRangeText(from, to)}`;
 
-/** The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC". */
-export const estimatedNote = (agency: string): string => `estimated from vehicle positions, not reported by the ${agency.toUpperCase()}`;
+/**
+ * The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC" ("by MiWay": the agency's
+ * short name, with "the" only where the CIV-1103 rule gives it, #1474 / CIV-1474).
+ */
+export const estimatedNote = (agencyName: string): string => `estimated from vehicle positions, not reported by ${agencyInSentence(agencyName)}`;
 
 /**
  * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC routes ·
  * estimated from vehicle positions, not reported by the TTC · data up to Oct 14". `middle` is the page's own count (routes or trips);
  * "compared with" only when the two weeks can be compared.
  */
-export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; agency: string; /** The newest day in the figures (YYYY-MM-DD): ends the line as "data up to Oct 14". */ upTo?: string | null }): string {
+export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; /** The agency's short name ("TTC", "MiWay"). */ agency: string; /** The newest day in the figures (YYYY-MM-DD): ends the line as "data up to Oct 14". */ upTo?: string | null }): string {
   const t = o.thisWeek, l = o.lastWeek;
   const week = t.length ? weekOfText(t[0], t[t.length - 1]) + (l?.length ? `, ${changesComparedWith(l[0], l[l.length - 1])}` : '') : '';
   return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRangeText(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');

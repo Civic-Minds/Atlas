@@ -200,7 +200,7 @@ export default function LiveAgencyPage() {
           <div className="min-w-0">
             <PageTitle>{name}</PageTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency })}
+              {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency: name })}
             </p>
           </div>
           {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}

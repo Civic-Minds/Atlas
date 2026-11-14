@@ -75,13 +75,14 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 }
 
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
-export function routeSubtitle(v3: LiveV3, agency: string): string {
+/** `agencyName` is the agency's short name ("TTC", "MiWay"). */
+export function routeSubtitle(v3: LiveV3, agencyName: string): string {
   const w = v3.weekly;
   // CIV-1445: "Week of" and its trip count cover this week only, the trips the Late tile counts. A file with no weekly
   // figures still names its whole window.
   const thisWeek = w?.thisWeek.dates.length ? w.thisWeek.dates : v3.window.dates;
   const trips = w?.thisWeek.late ? w.thisWeek.late.n : goodDayCounts(v3).runs;
-  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**
@@ -90,7 +91,7 @@ export function routeSubtitle(v3: LiveV3, agency: string): string {
  */
 export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
   const f = freshness(v3, route, Date.now());
-  const line = routeSubtitle(v3, agency);
+  const line = routeSubtitle(v3, useLiveAgencyName(agency));
   const at = line.lastIndexOf(' · data up to ');
   if (!f.stale) return <>{line}</>;
   const stale = 'font-bold text-[var(--status-caution-text)]';
