@@ -59,6 +59,35 @@
           "url": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
           "retrievedAt": "2026-11-14"
         }
+      },
+      "Greater Moncton Airport": {
+        "serviceName": "Dieppe On-Demand Transit",
+        "serviceHours": "Monday to Saturday 6 a.m. to 10:30 p.m.; Sunday 9 a.m. to 6:30 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 9,
+              "endHour": 18.5
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+          "retrievedAt": "2026-11-14"
+        },
+        "hoursNote": "Pickup and drop-off at the airport's designated stop (3020, Aéroport)."
       }
     }
   },
@@ -702,6 +731,46 @@
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+        "sourceLabel": "City of Dieppe on-demand service zone GeoJSON (agency-supplied)",
+        "sourceRetrievedAt": "2026-10-16",
+        "areaName": "Greater Moncton Airport"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -64.683711,
+                46.116633
+              ],
+              [
+                -64.6893,
+                46.1194
+              ],
+              [
+                -64.6938,
+                46.1172
+              ],
+              [
+                -64.6897,
+                46.1125
+              ],
+              [
+                -64.683711,
+                46.116633
+              ]
+            ]
+          ]
+        ]
+      }
     }
   ],
   "stopFeatures": [
@@ -842,5 +911,5 @@
       }
     }
   ],
-  "notes": "Zone and transfer points from 'Dieppe On-Demand Transit Service Zone.geojson' and 'Dieppe On-Demand Transit Transfer Points.geojson', sent by the City of Dieppe (Urban Mobility) to Atlas Outreach on 2026-10-16: the revised boundary in effect since Aug 23, 2026. Geometry used exactly as given (WGS84 in the file). The zone is the file's zone 1 (TAD 1.1 and TAD 1.2), drawn as one MultiPolygon; it matches the turquoise zone on the City's map. Left out: the 8 small zone-2 shapes (TAD 2.1 to 2.8), each drawn around one of the 8 transfer points, which are drawn as points instead; and 'Zone_3_Airport' (designated stop 3020, 'Aeroport'), a 0.3 km2 box at YQM that the City's pages and map do not mention, so it is not drawn (ask the City if needed). The 8 transfer points match the list on the City's page (2 main, 6 secondary). Hours from the City's page and FAQ; no holiday hours are stated. The service is free and open to everyone (children 11 and under ride with someone 12 or older). Pickup is at a stop the app assigns, usually under 500 m away (FAQ); no pickup method is set because the pickup line would count the transfer points as those stops. Booking: Blaise Transit app, ride.blaisetransit.com or 506-877-7818. Run by the City of Dieppe, not Codiac Transpo, so it is its own on-demand-only agency (the 'dieppe' slug is Dieppe, France)."
+  "notes": "Zone and transfer points from 'Dieppe On-Demand Transit Service Zone.geojson' and 'Dieppe On-Demand Transit Transfer Points.geojson', sent by the City of Dieppe (Urban Mobility) to Atlas Outreach on 2026-10-16: the revised boundary in effect since Aug 23, 2026. Geometry used exactly as given (WGS84 in the file). The zone is the file's zone 1 (TAD 1.1 and TAD 1.2), drawn as one MultiPolygon; it matches the turquoise zone on the City's map. Left out: the 8 small zone-2 shapes (TAD 2.1 to 2.8), each drawn around one of the 8 transfer points, which are drawn as points instead; 'Zone_3_Airport' (designated stop 3020, 'Aeroport'), a 0.3 km2 box at YQM, was left out at first and added in CIV-1572 (2026-11-14), geometry as given, once the Greater Moncton airport's own page (cyqm.ca/to-from/transportation) confirmed Dieppe on-demand serves the airport. The 8 transfer points match the list on the City's page (2 main, 6 secondary). Hours from the City's page and FAQ; no holiday hours are stated. The service is free and open to everyone (children 11 and under ride with someone 12 or older). Pickup is at a stop the app assigns, usually under 500 m away (FAQ); no pickup method is set because the pickup line would count the transfer points as those stops. Booking: Blaise Transit app, ride.blaisetransit.com or 506-877-7818. Run by the City of Dieppe, not Codiac Transpo, so it is its own on-demand-only agency (the 'dieppe' slug is Dieppe, France)."
 }
