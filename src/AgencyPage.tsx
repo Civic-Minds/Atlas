@@ -23,6 +23,7 @@ import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
+import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
@@ -49,12 +50,13 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
-function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string }>; others: number; counted: readonly [string, string] }) {
+function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string; before?: string }>; others: number; counted: readonly [string, string] }) {
   return (
     <>
       {items.map((p, i) => (
         <span key={p.name}>
           {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {p.before}
           {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
         </span>
       ))}
@@ -92,7 +94,7 @@ function Intro({ data }: { data: AgencyPageData }) {
       {at >= 0 && named.length > 0 && (
         <>
           {CONNECTS_WITH}
-          <LinkedNames items={named.map(c => ({ name: c.name, href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
+          <LinkedNames items={named.map(c => ({ name: c.name, before: agencyArticle(c.name), href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
         </>
       )}
       .{noMidday}

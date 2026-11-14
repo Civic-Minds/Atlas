@@ -1,6 +1,7 @@
 {
   "slug": "smat",
-  "officialName": "Santa Maria Area Transit",
+  "officialName": "Santa Maria Regional Transit",
+  "commonName": "SMRT",
   "websiteUrl": "https://smrt.tripshot.com/",
   "center": [
     34.95,

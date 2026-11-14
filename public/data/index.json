@@ -12914,8 +12914,9 @@
     },
     {
       "slug": "smat",
-      "name": "Santa Maria Area Transit",
-      "officialName": "Santa Maria Area Transit",
+      "name": "Santa Maria Regional Transit (SMRT)",
+      "officialName": "Santa Maria Regional Transit",
+      "commonName": "SMRT",
       "websiteUrl": "https://smrt.tripshot.com/",
       "center": [
         34.95,
@@ -28180,9 +28181,9 @@
     },
     {
       "slug": "ccta",
-      "name": "CCTA / Green Mountain Transit (Burlington, VT)",
-      "officialName": "CCTA / Green Mountain Transit",
-      "nameQualifier": "Burlington, VT",
+      "name": "Green Mountain Transit (GMT)",
+      "officialName": "Green Mountain Transit",
+      "commonName": "GMT",
       "websiteUrl": "https://www.ridegmt.com/",
       "center": [
         44.48,

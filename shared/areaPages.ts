@@ -26,6 +26,7 @@ import { countOf } from './overflowText';
 import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
+import { agencyInSentence } from './agencyArticle';
 
 export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
@@ -286,7 +287,7 @@ export function areaIntroName(_d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgency
 export function areaAboutParagraph(d: AreaPageData): string {
   const parts = areaIntroParts(d);
   const j = areaIntroJoiners(parts);
-  return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
+  return `${parts.lead}${j.opener}${parts.named.map((a, i) => agencyInSentence(areaIntroName(d, a)) + j.separators[i]).join('')}${j.tail}`;
 }
 
 /** The line under an area page's frequency bar. */
