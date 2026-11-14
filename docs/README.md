@@ -69,6 +69,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Adding agencies](data/ADDIN
 | [Agency config](../config/agencies/README.md) | Open when you edit an agency config file or a `modeOverrides` entry. |
 | [Agencies](data/AGENCIES.md) | Open when you need the static list of which agencies Atlas covers. |
 | [History coverage](data/DATA_HISTORY.md) | Open when you work on History, check why an agency is or is not eligible, or need the archive policy for past schedule periods. |
+| [History archive validation evidence](data/history-archive-validation.json) | Supporting source hashes, service dates, local processor results and current-route comparisons for the November 2026 History archive research. |
 | [Agency backlog](data/AGENCY_BACKLOG.md) | Open when you pick the next agencies to add or check what was already batched. |
 | [Feed status snapshot](operations/GTFS_FEED_STATUS.md) | Open only for the 2026-08-10 refresh results; it is a historical snapshot. |
 | [Places data](../shared/data/README.md) | Open when you change or rely on `na-places.json`. |
