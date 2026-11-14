@@ -33,6 +33,7 @@ import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
+import { identitySplitApplies, isPeriodExcluded, type HistoryIdentityKeys, type HistoryPeriodExcludes } from './historyRouteConfig.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 
@@ -382,8 +383,11 @@ async function main() {
     ? configuredConcurrency
     : 4;
   console.log(`Downloading ${tasks.length} history snapshot files in parallel (concurrency ${concurrency})...`);
+  // CIV-1481: a route key left out of one archived period (another agency's route in an old feed).
+  const periodExcludes = JSON.parse(readFileSync(resolve('config/history-period-excludes.json'), 'utf8')) as HistoryPeriodExcludes;
   for (const read of await runWithConcurrency(tasks, concurrency)) {
     if (!read) continue;
+    if (read.kind === 'change' && isPeriodExcluded(periodExcludes, read.slug, read.change.periodKey, read.routeShortName)) continue;
     if (read.kind === 'failed') recordFailure(read.key);
     else if (read.kind === 'refresh-run') refreshRunSkipped++;
     else if (read.kind === 'coverage') coverageBySlug[read.slug] = read.coverage;
@@ -437,6 +441,7 @@ async function main() {
     if (repicked) repickedPeriods.push(repicked);
     for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
     for (const [routeKey, rec] of Object.entries(sc.routes)) {
+      if (isPeriodExcluded(periodExcludes, slug, periodKey, routeKey)) continue;
       ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
     }
   }
@@ -541,10 +546,14 @@ async function main() {
   // CIV-422: a reused route number becomes separate routes, by long name and how much of the line ran before.
   // Off unless ATLAS_HISTORY_ROUTE_IDENTITY=1; an earlier route is published as "<number> (<years>)".
   const splitOrigin: Record<string, Record<string, string>> = {};
-  if (v2 && process.env.ATLAS_HISTORY_ROUTE_IDENTITY === '1') {
+  // CIV-1481: keys listed in config/history-route-identity.json get the same split while the flag is off.
+  const identityFlag = process.env.ATLAS_HISTORY_ROUTE_IDENTITY === '1';
+  const identityKeys = JSON.parse(readFileSync(resolve('config/history-route-identity.json'), 'utf8')) as HistoryIdentityKeys;
+  if (v2 && (identityFlag || Object.keys(identityKeys).length > 0)) {
     let splitCount = 0;
     for (const [slug, routes] of Object.entries(sidecarRoutes)) {
       for (const [key, entries] of Object.entries({ ...routes })) {
+        if (!identitySplitApplies(identityFlag, identityKeys, slug, key)) continue;
         const { segments, splits } = splitRouteHistory(entries.map(e => ({
           periodKey: e.periodKey,
           sortKey: e.v2.refDate,
