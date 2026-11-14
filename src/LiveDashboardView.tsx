@@ -177,6 +177,8 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
         </div>
       )}
+      {/* One key for every direction shown, above the strips as in the Full analysis, as the map's route card shows its key once (CIV-1448). */}
+      <StripsLegend v3={v3} directionIds={dirs.map(d => d.directionId)} band="all" uncertain={uncertain} />
       {dirs.length ? (
         <div className="mt-4 grid gap-x-8 gap-y-10">
           {dirs.map(d => {
@@ -191,8 +193,6 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
           })}
         </div>
       ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOPS_MEASURED}</p>}
-      {/* One key for every direction shown, as the map's route card shows its key once (CIV-1448). */}
-      <StripsLegend v3={v3} directionIds={dirs.map(d => d.directionId)} band="all" uncertain={uncertain} />
     </Section>
   );
 }

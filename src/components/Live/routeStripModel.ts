@@ -5,7 +5,7 @@
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { pct, tenth } from '../../../shared/liveFormat';
+import { pct, signedMinutes, tenth } from '../../../shared/liveFormat';
 import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -121,10 +121,10 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
 }
 
 export { pct };
-/** "+3.1 min late", "−2 min early", "on time". */
+/** "+3.1 min late", "−2.0 min early", "on time": signedMinutes, so a column of them reads at one precision (CIV-1448). */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
-  return min > 0 ? `+${tenth(min)} min late` : `${tenth(min)} min early`;
+  return `${signedMinutes(min)} ${min > 0 ? 'late' : 'early'}`;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
