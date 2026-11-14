@@ -60,13 +60,33 @@ Winnipeg's 2011 source has real weekday service, but the existing processor prod
 
 Comparable current checks use the same `representativeRep` helper over weekday `routeAllDayHeadway` stamps, rather than pattern minima. Examples: Pittsburgh **1 Freeport Road**, 50 minutes on 2012-11-21 versus 35 in the current artifact; SEPTA **4 Broad-Pattison to Fern Rock TC**, 17 minutes on 2015-09-16 versus 30 current; Winnipeg **74 Kenaston–Keewatin**, 20 minutes on 2025-09-10 versus 14 current. These demonstrate numerical differences for matching keys and names, not independently verified continuity of every route alignment. Winnipeg comparisons with current service deliberately use only post-redesign snapshots. Exact dates, source artifacts and additional examples are in the evidence JSON.
 
+### Ten-city North American archive goal — 2026-11-14
+
+Ten systems now have public GTFS archives and local History v2 output for at least ten usable service years. A year counts here when a downloaded GTFS source produces at least **10 finite positive weekday route values** in a sidecar, and its `refDate` is in that year. Repeated periods in one year count once. This is a conservative research filter, not a change to History membership rules.
+
+| City / area | Agency | Usable years | Lowest qualifying route count | Source archive |
+| --- | --- | --- | ---: | --- |
+| Pittsburgh, Pennsylvania | Pittsburgh Regional Transit | 15: 2012–2026 | 73 | [WPRDC](https://data.wprdc.org/en/dataset/gtfs-archive) |
+| Philadelphia, Pennsylvania | SEPTA bus network | 12: 2015–2026 | 129 | [SEPTA releases](https://github.com/septadev/GTFS/releases) |
+| Winnipeg, Manitoba | Winnipeg Transit | 14: 2012–2025 | 52 | [WT Live archive](https://wtlivewpg.com/Pages/gtfs/) |
+| Portland, Oregon | TriMet | 10: 2013–2022 | 66 | [Mobility Database archive](https://mobilitydatabase.org/feeds/gtfs/mdb-247) |
+| Santa Monica, California | Big Blue Bus | 10: 2012–2020, 2026 | 14 | [City archive](https://github.com/CityofSantaMonica/GTFS) |
+| Rochester, New York | Rochester Regional Transit Service | 10: 2016–2025 | 28 | [RTS archive](https://scheduledata.rgrta.com/Archive/) |
+| Daytona Beach / Volusia County, Florida | Votran | 11: 2015, 2017–2026 | 18 | [FTIS](https://www.ftis.org/Posts.aspx) |
+| Tampa, Florida | Hillsborough Area Regional Transit (HART) | 10: 2014, 2017–2019, 2021–2026 | 29 | [FTIS](https://www.ftis.org/Posts.aspx) |
+| Orlando, Florida | LYNX | 10: 2015, 2018–2026 | 55 | [FTIS](https://www.ftis.org/Posts.aspx) |
+| Broward County, Florida | Broward County Transit | 10: 2016, 2018–2026 | 34 | [FTIS](https://www.ftis.org/Posts.aspx) |
+
+The per-year direct URLs, ZIP hashes, GTFS service checks, sidecar dates and numeric route counts are in the [supporting evidence](history-archive-validation.json). The local membership list was checked: none of these ten systems is currently in History. Rochester needs a new agency slug/config because `rts` already identifies Gainesville. HART's older single-agency feeds omit `agency_id`, so their local run disabled the current `agencyId=1` filter; its 2020 reference year had only two numeric routes and is excluded. Broward needed a separate December 2020 archive to add a distinct 2020 reference year. Collier Area Transit did not qualify: only two years reached the route-value floor. The FTIS page does not state a data license for HART, LYNX, Broward or Votran.
+
+This is research eligibility, not approval to publish. SEPTA's bus and rail outputs remain separate, Rochester has many blank route values, and Winnipeg route identities cross a 2025 redesign. Review route continuity, coverage and licenses before adding any system to History; no membership or public data changed in this work.
+
 ### Further source leads
 
-These extend the pool beyond the first three agencies. Partial ZIP reads verified original calendar members and their CRC32/SHA256 values for TriMet and King County; the full ZIPs were **not** downloaded or hashed, trip references were not checked, and no route history was processed for these leads.
+The ten-city pool above is locally validated. These are additional leads, outside that goal, which still need full source and route-output checks.
 
 | Agency | Evidence | Next check |
 | --- | --- | --- |
-| **TriMet** (`trimet`) | [MDB `mdb-247`](https://mobilitydatabase.org/feeds/gtfs/mdb-247): a calendar member checked for **each year 2013–2026** (14). | Download annual ZIPs, prove active trip-referenced service in the target year, then process locally. |
 | **King County Metro** (`kingcountymetro`) | [MDB `mdb-267`](https://mobilitydatabase.org/feeds/gtfs/mdb-267): a calendar member checked for **each year 2013–2026** (14). | Check trip references, especially the 2013 January 1 exception preceding the regular October start; then validate full annual feeds and process locally. |
 | **Sound Transit** (`soundtransit`) | Metadata identifies **12 service-start years:** 2013–2021 and 2024–2026, across [legacy `tfs-44`](https://mobilitydatabase.org/feeds/gtfs/tfs-44) and [official `mdb-268`](https://mobilitydatabase.org/feeds/gtfs/mdb-268). 2022 and 2023 remain gaps. | Verify actual calendars and the legacy community-modified feed's provenance before combining sources. |
 | **Capital Metro, San Diego MTS, DART Dallas** | [Austin `mdb-150`](https://mobilitydatabase.org/feeds/gtfs/mdb-150), [San Diego `mdb-13`](https://mobilitydatabase.org/feeds/gtfs/mdb-13), [Dallas `mdb-152`](https://mobilitydatabase.org/feeds/gtfs/mdb-152): download labels in each year 2013–2026. | Actual service-year calendars remain unverified; these are weaker leads, not fourteen-year claims. |
@@ -74,11 +94,11 @@ These extend the pool beyond the first three agencies. Partial ZIP reads verifie
 ### Research follow-ups
 
 1. Process the recovered missing-year Brampton and Kingston sources; each needs one additional real numerical snapshot year to reach ten.
-2. Download full annual TriMet and King County feeds, verify trip references, and run local processing; calendar-member checks alone are not route-history validation.
+2. Find an additional King County Metro year with a valid reference date; 2014–2022 currently yield nine usable years because the 2013 output is blank.
 3. Separate Winnipeg route identities across the 2025 redesign, and investigate 2011 blank outputs only as a bounded follow-up. Do not invent aliases or count the rejected periods.
 4. Validate SEPTA's combined main/regional-rail build and choose additional within-year periods for cuts/restorations; separately curate Pittsburgh periods and review route continuity and source licensing before proposing any upload.
 
-All processing and source downloads stayed local; no R2 writes, deployments, or membership changes were made. Preserve the archive policy: no invented years or copied route values. Linear was unavailable in this session; these follow-ups remain recorded here for queue capture when reconnected.
+All processing and source downloads stayed local; no R2 writes, deployments, or membership changes were made. Preserve the archive policy: no invented years or copied route values. Linear search was unavailable in this session, so no follow-up item could be checked or created.
 
 ---
 
