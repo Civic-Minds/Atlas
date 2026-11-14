@@ -39,18 +39,18 @@ const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 
 type CoverageRow = (typeof frequentServiceCoverageStats)[number];
 const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
-  // Same type as the agency and area tables: names in regular weight, figures in the plain body digits (no tabular-nums).
-  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-normal text-[var(--text-primary)]' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'text-[var(--text-muted)]' },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'text-[var(--text-muted)]' },
-  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
+  // Same classes as the agency and area tables (compact variant): regular-weight names, plain digits, default text colour.
+  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-normal' },
+  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute },
+  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute },
+  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min` },
 ];
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
-  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
-  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, width: 6.5 },
 ];
 
 /**
@@ -302,7 +302,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
             <div className="mt-8 overflow-x-auto">
               <DataTable
-                variant="ruled"
                 caption="Population within a ten-minute walk of frequent transit by headway threshold"
                 columns={COVERAGE_COLUMNS}
                 rows={frequentServiceCoverageStats}
