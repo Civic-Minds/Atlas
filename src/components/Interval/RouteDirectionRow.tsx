@@ -3,7 +3,7 @@ import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
 import { Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
-import { HeadwayBadge, LimitedBadge } from './cardUi';
+import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
@@ -94,7 +94,10 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const valueWords = limited ? limitedLabel : rangeText ?? (headway != null ? headwayLabel : undefined);
   const rowRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLSpanElement>(null);
-  const longValue = wrapLongValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
+  // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
+  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
+  const longValue = wrapLongValue && !twoLineValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
   // name is never cut. With a short value the value stays on the row's first line at the right and the name wraps onto a
   // second line beneath itself, as in the route lists.
@@ -151,7 +154,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           )}
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
               the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour

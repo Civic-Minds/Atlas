@@ -4,8 +4,16 @@ import RouteDirectionRow from '../RouteDirectionRow';
 
 // CIV-1143 (Ryan 2026-10-30): a long value goes under the whole destination name, at the right, as Compare's rows do (CIV-844).
 describe('RouteDirectionRow long values', () => {
-  it('puts a long value under the whole name instead of cutting the name', () => {
-    render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue headway={60} headwayLabel="every 60 min until 5:05 PM" />);
+  it('keeps a long two-part value in the value column on two right-aligned lines, the name beside it (CIV-1465, the CIV-1300 list rule)', () => {
+    const { container } = render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue headway={60} headwayLabel="every 60 min until 5:05 PM" />);
+    const name = screen.getByText('to Centrepointe');
+    expect(name.className).not.toContain('basis-full');
+    expect(name.className).not.toContain('truncate');
+    expect([...container.querySelectorAll('span.flex-col.items-end > span')].map(el => el.textContent)).toEqual(['every 60 min', 'until 5:05 PM']);
+  });
+
+  it('puts a long value with no two parts under the whole name instead of cutting the name (CIV-1143)', () => {
+    render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue limited limitedLabel="Runs irregularly in this period" />);
     const name = screen.getByText('to Centrepointe');
     expect(name.className).toContain('basis-full');
     expect(name.className).not.toContain('truncate');
