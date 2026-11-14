@@ -11,11 +11,15 @@ describe('RouteDirectionRow long values', () => {
     expect(name.className).not.toContain('truncate');
   });
 
-  it('keeps a plain value or a short range beside the name on one line', () => {
-    const { rerender } = render(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue headway={60} />);
-    expect(screen.getByText('to Centrepointe').className).toContain('truncate');
-    rerender(<RouteDirectionRow label="to Centrepointe" singleLine wrapLongValue headway={120} trunkHeadway={60} />);
-    expect(screen.getByText('to Centrepointe').className).toContain('truncate');
+  it('keeps a plain value or a short range on the first line at the right, the name wrapping beneath itself, never cut (CIV-1165)', () => {
+    const { rerender, container } = render(<RouteDirectionRow label="to Pearson Airport via Dixon Rd" singleLine wrapLongValue headway={16} />);
+    const name = () => screen.getByText('to Pearson Airport via Dixon Rd');
+    expect(name().className).not.toContain('truncate');
+    expect(name().className).not.toContain('basis-full');
+    expect(name().className).toContain('break-words');
+    expect(container.querySelector('div.flex-wrap')).toBeNull();
+    rerender(<RouteDirectionRow label="to Pearson Airport via Dixon Rd" singleLine wrapLongValue headway={120} trunkHeadway={60} />);
+    expect(name().className).not.toContain('truncate');
   });
 
   it('leaves rows that do not ask for it as they were', () => {
