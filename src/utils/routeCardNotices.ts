@@ -282,9 +282,10 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   }
   // #1226: every row giving its hours already says what the line says (CIV-1251 row 8: nothing below the rows).
   if (periodNotice?.code === 'N9' && rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
-  // CIV-1199: with no number on the rows, a row giving the line's hours says it all (with a number, the line stays: CTA X4 AM).
+  // CIV-1199 (audit proposal, approved): N9 drops entirely when a row already gives its hours (CTA 82 Sunday late); a row
+  // showing only a number keeps the line (CTA X4 AM: the number says how often, not when).
   const periodRun: [number, number] | null = periodRanges.length > 0 ? [periodRanges[0][0], periodRanges[periodRanges.length - 1][1]] : null;
-  if (periodNotice?.code === 'N9' && rowNumbers.length === 0 && rowsGiveSameHours(periodRun)) periodNotice = drop(periodNotice, 'a row gives the same hours');
+  if (periodNotice?.code === 'N9' && rowsGiveSameHours(periodRun)) periodNotice = drop(periodNotice, 'a row gives the same hours');
   if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
   if (filter?.code === 'N13' && rowsGiveSameHours(partPeriodRun)) filter = drop(filter, 'a row gives the same hours');
   // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").

@@ -309,14 +309,18 @@ describe('CIV-1199: each fact once (Ryan, 2026-11-14), on the audit\'s cards', (
     expect(plain(n.filter?.text)).toBe('This route runs every 33 min, only from 7–9 AM. It has no trips from 6–7 AM.');
   });
 
-  it('N9: keeps "runs only from" beside a row showing a frequency (CTA X4 AM)', () => {
+  it('N9: drops beside a row that gives its hours, number or not (CTA X4 AM: "every 13 min from 7:03 AM" says 7–9 AM)', () => {
     const x4 = { headsign: 'A', headwayByHour: { 7: 12, 8: 12 }, departuresByHour: { 7: 5, 8: 5 } } as any;
     const m = withRows([{ headway: 63, label: 'every 13 min from 7:03 AM' }, { headway: 12 }], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [x4] });
     const n = routeCardNotices({ ...base, directions: [x4], model: m, period: 'amPeak', maxHeadway: Infinity });
-    expect(plain(n.period?.text)).toBe('This route runs only from 7–9 AM.');
+    expect(n.period).toBeNull();
+    expect(n.dropped).toContainEqual({ code: 'N9', why: 'a row gives the same hours' });
+    // With no row giving hours, the line stays and never says "No frequency is shown" (#1226).
+    const kept = routeCardNotices({ ...base, directions: [x4], model: withRows([{ headway: 13 }, { headway: 12 }], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [x4] }), period: 'amPeak', maxHeadway: Infinity });
+    expect(plain(kept.period?.text)).toBe('This route runs only from 7–9 AM.');
   });
 
-  it('N9: with no number on the rows, drops where a row gives the same hours', () => {
+  it('N9: drops where a row gives the same hours', () => {
     const d = { headsign: 'A', departuresByHour: { 10: 3, 11: 3 } } as any;
     const partial = (rows: Parameters<typeof withRows>[0]) => withRows(rows, { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [d] });
     const same = routeCardNotices({ ...base, directions: [d], model: partial([{ headway: null, limited: true, label: 'from 10:04 AM' }, { headway: null, limited: true, label: 'until 11:50 AM' }, { headway: null, limited: true }]) });
