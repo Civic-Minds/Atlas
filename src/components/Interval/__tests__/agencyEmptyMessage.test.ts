@@ -11,6 +11,13 @@ describe('agencyEmptyMessage (CIV-1060)', () => {
     expect(agencyEmptyMessage({ ...base, hiddenNote: hiddenAgencyNoteFor('no-route-lines') })).toBeNull();
   });
 
+  it('adds no second message to a hidden agency on any empty path (filter on, loaded with no routes, no service today)', () => {
+    const hiddenNote = hiddenAgencyNoteFor('no-route-lines');
+    expect(agencyEmptyMessage({ ...base, hiddenNote, activeFilterLabel: 'Frequent' })).toBeNull();
+    expect(agencyEmptyMessage({ ...base, hiddenNote, loadFailed: false })).toBeNull();
+    expect(agencyEmptyMessage({ ...base, hiddenNote, loadFailed: false, noServiceToday: true })).toBeNull();
+  });
+
   it('keeps the load error for every other agency', () => {
     expect(agencyEmptyMessage({ ...base, hiddenNote: null })).toEqual({ text: AGENCY_ROUTES_FAILED, kind: 'error' });
   });

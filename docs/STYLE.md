@@ -44,7 +44,7 @@ Live
 Agencies
 
 - Agencies with an expired feed stay visible with the existing expired-feed notice. Switch to a newer feed if one exists; never hide the agency without Ryan's explicit yes.
-- Every hidden-agency note uses one pattern: "This agency’s [what] can’t be shown because its data [why]." Approved word for word: "This agency’s trips can’t be shown because its data doesn’t say which days they run." and "This agency’s route lines can’t be shown because its data doesn’t include them." A new [what] or [why] still needs Ryan's OK on its wording. CIV-1060.
+- Every hidden agency shows the same one note, word for word (Ryan, 2026-11-13): "Schedules for this agency aren’t available yet." Its card adds no second message (no "couldn’t load" error, no no-routes text). Changing the sentence needs Ryan's OK. CIV-1060.
 
 ## How Atlas talks
 

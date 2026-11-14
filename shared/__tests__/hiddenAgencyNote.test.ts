@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { buildAgencyCatalog } from '../agencyCatalog';
 import { CATALOG_MODES } from '../../scripts/agencyIndexGeneration';
-import { HIDDEN_AGENCY_REASONS, hiddenAgencyNote, hiddenAgencyNoteFor } from '../hiddenAgencyNote';
+import { HIDDEN_AGENCY_NOTE, HIDDEN_AGENCY_REASONS, hiddenAgencyNoteFor } from '../hiddenAgencyNote';
 
 const root = resolve(import.meta.dirname, '../..');
 const configDir = resolve(root, 'config/agencies');
@@ -12,26 +12,21 @@ const allConfigs = readdirSync(configDir)
   .filter(name => name.endsWith('.json') && name !== 'order.json')
   .map(name => readConfig(name.replace(/\.json$/, '')));
 
-// CIV-1060: Ryan's approved wording, word for word (2026-11-13).
-const APPROVED: Record<string, string> = {
-  hocts: 'This agency’s trips can’t be shown because its data doesn’t say which days they run.',
-  roswell: 'This agency’s route lines can’t be shown because its data doesn’t include them.',
-  'tangipahoa-parish': 'This agency’s route lines can’t be shown because its data doesn’t include them.',
-};
+// CIV-1060: Ryan's approved sentence, word for word (2026-11-13), the same for every hidden agency.
+const APPROVED_NOTE = 'Schedules for this agency aren’t available yet.';
+const HIDDEN_SLUGS = ['hocts', 'roswell', 'tangipahoa-parish'];
 
 describe('hidden-agency notes (CIV-1060)', () => {
-  it('builds every note from the one pattern', () => {
-    expect(hiddenAgencyNote('[what]', '[why]')).toBe('This agency’s [what] can’t be shown because its data [why].');
-    for (const { what, why } of Object.values(HIDDEN_AGENCY_REASONS)) {
-      expect(hiddenAgencyNote(what, why)).toMatch(/^This agency’s .+ can’t be shown because its data .+\.$/);
-    }
+  it('uses the one approved sentence for every reason', () => {
+    expect(HIDDEN_AGENCY_NOTE).toBe(APPROVED_NOTE);
+    for (const reason of HIDDEN_AGENCY_REASONS) expect(hiddenAgencyNoteFor(reason)).toBe(APPROVED_NOTE);
     expect(hiddenAgencyNoteFor(undefined)).toBeNull();
     expect(hiddenAgencyNoteFor('not-a-reason')).toBeNull();
   });
 
-  it('pins the three approved sentences', () => {
-    for (const [slug, sentence] of Object.entries(APPROVED)) {
-      expect(hiddenAgencyNoteFor(readConfig(slug).hiddenReason)).toBe(sentence);
+  it('pins the sentence on HOCTS, Roswell and Tangipahoa', () => {
+    for (const slug of HIDDEN_SLUGS) {
+      expect(hiddenAgencyNoteFor(readConfig(slug).hiddenReason), slug).toBe(APPROVED_NOTE);
     }
   });
 
@@ -53,7 +48,7 @@ describe('hidden-agency notes (CIV-1060)', () => {
     }
     // The three agencies show only in dev; their entries carry no engineering wording a card could show.
     const dev = buildAgencyCatalog(allConfigs, 'dev').agencies;
-    for (const slug of Object.keys(APPROVED)) {
+    for (const slug of HIDDEN_SLUGS) {
       const entry = dev.find(a => a.slug === slug);
       expect(entry, slug).toBeDefined();
       expect(entry!.overrideNote, slug).toBeUndefined();

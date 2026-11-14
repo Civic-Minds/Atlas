@@ -399,7 +399,8 @@ function RouteListSection({
 
 /**
  * The agency card's message when no route rows show. A hidden agency's note (CIV-1060) already says why nothing
- * shows, so its card leaves out the "couldn't load" error; every other agency keeps it.
+ * shows, so its card adds no second message: not the "couldn't load" error (with or without a filter on), and not the
+ * no-routes text. Every other agency keeps them.
  */
 export function agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, noServiceToday, day }: {
   activeFilterLabel: string | null | undefined;
@@ -408,8 +409,9 @@ export function agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, 
   noServiceToday: boolean;
   day: string;
 }): { text: string; kind?: 'error' } | null {
+  if (hiddenNote) return null;
   if (activeFilterLabel) return { text: noRoutesMatchText(activeFilterLabel), ...(loadFailed ? { kind: 'error' as const } : {}) };
-  if (loadFailed) return hiddenNote ? null : { text: AGENCY_ROUTES_FAILED, kind: 'error' };
+  if (loadFailed) return { text: AGENCY_ROUTES_FAILED, kind: 'error' };
   return { text: noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED };
 }
 
@@ -754,6 +756,12 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 </Pill>
               )}
             </ModeFilterPillRow>
+          )}
+          {/* CIV-1060: the hidden-agency note has no Learn more, so it shows even where the card has no info panel. */}
+          {hiddenNote && !onInfoOpen && (
+            <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              <CardHelpNotice message={hiddenNote} />
+            </div>
           )}
           {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice || hiddenNote) && onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
