@@ -1,6 +1,7 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, Search, Radio } from 'lucide-react';
+import { Search, Radio } from 'lucide-react';
+import SearchClearButton from './ui/SearchClearButton';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -20,7 +21,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -377,7 +378,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           </div>
 
           <div className="flex-1" />
-          <PanelCloseButton onClick={onClose} className="z-10" label="Close" />
+          <PanelCloseButton onClick={onClose} className="z-10" label={closeLabel(CLOSE_PLACES.aboutAtlas)} />
         </div>
 
         {/* Content View Container */}
@@ -444,11 +445,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     placeholder="Search agencies…"
                     className={SEARCH_FIELD}
                   />
-                  {query && (
-                    <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
+                  {query && <SearchClearButton variant="pill" onClear={() => setQuery('')} />}
                 </div>
                 <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {

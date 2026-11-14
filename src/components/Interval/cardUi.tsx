@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { Flag, Radio, X } from 'lucide-react';
+import { Flag, Radio } from 'lucide-react';
 import { fmtHeadway } from '../../utils/format';
 import { placeAlreadyInName } from '../../utils/agencyName';
 import { headwayToTierColor } from './HeadwaySparkline';
@@ -26,7 +26,8 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
-import { REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
+import { PanelCloseButton } from '../ui/PanelHeader';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -328,9 +329,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                 <h2 id={dialogTitleId} className={CARD_TITLE}>{REPORT_A_PROBLEM}</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
               </div>
-              <RoundIconButton onClick={reset} aria-label="Close report form">
-                <X className="w-3.5 h-3.5" />
-              </RoundIconButton>
+              <PanelCloseButton onClick={reset} label={closeLabel(CLOSE_PLACES.reportForm)} />
             </div>
 
             <div className="px-4 py-3 space-y-2">

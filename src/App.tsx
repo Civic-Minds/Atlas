@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
+import SearchClearButton from './components/ui/SearchClearButton';
 import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
@@ -717,24 +718,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <span className="hidden sm:inline">{searchPlaceholder}</span>
             </span>
           )}
-          {query !== '' && (
-            <button
-              type="button"
-              onPointerDown={event => {
-                event.preventDefault();
-                handleSearchClear();
-              }}
-              onClick={event => {
-                // Pointer activation is handled on pointerdown for immediate feedback.
-                // Keep click for keyboard activation, whose detail is zero.
-                if (event.detail === 0) handleSearchClear();
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
-              aria-label="Clear search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          {query !== '' && <SearchClearButton variant="bar" onClear={handleSearchClear} />}
         </div>
         </div>
         </div>

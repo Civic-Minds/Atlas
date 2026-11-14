@@ -21,7 +21,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
@@ -381,7 +381,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
               backLabel={backLinkLabel(BACK_PLACES.settings)}
               onClose={close}
-              closeLabel={isFilters ? 'Close filters' : 'Close settings'}
+              closeLabel={closeLabel(isFilters ? CLOSE_PLACES.filters : CLOSE_PLACES.settings)}
             />
 
             <div className="overflow-y-auto flex flex-col">

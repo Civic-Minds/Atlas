@@ -224,8 +224,26 @@ export const DEFAULT_EXPORT_TITLE = 'Transit map';
 export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
 // The button that tries a failed load again.
 export const RETRY_LABEL = 'Retry';
-// The link that closes a card that couldn't be shown.
-export const CLOSE_LABEL = 'Close';
+/**
+ * Every close (X) button's screen-reader name, in one place (CIV-1569), mirroring backLinkLabel: "Close " + the thing
+ * it closes ("Close filters", "Close chart", "Close About Atlas"). A common thing is lower case; a name keeps its case.
+ */
+export const CLOSE_PLACES = {
+  filters: 'filters',
+  settings: 'settings',
+  schedule: 'schedule',
+  chart: 'chart',
+  reportForm: 'report form',
+  exportDialog: 'export dialog',
+  whatsNew: 'what’s new',
+  privacySettings: 'privacy and analytics settings',
+  aboutAtlas: BACK_PLACES.aboutAtlas,
+} as const;
+export function closeLabel(place: string): string {
+  return `Close ${place}`;
+}
+/** The clear (X) button inside a search box, to screen readers. */
+export const CLEAR_SEARCH_LABEL = 'Clear search';
 // Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
 export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
 // Filter panel: the route settings shown outside the Frequency view.

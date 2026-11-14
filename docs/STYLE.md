@@ -32,7 +32,7 @@ Colour and shape
 - No dark fills. Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`). No solid near-black pills with white text.
 - Nothing has a shadow. Keep the flat look.
 - Sentence case for headings and labels ("Near you"). No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written, and an agency's short name is shown as the agency writes it ("MiWay", not "MIWAY"). CIV-1160, CIV-1448.
-- A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border. Every search box's clear X is `SearchClearButton` (`src/components/ui/SearchClearButton.tsx`); every close X on a panel, card or dialog is `PanelCloseButton` (`src/components/ui/PanelHeader.tsx`), each keeping its kind's look. CIV-1569.
 - Map overlays (the header row, footer pills, counts, map controls, notice and status pills, the analytics prompt) take their position from the "Map overlay slots" in `src/styles.ts`, never a hand-set `bottom-*`/`right-*`, and each carries `data-map-overlay`. After moving one, run `npm run check:overlays -- <dev server URL>`: it fails if any two overlap or one runs off the screen at 360, 640, 820, 1024 or 1440 wide. CIV-1011.
 
 Live
@@ -51,6 +51,7 @@ Agencies
 ## How Atlas talks
 
 - Every back control says "Back to " + the place it returns to, from one source (`src/content/backLinks.ts`): a text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies"); an arrow-only control or the logo says the same words to screen readers ("Back to About Atlas"). Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies"). CIV-1462.
+- Every close (X) button says "Close " + what it closes to screen readers, from `closeLabel` in `src/content/noticeCopy.ts` ("Close filters", "Close chart", "Close About Atlas"): common things lower case, names keep their case. The clear X in a search box says "Clear search". CIV-1569.
 
 Frequencies
 

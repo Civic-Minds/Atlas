@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   BACK_TO_MAP_LABEL,
-  CLOSE_LABEL,
   COMPARE_B_PICKER_NOTE,
   DEFAULT_EXPORT_TITLE,
   FREQUENCY_LABEL,
@@ -29,7 +28,6 @@ describe('CIV-1160 shared copy keeps the same words', () => {
     expect(DEFAULT_EXPORT_TITLE).toBe('Transit map');
     expect(PRIVACY_SETTINGS_TITLE).toBe('Privacy & analytics');
     expect(RETRY_LABEL).toBe('Retry');
-    expect(CLOSE_LABEL).toBe('Close');
     expect(capitalizeFirst(LIMITED_SERVICE_LABEL)).toBe('Limited');
     expect(`A ${LIMITED_SERVICE_LABEL}`).toBe('A limited');
   });

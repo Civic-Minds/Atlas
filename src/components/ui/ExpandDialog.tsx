@@ -1,8 +1,9 @@
 import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2 } from 'lucide-react';
 import { CARD_NOTE } from '../../styles';
 import RoundIconButton from './RoundIconButton';
+import { PanelCloseButton } from './PanelHeader';
 
 /**
  * The small icon that opens a chart's wide view, at the top right of the chart (the route card's hour chart, History's
@@ -64,9 +65,7 @@ export default function ExpandDialog({ title, note, ariaLabel, closeLabel, onClo
             <h2 className="text-base font-black text-[var(--text-primary)]">{title}</h2>
             {note && <p className={`mt-1 ${CARD_NOTE}`}>{note}</p>}
           </div>
-          <RoundIconButton onClick={onClose} aria-label={closeLabel}>
-            <X className="w-4 h-4" />
-          </RoundIconButton>
+          <PanelCloseButton onClick={onClose} label={closeLabel} size="dialog" />
         </div>
         {children}
       </div>
