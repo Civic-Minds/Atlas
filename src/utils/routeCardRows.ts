@@ -252,7 +252,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       .filter(d => d.tier !== 'infrequent' && d.tier !== 'span' && !/drop[- ]?offs?\s+only/i.test(d.headsign ?? ''))
       .map(d => d.headsign)
       .filter((headsign): headsign is string => !!headsign);
-    const shared: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
+    const sharedRow: CardSharedRow | null = groupHasCoreSummary && groupCoreHeadway != null
       ? {
         // CIV-1251: one name for the shared part of a route; how its number was worked out belongs in the glossary.
         label: SHARED_STRETCH_LABEL,
@@ -276,8 +276,18 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         const grade = rowNightGrade(d);
         return { ...base, night: { grade, partOfRoute: d.nightServicePartOfRoute === true }, display: rowDisplay(d) };
       }
-      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, shared != null) };
+      return { ...base, display: rowDisplay(d, group.pooledMain?.feature === d ? group.pooledMain.headway : undefined, sharedRow != null) };
     });
+    // CIV-995 Q2 (Ryan, 2026-11-13): now that a direction's main row reads every bus on its stretch, the Shared stretch row
+    // often repeats its number. It is left out when it shows exactly the same number as a main row of the group, and kept
+    // whenever they differ (or it words a late start or early end). Only on the card (stretchValues): the stop card's
+    // no-number words and the lists read the model as before.
+    const repeats = sharedRow != null && stretchValues && !sharedRow.edgeText && rows.some(row => {
+      if (row.feature.stretchRole !== 'main' || row.night) return false;
+      const v = row.display(null).value;
+      return !v.isLimited && !v.headwayLabel && v.headway === sharedRow.headway;
+    });
+    const shared = repeats ? null : sharedRow;
 
     const realHeadsignKeys = new Set(
       group.realTier.map(d => (d.headsign ?? '').trim().toLowerCase()).filter(Boolean),

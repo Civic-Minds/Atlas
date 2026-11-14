@@ -36,3 +36,24 @@ describe('one shared value per card group (#1232)', () => {
     expect(routeCardRowValue(d, { ...ctx, sharedRowShown: true }).trunkHeadway).toBeUndefined();
   });
 });
+
+describe('the Shared stretch row is left out when a main row shows its exact number (CIV-995 Q2)', () => {
+  // TTC 102 PM: the main rows read their stretch (CIV-995) once the data carries its rows and trip check.
+  const withStretch = (cadence: number) => directions.map(d => d.stretchRole === 'main' && d.stretchMeta?.main
+    ? { ...d, stretchRowPeriods: ['pmPeak'], stretchMeta: { ...d.stretchMeta, main: { ...d.stretchMeta.main, noRegular: [], rows: { cadence: { pmPeak: cadence }, longestGap: { pmPeak: cadence }, steady: ['pmPeak'], hourly: {} } } } }
+    : d) as ShapeProperties[];
+  const model = (dirs: ShapeProperties[], stretchValues?: boolean) => buildRouteCardModel({
+    directions: dirs, routeShortName: '102', routeLongName: 'Markham Rd', directionGroups: buildDirectionGroups({ directions: dirs }, 'pmPeak'),
+    agencyFeatures: undefined, period: 'pmPeak', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false, stretchValues,
+  });
+  it('same number: no Shared stretch row', () => {
+    const group = model(withStretch(7)).groups.find(g => g.rows.some(r => r.feature.stretchRole === 'main' && r.display(null).value.headway === 7))!;
+    expect(group.shared).toBeNull();
+  });
+  it('different numbers: the Shared stretch row stays', () => {
+    expect(model(withStretch(8)).groups.some(g => g.shared?.headway === 7)).toBe(true);
+  });
+  it('the stop card\'s and lists\' own-trips model keeps it', () => {
+    expect(model(withStretch(7), false).groups.some(g => g.shared?.headway === 7)).toBe(true);
+  });
+});
