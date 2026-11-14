@@ -1,6 +1,6 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { routeCardDisplayHeadway, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
+import { routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
 import { pairedTripSafeHeadway } from './pairedTripFloor';
@@ -16,6 +16,8 @@ export interface RowTrips {
   longestGap: number | null;
   /** #934 / D6 wording for a main stretch's late start, early end or one gap inside steady service. */
   partPeriod: string | undefined;
+  /** The number `partPeriod`'s words name ("every 31 min, …" -> 31), so a notice can name the same number (CIV-1199). */
+  partPeriodEvery?: number;
   /** The headsign runs under three times itself in the period: its value is other headsigns' (CTA 77 Belmont & Octavia). */
   noOwnService: boolean;
 }
@@ -102,7 +104,9 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
-  let partPeriod = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period) ? routeCardPeriodShapeText(d, period) : undefined;
+  const readsShape = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period);
+  let partPeriod = readsShape ? routeCardPeriodShapeText(d, period) : undefined;
+  let partPeriodEvery = partPeriod != null ? routeCardPeriodShapeEvery(d, period) : undefined;
   // CIV-995 (b): a main or tail row reads its stretch's own values (every trip at the stretch's stop) where the stretch runs
   // through the period: its cadence, steadiness and longest gap. Elsewhere, and on older data, the row's own trips. The
   // shared and pooled rows' comparison (ownTrips) and the stop card (stretch: false) keep reading the row's own trips.
@@ -113,7 +117,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   const filterReading = partPeriod == null && value != null && !opts.ownTrips ? mainFilterReading(d, key) : null;
   if (filterReading) {
     value = filterReading.every;
-    if (filterReading.gap != null) partPeriod = headwayPeriodShape(filterReading);
+    if (filterReading.gap != null) { partPeriod = headwayPeriodShape(filterReading); partPeriodEvery = filterReading.every ?? undefined; }
   }
   const slot = stretchSlot(d);
   const slotGap = slot?.maxGap?.[key];
@@ -140,6 +144,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     value,
     longestGap: stretch ? stretch.longestGap : fromSlot ? slotGap : typeof ownGap === 'number' ? ownGap : null,
     partPeriod,
+    ...(partPeriodEvery != null ? { partPeriodEvery } : {}),
     noOwnService: false,
   };
 }
