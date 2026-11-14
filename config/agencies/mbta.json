@@ -20,6 +20,21 @@
       "shortName": "Shuttle",
       "longName": "Cleveland Circle - Kenmore (Shuttle)",
       "name": "Cleveland Circle–Kenmore Shuttle"
+    },
+    {
+      "shortName": "Red Line Shuttle",
+      "longName": "Alewife - Harvard",
+      "name": "Alewife–Harvard Shuttle"
+    },
+    {
+      "shortName": "Red Line Shuttle",
+      "longName": "Ashmont - JFK/UMass",
+      "name": "Ashmont–JFK/UMass Shuttle"
+    },
+    {
+      "shortName": "Red Line Shuttle",
+      "longName": "JFK/UMass - Broadway",
+      "name": "JFK/UMass–Broadway Shuttle"
     }
   ],
   "lastFeedExpiry": "20261212",
