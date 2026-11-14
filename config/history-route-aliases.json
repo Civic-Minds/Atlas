@@ -25,5 +25,9 @@
   "caltrain": {
     "Local Weekday": [{ "key": "Local", "days": "weekday" }],
     "Local Weekend": [{ "key": "Local", "days": "weekend" }]
+  },
+  "port-authority-pa": {
+    "SLVR": ["BLLB"],
+    "BLUE": ["BLSV"]
   }
 }
