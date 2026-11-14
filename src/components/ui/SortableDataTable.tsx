@@ -7,19 +7,22 @@ export interface SortableColumn<T> extends DataTableColumn<T> {
 }
 
 /**
- * A DataTable that sorts itself by its headers (columns with `worst`), worst first, in the fixed full-width layout the
- * Live pages use. Ties keep the incoming order. For a table whose sort lives in the address, use DataTable's
+ * A DataTable that sorts itself by its headers (columns with `worst`), worst first, in the `page` layout the area and
+ * agency pages use (figures right-aligned at the right edge) unless another is asked for. Ties keep the incoming order. For a table whose sort lives in the address, use DataTable's
  * `sort` / `onSort` directly (the Live agency Routes table).
  */
-export default function SortableDataTable<T>({ columns, rows, defaultSort, layout = 'fill', narrowFit, ...rest }: {
+export default function SortableDataTable<T>({ columns, rows, defaultSort, layout = 'page', narrowFit, ...rest }: {
   columns: SortableColumn<T>[];
   rows: readonly T[];
   rowKey: (row: T) => Key;
   caption?: string;
   /** The column the rows start sorted by; omit to keep the incoming order until a header is clicked. */
   defaultSort?: string;
-  /** `fill` spans its container (default); `fixed` keeps every column at its set width, so tables line up. */
-  layout?: 'fill' | 'fixed';
+  /**
+   * `page` (default) spans its container with the figure columns right-aligned at its right edge; `fill` shares the
+   * width between the columns; `fixed` keeps every column at its set width, so tables line up.
+   */
+  layout?: 'page' | 'fill' | 'fixed';
   /** See DataTable: on a phone the table fits its container, leaving out the columns marked `narrowHide`. */
   narrowFit?: boolean;
   rowTitle?: (row: T) => string | undefined;
@@ -36,8 +39,8 @@ export default function SortableDataTable<T>({ columns, rows, defaultSort, layou
       layout={layout}
       narrowFit={narrowFit}
       rows={sorted}
-      // Headers stay on one line, as in the Routes table.
-      columns={columns.map(({ worst, ...c }) => ({ ...c, header: <span className={narrowFit ? 'sm:whitespace-nowrap' : 'whitespace-nowrap'}>{c.header}</span>, sortable: !!worst }))}
+      // `page` headers wrap onto a second line and sit on their bottom line, as on the area page; the other layouts keep one line.
+      columns={columns.map(({ worst, ...c }) => ({ ...c, header: layout === 'page' ? c.header : <span className={narrowFit ? 'sm:whitespace-nowrap' : 'whitespace-nowrap'}>{c.header}</span>, sortable: !!worst }))}
       sort={sort ?? undefined}
       onSort={key => setSort(s => (s?.key === key ? { key, reversed: !s.reversed } : { key, reversed: false }))}
     />

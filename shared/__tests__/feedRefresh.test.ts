@@ -29,7 +29,7 @@ describe('nextFeedRefreshRun', () => {
 describe('feedRefreshCountdownLabel', () => {
   it('uses schedule cron from meta', () => {
     expect(feedRefreshCountdownLabel(META, new Date('2026-07-07T12:00:00Z'))).toBe(
-      "We'll check for updates again in 6 days.",
+      "We’ll check for updates again in 6 days.",
     );
     expect(feedRefreshCountdownLabel(META, new Date('2026-07-06T04:00:00Z'))).toContain('today');
   });

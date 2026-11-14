@@ -1,20 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import { delayLabel, vehicleCardName, vehicleCardRows } from '../vehicleCardModel';
+import { delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../vehicleCardModel';
+import { vehicleModeWord } from '../../../utils/format';
 
 const base = { headsign: 'Humber Loop', directionId: 0, speedKmh: 23, delayMin: 7.2, statusLabel: null, status: 'late' as const };
 
 describe('vehicle card content', () => {
   it('maps direction, destination, speed and schedule', () => {
-    expect(vehicleCardRows(base, 'Westbound')).toEqual([
-      { label: 'Direction', value: 'Westbound' },
-      { label: 'Destination', value: 'Humber Loop' },
+    expect(vehicleCardRows(base, 'Neville Park', 'shortTurn')).toEqual([
+      { label: 'Direction', value: 'to Neville Park' },
+      { label: 'Ends at', value: 'Humber Loop', tag: 'Short turn' },
       { label: 'Speed', value: '23 km/h' },
       { label: 'Schedule', value: '7 min late', status: 'late' },
     ]);
   });
   it('omits what the feed did not give and never repeats the destination as direction', () => {
     const rows = vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, 'Humber Loop');
-    expect(rows).toEqual([{ label: 'Destination', value: 'Humber Loop' }]);
+    // A trip to the line's end: "Direction" only, as on every other card in the list (CIV-1043).
+    expect(rows).toEqual([{ label: 'Direction', value: 'to Humber Loop' }]);
+    // A short turn (its last stop on the line) adds where it ends, tagged; with no direction known, only where the trip ends (no tag).
+    const quiet = { speedKmh: null, delayMin: null, status: 'no_data' as const };
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview & Queen' }, 'Distillery', 'shortTurn'))
+      .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview & Queen', tag: 'Short turn' }]);
+    // A branch (504B) runs to its own end: that is its direction, untagged.
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery', 'branch')).toEqual([{ label: 'Direction', value: 'to Broadview' }]);
+    // A destination from the feed, with no shape to say what kind of trip it is: where it ends, untagged.
+    expect(vehicleCardRows({ ...base, ...quiet, headsign: 'Broadview' }, 'Distillery'))
+      .toEqual([{ label: 'Direction', value: 'to Distillery' }, { label: 'Ends at', value: 'Broadview' }]);
+    expect(vehicleCardRows({ ...base, speedKmh: null, delayMin: null, status: 'no_data' }, null)).toEqual([{ label: 'Ends at', value: 'Humber Loop' }]);
   });
   it('says on time and early in the list wording', () => {
     expect(delayLabel({ delayMin: 1, statusLabel: null })).toBe('On time');
@@ -22,6 +34,24 @@ describe('vehicle card content', () => {
   });
   it('names a vehicle only when the feed gives a fleet label', () => {
     expect(vehicleCardName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 'Bus')).toBeNull();
-    expect(vehicleCardName({ id: 'x', vehicleLabel: '4412' }, 'Streetcar')).toBe('Streetcar 4412');
+    expect(vehicleCardName({ id: 'x', vehicleLabel: '4412' }, vehicleModeWord(0))).toBe('4412');
+    expect(vehicleCardName({ id: 'x', vehicleLabel: '8123' }, vehicleModeWord(3))).toBe('Bus 8123');
+  });
+  it('labels every vehicle row the same way: the vehicle name, never the destination (CIV-899)', () => {
+    // A streetcar route can run buses and the feed doesn't say which (CIV-926): the fleet number stands alone.
+    expect(vehicleRowName({ id: '4578', vehicleLabel: null }, 0, vehicleModeWord(0))).toBe('4578');
+    expect(vehicleRowName({ id: 'x', vehicleLabel: '4412' }, 3, vehicleModeWord(0))).toBe('4412');
+    expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, vehicleModeWord(0))).toBe('Vehicle 3');
+    expect(vehicleRowName({ id: 'a1b2c3d4-0000-0000-0000-000000000000', vehicleLabel: null }, 2, 'Bus')).toBe('Vehicle 3');
+  });
+});
+
+describe('placedRows (CIV-1068)', () => {
+  const rows = [{ label: 'Direction', value: 'to High Park' }, { label: 'Ends at', value: 'Spadina', tag: 'Short turn' }, { label: 'Speed', value: '0 km/h' }];
+  it('holds Direction and Ends at back until the vehicles are placed by their trips (a card opened from a link)', () => {
+    expect(placedRows(rows, false)).toEqual([{ label: 'Speed', value: '0 km/h' }]);
+  });
+  it('shows every row once they are', () => {
+    expect(placedRows(rows, true)).toEqual(rows);
   });
 });

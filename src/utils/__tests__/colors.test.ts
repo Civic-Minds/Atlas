@@ -1,4 +1,4 @@
-import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getNightServiceColor } from '../colors';
+import { buildDefaultRouteLineOpacityExpression, buildFocusedRouteLineOpacityExpression, getTierColor, getVehicleStatus, getVehicleColors, getVehicleRgb, getNightServiceColor } from '../colors';
 import { describe, it, expect } from 'vitest';
 
 describe('getTierColor', () => {
@@ -96,5 +96,19 @@ describe('buildFocusedRouteLineOpacityExpression', () => {
       1,
       ['case', ['>', ['get', 'headway'], 20], 0, 0.16],
     ]);
+  });
+});
+
+describe('getVehicleRgb (Live dots)', () => {
+  it('is the cards\' status fill, unchanged in the default palette', () => {
+    expect(getVehicleRgb('on_time')).toEqual([56, 161, 105]);
+    expect(getVehicleRgb('early')).toEqual([49, 130, 206]);
+    expect(getVehicleRgb('late')).toEqual([229, 62, 62]);
+    expect(getVehicleRgb('no_data')).toEqual([113, 128, 150]);
+  });
+
+  it('follows colour-vision mode', () => {
+    expect(getVehicleRgb('late', 'friendly')).toEqual([196, 69, 22]);
+    expect(getVehicleRgb('on_time', 'friendly')).toEqual([0, 158, 115]);
   });
 });

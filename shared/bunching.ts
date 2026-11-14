@@ -155,3 +155,25 @@ export function bunchingLinks(e: BunchingEvidence): BunchingLink[] {
     { kind: 'short_turns', linked: e.shortTurnsPerDay != null && e.shortTurnsPerDay >= LINK_SHORT_TURNS_PER_DAY, value: e.shortTurnsPerDay },
   ];
 }
+
+/** One stop's row of the gaps-through-the-day chart: m = minutes after the service day's start, g = the gap (s), s = the timetable's typical gap in that stretch (s). */
+export interface StopGapsRow { m: number[]; g: number[]; s: number[] }
+
+/**
+ * The gaps-through-the-day chart (B4) for one stop: every measured gap on the good-recording days only (CIV-318: every
+ * Live figure counts only good days), or null when those days hold fewer than MIN_GAPS gaps. `dayStart` gives a service
+ * date's start in epoch seconds.
+ */
+export function stopGapsRow(
+  windows: readonly (GapWindow & { date: string; actualAt?: number[] })[], good: ReadonlySet<string>, dayStart: (date: string) => number,
+): StopGapsRow | null {
+  const wins = windows.filter(w => good.has(w.date) && w.actualAt);
+  if (wins.reduce((n, w) => n + w.actualGaps.length, 0) < MIN_GAPS) return null;
+  const row: StopGapsRow = { m: [], g: [], s: [] };
+  for (const w of wins) {
+    const sched = Math.round(median(w.scheduledGaps) ?? 0);
+    const start = dayStart(w.date);
+    w.actualGaps.forEach((g, i) => { row.m.push(Math.round((w.actualAt![i] - start) / 60)); row.g.push(Math.round(g)); row.s.push(sched); });
+  }
+  return row;
+}

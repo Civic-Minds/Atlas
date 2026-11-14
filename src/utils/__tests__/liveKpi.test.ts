@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { kpiDelta, kpiTiles, lateForDays, weekWindowLine, weekWindowParts } from '../liveKpi';
+import { kpiDelta, kpiTiles, lateForDays, weekWindowParts } from '../liveKpi';
 import { dailyNoise } from '../../../shared/liveDashboard';
 import type { LiveV3 } from '../../../shared/liveDashboard';
 
@@ -21,6 +21,9 @@ describe('kpiDelta', () => {
 describe('kpiDelta wording', () => {
   it('reads label first, then last week\'s value, with the direction kept apart as the arrow', () => {
     expect(kpiDelta('tripTime', 31, 32, true, false, null, '32 min')).toMatchObject({ text: 'last week 32 min', arrow: 'down', spoken: expect.stringMatching(/^last week 32 min, down 1 min/) });
+    // #1487: TTC 504 read "30 min, last week 32" while the spoken change said "down 1.2 min"; it now says the shown 2 min.
+    expect(kpiDelta('tripTime', 30.4, 31.6, true, false, null, '32 min', '30 min')?.spoken).toMatch(/^last week 32 min, down 2 min/);
+    expect(kpiDelta('delivered', 0.9994, 1, false, true, null, '100.0%', '99.9%')?.spoken).toMatch(/^last week 100.0%, down 0.1 points/);
     expect(kpiDelta('late', 0.3, 0.2, true, true, null, '20%')).toMatchObject({ text: 'last week 20%', arrow: 'up', tone: 'worse' });
     expect(kpiDelta('late', 0.2, 0.2, true, true, null, '20%')).toMatchObject({ text: 'same as last week', arrow: 'none' });
   });
@@ -84,7 +87,7 @@ describe('kpiTiles', () => {
   });
   it('makes the five tiles with sample sizes and no colour for small moves', () => {
     const tiles = kpiTiles(w);
-    expect(tiles.map(t => t.label)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
+    expect(tiles.map(t => t.label)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
     expect(tiles[0]).toMatchObject({ value: '21%', n: 900, delta: { text: 'last week 20%', arrow: 'up', tone: 'same' } });
     expect(tiles[4]).toMatchObject({ value: '99.7%', delta: { text: 'last week 99.8%', arrow: 'down', tone: 'same' } });
   });
@@ -96,7 +99,7 @@ describe('kpiTiles', () => {
   });
   it('drops the change chips when the weeks are not comparable', () => {
     expect(kpiTiles({ ...w, comparable: false }).every(t => t.delta == null)).toBe(true);
-    expect(weekWindowLine({ ...w, comparable: false })).toMatch(/Not enough days/);
+    expect(weekWindowParts({ ...w, comparable: false }).weeks).toMatch(/Not enough days/);
   });
 });
 
@@ -140,9 +143,21 @@ describe('the method line for the days left out', () => {
   const weeks = (a: ReturnType<typeof wk>, b: ReturnType<typeof wk>) => ({ minHealthyDays: 2, health: [], comparable: true, thisWeek: a, lastWeek: b });
   const t = ['2026-10-10', '2026-10-11', '2026-10-12'], l = ['2026-10-03', '2026-10-04', '2026-10-05'];
   it('names this week, last week, both, or nothing', () => {
-    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11 this week.');
-    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5 last week.');
-    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 this week, Oct 5 last week.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l))).days).toBe('Excluding Oct 11.');
+    expect(weekWindowParts(weeks(wk(t, t), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 5.');
+    expect(weekWindowParts(weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04']))).days).toBe('Excluding Oct 11 and Oct 5.');
+    // CIV-910 Q2: the network names only the days every route left out.
+    expect(weekWindowParts({ ...weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, ['2026-10-03', '2026-10-04'])), leftOutEverywhere: { thisWeek: [], lastWeek: [] } }).days).toBeNull();
+    expect(weekWindowParts({ ...weeks(wk(t, ['2026-10-10', '2026-10-12']), wk(l, l)), leftOutEverywhere: { thisWeek: ['2026-10-11'], lastWeek: [] } }).days).toBe('Excluding Oct 11.');
     expect(weekWindowParts(weeks(wk(t, t), wk(l, l))).days).toBeNull();
+  });
+});
+
+describe('network run time against the timetable (CIV-945)', () => {
+  it('writes the share faster or slower, and on time when it rounds to 0%', async () => {
+    const { runTimeShareText } = await import('../liveAgencyKpi');
+    expect(runTimeShareText(-0.071)).toBe('7% faster');
+    expect(runTimeShareText(0.03)).toBe('3% slower');
+    expect(runTimeShareText(0.004)).toBe('on time');
   });
 });

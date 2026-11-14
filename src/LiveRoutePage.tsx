@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  dateRangeText, freshness,
+  dateRangeText, freshness, goodDayCounts,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
-import { useLiveDashboard } from './hooks/useLiveDashboard';
+import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
 import { useLiveGaps } from './hooks/useLiveGaps';
-import { devOnly, liveReportTitle } from './lib/liveReportData';
+import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
+import { RouteTitleName } from './components/RouteRowName';
 import DevHint from './components/Live/DevHint';
 import { applySeoToDocument } from './lib/seoDom';
 import { SITE_URL } from '../shared/seo';
@@ -15,25 +17,29 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readUrlParam } from './utils/urlSchema';
 import { nameCase } from './utils/format';
 import ErrorBoundary from './components/ErrorBoundary';
-import PageShell from './components/ui/PageShell';
+import DocsPageLayout from './components/ui/DocsPageLayout';
+import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import LiveOffNotice from './components/LiveOffNotice';
 import LiveDashboardView from './LiveDashboardView';
 import LiveExplorePage from './LiveExplorePage';
 import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
+import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, excludingText, LATE_BY_HOUR_TITLE, liveSubtitle, TRIP_TIME_LABEL } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
-import LateByHourSection from './components/Live/sections/LateByHourSection';
+import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
-import { dirsOf, mins } from './components/Live/sections/figures';
+import { dirsOf } from './components/Live/sections/figures';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
+import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -41,7 +47,7 @@ const NAME_KEYS = new Set(['name', 'fromName', 'toName']);
 /** Big per-stop number tables that hold no names, left alone. */
 const NO_NAMES = new Set(['stopHours', 'segmentLines']);
 const niceDeep = (x: unknown, key = ''): unknown => {
-  if (typeof x === 'string') return NAME_KEYS.has(key) ? nameCase(x, 'stop') : x;
+  if (typeof x === 'string') return NAME_KEYS.has(key) ? nameCase(x, 'liveStop') : x;
   if (Array.isArray(x)) return x.map(v => niceDeep(v, key));
   if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, NO_NAMES.has(k) ? v : niceDeep(v, k)]));
   return x;
@@ -54,14 +60,9 @@ const niceDeep = (x: unknown, key = ''): unknown => {
 export function withNiceNames(v3: LiveV3): LiveV3 {
   return niceDeep(v3) as LiveV3;
 }
-/** Axis value with its unit, with a real minus sign. */
-const axisMin = mins;
 
 export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 
-
-/** B2: stops most often late, ranked by how often vehicles leave more than 5½ min late. One table with a small bar in each row. */
-const hourLabel = (h: number) => `${h % 12 === 0 ? 12 : h % 12}${h % 24 < 12 ? 'a' : 'p'}`;
 
 /** This week against last week: five tiles, each a number, a label and a change chip coloured only beyond normal noise. */
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
@@ -74,18 +75,22 @@ function WeekCompare({ v3 }: { v3: LiveV3 }) {
 }
 
 /** The route pages' subtitle (full analysis and explore): the week, the trip count, where the figures come from. */
-export function routeSubtitle(v3: LiveV3, agency: string): string {
+export function routeSubtitle(v3: LiveV3, /** The agency's short name (useLiveAgencyName). */ agencyName: string): string {
   const w = v3.weekly;
-  return liveSubtitle({ thisWeek: v3.window.dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${v3.totals.runs.toLocaleString()} trips`, agency, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  // CIV-1445: "Week of" and its trip count cover this week only, the trips the Late tile counts. A file with no weekly
+  // figures still names its whole window.
+  const thisWeek = w?.thisWeek.dates.length ? w.thisWeek.dates : v3.window.dates;
+  const trips = w?.thisWeek.late ? w.thisWeek.late.n : goodDayCounts(v3).runs;
+  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**
  * The subtitle line. When the analysis is stale, its "data up to Oct 14" segment takes the caution colour and carries
- * role=status; the age ("Data up to 2026-10-14, 3 days ago.") is that segment's hover text, not a line of its own.
+ * role=status; the age ("Data up to Oct 14, 3 days ago.") is that segment's hover text, not a line of its own.
  */
 export function RouteSubtitle({ v3, agency, route }: { v3: LiveV3; agency: string; route: string }) {
   const f = freshness(v3, route, Date.now());
-  const line = routeSubtitle(v3, agency);
+  const line = routeSubtitle(v3, useLiveAgencyName(agency));
   const at = line.lastIndexOf(' · data up to ');
   if (!f.stale) return <>{line}</>;
   const stale = 'font-bold text-[var(--status-caution-text)]';
@@ -112,10 +117,11 @@ export function RouteDevHint({ v3, route }: { v3: LiveV3; route: string }) {
   return <DevHint hint={freshness(v3, route, Date.now()).devHint} className="mt-2" />;
 }
 
-export const BOUNDARY = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+export const BOUNDARY = liveDrawError;
 
 function AnalysisPage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const gaps = useLiveGaps(FEATURES.liveReports ? agency : null, route);
   // No time-of-day toggle: every section shows the whole day; hour charts highlight a period on hover, and sections
@@ -135,36 +141,32 @@ function AnalysisPage() {
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
-  if (state.kind === 'loading') return <PageShell variant="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p></PageShell>;
-  if (state.kind === 'error') return <PageShell variant="wide"><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</PageShell>;
+  const title = `${agencyName} ${route}`;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
+  const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
+  if (state.kind === 'loading') return <DocsPageLayout width="wide"><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} above={toAgency} />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return (
-      <PageShell variant="wide">
-        <PageTitle className="mt-24">{title}</PageTitle>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>
-        {back}
-      </PageShell>
-    );
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.status === 'unknown_route' ? liveNoRoute(route, agencyName) : data.reason} action={back} above={toAgency} />;
   }
   // A malformed file must not blank the page: fall back to the raw names and let each section's boundary report its own problem.
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   const bandData = v3.bands?.[band] as DashboardBandData;
   const uncertain = data.uncertainStart ?? [];
   return (
-    <PageShell variant="wide">
-      <article className="pb-16 pt-10 sm:pt-14">
+    <DocsPageLayout width="wide">
+        <div className="mb-2">{toAgency}</div>
         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-          <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+          <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
             <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>
-          {FEATURES.live && <ArrowLink href="/apps/live" className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
@@ -174,22 +176,23 @@ function AnalysisPage() {
             options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         </div>}
         {view !== 'analysis' ? (
-          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain} note={data.note} title={title}
+          <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain}
             filters={null}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>
         <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where delays build up')}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="b2" intro notRanked p90Width={10} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title="Stops most often late" id="b2" intro notRanked /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
         </>)}
-      </article>
-    </PageShell>
+        {/* One "How this is measured" for Summary and Full analysis alike, every line of the method (CIV-308). */}
+        {/* #1490: Summary and Dashboard name the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
+        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={view !== 'analysis' ? excludingText(routeLeftOut(v3)) : null} /></ErrorBoundary>
+    </DocsPageLayout>
   );
 }
 

@@ -4,7 +4,7 @@
  * route, so a quiet route does not count as much as the 504. Every figure says how many of the agency's routes it covers.
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
-import { dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
+import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekMetrics } from './liveDashboard.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
 export const AGENCY_MIN_N = 30;
@@ -57,7 +57,11 @@ export interface AgencySummary {
   totalRoutes: number;
   covered: string[];
   held: Array<{ route: string }>;
-  weekly: { thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number } | null;
+  weekly: {
+    thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number;
+    /** The days every route left out (the footer names only these; each route page lists its own). Older files: absent. */
+    leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] };
+  } | null;
   /** Network late share per day of this week (days with good recordings), for the change's noise. */
   daily: Required<DailyValues>;
   routes: AgencyRouteRow[];
@@ -132,7 +136,6 @@ function networkDaily(inputs: readonly AgencyRouteInput[], healthy: readonly str
   return { late, delivered, tripTime: rest.tripTime, extraWait: rest.extraWait, bunching: rest.bunching };
 }
 
-const dirLabel = (v3: LiveV3, d: number) => v3.directionLabels[String(d)] ?? `Direction ${d}`;
 
 export function agencySummary(input: {
   agency: string;
@@ -142,14 +145,23 @@ export function agencySummary(input: {
   generatedAt?: string;
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
-  const { agency, routes } = input;
+  const { agency } = input;
+  // Run time over each route's main pattern only (CIV-945), so the network's figure and each route's row match the route's own.
+  const routes = input.routes.map(r => ({ ...r, v3: withMainPatternTrip(r.v3) }));
   const topStops = input.top?.stops ?? 10, topStretches = input.top?.stretches ?? 10;
   const withWeekly = routes.filter(r => r.v3.weekly);
   const weekly = withWeekly.length ? (() => {
     const thisWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.thisWeek));
     const lastWeek = combineWeeks(withWeekly.map(r => r.v3.weekly!.lastWeek));
     const minHealthyDays = Math.max(...withWeekly.map(r => r.v3.weekly!.minHealthyDays));
-    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays };
+    // A day every route that ran it left out (CIV-910 Q2). A day only some routes left out still counts on the others.
+    const everywhere = (weeks: readonly WeekMetrics[]) => [...new Set(weeks.flatMap(w => w.dates))].sort()
+      .filter(d => weeks.every(w => !w.dates.includes(d) || !w.healthyDates.includes(d)));
+    const leftOutEverywhere = {
+      thisWeek: everywhere(withWeekly.map(r => r.v3.weekly!.thisWeek)),
+      lastWeek: everywhere(withWeekly.map(r => r.v3.weekly!.lastWeek)),
+    };
+    return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays, leftOutEverywhere };
   })() : null;
 
   const rows: AgencyRouteRow[] = routes.map(({ route, label, titleLabel, mode, longName, v3 }) => {
@@ -161,7 +173,7 @@ export function agencySummary(input: {
       lateN: t?.late?.n ?? 0,
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,
       runTimeOver: runTimeOver(t?.tripTime ?? null),
-      runTimeDiffMin: t?.tripTime && t.tripTime.n > 0 ? Math.round(t.tripTime.typicalMin) - Math.round(t.tripTime.scheduledMin) : null,
+      runTimeDiffMin: t?.tripTime && t.tripTime.n > 0 ? runTimeDiffMin(t.tripTime.typicalMin, t.tripTime.scheduledMin) : null,
       bunchingShare: t?.bunching?.share ?? null,
       ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,

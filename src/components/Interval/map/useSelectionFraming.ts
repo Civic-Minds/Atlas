@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { Agency } from '../../../App';
 import { routeKey } from '../../../hooks/useIntervalStats';
@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { selectionFramePadding } from './routeFraming';
+import { cardBesideMap, paddedCenter, routeFitStep, selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -20,7 +20,18 @@ export interface SelectionFramingInput {
   areaFocus?: { bbox: [number, number, number, number]; nonce: number } | null;
   resetViewKey?: number;
   regionalView: ReturnType<typeof getRegionalView>;
+  /**
+   * Padding for the route fit when the card over the map is not the regular route card (Live's card), or null while
+   * that card is not in place yet: the fit then waits for it (CIV-1093).
+   */
+  framePadding?: ((map: maplibregl.Map) => maplibregl.PaddingOptions | null) | null;
+  /** A vehicle card is open over the selected route: the vehicle's frame wins, so the route fit stands down. */
+  vehicleCardOpen?: boolean;
 }
+
+/** How often, and how many times, the route fit looks again for a card that is not in place yet. */
+const CARD_WAIT_MS = 100;
+const CARD_WAIT_TRIES = 20;
 
 /** Camera moves for a selection: agency, `?ondemand=` link, area, Reset View, route and stop. */
 export function useSelectionFraming(
@@ -28,10 +39,14 @@ export function useSelectionFraming(
   mapLoaded: boolean,
   {
     agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding, vehicleCardOpen = false,
   }: SelectionFramingInput,
 ) {
   const fittedRouteRef = useRef<string | null>(null);
+  // Re-runs the route fit while the card it frames against is not in place yet (framePadding gives null).
+  const [cardWait, setCardWait] = useState(0);
+  const cardWaitsRef = useRef(0);
+  const cardWaitKeyRef = useRef<string | null>(null);
 
   // Fly to selected agency when chosen from lists/panels (e.g. Data list in InfoPanel)
   useEffect(() => {
@@ -97,11 +112,26 @@ export function useSelectionFraming(
     if (!map || !mapLoaded) return;
     if (!selectedRoute) {
       fittedRouteRef.current = null;
+      cardWaitsRef.current = 0;
       return;
     }
     // Direction hover changes filtered layer data, but it is not a new route
     // selection. Do not refit the map on every hover-driven layer update.
-    if (fittedRouteRef.current === selectedRoute) return;
+    // A route the main map hands to Live keeps its key but gains Live's card padding: on wide screens, refit it
+    // once for that card, or the fit made for the regular card leaves the route under Live's wider card. Phones
+    // keep the first fit: it already clears the bottom sheet, and Live's sheet isn't open yet at the hand-off.
+    const fitKey = `${selectedRoute}|${framePadding && cardBesideMap(map) ? 'card' : 'map'}`;
+    // A new route gets the whole wait for the card, whatever an earlier one used.
+    if (cardWaitKeyRef.current !== fitKey) {
+      cardWaitKeyRef.current = fitKey;
+      cardWaitsRef.current = 0;
+    }
+    const step = routeFitStep(fitKey, fittedRouteRef.current, vehicleCardOpen);
+    if (step === 'skip') return;
+    if (step === 'hold') {
+      fittedRouteRef.current = fitKey;
+      return;
+    }
 
     // Compute full-route bounds from GeoJSON layer data.
     // agencySlug is added to features only in build-pmtiles, not the raw R2 GeoJSON,
@@ -121,22 +151,29 @@ export function useSelectionFraming(
       target = fitTargetForPoints(rendered.flatMap(f => lineCoordinates(f.geometry)));
     }
 
-    // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming).
-    const padding = selectionFramePadding(map);
+    // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming). A card not in
+    // place yet is waited for, up to about two seconds; after that the phone sheet's usual padding stands in.
+    let padding = framePadding ? framePadding(map) : selectionFramePadding(map);
+    if (!padding && cardWaitsRef.current < CARD_WAIT_TRIES) {
+      cardWaitsRef.current += 1;
+      const timer = setTimeout(() => setCardWait(n => n + 1), CARD_WAIT_MS);
+      return () => clearTimeout(timer);
+    }
+    cardWaitsRef.current = 0;
+    padding ??= selectionFramePadding(map, true);
     if (target?.kind === 'bounds') {
       map.fitBounds(target.bounds, { padding, maxZoom: 14 });
-      fittedRouteRef.current = selectedRoute;
+      fittedRouteRef.current = fitKey;
     } else if (target?.kind === 'point') {
-      map.flyTo({
-        center: target.center,
-        zoom: Math.max(map.getZoom(), 14),
-        padding,
-        duration: 900,
-        essential: true,
-      });
-      fittedRouteRef.current = selectedRoute;
+      const zoom = Math.max(map.getZoom(), 14);
+      // Live's card (framePadding): the padding goes into the centre so the camera doesn't keep it for later fits
+      // (routeFraming). The main map keeps its own fly until that change is reviewed for it.
+      map.flyTo(framePadding
+        ? { center: paddedCenter(target.center, zoom, padding), zoom, duration: 900, essential: true }
+        : { center: target.center, zoom, padding, duration: 900, essential: true });
+      fittedRouteRef.current = fitKey;
     }
-  }, [selectedRoute, mapLoaded, layers]);
+  }, [selectedRoute, mapLoaded, layers, framePadding, vehicleCardOpen, cardWait]);
 
   // Fly to selected stop when chosen
   useEffect(() => {

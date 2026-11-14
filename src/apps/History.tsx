@@ -27,7 +27,7 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
-import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
@@ -50,7 +50,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
+import { HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -59,7 +59,7 @@ export interface RouteSnapshot {
   year: number;
   weekdayHeadwayMin: number;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than its all-day value (build-history), and per period. */
+  /** CIV-555: the route's shared-stretch value per period when better than its own (build-history); trunkHeadwayMin is the internal all-day one (no screen shows it). */
   trunkHeadwayMin?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
@@ -138,12 +138,13 @@ export const MIN_CHART_VALUES = 3;
 /**
  * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
  * more often, by the one range rule (headwayRangeShown, headwayEveryRange); else "every 52 min".
- * The number that colours and filters stays the period's value. The shared-stretch values are weekday-only, so a
- * Saturday or Sunday row is the plain "every 52 min" (CIV-1425).
+ * The number that colours and filters stays the period's value. A Saturday or Sunday row reads that day's own
+ * shared-stretch values (CIV-1431); a day without them is the plain "every 52 min".
  */
 function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number, day: DayType = 'Weekday'): string {
-  if (day !== 'Weekday') return headwayEvery(shownMinutes(minutes));
-  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
+  const trunk = day === 'Saturday' || day === 'Sunday'
+    ? historyDayTrunk(snapshot, day, period)
+    : period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
   return trunk != null && headwayRangeShown(trunk, minutes)
     ? headwayEveryRange(trunk, shownMinutes(minutes))
     : headwayEvery(shownMinutes(minutes));
@@ -183,9 +184,7 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all', day
 /** The neutral callout's outline, for the tinted frequency box, so both History boxes have the same edge (CIV-1127). */
 const CALLOUT_OUTLINE = 'border border-[var(--border-primary)]';
 
-/** The one sentence in the frequency change box: Ryan's wording, 2026-11-12 (CIV-1127). */
-const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
-/** The frequency box's sentence for the day shown: the weekday one above, or the weekend one (CIV-1425, pending OK). */
+/** The frequency box's sentence for the day shown: the weekday one (HISTORY_FREQUENCY_CHANGE_NOTE), or the weekend one (CIV-1425, pending OK). */
 const frequencyChangeNote = (day: DayType): string => (day === 'Weekday' ? HISTORY_FREQUENCY_CHANGE_NOTE : historyWeekendFrequencyChangeNote(day));
 
 type ChangeTone = 'negative' | 'positive' | 'neutral';
@@ -204,10 +203,16 @@ export function tripTimeChangedEnough(firstMinutes: number, lastMinutes: number)
   return Math.abs(lastMinutes - firstMinutes) >= firstMinutes * TRIP_TIME_MIN_CHANGE_SHARE;
 }
 
+/** The day the archived trip times describe: one typical weekday trip (HISTORY_TRIP_TIME_NOTE). */
+export const TRIP_DURATION_DAY: DayType = 'Weekday';
+
 /** The trip time box's lines, only when the trip time changed enough (`tripTimeChangedEnough`; Ryan 2026-10-29:
  *  "why are we showing trip time if it iddint change"). A longer trip is the worse colour and a shorter one
  *  the better colour, as the frequency box (Ryan 2026-11-12: "why is one red tbut not the other if both got worse"). */
-export function tripTimeChange(entry: RouteHistoryEntry): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+export function tripTimeChange(entry: RouteHistoryEntry, day: DayType = 'Weekday'): { first: string; last: string; dates: string; tone: ChangeTone } | null {
+  // A day the trip time wasn't measured on has no box, as a main-map route card piece with no data for the
+  // chosen day isn't drawn (CIV-1435).
+  if (day !== TRIP_DURATION_DAY) return null;
   const trip = entry.tripDuration;
   if (!trip || !tripTimeChangedEnough(trip.firstMinutes, trip.lastMinutes)) return null;
   const tone: ChangeTone = trip.lastMinutes > trip.firstMinutes ? 'negative' : 'positive';
@@ -302,8 +307,7 @@ function RouteHistoryCard({
   const worse = lastHw > firstHw;
   const better = lastHw < firstHw;
   const summary = changeSummary(route, period, day);
-  // The trip time is a weekday trip's, so it shows on Weekday only (CIV-1425).
-  const tripTime = day === 'Weekday' ? tripTimeChange(route) : null;
+  const tripTime = tripTimeChange(route, day);
   // The snapshot under the pointer or keyboard, on a row or a chart point: its row highlights like a route card row and
   // its point grows and shows its value (Ryan: "when u hover over a date in this list does it hihglight it on the date on the chart too").
   const [hoveredSnap, setHoveredSnap] = useState<RouteSnapshot | null>(null);
@@ -353,12 +357,12 @@ function RouteHistoryCard({
       {/* The chart sits on the card with no box, as the route card's hour chart does (#1028 item 10); its icon opens the wide view. */}
       {showChart && (
         <div className="mt-3 relative pt-5">
-          <ExpandButton label="Expand chart" onClick={() => setChartExpanded(true)} />
+          <ExpandButton label={HISTORY_EXPAND_CHART} onClick={() => setChartExpanded(true)} />
           <RouteHistoryChart snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={gradientId} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
         </div>
       )}
       {chartExpanded && showChart && (
-        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel="Route history chart" closeLabel="Close chart" onClose={closeChart}>
+        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel={HISTORY_CHART_LABEL} closeLabel="Close chart" onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
           </div>
@@ -662,7 +666,7 @@ function HistoryAgencyPanel({
     // "Biggest change" order as before, among the routes that ran in the selected year.
     return yearRoutes
       // Only routes within the Frequency limit in the chosen period, as on the map (CIV-392).
-      .filter(({ snapshot }) => passesHistoryLimit(historyDayPeriodValue(snapshot, view.day, view.period), view.maxHeadway))
+      .filter(({ snapshot }) => passesHistoryLimit(historyDayPeriodValue(snapshot, view.day, view.period), view.maxHeadway, view.period))
       .map(({ route, snapshot: yearSnapshot }) => {
         if (route.snapshots.length === 0) return null;
         const valued = routeHistorySnapshots(route).newestFirst.filter(s => periodMinutes(s, view.period, view.day) != null);
@@ -722,7 +726,7 @@ function HistoryAgencyPanel({
           as="h2"
           name={nameParts.primary}
           place={nameParts.secondary}
-          back={{ to: 'All agencies', onClick: onBack }}
+          back={{ to: HISTORY_BACK_TO_AGENCIES, onClick: onBack }}
           facts={[countOf(agencyHistory.routes.length, 'route'), minYear === maxYear ? String(minYear) : `${minYear}–${maxYear}`].join(' · ')}
           report={(
             <CardReportButton
@@ -919,6 +923,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       routeGeometry: yearRoutes.find(r => r.routeShortName === selectedRouteShortName)?.coordinates,
       selectedYear: selectedYear > 0 ? selectedYear : undefined,
       yearRoutes,
+      day: view.day,
     });
   }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view]);
 
@@ -1166,7 +1171,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           style={frameStyle}
           onMouseDown={e => e.preventDefault()}
         >
-          <PanelTitleBar icon={<HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title="Historical service" />
+          <PanelTitleBar icon={<HistoryIcon className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title={HISTORY_TITLE} />
           {(
             <>
               {historyData !== null && !historyLoadFailed && (
@@ -1222,7 +1227,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         <div
           data-map-overlay="history-scrubber"
           className={`${MAP_SCRUBBER_SLOT} ${Z_PANEL} ${MAP_SCRUBBER_WIDTH} ${PILL_SURFACE} gap-2 px-2.5 text-xs`}
-          title="Older to newer"
+          title={HISTORY_YEAR_HINT}
           onPointerDown={event => event.stopPropagation()}
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
@@ -1235,7 +1240,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
               step={1}
               value={Math.max(0, availableYears.indexOf(selectedYear))}
               onChange={e => setSelectedYear(availableYears[Number(e.target.value)])}
-              aria-label="History year"
+              aria-label={HISTORY_YEAR_LABEL}
               className="time-scrubber-range flex-1 min-w-0"
             />
             {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}

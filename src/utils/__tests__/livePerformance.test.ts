@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lineModel, liveGaps, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
+import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
 import type { SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
 
 // Five stops along latitude 43.65, ~800 m apart, westbound (direction 0).
@@ -170,5 +170,112 @@ describe('livePerformance', () => {
   it('returns nothing with fewer than two placed cars', () => {
     const line = lineModel(data, 0)!;
     expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5)).toBeNull();
+  });
+
+  it('returns the count with no gaps for fewer than two cars when asked (the Live card, CIV-893)', () => {
+    const line = lineModel(data, 0)!;
+    expect(liveGaps(data, line, withStats(line, 'all'), 'all', [snap(5, [['a', 't1', 2]])], 5, { countFewCars: true })).toEqual({ cars: 1, carIds: ['a'], gapsMin: [], scheduledSec: 300 });
+  });
+
+  it('skips an unlisted car seen only once instead of marking the feed incomplete when asked', () => {
+    const line = lineModel(data, 0)!;
+    const snaps = [snap(1_000, [['a', 't1', 3.5], ['b', 't2', 1.5], ['x', '-99', 2.5]])];
+    const g = liveGaps(data, line, withStats(line, 'all'), 'all', snaps, 1_000, { skipUnseenAdded: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(2);
+  });
+});
+
+describe('"Right now" over the whole route (CIV-899)', () => {
+  // The last stop pair carries fewer recorded trips, so it falls outside the shared section; the
+  // timetable there is every 10 min against every 5 on the rest. B1 is a recorded branch heading north.
+  const wl = {
+    ...data,
+    segments: [seg(0, 600), seg(1, 600), seg(2, 600), seg(3, 300), { ...seg(1, 50), toStopId: 'B1', toName: 'Branch at Stub', coordinates: [[lon(1), LAT], [lon(1), LAT + 0.01]] }],
+    headways: [1, 2, 3].map(i => ({ stopId: `S${i}`, stopName: `King St at Stop ${i}`, directionId: 0, coordinates: [], bands: { all: gapStat(i === 3 ? 600 : 300, 240, 60, 600) } })),
+  } as typeof data;
+  const at = (t: number, cars: [string, string, number, number?][]) => ({ capturedAt: t, v: cars.map(([id, trip, x, dLat = 0]) => [id, trip, LAT + dLat, lon(x), t] as [string, string, number, number, number]) });
+  const t0 = 50_000;
+
+  it('counts a car past the shared section and measures its gap', () => {
+    const line = lineModel(wl, 0)!;
+    expect(line.stops[4].shared).toBe(false);
+    // a reaches 3.5 (outside the shared section); b, 4 min behind, is at 1.5.
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    expect(liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { countFewCars: true })!.cars).toBe(1);
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.cars).toBe(2);
+    expect(g.gapsMin).toEqual([4]);
+    expect(g.gapsSchedSec).toEqual([300]);
+    expect(g.scheduledRangeSec).toEqual([300, 600]);
+  });
+
+  it('judges a gap against the timetable where the car behind is', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', 1 + k * 0.4], ['b', 't2', 0.4 + k * 0.4]]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.gapsMin).toEqual([2]);
+    expect(g.gapsSchedSec).toEqual([600]);
+  });
+
+  it('keeps a car off every recorded street (a new diversion) in the count, with no gap claimed either side', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['c', 't3', 2.5, 0.003], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.incomplete).toBeUndefined();
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([null, null]);
+  });
+
+  it('counts a trip the analysis\'s timetable doesn\'t list once the map knows its direction, even off the line', () => {
+    const line = lineModel(wl, 0)!;
+    // n is on a new trip, parked off the recorded streets: without its direction it would never count.
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['n', 'new1', 2.5, 0.003], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    expect(liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true, skipUnseenAdded: true })!.cars).toBe(2);
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true, skipUnseenAdded: true, extraTrips: new Set(['new1']) })!;
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([null, null]);
+  });
+
+  it('counts a car on a recorded branch without putting it between the line\'s cars', () => {
+    const line = lineModel(wl, 0)!;
+    const snaps = [0, 1, 2, 3, 4, 5, 6, 7].map(k => at(t0 + k * 60, [['a', 't1', k * 0.5], ['c', 't3', 1, 0.005], ...(k >= 4 ? [['b', 't2', (k - 4) * 0.5] as [string, string, number]] : [])]));
+    const g = liveGaps(wl, line, withStats(line, 'all'), 'all', snaps, t0 + 420, { wholeLine: true })!;
+    expect(g.cars).toBe(3);
+    expect(g.gapsMin).toEqual([4]);
+  });
+});
+
+describe('rolling buffer of the map\'s polls (CIV-893)', () => {
+  const v = (id: string, at: number, tsEpoch: number | null) => ({ id, tripId: 't1', lat: LAT, lon: lon(at), tsEpoch });
+
+  it('uses each car\'s own report time, or the poll time when the feed gives none', () => {
+    expect(positionsSnapshot([v('a', 1, 90), v('b', 2, null)], 100).v.map(c => c[4])).toEqual([90, 100]);
+  });
+
+  it('adds a poll only when something changed, and drops polls older than 30 min', () => {
+    const first = positionsSnapshot([v('a', 1, 90)], 100);
+    let buf = addSnapshot([], first);
+    // Same cars and places, rebuilt in a different order: not a new poll.
+    expect(addSnapshot(buf, positionsSnapshot([v('a', 1, 90)], 115))).toBe(buf);
+    buf = addSnapshot(buf, positionsSnapshot([v('a', 2, 105)], 115));
+    expect(buf).toHaveLength(2);
+    buf = addSnapshot(buf, positionsSnapshot([v('a', 3, 2_000)], 100 + RECENT_WINDOW_SEC + 10));
+    expect(buf.map(s => s.capturedAt)).toEqual([115, 100 + RECENT_WINDOW_SEC + 10]);
+  });
+});
+
+describe('directions for trips the analysis doesn\'t list (CIV-899)', () => {
+  it('pairs the map\'s direction numbers with the analysis\'s from vehicles both know', () => {
+    // The map's 1 is the analysis's 0 (TTC numbers them the other way round).
+    const vs = [{ tripId: 't1', directionId: 1 }, { tripId: 't2', directionId: 1 }, { tripId: 'other', directionId: 0 }, { tripId: 'new1', directionId: 1 }, { tripId: 'new2', directionId: 0 }, { tripId: 'new3', directionId: null }];
+    const out = liveTripDirections(vs, { 0: ['t1', 't2'], 1: ['other'] });
+    expect([...out.get(0)!]).toEqual(['new1']);
+    expect([...out.get(1)!]).toEqual(['new2']);
+  });
+
+  it('pairs nothing when the map\'s directions don\'t line up with the analysis\'s', () => {
+    const vs = [{ tripId: 't1', directionId: 1 }, { tripId: 'other', directionId: 1 }, { tripId: 'new1', directionId: 1 }];
+    expect(liveTripDirections(vs, { 0: ['t1'], 1: ['other'] }).size).toBe(0);
   });
 });

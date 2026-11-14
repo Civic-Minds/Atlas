@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { SPARKLINE_HOUR_LABELS } from '../../../shared/config';
-import { hourTime } from '../../../shared/timeText';
+import { hourTime as clock } from '../../../shared/timeText';
 import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../../utils/sparklinePeriods';
 import PeriodBand from './PeriodBand';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
@@ -17,7 +17,6 @@ export interface HourValue {
 const H = 64;
 /** Height of the departures band under the bars. */
 const BAND_H = 12;
-const clock = hourTime;
 
 /**
  * A small bar for each hour of the day, in the route card's sparkline shape (same hour order, narrow rounded bars, 90%
@@ -84,7 +83,8 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
           <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
             {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null ? idleText : null}
           </div>
-          <div className={`relative ${yAxis ? 'mt-2.5' : ''}`} style={{ paddingLeft: ml }}>
+          {/* The peak label sits above the tallest bar: room is kept for it so it never runs into the line above. */}
+          <div className={`relative ${yAxis ? 'mt-2.5' : peakLabel ? 'mt-3' : ''}`} style={{ paddingLeft: ml }}>
             <SparkTicks ticks={ticks} y={t => height - pos(t)} format={format} />
             <div className="relative flex gap-px" style={{ height }}>
               {scale.min < 0 && <div className="pointer-events-none absolute inset-x-0 border-t border-dashed border-[var(--text-dim)] opacity-60" style={{ bottom: zeroPx }} />}

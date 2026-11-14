@@ -91,6 +91,12 @@ export function getVehicleColors(status: 'early' | 'late' | 'on_time' | 'no_data
   return statusPalette(mode)[status];
 }
 
+/** A vehicle dot's fill as [r, g, b] (for WebGL layers): the same status colour as the cards, in the given mode. */
+export function getVehicleRgb(status: 'early' | 'late' | 'on_time' | 'no_data', mode: ColorVisionMode = 'default'): [number, number, number] {
+  const hex = getVehicleColors(status, mode).bg.replace('#', '');
+  return [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
+}
+
 /** Dark or white text, whichever reads better (WCAG contrast) on a hex background. */
 export function readableTextOn(hex: string): string {
   const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());

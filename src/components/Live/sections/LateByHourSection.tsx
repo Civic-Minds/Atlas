@@ -1,24 +1,25 @@
 import { useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { excludingText, lateCount, lateHourLine, leftOutReason, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
-import { TILE } from '../../../pageStyles';
+import { fadedNoteText, excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
 import ErrorBoundary from '../../ErrorBoundary';
 import HourSpark, { type HourValue } from '../../charts/HourSpark';
 import LegendItem from '../../ui/LegendItem';
-import { SectionTitle } from '../../ui/PageTitle';
 import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
+import LeftOutDays from '../LeftOutDays';
 import { DAYS, pct } from './figures';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays } from '../../../content/noticeCopy';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = 30;
 /** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text. */
 export const MIN_GOOD_DAYS = 3;
-export const THIN_HINT = 'Few measurements: treat with care.';
+export const THIN_HINT = LIVE_FEW_MEASUREMENTS;
 /** The top of a row's shared scale: the highest bar among hours with enough departures, at least 10%, rounded up to a tenth. */
 export const rowMax = (hours: readonly HourValue[]): number => Math.ceil(Math.max(0.1, ...hours.filter(h => h.n >= MIN_N).map(h => h.value)) * 10) / 10;
 
@@ -103,7 +104,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
                 <>
                   <div className="flex items-baseline justify-between gap-2">
                     <h3 className="text-base font-black">{c.label}</h3>
-                    <span className="text-sm text-[var(--text-dim)]" title={leftOutReason(c.leftOut ?? []) ?? undefined}>{excludingText(c.leftOut ?? []) ?? ''}</span>
+                    <LeftOutDays className="text-sm text-[var(--text-dim)]" dates={c.leftOut ?? []} />
                   </div>
                   {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
                 </>
@@ -113,9 +114,9 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
                   {c.hours.length ? (
                     <HourSpark departures yAxis periodBand idleText={c.thin ? THIN_HINT : undefined} barColor={lateShareColor} hover={hover} onHover={setHover} height={tall ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={axis} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
-                  ) : <p className="text-sm text-[var(--text-muted)]">No departures in this part of the day.</p>}
+                  ) : <p className="text-sm text-[var(--text-muted)]">{LIVE_NO_DEPARTURES_IN_PERIOD}</p>}
                 </div>
-              ) : withLabels ? <p className="mt-1 text-sm text-[var(--text-muted)]">No {c.label.toLowerCase()} with good recordings this week.</p> : null}
+              ) : withLabels ? <p className="mt-1 text-sm text-[var(--text-muted)]">{liveNoGoodDays(c.label)}</p> : null}
             </div>
           );
         })}
@@ -124,7 +125,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
         <LegendItem color={LATE_SHARE_SWATCH}>Late %</LegendItem>
         <LegendItem color="var(--text-dim)" swatchClassName="opacity-50">Departures</LegendItem>
       </div>
-      {showNote && <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do.</p>}
+      {showNote && <p className="mt-2 text-xs text-[var(--text-dim)]">{fadedNoteText(MIN_N, 'departures')} The percentages count only days with good recordings, as the tiles do.</p>}
     </>
   );
 }
@@ -137,24 +138,20 @@ function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & 
     return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? [] : leftOutDays(v3, kind) };
   });
   return (
-    <section aria-labelledby="dash-days" className="mt-10">
-      <SectionTitle id="dash-days">{title}</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.
-        {dir != null && ' Both directions: this view is not split by direction yet.'}
-      </p>
+    <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
       <ChartRow cols={cols} tall={allOnly} showNote={!allOnly} />
-    </section>
+    </Section>
   );
 }
 
 function Tile({ label, value, sub, thin = false }: { label: string; value: string; sub: string; thin?: boolean }) {
   return (
-    <div className={`${TILE} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
-      <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-      <div className="mt-1 text-3xl font-black tracking-tight">{value}</div>
-      <div className="mt-1 text-xs text-[var(--text-dim)]">{sub}</div>
-      {thin && <div className="mt-1 text-xs text-[var(--text-dim)]">{THIN_HINT}</div>}
+    // The week tiles' look (KpiTile), from the one tile style (CIV-1117 row 3).
+    <div className={`${KPI_TILE.frame} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
+      <div className={KPI_TILE.label}>{label}</div>
+      <div className={KPI_TILE.value}>{value}</div>
+      <div className={KPI_TILE.line}>{sub}</div>
+      {thin && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
     </div>
   );
 }
@@ -163,7 +160,7 @@ function Tile({ label, value, sub, thin = false }: { label: string; value: strin
 function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: number | null }) {
   const m = lateByHourModel(v3, data, dir);
   const all = m.countsFor('all');
-  if (!(all && all.n > 0)) return <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>;
+  if (!(all && all.n > 0)) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_TOO_FEW_SCHEDULED_DEPARTURES}</p>;
   const cols: DayChart[] = DAYS.map(([kind, label]) => {
     const c = m.countsFor(kind);
     return { kind, label, late: c && c.n > 0 ? { share: c.lateShare, n: c.n, days: c.days ?? 0 } : null, hours: m.sparkHours(kind, 'all'), thin: isThin(c?.days) };
@@ -176,7 +173,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
           const c = m.countsFor(k);
           return c && c.n > 0
             ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} thin={isThin(c.days)} />
-            : <Tile key={k} label={label} value="–" sub="too few departures" />;
+            : <Tile key={k} label={label} value="–" sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
       <h3 className="mt-6 text-base font-black">By hour of the day</h3>
@@ -190,16 +187,16 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
   const m = lateByHourModel(v3, data, dir);
   const c = m.countsFor(day);
   const label = DAYS.find(([k]) => k === day)![1];
-  if (!c || c.n === 0) return <p className="mt-3 text-sm text-[var(--text-muted)]">Not enough departures at stops with a scheduled time.</p>;
+  if (!c || c.n === 0) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_TOO_FEW_SCHEDULED_DEPARTURES}</p>;
   const col: DayChart = { kind: day, label, late: { share: c.lateShare, n: c.n, days: c.days ?? 0 }, hours: m.sparkHours(day, band), thin: isThin(c.days) };
   return (
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
-      <div className={`${TILE} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
-        <div className="text-xs font-bold text-[var(--text-muted)]">{label}</div>
-        <div className="mt-1 text-3xl font-black tracking-tight">{pct(c.lateShare)}</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
-        <div className="mt-1 text-xs text-[var(--text-dim)]">{LATE_THRESHOLD}</div>
-        {isThin(c.days) && <div className="mt-1 text-xs text-[var(--text-dim)]">{THIN_HINT}</div>}
+      <div className={`${KPI_TILE.frame} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
+        <div className={KPI_TILE.label}>{label}</div>
+        <div className={KPI_TILE.value}>{pct(c.lateShare)}</div>
+        <div className={KPI_TILE.line}>late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
+        <div className={KPI_TILE.line}>{LATE_THRESHOLD}</div>
+        {isThin(c.days) && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
       </div>
       <div className="min-w-0"><ChartRow cols={[col]} withLabels={false} showNote /></div>
     </div>
@@ -212,7 +209,7 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
   const max = Math.max(0.01, ...hours.filter(h => h.n >= 30).map(h => h.value));
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <span className="shrink-0 text-xs text-[var(--text-dim)]" title={leftOutReason(leftOut) ?? undefined}>{excludingText(leftOut)}</span> : undefined}>
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
       <HourSpark
         idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}

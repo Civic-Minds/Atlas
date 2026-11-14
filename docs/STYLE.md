@@ -64,7 +64,7 @@ Frequencies
 - The frequency definition is written "every 15 min or better": "No stop on this route has a vehicle every 15 min or better at this time of day." CIV-1160.
 - A route that starts slowly reads "every N from <time>", where N is the longest wait after that time. CIV-1411.
 - Route lists and agency pages use the same words and range as the route card, from the same function, with the "Irregular" badge where the card shows no number. A range's dot takes the slower number's colour. CIV-1300, CIV-1447.
-- There is no "All day" option. Never describe one in any text. CIV-1097, CIV-1451.
+- There is no "All day" option. Never describe one in any text. The 07:00-22:00 all-day grade is internal; it reaches the screen only as "Infrequent" or "limited" ([FREQUENCY_RULES.md](product/FREQUENCY_RULES.md)). CIV-1097, CIV-1451.
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other). Many agencies have no routes that frequent. Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 

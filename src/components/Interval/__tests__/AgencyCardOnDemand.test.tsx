@@ -43,11 +43,11 @@ describe('on-demand zone card', () => {
     expect(screen.getByText('Sun')).not.toHaveClass('font-bold');
     expect(screen.getByText('5:30 AM–1 AM').closest('p')).not.toHaveClass('font-bold');
     expect(screen.getByText('Holidays follow Sunday hours.')).toBeInTheDocument();
-    expect(screen.getByText("Every trip starts or ends at this zone's transfer point, shown on the map.")).toBeInTheDocument();
+    expect(screen.getByText("Every trip starts or ends at this zone’s transfer point, shown on the map.")).toBeInTheDocument();
     expect(screen.queryByText(/not fixed-route stops/)).toBeNull();
   });
 
-  it("shows West Glanbrook's own weekend hours, not Stoney Creek's", () => {
+  it("shows West Glanbrook’s own weekend hours, not Stoney Creek’s", () => {
     renderZoneCard('West Glanbrook', 'Sunday', 'midday');
     expect(screen.getByText('4:30 AM–1 AM')).toBeInTheDocument();
     expect(screen.getByText('4:30 AM–12 AM')).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('on-demand card back link', () => {
     expect(screen.getAllByText(/Hamilton Street Railway/)).toHaveLength(1);
   });
 
-  it("an on-demand-only agency's whole-service card is its agency card: \"← Map\" closes it and the agency is named once", () => {
+  it("an on-demand-only agency’s whole-service card is its agency card: \"← Map\" closes it and the agency is named once", () => {
     const onClose = vi.fn();
     const onBack = vi.fn();
     renderZoneCard(null, 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, onBack, onClose);
@@ -104,7 +104,7 @@ describe('on-demand card back link', () => {
     expect(screen.getAllByText('On-demand service')).toHaveLength(1);
   });
 
-  it("an on-demand-only agency's zone card goes back to the service name its agency card shows", () => {
+  it("an on-demand-only agency’s zone card goes back to the service name its agency card shows", () => {
     renderZoneCard('West Glanbrook', 'Saturday', 'midday', { ...hamilton, onDemandOnly: true } as unknown as Agency, vi.fn());
     expect(screen.getByRole('button', { name: `← ${HAMILTON_MY_RIDE_SERVICE_AREA.serviceName}` })).toBeInTheDocument();
   });

@@ -164,14 +164,6 @@ export function sharedSummary(data: SegmentDelayData & { sharedSection?: Record<
   return st;
 }
 
-/** Extra wait at the first measured stop and where it peaks. */
-export function extraWaitRun(stops: LineStop[]): { first: LineStop; peak: LineStop } | null {
-  const m = stops.filter(s => s.stat?.excessWaitSec != null);
-  if (m.length === 0) return null;
-  const peak = m.reduce((a, b) => (b.stat!.excessWaitSec! > a.stat!.excessWaitSec! ? b : a));
-  return { first: m[0], peak };
-}
-
 /** Running time on the line: how many measured stop pairs are within ½ min of the timetable or faster. */
 export function runningTimeTally(segments: SegmentDelaySegment[], band: SegmentBand): { within: number; total: number } {
   let within = 0, total = 0;
@@ -203,14 +195,6 @@ export function stretchBetween(line: LineModel, stops: LineStop[], fromIndex: nu
   let w = 180, s = 90, e = -180, n = -90;
   for (const [x, y] of coordinates) { w = Math.min(w, x); e = Math.max(e, x); s = Math.min(s, y); n = Math.max(n, y); }
   return { from: stops[lo], to: stops[hi], stops: stops.slice(lo, hi + 1), segments, bounds: [w, s, e, n], coordinates };
-}
-
-/** Strip row i covers the stretch from its stop to the next row's stop (the last row looks back). */
-export function stretchForRow(line: LineModel, stops: LineStop[], rows: LineStop[], i: number): Stretch | null {
-  if (rows.length < 2) return null;
-  const a = i < rows.length - 1 ? rows[i] : rows[i - 1];
-  const b = i < rows.length - 1 ? rows[i + 1] : rows[i];
-  return stretchBetween(line, stops, a.index, b.index);
 }
 
 /** Place a point on the line: the stop pair it's on and how far along (0..1). */
@@ -251,9 +235,15 @@ export interface LiveGaps {
   /** The feed is behind, too few cars are placed for the schedule, or a car on the line can't be placed. */
   incomplete?: boolean;
   cars: number;
+  /** The vehicle ids behind `cars`, so a figure about those cars (how many are on time) counts the same ones. */
+  carIds?: string[];
   /** Minutes between consecutive cars, front of the line first; null when the car ahead's passing wasn't seen. */
   gapsMin: (number | null)[];
   scheduledSec: number | null;
+  /** wholeLine: the timetable gap where each gap's car behind is, matching gapsMin. */
+  gapsSchedSec?: (number | null)[];
+  /** wholeLine: the stops' typical timetable gaps along the line in this period, lowest to highest. */
+  scheduledRangeSec?: [number, number] | null;
 }
 
 /** Metres along the line to the start of each stop pair, and each pair's length. */
@@ -268,28 +258,136 @@ function lineMetres(line: LineModel): { start: number[]; len: number[] } {
   return { start, len };
 }
 
+/** How long the Live card keeps the map's polled positions for "Right now" (the archive's window). */
+export const RECENT_WINDOW_SEC = 30 * 60;
+
+/** One poll of the map's live vehicles as a snapshot; a car's report time is its own, else the poll's. */
+export function positionsSnapshot(vehicles: readonly { id: string; tripId: string; lat: number; lon: number; tsEpoch: number | null }[], capturedAt: number): RecentSnapshot {
+  return { capturedAt, v: vehicles.map(x => [x.id, x.tripId, x.lat, x.lon, x.tsEpoch ?? capturedAt]) };
+}
+
+/**
+ * Add a poll to the rolling buffer. A poll with the same cars, places and report times as the last
+ * one (the map rebuilds its vehicle list without a new poll) is not added; snapshots older than the
+ * window are dropped.
+ */
+export function addSnapshot(buffer: readonly RecentSnapshot[], snap: RecentSnapshot, windowSec = RECENT_WINDOW_SEC): RecentSnapshot[] {
+  const key = (s: RecentSnapshot) => s.v.map(c => c.join(',')).sort().join(';');
+  const last = buffer[buffer.length - 1];
+  if (last && key(last) === key(snap)) return buffer as RecentSnapshot[];
+  return [...buffer.filter(s => snap.capturedAt - s.capturedAt <= windowSec), snap];
+}
+
+export interface LiveGapsOptions {
+  /**
+   * An unlisted trip seen fewer than twice has no movement yet to tell its direction. By default
+   * that makes the result incomplete (the archive path, which had 30 min of history). The Live card
+   * builds its history from the map's polls after it opens, so it skips such a car instead.
+   */
+  skipUnseenAdded?: boolean;
+  /** With 0 or 1 placed cars, return the count (no gaps) instead of null. */
+  countFewCars?: boolean;
+  /**
+   * The whole line, not only the shared section (CIV-899): every current car on a trip going this way
+   * is counted wherever it is, gaps run end to end, and each gap is judged against the timetable where
+   * the car behind is. A car off every recorded street of this direction (a new diversion) is still
+   * counted and ordered by its nearest point on the line; the gaps either side of it are unknown ("–").
+   * A car on a recorded branch that isn't the drawn line is counted but has no gap on this line.
+   */
+  wholeLine?: boolean;
+  /**
+   * Trips today's timetable runs that the analysis's timetable doesn't list, already known to go this way
+   * (from the map's own direction for each vehicle, see liveTripDirections). Treated like listed trips.
+   */
+  extraTrips?: ReadonlySet<string>;
+}
+
+/** The analysis's direction for each trip its timetable lists. */
+export function analysisTripDirections(tripDirections: Record<string, string[]> | undefined): Map<string, number> {
+  const dirOf = new Map<string, number>();
+  for (const [d, ids] of Object.entries(tripDirections ?? {})) for (const id of ids) dirOf.set(id, Number(d));
+  return dirOf;
+}
+
+/**
+ * Which of the analysis's directions each of the map's directions is (map direction → analysis direction).
+ * The two timetables number directions differently (TTC: the map's 0 is east, the analysis's 0 is west), so
+ * the pairing is learned from vehicles both know; a direction with no clear majority is left out.
+ */
+export function mapDirectionPairing(vehicles: readonly { tripId: string; directionId: number | null }[], dirOf: ReadonlyMap<string, number>): Map<number, number> {
+  const votes = new Map<number, Map<number, number>>();
+  for (const v of vehicles) {
+    const d = dirOf.get(v.tripId);
+    if (d == null || v.directionId == null) continue;
+    const m = votes.get(v.directionId) ?? votes.set(v.directionId, new Map()).get(v.directionId)!;
+    m.set(d, (m.get(d) ?? 0) + 1);
+  }
+  const pair = new Map<number, number>();
+  for (const [mapDir, m] of votes) {
+    const ranked = [...m.entries()].sort((a, b) => b[1] - a[1]);
+    // Only a clear pairing: a tie means the map's directions don't line up with the analysis's.
+    if (ranked.length === 1 || ranked[0][1] > ranked[1][1]) pair.set(mapDir, ranked[0][0]);
+  }
+  return pair;
+}
+
+/**
+ * The analysis's direction for trips its timetable doesn't list, from the map's direction for each vehicle
+ * (which comes from today's route shapes), through mapDirectionPairing.
+ */
+export function liveTripDirections(vehicles: readonly { tripId: string; directionId: number | null }[], tripDirections: Record<string, string[]> | undefined): Map<number, Set<string>> {
+  const dirOf = analysisTripDirections(tripDirections);
+  const pair = mapDirectionPairing(vehicles, dirOf);
+  const out = new Map<number, Set<string>>();
+  for (const v of vehicles) {
+    if (dirOf.has(v.tripId) || v.directionId == null || !pair.has(v.directionId)) continue;
+    const d = pair.get(v.directionId)!;
+    (out.get(d) ?? out.set(d, new Set()).get(d)!).add(v.tripId);
+  }
+  return out;
+}
+
 /**
  * Real time gaps between the cars on the shared section now, from the last
  * 30 minutes of archived positions: a gap is how long ago the car ahead
  * passed the spot where the car behind is now. Nothing is estimated; when the
  * car ahead's passing wasn't seen, that gap is null.
  */
-export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number): LiveGaps | null {
-  const trips = new Set(data.tripDirections?.[String(line.directionId)] ?? []);
+export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<string, string[]> }, line: LineModel, stops: LineStop[], band: SegmentBand, snapshots: RecentSnapshot[], nowSec: number, opts: LiveGapsOptions = {}): LiveGaps | null {
+  const trips = new Set([...(data.tripDirections?.[String(line.directionId)] ?? []), ...(opts.extraTrips ?? [])]);
   if (trips.size === 0 || snapshots.length === 0) return null;
-  const sched = med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
+  const whole = !!opts.wholeLine;
+  // The timetable at each stop, read from the timetable itself rather than the recorded-gap stats
+  // (those need enough recorded passings, which the line ends often lack).
+  const schedBand = (i: number) => stops[i]?.headway?.bands[band] ?? stops[i]?.headway?.bands.all ?? null;
+  const schedAt = (i: number) => schedBand(i)?.scheduledMedianGapSec ?? null;
+  const sched = whole
+    ? med(stops.map((_, i) => schedAt(i)).filter((x): x is number => x != null))
+    : med(stops.filter(s => s.shared && s.stat).map(s => s.stat!.scheduledMedianGapSec));
+  const scheduledRangeSec = (() => {
+    if (!whole) return undefined;
+    const bs = stops.map((_, i) => schedBand(i)).filter((b): b is HeadwayBandStat => !!b);
+    if (!bs.length) return null;
+    // Each stop's typical timetable gap: the 10th-90th percentiles within a stop span bunched timetable
+    // pairs and would read "every 2–15" on a route that runs every 5 and every 10.
+    return [Math.min(...bs.map(b => b.scheduledMedianGapSec)), Math.max(...bs.map(b => b.scheduledMedianGapSec))] as [number, number];
+  })();
+  const extra = whole ? { scheduledRangeSec } : {};
   const latest = snapshots[snapshots.length - 1];
   // nowSec is the server's clock (the archive's), not the browser's. The archive is written every
   // minute: an old newest snapshot means the feed or the archive is behind.
-  if (nowSec - latest.capturedAt > LIVE_STALE_SEC) return { incomplete: true, cars: 0, gapsMin: [], scheduledSec: sched };
+  if (nowSec - latest.capturedAt > LIVE_STALE_SEC) return { incomplete: true, cars: 0, gapsMin: [], scheduledSec: sched, ...extra };
 
   const { start, len } = lineMetres(line);
-  const onShared = (segIndex: number) => !!stops[segIndex]?.shared && !!stops[segIndex + 1]?.shared;
+  const onShared = (segIndex: number) => (whole ? segIndex >= 0 && segIndex < line.segments.length : !!stops[segIndex]?.shared && !!stops[segIndex + 1]?.shared);
+  // Every recorded stop pair of this direction, branches included: a car near one of them is on a
+  // known street even when it isn't on the drawn line.
+  const recorded: LineModel = { ...line, segments: data.segments.filter(s => s.directionId === line.directionId) };
   const along = (lon: number, lat: number) => {
     const p = placeOnLine(line, [lon, lat]);
     return p ? { m: start[p.segIndex] + p.frac * len[p.segIndex], segIndex: p.segIndex } : null;
   };
-  const known = new Set(Object.values(data.tripDirections ?? {}).flat());
+  const known = new Set([...Object.values(data.tripDirections ?? {}).flat(), ...(opts.extraTrips ?? [])]);
   // Trips the timetable doesn't list (e.g. added buses with negative trip numbers) count in this
   // direction only when their own recent track moved 200 m or more forward along this line.
   const added = new Map<string, { m: number; t: number }[]>();
@@ -312,6 +410,7 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     else if (moved <= -200) backward.add(key);
   }
   const movingOtherWay = (id: string, tripId: string) => backward.has(`${id}|${tripId}`);
+  const unseen = (id: string, tripId: string) => (added.get(`${id}|${tripId}`)?.length ?? 0) < 2;
   // Parked: two or more reports in the last 10 min that stay within 200 m.
   const parked = (id: string, tripId: string) => {
     const tr = added.get(`${id}|${tripId}`) ?? [];
@@ -333,8 +432,10 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
       if (!tr.length || t > tr[tr.length - 1].t) tr.push({ t, m: a.m });
     }
   }
-  const now: { key: string; t: number; m: number }[] = [];
+  const now: { key: string; t: number; m: number; segIndex: number; off?: boolean }[] = [];
   let unplaceable = 0;
+  let cars = 0;
+  const carIds: string[] = [];
   for (const [id, tripId, lat, lon, t] of latest.v) {
     // Staleness is measured once: the car's own report time against the server clock.
     if (nowSec - t > LIVE_STALE_SEC) continue;
@@ -343,24 +444,39 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
       // A current car on this section whose direction we can't tell (an unlisted trip with too few
       // reports, or moving back and forth): the gaps either side of it would be wrong. One that
       // stayed within 200 m over 10 min is parked (standby buses wait on the line), not missing.
+      if (opts.skipUnseenAdded && unseen(id, tripId)) continue;
       if (!known.has(tripId) && a && onShared(a.segIndex) && !parked(id, tripId) && !movingOtherWay(id, tripId)) unplaceable++;
       continue;
     }
-    if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m });
+    cars++;
+    carIds.push(id);
+    if (a && onShared(a.segIndex)) now.push({ key: `${id}|${tripId}`, t, m: a.m, segIndex: a.segIndex });
+    else if (whole && !a && !placeOnLine(recorded, [lon, lat])) {
+      const p = placeOnLine(line, [lon, lat], Infinity);
+      if (p) now.push({ key: `${id}|${tripId}`, t, m: start[p.segIndex] + p.frac * len[p.segIndex], segIndex: p.segIndex, off: true });
+    }
   }
+  if (!whole) cars = now.length;
+  const counted = whole ? carIds : now.map(c => c.key.split('|')[0]);
   // Same idea as the archive's "thin" feed rule: fewer than half the cars the schedule puts on the
   // section means some aren't reporting, and a missing car would show as one long gap.
+  // On the whole line each stop pair counts against its own timetable gap (a branch every 10 beside a trunk every 5).
   let sharedSec = 0;
+  let expectedWhole = 0;
   line.segments.forEach((seg, i) => {
     if (!onShared(i)) return;
     const b = seg.bands[band] ?? seg.bands.all;
     sharedSec += b ? b.actualMedianSec : 0;
+    const g = schedAt(i) ?? sched;
+    if (b && g) expectedWhole += b.actualMedianSec / g;
   });
-  const expected = sched ? sharedSec / sched : 0;
-  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars: now.length, gapsMin: [], scheduledSec: sched };
-  if (now.length < 2) return null;
+  const expected = whole ? expectedWhole : sched ? sharedSec / sched : 0;
+  if (unplaceable > 0 || (expected >= 2 && now.length < expected / 2)) return { incomplete: true, cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra };
+  if (now.length < 2) return opts.countFewCars ? { cars, carIds: counted, gapsMin: [], scheduledSec: sched, ...extra } : null;
   now.sort((a, b) => b.m - a.m);
   const gapsMin = now.slice(1).map((car, i) => {
+    // Next to a car off the recorded streets the order is only approximate: no gap is claimed.
+    if (car.off || now[i].off) return null;
     const track = tracks.get(now[i].key) ?? [];
     for (let k = 1; k < track.length; k++) {
       const a = track[k - 1], b = track[k];
@@ -374,5 +490,6 @@ export function liveGaps(data: SegmentDelayData & { tripDirections?: Record<stri
     }
     return null;
   });
-  return { cars: now.length, gapsMin, scheduledSec: sched };
+  if (!whole) return { cars, carIds: counted, gapsMin, scheduledSec: sched };
+  return { cars, carIds: counted, gapsMin, scheduledSec: sched, gapsSchedSec: now.slice(1).map(car => schedAt(car.segIndex) ?? sched), scheduledRangeSec };
 }

@@ -12,13 +12,13 @@ const spread = { late: [0.01, 0.2, 0.1], tripTime: [20, 40, 30], extraWait: [0.1
 
 describe('WeekTable', () => {
   const tiles = kpiTiles(weekly, spread);
-  const view = () => render(<WeekTable tiles={tiles} scope="TTC" notes={['more than 5½ min late']} caption="Grey = within normal day-to-day change" captionTitle="rule" excluding="Excluding Oct 11 this week, Oct 4 last week" excludingTitle="Oct 4, 11 left out: gaps in our recordings those days" />);
+  const view = () => render(<WeekTable tiles={tiles} scope="TTC" notes={['more than 5½ min late']} caption="Grey = within normal day-to-day change" captionTitle="rule" excluding="Excluding Oct 11 and Oct 4" excludingTitle="Oct 4, 11 left out: gaps in our recordings those days" />);
 
   it('is a real table: measures as row headers, This week and Last week as column headers', () => {
     view();
     const table = screen.getByRole('table');
     expect(within(table).getAllByRole('columnheader').map(h => h.textContent)).toEqual(['Measure TTC', 'This week', 'Last week']);
-    expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Run time', 'Extra wait', 'Bunching', 'Service delivered']);
+    expect(within(table).getAllByRole('rowheader').map(h => h.textContent)).toEqual(['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']);
   });
   it('puts this week and last week in their own columns, bunching in two parts that add up to the total', () => {
     view();
@@ -30,7 +30,7 @@ describe('WeekTable', () => {
     const { container } = view();
     expect(container.querySelectorAll('[data-tone]').length).toBe(2); // late and bunching moved; the other three match
     const rows = screen.getAllByRole('row');
-    const runTime = rows.find(r => r.textContent?.startsWith('Run time'))!;
+    const runTime = rows.find(r => r.textContent?.startsWith('Trip time'))!;
     expect(runTime.querySelector('[data-tone]')).toBeNull();
     expect(runTime.getAttribute('title')).toMatch(/same as last week/);
   });
@@ -38,8 +38,8 @@ describe('WeekTable', () => {
     view();
     expect(screen.getByText('more than 5½ min late')).toBeTruthy();
     expect(screen.getByText('Grey = within normal day-to-day change').getAttribute('title')).toBe('rule');
-    expect(screen.getAllByText('Excluding Oct 11 this week, Oct 4 last week')).toHaveLength(1); // once, directly under the table
-    expect(screen.getByText('Excluding Oct 11 this week, Oct 4 last week').getAttribute('title')).toMatch(/left out: gaps in our recordings/);
+    expect(screen.getAllByText('Excluding Oct 11 and Oct 4')).toHaveLength(1); // once, directly under the table
+    expect(screen.getByText('Excluding Oct 11 and Oct 4').getAttribute('title')).toMatch(/left out: gaps in our recordings/);
   });
 });
 
@@ -53,7 +53,7 @@ describe('one arrow rule for all five rows', () => {
     render(<WeekTable tiles={kpiTiles(w, noisy)} />);
     const arrows = Object.fromEntries(screen.getAllByRole('row').slice(1).map(r => [r.querySelector('th')!.textContent, r.querySelector('[data-tone]')?.textContent ?? '']));
     // Late 7% and 7%, Extra wait 1.2 and 1.2 and Bunching 21% (14% · 7% against 12% · 9%: the same total) show nothing; Run time 31 against 32 and Delivered 99.8 against 99.9 always do.
-    expect(arrows).toEqual({ Late: '', 'Run time': '▼', 'Extra wait': '', Bunching: '', 'Service delivered': '▼' });
+    expect(arrows).toEqual({ Late: '', 'Trip time': '▼', 'Extra wait': '', Bunching: '', 'Service delivered': '▼' });
     // None of them beats the day-to-day spread here, so every arrow is grey.
     expect([...document.querySelectorAll('[data-tone]')].every(a => a.getAttribute('data-tone') === 'same')).toBe(true);
   });

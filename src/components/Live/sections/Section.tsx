@@ -1,16 +1,20 @@
 import type { ReactNode } from 'react';
-import { SectionTitle } from '../../ui/PageTitle';
+import PageSection from '../../ui/PageSection';
 import ErrorBoundary from '../../ErrorBoundary';
 
 /**
- * A titled page section of the Live route views. `shrink` lets wide content (a table, a chart) narrow inside a grid or
+ * A titled page section of the Live route views: the data pages' shared section (PageSection), with an error boundary. `shrink` lets wide content (a table, a chart) narrow inside a grid or
  * flex parent. `boundary` (the message to show) keeps the title on screen if the content fails to draw.
  */
-export default function Section({ id, title, shrink = false, boundary, children }: { id: string; title: string; shrink?: boolean; boundary?: string; children: ReactNode }) {
+export default function Section({ id, title, intro, shrink = false, boundary, children }: {
+  id: string; title: string;
+  /** The line under the title that says what the section shows. */
+  intro?: ReactNode;
+  shrink?: boolean; boundary?: string; children: ReactNode;
+}) {
   return (
-    <section className={shrink ? 'mt-12 min-w-0' : 'mt-12'} aria-labelledby={id}>
-      <SectionTitle id={id}>{title}</SectionTitle>
+    <PageSection id={id} title={title} intro={intro} shrink={shrink}>
       {boundary ? <ErrorBoundary label={boundary}>{children}</ErrorBoundary> : children}
-    </section>
+    </PageSection>
   );
 }

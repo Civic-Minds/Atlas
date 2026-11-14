@@ -1,24 +1,28 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router';
+import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
   LINK_LABELS, linkValueText,
   type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart,
 } from '../shared/liveDashboard';
-import { headwayAmount } from '../shared/headwayText';
+import { scheduledEveryText } from '../shared/headwayText';
 import { minutesText } from '../shared/liveFormat';
 import { SITE_URL } from '../shared/seo';
-import { useLiveDashboard } from './hooks/useLiveDashboard';
-import { devOnly, liveReportTitle } from './lib/liveReportData';
+import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
+import { devOnly, liveReportTitle, liveRouteTitleLabel } from './lib/liveReportData';
+import { RouteTitleName } from './components/RouteRowName';
 import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
-import { shortStopName } from './utils/stopLabel';
+import { stretchLabel } from './utils/stopLabel';
 import { TILE } from './pageStyles';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
+import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
+import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
@@ -33,20 +37,20 @@ import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
-import { BANDS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { liveBandNow } from './components/Live/liveBandNow';
+import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
+import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
-const DAYS: [Day, string][] = [['all', 'All days'], ['weekday', 'Weekdays'], ['weekend', 'Weekends']];
-export { BANDS };
 
 /** What is open in the detail panel: a stop (by its place in the direction's strip) or a marked stretch. */
 type Selection = { dir: number; kind: 'stop'; stopId: string } | { dir: number; kind: 'stretch'; mode: RouteStripMode };
 
-export { dirsOf };
 
-export const Group = PillGroup;
+const Group = PillGroup;
 
 function Fact({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
@@ -74,16 +78,15 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
   const strip = { label: v3.directionLabels[String(sel.dir)] };
   const buildup = data.buildup.find(b => b.directionId === sel.dir);
   const bunchBand = v3.bunching.find(b => b.directionId === sel.dir)?.bands[band];
-  const nice = (n: string) => shortStopName(n);
 
   if (sel.kind === 'stretch') {
     if (sel.mode === 'delay') {
       const f = buildup?.forms;
       if (!f) return null;
       return (
-        <Panel title={`${nice(f.fromName)} to ${nice(f.toName)}`} sub={strip.label}>
+        <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
-            <Fact label="Typical added" value={mins(f.medianAddedMin)} />
+            <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
             <Fact label="Trips where it grows" value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
             <Fact label="Typical delay" value={mins(f.medianDelayMin)} />
             <Fact label="1 in 10 later than" value={mins(f.p90DelayMin)} />
@@ -95,11 +98,11 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     if (!b) return null;
     const linked = b.links.filter(l => l.linked);
     return (
-      <Panel title={`${nice(b.fromName)} to ${nice(b.toName)}`} sub={strip.label}>
+      <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
           <Fact label="Gaps off the schedule" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
-        <Block title={linked.length ? 'Linked to' : 'Nothing measured here is linked to it'}>
+        <Block title={linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
             <Fact key={l.kind} label={`${l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
           ))}
@@ -124,7 +127,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
             {s.lateShare != null && <Fact label="Late" value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
           </>
         ) : <Fact label="Typical delay" value="not measured" />}
-        {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">Less exact here: vehicles report their location less often</p>}
+        {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
@@ -134,12 +137,12 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       )}
       {extra && (
         <Block>
-          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={`Scheduled every ${headwayAmount(extra.scheduledGapMin)}`} />
+          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
         </Block>
       )}
       {into && into.n > 0 && (
-        <Block title={`${nice(into.fromName)} to ${nice(into.toName)}`}>
-          <Fact label="Typical added" value={mins(into.medianAddedMin)} />
+        <Block title={stretchLabel(into.fromName, into.toName)}>
+          <Fact label={TYPICAL_ADDED} value={mins(into.medianAddedMin)} />
           <Fact label="Trips where it grows" value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
         </Block>
       )}
@@ -186,27 +189,31 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
 
 export default function LiveExplorePage() {
   const { agency = '', route = '' } = useParams();
+  const agencyName = useLiveAgencyName(agency);
   const state = useLiveDashboard(FEATURES.liveReports ? agency : null, route);
   const [link] = useState(() => readLink(currentSearch(), LIVE_ROUTE_URL));
   const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
   const [day, setDay] = useState<Day>(() => link.day ?? 'all');
-  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
+  const { agencies } = useAgencies();
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? liveBandNow(agencies.find(a => a.slug === agency)?.timezone));
   const [picked, setPicked] = useState<Selection | null>(null);
   useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', dir, day, band })); }, [dir, day, band]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
   useEffect(() => {
     if (!agency || !route) return;
-    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agency.toUpperCase()} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
-  }, [agency, route, routeTitle]);
+    applySeoToDocument(document, { title: liveReportTitle(routeTitle || `${agencyName} ${route}`), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
+  }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const title = `${agency.toUpperCase()} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live" className="mt-6">Open Live</ArrowLink> : null;
+  const title = `${agencyName} ${route}`;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
+  const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
-  if (state.kind === 'loading') return shell(<p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">Loading {title}…</p>);
-  if (state.kind === 'error') return shell(<><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{state.reason}</p>{back}</>);
+  if (state.kind === 'loading') return shell(<><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></>);
+  if (state.kind === 'error') return <EmptyPage title={title} body={state.reason} action={back} above={toAgency} maxWidth="max-w-[1600px]" />;
   const data = state.data;
   if (data.status !== 'ready') {
-    return shell(<><PageTitle className="mt-24">{title}</PageTitle><p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{data.status === 'no_analysis' ? devOnly(data.reason) : data.reason}</p>{back}</>);
+    return <EmptyPage title={title} body={data.status === 'no_analysis' ? devOnly(data.reason) : data.reason} action={back} above={toAgency} maxWidth="max-w-[1600px]" />;
   }
   const v3 = (() => { try { return withNiceNames(data.v3); } catch { return data.v3; } })();
   const bandData = v3.bands?.[band] as DashboardBandData;
@@ -241,12 +248,13 @@ export default function LiveExplorePage() {
 
   return shell(
     <article className="pb-16 pt-10 sm:pt-14">
+      <div className="mb-2">{toAgency}</div>
       <div className="flex flex-col gap-1 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4">
-        <div className="min-w-0"><PageTitle>{data.routeTitle || title}</PageTitle></div>
+        <div className="min-w-0"><PageTitle>{data.routeTitle ? <RouteTitleName label={liveRouteTitleLabel(data.routeTitle, route)} /> : title}</PageTitle></div>
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
           <RouteSubtitle v3={v3} agency={agency} route={route} />
         </p>
-        {FEATURES.live && <ArrowLink href="/apps/live" className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
       </div>
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
@@ -256,7 +264,7 @@ export default function LiveExplorePage() {
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
         <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
           options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
+        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
       <ErrorBoundary label={BOUNDARY('Along the route')}>
@@ -265,13 +273,13 @@ export default function LiveExplorePage() {
 
       <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
         before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
-      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY('Run time')} />
-      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY('Where delays build up')} />
+      <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
+      <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
       <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
       <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
       <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="x-stops" shrink boundary={BOUNDARY('Stops most often late')} onPick={pickStop} canPick={onStrip} />
-      <ErrorBoundary label="How this is measured could not be drawn."><MethodSection scope="route" data={data} /></ErrorBoundary>
+      <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );
 }

@@ -1,3 +1,4 @@
+import { originVariantText } from '../../../utils/nameCase';
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
@@ -192,7 +193,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     selectedRouteOutOfFilter,
     hideFilterNotices,
     unevenEnabled: FEATURES.unevenBanner,
-    variantShortNames: FEATURES.routeVariants && variantFamily ? variantFamily.members.map(m => m.shortName) : null,
+    variantShortNames: FEATURES.routeVariants && variantFamily ? variantFamily.members.map(m => originVariantText(m.shortName)) : null,
     agency: routeAgency ? { name: routeAgency.name, feedReviewStatus: routeAgency.feedReviewStatus, overrideNote: routeAgency.overrideNote, manualFeedSource: routeAgency.manualFeedSource } : undefined,
     routeOverrideNote,
     routeIsStale,
@@ -490,6 +491,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
+                            wrapLongValue
                             label={row.label}
                             headway={grade ?? undefined}
                             limited={grade == null}
@@ -531,6 +533,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     <CardDirectionRow
                       labelWeight="regular"
                       singleLine
+                      wrapLongValue
                       key={span.feature ? `s${si}` : 'smulti'}
                       label={span.label}
                       limited

@@ -19,7 +19,7 @@ const pilot = {
       routeShortName: '1', routeName: 'Alpha',
       tripDuration: { firstLabel: 'Jun 2015', firstMinutes: 40, lastLabel: 'Jun 2024', lastMinutes: 50 },
       snapshots: [
-        snap(2015, 52, { h: 30, p: { midday: 20 } }, 15),
+        snap(2015, 52, { h: 30, p: { midday: 20 }, tp: { midday: 12 } }, 15),
         snap(2019, 60, { h: 30, p: { midday: 24 } }, 15),
         snap(2024, 12, { h: 30, p: { midday: 30 } }),
       ],
@@ -50,13 +50,16 @@ const saturday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Sa
 const weekday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Weekday' };
 
 describe('History on Saturday (CIV-1425)', () => {
-  it("route card rows, chart and box read Saturday's values by time of day, with no shared-stretch range and no trip time", async () => {
+  it("route card rows, chart and box read Saturday’s values by time of day, with Saturday’s own shared-stretch range and no trip time", async () => {
     const c = await open('/apps/history?agency=mbta&hroute=1&year=2024&p=midday', pilot, saturday, 'Jun 2015');
     const text = c.textContent ?? '';
-    expect(text).toContain('every 20 min');
+    // CIV-1431: the 2015 Saturday stores its own shared stretch (12 at midday), so its row reads as a range,
+    // and never the weekday's (15–52); 2019's Saturday stores none, so it stays a plain value.
+    expect(text).toContain('every 12–20 min');
     expect(text).toContain('every 24 min');
     expect(text).toContain('every 30 min');
     expect(text).not.toContain('every 15–52 min');
+    expect(text).not.toContain('every 15–24 min');
     expect(text).not.toContain('every 52 min');
     expect(c.querySelector('svg path')).not.toBeNull();
     expect(c.querySelector('[data-testid="history-frequency"]')?.textContent).toBe('Frequency: 20 → 30 min');
@@ -69,12 +72,13 @@ describe('History on Saturday (CIV-1425)', () => {
     expect(c.textContent).toContain('no trips');
   });
 
-  it('the agency list reads Saturday values, "no trips" rows, and no missing-values notice for a pilot agency', async () => {
+  it('the agency list reads Saturday values, leaves out routes with no trips that day, and has no missing-values notice for a pilot agency', async () => {
     // Waits for a row, not the list heading: the rows can render a moment after it (CI, PR #1457).
-    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Nightless');
+    const c = await open('/apps/history?agency=mbta&year=2024&p=midday', pilot, saturday, 'Alpha');
     const text = c.textContent ?? '';
     expect(text).toContain('Biggest changes first');
-    expect(text).toContain('no trips');
+    // CIV-1434: even under All, as the main map drops a route with no service then.
+    expect(text).not.toContain('Nightless');
     expect(text).toContain('30 min');
     expect(text).toContain('+6');
     expect(text).not.toContain('12 min');
@@ -90,7 +94,7 @@ describe('History on Saturday (CIV-1425)', () => {
 
   it('an agency with no Saturday values by time of day says so once', async () => {
     const c = await open('/apps/history?agency=other&year=2024&p=midday', other, saturday, 'Biggest changes first');
-    expect(c.textContent).toContain("Saturday values by time of day aren't available for this agency yet.");
+    expect(c.textContent).toContain("Saturday values by time of day aren’t available for this agency yet.");
   });
 });
 

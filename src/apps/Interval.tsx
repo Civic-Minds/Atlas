@@ -33,12 +33,15 @@ import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
+import { liveHandoffSettled, mapFocusRoute } from '../utils/routeFocus';
+import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import { getPolledRoute } from '../../shared/livePollingConfig';
 import { resolveRouteSelectionForDay, routeOnAnyDay } from '../utils/routeSelection';
 import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlParamUpdate } from '../utils/urlSchema';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
+import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
@@ -56,7 +59,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -736,7 +739,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [mapA, setMapA] = useState<maplibregl.Map | null>(null);
   const routeCardBack = useMemo(() => {
     const target = resolveRouteCardBack({ selectedRoute, nightServiceView, nightListRoute, nearYouRoute, hasUserLocation: !!userLocation });
-    if (target?.kind === 'nearYou') return { to: 'Near You', onClick: () => setSelectedRoute(null) };
+    if (target?.kind === 'nearYou') return { to: NEAR_YOU_TITLE, onClick: () => setSelectedRoute(null) };
     if (target?.kind === 'nightList') {
       return {
         to: NIGHT_LIST_TITLE,
@@ -848,7 +851,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     };
   });
   usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
-  usePersistedFilterPref('atlas_pref_day', day, filtersFromUrl.day);
+  usePersistedFilterPref(DAY_PREF_KEY, day, filtersFromUrl.day);
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {
@@ -1054,7 +1057,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [selectedRoute, selectedStop, disambiguationRoutes, selectedAgencySlug, onDemandStopAgencySlug, externalPanelOpen, dismissMapSelection]);
 
-  // Live mode: hand a live route to Live's card. Live then owns the route param.
+  // Live mode: hand a live route to Live's card. Live then owns the route param, and its pick is the map's
+  // selection (liveMapRoute below), so the map keeps the shared selected-route fade and framing.
+  const { overlay: liveOverlay } = useLiveVehiclesMapOverlay();
+  const liveOverlayRef = useRef(liveOverlay);
+  liveOverlayRef.current = liveOverlay;
+  // The handed route stays the map's selection until Live has taken it (liveHandoffSettled).
+  const [liveHandoff, setLiveHandoff] = useState<{ route: string; liveRouteAtHandoff: string | null } | null>(null);
   const handedToLiveRef = useRef(false);
   useEffect(() => {
     if (!onLiveRouteSelected || !selectedRoute) return;
@@ -1065,9 +1074,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const rsn = (feature?.properties as ShapeProperties | undefined)?.routeShortName;
     if (!rsn || !getPolledRoute(agencySlug, rsn)) return;
     handedToLiveRef.current = true;
+    setLiveHandoff({ route: selectedRoute, liveRouteAtHandoff: mapFocusRoute(liveOverlayRef.current?.focus) });
     onLiveRouteSelected(agencySlug, rsn);
     setSelectedRoute(null);
   }, [onLiveRouteSelected, selectedRoute, layers]);
+  const liveFocusRoute = mapFocusRoute(liveOverlay?.focus);
+  const liveMapRouteKey = liveOverlay?.mapRouteKey ?? null;
+  const liveOpen = !!liveOverlay;
+  useEffect(() => {
+    if (liveHandoff && liveHandoffSettled(liveHandoff, liveOpen ? { route: liveFocusRoute, mapRouteKey: liveMapRouteKey } : null)) setLiveHandoff(null);
+  }, [liveHandoff, liveOpen, liveFocusRoute, liveMapRouteKey]);
+  const liveMapRoute = liveHandoff?.route ?? liveMapRouteKey;
 
   // Sync selected route and stop to URL — replaceState via shared merge so
   // concurrent writers (day, map center, filters) don't clobber each other.
@@ -1176,6 +1193,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             period={period}
             q={q}
             selectedRoute={selectedRoute}
+            liveSelectedRoute={liveMapRoute}
             highlightRoutes={highlightRoutes}
             hoveredSearchRoute={hoveredSearchRoute}
             hoveredBranch={hoveredBranch}
@@ -1582,7 +1600,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
 
       {headerPortalContainer && createPortal(
-        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : ''}`}>
+        <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : 'pointer-events-auto'}`}>
           <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {historyView ? (
               <FilterChips

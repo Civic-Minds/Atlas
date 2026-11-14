@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
@@ -52,9 +53,10 @@ import type { NightServiceFrequency } from '../../../shared/nightService';
 import { markAtlasLatest } from '../../lib/performance';
 import { isOnDemandStopShown, isOnDemandZoneShown, localDateIn, onDemandHoursConfirmed, onDemandStopZoneNames } from '../../../shared/onDemandAvailability';
 import Panel from '../ui/Panel';
+import { pickLiveVehicles } from './map/liveVehiclePick';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -147,6 +149,8 @@ interface MapCanvasProps {
   period: TimePeriod;
   q: string;
   selectedRoute: string | null;
+  /** The route Live's card has open, in the map's key form: the map's selection while Interval has none of its own. */
+  liveSelectedRoute?: string | null;
   /** Debug-only: draw these routes on the map in distinct colors, independent of selectedRoute.
    * Not exposed in any UI -- set via ?highlight=agency::routeId,agency::routeId2 in Interval.tsx. */
   highlightRoutes?: string[];
@@ -249,6 +253,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   period,
   q,
   selectedRoute,
+  liveSelectedRoute = null,
   highlightRoutes = [],
   hoveredSearchRoute = null,
   hoveredBranch = null,
@@ -807,6 +812,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       const map = mapRef.current;
       if (!map) return;
 
+      // A Live vehicle dot belongs to Live's own click handler (vehicle card), not the route picker.
+      if (pickLiveVehicles(deckOverlayRef.current, e.point).length > 0) return;
+
       if (selectedAgencySlugRef.current) {
         setSelectedAgencySlugRef.current?.(null);
       }
@@ -1131,7 +1139,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     trackEvent('report_issue_opened', { source: 'map_context_menu' });
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
+    const body = `**Location:** ${url}\n\n**What’s wrong:**\n\n`;
     const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
     window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);
@@ -1225,13 +1233,27 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     );
   };
 
+  // A route Live has open is the map's selection too: once the main map hands a route to Live's card (Interval
+  // clears its own pick so its card stays closed), Live's pick drives the same selected-route styling and framing.
+  const mapSelectedRoute = selectedRoute ?? liveSelectedRoute;
+  // Live's card is not the regular route card: frame a Live route clear of where that card really is.
+  const liveCardRef = liveOverlay?.cardRef;
+  const liveFramePadding = useMemo(
+    () => (liveCardRef && !selectedRoute
+      ? (map: maplibregl.Map) => (cardInFramingPlace(map, liveCardRef.current) ? cardFramePadding(map, liveCardRef.current) : null)
+      : null),
+    [liveCardRef, selectedRoute],
+  );
+
   useSelectionFraming(mapRef, mapLoaded, {
-    agencies, layers, selectedAgencySlug, selectedRoute, selectedStop, initialOnDemandSlug,
-    initialMapCenter, areaFocus, resetViewKey, regionalView,
+    agencies, layers, selectedAgencySlug, selectedRoute: mapSelectedRoute, selectedStop, initialOnDemandSlug,
+    initialMapCenter, areaFocus, resetViewKey, regionalView, framePadding: liveFramePadding,
+    // A Live vehicle card frames its vehicle; the route it belongs to must not refit over that.
+    vehicleCardOpen: !selectedRoute && !!liveOverlay?.vehicleCardId,
   });
 
   useRouteStyling(mapRef, mapLoaded, {
-    agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
+    agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
     frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
@@ -1300,7 +1322,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             className="justify-start gap-2"
           >
             <Flag className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
+            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">{REPORT_A_PROBLEM}</span>
           </ListRow>
         </Panel>
       )}

@@ -28,7 +28,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -324,7 +324,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         <div className="relative">
-          <button onClick={() => toggle('day')} className={chipClass(true)}>Day<Dot show /></button>
+          <button onClick={() => toggle('day')} className={chipClass(true)}>{DAY_LABEL}<Dot show /></button>
           {openChip === 'day' && <div className={`${PANEL} w-40`}>
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
@@ -334,7 +334,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
           options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
-          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
+          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>{MODE_LABEL}<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>
             {modesForView(MODES, 'frequent-service').map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
           </div>}
@@ -374,7 +374,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const dayChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('day')} className={chipClass(true)}>
-        Day
+        {DAY_LABEL}
         <Dot show={true} />
       </button>
       {openChip === 'day' && (
@@ -397,7 +397,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const periodChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('period')} className={chipClass(true)}>
-        Time
+        {TIME_LABEL}
         <Dot show={true} />
       </button>
       {openChip === 'period' && (
@@ -446,7 +446,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const modeChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-        Mode
+        {MODE_LABEL}
         <Dot show={selectedModes.size > 0} />
       </button>
       {openChip === 'mode' && (
@@ -516,12 +516,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {/* Frequency */}
             <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
             {/* Day */}
-            <PickerSection title="Day"><DayPicker value={day} onChange={setDay} /></PickerSection>
+            <PickerSection title={DAY_LABEL}><DayPicker value={day} onChange={setDay} /></PickerSection>
             {/* Time */}
-            <PickerSection title="Time"><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
+            <PickerSection title={TIME_LABEL}><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
             {/* Mode */}
             <div>
-              <p className={`${CARD_SECTION} mb-1.5`}>Mode</p>
+              <p className={`${CARD_SECTION} mb-1.5`}>{MODE_LABEL}</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>

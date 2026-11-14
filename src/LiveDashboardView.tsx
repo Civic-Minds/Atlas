@@ -1,33 +1,36 @@
 import DataTable from './components/ui/DataTable';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { dateRangeText, runTimeTileStretch, weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, weekNotComparableLine, type Kpi } from './utils/liveKpi';
+import { useMemo, useState, type ReactNode } from 'react';
+import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
+import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
-import DirectionStrip from './components/Live/DirectionStrip';
+import DirectionStrip, { StripsLegend } from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
-import { syncUrlParams } from './utils/syncUrlParams';
 import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { TILE } from './pageStyles';
+import { KPI_TILE } from './components/Live/kpiTileStyle';
 import ArrowLink from './components/ui/ArrowLink';
-import { SectionTitle } from './components/ui/PageTitle';
-import MethodSection from './components/Live/sections/MethodSection';
+import Section from './components/Live/sections/Section';
 import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 
 const MIN_N = 30;
 
 
+/** The change arrow's colour by its tone: the tiles and the week table colour a change the same way. */
+const TONE_TEXT: Record<KpiTone, string> = { better: 'text-[var(--status-positive-text)]', worse: 'text-[var(--status-negative-text)]', same: 'text-[var(--text-muted)]' };
+
 function Delta({ k }: { k: Kpi }) {
-  if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">No comparison with last week</span>;
-  const mark = k.delta.tone === 'better' ? 'text-[var(--status-positive-text)]' : k.delta.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]';
+  if (!k.delta) return <span className="text-xs text-[var(--text-dim)]">{LIVE_NO_WEEK_COMPARISON}</span>;
+  const mark = TONE_TEXT[k.delta.tone];
   return (
     <span className="flex items-baseline gap-1 text-xs tracking-tight" aria-label={k.delta.spoken} title={k.delta.spoken}>
       {k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`text-2xs ${mark}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
@@ -36,11 +39,10 @@ function Delta({ k }: { k: Kpi }) {
   );
 }
 
-/** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 /** The Yesterday tiles: the same five figures for one day, against the same weekday a week before (CIV-278). */
-export function YesterdayTiles({ y, tiles }: { y: LiveYesterday; tiles?: Kpi[] }) {
+export function YesterdayTiles({ y }: { y: LiveYesterday }) {
   if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
-  const ks = (tiles ?? kpiTiles(y.weekly, y.daily)).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
+  const ks = kpiTiles(y.weekly, y.daily).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
   // The comparison is named in the page subtitle ("Thursday, Oct 15, compared with Thursday, Oct 8"), not under the tiles.
   return <KpiTiles tiles={ks} caption={y.weekly.comparable ? '' : NOT_ENOUGH_YESTERDAY} />;
 }
@@ -52,9 +54,10 @@ export const yesterdayHours = (y: LiveYesterday) => ({
   hours: y.lateByHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
 });
 
+/** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
   const w = v3.weekly;
-  if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">This week against last week is not in this analysis file.</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
+  if (!w) return <><p className="mt-4 text-sm text-[var(--text-muted)]">{LIVE_WEEK_NOT_IN_FILE}</p><DevHint hint={ANALYZE_DEV_HINT} /></>;
   return <KpiTiles tiles={kpiTiles(w, weekDailyValues(v3), 'both directions')} caption={weekNotComparableLine(w)} />;
 }
 
@@ -62,36 +65,14 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 export function KpiTile({ k, className = '', math, bare = false, caption = false }: { k: Kpi; className?: string; /** With `bare`: still show the one caption line under the figure. */ caption?: boolean; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${TILE} flex list-none flex-col px-2.5 ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
-      <div className="text-sm font-bold text-[var(--text-muted)]">{k.label}</div>
-      <div className="mt-1 text-3xl font-black tracking-tight">{k.value}</div>
+    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+      <div className={KPI_TILE.label}>{k.label}</div>
+      <div className={KPI_TILE.value}>{k.value}</div>
       {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
-      {math && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{math}</div>}
-      {k.scope && !bare && <div className="mt-0.5 text-xs leading-4 text-[var(--text-dim)]">{k.scope}</div>}
+      {math && !bare && <div className={KPI_TILE.line}>{math}</div>}
+      {k.scope && !bare && <div className={KPI_TILE.line}>{k.scope}</div>}
       <div className={`mt-auto ${bare && caption ? 'pt-0.5' : 'pt-2'}`}><Delta k={k} /></div>
     </li>
-  );
-}
-
-/** The week's figures as rows for a narrow column: the name, the figure, the change from last week; under it, the line that explains the math where there is one. */
-export function KpiRows({ tiles, math, caption, captionTitle }: { tiles: Kpi[]; /** Per tile key, the line that explains how the figure is worked out. */ math?: Partial<Record<Kpi['key'], string>>; caption?: string | null; /** Hover text for the caption (the full rule behind it). */ captionTitle?: string }) {
-  return (
-    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
-      <ul className="m-0 p-0">
-        {tiles.map(k => (
-          <li key={k.key} className={`list-none border-b border-[var(--border-primary)] py-1 last:border-b-0 ${k.n < MIN_N ? 'opacity-60' : ''}`}
-            title={`${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}>
-            <div className="grid grid-cols-[max-content_max-content_minmax(0,1fr)] items-baseline gap-x-1.5">
-              <span className="text-xs font-bold text-[var(--text-muted)]">{k.label}</span>
-              <span className="text-sm font-black tracking-tight">{k.value}</span>
-              <Delta k={k} />
-            </div>
-            {[(k.key === 'bunching' && !math?.bunching) || (k.key === 'late' && !math?.late) ? k.sub : null, math?.[k.key]].filter(Boolean).map(line => <div key={line} className="text-xs leading-4 text-[var(--text-dim)]">{line}</div>)}
-          </li>
-        ))}
-      </ul>
-      {caption && <p className="m-0 mt-1.5 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
-    </section>
   );
 }
 
@@ -114,7 +95,6 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excluding?: string | null;
   excludingTitle?: string;
 }) {
-  const arrowTone = (t: Kpi['delta']) => (t?.tone === 'better' ? 'text-[var(--status-positive-text)]' : t?.tone === 'worse' ? 'text-[var(--status-negative-text)]' : 'text-[var(--text-muted)]');
   return (
     <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
       <DataTable
@@ -126,20 +106,21 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
           { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
           { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
-              {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${arrowTone(k.delta)}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
+              {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
           { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
         ]}
       />
-      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)]" title={excludingTitle}>{excluding}</p>}
+      {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
+      {excluding && <p className="m-0 mt-1 border-t border-[var(--border-primary)] pt-1 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={excludingTitle}>{excluding}</p>}
       {notes && notes.length > 0 && (
         <ul className={`m-0 list-none p-0 text-pretty ${excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
-          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)]">{n}</li>)}
+          {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
         </ul>
       )}
-      {caption && <p className="m-0 mt-1 text-xs leading-4 text-[var(--text-dim)]" title={captionTitle}>{caption}</p>}
+      {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
     </section>
   );
 }
@@ -190,16 +171,14 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
-    <section aria-labelledby="dash-strip" className="mt-10">
-      <SectionTitle id="dash-strip">Along the route</SectionTitle>
-      <p className="mt-1 max-w-3xl text-sm text-[var(--text-muted)]">
-        Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.
-      </p>
+    <Section id="dash-strip" title="Along the route" intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
         </div>
       )}
+      {/* One key for every direction shown, above the strips as in the Full analysis, as the map's route card shows its key once (CIV-1448). */}
+      <StripsLegend v3={v3} directionIds={dirs.map(d => d.directionId)} band="all" uncertain={uncertain} />
       {dirs.length ? (
         <div className="mt-4 grid gap-x-8 gap-y-10">
           {dirs.map(d => {
@@ -207,19 +186,19 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             return (
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
+                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} legend={false} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{d.label}: {n}</p>)}
               </div>
             );
           })}
         </div>
-      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">No stops were measured.</p>}
-    </section>
+      ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOPS_MEASURED}</p>}
+    </Section>
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, title, filters, toFull, lite = false, yesterday = null }: {
-  v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[]; note: string | null; title: string;
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false, yesterday = null }: {
+  v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[];
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;
@@ -228,7 +207,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
   /** The lite view's Yesterday figures, when the Yesterday pill is on. */
   yesterday?: LiveYesterday | null;
 }) {
-  const bad = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+  const bad = liveDrawError;
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
@@ -236,8 +215,6 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
-      {/* The week's method, open: how the figures above are counted (not shown over a single day, whose days counted say nothing about it). */}
-      {!yesterday && <ErrorBoundary label={bad('How this is measured')}><MethodSection scope="week" v3={v3} toFull={toFull} /></ErrorBoundary>}
     </>
   );
   return (
@@ -248,11 +225,10 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, titl
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
+      <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
-      <MethodSection scope="week" v3={v3} toFull={toFull} />
     </>
   );
 }

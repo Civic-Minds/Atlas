@@ -1,10 +1,11 @@
 import React from 'react';
 import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
-import { Info } from 'lucide-react';
+import { ChevronRight, Info } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
-import { HeadwayBadge, LimitedBadge } from './cardUi';
+import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
+import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
 interface Props {
@@ -56,6 +57,10 @@ interface Props {
   onClick?: () => void;
   /** While the sparkline is hovered: keep the row's pre-hover size so the card does not jump. */
   holdLayout?: boolean;
+  /** A trailing chevron: the row opens a list (Live's direction rows). Off by default. */
+  chevron?: boolean;
+  /** Any other figure at the right end of the row, in place of a frequency (Live's vehicle delay). */
+  value?: React.ReactNode;
 }
 
 /**
@@ -82,7 +87,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -90,16 +95,23 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
-  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText;
+  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText || value != null;
   const valueWords = limited ? limitedLabel : rangeText ?? (headway != null ? headwayLabel : undefined);
-  const longValue = wrapLongValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
-  const singleLine = singleLineProp && !longValue;
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const valueRef = React.useRef<HTMLSpanElement>(null);
+  // CIV-1465 (Ryan, 2026-11-13: "same as the other one i thin split it into 2 lines"): a long value in two parts ("every
+  // 60 min" / "until 5:05 PM") stays in the value column on two right-aligned lines, the list rule (CIV-1300).
+  const twoLineValue = wrapLongValue && !limited && headway != null && !showRange && twoPart(headwayLabel);
+  const longValue = wrapLongValue && !twoLineValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
+  // CIV-1165 (Ryan, 2026-11-13: "i wonder if instead we should wrap the destination text if needed", then "1"): a destination
+  // name is never cut. With a short value the value stays on the row's first line at the right and the name wraps onto a
+  // second line beneath itself, as in the route lists.
+  const wrapName = wrapLongValue && !longValue;
+  const singleLine = singleLineProp && !longValue && !wrapName;
   const valueEnd = valueEndProp || longValue;
   // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
   const listRow = !!routeName;
   // Measured only while not held, so the held size is always the pre-hover layout.
-  const rowRef = React.useRef<HTMLDivElement>(null);
-  const valueRef = React.useRef<HTMLSpanElement>(null);
   const heldSize = React.useRef<HeldSize | null>(null);
   React.useLayoutEffect(() => {
     if (holdLayout || !rowRef.current) return;
@@ -123,12 +135,12 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
       onMouseLeave={onHoverEnd}
       {...keyboardFocusHover(onHoverStart, onHoverEnd)}
     >
-      <div className={`flex ${singleLine || listRow ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
+      <div className={`flex ${singleLine || listRow || wrapName ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >
-          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
+          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : singleLine ? label : keepLastWord(label)}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {edgeGapAllowance && (
@@ -147,13 +159,15 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           )}
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
               the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour
               number (the filter's, as a one-number row uses), the slower of the two, so a range never looks better than that row would. */}
           {!limited && rangeText && <HeadwayBadge headway={headway!} colorHeadway={Math.max(headway!, colorHeadway ?? headway!)} label={rangeText} />}
+          {value}
         </span>}
+        {chevron && <ChevronRight aria-hidden="true" className="w-3 h-3 text-[var(--text-dim)] shrink-0" />}
       </div>
       {subLabel && (subLabelTrailing ? (
         <span className={`text-xs ${subLabelWeight === 'medium' ? 'font-medium' : 'font-bold'} text-[var(--text-dim)] flex min-w-0 mt-0.5`}>

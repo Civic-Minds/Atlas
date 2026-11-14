@@ -142,10 +142,11 @@ describe('naming the days, with the reason', () => {
     expect(leftOutReason(['2026-10-13', '2026-10-14'])).toBe('Oct 13, 14 left out: gaps in our recordings those days');
     expect(leftOutReason([])).toBeNull();
   });
-  it('names the week that left days out where this week and last week are compared', () => {
-    expect(excludingWeeksText(['2026-10-11'], ['2026-10-04'])).toBe('Excluding Oct 11 this week, Oct 4 last week');
-    expect(excludingWeeksText(['2026-10-11'], [])).toBe('Excluding Oct 11 this week');
-    expect(excludingWeeksText([], ['2026-10-05'])).toBe('Excluding Oct 5 last week');
+  it('names the days left out where this week and last week are compared, this week first (Ryan, CIV-910)', () => {
+    expect(excludingWeeksText(['2026-10-11'], ['2026-10-04'])).toBe('Excluding Oct 11 and Oct 4');
+    expect(excludingWeeksText(['2026-10-12', '2026-10-11'], ['2026-10-04'])).toBe('Excluding Oct 11, Oct 12 and Oct 4');
+    expect(excludingWeeksText([], ['2026-10-04'])).toBe('Excluding Oct 4');
+    expect(excludingWeeksText(['2026-10-11'], [])).toBe('Excluding Oct 11');
     expect(excludingWeeksText([], [])).toBeNull();
   });
 });

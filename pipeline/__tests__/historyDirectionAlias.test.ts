@@ -50,6 +50,18 @@ describe('direction-split routes in History (#1285)', () => {
     expect(lim.routes.Yellow[0].v2).toEqual({ refDate: '20230901', rep: { lim: true } });
   });
 
+  it("weekend days keep their per-period and shared-stretch values when two directions merge, as the weekday's do (CIV-1431)", () => {
+    const merged = worseSidecarEntry(
+      { v2: { rep: { h: 10 }, sat: { h: 20, p: { midday: 20, late: 30 }, t: 10, tp: { midday: 12 } }, sun: { lim: true, p: { midday: 60 } } } } as never,
+      { v2: { rep: { h: 12 }, sat: { h: 30, p: { midday: 25, late: null }, t: 14, tp: { midday: 9 } }, sun: { h: 40, p: { midday: 50 } } } } as never,
+    ) as { v2: { sat: unknown; sun: unknown } };
+    expect(merged.v2.sat).toEqual({ h: 30, p: { midday: 25, late: null }, t: 14, tp: { midday: 12 } });
+    expect(merged.v2.sun).toEqual({ lim: true, p: { midday: 60 } });
+    // A trunk only where both directions have one; none stays exactly none.
+    const one = worseSidecarEntry({ v2: { rep: { h: 10 }, sat: { h: 20, t: 10 } } } as never, { v2: { rep: { h: 12 }, sat: { h: 30 }, sun: { none: true } } } as never) as { v2: { sat: unknown; sun?: unknown } };
+    expect(one.v2.sat).toEqual({ h: 30 });
+  });
+
   it('a direction with no value in a period leaves the route without one there (blank, null), as today', () => {
     expect(worseSidecarEntry({ v2: { rep: {} } }, { v2: { rep: { h: 10 } } }).v2.rep).toEqual({});
     expect(worseArchiveChange({ headway: 10, headwayByPeriod: { late: null } as never }, { headway: 12, headwayByPeriod: { late: 30 } as never }).headwayByPeriod).toEqual({ late: null });

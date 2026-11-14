@@ -6,8 +6,22 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
+- **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
+- **The About page no longer describes an all-day value or threshold**: the map has no All day option, so the filter note now speaks only of periods
+- **Live writes minutes the way the map does**: "every 8–10 min", "7.5 min", "2 min late", where it had half minutes, numbers with no unit and "+2 min late"
+- **One name for each thing**: "Report a problem", "Trip time" on Live (it was also "Run time"), "Day / Time / Mode" on the phone filters and "On-demand" on the agency card
+- **Live names agencies by their own short name in link previews and missing-route messages**: "MiWay", not "MIWAY"
+- **Small wording fixes**: "Near you", "1 match" and "1 stop" instead of "1 matches" and "1 stops", "Search routes…" like the other search boxes, and the Extra wait empty message reads "at this time of day"
+- **Apostrophes are curly everywhere on the site**: notices, errors and Live text used straight ones while the About and story pages used ’
+- **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
+- **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")
+- **Live's Routes table writes run time as the tile does**: "6% faster" instead of a bare "−6%", and added minutes always show one decimal, so a column doesn't mix "+3 min" with "+1.6 min"
+- **Live shows the stop-strip colour key once per section**: it repeated under every direction
+- **Route cards no longer show feed names in capitals**: NJ Transit 1's variants line and the chart key read "Ivy Hill Loop", as the rows do
 - **A route card leaves out its "Shared stretch" row when a destination row already shows the same number, and route lists start their range where the card does**: once rows count every bus on their stretch, the shared row often repeated it
 - **Route card rows count every bus on their stretch of road**: a row read only the buses signed to its destination, so a stretch several destinations share looked less frequent than it is (TTC 927 AM 10 → 5)
+- **Route cards never cut a destination name**: a row like TTC 52's "to Pearson Airport via Di…" now wraps the name onto a second line, with its frequency staying on the first line at the right
 - **Snowmass shows the "still being verified" notice on its new schedule**: route 3 now reads every 30 all week; the notice turns off by itself when the next schedule file arrives
 - **The frequent service story map's steps say what the map now draws, with a route count under each**: the text still described rush-hour-only cuts after the map switched to weekday routes and the main map's limited-service rule
 - **A period that starts slowly says when steady service starts**: TTC Line 5's AM peak read every 20 from two early gaps, though trains come every few minutes from 7:27; its card now names that time and the longest wait after it
@@ -38,6 +52,18 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Shared stops with uneven service show their longest wait instead of nothing**: the [TTC 102](https://github.com/Civic-Minds/Atlas/issues/1088) stretch to Warden had no rush-hour value, and a blank hid that buses still come
 - **Compare's loading and "couldn't load" pills sit at the bottom right, beside the map controls**: they report both maps, so they no longer sit against the divider under map A
 - **NJ Transit is [one agency](https://github.com/Civic-Minds/Atlas/issues/1303)**: bus and rail were listed as two, unlike SEPTA and LA Metro; old NJ Transit Bus and Rail pages and map links open the combined agency
+- **Live shortens a [stop name](https://github.com/Civic-Minds/Atlas/issues/1235) the same way everywhere**: SEPTA, MARTA and [MBTA stops](https://github.com/Civic-Minds/Atlas/issues/1237) no longer read as codes like "FS" or "BAY C"
+- **Live is one mode that opens on the vehicles**: a route's card matches the regular card, including its [scheduled frequency](https://github.com/Civic-Minds/Atlas/issues/1234) (TTC 29), counts every vehicle, and loads lateness and arrivals
+- **Live has a vehicle card and frames what you click**: a vehicle shows its direction, destination, speed and on-time status
+- **Live's place list says what each agency offers**: "Vehicles" or "Vehicles + performance", and Toronto no longer lists [York Region](https://github.com/Civic-Minds/Atlas/issues/900) routes
+- **Live zooms and closes without freezing**: zoom pauses are gone, and leaving Live hides it at once
+- **Live has a whole-TTC page and a planner screen**: this week against last on five measures, and every analysed route coloured by measure and time of day
+- **Live route pages open on a shareable summary, with a full analysis view**
+- **Live's [lateness](https://github.com/Civic-Minds/Atlas/issues/866) is measured one way, on good days only**: "Late" is leaving the end of the line over 5½ min behind, and bad days are left out
+- **Live reports cover the rolling 7 days and always agree**
+- **Live charts, tiles and stop lists read clearly and the same everywhere**: one late-by-hour chart, run time in minutes, delay and bunching on the route strip, "Few measurements" where data is thin, and stop names in full
+- **Live pages fit on one screen**: headers and switchers fit one line, the planner's notes show only where they apply, and phones draw the route strip too
+- **Live report tables match the area and agency page tables**: numbers line up at the right edge, spacing is the same, and a route's row opens its report
 
 ## [3.4.0] - 2026-11-09
 

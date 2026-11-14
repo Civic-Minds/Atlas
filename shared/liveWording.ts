@@ -1,26 +1,53 @@
 import { dateRangeText } from './liveDashboard';
 import { clockTime } from './timeText';
+import { countOf } from './overflowText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
  * cannot drift apart.
  */
 
-/** The Late tile's caption under its percentage. */
 /** What Late means, once, for every page, panel and the glossary (approved by Ryan 2026-10-17). Reads after "Late:". */
-export const LATE_DEFINITION = "more than 5½ min behind the schedule: the TTC's 5-minute standard, plus 30 seconds because we see each vehicle about once a minute.";
+/** The route strip's delay legend (E22, Ryan, CIV-1075): "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind". The early step shows only when a stop is ahead. */
+/** The name of how long a trip takes end to end, on Live and the map alike (Ryan, CIV-1160 question 6, 2026-11-13: "Trip time", not "Run time"). */
+export const TRIP_TIME_LABEL = 'Trip time';
+export const DELAY_LEGEND_TITLE = 'Typical delay';
+export const EARLY_STEP_LABEL = '1+ min ahead';
+/** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
+export const DELAY_STEP_LABELS = ['On time', '1–3 min', '3+ min behind'] as const;
+
+export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = 'more than 5½ min late';
-/** The short line for the tool's left panel and tile maths: the threshold and where it comes from. */
-export const LATE_SHORT = `${LATE_THRESHOLD} (TTC's 5-min standard + 30 s)`;
+
+/** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
+export const DELAY_STARTS_TITLE = 'Where delays start';
+/** The column and figure label for the typical minutes a stretch adds (CIV-1448). */
+export const TYPICAL_ADDED = 'Typical added';
+
+/**
+ * The line under "Stops most often late", the same on the agency page and the route's Full analysis (CIV-1448):
+ * "The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across all analysed routes." on the
+ * agency page; "… late (stops with 30+ departures)." on a route. With no dates, the days are left out.
+ */
+export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
+  const d = o.dates ?? [];
+  const days = d.length ? `, ${dateRangeText(d[0], d[d.length - 1])}` : '';
+  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ' (stops with 30+ departures)'}.`;
+};
+
+/** The faded-mark note under a chart, one sentence everywhere (CIV-1448): "Paler bars rest on fewer than 30 trips." */
+export const fadedNoteText = (minN: number, unit: string, marks: 'bars' | 'dots' = 'bars'): string => `Paler ${marks} rest on fewer than ${minN} ${unit}.`;
+
+/** The Late tile's caption under its percentage. */
 export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */
 export const weekOfText = (from: string, to: string): string => `Week of ${dateRangeText(from, to)}`;
 
-/** The hover line of a late-by-hour chart (approved by Ryan), by the hour trips start: "2 pm: 8 of 167 trips left the end of the line late". */
+/** The hover line of a late-by-hour chart (approved by Ryan), by the hour trips start: "2 PM: 8 of 167 trips left the end of the line late". */
 export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${late.toLocaleString()} of ${total.toLocaleString()} trips left the end of the line late`;
 
 /** Late departures in an hour, from its late share and its count (the share is that count over the total). */
@@ -33,25 +60,22 @@ export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
 
 /** The Yesterday view (CIV-278, wording approved by Ryan). */
-export const PERIOD_PILLS = { week: 'This week', yesterday: 'Yesterday' } as const;
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
 /** "Thursday, Oct 15": a single day where the weekly view says "Week of Oct 8–14". */
 export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRangeText(date, date)}`;
 /** A tile's change line against the same weekday a week before: "last week 9%" becomes "last Thursday 9%" ("same as last week" likewise). */
 export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week/, `last ${weekdayOf(compareDate)}`);
-/** The Yesterday subtitle's opening, like the week's "Week of Oct 8–14, compared with Oct 1–7": "Thursday, Oct 15, compared with Thursday, Oct 8". */
-export const dayComparedWith = (date: string, compareDate: string): string => `${dayText(date)}, compared with ${dayText(compareDate)}`;
 export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.';
 
 /** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */
 export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRangeText(from, to)}`;
 
-/** The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC". */
-export const estimatedNote = (agency: string): string => `estimated from vehicle positions, not reported by the ${agency.toUpperCase()}`;
+/** The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC". `agency` is its short name (useLiveAgencyName), never the slug in capitals. */
+export const estimatedNote = (agency: string): string => `estimated from vehicle positions, not reported by the ${agency}`;
 
 /**
- * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC streetcar routes ·
+ * A Live page subtitle (approved by Ryan): "Week of Oct 8–14, compared with Oct 1–7 · 9 TTC routes ·
  * estimated from vehicle positions, not reported by the TTC · data up to Oct 14". `middle` is the page's own count (routes or trips);
  * "compared with" only when the two weeks can be compared.
  */
@@ -61,18 +85,23 @@ export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readon
   return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRangeText(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');
 }
 
-/** "9 TTC streetcar routes": the routes a page covers, naming the mode only when every one is a streetcar (GTFS route_type 0). */
-export function coveredRoutesText(agency: string, routes: ReadonlyArray<{ mode?: number }>): string {
-  const streetcar = routes.length > 0 && routes.every(r => r.mode === 0);
-  return `${routes.length} ${agency.toUpperCase()} ${streetcar ? 'streetcar ' : ''}route${routes.length === 1 ? '' : 's'}`;
+/**
+ * "9 TTC routes": the routes a page covers. No mode word: a streetcar timetable can run entirely as replacement buses
+ * (503, 507), which the agency figures can't tell apart (Ryan, CIV-1075).
+ */
+export function coveredRoutesText(/** The agency's short name (useLiveAgencyName). */ agency: string, routes: ReadonlyArray<unknown>): string {
+  return `${routes.length} ${agency} route${routes.length === 1 ? '' : 's'}`;
 }
 
-/** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp. */
+/** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp (shared/timeText.ts). */
 export function builtText(iso: string): string {
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(iso));
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Toronto', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(new Date(iso));
   const p = (t: string) => parts.find(x => x.type === t)?.value ?? '';
   return `Built ${p('month')} ${p('day')}, ${clockTime(Number(p('hour')) * 60 + Number(p('minute')))}`;
 }
+
+/** The heading at the foot of every Live page (MethodFootnote), and the name its draw error uses. */
+export const METHOD_TITLE = 'How this is measured';
 
 /** The four group labels of "How this is measured", the same on every Live page. */
 export const METHOD_GROUPS = {
@@ -83,10 +112,16 @@ export const METHOD_GROUPS = {
 } as const;
 
 /** The recording-gaps limit, said once per page. */
-export const RECORDING_GAPS = "days with gaps in our recordings are left out, and trips during those gaps aren't counted.";
+export const RECORDING_GAPS = "are times our recording missed, such as when the feed went down. Trips during a gap aren’t counted, and days with gaps are left out.";
 
 /** Run time against the timetable in whole minutes: "2 min faster than the schedule" (the tile's caption), or without the tail in a table cell. */
 export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the schedule' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the schedule' : ''}`);
+
+/** A run time against the schedule as a share: "7% faster", "3% slower", or "on time" when it rounds to 0% (the tile and the Routes table, CIV-945, CIV-1448). */
+export function runTimeShareText(over: number): string {
+  const p = Math.round(Math.abs(over) * 100);
+  return p === 0 ? 'on time' : `${p}% ${over < 0 ? 'faster' : 'slower'}`;
+}
 
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
@@ -133,13 +168,12 @@ export function leftOutReason(dates: readonly string[]): string | null {
 }
 
 /**
- * Where this week and last week are compared: "Excluding Oct 11 this week, Oct 4 last week" (only the week that left days
- * out is named). Null when every day of both weeks counted.
+ * Where this week and last week are compared, the days left out in one list, this week's first (Ryan, CIV-910):
+ * "Excluding Oct 11", "Excluding Oct 11 and Oct 4", "Excluding Oct 11, Oct 12 and Oct 4". Null when every day of both
+ * weeks counted.
  */
 export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readonly string[]): string | null {
-  const t = leftOutList(thisWeek), l = leftOutList(lastWeek);
-  if (t && l) return `Excluding ${t} this week, ${l} last week`;
-  if (t) return `Excluding ${t} this week`;
-  if (l) return `Excluding ${l} last week`;
-  return null;
+  const days = [...[...new Set(thisWeek)].sort(), ...[...new Set(lastWeek)].sort()].map(d => dateRangeText(d, d));
+  if (!days.length) return null;
+  return `Excluding ${days.length === 1 ? days[0] : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`}`;
 }

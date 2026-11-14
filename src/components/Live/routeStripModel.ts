@@ -3,9 +3,11 @@
  * stop, which stops get a label without labels overlapping, the screen-reader summary, and how a direction is read
  * from the Live analysis file (v3).
  */
-import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
+import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { minutesText, pct, tenth } from '../../../shared/liveFormat';
+import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { countOf } from '../../../shared/overflowText';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -45,20 +47,43 @@ export type Step = 'early' | 0 | 1 | 2;
 export const DELAY_STEP_LIMITS = [1, 3] as const;
 /** A typical departure this many minutes early or more is its own (blue) step, not "on time". */
 export const EARLY_STEP_MIN = 1;
-/** The early step's legend label (approved by Ryan, CIV-283). */
-export const EARLY_STEP_LABEL = '1+ min early';
+/** The early step's legend label (Ryan, CIV-1075 E22: "ahead", as in the Ahead definition). */
+export { EARLY_STEP_LABEL };
 /** Bunching steps: share of gaps too short or too long. */
 export const BUNCHING_STEP_LIMITS = [0.15, 0.25] as const;
 export const MIN_N = 30;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
-  delay: ['On time', '1–3 min late', '3+ min late'],
+  delay: DELAY_STEP_LABELS,
   bunching: ['Under 15%', '15–25%', '25% or more'],
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
-  delay: 'Typical delay',
-  bunching: 'Gaps too short or too long',
+  delay: DELAY_LEGEND_TITLE,
+  bunching: 'Bunching',
 };
+/** The words both strips (RouteStrip, BranchStrip) write, kept in one place so the two cannot drift apart (CIV-1160). */
+/** A track's name in its hover and screen-reader text. */
+export const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
+/** The screen-reader table's caption: "Eastbound: delay and bunching at each stop". */
+export const stripTableCaption = (label: string): string => `${label}: delay and bunching at each stop`;
+/** The screen-reader table's column headers. */
+export const STRIP_COLUMNS = { stop: 'Stop', delay: 'Typical delay', late: 'Late', bunch: 'Gaps off', n: 'Departures' } as const;
+/** A table cell or hover value with nothing measured. */
+export const NOT_MEASURED_CELL = 'not measured';
+/** The phone list's switch between key stops and every stop. */
+export const SHOW_KEY_STOPS = 'Show key stops only';
+export const showAllStopsText = (n: number): string => `Show all ${countOf(n, 'stop')}`;
+/** What a screen reader calls the strip. */
+export const STRIP_ROLE = 'route strip';
+/** The legend's extra keys. */
+export const LESS_EXACT = 'Less exact';
+export const fewerThanText = (minN: number): string => `Fewer than ${minN} departures or gaps`;
+export const NOT_MEASURED_KEY = 'Not measured';
+/** A bunching value in the hover: "12% of gaps off". */
+export const gapsOffText = (pct: string): string => `${pct} of gaps off`;
+
+/** Words after a legend's last step (E23: "25% or more of gaps"). */
+export const LEGEND_LAST_STEP_TAIL: Partial<Record<RouteStripMode, string>> = { bunching: ' of gaps' };
 
 /** The colour token for a step. The values live in styles/index.css, with their dark and colour-vision versions. */
 export const stepColor = (mode: RouteStripMode, step: Step) => `var(--strip-${mode}-${step})`;
@@ -96,13 +121,11 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
-const MINUS = '−';
-const num = (x: number) => (Math.round(x * 10) / 10).toString().replace('-', MINUS);
-export const pct = (x: number) => `${Math.round(x * 100)}%`;
-/** "+3.1 min late", "−2 min early", "on time". */
+export { pct };
+/** "3.1 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5). */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
-  return min > 0 ? `+${num(min)} min late` : `${num(min)} min early`;
+  return `${minutesText(Math.abs(min))} ${min > 0 ? 'late' : 'early'}`;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
@@ -211,7 +234,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   }
   const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${stops.length} stops: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${countOf(stops.length, 'stop')}: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');
@@ -233,7 +256,7 @@ export function bunchParts(stop: RouteStripStop): { total: number; bunched: numb
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
-    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(num(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
   const parts = bunchParts(stop);
@@ -268,7 +291,7 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
       const b = bunchingById.get(s.stopId);
       return {
         stopId: s.stopId,
-        name: nameCase(s.name, 'stop'),
+        name: nameCase(s.name, 'liveStop'),
         delayMin: s.n > 0 ? s.medianMin : null,
         lateShare: s.n > 0 ? s.lateShare : null,
         bunchingShare: b && b.n > 0 ? b.badShare : null,
@@ -285,9 +308,23 @@ export function routeStripFromV3(v3: LiveV3, directionId: number, band: Dashboar
   const bForms = bunchingBand?.kind === 'forms' ? bunchingBand.forms : null;
   return {
     directionId,
-    label: v3.directionLabels[String(directionId)] ?? `Direction ${directionId}`,
+    label: directionLabel(v3, directionId),
     stops,
     delaysStart: forms ? { fromStopId: forms.fromStopId, toStopId: forms.toStopId } : null,
     bunchingForms: bForms ? { fromStopId: bForms.fromStopId, toStopId: bForms.toStopId } : null,
+  };
+}
+
+/**
+ * What the strip key lists for a set of stops (one direction, or every direction a section draws): the less exact,
+ * faded, not measured and early keys show only when a stop needs them. The straight strip, the branch strip and the
+ * one key under a section of strips all read it here (CIV-1448).
+ */
+export function stripLegendFlags(stops: readonly RouteStripStop[], modes: readonly RouteStripMode[], minN: number): { anyUncertain: boolean; anyFaded: boolean; anyMissing: boolean; anyEarly: boolean } {
+  return {
+    anyUncertain: modes.length > 0 && stops.some(s => !!s.uncertain),
+    anyFaded: stops.some(s => modes.some(m => stopN(s, m) > 0 && stopN(s, m) < minN)),
+    anyMissing: stops.some(s => modes.some(m => stopStep(s, m) == null)),
+    anyEarly: modes.includes('delay') && stops.some(s => stopStep(s, 'delay') === 'early'),
   };
 }

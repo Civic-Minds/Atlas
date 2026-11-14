@@ -40,7 +40,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A route with no all-day value stays without one**
-  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route.
+  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route. The all-day value is internal (the map has no All day option); riders see only the "limited".
   - Why: a peak-only route is not all-day service.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rules 7, 8 and 11, [#899](https://github.com/Civic-Minds/Atlas/issues/899)
 - **The route grade follows the existing branch and steady filter rule**
@@ -280,7 +280,7 @@ Implementation choices, confirmed by Ryan on 2026-11-01:
 Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, recommendations 1, 2 and 4 of the run-shape study. A row's headline is replaced by the wait a rider arriving at random faces on the main stretch (CIV-1161: the time-weighted median gap, in the headline's own window: midday, then PM peak, then all day) only when that wait is 10+ minutes longer than the headline, and only when the direction runs through that window at every boarding stop with a reading, by the settled verdicts.
 - Midday: the midpoint and hole test (FREQUENCY_RULES rule 5) and the #899 midday test (rule 7).
 - PM peak: the midpoint and hole test.
-- All day: the direction is not limited (rule 7).
+- All day (the internal 07:00-22:00 window, not a map option): the direction is not limited (rule 7).
 
 Why: a peak route's last morning and first afternoon trips reaching into midday are not a five-hour wait. Examples are TTC 945 (every 10 to 9:28, then 14:40) and CAT Harrisburg 14 (five trips a day).
 - A blocked row keeps its headline and tier. It is marked as having no regular cadence in the headline's window, so no fallback prints the headline as "every N". Route cards already read "Runs irregularly in this period" there (wording from CIV-1238).

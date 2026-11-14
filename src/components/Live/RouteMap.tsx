@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { FloatingMapCard, MapHoverTip, type MapCardAt } from './MapCard';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
-import type { MapMeasure, RouteMapModel } from './routeMapModel';
+import { stopDotPaint } from '../Interval/map/stopStyle';
+import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from './routeMapModel';
+import type { HeatPoint } from './delayHeatModel';
 import { frameRoute } from '../Interval/map/routeFraming';
+import { FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
 
 export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string; route?: string } | { kind: 'stop'; stopId: string };
 
@@ -28,6 +32,8 @@ interface Props {
   padding?: { top: number; bottom: number; left: number; right: number };
   /** Distance of the zoom buttons from the right edge, px: the main map's 12, more where a panel floats over the map's right side. */
   controlsRight?: number | string;
+  /** Where delay starts (the CIV-942 prototype): a soft dot per stop, with a sharp centre where no stops are drawn already. */
+  heat?: HeatPoint[] | null;
   className?: string;
 }
 
@@ -43,23 +49,23 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
  * with a dot at each stop in the same colour. Segments and stops can be clicked; the picked one is marked. A segment or
  * stop with no value is drawn grey. Frames the route whenever `frameKey` changes.
  */
-export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, className = '' }: Props) {
+export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, heat = null, className = '' }: Props) {
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
   const pick = useRef(onPick);
   pick.current = onPick;
-  const latest = useRef({ model, measure, selected, frameKey, padding });
-  latest.current = { model, measure, selected, frameKey, padding };
+  const latest = useRef({ model, measure, selected, frameKey, padding, heat });
+  latest.current = { model, measure, selected, frameKey, padding, heat };
   const framed = useRef<string | null>(null);
-  const [at, setAt] = useState<{ x: number; y: number; w: number } | null>(null);
+  const [at, setAt] = useState<MapCardAt | null>(null);
   const anchorRef = useRef(anchor);
   anchorRef.current = anchor;
   const place = () => {
     const map = mapRef.current, a = anchorRef.current;
     if (!map || !a) { setAt(null); return; }
     const p = map.project(a);
-    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth });
+    setAt({ x: p.x, y: p.y, w: map.getContainer().clientWidth, h: map.getContainer().clientHeight });
   };
   const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
   const latestHl = useRef(highlightRoute);
@@ -69,10 +75,21 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     const map = mapRef.current;
     if (!map || !ready.current) return;
     // The load handler calls an older draw: everything it frames with is read from the latest props.
-    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad } = latest.current;
+    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad, heat: hp } = latest.current;
     const seg = map.getSource('segments') as maplibregl.GeoJSONSource | undefined;
     const stp = map.getSource('stops') as maplibregl.GeoJSONSource | undefined;
-    if (!seg || !stp) return;
+    const hs = map.getSource('heat') as maplibregl.GeoJSONSource | undefined;
+    if (!seg || !stp || !hs) return;
+    hs.setData({
+      type: 'FeatureCollection',
+      features: (hp ?? []).map(p => ({
+        type: 'Feature' as const,
+        properties: { added: p.addedMin, name: p.name, color: stepColor('delayStarts', mapStep('delayStarts', p.addedMin)), dot: m.stops.length ? 0 : 1 },
+        geometry: { type: 'Point' as const, coordinates: p.lonLat },
+      })),
+    });
+    // Other routes fade by the map's one fade amount; under Delay starts every line is already at half, so they fade by half of it.
+    map.setPaintProperty('seg', 'line-opacity', me === 'delayStarts' ? ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY / 2, 0.5] : ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1]);
     seg.setData({
       type: 'FeatureCollection',
       features: m.segments.map(s => ({
@@ -109,9 +126,21 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addSource('stops', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
-      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], 0.25, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
+      map.addLayer({ id: 'seg', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
       map.addLayer({ id: 'seg-sel', type: 'line', source: 'segments', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
-      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 6], 'circle-stroke-color': halo, 'circle-stroke-width': 1.5 } });
+      // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
+      // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.
+      const [, top] = MAP_STEP_LIMITS.delayStarts;
+      map.addSource('heat', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      const size = (z: number) => ['interpolate', ['linear'], ['get', 'added'], 0, 2 + z * 0.3, top, 6 + z, top * 4, 9 + z * 1.5];
+      map.addLayer({ id: 'heat', type: 'circle', source: 'heat', layout: { 'circle-sort-key': ['get', 'added'] }, paint: {
+        'circle-color': ['get', 'color'],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, size(2), 15, size(8)] as unknown as maplibregl.ExpressionSpecification,
+        'circle-blur': ['case', ['>=', ['get', 'added'], 0.25], 0.6, 0],
+        'circle-opacity': ['case', ['>=', ['get', 'added'], 0.25], 0.85, 0.7],
+      } });
+      map.addLayer({ id: 'heat-dot', type: 'circle', source: 'heat', filter: ['all', ['==', ['get', 'dot'], 1], ['>=', ['get', 'added'], 0.25]], layout: { 'circle-sort-key': ['get', 'added'] }, paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 15, 5], 'circle-stroke-color': halo, 'circle-stroke-width': 1 } });
+      map.addLayer({ id: 'stp', type: 'circle', source: 'stops', paint: stopDotPaint(light) as unknown as maplibregl.CircleLayerSpecification['paint'] });
       map.addLayer({ id: 'stp-sel', type: 'circle', source: 'stops', filter: ['==', ['get', 'sel'], 1], paint: { 'circle-color': ['get', 'color'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 6, 15, 11], 'circle-stroke-color': light ? '#111827' : '#ffffff', 'circle-stroke-width': 2 } });
       ready.current = true;
       draw();
@@ -125,7 +154,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       else pick.current(null, null);
     });
     map.on('mousemove', e => {
-      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'seg'] })[0];
+      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'heat-dot', 'heat', 'seg'] })[0];
       map.getCanvas().style.cursor = hit ? 'pointer' : '';
       const text = hit ? String(hit.properties?.name ?? hit.properties?.label ?? '') : '';
       setTip(text ? { x: e.point.x, y: e.point.y, text } : null);
@@ -138,7 +167,7 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     return () => { ro.disconnect(); ready.current = false; map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(draw, [model, measure, selected, frameKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [model, measure, selected, frameKey, heat]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (centerOn && mapRef.current) mapRef.current.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -146,18 +175,12 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
-      <div className="pointer-events-auto absolute bottom-6 z-20" style={{ right: controlsRight }}>
+      {/* Phones zoom by pinching, so the + and − buttons show only from sm up, as on the regular map. */}
+      <div className="pointer-events-auto absolute bottom-6 z-20 max-sm:hidden" style={{ right: controlsRight }}>
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
       </div>
-      {at && card && (
-        <div className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
-          style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: at.y, width: 260, transform: at.y < 280 ? 'translateY(16px)' : 'translateY(calc(-100% - 16px))' }}>
-          {card}
-        </div>
-      )}
-      {tip && !card && (
-        <div className="pointer-events-none absolute z-20 whitespace-nowrap rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 text-xs font-bold shadow-sm" style={{ left: tip.x + 12, top: tip.y + 12 }}>{tip.text}</div>
-      )}
+      {at && card && <FloatingMapCard at={at} padding={padding}>{card}</FloatingMapCard>}
+      {tip && !card && <MapHoverTip {...tip} />}
     </div>
   );
 }

@@ -19,7 +19,7 @@ describe('Night list when the map has no routes', () => {
   it('says it is zoomed out, not that no routes run (CIV-1337)', async () => {
     viewport = { bounds, zoom: 6 };
     renderNight();
-    expect(await screen.findByText('Zoomed out. Some less frequent routes are hidden')).toBeInTheDocument();
+    expect(await screen.findByText('Zoomed out. Some less frequent routes are hidden.')).toBeInTheDocument();
     expect(screen.queryByText(/No routes here run/)).not.toBeInTheDocument();
   });
 
