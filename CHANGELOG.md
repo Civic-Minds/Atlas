@@ -20,7 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live shows the stop-strip colour key once per section**: it repeated under every direction
 - **Route cards no longer show feed names in capitals**: NJ Transit 1's variants line and the chart key read "Ivy Hill Loop", as the rows do
 - **A route card leaves out its "Shared stretch" row when a destination row already shows the same number, and route lists start their range where the card does**: once rows count every bus on their stretch, the shared row often repeated it
-- **Route card rows count every bus on their stretch of road**: a row read only the buses signed to its destination, so a stretch several destinations share looked less frequent than it is (TTC 927 AM 10 → 5)
+- **Route card rows count every bus on their stretch of road**: a row read only the buses signed to its destination, so a stretch several destinations share looked less frequent than it is
 - **Route cards never cut a destination name**: a row like TTC 52's "to Pearson Airport via Di…" now wraps the name onto a second line, with its frequency staying on the first line at the right
 - **Snowmass shows the "still being verified" notice on its new schedule**: route 3 now reads every 30 all week; the notice turns off by itself when the next schedule file arrives
 - **The frequent service story map's steps say what the map now draws, with a route count under each**: the text still described rush-hour-only cuts after the map switched to weekday routes and the main map's limited-service rule
