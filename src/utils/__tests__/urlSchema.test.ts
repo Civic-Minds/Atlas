@@ -121,6 +121,10 @@ describe('older names and odd values still read', () => {
     expect(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', day: 'all', band: 'midday' })).toEqual({ view: 'explore', day: null, band: 'midday' });
     expect(readLink('?route=504&band=pmPeak&measure=bunching&seg=a>b', LIVE_TOOL_URL)).toMatchObject({ route: '504', band: 'pmPeak', measure: 'bunching', segment: 'a>b' });
     expect(linkUpdate(LIVE_TOOL_URL, { view: null, tab: null, measure: 'late' })).toEqual({ view: null, tab: null, measure: null });
+    // CIV-1451: the Live map has no All day (the map has none, CIV-1097): an old band=all link reads as absent and opens on
+    // the current period; the period is always written.
+    expect(readLink('?band=all', LIVE_TOOL_URL).band).toBeUndefined();
+    expect(linkUpdate(LIVE_TOOL_URL, { band: 'midday' })).toEqual({ band: 'midday' });
     expect(readLink('?sort=delivered', LIVE_AGENCY_URL).sort).toBe('delivered');
     // Live's band shares p with the map's period, and is always written while a route is open.
     expect(readLink('?p=midday', LIVE_MAP_URL).band).toBe('midday');

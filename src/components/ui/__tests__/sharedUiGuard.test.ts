@@ -84,7 +84,8 @@ const ALLOWED: Record<string, string[]> = {
   'components/Live/LiveRoutePerformance.tsx': ['hand-rolled grey note'],
   // Live sidebars never scroll, so LiveVehicles keeps its own height (CIV-1117 LV2, dropped).
   'apps/LiveVehicles.tsx': ['route label written by hand', 'hand-rolled grey note', 'hand-rolled sidebar card top or height'],
-  'LiveToolPage.tsx': ['hand-written back arrow'],
+  // Live's own "← TTC" (CIV-1446: Ryan kept the Live map's look), one component for the Live map and the route pages.
+  'components/Live/LiveBackLink.tsx': ['hand-written back arrow'],
   'components/Interval/panels/LiveStopArrivals.tsx': ['hand-rolled grey note', 'hand-rolled chip'],
   // SectionTitle always renders an h2; these item headings wait for its level prop (CIV-1117 LV10).
   'AboutPage.tsx': ['hand-rolled item heading'],

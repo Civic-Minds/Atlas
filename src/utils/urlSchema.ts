@@ -180,7 +180,9 @@ export const LIVE_ROUTE_URL = {
   view: oneOf<'lite' | 'dashboard' | 'analysis' | 'explore'>('view', ['dashboard', 'analysis', 'explore'], 'lite'),
   /** Explore's day and band, cleared when the route page opens without them. */
   day: oneOf<'all' | 'weekday' | 'weekend'>('day', ['weekday', 'weekend'], 'all'),
-  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS, 'all'),
+  /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
+   * opens on the agency's current period, as the map does. The Live map shares it. */
+  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS.filter(b => b !== 'all'), null),
 } as const;
 
 /** The Live tool page: its route, direction, band, measure and the picked stop or stretch. */

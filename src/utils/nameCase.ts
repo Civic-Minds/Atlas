@@ -5,11 +5,14 @@
  * - 'stop': stop and destination names; cased only when the feed sent them in capitals (CIV-935).
  * - 'route': one part of a route label; the stop rule plus the route-name acronyms (ROUTE_NAME_ACRONYMS).
  */
-/** 'liveStop' is 'stop' plus Live's own rule that WB and EB stay in capitals (Ryan, CIV-1117 row 6); the map keeps 'stop' until he OKs it there. */
+/**
+ * 'liveStop' is 'stop' plus Live's own rules: WB and EB stay in capitals (Ryan, CIV-1117 row 6), and a station's bay or
+ * platform reads as the station alone (liveStationName, CIV-1404); the map keeps 'stop' until he OKs it there.
+ */
 export type NameCaseMode = 'title' | 'stop' | 'liveStop' | 'route';
 
 export function nameCase(text: string, mode: NameCaseMode): string {
-  if (mode === 'liveStop') return directionCaps(stopNameCase(text));
+  if (mode === 'liveStop') return liveStationName(directionCaps(stopNameCase(text)));
   return mode === 'title' ? titleCase(text) : mode === 'stop' ? stopNameCase(text) : routeLabelCase(text);
 }
 
@@ -378,4 +381,23 @@ export function feedPlaceName(text: string): string {
 export function originVariantText(variant: string): string {
   const m = variant.trim().match(/^from\s+(.+)$/i);
   return m ? `from ${feedPlaceName(m[1])}` : variant;
+}
+
+/**
+ * CIV-1404 (Ryan, 2026-11-13: "do we need the 'bay 6' and 'dundas st west at dundas west outer platform'", then "1"): on
+ * Live a station's bay or platform is named by the station alone. "Broadview Station at Bay 6" and "Spadina Station
+ * Streetcar Platform" read "Broadview Station" and "Spadina Station"; "Dundas St West at Dundas West Outer Platform" reads
+ * "Dundas West Station". Every other name is left as it is.
+ */
+export function liveStationName(name: string): string {
+  // A bay is a number or a letter ("Bay 6", "Bay 4A", "Bay C"), never a street such as Bay St.
+  const atStation = /^(.+?\bStation)\s+(?:at\s+)?(?:Bay\s+(?:\d+[A-Z]?|[A-Z])|(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+Platform|Platform(?:\s+\d+)?)$/i.exec(name);
+  if (atStation) return atStation[1];
+  // "<street> at <station> Outer Platform": only a platform named by its kind, at a place with no street word in it, so
+  // "Main St at Eastbound Platform" or "… at Spadina Ave East Side Platform" stay as they are.
+  const platform = /^.+?\s+at\s+(.+?)\s+(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+Platform$/i.exec(name);
+  if (platform && !/\b(St|Ave|Rd|Blvd|Dr|Side|Hwy|Pkwy|Cres|Crt|Ln)\b/i.test(platform[1])) {
+    return /\bStation$/i.test(platform[1]) ? platform[1] : `${platform[1]} Station`;
+  }
+  return name;
 }
