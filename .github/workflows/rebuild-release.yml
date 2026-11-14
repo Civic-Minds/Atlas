@@ -167,6 +167,22 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
+      # Every route's and direction's period figures, small enough to upload for every agency, so
+      # two dry runs (an old rule and a new one) compare with scripts/diff-period-figures.ts.
+      - name: Summarize the period figures
+        if: always()
+        continue-on-error: true
+        run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
+
+      # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
+      # (The release manifest is written by the tile build, which only the publish job runs.)
+      - name: Record the build settings
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p tmp/derived-reprocess
+          printf '{"commit":"%s"}\n' "$(git rev-parse HEAD)" > tmp/derived-reprocess/build-settings.json
+
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
         id: summary
@@ -248,6 +264,8 @@ jobs:
           name: rebuild-report-dry-run-${{ github.run_id }}
           path: |
             tmp/derived-reprocess/report.json
+            tmp/derived-reprocess/period-figures.json
+            tmp/derived-reprocess/build-settings.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
           if-no-files-found: warn

@@ -18,6 +18,8 @@ export interface RouteCardRowContext {
   pooledMainH?: number;
   /** #1232: the row's group shows a Shared stretch / Combined row, the one shared value the group has. */
   sharedRowShown?: boolean;
+  /** CIV-1447: the main stretch's value, for a branch row that is its direction's only row (oneRowMainStretchHeadway). */
+  oneRowMainH?: number;
   /** The route's all-day contract, on All day only. */
   allDay?: { filterValue: number | null; limited: boolean };
   /** The route's contract for the selected period. */
@@ -97,9 +99,12 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // #962: a row whose number would be its unsteady direction's worst wait reads no regular service.
   const fallbackUnsteady = !nightRow && displayH === directionH && pooledH === undefined && !uneven && allDayH == null
     && variantH === undefined && unsteadyDirectionFallback(d, period, trips);
-  // CIV-1251 (Ryan, 2026-11-01): a branch row shows only its own number. The shared-stretch-to-branch range ("every 6–12")
-  // never shows on a card: the Shared stretch row gives the shared number. Lists keep their range.
-  const trunkHeadway = undefined;
+  // CIV-1251 (Ryan, 2026-11-01): a branch row shows only its own number; the Shared stretch row gives the shared number.
+  // CIV-1447 (Ryan, 2026-11-13): a branch row that is its direction's only row has no Shared stretch row above it, so it
+  // reads the range from the main stretch to itself ("every 15–54 min"), unless it has words of its own (a late start, an
+  // early end, a gap or an uneven period). The row draws the range only where the branch is slower (headwayRangeShown).
+  const ownWords = edgeText != null || uneven != null;
+  const trunkHeadway = hoveredHour == null && !nightRow && variantH === undefined && allDayH == null && !ownWords ? ctx.oneRowMainH : undefined;
   // The stop card's rule (hasRegularServiceInPeriod), so the two cards agree. #954: when
   // the route has no regular cadence in the period, a row still shows its own direction
   // value when it has one (SF Muni 8 PM: Fisherman's Wharf every 8), on data that carries

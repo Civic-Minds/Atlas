@@ -84,6 +84,18 @@ export function featuresForStage(features: StoryFeature[], stage: number, freque
 }
 
 /**
+ * CIV-1424: how many routes the map draws at a stage. The map draws one row per direction (and day), so the count is of
+ * routes, from the same rows `featuresForStage` gives the map, and follows the data rather than a written number.
+ */
+export function routeCountForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30): number {
+  const routes = new Set(featuresForStage(features, stage, frequencyMinutes).map(feature => {
+    const properties = (feature.properties ?? {}) as { routeId?: string; routeBranch?: string | null };
+    return `${properties.routeId ?? ''}::${properties.routeBranch ?? ''}`;
+  }));
+  return routes.size;
+}
+
+/**
  * Every route once, with `keep`: the last stage it is still shown at (each stage keeps a subset of the one before), so one
  * layer per stage can filter on it and the stages cross-fade as the SVG's paths did.
  */
@@ -154,6 +166,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
 
   const collection = useMemo(() => stageCollection(features, frequencyMinutes), [features, frequencyMinutes]);
   const bounds = useMemo(() => boundsOf(features), [features]);
+  const routeCount = useMemo(() => routeCountForStage(features, stage, frequencyMinutes), [features, stage, frequencyMinutes]);
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -217,15 +230,15 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 backdrop-blur">
           {stage === 0 && <>
             <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with the whole network.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is coverage: every route that reaches somewhere, whether it comes often or not.</p>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is coverage: every weekday route that reaches somewhere, whether it comes often or not.</p>
           </>}
           {stage === 1 && <>
-            <h2 className="text-3xl font-black tracking-tight">Remove rush-hour-only routes.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Some routes are built for the busiest hours and disappear when demand drops. Useful for commuters, but not service you can count on all day.</p>
+            <h2 className="text-3xl font-black tracking-tight">Remove limited-service routes.</h2>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Some routes are built for the busiest hours and disappear when demand drops, and some run only a few trips a day. Useful for some riders, but not service you can count on all day.</p>
           </>}
           {stage === 2 && <>
             <h2 className="text-3xl font-black tracking-tight">Keep routes that run through the day.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that continue beyond the commute. Service is more useful when it is still there when your trip does not fit rush hour.</p>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that run in the middle of the day. Night-only routes, like Toronto's 300 buses, drop out here. Service is more useful when it is still there when your trip does not fit rush hour.</p>
           </>}
           {stage === 3 && <>
             <h2 className="text-3xl font-black tracking-tight">Now measure how often it comes.</h2>
@@ -235,7 +248,10 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 pb-6 pt-4 text-xs text-[var(--text-muted)]">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">{researchRecord.agencyName}{ready && <BasemapCredit />}</span>
-        <span>{stage === 0 ? 'All route patterns' : stage === 1 ? 'Rush-hour-only patterns removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
+        <span className="flex flex-col items-start gap-y-1 sm:items-end sm:text-right">
+          <span>{stage === 0 ? 'All weekday routes' : stage === 1 ? 'Limited-service routes removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
+          {ready && <span className="tabular-nums">{routeCount} routes</span>}
+        </span>
       </figcaption>
     </figure>
   );

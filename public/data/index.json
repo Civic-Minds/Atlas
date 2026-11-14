@@ -1721,6 +1721,7 @@
         "Toronto"
       ],
       "region": "Ontario",
+      "mergeIdenticalShapeIds": true,
       "center": [
         43.7187,
         -79.4077
@@ -1735,7 +1736,7 @@
       "lastFeedExpiry": "20261221",
       "lastFeedVersion": "S1000544",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2253/latest.zip",
-      "lastRefreshedAt": "2026-11-01",
+      "lastRefreshedAt": "2026-11-13",
       "cities": [
         "Toronto, Ontario",
         "Etobicoke, Ontario",
@@ -1747,7 +1748,7 @@
         "Vaughan, Ontario"
       ],
       "timezone": "America/Toronto",
-      "lastRawArchiveKey": "unknown-6a2597e02c81c1c5",
+      "lastRawArchiveKey": "20261219-a2c8d495bf7b06fe",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -1755,9 +1756,9 @@
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
-          "shapeAnomalies": 4,
+          "shapeAnomalies": 0,
           "routeHeadwayMismatches": 4,
-          "featureCount": 1906,
+          "featureCount": 1877,
           "feedExpiry": "20261221",
           "routeCount": 230,
           "problemShapes": 0,
@@ -1767,7 +1768,7 @@
         },
         "checkedAt": "2026-11-13"
       },
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261221",
@@ -1779,8 +1780,9 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "c5d251493ebf8760",
-      "feedObtainedAt": "20261101",
-      "lastFeedStart": "20261101"
+      "feedObtainedAt": "20261113",
+      "lastFeedStart": "20261101",
+      "lastFeedContentKey": "393971d31c421e20"
     },
     {
       "slug": "windsor",
@@ -5689,6 +5691,7 @@
       "name": "CTtransit",
       "officialName": "CTtransit",
       "region": "Connecticut",
+      "mergeIdenticalShapeIds": true,
       "center": [
         41.765,
         -72.682
@@ -5706,7 +5709,7 @@
         "Hamden, Connecticut",
         "Hartford, Connecticut"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270109",
@@ -5733,7 +5736,8 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-13"
+        "checkedAt": "2026-11-13",
+        "scoredAt": "2026-11-13"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7289,10 +7293,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261111",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261211",
+      "expiredFeedCheckExpiry": "20261213",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7308,7 +7312,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-11"
+        "scoredAt": "2026-11-13"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7317,7 +7321,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "d9ac495308d6e1ff1037e27f3ec843f93853da7f827820c28d18faf3a14d7b8a"
+      "refusedFeedSha256": "3846f83773dea82dcdf0a99aadb13b1b594ecee7e2dcd139e93d8653d6eb9056"
     },
     {
       "slug": "hocts",
@@ -7754,6 +7758,7 @@
         -122.6593
       ],
       "region": "Oregon",
+      "mergeIdenticalShapeIds": true,
       "bbox": [
         45.29,
         -123.12,
@@ -7773,7 +7778,7 @@
         "Hillsboro, Oregon",
         "Vancouver, Washington"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270227",
@@ -7794,7 +7799,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-13"
+        "checkedAt": "2026-11-13",
+        "scoredAt": "2026-11-13"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -11283,7 +11289,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-11",
+      "lastRefreshedAt": "2026-11-13",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11302,7 +11308,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261111",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11336,15 +11342,17 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261125",
+          "feedExpiry": "20261127",
           "feedVersion": null,
-          "rawArchiveKey": "20261125-d5384f0c0df337ce"
+          "rawArchiveKey": "20261127-9bf1118bc78add6e"
         }
       ],
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "8a5859505ca2916d",
-      "feedObtainedAt": "20261111",
-      "lastFeedStart": "20260607"
+      "feedObtainedAt": "20261113",
+      "lastFeedStart": "20260607",
+      "lastRawArchiveKey": "20261212-cb1a2283abecc0af",
+      "lastFeedContentKey": "d8c2060fa7403749"
     },
     {
       "slug": "metrolink",
@@ -15376,6 +15384,7 @@
       "lastFeedExpiry": "20261219",
       "lastFeedVersion": "20261101",
       "region": "Illinois",
+      "mergeIdenticalShapeIds": true,
       "lastRefreshedAt": "2026-11-06",
       "cities": [
         "Waukegan, Illinois",
@@ -15389,7 +15398,7 @@
         "Tinley Park, Illinois",
         "Wheaton, Illinois"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20261219",
@@ -15413,7 +15422,8 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-13"
+        "checkedAt": "2026-11-13",
+        "scoredAt": "2026-11-13"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -17144,6 +17154,7 @@
         "0",
         "2"
       ],
+      "mergeIdenticalShapeIds": true,
       "cities": [
         "Trenton, New Jersey",
         "Passaic, New Jersey",
@@ -35963,41 +35974,50 @@
         "BC-SMI",
         "SMI-BC"
       ],
-      "lastFeedExpiry": "20260920",
-      "lastFeedVersion": "UTC: 27-May-2026 19:57",
-      "lastRefreshedAt": "2026-08-27",
+      "reviewFeedVersion": "UTC: 21-Oct-2026 21:10",
+      "lastFeedExpiry": "20261125",
+      "lastFeedVersion": "UTC: 21-Oct-2026 21:10",
+      "lastRefreshedAt": "2026-11-13",
       "cities": [
         "Snowmass Village, Colorado"
       ],
       "feedQuality": {
-        "status": "degraded",
-        "score": 65,
-        "reasons": [
-          "The schedule dates in this feed have passed."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 6,
-          "feedExpiry": "20260920"
+          "featureCount": 3,
+          "feedExpiry": "20261125",
+          "routeCount": 1,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
         },
-        "checkedAt": "2026-08-27",
-        "scoredAt": "2026-11-09"
+        "checkedAt": "2026-11-13"
       },
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261113",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270129",
       "timezone": "America/Denver",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "GTFS validation failed (4 error(s))",
-      "feedRefreshErrorAt": "20261019",
-      "feedRefreshRetryCount": 5,
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip",
-      "refusedFeedSha256": "ee761c854d335a47240bdf8249ada3146987b9106bda2020cbfa50949c638fc8"
+      "feedReviewStatus": "review",
+      "lastRawArchiveKey": "20270129-931f468e7ee25dc3",
+      "lastFeedContentKey": "3fd9eb8bd7cf3bfb",
+      "lastPeekedExpiry": "20270129",
+      "lastFeedStart": "20261019",
+      "lastServiceWeek": "3451d72eb8fa7a31",
+      "feedObtainedAt": "20261113"
     },
     {
       "slug": "winter-park",

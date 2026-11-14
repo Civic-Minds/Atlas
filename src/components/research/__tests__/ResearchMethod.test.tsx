@@ -15,6 +15,11 @@ describe('ResearchMethod (CIV-1167)', () => {
     expect(labels(container)).toEqual(['Date conducted:', 'Date updated:', 'Sample:', 'Sources:', 'What counted:', 'How we handled numbers:', 'Not found yet:', 'Rechecked:', 'Limitations:']);
   });
 
+  it('ends with "Corrections:" only on a page that fixed a published mistake (CIV-1171)', () => {
+    const { container } = render(<ResearchMethod parts={{ corrections: 'C', dateConducted: 'D', sample: 'Sa', sources: 'S', whatCounted: 'W', limitations: 'L' }} />);
+    expect(labels(container)).toEqual(['Date conducted:', 'Sample:', 'Sources:', 'What counted:', 'Limitations:', 'Corrections:']);
+  });
+
   it('shows an optional part only when the page passes it; "What we checked:" shows nowhere until it is given text', () => {
     const { container } = render(<ResearchMethod parts={{ dateConducted: 'D', sample: 'Sa', sources: 'S', whatCounted: 'W', limitations: 'L' }} />);
     expect(labels(container)).toEqual(['Date conducted:', 'Sample:', 'Sources:', 'What counted:', 'Limitations:']);

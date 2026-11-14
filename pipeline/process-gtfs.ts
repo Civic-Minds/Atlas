@@ -34,7 +34,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
-import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
+import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { configFromIndexEntry, withRegistryName } from '../shared/agencyRegistryName.js';
@@ -311,7 +311,8 @@ async function main() {
     };
     stampListingEnd(updated, listingEnd);
     if (upstreamFeedChanged(prev, calendarExpiry, feedVersion)) {
-      updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
+      updated.feedReviewStatus = reviewStatusForNewFeed(readFeedReviewHistory().agencies[slug] ?? [], updated.reviewFeedVersion, feedVersion);
+      if (updated.reviewFeedVersion && updated.reviewFeedVersion !== feedVersion) delete updated.reviewFeedVersion;
       delete updated.issueUrl;
       delete updated.overrideNote;
       if (prev.issueUrl || prev.overrideNote) console.log(`  ${formatOverrideUserFacingClearedLog(slug)}`);
