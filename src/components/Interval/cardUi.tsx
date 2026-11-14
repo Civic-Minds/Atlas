@@ -574,6 +574,21 @@ function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: st
   );
 }
 
+/** CIV-1300: a two-part value as two left-aligned lines, the dot beside the first (a route list's value column). */
+function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
+  const [first, second] = twoPartSplit(text) ?? [text, ''];
+  return (
+    <span className="inline-flex items-start gap-1 min-w-0">
+      {/* One text line tall, so the dot sits beside the first line. */}
+      <span className="flex h-[1.375em] items-center">{dot}</span>
+      <span className="flex flex-col items-start">
+        <span className="whitespace-nowrap">{first}</span>
+        <span className="whitespace-nowrap">{second}</span>
+      </span>
+    </span>
+  );
+}
+
 export function HeadwayBadge({
   headway,
   colorHeadway,
@@ -584,6 +599,7 @@ export function HeadwayBadge({
   suffixTone = 'dim',
   className = '',
   secondLine = false,
+  stacked = false,
 }: {
   headway: number;
   colorHeadway?: number | null;
@@ -597,6 +613,11 @@ export function HeadwayBadge({
   className?: string;
   /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
   secondLine?: boolean;
+  /**
+   * A route list's value column (CIV-1300, Ryan: "two lines with left justification"): words in two parts ("every 15 min,"
+   * "with one 32 min gap") always sit on two left-aligned lines, the dot beside the first, so the value keeps its column.
+   */
+  stacked?: boolean;
 }) {
   const colorMode = useColorMode();
   const words = label ?? fmtHeadway(headway);
@@ -607,7 +628,7 @@ export function HeadwayBadge({
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
+      {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );
