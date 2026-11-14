@@ -48,10 +48,13 @@ export function agencyTime(slug: string, d = new Date()): string {
   return clockTime(n('hour') * 60 + n('minute'));
 }
 
-/** The period now at the agency, when the archive has it (late night included), else all day. */
-function livePeriod(data: SegmentDelayData, slug: string): SegmentBand {
-  const key = periodKeyForHour(agencyHour(slug));
-  return key && (data.headways ?? []).some(h => h.bands[key]) ? (key as SegmentBand) : 'all';
+/**
+ * The period at `hour` when the archive has figures for it; null when no period covers it (late night, overnight). Then
+ * "Right now" shows no scheduled comparison: the whole day's timetable is never shown as the hour's (CIV-1459 rule).
+ */
+export function livePeriodAt(data: Pick<SegmentDelayData, 'headways'>, hour: number): SegmentBand | null {
+  const key = periodKeyForHour(hour);
+  return key && (data.headways ?? []).some(h => h.bands[key as SegmentBand]) ? (key as SegmentBand) : null;
 }
 
 /**
@@ -127,7 +130,9 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // direction pills never vanish.
   // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
   const directionLabel = directions.find(([id]) => id === directionId)?.[1] ?? '';
-  const liveBand = data ? livePeriod(data, slug) : 'all';
+  const period = data ? livePeriodAt(data, agencyHour(slug)) : null;
+  // The cars and their gaps need a band's stops either way; only the scheduled comparison waits for a period.
+  const liveBand: SegmentBand = period ?? 'all';
   const extraTrips = data ? liveTripDirections(vehicles, data.tripDirections).get(directionId) : undefined;
   const live = data && line && !feedDegraded ? liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null;
   const countedKey = live && !live.incomplete ? (live.carIds ?? []).join('\n') : null;
@@ -147,6 +152,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? mins(live.scheduledSec) : '–';
   // A gap is late at twice the timetable gap where the car behind is.
   const late = (g: number, i: number) => {
+    if (!period) return false;
     const s = live?.gapsSchedSec?.[i] ?? live?.scheduledSec;
     return !!s && g * 60 >= 2 * s;
   };
@@ -179,7 +185,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
               <Stats items={[
                 ['Vehicles', String(live.cars)],
                 ...(onTime != null ? [['On time', String(onTime)] as [string, string]] : []),
-                ['Scheduled', `every ${schedLabel}`],
+                ...(period ? [['Scheduled', `every ${schedLabel}`] as [string, string]] : []),
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
               {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
