@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
 - **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
+- **The About page no longer describes an all-day value or threshold**: the map has no All day option, so the filter note now speaks only of periods
 - **Live writes minutes the way the map does**: "every 8–10 min", "7.5 min", "2 min late", where it had half minutes, numbers with no unit and "+2 min late"
 - **One name for each thing**: "Report a problem", "Trip time" on Live (it was also "Run time"), "Day / Time / Mode" on the phone filters and "On-demand" on the agency card
 - **Live names agencies by their own short name in link previews and missing-route messages**: "MiWay", not "MIWAY"

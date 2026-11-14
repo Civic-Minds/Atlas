@@ -64,7 +64,7 @@ export function routeCardDisplayHeadway(p: ShapeProperties, period: TimePeriod):
   // service. Keep limited branches out of normal route-card/list cadence rows.
   if (p.tier === 'span') return null;
 
-  // All day has no single longest-gap measure to test the median against. An
+  // The internal 'all' path (no All day option, CIV-1097) has no single longest-gap measure to test the median against. An
   // infrequent-tier branch has no sustained all-day cadence, so a numeric all-day
   // value (Winter Park TL-42's 56 min across 3 trips a day) would mislead (#708).
   if (period === 'all' && p.tier === 'infrequent') return null;
@@ -226,7 +226,7 @@ export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePer
 /**
  * Whether a route card row shows "limited" instead of a cadence. Shares
  * routeCardDisplayHeadway's rule: in a specific period the row has service but
- * no trustworthy cadence; on All day the branch is infrequent-tier (#708).
+ * no trustworthy cadence; on the internal 'all' path (no screen picks it) the branch is infrequent-tier (#708).
  */
 export function routeCardDisplayLimited(p: ShapeProperties, period: TimePeriod): boolean {
   if (routeCardDisplayHeadway(p, period) != null) return false;
@@ -377,7 +377,7 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
   const contract = routeFilterContract(features, period);
   if (contract != null && contract.filterValue == null) return false;
   if (routeValueIsOneGap(features, period)) return false;
-  // All day: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
+  // Internal 'all' path: no all-day value is "limited" when a direction does not run at midday (step 6), else no number.
   const allDay = period === 'all' ? routeFilterAllDayContract(features) : undefined;
   if (allDay) return allDay.filterValue == null && allDay.limited;
   return routeListDisplayHeadway(features, period) == null
