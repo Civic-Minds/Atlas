@@ -1,3 +1,4 @@
+import { originVariantText } from './nameCase';
 import type { ShapeProperties } from '../hooks/useIntervalStats';
 
 type RowLike = Pick<ShapeProperties, 'headsign' | 'routeVariant' | 'stopOrder'>;
@@ -20,7 +21,7 @@ export function rowsShareOrigin(rows: RowLike[]): boolean {
  * "variant · label" form when two rows share a destination.
  */
 export function rowLabelWithOrigin(label: string, row: RowLike, directionRows: RowLike[]): string {
-  const variant = row.routeVariant?.trim();
+  const variant = row.routeVariant?.trim() ? originVariantText(row.routeVariant) : undefined;
   if (variant && FROM_VARIANT_RE.test(variant)) {
     if (rowsShareOrigin(directionRows)) return label || variant;
     if (!label) return variant;

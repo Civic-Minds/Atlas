@@ -4,6 +4,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import {
   LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
+  stripLegendFlags,
 } from './routeStripModel';
 import { shortStopName, stretchLabel, stripStopName } from '../../utils/stopLabel';
 
@@ -23,6 +24,8 @@ export interface RouteStripProps {
   bunchingForms?: RouteStripStretch | null;
   /** Stops measured fewer times than this are faded. Default 30. */
   minN?: number;
+  /** Draw the key under the strip (default). A section that draws several strips passes false and shows one StripsLegend under them all (CIV-1448). */
+  legend?: boolean;
   /** The strip becomes a vertical list on phones (screens under 480px wide), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
   className?: string;
@@ -78,7 +81,7 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, anyEarl
     <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
       {modes.map(mode => (
         <span key={mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
-          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
+          <span className="w-full font-bold text-[var(--text-secondary)] sm:w-auto">{LEGEND_TITLE[mode]}:</span>
           {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map((step, i, shown) => (
             <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}{i === shown.length - 1 ? LEGEND_LAST_STEP_TAIL[mode] ?? '' : ''}</span>
           ))}
@@ -113,7 +116,7 @@ interface Track {
  * named, and a "Show all stops" switch for the full list. The strip is one focusable unit: its label sums it up, the
  * arrow keys step through the stops, and the same figures are in a table for screen readers.
  */
-export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
+export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, legend: showLegend = true, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -132,10 +135,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const phone = useMediaQuery('(max-width: 479px)');
   const vertical = phone || (width > 0 && width < verticalBelow);
   const count = stops.length;
-  const anyUncertain = stops.some(s => s.uncertain);
-  const anyFaded = tracks.some(t => stops.some(t.faded));
-  const anyMissing = tracks.some(t => t.steps.some(s => s == null));
-  const anyEarly = tracks.some(t => t.mode === 'delay' && t.steps.some(s => s === 'early'));
+  const flags = useMemo(() => stripLegendFlags(stops, modes, minN), [stops, modes, minN]);
 
   const onKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (count === 0) return;
@@ -185,7 +185,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     if (e.type === 'pointerdown') onSelect?.(at);
   };
 
-  const legend = <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />;
+  const legend = showLegend ? <StripLegend modes={modes} {...flags} minN={minN} /> : null;
 
   const table = (
     <div id={tableId} className="sr-only">

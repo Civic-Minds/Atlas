@@ -6,11 +6,11 @@ import type { AgencySummary } from './liveAgency';
  * The link preview of a Live report page (og:title, og:description): the approved page title, and the week's late share
  * in the Late tile's words with the subtitle's week ("9% of trips left the end of the line more than 5½ min late · Week of Oct 8–14").
  */
-export function liveLinkPreview(agency: string, route: string | null, summary: AgencySummary | null): { title: string; description: string } {
+export function liveLinkPreview(/** The agency's short name ("MiWay"), never the address in capitals (CIV-1160 question 7). */ agencyName: string, route: string | null, summary: AgencySummary | null): { title: string; description: string } {
   const dates = summary?.weekly?.thisWeek.dates ?? [];
   const week = dates.length ? weekOfText(dates[0], dates[dates.length - 1]) : '';
   const line = (share: number | null | undefined) => (share == null ? '' : `${pct(share)} ${LATE_TILE_CAPTION}${week ? ` · ${week}` : ''}`);
-  if (!route) return { title: `${agency.toUpperCase()} · Live · Atlas`, description: line(summary?.weekly?.thisWeek.late?.share) };
+  if (!route) return { title: `${agencyName} · Live · Atlas`, description: line(summary?.weekly?.thisWeek.late?.share) };
   const row = summary?.routes.find(r => r.route === route);
-  return { title: `${row?.titleLabel ?? `${agency.toUpperCase()} ${route}`} · Live · Atlas`, description: line(row?.lateShare) };
+  return { title: `${row?.titleLabel ?? `${agencyName} ${route}`} · Live · Atlas`, description: line(row?.lateShare) };
 }

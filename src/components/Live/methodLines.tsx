@@ -3,7 +3,7 @@
  * way everywhere. Page-only lines are written next to their page.
  */
 import { COLOURED_CHANGES } from '../../../shared/liveDashboard';
-import { LATE_DEFINITION, RECORDING_GAPS } from '../../../shared/liveWording';
+import { LATE_DEFINITION, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
 
 // E9–E23 as Ryan approved them (CIV-1075): each line is the bold term, then the rest of its sentence, no colon.
@@ -17,7 +17,7 @@ export const lateLine = <Term t="Late">{LATE_DEFINITION}</Term>;
 /** What "ahead" means, its own line after the Late definition. */
 export const aheadLine = (aheadMin: number) => <Term t="Ahead">is {aheadMin} min or more ahead of schedule.</Term>;
 export const runTimeLine = (shortTurns = false) => (
-  <Term t="Run time">{RUN_TIME_TEXT}{shortTurns ? '; only trips seen at both ends count, so short turns are left out' : ''}.</Term>
+  <Term t={TRIP_TIME_LABEL}>{RUN_TIME_TEXT}{shortTurns ? '; only trips seen at both ends count, so short turns are left out' : ''}.</Term>
 );
 export const extraWaitLine = <Term t="Extra wait">{EXTRA_WAIT_TEXT}</Term>;
 export const bunchingLine = (underMin = 2) => <Term t="Bunching">{bunchingText(underMin)}</Term>;

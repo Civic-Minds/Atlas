@@ -56,7 +56,7 @@ import Panel from '../ui/Panel';
 import { pickLiveVehicles } from './map/liveVehiclePick';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -1139,7 +1139,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     trackEvent('report_issue_opened', { source: 'map_context_menu' });
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
+    const body = `**Location:** ${url}\n\n**What’s wrong:**\n\n`;
     const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
     window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);
@@ -1322,7 +1322,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
             className="justify-start gap-2"
           >
             <Flag className="w-3.5 h-3.5 text-[var(--text-dim)] shrink-0" />
-            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">Report an issue</span>
+            <span className="text-xs font-bold text-[var(--text-primary)] whitespace-nowrap">{REPORT_A_PROBLEM}</span>
           </ListRow>
         </Panel>
       )}

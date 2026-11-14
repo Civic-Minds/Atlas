@@ -20,7 +20,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { COMPARE_B_PICKER_NOTE, FREQUENCY_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
+import { COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
@@ -628,8 +628,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {isFilters && maxHeadway !== undefined && (
                 <div className="block sm:hidden pb-4">
                   <PickerSection title={FREQUENCY_LABEL} className="px-5 pt-4 pb-3"><FrequencyPicker value={maxHeadway} onChange={max => setMaxHeadway?.(max)} /></PickerSection>
-                  <PickerSection title="Day of service" className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
-                  <PickerSection title="Time period" className="px-5 pt-2 pb-3"><PeriodPicker value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
+                  <PickerSection title={DAY_LABEL} className="px-5 pt-2 pb-3"><DayPicker fill value={day as DayType} onChange={d => setDay?.(d)} /></PickerSection>
+                  <PickerSection title={TIME_LABEL} className="px-5 pt-2 pb-3"><PeriodPicker value={period as TimePeriod} onChange={p => setPeriod?.(p)} /></PickerSection>
 
                   {compare?.side && (
                     <div className="px-5 pt-2 pb-3">
@@ -640,7 +640,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
                   {/* Transit Modes */}
                   <div className="px-5 pt-2 pb-1">
-                    <p className={CARD_NOTE}>Transit modes</p>
+                    <p className={CARD_NOTE}>{MODE_LABEL}</p>
                   </div>
                   <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                     {AVAILABLE_FILTER_MODES.map(({ id, label }) => {

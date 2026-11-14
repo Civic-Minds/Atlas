@@ -1,12 +1,12 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
-import { pct, signedMinutes, tenth } from '../../../../shared/liveFormat';
+import { minutesText, pct, tenth } from '../../../../shared/liveFormat';
 import { PERIOD_LABELS } from '../../../../shared/config';
 
 export { pct };
 /** A figure to one decimal, with a real minus sign. */
 export const num = tenth;
-/** A signed minutes value ("+3.2 min"), also used as the axis value. */
-export const mins = signedMinutes;
+/** A minutes value ("3.2 min", "−0.4 min"), also used as the axis value: the shared minutes format. */
+export const mins = minutesText;
 
 /** The route's direction ids in numeric order, narrowed to one direction when `dir` is set. The one direction list every Live surface uses. */
 export const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b).filter(d => dir == null || d === dir);

@@ -38,7 +38,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
         enter
         className="absolute bottom-24 sm:bottom-16 left-3 right-3 sm:left-6 sm:right-auto sm:w-[340px] max-h-[min(70vh,520px)]"
       >
-        <PanelHeader titleId="whats-new-title" title="What's new" onClose={onClose} closeLabel="Close what's new" />
+        <PanelHeader titleId="whats-new-title" title="What’s new" onClose={onClose} closeLabel="Close what’s new" />
         <div className="overflow-y-auto custom-scrollbar px-5 py-4 space-y-4 text-xs">
           {visible.map(release => (
             <section key={release.version} aria-label={`Version ${shortVersion(release.version)}`}>

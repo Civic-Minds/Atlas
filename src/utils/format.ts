@@ -4,7 +4,7 @@ import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/rout
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 import { countOf } from '../../shared/overflowText';
-import { nameCase } from './nameCase';
+import { feedPlaceName, nameCase } from './nameCase';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 // Name casing lives in nameCase.ts (CIV-1001); these keep the older import path working.
 export { nameCase, ROUTE_NAME_ACRONYMS, writtenInCapitals, type NameCaseMode } from './nameCase';
@@ -161,7 +161,7 @@ export function formatBranchLabel(
     ? headsign.trim()
     : cleanHeadsign(headsign.trim(), shortName, longName);
   if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
-  return withToPrefix(nameCase(raw, 'stop'));
+  return withToPrefix(feedPlaceName(raw));
 }
 
 /** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */

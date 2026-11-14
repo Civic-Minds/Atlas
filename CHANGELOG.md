@@ -7,8 +7,20 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
+- **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
+- **Live writes minutes the way the map does**: "every 8–10 min", "7.5 min", "2 min late", where it had half minutes, numbers with no unit and "+2 min late"
+- **One name for each thing**: "Report a problem", "Trip time" on Live (it was also "Run time"), "Day / Time / Mode" on the phone filters and "On-demand" on the agency card
+- **Live names agencies by their own short name in link previews and missing-route messages**: "MiWay", not "MIWAY"
+- **Small wording fixes**: "Near you", "1 match" and "1 stop" instead of "1 matches" and "1 stops", "Search routes…" like the other search boxes, and the Extra wait empty message reads "at this time of day"
+- **Apostrophes are curly everywhere on the site**: notices, errors and Live text used straight ones while the About and story pages used ’
+- **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
+- **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")
+- **Live's Routes table writes run time as the tile does**: "6% faster" instead of a bare "−6%", and added minutes always show one decimal, so a column doesn't mix "+3 min" with "+1.6 min"
+- **Live shows the stop-strip colour key once per section**: it repeated under every direction
+- **Route cards no longer show feed names in capitals**: NJ Transit 1's variants line and the chart key read "Ivy Hill Loop", as the rows do
 - **A route card leaves out its "Shared stretch" row when a destination row already shows the same number, and route lists start their range where the card does**: once rows count every bus on their stretch, the shared row often repeated it
 - **Route card rows count every bus on their stretch of road**: a row read only the buses signed to its destination, so a stretch several destinations share looked less frequent than it is (TTC 927 AM 10 → 5)
+- **Route cards never cut a destination name**: a row like TTC 52's "to Pearson Airport via Di…" now wraps the name onto a second line, with its frequency staying on the first line at the right
 - **Snowmass shows the "still being verified" notice on its new schedule**: route 3 now reads every 30 all week; the notice turns off by itself when the next schedule file arrives
 - **The frequent service story map's steps say what the map now draws, with a route count under each**: the text still described rush-hour-only cuts after the map switched to weekday routes and the main map's limited-service rule
 - **A period that starts slowly says when steady service starts**: TTC Line 5's AM peak read every 20 from two early gaps, though trains come every few minutes from 7:27; its card now names that time and the longest wait after it

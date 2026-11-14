@@ -238,7 +238,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
           </>}
           {stage === 2 && <>
             <h2 className="text-3xl font-black tracking-tight">Keep routes that run through the day.</h2>
-            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that run in the middle of the day. Night-only routes, like Toronto's 300 buses, drop out here. Service is more useful when it is still there when your trip does not fit rush hour.</p>
+            <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Now we keep routes that run in the middle of the day. Night-only routes, like Toronto’s 300 buses, drop out here. Service is more useful when it is still there when your trip does not fit rush hour.</p>
           </>}
           {stage === 3 && <>
             <h2 className="text-3xl font-black tracking-tight">Now measure how often it comes.</h2>

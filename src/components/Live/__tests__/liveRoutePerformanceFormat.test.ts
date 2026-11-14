@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { mins, schedText } from '../LiveRoutePerformance';
+import { schedText } from '../LiveRoutePerformance';
 
+// CIV-1160 question 5 (Ryan, 2026-11-13): Live uses the map's shared minutes format ("every 8–10 min", "7.5 min").
 describe('Live card number formatting', () => {
-  it('rounds single values to the nearest ½ min', () => {
-    expect(mins(222)).toBe('3½');
-    expect(mins(20)).toBe('½');
+  it('writes the scheduled gap as the map writes a frequency, to a tenth of a minute', () => {
+    expect(schedText({ scheduledMedianGapSec: 450 })).toBe('every 7.5 min');
+    expect(schedText({ scheduledMedianGapSec: 222 })).toBe('every 3.7 min');
   });
 
-  it('shows the timetable as a range when the period mixes headways', () => {
-    expect(schedText({ scheduledMedianGapSec: 600, scheduledP10Sec: 480, scheduledP90Sec: 840 })).toBe('8–14');
-    expect(schedText({ scheduledMedianGapSec: 300, scheduledP10Sec: 300, scheduledP90Sec: 300 })).toBe('5');
-    expect(schedText({ scheduledMedianGapSec: 300 })).toBe('5');
+  it('shows the schedule as a range when the period mixes headways', () => {
+    expect(schedText({ scheduledMedianGapSec: 600, scheduledP10Sec: 480, scheduledP90Sec: 600 })).toBe('every 8–10 min');
+    expect(schedText({ scheduledMedianGapSec: 300, scheduledP10Sec: 300, scheduledP90Sec: 300 })).toBe('every 5 min');
+    expect(schedText({ scheduledMedianGapSec: 300 })).toBe('every 5 min');
   });
 });

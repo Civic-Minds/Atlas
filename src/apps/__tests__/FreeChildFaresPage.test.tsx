@@ -23,7 +23,7 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getAllByText('Up to 5').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Not found').length).toBeGreaterThan(0);
     // #1290: the note under the charts moved into Method, so this sentence is there once.
-    expect(screen.getAllByText(/We couldn't find a current official rule for 34 agencies\./)).toHaveLength(1);
+    expect(screen.getAllByText(/We couldn’t find a current official rule for 34 agencies\./)).toHaveLength(1);
     expect(screen.getByText(/Free fares up to 17 or 18 are usually youth programs\./).closest('[data-research-method]')).not.toBeNull();
     expect(screen.queryByText(/Each agency appears once/)).toBeNull();
     expect(screen.queryByText('Show as a table')).toBeNull();
@@ -37,7 +37,7 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
     expect([...container.querySelectorAll('[data-research-method] strong')].map(el => el.textContent)).toEqual(['Date conducted:', 'Sample:', 'Sources:', 'What counted:', 'Not found yet:', 'Limitations:']);
     expect(screen.getByText(/All 553 agencies Atlas covered on that date: 465 in the United States and 88 in Canada\./)).toBeInTheDocument();
-    expect(screen.getByText(/^Only an agency's own fare page, or its city or county fare bylaw, counted\.$/)).toBeInTheDocument();
+    expect(screen.getByText(/^Only an agency’s own fare page, or its city or county fare bylaw, counted\.$/)).toBeInTheDocument();
   });
 
   it('draws the ages as the one chart, with its own table (CIV-1176, #1290)', () => {

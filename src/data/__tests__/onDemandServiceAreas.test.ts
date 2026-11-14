@@ -311,9 +311,9 @@ describe('on-demand pickup methods stated by agencies', () => {
 
 describe('Hamilton pickup methods from hamilton.ca', () => {
   it('describes Trans-Cab trips as to or from a transfer point and myRide as set stops', () => {
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone's transfer points, shown on the map.");
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe("Every trip starts or ends at this zone's transfer points, shown on the map.");
-    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower North Stoney Creek')).toBe("Every trip starts or ends at this zone's transfer point, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'West Glanbrook')).toBe("Every trip starts or ends at this zone’s transfer points, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower East Stoney Creek')).toBe("Every trip starts or ends at this zone’s transfer points, shown on the map.");
+    expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, 'Lower North Stoney Creek')).toBe("Every trip starts or ends at this zone’s transfer point, shown on the map.");
     expect(onDemandPickupSentence(HAMILTON_MY_RIDE_SERVICE_AREA, undefined)).toMatch(/^Pickups and drop-offs are at \d+ set stops, shown on the map\.$/);
   });
 });
@@ -412,7 +412,7 @@ describe('on-demand public launch gate (CIV-23)', () => {
 });
 
 describe('RTD FlexRide (CIV-951)', () => {
-  it('draws the 13 zones from RTD\'s layer, each with its own hours and source page', () => {
+  it('draws the 13 zones from RTD’s layer, each with its own hours and source page', () => {
     const names = RTD_FLEXRIDE_SERVICE_AREA.features.map(f => (f.properties as { areaName: string }).areaName);
     expect(names).toHaveLength(13);
     expect(new Set(names).size).toBe(13);

@@ -5,9 +5,11 @@ import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel
 import {
   MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption,
   type RouteStripMode, type RouteStripStop,
+  stripLegendFlags,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
+import { countOf } from '../../../shared/overflowText';
 
 export interface BranchStripProps {
   model: BranchModel;
@@ -21,6 +23,8 @@ export interface BranchStripProps {
   /** Use the two-line row height even when this strip's names fit on one line, for the same reason. */
   twoLineNames?: boolean;
   minN?: number;
+  /** Draw the key under the strip (default); false when the section shows one key for all its strips (CIV-1448). */
+  legend?: boolean;
   /** The strip becomes a vertical list on phones (under 480px), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
   className?: string;
@@ -102,7 +106,7 @@ function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: read
  * ends, a branch names the stop where it ends. A branch stop shows its own delay; bunching is only measured along the
  * main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after another.
  */
-export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, verticalBelow = 360, className = '' }: BranchStripProps) {
+export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, legend = true, verticalBelow = 360, className = '' }: BranchStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<string | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -112,13 +116,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const vertical = phone || (width > 0 && width < verticalBelow);
   const stops = useMemo(() => allBranchStops(model), [model]);
   const faded = (s: RouteStripStop, mode: RouteStripMode) => stopN(s, mode) > 0 && stopN(s, mode) < minN;
-  const anyUncertain = modes.length > 0 && stops.some(s => !!s.uncertain);
-  const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
-  const anyMissing = stops.some(s => modes.some(m => stopStep(s, m) == null));
-  const anyEarly = stops.some(s => modes.includes('delay') && stopStep(s, 'delay') === 'early');
+  const flags = stripLegendFlags(stops, modes, minN);
   const activeStop = stops.find(s => s.stopId === active) ?? null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
-  const summary = `${model.label}: ${model.trunk.length} stops on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
+  const summary = `${model.label}: ${countOf(model.trunk.length, 'stop')} on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
 
   const onKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     const at = stops.findIndex(s => s.stopId === active);
@@ -311,7 +312,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
           {allStops ? SHOW_KEY_STOPS : showAllStopsText(stops.length)}
         </button>
       )}
-      <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />
+      {legend && <StripLegend modes={modes} {...flags} minN={minN} />}
       {table}
     </figure>
   );

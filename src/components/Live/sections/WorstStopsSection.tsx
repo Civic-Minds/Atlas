@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { LATE_THRESHOLD, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -15,6 +15,7 @@ import LegendItem from '../../ui/LegendItem';
 import { LIVE_NO_STOP_TO_RANK } from '../../../content/noticeCopy';
 import LateStopsMap from '../LateStopsMapLazy';
 import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
+import { countOf } from '../../../../shared/overflowText';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -83,14 +84,14 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const mapped = map && top.length ? (() => {
     const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${pct(s.lateShare)} late`, lateShare: s.lateShare })));
-    return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${top.length} stops most often late`} className="mt-6" />;
+    return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${countOf(top.length, 'stop')} most often late`} className="mt-6" />;
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map
-    ? `The ${top.length} stops where vehicles most often leave ${LATE_THRESHOLD} (stops with 30+ departures). ${LATE_MAP_HINT}`
+    ? `${lateStopsIntro(top.length, { scope: 'route' })} ${LATE_MAP_HINT}`
     : <>Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</>}</p>;
   const note = notRanked && hidden.length > 0 && (
     <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
-      Not ranked: the first {hidden[0].stops} stops {hidden.length === 1 ? directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
+      Not ranked: the first {countOf(hidden[0].stops, 'stop')} {hidden.length === 1 ? directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).
     </p>
   );
   if (id) return <Section id={id} title={title} shrink={shrink} boundary={boundary}>{introLine}{mapped ?? table}{note}</Section>;

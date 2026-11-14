@@ -5,7 +5,7 @@ import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
-import DirectionStrip from './components/Live/DirectionStrip';
+import DirectionStrip, { StripsLegend } from './components/Live/DirectionStrip';
 import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { shortStopName } from './utils/stopLabel';
@@ -19,7 +19,7 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText } from '../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText, TRIP_TIME_LABEL } from '../shared/liveWording';
 import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 
 const MIN_N = 30;
@@ -177,6 +177,8 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
         </div>
       )}
+      {/* One key for every direction shown, above the strips as in the Full analysis, as the map's route card shows its key once (CIV-1448). */}
+      <StripsLegend v3={v3} directionIds={dirs.map(d => d.directionId)} band="all" uncertain={uncertain} />
       {dirs.length ? (
         <div className="mt-4 grid gap-x-8 gap-y-10">
           {dirs.map(d => {
@@ -184,7 +186,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             return (
               <div key={d.directionId} className="min-w-0">
                 {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
-                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} />
+                <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} legend={false} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{d.label}: {n}</p>)}
               </div>
             );
@@ -223,7 +225,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad('Run time')}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
+      <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
       <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />

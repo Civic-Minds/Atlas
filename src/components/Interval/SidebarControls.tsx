@@ -48,6 +48,7 @@ import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useFadePresence } from '../../hooks/useFadePresence';
 import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 import { chooserRouteRow } from '../../utils/chooserRoutes';
+import { countOf } from '../../../shared/overflowText';
 
 interface SidebarControlsProps {
   query: string;
@@ -682,8 +683,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [searchStopMatchResults, showAllSearchResults]);
 
   const stopResultsHeadLabel = stopSearchDisplay.truncated
-    ? `Stops · ${stopSearchDisplay.stops.length} of ${stopSearchDisplay.totalMatches} matches`
-    : `Stops · ${stopSearchDisplay.totalMatches} matches`;
+    ? `Stops · ${stopSearchDisplay.stops.length} of ${countOf(stopSearchDisplay.totalMatches, 'match', 'matches')}`
+    : `Stops · ${countOf(stopSearchDisplay.totalMatches, 'match', 'matches')}`;
 
   const stopSections = useMemo(
     () => splitStopResults(stopSearchDisplay.stops),
@@ -736,9 +737,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Routes · ${routeSearchDisplay.routes.length} of ${routeSearchDisplay.totalMatches} matches`
-    : `Routes · ${routeSearchDisplay.totalMatches} matches`;
-  const agencyResultsHeadLabel = `Agencies · ${agencySearchDisplay.totalMatches} matches`;
+    ? `Routes · ${routeSearchDisplay.routes.length} of ${countOf(routeSearchDisplay.totalMatches, 'match', 'matches')}`
+    : `Routes · ${countOf(routeSearchDisplay.totalMatches, 'match', 'matches')}`;
+  const agencyResultsHeadLabel = `Agencies · ${countOf(agencySearchDisplay.totalMatches, 'match', 'matches')}`;
   const hasMoreSearchResults = agencySearchDisplay.truncated
     || routeSearchDisplay.truncated
     || stopSearchDisplay.truncated;

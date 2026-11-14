@@ -7,28 +7,24 @@ import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/u
 import { periodKeyForHour } from '../../../shared/config';
 import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { clockTime } from '../../../shared/timeText';
-import { halfMinutes, type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
+import { type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
+import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
 import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES } from '../../content/noticeCopy';
 
-function halfText(m: number): string {
-  const whole = Math.floor(Math.abs(m));
-  const half = Math.abs(m) - whole >= 0.5;
-  return `${m < 0 ? '−' : ''}${whole === 0 && half ? '' : whole}${half ? '½' : ''}`;
-}
+/** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
+const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
 
-/** "3½", "10", "½" — minutes to the nearest ½. */
-export function mins(sec: number): string {
-  return halfText(halfMinutes(sec));
-}
-
-/** The timetable's gap: one value, or a range when the period mixes headways ("8–14"). */
+/**
+ * The schedule's gap as the map writes a frequency: "every 8 min", or "every 8–14 min" when the period mixes headways
+ * (shared/headwayText.ts; Ryan, CIV-1160 question 5, 2026-11-13).
+ */
 export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?: number; scheduledP90Sec?: number }): string {
   const lo = st.scheduledP10Sec, hi = st.scheduledP90Sec;
-  if (lo == null || hi == null || mins(lo) === mins(hi)) return mins(st.scheduledMedianGapSec);
-  return `${mins(lo)}–${mins(hi)}`;
+  if (lo == null || hi == null || tenthMin(lo) === tenthMin(hi)) return headwayEvery(tenthMin(st.scheduledMedianGapSec));
+  return headwayEveryRange(tenthMin(lo), tenthMin(hi));
 }
 
 const AMBER = 'var(--status-caution-text)';
@@ -144,7 +140,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     : null;
 
   const range = live?.scheduledRangeSec;
-  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? mins(live.scheduledSec) : '–';
+  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? schedText({ scheduledMedianGapSec: live.scheduledSec }) : '–';
   // A gap is late at twice the timetable gap where the car behind is.
   const late = (g: number, i: number) => {
     const s = live?.gapsSchedSec?.[i] ?? live?.scheduledSec;
@@ -179,7 +175,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
               <Stats items={[
                 ['Vehicles', String(live.cars)],
                 ...(onTime != null ? [['On time', String(onTime)] as [string, string]] : []),
-                ['Scheduled', `every ${schedLabel}`],
+                ['Scheduled', schedLabel],
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
               {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { excludingText, lateCount, lateHourLine, leftOutReason, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { fadedNoteText, excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
@@ -11,6 +11,7 @@ import LegendItem from '../../ui/LegendItem';
 import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
+import LeftOutDays from '../LeftOutDays';
 import { DAYS, pct } from './figures';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays } from '../../../content/noticeCopy';
 
@@ -103,7 +104,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
                 <>
                   <div className="flex items-baseline justify-between gap-2">
                     <h3 className="text-base font-black">{c.label}</h3>
-                    <span className="text-sm text-[var(--text-dim)]" title={leftOutReason(c.leftOut ?? []) ?? undefined}>{excludingText(c.leftOut ?? []) ?? ''}</span>
+                    <LeftOutDays className="text-sm text-[var(--text-dim)]" dates={c.leftOut ?? []} />
                   </div>
                   {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
                 </>
@@ -124,7 +125,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
         <LegendItem color={LATE_SHARE_SWATCH}>Late %</LegendItem>
         <LegendItem color="var(--text-dim)" swatchClassName="opacity-50">Departures</LegendItem>
       </div>
-      {showNote && <p className="mt-2 text-xs text-[var(--text-dim)]">Faded bars are based on fewer than {MIN_N} departures. The percentages count only days with good recordings, as the tiles do.</p>}
+      {showNote && <p className="mt-2 text-xs text-[var(--text-dim)]">{fadedNoteText(MIN_N, 'departures')} The percentages count only days with good recordings, as the tiles do.</p>}
     </>
   );
 }
@@ -208,7 +209,7 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
   const max = Math.max(0.01, ...hours.filter(h => h.n >= 30).map(h => h.value));
   return (
-    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <span className="shrink-0 text-xs text-[var(--text-dim)]" title={leftOutReason(leftOut) ?? undefined}>{excludingText(leftOut)}</span> : undefined}>
+    <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
       <HourSpark
         idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}

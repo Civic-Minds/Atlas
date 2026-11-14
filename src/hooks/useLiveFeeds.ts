@@ -26,7 +26,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
       const res = await fetch(`/api/live-vehicles?agency=${slug}`);
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Can't reach this feed right now.");
+        throw new Error(errData.error || "Can’t reach this feed right now.");
       }
       const data = await res.json();
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));

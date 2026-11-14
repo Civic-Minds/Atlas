@@ -3,14 +3,14 @@
  * The Docs page's Glossary shows them. `text` is the rest of the sentence after the bold term, no colon (CIV-1075).
  */
 import { COLOURED_CHANGES } from './liveDashboard.js';
-import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_DEFINITION, RECORDING_GAPS } from './liveWording.js';
+import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_DEFINITION, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
 
 /** `legend`: a chart key rather than a definition, shown as "**Term**: …" (E22) and not on the agency page. */
 export interface LiveTerm { term: string; text: string; legend?: boolean }
 
 export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: 'Late', text: LATE_DEFINITION },
-  { term: 'Run time', text: 'is how long a typical trip takes over the main stretch, compared with the schedule.' },
+  { term: TRIP_TIME_LABEL, text: 'is how long a typical trip takes over the main stretch, compared with the schedule.' },
   { term: 'Extra wait', text: 'is how much longer riders wait than the schedule says, worked out from the gaps between vehicles at each stop.' },
   { term: 'Bunching', text: 'is when the gap between vehicles is under 2 min, or more than twice the scheduled gap.' },
   { term: 'Delivered', text: 'is the share of scheduled trips that actually ran.' },
