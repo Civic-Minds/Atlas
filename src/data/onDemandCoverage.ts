@@ -47,8 +47,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'portlandme': { serviceName: 'Metro Connect', url: 'https://www.gpmetro.org/metroconnect-on-demand/' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.greenbaywi.gov/GBM-On-Demand
   'green-bay': { serviceName: 'GBM On Demand', url: 'https://www.greenbaywi.gov/GBM-On-Demand' },
-  // Confirmed 2026-10-27 (CIV-1063): https://guelph.ca/living/getting-around/bus/schedules/on-demand-bus-service/
-  'guelph': { serviceName: 'On-demand service', url: 'https://guelph.ca/living/getting-around/bus/schedules/on-demand-bus-service/' },
   'gwinnett-transit': { serviceName: 'Ride Gwinnett Micro' },
   'kcata': { serviceName: 'IRIS' },
   // Unclear (CIV-1063, 2026-10-27): No dedicated page and no current zone list; the zones were redrawn after 2021 (Lakeview went fixed-route in 2025). Missing: which demand zones run tod
