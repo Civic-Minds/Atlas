@@ -84,6 +84,7 @@ Words
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Search routes…". CIV-1160.
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
+- Days in a sentence: "on weekdays", "on Saturdays", "on Sundays"; one day before a noun reads "weekday midday", "Saturday schedules" ("weekday" lower case, Saturday and Sunday capitalised). From `dayPlural` / `dayInSentence` in `shared/dayTypes.ts`. CIV-1569.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
 - A route named by its number reads "Route " + the number as the route lists show it ("Route 504", "Route 52A", "Routes 501, 504"), from `routeShortLabel` / `routesShortLabel` in `src/utils/format.ts`; never built by hand. CIV-1569.

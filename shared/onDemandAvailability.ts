@@ -1,4 +1,4 @@
-import type { DayType } from './dayTypes.js';
+import { dayInSentence, dayPlural, type DayType } from './dayTypes.js';
 import { TIME_PERIODS, type PeriodKey } from './config.js';
 import { clockTime, timeRange } from './timeText.js';
 
@@ -321,7 +321,6 @@ function formatHoursLinesWithFriday(availability: OnDemandAvailability): OnDeman
   return [...groups.entries()].map(([key, group]) => hoursLine(key, [...group.dayTypes], weekDaysLabel(group.days), group.windows));
 }
 
-const RUNNING_DAY_LABELS: Record<DayType, string> = { Weekday: 'weekday', Saturday: 'Saturday', Sunday: 'Sunday' };
 const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
   all: '',
   amPeak: 'AM peak',
@@ -337,8 +336,8 @@ export function onDemandRunningNote(availability: OnDemandAvailability | undefin
   const state = onDemandRunningState(availability, day, period);
   if (state === 'unknown') return 'Hours unavailable'; // Ryan's wording, 2026-10-27
   if (state === 'not-running') return 'Not running at this time';
-  if (period === 'all') return day === 'Weekday' ? 'Running on weekdays' : `Running on ${day}`;
-  return `Running during ${RUNNING_DAY_LABELS[day]} ${RUNNING_PERIOD_LABELS[period]}`;
+  if (period === 'all') return `Running on ${dayPlural(day)}`;
+  return `Running during ${dayInSentence(day)} ${RUNNING_PERIOD_LABELS[period]}`;
 }
 
 export interface OnDemandPickupStop {
