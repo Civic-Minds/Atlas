@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { longDate } from '../../shared/dateText';
 import { MISSING_VALUE } from '../../shared/missingValue';
 import PageShell from '../components/ui/PageShell';
 import { niceAxis } from '../components/charts/ProfileBars';
@@ -13,6 +14,9 @@ import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
+
+/** The day the fare snapshot was taken (shared/dateText.ts writes it). */
+const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
@@ -100,12 +104,12 @@ export default function FreeChildFaresPage() {
   const mapTableId = useId();
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>October 11, 2026.</>,
+      dateConducted: <>{longDate(FREE_CHILD_FARES_SNAPSHOT)}.</>,
       sample: <>Canada and the United States only. All {freeChildFareStats.agencies} agencies Atlas covered on that date: {FREE_CHILD_AGENCIES_BY_COUNTRY['United States']} in the United States and {FREE_CHILD_AGENCIES_BY_COUNTRY.Canada} in Canada.</>,
       sources: <>Only an agency’s own fare page, or its city or county fare bylaw, counted.</>,
       whatCounted: <>Each bar uses the oldest age that rides free: "under 6 ride free" counts as 5. When two official pages disagreed, we used the narrower rule. "Fare-free" means the whole system is free for every rider. Free fares that apply only in some seasons, with a pass or for residents are counted under "Program only", not as a free child fare. Free fares up to 17 or 18 are usually youth programs.</>,
       notFound: <>We couldn’t find a current official rule for {freeChildFareStats.notFound} agencies. Some sites block automated visits, some fare pages have no child rule, and some describe children without an age, such as "preschoolers". These are drawn with stripes.</>,
-      limitations: <>This is a snapshot of October 11, 2026, not a live list. Fares change, and seasonal programs and short free-fare periods will go out of date.</>,
+      limitations: <>This is a snapshot of {longDate(FREE_CHILD_FARES_SNAPSHOT)}, not a live list. Fares change, and seasonal programs and short free-fare periods will go out of date.</>,
     }} />
   );
   return (

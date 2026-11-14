@@ -89,7 +89,8 @@ export const frequentServiceCoverageStats = [
   { country: 'United States', populationBase: '225.83M', fifteenMinute: '7.28%', thirtyMinute: '16.79%', metros: '148 metros', fifteenMinuteMetros: '77' },
 ] as const;
 
-export const frequentServiceCoverageUpdated = 'November 7, 2026';
+/** The coverage section's own "Date updated": the day of the coverage cloud run above (shared/dateText.ts writes it). */
+export const frequentServiceCoverageUpdated = '2026-11-07';
 
 export const frequentServiceCoverageInterpretation = {
   canadaThirtyToFifteenRatio: '2.6',

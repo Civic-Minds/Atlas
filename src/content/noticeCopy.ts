@@ -8,9 +8,9 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { shortDate } from '../../shared/dateText';
 import { joinList, plural } from '../../shared/overflowText';
 import { METHOD_TITLE } from '../../shared/liveWording';
-import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
@@ -111,8 +111,8 @@ export const EXPIRED_FEED_EXPLANATION =
 
 // N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
 export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
-  if (options.count != null && options.since && formatStoredDate(options.since)) {
-    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
+  if (options.count != null && options.since && shortDate(options.since)) {
+    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${shortDate(options.since)}.`;
   }
   return '';
 }

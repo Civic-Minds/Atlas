@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRange } from '../../../../shared/dateText';
+import { goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { pct } from '../../../../shared/liveFormat';
 import { joinList } from '../../../../shared/overflowText';
@@ -54,7 +55,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         <Term t="Linked to">shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
-        `Last ${good.days} service days, ${dateRangeText(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
+        `Last ${good.days} service days, ${dateRange(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
         ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),

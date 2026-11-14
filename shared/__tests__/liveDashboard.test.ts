@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runningTimeSentence, dateRangeText, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
+import { runningTimeSentence, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -60,13 +60,6 @@ describe('freshness', () => {
   });
 });
 
-describe('dateRangeText', () => {
-  it('writes the range in plain format', () => {
-    expect(dateRangeText('2026-10-08', '2026-10-14')).toBe('Oct 8–14');
-    expect(dateRangeText('2026-09-30', '2026-10-14')).toBe('Sep 30–Oct 14');
-    expect(dateRangeText('2026-10-08', '2026-10-08')).toBe('Oct 8');
-  });
-});
 
 describe('running time', () => {
   it('says scheduled, usual and 1-in-10 in plain words, and does not guess from a handful of trips', () => {

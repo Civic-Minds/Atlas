@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
+import { shortDate } from '../../shared/dateText';
 import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
 import PanelHeader from './ui/PanelHeader';
-import { formatStoredDate } from '../utils/format';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { CLOSE_PLACES, closeLabel } from '../content/noticeCopy';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
 
 /** "Released Nov 9, 2026" from the release's own date; the month when the date is unusable. */
 function releasedLabel(release: WhatsNewRelease): string {
-  const date = formatStoredDate(release.date);
+  const date = shortDate(release.date);
   return date ? `Released ${date}` : release.month;
 }
 

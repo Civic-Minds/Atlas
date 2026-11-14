@@ -5,6 +5,7 @@
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
 import { agencyTodayYmd, isExpiredFeedExpiry } from './feedAvailability';
+import { shortDate } from './dateText';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
@@ -683,10 +684,10 @@ export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) =>
 export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This schedule covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
 
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn' | 'timezone'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd(a)): string {
-  const published = formatDataDate(a.lastRefreshedAt);
-  const through = formatDataDate(a.validThrough);
-  const release = formatDataDate(releaseDate);
-  const listingEnded = formatDataDate(a.listingEndedOn);
+  const published = shortDate(a.lastRefreshedAt);
+  const through = shortDate(a.validThrough);
+  const release = shortDate(releaseDate);
+  const listingEnded = shortDate(a.listingEndedOn);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
   const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
     ? `This schedule ended on ${through}; the agency hasn’t published a newer one yet.`
@@ -698,15 +699,6 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : through ? `This schedule covers service until ${through}.`
     : '';
   return ["Based on the agency’s published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
-}
-
-/** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
-export function formatDataDate(value: string | null | undefined): string | null {
-  const m = dateParts(value);
-  if (!m) return null;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const month = months[Number(m[2]) - 1];
-  return month ? `${month} ${Number(m[3])}, ${m[1]}` : null;
 }
 
 /** "2026-10-12" from an ISO or yyyymmdd date; null when unusable. */

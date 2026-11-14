@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import { shortDate } from '../../shared/dateText';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Search, Radio } from 'lucide-react';
 import SearchClearButton from './ui/SearchClearButton';
@@ -11,7 +12,7 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { formatStoredDate, nameCase, routeShortLabel } from '../utils/format';
+import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -568,7 +569,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
             <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
-              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null) : ''} />
+              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, shortDate(helpContext.lastRefreshedAt)) : ''} />
           )}
           {view === 'corrected-data' && (
             <ExplainerBody layout="corrected-data" helpContext={helpContext}

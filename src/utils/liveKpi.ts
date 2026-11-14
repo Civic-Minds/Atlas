@@ -3,7 +3,8 @@
  * A change is coloured only when it is bigger than normal noise: the rule (weekChangeTone, dailyNoise, NOISE_RULE) lives
  * in shared/liveDashboard so the dashboard and Full analysis colour changes the same way.
  */
-import { runTimeDiffMin, dailyNoise, dateRangeText, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { runTimeDiffMin, dailyNoise, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
+import { dateRange } from '../../shared/dateText';
 import { MISSING_VALUE } from '../../shared/missingValue';
 import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText, TRIP_TIME_LABEL } from '../../shared/liveWording';
 import { minutesText, pct as pct0, pctTenth as pct1, tenth as clean } from '../../shared/liveFormat';
@@ -102,7 +103,7 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
  * "Oct 8–14: too few days of good recordings to compare with Oct 1–7".
  */
 export function weekNotComparableLine(w: NonNullable<LiveV3['weekly']>): string | null {
-  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
+  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRange(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   return w.comparable ? null : `${range(w.thisWeek)}: too few days of good recordings to compare with ${range(w.lastWeek)}`;
 }
 
@@ -122,7 +123,7 @@ export function excludingDays(w: { thisWeek: WeekMetrics; lastWeek: WeekMetrics;
  * of both weeks counted).
  */
 export function weekWindowParts(w: NonNullable<LiveV3['weekly']> & { leftOutEverywhere?: { thisWeek: string[]; lastWeek: string[] } }): { weeks: string; days: string | null; reason: string | null } {
-  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRangeText(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
+  const range = (wk: WeekMetrics) => (wk.dates.length ? dateRange(wk.dates[0], wk.dates[wk.dates.length - 1]) : 'no days');
   const weeks = `This week is ${range(w.thisWeek)} and last week is ${range(w.lastWeek)}.`;
   // The network names only the days every route left out (CIV-910 Q2); a route names its own.
   const thisLeft = w.leftOutEverywhere?.thisWeek ?? leftOutDates(w.thisWeek), lastLeft = w.leftOutEverywhere?.lastWeek ?? leftOutDates(w.lastWeek);
