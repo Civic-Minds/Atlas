@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route card leaves out its "Shared stretch" row when a destination row already shows the same number, and route lists start their range where the card does**: once rows count every bus on their stretch, the shared row often repeated it
 - **Route card rows count every bus on their stretch of road**: a row read only the buses signed to its destination, so a stretch several destinations share looked less frequent than it is (TTC 927 AM 10 → 5)
 - **Cards keep a readable width in a narrow window or at 200% zoom**: [TTC 504's card](https://github.com/Civic-Minds/Atlas/issues/1187) shrank to the search bar's squeezed width, so its rows and hour labels ran into each other
 - **On-demand cards drop "Who can ride" and say trip rules one way**: Atlas maps only services open to the public, trip rules use three fixed sentences instead of repeating the pickup, booking or hours lines, and lines saying the agency doesn't state something are gone

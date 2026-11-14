@@ -4,8 +4,9 @@ import { buildRouteCardModel } from './routeCardRows';
 
 /**
  * #1231: the lowest number the route card shows for the period (its Shared stretch rows and destination rows), so a list
- * range starts where the card does (TTC 102 midday: the card's 20 and 30, not the list's old 5–30). Undefined when the card
- * shows no number.
+ * range starts where the card does (TTC 102 midday: the card's 20 and 30, not the list's old 5–30), its stretch values
+ * included (CIV-995 Q3, Ryan 2026-11-13: lists follow the card; History's stored low ends read this too). Undefined when the
+ * card shows no number.
  */
 export function routeCardLowestHeadway(features: readonly ShapeProperties[], period: TimePeriod): number | undefined {
   // Lists call this once per route feature (the search suggestions) and per period: one card per route-day-period, keyed
@@ -32,8 +33,6 @@ function cardLowest(features: readonly ShapeProperties[], period: TimePeriod): n
   const model = buildRouteCardModel({
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
     period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
-    // CIV-995 (b): each row's own trips, so this stays as before the card read its stretches.
-    stretchValues: false,
   });
   let lowest: number | undefined;
   for (const group of model.groups) {
