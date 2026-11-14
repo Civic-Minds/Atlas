@@ -95,6 +95,8 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const longValue = wrapLongValue && (valueWords?.length ?? 0) > LONG_VALUE_CHARS;
   const singleLine = singleLineProp && !longValue;
   const valueEnd = valueEndProp || longValue;
+  // CIV-1300: a route list row (number and name) keeps its value in the right-hand column, a long value on two lines.
+  const listRow = !!routeName;
   // Measured only while not held, so the held size is always the pre-hover layout.
   const rowRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLSpanElement>(null);
@@ -121,7 +123,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
       onMouseLeave={onHoverEnd}
       {...keyboardFocusHover(onHoverStart, onHoverEnd)}
     >
-      <div className={`flex ${singleLine ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
+      <div className={`flex ${singleLine || listRow ? '' : 'flex-wrap'} items-start justify-between gap-2`}>
         <span
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
@@ -145,7 +147,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           )}
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
-            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} />
+            <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow} />
           )}
           {/* The trunk-to-branch range ("every 15–54 min") is the shared badge (CIV-1000), coloured by its slower number, never
               the main stretch's: it must never look better than riders get (Ryan, CIV-1447). Where the row has its own colour

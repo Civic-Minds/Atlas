@@ -25,4 +25,10 @@ describe('route row range badge', () => {
     const dot = container.querySelector('span.rounded-full') as HTMLElement;
     expect(dot.style.background).toBe(render(<span style={{ background: headwayToTierColor(22) }} />).container.querySelector('span')!.style.background);
   });
+  it('a route list row keeps a long value in its column on two right-aligned lines, the dot by the first (CIV-1300, OC Transpo 6 midday)', () => {
+    const { container } = render(<RouteDirectionRow label="6 Greenboro ↔ Rockcliffe" routeName={{ shortName: '6', name: 'Greenboro ↔ Rockcliffe' }} headway={15} colorHeadway={32} headwayLabel="every 15 min, with one 32 min gap" />);
+    const lines = [...container.querySelectorAll('span.flex-col.items-end > span')].map(el => el.textContent);
+    expect(lines).toEqual(['every 15 min,', 'with one 32 min gap']);
+    expect(container.querySelector('div.flex.flex-wrap')).toBeNull();
+  });
 });

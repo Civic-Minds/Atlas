@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { periodEdgeText, routeListDisplay } from '../effectiveHeadway';
+import { routeCardRange } from '../routeListRange';
 
 // #1292: NYC B AM peak toward Bedford Park: the filter value is 72 (the Bronx end starts at 7:12), the card reads
 // "every 9 min from 7:12 AM"; lists and agency pages now read the card's words, the filter value stays 72.
@@ -21,7 +22,9 @@ describe('route lists read the edge that sets the value (#1292)', () => {
   it('legitimate: no edge on the direction that sets the value, no edge text', () => {
     expect(routeListDisplay([dir(0, 72), dir(1, 10, { from: 400, every: 8 })], 'amPeak').edgeText).toBeUndefined();
   });
-  it('legitimate: two directions setting the value with different edges read the number', () => {
-    expect(routeListDisplay([dir(0, 72, { from: 432, every: 9 }), dir(1, 72, { until: 500, every: 10 })], 'amPeak').edgeText).toBeUndefined();
+  it('two directions setting the value with different edges: the list reads what the card reads (CIV-1300: the card\'s own words)', () => {
+    const ds = [dir(0, 72, { from: 432, every: 9 }), dir(1, 72, { until: 500, every: 10 })];
+    expect(routeCardRange(ds, 'amPeak')?.words).toBe('every 9 min from 7:12 AM');
+    expect(routeListDisplay(ds, 'amPeak').edgeText).toBe('every 9 min from 7:12 AM');
   });
 });

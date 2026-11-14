@@ -10,6 +10,11 @@ export interface RouteCardRange {
   high: number;
   /** The slowest colour the card's rows draw (a row's dot can take its filter number, slower than its words: NYC B AM peak "every 9 min from 7:12 AM" is coloured for 72). */
   color: number;
+  /**
+   * CIV-1300 (#1311): the card's own words for its highest number, where the row says more than "every N" ("every 15 min,
+   * with one 32 min gap"; "every 9 min from 7:12 AM"). Undefined when the row reads its plain number.
+   */
+  words?: string;
 }
 
 /**
@@ -52,6 +57,7 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
   });
   const shown: number[] = [];
   let color = 0;
+  const worded: Array<{ h: number; words: string }> = [];
   for (const group of model.groups) {
     if (typeof group.shared?.headway === 'number') shown.push(group.shared.headway);
     for (const row of group.rows) {
@@ -60,10 +66,15 @@ function cardRange(features: readonly ShapeProperties[], period: TimePeriod): Ro
       if (v.isLimited || v.headway == null) continue;
       shown.push(v.headway);
       color = Math.max(color, v.headway, v.colorHeadway ?? 0);
-      if (v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, v.headway)) shown.push(v.trunkHeadway);
+      const range = v.trunkHeadway != null && headwayRangeShown(v.trunkHeadway, v.headway);
+      if (range) shown.push(v.trunkHeadway!);
+      else if (v.headwayLabel) worded.push({ h: v.headway, words: v.headwayLabel });
     }
   }
   if (!shown.length) return undefined;
   const high = Math.max(...shown);
-  return { low: Math.min(...shown), high, color: Math.max(color, high) };
+  // Rows at that number saying different things leave the list on the number.
+  const said = new Set(worded.filter(w => w.h === high).map(w => w.words));
+  const words = said.size === 1 ? [...said][0] : undefined;
+  return { low: Math.min(...shown), high, color: Math.max(color, high), ...(words ? { words } : {}) };
 }
