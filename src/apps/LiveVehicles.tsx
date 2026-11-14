@@ -12,7 +12,7 @@ import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
+import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
 import { useRouteAnalysis } from '../hooks/useRouteAnalysisPatterns';
@@ -708,6 +708,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
   const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
+  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
+  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -865,7 +867,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       >
         {cardOpen ? (
           // The report form takes the card's width (CIV-932), as History's card does (CIV-1117).
-          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded, vehicleCardOpen ? BOTTOM_SHEET_FIT_CONTENT : undefined) : SIDEBAR_CARD_BODY}>
             {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
             {cardBody}
           </div>

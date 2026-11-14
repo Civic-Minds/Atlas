@@ -443,6 +443,8 @@ export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
 export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+/** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
+export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren’t available yet.';
 /** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
 export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can’t be shown right now.";
 export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
