@@ -27,7 +27,7 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
-import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
@@ -138,12 +138,13 @@ export const MIN_CHART_VALUES = 3;
 /**
  * A row's words (CIV-555): "every 15–52 min" where a slow branch sets the period's value and the shared stretch runs
  * more often, by the one range rule (headwayRangeShown, headwayEveryRange); else "every 52 min".
- * The number that colours and filters stays the period's value. The shared-stretch values are weekday-only, so a
- * Saturday or Sunday row is the plain "every 52 min" (CIV-1425).
+ * The number that colours and filters stays the period's value. A Saturday or Sunday row reads that day's own
+ * shared-stretch values (CIV-1431); a day without them is the plain "every 52 min".
  */
 function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minutes: number, day: DayType = 'Weekday'): string {
-  if (day !== 'Weekday') return headwayEvery(shownMinutes(minutes));
-  const trunk = period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
+  const trunk = day === 'Saturday' || day === 'Sunday'
+    ? historyDayTrunk(snapshot, day, period)
+    : period === 'all' ? snapshot.trunkHeadwayMin : snapshot.trunkHeadwayByPeriod?.[period] ?? undefined;
   return trunk != null && headwayRangeShown(trunk, minutes)
     ? headwayEveryRange(trunk, shownMinutes(minutes))
     : headwayEvery(shownMinutes(minutes));

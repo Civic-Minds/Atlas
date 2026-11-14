@@ -194,11 +194,16 @@ function worsePeriods(a: HeadwayByPeriod | undefined, b: HeadwayByPeriod | undef
   return out as HeadwayByPeriod;
 }
 
+// CIV-1431: a day's per-period values (p) and shared-stretch values (t, tp) merge as the weekday rep's do
+// (worseSidecarEntry): the worse per period, the trunk only where both directions have one.
 function worseDay(a: HistoryDayValue | undefined, b: HistoryDayValue | undefined): HistoryDayValue | undefined {
   if (!a || !b) return undefined;
   if ('none' in a || 'none' in b) return { none: true };
-  if ('lim' in a || 'lim' in b) return { lim: true };
-  return { h: Math.max(a.h, b.h) };
+  const p = worsePeriods(a.p, b.p);
+  if ('lim' in a || 'lim' in b) return { lim: true, ...(p ? { p } : {}) };
+  const t = worseNumber(a.t, b.t);
+  const tp = worsePeriods(a.tp, b.tp);
+  return { h: Math.max(a.h, b.h), ...(p ? { p } : {}), ...(t != null ? { t } : {}), ...(tp ? { tp } : {}) };
 }
 
 /** Two directions' old change files for one period: the worse headway, per period too; the trunk value only where both have one. */

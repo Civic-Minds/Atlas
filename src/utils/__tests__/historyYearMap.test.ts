@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyDayHasPeriods, historyDayPeriodValue, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
+import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
@@ -114,6 +114,16 @@ describe('History weekend days (CIV-1425)', () => {
     for (const period of ['all', 'midday', 'evening', 'late'] as const) {
       expect(historyDayPeriodValue(satP, 'Weekday', period)).toEqual(historyPeriodValue(satP, period));
     }
+  });
+
+  it("a weekend day's shared-stretch low end is its own t / tp, never the weekday's (CIV-1431)", () => {
+    const withTrunk = snap(2024, v2({ rep: { h: 10, t: 6, tp: { midday: 6 } }, sat: { h: 30, p: { midday: 25 }, t: 15, tp: { midday: 12 } }, sun: { lim: true, p: { midday: 40 } } }));
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'midday')).toBe(12);
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'all')).toBe(15);
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'evening')).toBeUndefined();
+    expect(historyDayTrunk(withTrunk, 'Sunday', 'midday')).toBeUndefined();
+    expect(historyDayTrunk(satP, 'Saturday', 'midday')).toBeUndefined();
+    expect(historyDayTrunk(snap(2014, undefined), 'Saturday', 'all')).toBeUndefined();
   });
 
   it('knows whether a weekend day stores values by time of day', () => {

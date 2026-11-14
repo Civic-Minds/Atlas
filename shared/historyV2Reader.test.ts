@@ -58,6 +58,8 @@ describe('parseHistoryV2Sidecar', () => {
     }
     // CIV-1425: weekend days may carry per-period values
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, p: { midday: 15, late: null } }, sun: { lim: true, p: { midday: 60 } } } } }).ok).toBe(true);
+    // CIV-1431: a weekend day with a number may carry its shared-stretch values, as rep does
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 30, p: { midday: 30 }, t: 15, tp: { midday: 15 } } } } }).ok).toBe(true);
   });
 
   it('returns typed errors and never throws', () => {
@@ -70,6 +72,12 @@ describe('parseHistoryV2Sidecar', () => {
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 0 } } } })).toMatchObject({ error: { path: 'routes.1.sat' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { none: false } } } })).toMatchObject({ error: { path: 'routes.1.sat' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, p: 5 } } } })).toMatchObject({ error: { path: 'routes.1.sat.p' } });
+    // CIV-1431: tp is an object, t positive minutes, and neither is allowed on none or lim
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, tp: 15 } } } })).toMatchObject({ error: { path: 'routes.1.sat.tp' } });
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { h: 20, t: 0 } } } })).toMatchObject({ error: { path: 'routes.1.sat.t' } });
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sat: { none: true, tp: { midday: 5 } } } } })).toMatchObject({ error: { path: 'routes.1.sat' } });
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sun: { lim: true, tp: { midday: 5 } } } } })).toMatchObject({ error: { path: 'routes.1.sun' } });
+    expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, sun: { lim: true, t: 5 } } } })).toMatchObject({ error: { path: 'routes.1.sun' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5 }, flag: 'huge' } } })).toMatchObject({ error: { path: 'routes.1.flag' } });
     expect(parseHistoryV2Sidecar({ ...sidecar, routes: { 1: { rep: { h: 5, lim: true } } } })).toMatchObject({ error: { code: 'bad-field' } });
   });

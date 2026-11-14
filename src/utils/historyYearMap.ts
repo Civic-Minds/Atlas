@@ -68,6 +68,17 @@ export function historyDayPeriodValue(snapshot: Snapshot, day: DayType, period: 
 }
 
 /**
+ * CIV-1431: a weekend day's shared-stretch low end in a period ('all' = the day's `t`, else `tp[period]`), stored the
+ * same way as the weekday's. Undefined when the day has none (never borrowed from the weekday or another period).
+ */
+export function historyDayTrunk(snapshot: Snapshot, day: 'Saturday' | 'Sunday', period: TimePeriod): number | undefined {
+  const dayValue = day === 'Saturday' ? snapshot.v2?.sat : snapshot.v2?.sun;
+  if (!dayValue || !('h' in dayValue)) return undefined;
+  const t = period === 'all' ? dayValue.t : dayValue.tp?.[period];
+  return typeof t === 'number' && Number.isFinite(t) && t > 0 ? t : undefined;
+}
+
+/**
  * Whether a snapshot stores any value by time of day for a weekend day (CIV-1425), or positively has no trips that
  * day (which needs none). History says so for the agency when none of its routes has either.
  */

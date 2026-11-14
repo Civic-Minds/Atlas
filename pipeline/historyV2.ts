@@ -8,6 +8,7 @@ import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   historyFlagFor,
+  type HistoryDayValue,
   type HistoryRep,
   type HistoryV2Sidecar,
   type HistoryV2SidecarRoute,
@@ -78,6 +79,18 @@ export function representativeRep(features: Props[]): RepResult {
   return { rep: { h: worst, ...(p ? { p } : {}), ...(t != null && t < worst ? { t } : {}), ...(tp ? { tp } : {}) }, conflict };
 }
 
+/**
+ * CIV-1431: a weekend day's shared-stretch values, worked out the same way as the weekday's (representativeRep):
+ * `t` is the day's all-day low end when better than its h, `tp` the per-period low ends where better than its `p`.
+ * Only a day with a number gets them; limited, none and unknown are returned unchanged.
+ */
+export function weekendTrunk(day: HistoryDayValue, features: Props[]): HistoryDayValue {
+  if (!('h' in day)) return day;
+  const t = routeTrunkHeadway(features);
+  const tp = routeTrunkHeadwayByPeriod(features, day.p);
+  return { ...day, ...(t != null && t < day.h ? { t } : {}), ...(tp ? { tp } : {}) };
+}
+
 export interface BuildV2Report {
   routes: number;
   blankWeekday: number;
@@ -123,7 +136,9 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
     const { rep, conflict } = representativeRep(e.Weekday);
     const rec: HistoryV2SidecarRoute = { name: e.name ?? key, rep };
     for (const [field, day] of [['sat', 'Saturday'], ['sun', 'Sunday']] as const) {
-      const v = weekendDay(e[day], evidence ? positivelyNoService(evidence, key, day) : false, { periods: opts.weekendPeriods });
+      const day0 = weekendDay(e[day], evidence ? positivelyNoService(evidence, key, day) : false, { periods: opts.weekendPeriods });
+      // CIV-1431: the day's shared-stretch values, with its per-period values (same switch, so it is off by default).
+      const v = day0 && opts.weekendPeriods ? weekendTrunk(day0, e[day]) : day0;
       if (v) { rec[field] = v; if ('none' in v) report.weekendNone++; }
     }
     const flag = historyFlagFor(rep);

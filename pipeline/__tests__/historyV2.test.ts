@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { computeFeedEvidence, positivelyNoService, weekendDay } from '../historyWeekend.js';
 import {
   baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, localDirSink,
-  periodKeyForZip, representativeRep, routeTrunkHeadway, writeSidecar,
+  periodKeyForZip, representativeRep, routeTrunkHeadway, weekendTrunk, writeSidecar,
 } from '../historyV2.js';
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck } from '../historyV2Build.js';
 import { mergeAliasedRoutes, currentRouteShortNamesFor } from '../historyIdentity.js';
@@ -201,6 +201,31 @@ describe('buildV2Routes', () => {
       expect(out['5'].sun).toEqual({ lim: true, p: { midday: 60 } });
       expect(out['5'].rep.p).toEqual({ amPeak: 8, midday: 12 });
       expect(fingerprintOf(out['5'])).toEqual(fingerprintOf(buildV2Routes(route).routes['5']));
+    });
+    // CIV-1431: weekend shared-stretch values, the same way as the weekday's. TTC 102's real weekday features stand in
+    // for a Saturday: the day's t/tp must equal what representativeRep reads from the same features.
+    const ttc102 = (day: string) => (JSON.parse(readFileSync(new URL('./fixtures/history-list-low-end/ttc-102-weekday.json', import.meta.url), 'utf8')) as Array<Record<string, unknown>>)
+      .map(p => ({ properties: { ...p, day, routeShortName: '102' } }));
+    it('on: a Saturday with a number gets tp (and t) exactly as the weekday rep would from the same features', () => {
+      const { routes: out } = buildV2Routes([...ttc102('Weekday'), ...ttc102('Saturday')], undefined, { weekendPeriods: true });
+      const sat = out['102'].sat as { h: number; p?: Record<string, number | null>; t?: number; tp?: Record<string, number | null> };
+      expect(sat.h).toBe(out['102'].rep.h);
+      expect(sat.p).toEqual(out['102'].rep.p);
+      expect(sat.tp).toEqual({ amPeak: 6, midday: 20, pmPeak: 7, evening: 20 });
+      expect(sat.tp).toEqual(out['102'].rep.tp);
+      expect(sat.t).toBe(out['102'].rep.t);
+      expect(Object.keys(sat)).toEqual(Object.keys(out['102'].rep).filter(k => k !== 'lim'));
+    });
+    it('off: no weekend t or tp, so other agencies are unchanged', () => {
+      const { routes: out } = buildV2Routes([...ttc102('Weekday'), ...ttc102('Saturday')]);
+      expect(out['102'].sat).toEqual({ h: out['102'].rep.h });
+    });
+    it('weekendTrunk leaves limited, none and plain days alone', () => {
+      expect(weekendTrunk({ lim: true, p: { midday: 60 } }, ttc102('Saturday').map(f => f.properties))).toEqual({ lim: true, p: { midday: 60 } });
+      expect(weekendTrunk({ none: true }, [])).toEqual({ none: true });
+      expect(weekendTrunk({ h: 20, p: { midday: 20 } }, [{ routeAllDayHeadway: 20, minStopHeadway: 8 }])).toEqual({ h: 20, p: { midday: 20 } });
+      // Sunday's limited day in the CIV-1425 route keeps exactly its p.
+      expect(buildV2Routes(route, undefined, { weekendPeriods: true }).routes['5'].sun).toEqual({ lim: true, p: { midday: 60 } });
     });
     it('on: none and unknown days never get periods', () => {
       expect(weekendDay([], true, { periods: true })).toEqual({ none: true });

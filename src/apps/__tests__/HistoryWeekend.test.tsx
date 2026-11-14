@@ -19,7 +19,7 @@ const pilot = {
       routeShortName: '1', routeName: 'Alpha',
       tripDuration: { firstLabel: 'Jun 2015', firstMinutes: 40, lastLabel: 'Jun 2024', lastMinutes: 50 },
       snapshots: [
-        snap(2015, 52, { h: 30, p: { midday: 20 } }, 15),
+        snap(2015, 52, { h: 30, p: { midday: 20 }, tp: { midday: 12 } }, 15),
         snap(2019, 60, { h: 30, p: { midday: 24 } }, 15),
         snap(2024, 12, { h: 30, p: { midday: 30 } }),
       ],
@@ -50,13 +50,16 @@ const saturday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Sa
 const weekday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Weekday' };
 
 describe('History on Saturday (CIV-1425)', () => {
-  it("route card rows, chart and box read Saturday's values by time of day, with no shared-stretch range and no trip time", async () => {
+  it("route card rows, chart and box read Saturday's values by time of day, with Saturday's own shared-stretch range and no trip time", async () => {
     const c = await open('/apps/history?agency=mbta&hroute=1&year=2024&p=midday', pilot, saturday, 'Jun 2015');
     const text = c.textContent ?? '';
-    expect(text).toContain('every 20 min');
+    // CIV-1431: the 2015 Saturday stores its own shared stretch (12 at midday), so its row reads as a range,
+    // and never the weekday's (15–52); 2019's Saturday stores none, so it stays a plain value.
+    expect(text).toContain('every 12–20 min');
     expect(text).toContain('every 24 min');
     expect(text).toContain('every 30 min');
     expect(text).not.toContain('every 15–52 min');
+    expect(text).not.toContain('every 15–24 min');
     expect(text).not.toContain('every 52 min');
     expect(c.querySelector('svg path')).not.toBeNull();
     expect(c.querySelector('[data-testid="history-frequency"]')?.textContent).toBe('Frequency: 20 → 30 min');
