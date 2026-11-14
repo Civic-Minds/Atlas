@@ -29,7 +29,9 @@
  * Nothing here changes a number except the one-decimal rounding, so the wording can change without the data changing.
  */
 
-const MISSING = '—';
+import { MISSING_VALUE } from './missingValue';
+
+const MISSING = MISSING_VALUE;
 
 const isUsable = (n: number | null | undefined): n is number => n != null && Number.isFinite(n);
 

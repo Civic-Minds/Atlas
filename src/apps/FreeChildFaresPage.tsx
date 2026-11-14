@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { MISSING_VALUE } from '../../shared/missingValue';
 import PageShell from '../components/ui/PageShell';
 import { niceAxis } from '../components/charts/ProfileBars';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
@@ -73,7 +74,7 @@ const regionTiles: MapTile[] = regionRows.map(r => {
   const what = r.age != null ? `most common free age ${r.age}` : r.tie ? `a tie between ages ${r.tie.join(', ')}` : 'no age limit found';
   return {
     key: r.region, abbr, col, row, count: r.total,
-    value: r.age != null ? String(r.age) : r.tie ? 'Mix' : '–',
+    value: r.age != null ? String(r.age) : r.tie ? 'Mix' : MISSING_VALUE,
     fill: band ? bandFill(band.mix) : 'none', darkFill: !!band && band.mix >= 85, thin: r.withAge > 0 && r.withAge < MIN_AGE_RULES,
     sentence: `${r.region}: ${what}, ${agencies(r.total)}, ${r.withAge} with an age limit.`,
   };

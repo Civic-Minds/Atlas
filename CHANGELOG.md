@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text
 - **Route card notices no longer repeat what the rows say**: a [notice](https://github.com/Civic-Minds/Atlas/issues/1221) that a row's hours or gap already give is left out, the "runs only from" line shows once, and a route whose rows all meet the filter says when it runs instead of that it misses the filter
 - **Agency names read naturally in sentences**: notices and agency pages say "The TTC’s schedule ended…" and "BC Ferries’ schedule", and renamed agencies use their current names (Green Mountain Transit, Santa Maria Regional Transit)
 - **Every back link reads "Back to" and the place it goes**: "← Back to map", "← Back to TTC", and History's agency card "← Back to agencies" (it read "All agencies"), so the way back reads the same on every screen

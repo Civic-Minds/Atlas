@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from './content/backLinks';
+import { MISSING_VALUE } from '../shared/missingValue';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUpDown } from 'lucide-react';
 import AtlasLogo from './components/AtlasLogo';
@@ -53,7 +54,7 @@ function extractRows(slug: string, agencyName: string, fc: GeoJSON.FeatureCollec
         agencySlug: slug,
         agencyName,
         route: p.routeShortName || String(p.routeId),
-        headsign: p.headsign ?? '—',
+        headsign: p.headsign ?? MISSING_VALUE,
         day,
         period,
         headway: headway ?? 0,

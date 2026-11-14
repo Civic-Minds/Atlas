@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { useParams } from 'react-router';
 import { useLiveAgencyName, useLiveAgencyNames } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
@@ -47,7 +48,7 @@ import { countOf } from '../shared/overflowText';
  */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5, FIGURE_COL = PAGE_FIGURE_COLUMN_REM;
 
-const pct = (x: number | null) => (x == null ? '–' : pctOf(x));
+const pct = (x: number | null) => (x == null ? MISSING_VALUE : pctOf(x));
 
 type Sort = LiveSort;
 const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', TRIP_TIME_LABEL], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
@@ -126,9 +127,9 @@ function RoutesTable({ s }: { s: AgencySummary }) {
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
               { key: 'late', sortable: true, header: 'Late', width: FIGURE_COL, cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
               { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
-              { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? '–' : runTimeShareText(r.runTimeOver)) },
+              { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? MISSING_VALUE : runTimeShareText(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: 'Bunching', width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
-              { key: 'delivered', sortable: true, header: 'Delivered', width: FIGURE_COL, cell: r => (r.deliveredShare == null ? '–' : pctTenth(r.deliveredShare)) },
+              { key: 'delivered', sortable: true, header: 'Delivered', width: FIGURE_COL, cell: r => (r.deliveredShare == null ? MISSING_VALUE : pctTenth(r.deliveredShare)) },
             ]}
           />
           </ScrollX>

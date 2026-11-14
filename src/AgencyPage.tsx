@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { useParams } from 'react-router';
 import {
   bandCounts,
@@ -8,7 +9,6 @@ import {
   agencyPageH1,
   agencyPagePath,
   agencyStats,
-  headwayEvery,
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   CONNECTS_WITH,
@@ -117,7 +117,7 @@ function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPa
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
-  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : headwayEvery(null);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : MISSING_VALUE;
 }
 
 /**
