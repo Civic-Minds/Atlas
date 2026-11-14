@@ -70,7 +70,8 @@ export function useLiveAgency(agency: string): { kind: 'loading' } | { kind: 'er
     let live = true;
     fetch(liveAgencyDataUrl(agency))
       .then(r => (liveDataMissing(r) ? { status: 'unknown_agency', reason: liveNoAgencyAnalysis(agency) } as LiveAgencyResponse : r.json() as Promise<LiveAgencyResponse>))
-      .then(data => { if (live) setState({ kind: 'done', data }); })
+      // #1486: an answer for another agency (a local review stub serves TTC's file for any agency) is "no analysis", never shown under this name.
+      .then(data => { if (live) setState({ kind: 'done', data: data.status === 'ready' && data.summary.agency !== agency.toLowerCase() ? { status: 'unknown_agency', reason: liveNoAgencyAnalysis(agency) } : data }); })
       .catch(() => { if (live) setState({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }); });
     return () => { live = false; };
   }, [agency]);

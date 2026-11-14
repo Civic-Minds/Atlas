@@ -37,4 +37,10 @@ describe('Live agency page', () => {
     expect(container.querySelector('details')).toBeNull();
     expect(container.querySelector('#agency-method')).toBeTruthy();
   });
+  it('never shows another agency\'s figures under this agency\'s name (#1486)', async () => {
+    // The answer is TTC's file, asked for MiWay (a local stub serving one file for every agency).
+    render(<MemoryRouter initialEntries={['/apps/live/miway']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
+    expect(await screen.findByText(/no route analysis/i)).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Where bunching forms' })).toBeNull();
+  });
 });
