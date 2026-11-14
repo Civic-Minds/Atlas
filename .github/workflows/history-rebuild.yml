@@ -13,7 +13,13 @@ name: Rebuild History v2 sidecars
 # write:   the same, from the tip of main only, then `history:upload --write --replace-approved <ticket>`: only
 #          sidecars whose ONLY differences are added weekend fields are replaced (each backed up first and read
 #          back); any other change refuses the whole run. Needs Ryan's explicit go-ahead, like any R2 write.
+#
+# A workflow that is not on the default branch cannot be dispatched (HTTP 404), so pushing a tag named
+# dryrun/civ-1430-* also starts a DRY RUN of mbta at that tag (never write mode).
 on:
+  push:
+    tags:
+      - 'dryrun/civ-1430-*'
   workflow_dispatch:
     inputs:
       ref:
@@ -49,7 +55,7 @@ permissions:
 
 jobs:
   dry-run:
-    if: inputs.mode == 'dry-run'
+    if: github.event_name == 'push' || inputs.mode == 'dry-run'
     runs-on: ubuntu-latest
     concurrency:
       group: history-rebuild-dry-run
@@ -58,7 +64,7 @@ jobs:
       contents: read
     timeout-minutes: 180
     env:
-      SLUG: ${{ inputs.slug }}
+      SLUG: ${{ inputs.slug || 'mbta' }}
       TICKET: ${{ inputs.ticket }}
       NODE_OPTIONS: --max-old-space-size=6144
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -77,7 +83,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || 'main' }}
+          ref: ${{ inputs.ref || github.ref }}
           persist-credentials: false
 
       - uses: actions/setup-node@v7
@@ -102,7 +108,7 @@ jobs:
         continue-on-error: true
         env:
           ATLAS_HISTORY_V2: '1'
-          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug }}
+          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug || 'mbta' }}
         run: |
           i=0
           for z in "$OUT"/zips/*.zip; do
@@ -147,7 +153,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: history-rebuild-${{ inputs.slug }}-${{ github.run_id }}
+          name: history-rebuild-${{ inputs.slug || 'mbta' }}-${{ github.run_id }}
           path: |
             ${{ env.OUT }}/sources.json
             ${{ env.OUT }}/published/
@@ -163,7 +169,7 @@ jobs:
   # Write. Only the tip of main, only with an explicit ticket, and only after Ryan's go-ahead.
   # ---------------------------------------------------------------------------------------
   write:
-    if: inputs.mode == 'write'
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'write'
     runs-on: ubuntu-latest
     # Never beside a data release, which runs build-history over these sidecars.
     concurrency:
