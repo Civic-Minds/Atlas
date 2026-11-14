@@ -171,7 +171,7 @@ export type LiveDashboardResponse =
 /** Routes whose analysis is built but not shown until a known problem is fixed. */
 export const LIVE_DASHBOARD_HOLD: Readonly<Record<string, string>> = {
   // Pages say only that the route isn't included, never why (Ryan, 2026-10-16).
-  'ttc::512': "The 512 isn't included yet.",
+  'ttc::512': "The 512 isn’t included yet.",
 };
 
 /** Things to know when reading one route's numbers. */
@@ -340,7 +340,7 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
  * fewer than 3 good days leave no spread to measure (or an older file has no daily values).
  */
 /** E17, after the term "Coloured changes" (approved by Ryan, CIV-1075). */
-export const COLOURED_CHANGES = "are bigger than the figure's normal day-to-day range. Grey changes fall inside that range and may just be normal variation.";
+export const COLOURED_CHANGES = "are bigger than the figure’s normal day-to-day range. Grey changes fall inside that range and may just be normal variation.";
 /** The same rule as one sentence, for the week table's caption hover. */
 export const NOISE_RULE = `Coloured changes ${COLOURED_CHANGES}`;
 

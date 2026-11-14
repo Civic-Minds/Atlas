@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Apostrophes are curly everywhere on the site**: notices, errors and Live text used straight ones while the About and story pages used ’
 - **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
 - **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")
 - **Live's Routes table writes run time as the tile does**: "6% faster" instead of a bare "−6%", and added minutes always show one decimal, so a column doesn't mix "+3 min" with "+1.6 min"

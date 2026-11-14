@@ -12,15 +12,15 @@ describe('Docs page Notices section (CIV-1236)', () => {
     const { container } = render(<AboutDocsPage />);
     const section = container.querySelector('#notices')!;
     expect([...section.querySelectorAll('h3')].map(h => h.textContent)).toEqual([
-      'Old and new schedules', "Errors in the agency's data", 'When a route runs', 'Uneven schedules', 'Filters',
+      'Old and new schedules', "Errors in the agency’s data", 'When a route runs', 'Uneven schedules', 'Filters',
       'Beta and on-demand service', 'Loading, errors and empty lists',
     ]);
     const examples = [...section.querySelectorAll('li')].map(li => li.textContent!.replace(/[⁠ ‑]/g, m => (m === '‑' ? '-' : m === ' ' ? ' ' : '')));
     expect(examples).toHaveLength(14);
-    expect(examples).toContain("“[Agency]'s schedule ended on [date]. Times shown may be out of date.”");
+    expect(examples).toContain("“[Agency]’s schedule ended on [date]. Times shown may be out of date.”");
     expect(examples).toContain('“Gaps between trips can be up to [N] min.”');
     expect(examples).toContain('“This route runs only from 7–9 AM.”');
-    expect(examples).toContain("“This route couldn't load.”");
+    expect(examples).toContain("“This route couldn’t load.”");
     expect(screen.getByRole('link', { name: 'Notices' })).toHaveAttribute('href', '#notices');
   });
 

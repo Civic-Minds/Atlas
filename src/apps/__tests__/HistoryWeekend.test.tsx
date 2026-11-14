@@ -50,7 +50,7 @@ const saturday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Sa
 const weekday: HistoryView = { period: 'midday', maxHeadway: Infinity, day: 'Weekday' };
 
 describe('History on Saturday (CIV-1425)', () => {
-  it("route card rows, chart and box read Saturday's values by time of day, with no shared-stretch range and no trip time", async () => {
+  it("route card rows, chart and box read Saturday’s values by time of day, with no shared-stretch range and no trip time", async () => {
     const c = await open('/apps/history?agency=mbta&hroute=1&year=2024&p=midday', pilot, saturday, 'Jun 2015');
     const text = c.textContent ?? '';
     expect(text).toContain('every 20 min');
@@ -90,7 +90,7 @@ describe('History on Saturday (CIV-1425)', () => {
 
   it('an agency with no Saturday values by time of day says so once', async () => {
     const c = await open('/apps/history?agency=other&year=2024&p=midday', other, saturday, 'Biggest changes first');
-    expect(c.textContent).toContain("Saturday values by time of day aren't available for this agency yet.");
+    expect(c.textContent).toContain("Saturday values by time of day aren’t available for this agency yet.");
   });
 });
 

@@ -47,7 +47,7 @@ export const FEED_REFRESH_CADENCE_LABEL = 'We check all feeds weekly.';
 export function feedRefreshCountdownLabel(meta: FeedRefreshMeta | null | undefined, from = new Date()): string {
   const days = meta ? daysUntilNextFeedRefresh(meta, from) : null;
   if (days == null) return 'We check for updates weekly.';
-  if (days === 0) return "We'll check for updates again today.";
-  if (days === 1) return "We'll check for updates again tomorrow.";
-  return `We'll check for updates again in ${days} days.`;
+  if (days === 0) return "We’ll check for updates again today.";
+  if (days === 1) return "We’ll check for updates again tomorrow.";
+  return `We’ll check for updates again in ${days} days.`;
 }

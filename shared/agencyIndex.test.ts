@@ -36,7 +36,7 @@ describe('buildAgencyIndexData', () => {
   });
 
   it('writes a description and a canonical, noindex outside public', () => {
-    expect(agencyIndexDescription(d)).toBe("5 transit agencies and 1 region. Each agency's page shows how often every route runs.");
+    expect(agencyIndexDescription(d)).toBe("5 transit agencies and 1 region. Each agency’s page shows how often every route runs.");
     const seo = resolveAgencyIndexSeo(d, { mode: 'beta' });
     expect(seo.canonicalUrl).toBe('https://www.transitatlas.fyi/agencies');
     expect(seo.noindex).toBe(true);
@@ -72,7 +72,7 @@ describe('agencyIndexRegionHref (CIV-966)', () => {
 });
 
 describe('agency index short names (CIV-967)', () => {
-  it('carries each agency\'s name without its bracketed city, for rows too tight for the full name', () => {
+  it('carries each agency’s name without its bracketed city, for rows too tight for the full name', () => {
     const cdta = { ...ag('cdta', 'Capital District Transportation Authority', 'United States', 'New York', 50), displayName: 'CDTA (Albany)' };
     const row = buildAgencyIndexData([cdta], [], null).groups[0].regions[0].agencies[0];
     expect(row).toMatchObject({ name: 'Capital District Transportation Authority', shortName: 'CDTA' });
@@ -101,7 +101,7 @@ describe('states in the agency list match the state pages (#1306)', () => {
   // State pages leave out agencies with no weekday midday service; the list keeps them, as it lists every agency page.
   const noMidday = (slug: string) => { const a = bySlug.get(slug); return !!a && !hasMiddayService(a); };
 
-  it('lists every state page\'s agencies under that state, and no other agency with midday service', () => {
+  it('lists every state page’s agencies under that state, and no other agency with midday service', () => {
     for (const r of regionPages(all)) {
       const page = buildRegionPageData(r, all, null).agencies.map(a => a.slug).sort();
       expect(listed(r.country, r.name).map(a => a.slug).filter(s => !noMidday(s)).sort(), r.name).toEqual(page);

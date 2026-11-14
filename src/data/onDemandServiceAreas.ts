@@ -165,7 +165,7 @@ export const CYRIDE_EASE_SERVICE_AREA = {
     'Ames city limits': {
       serviceName: 'Moonlight Express',
       serviceHours: 'Friday and Saturday nights 10:30 PM\u20132 AM during the Iowa State school year',
-      hoursNote: "Doesn't run on ISU break weekends, Thanksgiving, Easter or finals week.",
+      hoursNote: "Doesn’t run on ISU break weekends, Thanksgiving, Easter or finals week.",
       availability: { Friday: [{ startHour: 22.5, endHour: 26 }], Saturday: [{ startHour: 22.5, endHour: 26 }], Sunday: [] },
       hoursSource: { url: 'https://www.cyride.com/schedules/school-year-schedule/moonlight-express', retrievedAt: '2026-10-11' },
       // Season end: CyRide GTFS 20260827 calendar `MLX,0,0,0,0,1,1,0,20260817,20270514`
@@ -290,7 +290,7 @@ export const EDMONTON_ON_DEMAND_SERVICE_AREA = {
   sourceRetrievedAt: '2026-10-10',
   serviceName: 'ETS On Demand',
   pickup: { method: 'fixed-stops' } satisfies OnDemandPickup,
-  tripRules: "Trips must start or end at the neighbourhood's assigned transit hub.",
+  tripRules: "Trips must start or end at the neighbourhood’s assigned transit hub.",
   bookingUrl: 'https://www.edmonton.ca/ets/on-demand-transit',
   zoneMetadata: EDMONTON_ON_DEMAND_ZONE_METADATA,
 };
@@ -844,7 +844,7 @@ export const SAM_RIDES_SERVICE_AREA = {
   sourceRetrievedAt: FLEX_RETRIEVED_AT,
   serviceName: 'SAM rides',
   serviceHours: 'Weekdays 5:30 AM–9 PM; Saturday 10:15 AM–4:30 PM; no Sunday service',
-  hoursNote: "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
+  hoursNote: "No service on New Year’s Day, Memorial Day, Independence Day, Labor Day, Thanksgiving or Christmas.",
   bookingInfo: 'Call 503-668-3466, up to 2 weeks ahead or by 5 PM the day before.',
   tripRules: 'Trips can start and end anywhere in the area within 3 miles of Sandy.',
   bookingUrl: 'https://www.ci.sandy.or.us/transit/page/sam-rides-demand-response-dial-ride-service',

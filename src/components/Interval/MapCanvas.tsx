@@ -1139,7 +1139,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const url = buildLocationUrl(mapContextMenu.lat, mapContextMenu.lon);
     trackEvent('report_issue_opened', { source: 'map_context_menu' });
     const title = `Map issue near ${mapContextMenu.lat.toFixed(5)}, ${mapContextMenu.lon.toFixed(5)}`;
-    const body = `**Location:** ${url}\n\n**What's wrong:**\n\n`;
+    const body = `**Location:** ${url}\n\n**What’s wrong:**\n\n`;
     const issueUrl = `https://github.com/Civic-Minds/Atlas/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('user-reported')}`;
     window.open(issueUrl, '_blank', 'noopener,noreferrer');
     setMapContextMenu(null);

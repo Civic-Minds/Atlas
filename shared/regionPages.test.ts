@@ -23,7 +23,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(regionPages(ALL).map(p => p.slug)).toEqual(['ontario', 'colorado']);
   });
 
-  it('counts the place\'s agencies with the area pages\' rule, whole', () => {
+  it('counts the place’s agencies with the area pages’ rule, whole', () => {
     const d = buildRegionPageData({ slug: 'colorado', name: 'Colorado', country: 'United States' }, ALL, null);
     expect(d.agencies.map(a => a.slug)).toEqual(['rtd', 'rfta']);
     expect(d.totalRoutes).toBe(4);
@@ -33,7 +33,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(regionPageTitle(d)).toBe('Colorado: how often transit runs across 2 agencies');
     expect(regionPageDescription(d)).toBe('Compare 2 transit agencies in Colorado side by side: routes and weekday waits by time of day, from published schedules.');
     expect(regionIntroParts(d).lead).toBe('Colorado has 2 transit agencies operating 4 routes (1 commuter rail, 3 bus)');
-    expect(regionBarNote(d)).toBe("The bar splits this state's routes by how often they run on a weekday midday. Each route is judged by its slower direction.");
+    expect(regionBarNote(d)).toBe("The bar splits this state’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.");
     expect(regionMapHref(d)).toMatch(/^\/\?agencies=rtd%2Crfta&lat=39\.5000&lon=-105\.9000&z=\d+$/);
     expect(resolveRegionSeo(d, { mode: 'public' })).toMatchObject({ canonicalUrl: 'https://www.transitatlas.fyi/region/colorado', noindex: false, matchedPath: '/region/colorado' });
   });
@@ -45,7 +45,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(regionKind('United States', 'Colorado')).toBe('state');
   });
 
-  it('links an agency\'s place to its state page, or to the all-agencies heading when the state has none', () => {
+  it('links an agency’s place to its state page, or to the all-agencies heading when the state has none', () => {
     expect(regionPageHref(NIGHT, ALL)).toBe('/region/colorado');
     expect(regionPageHref(ONLY_NIGHT, ALL)).toBeUndefined();
     expect(agencyPageData(RFTA, ALL).regionPage).toBe('/region/colorado');

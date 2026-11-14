@@ -18,7 +18,7 @@ export function liveAgencyDataUrl(agency: string): string {
 }
 
 /** What the report pages say outside dev when their data fails to load (wording approved by Ryan, 2026-10-16). */
-export const LIVE_REPORT_UNAVAILABLE = "This report isn't available right now.";
+export const LIVE_REPORT_UNAVAILABLE = "This report isn’t available right now.";
 
 /** Setup instructions ("npm run live", "npm run live:analyze") are for dev only; outside dev the approved line stands in. */
 export const devOnly = (devText: string): string => (fromR2 ? LIVE_REPORT_UNAVAILABLE : devText);

@@ -25,7 +25,7 @@ describe('FrequentServiceStory', () => {
     expect(onExploreMap).toHaveBeenCalledOnce();
   });
 
-  it('picks a threshold bar the split bar\'s way: it fades the other bars and highlights its name, without agency tabs', () => {
+  it('picks a threshold bar the split bar’s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
     fireEvent.click(tenMinuteButton);
@@ -47,18 +47,18 @@ describe('FrequentServiceStory', () => {
     expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
   });
 
-  it("says how many agencies the chart shows, from the data (Ryan's caption, 2026-11-02)", () => {
+  it("says how many agencies the chart shows, from the data (Ryan’s caption, 2026-11-02)", () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByText(`This chart shows the ${frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.`, { exact: false })).toBeInTheDocument();
   });
 
-  it("bridges the montage and the map with Ryan's approved text, word for word (version A, 2026-11-02)", () => {
+  it("bridges the montage and the map with Ryan’s approved text, word for word (version A, 2026-11-02)", () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const bridge = [...screen.getByRole('heading', { name: 'Every map tells it differently.' }).closest('section')!.querySelectorAll('p')].map(p => p.textContent!.replace(/[\u2060\u00a0\u202f]/g, m => (m === '\u2060' ? '' : ' ')));
     expect(bridge).toEqual([
-      "Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar every 10 min or better, from 6 AM to 1 AM. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
-      "The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.",
-      "Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.",
+      "Each agency decides what its map shows, so one map is hard to compare with the next. Toronto’s Ten-Minute Network means a bus or streetcar every 10 min or better, from 6 AM to 1 AM. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
+      "The maps also differ in what they draw. Vancouver’s and Portland’s show only the frequent network, so a slower route isn’t on the map. Toronto’s, Ottawa’s and Seattle’s draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.",
+      "Atlas starts from the schedules instead. Here is Toronto’s network, built from the TTC’s own schedule data, one step at a time.",
     ]);
   });
 
@@ -137,7 +137,7 @@ describe('FrequentServiceStory', () => {
     expect(frequentServiceStoryResearchRecord).toEqual({ agencyId: 'ttc', agencyName: 'Toronto Transit Commission' });
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByText(/We checked how 428 agencies define frequent service on their own websites/)).toBeInTheDocument();
-    expect(screen.getByText(/at 428 agencies Atlas covers in Canada \(85\) and the United States \(343\)\. We couldn't check 2 others because their websites block automated visits\./)).toBeInTheDocument();
+    expect(screen.getByText(/at 428 agencies Atlas covers in Canada \(85\) and the United States \(343\)\. We couldn’t check 2 others because their websites block automated visits\./)).toBeInTheDocument();
   });
 
   it('keeps the audit canonical and unique after alias merging', () => {

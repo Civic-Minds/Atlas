@@ -45,7 +45,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   if (full) {
     return frame(<>
       {points.length > 1 && <div className="mt-4 max-w-2xl">{chart}</div>}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> <LeftOutDays dates={skipped.map(d => d.date)} />.</>}</p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren’t counted.{skipped.length > 0 && <> <LeftOutDays dates={skipped.map(d => d.date)} />.</>}</p>
     </>);
   }
   if (points.length < 2) return frame(null);

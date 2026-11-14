@@ -66,27 +66,27 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
 const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand?: true }[] = [
   {
     title: 'Old and new schedules',
-    text: "The agency's schedule has ended, is new and still being checked, or had an error we corrected.",
+    text: "The agency’s schedule has ended, is new and still being checked, or had an error we corrected.",
     examples: [expiredFeedNotice('[Agency]', '[date]'), NEW_SCHEDULE_DATA_NOTICE.route],
   },
   {
-    title: "Errors in the agency's data",
-    text: "A route's line is missing or wrong in the agency's data. Its frequency still comes from the schedule.",
+    title: "Errors in the agency’s data",
+    text: "A route’s line is missing or wrong in the agency’s data. Its frequency still comes from the schedule.",
     examples: [NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_WARNING_MESSAGE],
   },
   {
     title: 'When a route runs',
-    text: "The route doesn't run, or runs for only part of the time, on the day or at the time of day you picked.",
+    text: "The route doesn’t run, or runs for only part of the time, on the day or at the time of day you picked.",
     examples: [periodServiceNotice('6–9 AM', false), periodServiceNotice('6–9 AM', true, '7–9 AM')],
   },
   {
     title: 'Uneven schedules',
-    text: "The wait between trips isn't the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
+    text: "The wait between trips isn’t the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
     examples: [WEEKDAY_VARIATION_NOTICE, unevenServiceNotice(999).replace('999', '[N]')],
   },
   {
     title: 'Filters',
-    text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
+    text: "The route, or part of it, doesn’t meet the frequency filter you picked, or is hidden by your filters.",
     examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15, '3–7 PM')],
   },
   {
@@ -97,7 +97,7 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
   },
   {
     title: 'Loading, errors and empty lists',
-    text: "Something didn't load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
+    text: "Something didn’t load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
     examples: [loadErrorText('this route'), LOCATION_DENIED],
   },
 ];

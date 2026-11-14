@@ -669,7 +669,7 @@ function dateParts(value: string | null | undefined): RegExpExecArray | null {
  */
 // N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
 // Ryan: "ended is past but ends is upcoming": "ends" before the listing-end date (agency-local), "ended" from it on.
-export const listingEndedNotice = (date: string, ended: boolean) => `This agency's scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
+export const listingEndedNotice = (date: string, ended: boolean) => `This agency’s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
 /** Whether the listing-end date (yyyymmdd) has arrived, given today's agency-local yyyymmdd. */
 export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
 // N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
@@ -683,7 +683,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
   const listingEnded = formatDataDate(a.listingEndedOn);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
   const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
-    ? `This schedule ended on ${through}; the agency hasn't published a newer one yet.`
+    ? `This schedule ended on ${through}; the agency hasn’t published a newer one yet.`
     // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
     : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
@@ -691,7 +691,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : published ? `This schedule was published ${published}.`
     : through ? `This schedule covers service until ${through}.`
     : '';
-  return ["Based on the agency's published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency’s published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */

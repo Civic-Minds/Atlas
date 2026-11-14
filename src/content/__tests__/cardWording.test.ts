@@ -38,8 +38,8 @@ describe('card wording (CIV-1251), word for word', () => {
     ['row 7: a direction', noServiceInPeriodText('9 AM–3 PM'), 'No trips from 9 AM–3 PM'],
     ['row 9', selectedRoutePartMeetsFilterNotice(15, '3–7 PM'), 'Only the shared stretch runs every 15 min or better from 3–7 PM.'],
     ['row 9: one direction', selectedRoutePartMeetsFilterNotice(15, '3–7 PM', 'Northbound'), 'Northbound, only the shared stretch runs every 15 min or better from 3–7 PM.'],
-    ['row 10', selectedRouteOutsideFilterNotice(15, '6–9 AM'), "This route doesn't run every 15 min or better for all of 6–9 AM."],
-    ['row 10: all day', selectedRouteOutsideFilterNotice(15, null), "This route doesn't run every 15 min or better all day."],
+    ['row 10', selectedRouteOutsideFilterNotice(15, '6–9 AM'), "This route doesn’t run every 15 min or better for all of 6–9 AM."],
+    ['row 10: all day', selectedRouteOutsideFilterNotice(15, null), "This route doesn’t run every 15 min or better all day."],
     ['row 8: shared stretch time', periodEdgeText({ from: 487, every: 15 }), 'every 15 min from 8:07 AM'],
     ['row 11', IRREGULAR_OVERNIGHT_LABEL, 'Runs irregularly overnight'],
     ['row 11: one function', noNumberRowLabel({ nightView: true }), 'Runs irregularly overnight'],
@@ -55,7 +55,7 @@ describe('no All day row on the route card (CIV-1279)', () => {
     expect(noNumberRowLabel({})).toBe(IRREGULAR_PERIOD_LABEL);
     expect(noNumberRowLabel({ nightView: false })).toBe(IRREGULAR_PERIOD_LABEL);
   });
-  it("the card's issue report has no All day fallback: it names a period only when one is chosen", () => {
+  it("the card’s issue report has no All day fallback: it names a period only when one is chosen", () => {
     const card = readFileSync('src/components/Interval/panels/RouteCardHeadway.tsx', 'utf8');
     expect(card).not.toMatch(/['"]All day['"]/);
     expect(card).toContain("...(reportPeriod ? [['Period', reportPeriod] as const] : [])");

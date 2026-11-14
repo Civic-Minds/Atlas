@@ -165,7 +165,7 @@ export function regionIntroParts(d: RegionPageData) {
 
 /** The line under the frequency bar, as on area pages with the place swapped: "The bar splits this state's routes ...". */
 export function regionBarNote(d: Pick<RegionPageData, 'region'>): string {
-  return `The bar splits this ${d.region.kind}'s routes by how often they run on a weekday midday. Each route is judged by its slower direction.`;
+  return `The bar splits this ${d.region.kind}’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.`;
 }
 
 /** The map with every listed agency, framed on them all. */

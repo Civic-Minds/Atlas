@@ -98,7 +98,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/Last 7 service days, Oct 8–14: 1,234 trips and 20,000 stop departures\./)).toBeTruthy();
     expect(screen.getByText(/scheduled for \(4% of trips\)/)).toBeTruthy();
     // One Late definition (no second "Late at a stop" line), then what ahead means, from the file's own limit.
-    expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC's 5-minute standard/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/is more than 5½ min behind schedule\. This is based on the TTC’s 5-minute standard/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/Late at a stop/)).toBeNull();
     expect(screen.getAllByText((_, el) => el?.tagName === 'P' && /once a minute\.\s?Ahead is 1\.5 min or more ahead of schedule\./.test(el.textContent ?? '')).length).toBeGreaterThan(0);
   });
@@ -225,7 +225,7 @@ describe('Live route dashboard', () => {
     // Layout A (CIV-1075): each group's heading on its own line, no trailing period, then one paragraph.
     for (const g of ['What each number means', 'Where the data comes from', 'How changes are coloured', 'Limits']) expect(screen.getByText(g, { selector: 'h3' }).nextElementSibling?.tagName).toBe('P');
     expect(screen.queryByText(/trip time/i)).toBeNull();
-    expect(screen.getByText(/are trips we couldn't judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
+    expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
     expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
@@ -241,7 +241,7 @@ describe('Live route dashboard', () => {
     // The kept count is the trips the figures describe (the header's count), not the raw runs before matching (CIV-910).
     renderPage({ ...ready, v3: { ...v3, leftOut: { noTimetableTrip: 600, excluded: 500, excludedLabel: 'replacement buses', kept: 900 } } });
     await screen.findByRole('heading', { level: 1 });
-    expect(screen.getByText(/are runs whose trip number isn't on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
+    expect(screen.getByText(/are runs whose trip number isn’t on the schedule, such as extra buses\. We left out 600 of them \(30% of trips seen\), so the figures cover the 1,234 scheduled trips\./)).toBeTruthy();
     expect(screen.getByText(/are runs by replacement buses that shares this route number\. We left out 500 of them\./)).toBeTruthy();
   });
 
@@ -315,21 +315,21 @@ describe('Live route dashboard', () => {
   });
 
   it('says why when there is nothing to show', async () => {
-    const { unmount } = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
-    expect(await screen.findByText("The 512 isn't included yet.")).toBeTruthy();
+    const { unmount } = renderPage({ status: 'held', reason: "The 512 isn’t included yet." }, '/apps/live/ttc/512');
+    expect(await screen.findByText("The 512 isn’t included yet.")).toBeTruthy();
     unmount();
     renderPage(new Error('down'));
     expect(await screen.findByText(/did not answer. Start Live with "npm run live"/)).toBeTruthy();
   });
 
-  it('every route page leads back to the agency page with the Live map\'s "← TTC", held and unknown routes too (CIV-1446)', async () => {
+  it('every route page leads back to the agency page with the Live map’s "← TTC", held and unknown routes too (CIV-1446)', async () => {
     const back = () => screen.getByRole('link', { name: '← TTC' }).getAttribute('href');
     const a = renderPage(ready);
     await screen.findByRole('region', { name: /Late departures by hour/ });
     expect(back()).toBe('/apps/live/ttc');
     a.unmount();
-    const b = renderPage({ status: 'held', reason: "The 512 isn't included yet." }, '/apps/live/ttc/512');
-    await screen.findByText("The 512 isn't included yet.");
+    const b = renderPage({ status: 'held', reason: "The 512 isn’t included yet." }, '/apps/live/ttc/512');
+    await screen.findByText("The 512 isn’t included yet.");
     expect(back()).toBe('/apps/live/ttc');
     b.unmount();
     renderPage({ status: 'unknown_route', reason: 'Live has no route 999 for TTC.' } as LiveDashboardResponse, '/apps/live/ttc/999');
