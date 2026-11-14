@@ -187,7 +187,9 @@ export const LIVE_ROUTE_URL = {
 export const LIVE_TOOL_URL = {
   route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
   dir: direction,
-  band: LIVE_ROUTE_URL.band,
+  /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
+   * opens on the agency's current period, as the map does. */
+  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS.filter(b => b !== 'all'), null),
   // Live's beta heatmap of where delay starts (CIV-942) is linkable too, though it isn't one of the measure pills.
   measure: oneOf<MapMeasure>('measure', [...LIVE_MEASURE_IDS, 'delayStarts'], 'late'),
   stop: { key: 'stop', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,

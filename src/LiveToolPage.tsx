@@ -39,7 +39,9 @@ import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { WeekTable } from './LiveDashboardView';
-import { BANDS, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, mins, pct } from './components/Live/sections/figures';
+import { getNowPeriodForTimezone } from './components/Interval/FilterChips';
+import { useAgencies } from './hooks/useAgencies';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LiveMapKey from './components/Live/LiveMapKey';
@@ -62,9 +64,18 @@ function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure
   );
 }
 
+/**
+ * CIV-1451: the period the Live map opens on, the map's own (the agency's current period, CIV-1097: no All day). Live
+ * measures AM peak to Evening only, so Late and Overnight open on Evening, the last period it has.
+ */
+export function liveBandNow(timezone?: string | null, now: Date = new Date()): DashboardBand {
+  const p = getNowPeriodForTimezone(timezone, now);
+  return PERIOD_BANDS_ONLY.some(([k]) => k === p) ? p as DashboardBand : 'evening';
+}
+
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
 function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
-  return <PillMenu label="Time of day" value={band} options={BANDS} onPick={k => setBand(k as DashboardBand)} />;
+  return <PillMenu label="Time of day" value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
 }
 
 /** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
@@ -319,7 +330,8 @@ export default function LiveToolPage() {
   const [link] = useState(() => readLink(currentSearch(), LIVE_TOOL_URL));
   const [route, setRoute] = useState<string | null>(() => link.route ?? null);
   const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
-  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
+  const { agencies } = useAgencies();
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? liveBandNow(agencies.find(a => a.slug === agency)?.timezone));
   const [measure, setMeasure] = useState<MapMeasure>(() => link.measure ?? 'late');
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);

@@ -14,6 +14,9 @@ export const dirsOf = (v3: LiveV3, dir: number | null) => Object.keys(v3.directi
 /** The time-of-day choices, "All day" first. */
 export const BANDS: [DashboardBand, string][] = [['all', 'All day'], ['amPeak', PERIOD_LABELS.amPeak], ['midday', PERIOD_LABELS.midday], ['pmPeak', PERIOD_LABELS.pmPeak], ['evening', PERIOD_LABELS.evening]];
 
+/** The time periods alone, with the map's names: the Live map's time menu (CIV-1451: the map has no All day, CIV-1097). */
+export const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
+
 /** A time of day in a sentence ("all day", "in the AM peak"). */
 export const BAND_WORDS: Record<DashboardBand, string> = { all: 'all day', amPeak: 'in the AM peak', midday: 'at midday', pmPeak: 'in the PM peak', evening: 'in the evening' };
 

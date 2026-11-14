@@ -1,7 +1,7 @@
-import { BANDS } from './figures';
+import { PERIOD_BANDS_ONLY } from './figures';
 
 /** The four time-of-day periods (everything but "All day"). */
-export const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
+export { PERIOD_BANDS_ONLY };
 
 /** Rows with the same answer become one: "AM peak, Midday, PM peak, Evening: stays about level". Only merges, never rewrites. */
 export function mergePeriodRows(rows: Array<{ key: string; label: string; text: string }>): Array<{ key: string; label: string; text: string }> {
