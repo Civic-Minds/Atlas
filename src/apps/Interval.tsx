@@ -41,6 +41,7 @@ import { MAP_URL, currentSearch, linkUpdate, readUrlParam, urlParamPresent, urlP
 import { syncUrlParams } from '../utils/syncUrlParams';
 import type { HistoryView } from '../utils/historyYearMap';
 import { usePersistedFilterPref } from '../hooks/usePersistedFilterPref';
+import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
@@ -850,7 +851,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     };
   });
   usePersistedFilterPref('atlas_pref_headway', String(maxHeadway), filtersFromUrl.headway);
-  usePersistedFilterPref('atlas_pref_day', day, filtersFromUrl.day);
+  usePersistedFilterPref(DAY_PREF_KEY, day, filtersFromUrl.day);
   usePersistedFilterPref('atlas_pref_hide_span', String(hideSpan), filtersFromUrl.span);
   usePersistedFilterPref('atlas_pref_hide_limited', String(hideLimitedService), filtersFromUrl.limited);
   useEffect(() => {

@@ -35,12 +35,13 @@ import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/hist
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
 import { type HistoryView } from './utils/historyYearMap';
 import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
+import { openingDay, saveDayPref } from './utils/openingDay';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
 import LiveOffNotice from './components/LiveOffNotice';
 import ResearchInfo from './components/ResearchInfo';
 import { FREQUENT_INFO_HEADING, frequentRuleText } from './content/researchRules';
-import { DAY_TYPES, getNowDay, type DayType } from '../shared/dayTypes';
+import { type DayType } from '../shared/dayTypes';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
@@ -403,15 +404,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [intervalSelectionActive, setIntervalSelectionActive] = useState(false);
   const [compareActive, setCompareActive] = useState(false);
   const [day, setDay] = useState<DayType>(() => {
-    try {
-      const fromLink = readUrlParam(currentSearch(), MAP_URL.day);
-      if (fromLink != null) return fromLink;
-    } catch {}
-    try {
-      const s = localStorage.getItem('atlas_pref_day');
-      if (s && (DAY_TYPES as readonly string[]).includes(s)) return s as DayType;
-    } catch {}
-    return getNowDay();
+    let fromLink: DayType | undefined;
+    try { fromLink = readUrlParam(currentSearch(), MAP_URL.day); } catch {}
+    return openingDay(fromLink);
   });
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
@@ -430,7 +425,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
-  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryView }), [historyView]);
+  // CIV-1433: with the day picker on, a day the viewer picks in History is saved as their day, as the map saves it.
+  const setHistoryViewSavingDay = useCallback((next: HistoryView) => {
+    if (FEATURES.historyDayPicker && next.day !== historyView.day) saveDayPref(next.day);
+    setHistoryView(next);
+  }, [historyView.day]);
+  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryViewSavingDay }), [historyView, setHistoryViewSavingDay]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
   const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);

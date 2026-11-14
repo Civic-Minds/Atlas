@@ -122,9 +122,10 @@ export const HISTORY_VIEW_URL = {
   period: MAP_URL.period,
   /**
    * CIV-1425: History's own day (Weekday, Saturday, Sunday), read and written only while the day picker flag is on.
-   * Its own key, not the map's `day`, so a History link never changes the map's day. Weekday is left out.
+   * Its own key, not the map's `day`, so a History link never changes the map's day. Always written, like the map's
+   * `day` (CIV-1433): without it a link opens on the viewer's own day.
    */
-  day: oneOf<DayType>('hday', DAY_TYPES, 'Weekday'),
+  day: oneOf<DayType>('hday', DAY_TYPES, null),
 } as const;
 
 /** App-wide settings a link can carry. */
