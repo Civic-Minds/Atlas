@@ -1,0 +1,257 @@
+name: Rebuild History v2 sidecars
+
+# CIV-1430: rebuild one agency's published History v2 sidecars with weekend values, each period pinned to its
+# ORIGINAL reference date, so weekday fields stay byte-identical and only Saturday/Sunday p / t / tp are added.
+# Manual only; see docs/data/DATA_HISTORY.md "Publishing History v2 (runbook)".
+#
+#   gh workflow run history-rebuild.yml -f ref=<branch, tag or SHA> -f slug=mbta              (dry run, the default)
+#   gh workflow run history-rebuild.yml -f ref=main -f slug=mbta -f mode=write -f ticket=CIV-1430
+#
+# dry-run: downloads the published sidecars and each period's zip read-only (read-only R2 keys), runs the pinned
+#          backfill, diffs every period and route against the published sidecars, prints the upload plan with
+#          the approved-replacement check, and uploads all of it as artifacts. It cannot write R2.
+# write:   the same, from the tip of main only, then `history:upload --write --replace-approved <ticket>`: only
+#          sidecars whose ONLY differences are added weekend fields are replaced (each backed up first and read
+#          back); any other change refuses the whole run. Needs Ryan's explicit go-ahead, like any R2 write.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or SHA to build from. Write mode only accepts the current tip of main.'
+        required: false
+        default: main
+        type: string
+      slug:
+        description: 'One agency slug.'
+        required: false
+        default: mbta
+        type: string
+      mode:
+        description: 'dry-run writes nothing (read-only keys). write replaces the approved sidecars.'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - write
+      ticket:
+        description: 'Write mode: the approval ticket (e.g. CIV-1430). Dry run: optional; mbta defaults to CIV-1430 for the check.'
+        required: false
+        default: ''
+        type: string
+
+env:
+  TZ: America/Toronto
+  OUT: tmp/history-rebuild
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    if: inputs.mode == 'dry-run'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: history-rebuild-dry-run
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    timeout-minutes: 180
+    env:
+      SLUG: ${{ inputs.slug }}
+      TICKET: ${{ inputs.ticket }}
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # Read-only keys: this job runs the code of any ref, so it never sees a write-capable credential.
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check the inputs and the read-only keys
+        run: |
+          [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "slug must be one agency slug, got: $SLUG"; exit 1; }
+          if [ -n "$TICKET" ] && ! [[ "$TICKET" =~ ^CIV-[0-9]+$ ]]; then echo "ticket must look like CIV-1430, got: $TICKET"; exit 1; fi
+          [ -n "$R2_ACCESS_KEY_ID" ] && [ -n "$R2_SECRET_ACCESS_KEY" ] || { echo "Missing the read-only R2 keys (R2_RO_ACCESS_KEY_ID, R2_RO_SECRET_ACCESS_KEY)."; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          echo "node timezone: $zone"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto"; exit 1; }
+
+      - name: Download the published sidecars and their zips (read-only)
+        run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT"
+
+      # Three shards run side by side (one zip per process at a time); each writes its own report.
+      - name: Rebuild every period pinned to its published reference date
+        id: backfill
+        continue-on-error: true
+        env:
+          ATLAS_HISTORY_V2: '1'
+          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug }}
+        run: |
+          i=0
+          for z in "$OUT"/zips/*.zip; do
+            [ -e "$z" ] || continue
+            mkdir -p "$OUT/shard-$((i % 3))"; ln -s "$(realpath "$z")" "$OUT/shard-$((i % 3))/"; i=$((i + 1))
+          done
+          pids=()
+          for s in 0 1 2; do
+            [ -d "$OUT/shard-$s" ] || continue
+            npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/shard-$s" --out-dir "$OUT/rebuilt-$s" --pin-from "$OUT/published" > "$OUT/backfill-$s.log" 2>&1 &
+            pids+=($!)
+          done
+          rc=0
+          for p in "${pids[@]}"; do wait "$p" || rc=1; done
+          mkdir -p "$OUT/rebuilt/history-v2/$SLUG"
+          for s in 0 1 2; do
+            [ -d "$OUT/rebuilt-$s" ] || continue
+            cp "$OUT/rebuilt-$s"/history-v2/"$SLUG"/*.json "$OUT/rebuilt/history-v2/$SLUG/" 2>/dev/null || true
+            cp "$OUT/rebuilt-$s/$SLUG-report.json" "$OUT/rebuilt/$SLUG-report-$s.json" 2>/dev/null || true
+            grep -E "PINNED|NOT PINNABLE|FAILED|^Pinned:" "$OUT/backfill-$s.log" || true
+          done
+          exit $rc
+
+      - name: Diff every period and route against the published sidecars
+        if: always()
+        run: |
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff.json" --md "$OUT/diff.md"
+          cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload plan (dry run, with the approved-replacement check)
+        if: always()
+        continue-on-error: true
+        run: |
+          ticket="$TICKET"
+          if [ -z "$ticket" ] && [ "$SLUG" = mbta ]; then ticket=CIV-1430; fi
+          args=(--slug "$SLUG" --dir "$OUT/rebuilt")
+          [ -n "$ticket" ] && args+=(--replace-approved "$ticket")
+          set -o pipefail
+          npx tsx pipeline/history-v2-upload.ts "${args[@]}" 2>&1 | tee "$OUT/upload-plan.txt"
+
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-rebuild-${{ inputs.slug }}-${{ github.run_id }}
+          path: |
+            ${{ env.OUT }}/sources.json
+            ${{ env.OUT }}/published/
+            ${{ env.OUT }}/rebuilt/
+            ${{ env.OUT }}/diff.json
+            ${{ env.OUT }}/diff.md
+            ${{ env.OUT }}/upload-plan.txt
+            ${{ env.OUT }}/backfill-*.log
+          retention-days: 30
+          if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------------------
+  # Write. Only the tip of main, only with an explicit ticket, and only after Ryan's go-ahead.
+  # ---------------------------------------------------------------------------------------
+  write:
+    if: inputs.mode == 'write'
+    runs-on: ubuntu-latest
+    # Never beside a data release, which runs build-history over these sidecars.
+    concurrency:
+      group: atlas-data-release
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    timeout-minutes: 180
+    env:
+      SLUG: ${{ inputs.slug }}
+      TICKET: ${{ inputs.ticket }}
+      REF_INPUT: ${{ inputs.ref }}
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check the inputs
+        run: |
+          [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "slug must be one agency slug, got: $SLUG"; exit 1; }
+          [[ "$TICKET" =~ ^CIV-[0-9]+$ ]] || { echo "write mode needs an explicit ticket (e.g. CIV-1430), got: '$TICKET'"; exit 1; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+          persist-credentials: false
+
+      - name: Build main only
+        run: |
+          git fetch --no-tags --depth=1 origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "Refusing to write: ref '$REF_INPUT' is $(git rev-parse --short HEAD), main is $(git rev-parse --short FETCH_HEAD)."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
+
+      - name: Download the published sidecars and their zips (read-only)
+        run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT"
+
+      - name: Rebuild every period pinned to its published reference date
+        env:
+          ATLAS_HISTORY_V2: '1'
+          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug }}
+        run: |
+          mkdir -p "$OUT/rebuilt"
+          set -o pipefail
+          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/rebuilt" --pin-from "$OUT/published" > "$OUT/backfill.log" 2>&1 || { tail -50 "$OUT/backfill.log"; exit 1; }
+          grep -E "PINNED|NOT PINNABLE|FAILED|^Pinned:" "$OUT/backfill.log" || true
+
+      - name: Diff every period and route against the published sidecars
+        run: |
+          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff.json" --md "$OUT/diff.md"
+          cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
+
+      # Replaces only sidecars whose only differences are added weekend fields; any other change stops the run
+      # before the first write. Each replaced file is backed up under history-v2-replaced/<ticket>/ first.
+      - name: Upload (write, approved replacement only)
+        env:
+          ATLAS_HISTORY_V2: '1'
+        run: |
+          set -o pipefail
+          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/rebuilt" --replace-approved "$TICKET" --write 2>&1 | tee "$OUT/upload.txt"
+
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-rebuild-write-${{ inputs.slug }}-${{ github.run_id }}
+          path: |
+            ${{ env.OUT }}/sources.json
+            ${{ env.OUT }}/rebuilt/
+            ${{ env.OUT }}/diff.json
+            ${{ env.OUT }}/diff.md
+            ${{ env.OUT }}/upload.txt
+            ${{ env.OUT }}/backfill.log
+          retention-days: 90
+          if-no-files-found: warn
