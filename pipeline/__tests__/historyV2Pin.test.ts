@@ -32,6 +32,8 @@ describe('pinned History v2 rebuild (CIV-1430)', () => {
     expect(pickZipSource('20181202', '20181129', undefined, ['gtfs/archive/mbta/20181202-1111111111111111.zip'], index).source).toMatchObject({ kind: 'r2' });
     expect(pickZipSource('20181202', '20181129', undefined, [], index).source).toMatchObject({ kind: 'url', url: 'https://cdn.mbtace.com/archive/20181128.zip' });
     expect(pickZipSource('20181202', '20190101', undefined, [], index)).toMatchObject({ source: null });
+    // The file named by the period key wins even when refDate is past its listed end (MBTA 20110909, refDate 20111215).
+    expect(pickZipSource('20181128', '20181215', undefined, [], index).source).toMatchObject({ kind: 'url', url: 'https://cdn.mbtace.com/archive/20181128.zip' });
     expect(pickZipSource('20181202', '20181129', undefined, [], null)).toMatchObject({ source: null });
   });
 

@@ -102,7 +102,8 @@ jobs:
       - name: Download the published sidecars and their zips (read-only)
         run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT"
 
-      # Three shards run side by side (one zip per process at a time); each writes its own report.
+      # One process (three side by side ran the runner out of memory: exit 143, run 43551595422); the shard
+      # layout stays so it can be raised later.
       - name: Rebuild every period pinned to its published reference date
         id: backfill
         continue-on-error: true
@@ -113,7 +114,7 @@ jobs:
           i=0
           for z in "$OUT"/zips/*.zip; do
             [ -e "$z" ] || continue
-            mkdir -p "$OUT/shard-$((i % 3))"; ln -s "$(realpath "$z")" "$OUT/shard-$((i % 3))/"; i=$((i + 1))
+            mkdir -p "$OUT/shard-0"; ln -s "$(realpath "$z")" "$OUT/shard-0/"; i=$((i + 1))
           done
           pids=()
           for s in 0 1 2; do

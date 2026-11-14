@@ -44,7 +44,9 @@ export function pickZipSource(
   if (index) {
     const base = (u: string) => u.slice(u.lastIndexOf('/') + 1);
     const byName = index.find(f => base(f.url) === `${periodKey}.zip`);
-    if (byName && byName.startDate <= refDate && refDate <= byName.endDate) return { source: { kind: 'url', url: byName.url, why: 'MBTA archive file named by the period key' }, candidates: [byName.url] };
+    // The backfill named each zip by its archive file, so the file named by the period key is the source even when
+    // the sidecar's refDate falls after the index's listed end date (the feed's own calendar runs longer).
+    if (byName) return { source: { kind: 'url', url: byName.url, why: `MBTA archive file named by the period key (listed ${byName.startDate}-${byName.endDate})` }, candidates: [byName.url] };
     const byEnd = index.filter(f => f.endDate === periodKey && f.startDate <= refDate && refDate <= f.endDate);
     if (byEnd.length === 1) return { source: { kind: 'url', url: byEnd[0].url, why: 'MBTA archive feed ending on the period key, in force on refDate' }, candidates: byEnd.map(f => f.url) };
     const inForce = index.filter(f => f.startDate <= refDate && refDate <= f.endDate);
