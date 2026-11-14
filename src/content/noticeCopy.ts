@@ -314,14 +314,12 @@ export const HISTORY_CHART_LABEL = 'Route history chart';
 export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
 /** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
 export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
-// CIV-1425: pending Ryan's word-for-word OK
-/** The frequency change box's sentence on Saturday or Sunday (the weekday sentence stays Ryan's CIV-1127 wording). */
+/** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
   `This compares the oldest and newest ${day} schedules available for this route.`;
-/** A History row whose weekend day has no trips at all (STYLE.md card notices, CIV-1251). */
+/** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
-// CIV-1425: pending Ryan's word-for-word OK
-/** Above an agency's History list when no route has the picked weekend day's values by time of day. */
+/** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
   `${day} values by time of day aren’t available for this agency yet.`;
 
