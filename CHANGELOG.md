@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Frequent service story shows population coverage again, with new numbers**: a rerun on current Atlas data with the map's own frequency rule finds 17.16% of Canadians and 7.28% of Americans in the studied metros within a 10-minute walk of 15-minute service (45.13% and 16.79% at 30 minutes), dated November 7, 2026
 - **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
 - **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
 - **The About page no longer describes an all-day value or threshold**: the map has no All day option, so the filter note now speaks only of periods
