@@ -20,7 +20,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const DATA = process.env.R2_PUBLIC_URL ?? 'https://data.transitatlas.fyi';
+const DATA = (process.env.R2_PUBLIC_URL || 'https://data.transitatlas.fyi').replace(/\/$/, '');
+// The custom domain answers bots with 403, so identify the script (and, in the cloud, use the bucket's public URL).
+const HEADERS = { 'User-Agent': process.env.ATLAS_USER_AGENT || 'Atlas wait-band pass (github.com/Civic-Minds/Atlas)' };
 const BANDS = [10, 15, 20, 30, 60] as const;
 const BAND_LABELS = [...BANDS.map(String), 'slower_than_60', 'no_service'];
 const DAYS = ['Weekday', 'Saturday', 'Sunday'];
@@ -54,7 +56,7 @@ function csvCell(v: unknown): string {
 async function fetchJson<T>(url: string): Promise<T | null> {
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: HEADERS });
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return (await res.json()) as T;

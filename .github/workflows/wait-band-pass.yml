@@ -1,6 +1,7 @@
 # Wait-band pass (CIV-1188): for every agency in the current published release, the share of route-km in each wait
 # band (10, 15, 20, 30, 60 minutes, slower, no service) by day type and period, by the map's own filter.
-# Read-only: public URLs only, no secrets, never writes to R2. The rule code is checked out at the release's own
+# Read-only: public URLs only (the R2_PUBLIC_URL secret is the public bucket's address, used because the custom domain
+# returns 403 to GitHub runners), never writes to R2. The rule code is checked out at the release's own
 # codeVersion. Results come back as a workflow artifact. Plan: Atlas/editorial/drafts/wait-band-pass-plan.md.
 # Runs on a dryrun/civ-1188-* tag push (so it can run without pushing main) or by hand.
 name: Wait-band pass
@@ -25,6 +26,8 @@ concurrency:
 
 env:
   STUDY: docs/research/wait-bands-2026-11
+  R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+  ATLAS_USER_AGENT: Atlas wait-band pass (github.com/Civic-Minds/Atlas)
 
 jobs:
   pass:
@@ -39,7 +42,8 @@ jobs:
         id: release
         run: |
           set -euo pipefail
-          curl -fsSL --retry 3 https://data.transitatlas.fyi/atlas/release.json -o release.json
+          base="${R2_PUBLIC_URL:-https://data.transitatlas.fyi}"
+          curl -fsSL --retry 3 -A "$ATLAS_USER_AGENT" "${base%/}/atlas/release.json" -o release.json
           cat release.json
           code=$(node -e "console.log(JSON.parse(require('fs').readFileSync('release.json','utf8')).codeVersion)")
           [[ "$code" =~ ^[0-9a-f]{7,40}$ ]] || { echo "Bad codeVersion: $code"; exit 1; }
