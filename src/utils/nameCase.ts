@@ -5,11 +5,14 @@
  * - 'stop': stop and destination names; cased only when the feed sent them in capitals (CIV-935).
  * - 'route': one part of a route label; the stop rule plus the route-name acronyms (ROUTE_NAME_ACRONYMS).
  */
-/** 'liveStop' is 'stop' plus Live's own rule that WB and EB stay in capitals (Ryan, CIV-1117 row 6); the map keeps 'stop' until he OKs it there. */
+/**
+ * 'liveStop' is 'stop' plus Live's own rules: WB and EB stay in capitals (Ryan, CIV-1117 row 6), and a station's bay or
+ * platform reads as the station alone (liveStationName, CIV-1404); the map keeps 'stop' until he OKs it there.
+ */
 export type NameCaseMode = 'title' | 'stop' | 'liveStop' | 'route';
 
 export function nameCase(text: string, mode: NameCaseMode): string {
-  if (mode === 'liveStop') return directionCaps(stopNameCase(text));
+  if (mode === 'liveStop') return liveStationName(directionCaps(stopNameCase(text)));
   return mode === 'title' ? titleCase(text) : mode === 'stop' ? stopNameCase(text) : routeLabelCase(text);
 }
 
@@ -364,4 +367,18 @@ function routeLabelCase(part: string): string {
       // A route code with a digit ("sl1" after titleCase lowered it) is a code, not a word.
       return /\d/.test(tok) ? up : tok;
     });
+}
+
+/**
+ * CIV-1404 (Ryan, 2026-11-13: "do we need the 'bay 6' and 'dundas st west at dundas west outer platform'", then "1"): on
+ * Live a station's bay or platform is named by the station alone. "Broadview Station at Bay 6" and "Spadina Station
+ * Streetcar Platform" read "Broadview Station" and "Spadina Station"; "Dundas St West at Dundas West Outer Platform" reads
+ * "Dundas West Station". Every other name is left as it is.
+ */
+export function liveStationName(name: string): string {
+  const atStation = /^(.+?\bStation)\s+(?:at\s+)?(?:Bay\s+\w+|(?:\w+\s+)?Platform)$/i.exec(name);
+  if (atStation) return atStation[1];
+  const platform = /^.+?\s+at\s+(.+?)\s+(?:(?:Outer|Inner|Upper|Lower|Streetcar|Bus|Subway)\s+)?Platform$/i.exec(name);
+  if (platform) return /\bStation$/i.test(platform[1]) ? platform[1] : `${platform[1]} Station`;
+  return name;
 }
