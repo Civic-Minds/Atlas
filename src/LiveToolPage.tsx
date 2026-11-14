@@ -40,7 +40,7 @@ import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { WeekTable } from './LiveDashboardView';
 import { PERIOD_BANDS_ONLY, mins, pct } from './components/Live/sections/figures';
-import { getNowPeriodForTimezone } from './components/Interval/FilterChips';
+import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
@@ -62,15 +62,6 @@ function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure
       {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
     </div>
   );
-}
-
-/**
- * CIV-1451: the period the Live map opens on, the map's own (the agency's current period, CIV-1097: no All day). Live
- * measures AM peak to Evening only, so Late and Overnight open on Evening, the last period it has.
- */
-export function liveBandNow(timezone?: string | null, now: Date = new Date()): DashboardBand {
-  const p = getNowPeriodForTimezone(timezone, now);
-  return PERIOD_BANDS_ONLY.some(([k]) => k === p) ? p as DashboardBand : 'evening';
 }
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */

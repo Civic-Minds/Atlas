@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { liveBandNow } from '../LiveToolPage';
+import { liveBandNow } from '../components/Live/liveBandNow';
 import { PERIOD_BANDS_ONLY } from '../components/Live/sections/figures';
 
 // CIV-1451: the Live map's time menu matches the map: no All day, opening on the agency's current period.

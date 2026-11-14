@@ -180,16 +180,16 @@ export const LIVE_ROUTE_URL = {
   view: oneOf<'lite' | 'dashboard' | 'analysis' | 'explore'>('view', ['dashboard', 'analysis', 'explore'], 'lite'),
   /** Explore's day and band, cleared when the route page opens without them. */
   day: oneOf<'all' | 'weekday' | 'weekend'>('day', ['weekday', 'weekend'], 'all'),
-  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS, 'all'),
+  /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
+   * opens on the agency's current period, as the map does. The Live map shares it. */
+  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS.filter(b => b !== 'all'), null),
 } as const;
 
 /** The Live tool page: its route, direction, band, measure and the picked stop or stretch. */
 export const LIVE_TOOL_URL = {
   route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
   dir: direction,
-  /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
-   * opens on the agency's current period, as the map does. */
-  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS.filter(b => b !== 'all'), null),
+  band: LIVE_ROUTE_URL.band,
   // Live's beta heatmap of where delay starts (CIV-942) is linkable too, though it isn't one of the measure pills.
   measure: oneOf<MapMeasure>('measure', [...LIVE_MEASURE_IDS, 'delayStarts'], 'late'),
   stop: { key: 'stop', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,

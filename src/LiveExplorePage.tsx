@@ -37,7 +37,9 @@ import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
-import { BANDS, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { liveBandNow } from './components/Live/liveBandNow';
+import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { LATE_BY_HOUR_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
@@ -192,7 +194,8 @@ export default function LiveExplorePage() {
   const [link] = useState(() => readLink(currentSearch(), LIVE_ROUTE_URL));
   const [dir, setDir] = useState<number | null>(() => link.dir ?? null);
   const [day, setDay] = useState<Day>(() => link.day ?? 'all');
-  const [band, setBand] = useState<DashboardBand>(() => link.band ?? 'all');
+  const { agencies } = useAgencies();
+  const [band, setBand] = useState<DashboardBand>(() => link.band ?? liveBandNow(agencies.find(a => a.slug === agency)?.timezone));
   const [picked, setPicked] = useState<Selection | null>(null);
   useEffect(() => { syncUrlParams(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', dir, day, band })); }, [dir, day, band]);
   const routeTitle = state.kind === 'done' && state.data.status === 'ready' ? state.data.routeTitle : null;
@@ -261,7 +264,7 @@ export default function LiveExplorePage() {
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
         <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
           options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={BANDS} />
+        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
       <ErrorBoundary label={BOUNDARY('Along the route')}>
