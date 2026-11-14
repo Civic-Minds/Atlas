@@ -22,6 +22,16 @@
  * CIV-1101 Part B: each zip is read with the one service-day model (pickRiderWeek), anchored at the
  * zip's own first full week in force, so a holiday is a day that loses the vote (no holiday list,
  * no re-pick). Published sidecars are never rewritten: a sidecar that differs is a conflict.
+ *
+ *   --pin-from <dir>    CIV-1430: rebuild published periods at their ORIGINAL reference date. <dir> holds the
+ *                       published sidecars at <dir>/history-v2/{slug}/{periodKey}.json; each zip must be named
+ *                       {periodKey}.zip. The zip is read at that sidecar's refDate (the old picker with that
+ *                       explicit date, as the backfill that wrote it did; a vote-picked sidecar re-reads its
+ *                       stored week), and the output keeps the published sidecar's top-level fields
+ *                       (refDate, refDateQuality, ...) with freshly built routes, so weekday fields come out
+ *                       byte-identical when nothing but the weekend switch changed. A zip with no published
+ *                       sidecar, or one the processor reads at a different date, is reported as not pinnable
+ *                       and nothing is written for it. Check the result with history-v2-diff.ts.
  */
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
@@ -35,6 +45,7 @@ import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
 import { historyWeekendPeriodsFor } from './historyV2Flag.js';
+import { pinnedReadFor, readPinnedSidecars } from './historyV2Pin.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
@@ -53,28 +64,51 @@ async function main(): Promise<void> {
   if (policy.busOnly) console.log(`${slug}: ${policy.note} (${policy.supplementalExcluded.join(', ')})`);
 
   const zips = readdirSync(resolve(zipDir)).filter(f => f.endsWith('.zip')).sort();
-  if (zips.length === 0) throw new Error(`no .zip files in ${zipDir}`);
+  if (zips.length === 0 && !arg('--pin-from')) throw new Error(`no .zip files in ${zipDir}`);
   const sink = localDirSink(outDir, { overwrite: process.argv.includes('--overwrite') });
   const withShapes = process.argv.includes('--shapes');
   const splitKeys = (JSON.parse(readFileSync(resolve('config/history-route-splits.json'), 'utf8')) as HistoryRouteSplits)[slug] ?? [];
   mkdirSync(outDir, { recursive: true });
 
-  const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; error?: string }> = [];
+  const pinFrom = arg('--pin-from');
+  const pinned = pinFrom ? readPinnedSidecars(resolve(pinFrom), slug) : null;
+  if (pinned) console.log(`${slug}: pinning to ${pinned.size} published sidecar(s) from ${resolve(pinFrom!)}`);
+
+  const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
   for (const zip of zips) {
     const stem = basename(zip, '.zip');
     try {
+      // CIV-1430: a pinned run reads only zips that have a published sidecar, at that sidecar's own date.
+      const published = pinned ? pinned.get(stem) : undefined;
+      if (pinned && !published) {
+        rows.push({ zip, periodKey: stem, notPinnable: 'no published sidecar for this period' });
+        console.log(`\n${zip}: NOT PINNABLE (no published sidecar ${stem}); skipped`);
+        continue;
+      }
       const split = await splitLumpedRoutes(readFileSync(resolve(zipDir, zip)), splitKeys);
       const buf = split.buf;
       if (Object.keys(split.report.moved).length || Object.keys(split.report.unsplit).length) console.log(`${zip}: split lumped routes ${JSON.stringify(split.report)}`);
       const dates = await peekFeedDates(buf);
-      const periodKey = periodKeyForZip(stem, dates);
+      const periodKey = published ? stem : periodKeyForZip(stem, dates);
       // The zip's own anchor: its first full week in force (CIV-1101 Part B), never the run date.
-      const anchor = firstFullWeekAnchor(await readQualityRows(buf));
-      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, anchor ? { serviceAnchor: anchor } : {}, m => process.stdout.write(`  ${m}`));
+      const anchor = published ? null : firstFullWeekAnchor(await readQualityRows(buf));
+      const pin = published ? pinnedReadFor(published) : null;
+      const overrides = pin ? pin.overrides : anchor ? { serviceAnchor: anchor } : {};
+      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, overrides, m => process.stdout.write(`  ${m}`));
+      if (pin && processed.referenceDate !== pin.refDate) {
+        rows.push({ zip, periodKey, refDate: processed.referenceDate, pin: { refDate: pin.refDate, how: pin.how }, notPinnable: `the processor read ${processed.referenceDate}, not the published ${pin.refDate} (${pin.how})` });
+        console.log(`\n${zip}: NOT PINNABLE (read ${processed.referenceDate}, published ${pin.refDate}); nothing written`);
+        continue;
+      }
       const evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
       const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
-      const sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
-      sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
+      let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
+      if (published) {
+        // Same top-level fields and order as the published file; only routes are rebuilt.
+        sidecar = { ...published, routes: built.routes };
+      } else {
+        sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
+      }
       const result = await writeSidecar(sink, sidecar);
       let shapesNote = '';
       if (withShapes) {
@@ -84,17 +118,21 @@ async function main(): Promise<void> {
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
-      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report });
-      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${sidecar.refDateQuality.reason} (anchor ${anchor ?? 'none'})`);
+      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report, ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
+      console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${pin ? `PINNED to the published ${pin.refDate} (${pin.how})` : `${sidecar.refDateQuality?.reason} (anchor ${anchor ?? 'none'})`}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       rows.push({ zip, error: message });
       console.error(`\n${zip}: FAILED ${message}`);
     }
   }
-  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), rows }, null, 2));
+  // CIV-1430: published periods with no zip in this run cannot be pinned either.
+  const missingZips = pinned ? [...pinned.keys()].filter(pk => !zips.includes(`${pk}.zip`)) : [];
+  for (const pk of missingZips) console.log(`${pk}: NOT PINNABLE (published sidecar, no zip ${pk}.zip in ${zipDir})`);
+  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips } : {}), rows }, null, 2));
   console.log(`\nReport: ${resolve(outDir, `${slug}-report.json`)}`);
   if (rows.some(r => r.error || r.result === 'conflict')) process.exitCode = 1;
+  if (pinned) console.log(`Pinned: ${rows.filter(r => r.pin && !r.notPinnable && !r.error).length} rebuilt, ${rows.filter(r => r.notPinnable).length + missingZips.length} not pinnable, ${rows.filter(r => r.error).length} failed`);
 }
 
 main().catch(error => { console.error(error); process.exit(1); });
