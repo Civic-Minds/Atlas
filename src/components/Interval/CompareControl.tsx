@@ -86,6 +86,8 @@ const noop = () => {};
 interface CompareSideBarProps {
   side: 'A' | 'B';
   settings: CompareSide;
+  /** What the label reads, when it should lag the menus until the map has redrawn (CIV-1567). Defaults to `settings`. */
+  labelSettings?: CompareSide;
   onChange: (settings: CompareSide) => void;
   /** Routes this map draws in view. */
   counts: { total: number } | null;
@@ -107,7 +109,7 @@ function forwardWheelToMap(e: ReactWheelEvent<HTMLElement>) {
  * the map's half has room; when it has not, the menus wrap to a second line inside the same outline, so it
  * is clear which map each control changes.
  */
-export function CompareSideBar({ side, settings, onChange, counts }: CompareSideBarProps) {
+export function CompareSideBar({ side, settings, labelSettings = settings, onChange, counts }: CompareSideBarProps) {
   return (
     <div className="flex flex-col items-center sm:items-end min-w-0 max-w-full" data-compare-side={side}>
       <div
@@ -117,7 +119,7 @@ export function CompareSideBar({ side, settings, onChange, counts }: CompareSide
       >
         <div onWheel={forwardWheelToMap} className="flex items-center gap-1.5 pl-1.5 pr-1 min-h-8 min-w-0 max-w-full">
           <SideBadge side={side} />
-          <span className={`${MAP_BADGE_COUNT} whitespace-nowrap shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(settings)}</span>
+          <span className={`${MAP_BADGE_COUNT} whitespace-nowrap shrink-0`} data-testid={`compare-heading-${side}`}>{compareSideHeading(labelSettings)}</span>
           {counts && (
             <span className={`${MAP_BADGE_LABEL} whitespace-nowrap min-w-0 truncate`} data-testid={`compare-counts-${side}`}>
               <span className="hidden sm:inline">· </span>{counts.total} {plural(counts.total, 'route')}

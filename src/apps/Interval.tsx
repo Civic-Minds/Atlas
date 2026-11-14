@@ -30,6 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
+import { ModeEnter, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -169,9 +170,9 @@ const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
  * draggable around it; the controls inside turn them back on. One step above the panels so a chip's
  * menu opens over the phone route sheet instead of behind it.
  */
-function CompareSideSlot({ side, children }: { side: 'A' | 'B'; children: React.ReactNode }) {
+function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; className?: string; children: React.ReactNode }) {
   return (
-    <div data-map-overlay={`compare-label-${side}`} className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none`}>
+    <div data-map-overlay={`compare-label-${side}`} className={`absolute ${side === 'A' ? SIDEBAR_CARD_TOP : `top-3 ${SIDEBAR_CARD_TOP_DESKTOP}`} left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 sm:right-4 sm:flex sm:justify-end ${Z_PANEL_RAISED} pointer-events-none ${className}`}>
       {children}
     </div>
   );
@@ -760,6 +761,17 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
   useEffect(() => { onCompareActiveChange?.(compareActive); }, [compareActive, onCompareActiveChange]);
 
+  // CIV-1567 (beta): map B fades in once it has drawn instead of sitting blank, and each map's label changes
+  // when its map has redrawn, not before. Off: both are pass-throughs.
+  const compareTransitions = FEATURES.modeTransitions && compareActive;
+  // The first frame of Compare: map B's half starts at zero width and its controls transparent, then ease in.
+  const compareEntering = useModeEntering(compareActive, FEATURES.modeTransitions);
+  const compareEasing = useModeEasing(compareActive, FEATURES.modeTransitions);
+  const compareFadeIn = modeFadeIn(compareTransitions, compareEntering);
+  const compareBDrawn = useMapDrawn(mapB, compareTransitions);
+  const compareLabelA = useShownWhenDrawn(compareA, mapA, compareTransitions);
+  const compareLabelB = useShownWhenDrawn(compareB, mapB, compareTransitions);
+
   // Turning Compare on or off from the map moves the address between the map's path and /apps/compare (a new
   // history entry, so Back undoes it).
   const startCompare = useCallback(() => {
@@ -1183,7 +1195,20 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
-        <div className="relative flex-1 min-h-0 min-w-0">
+        {/* Map A: while Compare's split eases in, it glides to its half instead of resizing every frame. */}
+        <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} width="100vw" className="relative flex-1 min-h-0 min-w-0"
+          overlay={compareActive && (
+            <CompareSideSlot side="A" className={compareFadeIn}>
+              <CompareSideBar
+                side="A"
+                settings={compareA}
+                labelSettings={compareLabelA}
+                onChange={next => { setDay(next.day); setPeriod(next.period); setMaxHeadway(next.maxHeadway); }}
+                counts={compareCounts?.a ?? null}
+              />
+            </CompareSideSlot>
+          )}
+        >
           <MapCanvas
             agencies={agencies}
             layers={layers}
@@ -1256,19 +1281,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
           />
-          {compareActive && (
-            <CompareSideSlot side="A">
-              <CompareSideBar
-                side="A"
-                settings={compareA}
-                onChange={next => { setDay(next.day); setPeriod(next.period); setMaxHeadway(next.maxHeadway); }}
-                counts={compareCounts?.a ?? null}
-              />
-            </CompareSideSlot>
-          )}
-        </div>
+        </ModeSplitPane>
         {compareActive && (
-          <div className="relative flex-1 min-h-0 min-w-0">
+          // Map B's half: Interval fills the viewport, so its finished width is half the screen less the 1 (0.25rem) gap.
+          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} width="calc((100vw - 0.25rem) / 2)" className="relative flex-1 min-h-0 min-w-0">
+            <ModeEnter enabled={compareTransitions} ready={compareBDrawn} label={loadingText('map')}>
               <MapCanvas
                 agencies={agencies}
                 layers={layers}
@@ -1338,14 +1355,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               <CompareSideBar
                 side="B"
                 settings={compareSide!}
+                labelSettings={compareLabelB}
                 onChange={setCompareSide}
                 counts={compareCounts?.b ?? null}
               />
             </CompareSideSlot>
-          </div>
+            </ModeEnter>
+          </ModeSplitPane>
         )}
         {compareActive && (
-          <div data-map-overlay="compare-link" className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden`}>
+          <div data-map-overlay="compare-link" className={`absolute left-1/2 top-1/2 ${Z_PANEL_RAISED} -translate-x-1/2 -translate-y-1/2 max-sm:hidden ${compareFadeIn}`}>
             <CompareLinkToggle linked={compareLinked} onChange={setCompareLinked} />
           </div>
         )}
@@ -1601,7 +1620,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       {headerPortalContainer && createPortal(
         <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : 'pointer-events-auto'}`}>
-          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`hidden sm:flex items-center gap-2 ${compareTransitions && compareEntering ? compareFadeIn : `transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}`}>
             {historyView ? (
               <FilterChips
                 maxHeadway={historyView.view.maxHeadway}

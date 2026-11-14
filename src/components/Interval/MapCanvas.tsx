@@ -1049,7 +1049,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const container = mapContainerRef.current;
     if (!map || !container || !mapLoaded || typeof ResizeObserver === 'undefined') return;
     const resize = () => {
-      if (container.clientWidth > 0 && container.clientHeight > 0) map.resize();
+      if (container.clientWidth > 0 && container.clientHeight > 0) {
+        map.resize();
+        // CIV-1567 (beta): draw at the new size in this frame; a resize alone leaves the canvas blank until the next one.
+        if (FEATURES.modeTransitions) map.redraw();
+      }
     };
     const observer = new ResizeObserver(() => requestAnimationFrame(resize));
     observer.observe(container);
