@@ -5,6 +5,7 @@ import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
 import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
+import { keepLastWord } from '../../utils/keepLastWord';
 import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
 
 interface Props {
@@ -135,7 +136,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           className={`${labelWeight === 'regular' ? 'font-normal' : 'font-bold'} flex-1 min-w-[6rem] ${longValue ? 'basis-full' : ''} ${singleLine ? 'truncate' : 'break-words'} leading-snug ${clickable ? '' : 'text-[var(--text-primary)]'}`}
           title={singleLine ? label : undefined}
         >
-          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : label}
+          {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : singleLine ? label : keepLastWord(label)}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
           {edgeGapAllowance && (
