@@ -27,10 +27,10 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
+import { excludingText, LATE_BY_HOUR_TITLE, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
-import LateByHourSection from './components/Live/sections/LateByHourSection';
+import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
@@ -190,7 +190,8 @@ function AnalysisPage() {
         <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
         </>)}
         {/* One "How this is measured" for Summary and Full analysis alike, every line of the method (CIV-308). */}
-        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
+        {/* #1490: Summary and Dashboard name the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
+        <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={view !== 'analysis' ? excludingText(routeLeftOut(v3)) : null} /></ErrorBoundary>
     </DocsPageLayout>
   );
 }
