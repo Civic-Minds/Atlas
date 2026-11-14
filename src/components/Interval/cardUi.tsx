@@ -574,17 +574,16 @@ function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: st
   );
 }
 
-/** CIV-1300: a two-part value as two left-aligned lines, the dot beside the first (a route list's value column). */
+/**
+ * CIV-1300: a two-part value as two lines in a route list's value column, both ending at the row's right edge like every
+ * other value (Ryan, 2026-11-13), the dot beside the first line.
+ */
 function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
   const [first, second] = twoPartSplit(text) ?? [text, ''];
   return (
-    <span className="inline-flex items-start gap-1 min-w-0">
-      {/* One text line tall, so the dot sits beside the first line. */}
-      <span className="flex h-[1.375em] items-center">{dot}</span>
-      <span className="flex flex-col items-start">
-        <span className="whitespace-nowrap">{first}</span>
-        <span className="whitespace-nowrap">{second}</span>
-      </span>
+    <span className="inline-flex flex-col items-end min-w-0">
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
+      <span className="whitespace-nowrap">{second}</span>
     </span>
   );
 }
@@ -614,8 +613,8 @@ export function HeadwayBadge({
   /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
   secondLine?: boolean;
   /**
-   * A route list's value column (CIV-1300, Ryan: "two lines with left justification"): words in two parts ("every 15 min,"
-   * "with one 32 min gap") always sit on two left-aligned lines, the dot beside the first, so the value keeps its column.
+   * A route list's value column (CIV-1300, Ryan): words in two parts ("every 15 min," "with one 32 min gap") always sit on
+   * two lines, both right-aligned like the other rows' values, the dot beside the first, so the value keeps its column.
    */
   stacked?: boolean;
 }) {
