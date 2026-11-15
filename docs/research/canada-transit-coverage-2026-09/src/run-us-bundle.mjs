@@ -6,7 +6,8 @@ import { resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { calculateReport, coverageForAgencies, metros, populationAreas, pointInGeometry, readJson } from './coverage.mjs';
 import { writeCoverageReport } from './report.mjs';
-import { download, saveJson } from './io.mjs';
+import { downloadFirst, saveJson } from './io.mjs';
+import { stateSources } from './osmSources.mjs';
 
 const run = promisify(execFile);
 const arg = name => { const i = process.argv.indexOf(`--${name}`); return i < 0 ? undefined : process.argv[i + 1]; };
@@ -26,8 +27,6 @@ const outputRoot = resolve(arg('out-root') ?? resolve('output/us-bundles', bundl
 const censusRoot = resolve(arg('census-root') ?? 'data/derived/us-census');
 const osmium = arg('osmium') ?? 'osmium';
 
-const stateSlug = name => name.toLowerCase().replaceAll('district of columbia', 'district-of-columbia').replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-|-$/g, '');
-const stateSourceUrl = name => `https://download.geofabrik.de/north-america/us/${stateSlug(name)}-latest.osm.pbf`;
 const censusUrl = (service, layer, params) => {
   const url = new URL(`https://tigerweb.geo.census.gov/arcgis/rest/services/Census2020/${service}/MapServer/${layer}/query`);
   url.search = new URLSearchParams({ ...params, outSR: '4326', f: 'geojson' });
@@ -54,9 +53,9 @@ async function command(args) {
 }
 
 async function ensureHighways(stateName) {
-  const source = resolve(sourceRoot, `${stateSlug(stateName)}-latest.osm.pbf`);
-  const highways = resolve(root, 'data/derived/us-osm-highways', `${stateSlug(stateName)}.osm.pbf`);
-  await download(source, stateSourceUrl(stateName));
+  // Geofabrik first, then the openstreetmap.fr mirror (its state file, else its region file).
+  const { path: source } = await downloadFirst(stateSources(stateName, sourceRoot));
+  const highways = resolve(root, 'data/derived/us-osm-highways', source.split('/').pop().replace(/-latest\.osm\.pbf$/, '.osm.pbf'));
   try { await stat(highways); return highways; } catch {}
   await mkdir(resolve(highways, '..'), { recursive: true });
   await command(['tags-filter', source, 'w/highway', '-o', highways]);
@@ -144,7 +143,7 @@ if (!metro.features.length) {
 const metroPath = resolve(dataRoot, 'metros.geojson'); await saveJson(metroPath, metro);
 // One state at a time: Geofabrik limits parallel downloads from one address.
 const highways = [];
-for (const name of stateNames) highways.push(await ensureHighways(name));
+for (const name of stateNames) { const file = await ensureHighways(name); if (!highways.includes(file)) highways.push(file); }
 const walking = await network(qualifying, highways);
 const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population: populationAreas(population, 'POP100'), metroBoundaries: metros(metro), network: walking, walkMinutes, maxHeadwayMinutes: headway, populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point' });
 await writeCoverageReport(report, outputRoot);
