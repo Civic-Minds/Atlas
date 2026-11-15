@@ -289,3 +289,14 @@ describe('agency page search titles (#1291)', () => {
     expect(titleOf('/agency/bustang-interregional')).toBe('Bustang · Interregional frequency: how often routes run');
   });
 });
+
+describe('#1521: breadcrumb markup passes Google\'s check', () => {
+  it('links every step but the last: the country to its heading in the /agencies list, a city with no page left out', () => {
+    const ld = agencyPageJsonLd(TTC, 'https://x/agency/ttc', 'https://x') as { '@graph': Array<{ '@type': string; itemListElement?: Array<{ name: string; item?: string; position: number }> }> };
+    const items = ld['@graph'].find(n => n['@type'] === 'BreadcrumbList')!.itemListElement!;
+    expect(items.every(i => i.item)).toBe(true);
+    expect(items.find(i => i.name === 'Canada')?.item).toBe('https://x/agencies#index-Canada');
+    expect(items.find(i => i.name === 'Ontario')?.item).toBe('https://x/agencies#index-canada-ontario');
+    expect(items.map(i => i.position)).toEqual(items.map((_, i) => i + 1));
+  });
+});
