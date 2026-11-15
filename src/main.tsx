@@ -102,14 +102,14 @@ ReactDOM.createRoot(rootElement).render(
           <Route path={DOCS_PATH} element={<AboutDocsPage />} />
           <Route path={ABOUT_PATH} element={<AboutPage />} />
           {/* On in every build; beta-tagged entries still show only on beta. */}
-          {FEATURES.whatsNew && <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />}
-          {FEATURES.agencyPages && <Route path={`${AGENCY_PATH_PREFIX}:slug`} element={<AgencyPage />} />}
+          <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />
+          <Route path={`${AGENCY_PATH_PREFIX}:slug`} element={<AgencyPage />} />
           {FEATURES.researchApps && <Route path={FEATURE_ROUTES.research} element={<ResearchPage />} />}
           {FEATURES.researchApps && <Route path={FEATURE_ROUTES.freeChildFares} element={<FreeChildFaresPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
-          {FEATURES.agencyPages && <Route path={`${AREA_PATH_PREFIX}:slug`} element={<AreaPage />} />}
-          {FEATURES.agencyPages && <Route path={`${REGION_PATH_PREFIX}:slug`} element={<RegionPage />} />}
-          {FEATURES.agencyPages && <Route path={AGENCY_INDEX_PATH} element={<AgenciesIndexPage />} />}
+          <Route path={`${AREA_PATH_PREFIX}:slug`} element={<AreaPage />} />
+          <Route path={`${REGION_PATH_PREFIX}:slug`} element={<RegionPage />} />
+          <Route path={AGENCY_INDEX_PATH} element={<AgenciesIndexPage />} />
           <Route path="/*" element={<MapOrNotFound />} />
           </Routes>
         </React.Suspense>

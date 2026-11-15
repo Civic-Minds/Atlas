@@ -56,7 +56,7 @@ export const PRERENDER_PATHS = Object.keys(PAGES);
 
 /** #1522: the home page's static text (the map replaces it on mount). */
 export function renderHome(): string {
-  return renderToString(<StaticRouter location="/"><HomeStatic agencyPages={BUILD_FLAGS.agencyPages === true} /></StaticRouter>);
+  return renderToString(<StaticRouter location="/"><HomeStatic /></StaticRouter>);
 }
 
 export function renderAgencyPage(data: AgencyPageData): string {

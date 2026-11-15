@@ -9,13 +9,13 @@ import ArrowLink from './components/ui/ArrowLink';
  * (scripts/prerender-routes.ts); the map replaces it as soon as the app mounts. No new words: the site name, the home
  * description its tags already carry, and the existing link labels.
  */
-export default function HomeStatic({ agencyPages }: { agencyPages: boolean }) {
+export default function HomeStatic() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-16">
       <PageTitle>{SITE_NAME}</PageTitle>
       <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">{HOME_DESCRIPTION}</p>
       <nav className="mt-6 flex flex-col gap-2">
-        {agencyPages && <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>}
+        <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>
         <ArrowLink href={ABOUT_PATH}>{ABOUT_ATLAS}</ArrowLink>
         <ArrowLink href={DOCS_PATH}>{READ_HOW_ATLAS_WORKS}</ArrowLink>
       </nav>

@@ -22,7 +22,7 @@ export { SITE_NAME } from './pageNames';
 /** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
 export const HOME_TITLE = `${SITE_NAME}: Scheduled Frequency Map`;
 
-export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
+export type SeoGate = 'researchApps' | 'live' | 'history';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 
 /**
@@ -190,7 +190,6 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     title: tabTitle(PAGE_NAMES.whatsNew),
     description: 'Every Atlas version and map data update, newest first.',
     indexable: false,
-    gate: 'whatsNew',
   },
 ];
 
