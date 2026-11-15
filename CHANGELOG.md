@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Free child fares counts are current again (beta)**: fare-free systems rechecked against official pages (partly free and unconfirmed ones no longer count, Athens and newer free systems added), NJ Transit counted once, newer agencies included, and the link preview's agency count matches the page
 - **A route card's branch row names the pattern that actually runs then**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1526)'s Long Branch row named a 30th Street pattern with no midday trips next to another pattern's every 30
 - **History reads an old feed from its real timetable (beta)**: a one- or two-trip shuttle in force months earlier had left CTA's 2021–23 periods out
 - **Route cards say when Atlas fixed a route's data**: Brampton and New Orleans routes with removed “Not in Service” trips, and Brownsville's route with a removed placeholder stop, now show the corrected-data line, and Learn more says what was removed
