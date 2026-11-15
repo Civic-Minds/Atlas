@@ -38,6 +38,31 @@ describe('filterGtfsByAgencyId', () => {
     expect(filtered.shapes.map(s => s.id)).toEqual(['streetcar-shape']);
     expect(filtered.frequencies?.map(f => f.trip_id)).toEqual(['streetcar-trip']);
   });
+
+  // CIV-1580: GTFS lets a one-agency feed leave agency_id blank; HART's feeds before 2023 do.
+  const oneAgency = (agencyId: string | undefined, routeAgencyIds: Array<string | undefined>) => ({
+    agencies: [{ ...(agencyId !== undefined ? { agency_id: agencyId } : {}), agency_name: 'HART' }],
+    routes: routeAgencyIds.map((a, i) => ({ route_id: `r${i}`, ...(a !== undefined ? { agency_id: a } : {}), route_type: '3' })),
+    trips: routeAgencyIds.map((_, i) => ({ trip_id: `t${i}`, route_id: `r${i}`, service_id: 'wk' })),
+    stopTimes: [], shapes: [], frequencies: [], calendar: [], calendarDates: [], fareAttributes: [], fareRules: [],
+  }) as unknown as GtfsData;
+
+  it('a one-agency feed with no agency_id anywhere keeps every route', () => {
+    const f = filterGtfsByAgencyId(oneAgency(undefined, [undefined, undefined]), '1');
+    expect(f.routes.map(r => r.route_id)).toEqual(['r0', 'r1']);
+    expect(f.trips).toHaveLength(2);
+    expect(f.agencies).toHaveLength(1);
+  });
+
+  it('a route with no agency_id belongs to the one agency; a different named agency still keeps nothing', () => {
+    expect(filterGtfsByAgencyId(oneAgency('1', [undefined, '1']), '1').routes).toHaveLength(2);
+    expect(filterGtfsByAgencyId(oneAgency('HART', [undefined]), '1').routes).toHaveLength(0);
+  });
+
+  it('in a multi-agency feed a route with no agency_id is still left out', () => {
+    const g = { ...oneAgency('1', [undefined, '1']), agencies: [{ agency_id: '1', agency_name: 'A' }, { agency_id: '2', agency_name: 'B' }] } as unknown as GtfsData;
+    expect(filterGtfsByAgencyId(g, '1').routes.map(r => r.route_id)).toEqual(['r1']);
+  });
 });
 
 describe('filterGtfsByAgencyName', () => {
