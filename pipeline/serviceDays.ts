@@ -87,11 +87,27 @@ export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar'
   const tripsPerService = new Map<string, number>();
   for (const t of input.trips) tripsPerService.set(t.service_id, (tripsPerService.get(t.service_id) ?? 0) + 1);
   const trips = input.trips.filter(t => tripsPerService.get(t.service_id)! >= input.trips.length * TOKEN_SERVICE_SHARE);
-  const { span } = buildServiceDayTable({ ...input, trips: trips.length ? trips : input.trips, anchor: '20000103', weeksAfter: 1 });
+  const rows = { ...input, trips: trips.length ? trips : input.trips };
+  const { span } = buildServiceDayTable({ ...rows, anchor: '20000103', weeksAfter: 1 });
   if (!span) return null;
   const start = dayNumber(span.start);
-  return ymdOf(start + ((7 - dayIndex(start)) % 7));
+  const first = start + ((7 - dayIndex(start)) % 7);
+  // CIV-1485: the week must be in force, with service on most of its days. KCM's Oct 2013 zip lists
+  // holiday dates from Jan 1 2013 (Sunday service added on 8 single days), which put the anchor on a
+  // January week where only those holidays run, and the period came out blank. Single added days
+  // never make a week; with no such week the first Monday stands, as before.
+  const end = dayNumber(span.end);
+  for (let monday = first, n = 0; monday <= end && n < MAX_ANCHOR_WEEKS; monday += 7, n++) {
+    const { days } = buildServiceDayTable({ ...rows, anchor: ymdOf(monday), daysBefore: 0, weeksAfter: 1 });
+    const inWeek = days.filter(d => { const x = dayNumber(d.date); return x >= monday && x < monday + 7 && d.signature !== ''; });
+    if (inWeek.length >= MIN_DAYS_IN_FORCE) return ymdOf(monday);
+  }
+  return ymdOf(first);
 }
+/** firstFullWeekAnchor: days of a Monday-Sunday week with service for the week to count as in force (CIV-1485). */
+const MIN_DAYS_IN_FORCE = 4;
+/** firstFullWeekAnchor: weeks searched for one in force before falling back to the first Monday. */
+const MAX_ANCHOR_WEEKS = 60;
 
 export interface ServiceDay {
   date: string;

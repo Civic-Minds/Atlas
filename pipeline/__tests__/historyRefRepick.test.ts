@@ -157,6 +157,20 @@ describe('the archived zip\'s anchor skips token services (CIV-1641)', () => {
   });
 });
 
+describe('the archived zip\'s anchor is a week in force (CIV-1485)', () => {
+  it('holiday dates months before the timetable (KCM Oct 2013: Sunday service added on single days from Jan 1) do not start the period', () => {
+    const rows = winterFeed();
+    rows.calendarDates = [...rows.calendarDates, ...['20180101', '20180115', '20180219', '20180528', '20180704'].map(date => ({ service_id: 'SUN', date, exception_type: '1' }))] as any;
+    expect(firstFullWeekAnchor(rows)).toBe('20180903');
+    expect(week(rows, firstFullWeekAnchor(rows)!).week.services.Wednesday).toEqual(['MAIN']);
+  });
+
+  it('a weekday-only feed whose first week opens on a holiday Monday keeps that week (4 days in force)', () => {
+    const rows: RepickRows = { calendar: [cal('MAIN', MF, '20180903', '20190118')], calendarDates: [{ service_id: 'MAIN', date: '20180903', exception_type: '2' }] as any, trips: tripsFor('MAIN', 20) };
+    expect(firstFullWeekAnchor(rows)).toBe('20180903');
+  });
+});
+
 describe('process options', () => {
   it('carry a reference date or an anchor only when one is given', () => {
     const agency = { slug: 'x' } as any;
