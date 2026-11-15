@@ -6,8 +6,9 @@
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
 import { minutesText, pct, tenth } from '../../../shared/liveFormat';
-import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
+import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -69,16 +70,16 @@ export const stripTableCaption = (label: string): string => `${label}: delay and
 /** The screen-reader table's column headers. */
 export const STRIP_COLUMNS = { stop: 'Stop', delay: DELAY_LEGEND_TITLE, late: LATE_LABEL, bunch: 'Gaps off', n: 'Departures' } as const;
 /** A table cell or hover value with nothing measured. */
-export const NOT_MEASURED_CELL = 'not measured';
+export const NOT_MEASURED_CELL = NOT_MEASURED_VALUE;
 /** The phone list's switch between key stops and every stop. */
 export const SHOW_KEY_STOPS = 'Show key stops only';
 export const showAllStopsText = (n: number): string => `Show all ${countOf(n, 'stop')}`;
 /** What a screen reader calls the strip. */
 export const STRIP_ROLE = 'route strip';
 /** The legend's extra keys. */
-export const LESS_EXACT = 'Less exact';
+export const LESS_EXACT = LESS_EXACT_LABEL;
 export const fewerThanText = (minN: number): string => `Fewer than ${minN} departures or gaps`;
-export const NOT_MEASURED_KEY = 'Not measured';
+export const NOT_MEASURED_KEY = NOT_MEASURED_LABEL;
 /** A bunching value in the hover: "12% of gaps off". */
 export const gapsOffText = (pct: string): string => `${pct} of gaps off`;
 
@@ -258,11 +259,11 @@ export function stopDetail(stop: RouteStripStop): { name: string; lines: string[
   if (stop.n > 0 && stop.delayMin != null) {
     const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
-  } else lines.push('Delay not measured');
+  } else lines.push(DELAY_NOT_MEASURED);
   const parts = bunchParts(stop);
   if (parts && stop.bunchedShare != null && stop.gappedShare != null) lines.push(bunchedAndLong(`${parts.bunched}%`, `${parts.tooLong}%`));
   else if (parts) lines.push(`${parts.total}% of gaps too short or too long`);
-  if (stop.uncertain) lines.push('Less exact here: vehicles report their location less often');
+  if (stop.uncertain) lines.push(LIVE_LESS_EXACT_HERE);
   return { name: stop.name, lines };
 }
 

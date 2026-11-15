@@ -28,7 +28,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, METHOD_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
+import { BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, METHOD_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
@@ -146,7 +146,7 @@ function AnalysisPage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
@@ -167,14 +167,14 @@ function AnalysisPage() {
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
             <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>
-          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label="Filters">
           <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
-          <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
-            options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
+          <PillGroup label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
+            options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         </div>}
         {view !== 'analysis' ? (
           <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain}

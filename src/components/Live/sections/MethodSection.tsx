@@ -4,7 +4,7 @@ import { goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/li
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { pct } from '../../../../shared/liveFormat';
 import { joinList } from '../../../../shared/overflowText';
-import { builtText, coveredRoutesText, DELAY_STARTS_TITLE, METHOD_GROUPS } from '../../../../shared/liveWording';
+import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, builtText, coveredRoutesText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -52,7 +52,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
         deliveredLine(true),
         <Term t={DELAY_STARTS_TITLE}>is the stop where vehicles fall furthest behind and don’t catch up over the next 3 stops (about 1 km).</Term>,
-        <Term t="Linked to">shows what was measured in the same stretch. It is not the cause.</Term>,
+        <Term t={LINKED_TO_TITLE}>shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
         `Last ${good.days} service days, ${dateRange(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,

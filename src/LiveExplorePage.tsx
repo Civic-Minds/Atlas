@@ -41,7 +41,7 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/se
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, EXTRA_WAIT_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, WEEK_COMPARE_TITLE } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -89,7 +89,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
             <Fact label={GROWS_LABEL} value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
             <Fact label={DELAY_LEGEND_TITLE} value={mins(f.medianDelayMin)} />
-            <Fact label="1 in 10 later than" value={mins(f.p90DelayMin)} />
+            <Fact label={P90_LATER_LABEL} value={mins(f.p90DelayMin)} />
           </Block>
         </Panel>
       );
@@ -100,11 +100,11 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     return (
       <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
-          <Fact label="Gaps off the schedule" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
+          <Fact label={GAPS_OFF_SCHEDULE_LABEL} value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
         </Block>
-        <Block title={linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}>
+        <Block title={linked.length ? LINKED_TO_TITLE : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
-            <Fact key={l.kind} label={`${l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
+            <Fact key={l.kind} label={`${l.value == null ? NOT_MEASURED_LABEL : l.linked ? LINKED_LABEL : NOT_LINKED_LABEL}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
           ))}
         </Block>
       </Panel>
@@ -123,16 +123,16 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         {s.n > 0 && s.delayMin != null ? (
           <>
             <Fact label={DELAY_LEGEND_TITLE} value={delayText(s.delayMin)} />
-            {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
+            {full && <Fact label={P90_LATER_LABEL} value={mins(full.p90Min)} />}
             {s.lateShare != null && <Fact label={LATE_LABEL} value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
           </>
-        ) : <Fact label={DELAY_LEGEND_TITLE} value="not measured" />}
+        ) : <Fact label={DELAY_LEGEND_TITLE} value={NOT_MEASURED_VALUE} />}
         {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
-          <Fact label="Too close together" value={pct(bunch.bunchedShare)} />
-          <Fact label="Too far apart" value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
+          <Fact label={TOO_CLOSE_LABEL} value={pct(bunch.bunchedShare)} />
+          <Fact label={TOO_FAR_LABEL} value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
         </Block>
       )}
       {extra && (
@@ -205,7 +205,7 @@ export default function LiveExplorePage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
@@ -254,7 +254,7 @@ export default function LiveExplorePage() {
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
           <RouteSubtitle v3={v3} agency={agency} route={route} />
         </p>
-        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
       </div>
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
@@ -262,9 +262,9 @@ export default function LiveExplorePage() {
       <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
 
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
-        <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
-          options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
+        <Group label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
+          options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
+        <Group label={TIME_OF_DAY_LABEL} value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
       <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>

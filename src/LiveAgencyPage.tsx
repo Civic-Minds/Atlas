@@ -30,7 +30,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, LATE_LABEL, LATE_STOPS_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
 import { pct as pctOf, pctTenth } from '../shared/liveFormat';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
@@ -165,7 +165,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
+          { key: 'dir', header: DIRECTION_LABEL, width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
       />
@@ -185,7 +185,7 @@ export default function LiveAgencyPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   // The page title is the agency's full name, as on the map's agency page; the short name stays in the subtitle and tab title (CIV-1448).
   const name = agencyTitle;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p></DocsPageLayout>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.status === 'unknown_agency' ? liveNoAgencyAnalysis(agencyName) : (state.data as { reason: string }).reason;
@@ -205,7 +205,7 @@ export default function LiveAgencyPage() {
               {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency: agencyName })}
             </p>
           </div>
-          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">{VIEW_ON_LIVE_MAP}</ArrowLink>}
         </div>
         <ErrorBoundary>
           {w && tiles.length

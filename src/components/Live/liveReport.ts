@@ -1,5 +1,6 @@
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { reportDetails } from '../../utils/reportIssue';
+import { DIRECTION_LABEL } from '../../../shared/liveWording';
 
 /** A vehicle as a report lists it: id, trip, direction, delay and when its position was sent. */
 function vehicleLine(v: LiveVehicle): string {
@@ -17,7 +18,7 @@ export function liveRouteReportDetails(args: { agencySlug: string; agencyName: s
     ['Agency', args.agencyName],
     ['Agency slug', args.agencySlug],
     ['Route', args.routeShortName],
-    ['Direction', args.direction ?? 'all'],
+    [DIRECTION_LABEL, args.direction ?? 'all'],
     ['Reported at', (args.now ?? new Date()).toISOString()],
     '**Vehicles:**',
     ...(args.vehicles.length > 0 ? args.vehicles.map(vehicleLine) : ['- None']),

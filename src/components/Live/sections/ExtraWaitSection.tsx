@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
-import { EXTRA_WAIT_LABEL, fadedNoteText } from '../../../../shared/liveWording';
+import { DIRECTION_LABEL, EXTRA_WAIT_LABEL, fadedNoteText } from '../../../../shared/liveWording';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
@@ -83,7 +83,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           rowKey={s => `${s.stopId}-${s.directionId}`}
           columns={[
             { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
-            ...(dir == null ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
+            ...(dir == null ? [{ key: 'dir', header: DIRECTION_LABEL, align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: EXTRA_WAIT_LABEL, worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
             { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },

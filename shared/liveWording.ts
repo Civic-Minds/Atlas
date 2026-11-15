@@ -40,9 +40,45 @@ export const GROWS_LABEL = 'Trips where it grows';
 export const ADDS_MOST_TITLE = 'Stretch that adds the most';
 /** The by-hour part of the bunching and build-up sections. */
 export const BY_TIME_OF_DAY_TITLE = 'By time of day';
+
+// Live words used in more than one place, each written once (CIV-1601).
+/** "Not measured": a key entry, a link verdict, a map mark with no figure. */
+export const NOT_MEASURED_LABEL = 'Not measured';
+/** "not measured": the same, as a value inside a table cell or sentence. */
+export const NOT_MEASURED_VALUE = 'not measured';
+/** A stop with no delay figure, in its hover and card. */
+export const DELAY_NOT_MEASURED = 'Delay not measured';
+/** A chart or strip mark resting on sparse location reports. */
+export const LESS_EXACT_LABEL = 'Less exact';
+/** The 90th-percentile delay column and figure. */
+export const P90_LATER_LABEL = '1 in 10 later than';
+/** The back link from a report page to the Live map app. */
+export const OPEN_LIVE_LABEL = 'Open Live';
+/** The link from a report page to the same route or agency on the Live map. */
+export const VIEW_ON_LIVE_MAP = 'View on Live map';
+/** The direction pills' choice for both directions together. */
+export const BOTH_DIRECTIONS_LABEL = 'Both directions';
+/** The direction pills, table column and vehicle card row. */
+export const DIRECTION_LABEL = 'Direction';
+/** The period picker's label. */
+export const TIME_OF_DAY_LABEL = 'Time of day';
+/** The heading over what a stretch is linked to, and its glossary term. */
+export const LINKED_TO_TITLE = 'Linked to';
+/** A link verdict: measured in the same stretch, or not. */
+export const LINKED_LABEL = 'Linked';
+export const NOT_LINKED_LABEL = 'Not linked';
+/** A trip that ends before the line's end: a vehicle card tag and a trip pattern's kind. */
+export const SHORT_TURN_LABEL = 'Short turn';
+/** The two kinds of bunching gap, in charts, legends and figures. */
+export const TOO_CLOSE_LABEL = 'Too close together';
+export const TOO_FAR_LABEL = 'Too far apart';
+/** The share of gaps too short or too long, as a figure and column. */
+export const GAPS_OFF_SCHEDULE_LABEL = 'Gaps off the schedule';
 export const EARLY_STEP_LABEL = '1+ min ahead';
 /** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
-export const DELAY_STEP_LABELS = ['On time', '1–3 min', '3+ min behind'] as const;
+/** A vehicle or stop on schedule; the delay legend's first step (CIV-1601). */
+export const ON_TIME_LABEL = 'On time';
+export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] as const;
 
 export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */

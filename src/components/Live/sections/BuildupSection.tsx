@@ -9,7 +9,7 @@ import { branchNamesWrap } from '../BranchStrip';
 import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
-import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
+import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, ON_TIME_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
 import { mins, pct } from './figures';
 
 /** The one derivation of where delay builds up, so every surface draws the same numbers. */
@@ -72,7 +72,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                 caption="How late vehicles usually leave each stop: above the line is late, below is early."
                 whiskers={false}
                 zero
-                zeroLabel="On time"
+                zeroLabel={ON_TIME_LABEL}
                 scale={scale}
                 lessExactNote="the first stops are in the tunnel, where we see the vehicles less often. These are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
