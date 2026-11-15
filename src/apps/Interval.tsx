@@ -30,7 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
+import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -809,6 +809,11 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const countB = useMemo(() => (bothReported && renderedB ? { total: renderedB.size } : null), [bothReported, renderedB]);
   const [shownLabelA, shownCountA] = useShownWithCount(compareLabelA, countA, compareTransitions);
   const [shownLabelB, shownCountB] = useShownWithCount(compareLabelB, countB, compareTransitions);
+  // Each side's label waits for its route count and fades in with it, rather than showing first and widening when
+  // the count arrives (4 s at most). Side A's also waits for map B, so it fades in with the right map rather than
+  // during the busy moment the counts arrive in (where its fade would finish unseen).
+  const compareSideAShown = useReadyOrTimeout(shownCountA != null && compareBDrawn, compareActive, compareTransitions);
+  const compareSideBShown = useReadyOrTimeout(shownCountB != null, compareActive, compareTransitions);
 
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
   // draws (the night index has no 30 minute data, so it cannot answer for both settings). Night counts the
@@ -1204,7 +1209,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         {/* Map A: while Compare's split eases in, it glides to the centre of its half and resizes once at the end. */}
         <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
           overlay={compareActive && (
-            <CompareSideSlot side="A" className={compareFadeIn}>
+            <CompareSideSlot side="A" className={modeFadeWhen(compareTransitions, compareSideAShown)}>
               <CompareSideBar
                 side="A"
                 settings={compareA}
@@ -1358,7 +1363,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 onMapReady={setMapB}
         onRenderedRouteKeysChange={setRenderedB}
               />
-            <CompareSideSlot side="B">
+            <CompareSideSlot side="B" className={modeFadeWhen(compareTransitions, compareSideBShown)}>
               <CompareSideBar
                 side="B"
                 settings={compareSide!}

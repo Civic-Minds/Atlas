@@ -67,11 +67,15 @@ const SLIDE_TIMING = { duration: 300, easing: 'cubic-bezier(0, 0, 0.2, 1)' };
  * same render gets the same start time, so two panes moving together stay in step to the frame, and the browser runs
  * them off the main thread. The element's own style should already hold `to`, which is where it stays afterwards.
  */
-function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: string, to: string) {
+function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: string, to: string, fadeIn = false) {
   useLayoutEffect(() => {
     const el = ref.current;
     if (!start || !el || typeof el.animate !== 'function') return;
-    const animation = el.animate([{ transform: from }, { transform: to }], SLIDE_TIMING);
+    // `fadeIn`: also fades from transparent over the first part, while there is too little room on screen to show it whole.
+    const frames: Keyframe[] = fadeIn
+      ? [{ transform: from, opacity: 0 }, { opacity: 1, offset: 0.4 }, { transform: to, opacity: 1 }]
+      : [{ transform: from }, { transform: to }];
+    const animation = el.animate(frames, SLIDE_TIMING);
     animation.startTime = document.timeline.currentTime;
     return () => animation.cancel();
     // Only the start matters: the slide runs once per entry.
@@ -103,7 +107,7 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
   className: string;
   /** Laid out against the pane itself rather than its content (a label that must sit in the pane's own corner). */
   overlay?: ReactNode;
-  /** `anchor="left"`: shown centred on the sliding panel, where the content's own loading label will be (`ModeLoadingLabel`). */
+  /** `anchor="left"`: shown on the sliding panel, centred in its part on screen and ending where the content's own loading label will be (`ModeLoadingLabel`). */
   placeholder?: ReactNode;
   children: ReactNode;
 }) {
@@ -112,6 +116,10 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
   const offset = anchor === 'left' ? 'translateX(100%)' : 'translateX(0px)';
   const settled = anchor === 'left' ? 'translateX(0px)' : `translateX(calc(-25% - ${divider} / 4))`;
   useSlide(slideRef, sliding, offset, settled);
+  // The placeholder moves back by half the panel's travel, so it stays centred in the part of the panel already on
+  // screen, and fades in while that part is still too narrow to show it whole.
+  const placeholderRef = useRef<HTMLDivElement>(null);
+  useSlide(placeholderRef, sliding && anchor === 'left', 'translateX(-50%)', 'translateX(0px)', true);
   if (!enabled) return <div className={className}>{children}{overlay}</div>;
   const transform = entering ? offset : settled;
   if (anchor === 'left') {
@@ -123,7 +131,11 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
           style={{ width: `calc(50% + ${divider} / 2)`, borderLeft: `${divider} solid var(--text-primary)`, boxSizing: 'border-box', transform }}
           data-mode-enter="sliding"
         >
-          {placeholder != null && <div className="absolute inset-0 flex items-center justify-center pointer-events-none">{placeholder}</div>}
+          {placeholder != null && (
+            <div ref={placeholderRef} className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform" style={{ transform: entering ? 'translateX(-50%)' : 'translateX(0px)' }}>
+              {placeholder}
+            </div>
+          )}
         </div>
       );
     }
@@ -150,6 +162,9 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
  */
 export const FOLD_SHUT = '[transition:opacity_120ms_ease-out,grid-template-columns_200ms_ease-out_100ms] motion-reduce:[transition:none]';
 export const FOLD_OPEN = '[transition:grid-template-columns_200ms_ease-out,opacity_150ms_ease-out_150ms] motion-reduce:[transition:none]';
+/** An outline around something that folds (`FOLD_OPEN` / `FOLD_SHUT`): its colour fades in and out with the text, not before it. */
+export const FOLD_OUTLINE_OPEN = '[transition:border-color_150ms_ease-out_150ms,margin_200ms_ease-out] motion-reduce:[transition:none]';
+export const FOLD_OUTLINE_SHUT = '[transition:border-color_120ms_ease-out,margin_200ms_ease-out_100ms] motion-reduce:[transition:none]';
 
 /**
  * Controls that a mode takes away (or brings back) in a row of controls: they fade and fold instead of vanishing, and
@@ -165,6 +180,32 @@ export function ModeCollapse({ open, children }: { open: boolean; children: Reac
       <div className={`flex items-center min-w-0 ${open ? '' : 'overflow-hidden'}`}>{children}</div>
     </div>
   );
+}
+
+/**
+ * Classes for something that waits for a signal before it shows (a Compare label waiting for its route count): hidden
+ * until `shown`, then eased in. Nothing with the switch off.
+ */
+export function modeFadeWhen(enabled: boolean, shown: boolean): string {
+  if (!enabled) return '';
+  // Opacity only (no visibility switch, which held the fade back until its end); hidden controls take no clicks.
+  return shown ? `opacity-100 transition-opacity ${MODE_EASE}` : 'opacity-0 **:pointer-events-none';
+}
+
+/** True once `ready`, or `MODE_ENTER_MAX_WAIT_MS` after `active` turned on: a missing signal never hides something for good. */
+export function useReadyOrTimeout(ready: boolean, active: boolean, enabled: boolean): boolean {
+  const [timedOut, setTimedOut] = useState(false);
+  const [seenActive, setSeenActive] = useState(active);
+  if (seenActive !== active) {
+    setSeenActive(active);
+    setTimedOut(false);
+  }
+  useEffect(() => {
+    if (!enabled || !active || ready || timedOut) return;
+    const timer = window.setTimeout(() => setTimedOut(true), MODE_ENTER_MAX_WAIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [enabled, active, ready, timedOut]);
+  return !enabled || ready || timedOut;
 }
 
 /** Classes that fade a mode's new controls in: transparent with no transition while entering, then eased in. */
@@ -219,21 +260,23 @@ export function ModeEnter({ enabled, ready, label, children }: {
     return () => window.clearTimeout(timer);
   }, [enabled, shown]);
   // The cover stays fully drawn under the view while it fades in (fading both would let the divider colour show
-  // through halfway), and is dropped once the fade has finished. Its loading label goes before the fade starts,
-  // so it never shows through the half-faded map.
+  // through halfway), and is dropped once the fade has finished. Its loading label stays for the fade's first two
+  // frames, while the view is still all but transparent, then goes: so there is no frame with neither the label
+  // nor the map, and the label never shows through a half-faded map.
+  const [labelGone, setLabelGone] = useState(false);
   useEffect(() => {
     if (!enabled || !shown) return;
     const timer = window.setTimeout(() => setCoverGone(true), COVER_DROP_MS);
-    return () => window.clearTimeout(timer);
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setLabelGone(true)); });
+    return () => { window.clearTimeout(timer); cancelAnimationFrame(first); cancelAnimationFrame(second); };
   }, [enabled, shown]);
   if (!enabled) return <>{children}</>;
   return (
     <>
       {!coverGone && (
-        <div className="absolute inset-0 bg-[var(--bg-app)] flex items-center justify-center pointer-events-none" aria-hidden={shown} data-mode-enter="cover">
-          {!shown && (
-            <ModeLoadingLabel label={label} />
-          )}
+        <div className="absolute inset-0 bg-[var(--bg-app)] flex items-center justify-center pointer-events-none" aria-hidden={labelGone} data-mode-enter="cover">
+          {!labelGone && <ModeLoadingLabel label={label} />}
         </div>
       )}
       <div className={`absolute inset-0 ${FADE} ${shown ? 'opacity-100' : 'opacity-0'}`} data-mode-enter={shown ? 'shown' : 'waiting'}>

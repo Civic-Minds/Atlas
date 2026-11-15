@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
+import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
 
 /**
  * A stand-in map. `fireIdle` plays MapLibre's idle event (everything loaded and drawn); `fireRender` plays one
@@ -37,7 +37,10 @@ describe('ModeEnter (CIV-1567)', () => {
     expect(screen.getByText('Loading map…')).toBeTruthy();
     rerender(<ModeEnter enabled ready label="Loading map…"><p>view</p></ModeEnter>);
     expect(screen.getByText('view').parentElement?.dataset.modeEnter).toBe('shown');
-    // The label goes as the fade starts, so it never shows through the half-faded view; the plain panel stays under it.
+    // The label stays for the fade's first frames (no blank frame), then goes, so it never shows through the
+    // half-faded view; the plain panel stays under it.
+    expect(screen.getByText('Loading map…')).toBeTruthy();
+    act(() => { vi.advanceTimersByTime(50); });
     expect(screen.queryByText('Loading map…')).toBeNull();
     expect(document.querySelector('[data-mode-enter="cover"]')).not.toBeNull();
     act(() => { vi.advanceTimersByTime(1000); });
@@ -242,5 +245,26 @@ describe('useShownWithCount (CIV-1567)', () => {
     const off = renderHook(({ label }) => useShownWithCount(label, c1, false), { initialProps: { label: 'a' } });
     off.rerender({ label: 'b' });
     expect(off.result.current[0]).toBe('b');
+  });
+});
+
+describe('modeFadeWhen and useReadyOrTimeout (CIV-1567)', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('hides a label until its count is there, then fades it in; nothing with the switch off', () => {
+    expect(modeFadeWhen(true, false)).toContain('opacity-0');
+    expect(modeFadeWhen(true, true)).toContain('transition-opacity');
+    expect(modeFadeWhen(false, false)).toBe('');
+  });
+
+  it('is ready with the signal, or after the longest wait without it', () => {
+    const { result, rerender } = renderHook(({ ready, active }) => useReadyOrTimeout(ready, active, true), { initialProps: { ready: false, active: true } });
+    expect(result.current).toBe(false);
+    rerender({ ready: true, active: true });
+    expect(result.current).toBe(true);
+    rerender({ ready: false, active: true });
+    act(() => { vi.advanceTimersByTime(MODE_ENTER_MAX_WAIT_MS); });
+    expect(result.current).toBe(true);
   });
 });

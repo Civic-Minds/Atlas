@@ -11,7 +11,7 @@ import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
-import { MODE_EASE, ModeCollapse } from '../ModeTransition';
+import { FOLD_OUTLINE_OPEN, FOLD_OUTLINE_SHUT, ModeCollapse } from '../ModeTransition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
 import { parentAgency } from '../../../shared/parentAgencyList';
@@ -537,9 +537,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {periodChip('hidden lg:block')}
           </div>
         </ModeCollapse>
-        {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row. */}
+        {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row; the outline fades with "Both maps". */}
         <div
-          className={`flex items-center rounded-full border p-0.5 transition-[border-color,margin] ${MODE_EASE} ${shared ? TOP_BAR_OUTLINE : '-mx-[3px] border-transparent'}`}
+          className={`flex items-center rounded-full border p-0.5 ${shared ? `${TOP_BAR_OUTLINE} ${FOLD_OUTLINE_OPEN}` : `-mx-[3px] border-transparent ${FOLD_OUTLINE_SHUT}`}`}
           role={shared ? 'group' : undefined}
           aria-label={shared ? 'Filters for both maps' : undefined}
         >
