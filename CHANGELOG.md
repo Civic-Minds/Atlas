@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The data pipeline stops instead of publishing old fares when it can't read the [fare list](https://github.com/Civic-Minds/Atlas/issues/1367)**: a blocked read had quietly fallen back to each agency's older fare
 - **Route codes like [BLS-1](https://github.com/Civic-Minds/Atlas/issues/1529) keep their capitals**: CTA's Blue Line Shuttle read "Bls-1"
 - **Four commuter rail lines no longer look more frequent than they are**: Providence, Kitchener and Main/Bergen County at the evening rush, and Harlem on weekend middays had read the gap between trains on two branches as one shorter wait ([#1514](https://github.com/Civic-Minds/Atlas/issues/1514))
 - **Compare opens without a pause**: the page no longer stalls after clicking Compare or changing a Compare map's time

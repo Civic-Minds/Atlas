@@ -10,8 +10,27 @@
 # Files that .vercelignore re-includes with a "!path" line (build scripts, one research file) are
 # added automatically, so a new build-time script only needs its .vercelignore line.
 #
+# Only main deploys: both Vercel projects (atlas, atlas-beta) have productionBranch "main" (checked
+# 2026-11-15 via the Vercel API). A push of any other branch (helper/work branches) is skipped outright,
+# so it never starts a preview build or uses up the deploy limit. To deploy another branch, add it to
+# DEPLOY_BRANCHES. VERCEL_GIT_COMMIT_REF is unset in local use, which goes straight to the path check.
+#
 # Local use: scripts/vercel-ignore-build.sh <previous-sha> <current-sha>
 set -u
+
+DEPLOY_BRANCHES=(main)
+
+ref="${VERCEL_GIT_COMMIT_REF:-}"
+if [ -n "$ref" ]; then
+  deploys=0
+  for branch in "${DEPLOY_BRANCHES[@]}"; do
+    [ "$ref" = "$branch" ] && deploys=1
+  done
+  if [ "$deploys" -eq 0 ]; then
+    echo "vercel-ignore-build: branch ${ref} is not a deploy branch (${DEPLOY_BRANCHES[*]}), skipping"
+    exit 0
+  fi
+fi
 
 prev="${1:-${VERCEL_GIT_PREVIOUS_SHA:-}}"
 curr="${2:-${VERCEL_GIT_COMMIT_SHA:-HEAD}}"

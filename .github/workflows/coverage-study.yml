@@ -1,7 +1,8 @@
 # Population coverage study (CIV-1182): how many people live within a 10-minute walk of frequent service, in
 # Canada and the US. Runs the scripts in docs/research/canada-transit-coverage-2026-09/src, one job per Canadian
-# province and per US state bundle, against Atlas's current published data (read-only, public URLs).
-# Never writes to R2: the only secrets it can use are the read-only keys, and only for the StatCan fallback files.
+# province and per US state bundle, against Atlas's current published data (read-only).
+# Never writes to R2: the only secrets it can use are the read-only keys, for the StatCan fallback files and for
+# reading Atlas's published files straight from the bucket (the public domain's bot checks refused runners, #1367).
 # Reports come back as workflow artifacts. Plan and costs: docs/research/canada-transit-coverage-2026-09/CLOUD-RUN.md
 name: Coverage study
 
@@ -70,6 +71,11 @@ jobs:
           [[ "$REUSE_RUN" =~ ^[0-9]*$ ]] || { echo "Bad reuse_run: $REUSE_RUN"; exit 1; }
           node -e "import('./$STUDY/src/coverage.mjs').then(m => m.coverageRule())"
       - name: Plan the US bundles (smoke mode plans Hawaii only)
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_RO_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_RO_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           mkdir -p plan
           if [ "$MODE" = smoke ]; then
@@ -196,6 +202,10 @@ jobs:
         env:
           PROVINCE: ${{ matrix.province }}
           SLUG: ${{ steps.osm.outputs.slug }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_RO_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_RO_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
           cd $STUDY
@@ -263,6 +273,10 @@ jobs:
       - name: Run the bundle at 30, then 15 minutes (the 15-minute run reuses the 30-minute walking network)
         env:
           BUNDLE: ${{ matrix.bundle }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_RO_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_RO_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
           cd $STUDY

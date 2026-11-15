@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { calculateReport, json, publicMapAgencies, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows } from '../src/coverage.mjs';
+import { atlasJson, atlasR2Config, calculateReport, json, publicMapAgencies, signS3Get, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const { routeGroupKey } = await loadMapCode();
@@ -173,4 +173,59 @@ test('map-filter-trunk skips a trunk-only row whose mask is missing or the wrong
   assert.equal(diagnostics.rowsSkippedMaskMismatch, 1);
   assert.equal(diagnostics.rowsSkippedNoMask, 1);
   assert.equal(countedStops(rows, 15, 'map-filter-trunk').length, 3);
+});
+
+test('a dropped connection is retried like an error status, and a 404 is not retried (#1367)', async () => {
+  const realFetch = globalThis.fetch;
+  try {
+    let n = 0;
+    globalThis.fetch = async () => {
+      n++;
+      if (n === 1) throw new TypeError('fetch failed', { cause: { code: 'ECONNRESET' } });
+      if (n === 2) return { ok: true, json: async () => { throw new TypeError('terminated'); } };
+      return new Response('{"ok":true}', { status: 200 });
+    };
+    assert.deepEqual(await json('https://data.example/atlas/x.json', { delayMs: 0 }), { ok: true });
+    assert.equal(n, 3);
+    n = 0;
+    globalThis.fetch = async () => { n++; throw new TypeError('terminated'); };
+    await assert.rejects(json('https://data.example/atlas/x.json', { delayMs: 0 }), /https:\/\/data\.example\/atlas\/x\.json: terminated/);
+    assert.equal(n, 5);
+    n = 0;
+    globalThis.fetch = async () => { n++; return new Response('missing', { status: 404 }); };
+    await assert.rejects(json('https://data.example/atlas/x.json', { delayMs: 0 }), /^Error: 404 /);
+    assert.equal(n, 1);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test('S3 signing matches the AWS Signature V4 GET example (#1367)', () => {
+  const headers = signS3Get({
+    host: 'examplebucket.s3.amazonaws.com', path: '/test.txt', region: 'us-east-1',
+    accessKeyId: 'AKIAIOSFODNN7EXAMPLE', secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    date: new Date('2013-05-24T00:00:00Z'), extraHeaders: { Range: 'bytes=0-9' },
+    payloadHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+  });
+  assert.equal(headers.Authorization, 'AWS4-HMAC-SHA256 Credential=AKIAIOSFODNN7EXAMPLE/20130524/us-east-1/s3/aws4_request, SignedHeaders=host;range;x-amz-content-sha256;x-amz-date, Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41');
+});
+
+test('with read-only R2 keys, Atlas files are read from the bucket, not the public domain (#1367)', async () => {
+  const realFetch = globalThis.fetch;
+  const r2 = atlasR2Config({ R2_ACCOUNT_ID: 'acct', R2_BUCKET_NAME: 'atlas', R2_RO_ACCESS_KEY_ID: 'ro', R2_RO_SECRET_ACCESS_KEY: 'secret' });
+  assert.ok(r2);
+  assert.equal(atlasR2Config({ R2_ACCOUNT_ID: 'acct', R2_BUCKET_NAME: 'atlas' }), null);
+  const seen = [];
+  try {
+    globalThis.fetch = async (url, init) => { seen.push({ url, init }); return new Response('{"type":"FeatureCollection","features":[]}', { status: 200 }); };
+    await atlasJson('atlas/ttc.json', undefined, { r2, delayMs: 0 });
+    assert.equal(seen[0].url, 'https://acct.r2.cloudflarestorage.com/atlas/atlas/ttc.json');
+    assert.match(seen[0].init.headers.Authorization, /^AWS4-HMAC-SHA256 Credential=ro\/\d{8}\/auto\/s3\/aws4_request/);
+    await atlasJson('atlas/ttc.json', 'https://staging.example', { r2, delayMs: 0 });
+    assert.equal(seen[1].url, 'https://staging.example/atlas/ttc.json');
+    await atlasJson('atlas/ttc.json', undefined, { r2: null, delayMs: 0 });
+    assert.equal(seen[2].url, 'https://data.transitatlas.fyi/atlas/ttc.json');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });

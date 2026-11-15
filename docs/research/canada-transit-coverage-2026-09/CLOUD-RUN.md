@@ -1,6 +1,6 @@
 # Running the coverage study in the cloud (CIV-1182)
 
-The workflow is `.github/workflows/coverage-study.yml`, started by hand only. It runs this folder's scripts on GitHub's runners against Atlas's current published data (read-only, public URLs). It never writes to R2: the only secrets it can use are the read-only R2 keys, for the StatCan fallback below. Reports come back as workflow artifacts.
+The workflow is `.github/workflows/coverage-study.yml`, started by hand only. It runs this folder's scripts on GitHub's runners against Atlas's current published data (read-only). It never writes to R2: the only secrets it can use are the read-only R2 keys, for the StatCan fallback below and for reading Atlas's published files straight from the bucket, since data.transitatlas.fyi's bot checks refused runners (#1367). Without those keys (a local run) the scripts read the public domain. Reports come back as workflow artifacts.
 
 ## Why the rule is a parameter
 The September 19 figures depend on Atlas's `headwayByPeriodSustained` flag, and that flag drops some very frequent lines (CIV-1179). `COVERAGE_RULE`, the workflow's `rule` input, picks the rule:

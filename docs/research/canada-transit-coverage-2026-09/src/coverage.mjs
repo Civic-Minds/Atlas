@@ -1,3 +1,4 @@
+import { createHash, createHmac } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 export const CANADIAN_REGIONS = new Set([
@@ -242,19 +243,37 @@ export function qualifyingRows(features, maxHeadwayMinutes = 15, rule = coverage
   return { rows: result, stopsFor: row => (Array.isArray(row.properties?.stopOrder) ? row.properties.stopOrder.map(String) : []), diagnostics: null };
 }
 
-// #1367: Atlas's published files, read the way the pipeline reads feeds: a named User-Agent (a bare
-// Node fetch from a GitHub runner got 403 on data.transitatlas.fyi while the same request from a
-// desktop got 200), up to three tries, and an error that says what refused it.
+// #1367: Atlas's published files. Reads from GitHub runners to data.transitatlas.fyi hit Cloudflare
+// bot challenges (403 "Just a moment...") and dropped connections (ECONNRESET / undici "terminated"),
+// so when the workflow passes the read-only R2 keys, files are read straight from the R2 bucket over
+// S3 (signed GET, no extra packages) and Cloudflare's bot checks are out of the path. Without keys
+// (a local run) they come from the public domain. Either way, a thrown network error, including one
+// while reading the body, is retried like an error status, with a long backoff.
+export const DEFAULT_ATLAS_BASE_URL = 'https://data.transitatlas.fyi';
 export const ATLAS_FETCH_HEADERS = { 'User-Agent': 'atlas-coverage-study/1.0', Accept: 'application/json' };
-export async function json(url, { tries = 3, delayMs = 2000 } = {}) {
+const sleep = ms => new Promise(done => setTimeout(done, ms));
+
+function describeResponse(response, url, body) {
+  const by = [response.headers.get('server'), response.headers.get('cf-mitigated') && `cf-mitigated=${response.headers.get('cf-mitigated')}`, response.headers.get('cf-ray') && `cf-ray=${response.headers.get('cf-ray')}`].filter(Boolean).join(' ');
+  return `${response.status} ${url}${by ? ` (${by})` : ''}${body ? `: ${body}` : ''}`;
+}
+
+/** One request, retried on an error status (except 404) or a thrown network error. */
+export async function json(url, { tries = 5, delayMs = 10000, headers = ATLAS_FETCH_HEADERS, label = url } = {}) {
   let lastError;
   for (let attempt = 0; attempt < tries; attempt++) {
-    const response = await fetch(url, { headers: ATLAS_FETCH_HEADERS });
-    if (response.ok) return response.json();
-    const body = (await response.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 200);
-    const by = [response.headers.get('server'), response.headers.get('cf-mitigated') && `cf-mitigated=${response.headers.get('cf-mitigated')}`, response.headers.get('cf-ray') && `cf-ray=${response.headers.get('cf-ray')}`].filter(Boolean).join(' ');
-    lastError = new Error(`${response.status} ${url}${by ? ` (${by})` : ''}${body ? `: ${body}` : ''}`);
-    if (attempt < tries - 1) await new Promise(done => setTimeout(done, delayMs * (attempt + 1)));
+    try {
+      const response = await fetch(url, { headers: typeof headers === 'function' ? headers() : headers });
+      if (response.ok) return await response.json();
+      const body = (await response.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 200);
+      lastError = new Error(describeResponse(response, label, body));
+      if (response.status === 404) throw lastError;
+    } catch (error) {
+      if (error === lastError) throw error;
+      lastError = new Error(`${label}: ${error?.message ?? error}${error?.cause?.code ? ` (${error.cause.code})` : ''}`, { cause: error });
+    }
+    // 10 s, 20 s, 40 s, 80 s, each plus up to 25% jitter so parallel reads don't retry in lockstep.
+    if (attempt < tries - 1) await sleep(delayMs * 2 ** attempt * (1 + Math.random() * 0.25));
   }
   throw lastError;
 }
@@ -265,7 +284,49 @@ export function publicMapAgencies(agencies) {
   return agencies.filter(agency => !agency.hiddenInProduction && !agency.betaOnly && !agency.staged);
 }
 
-export async function coverageForAgencies(allAgencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
+const sha256 = data => createHash('sha256').update(data).digest('hex');
+const hmac = (key, data) => createHmac('sha256', key).update(data).digest();
+
+/** AWS Signature V4 headers for an S3 GET (R2 speaks S3). Exported for the signing test. */
+export function signS3Get({ host, path, accessKeyId, secretAccessKey, region = 'auto', date = new Date(), payloadHash = 'UNSIGNED-PAYLOAD', extraHeaders = {} }) {
+  const amzDate = date.toISOString().replace(/[:-]|\.\d{3}/g, '');
+  const day = amzDate.slice(0, 8);
+  const headers = { host, ...Object.fromEntries(Object.entries(extraHeaders).map(([k, v]) => [k.toLowerCase(), v])), 'x-amz-content-sha256': payloadHash, 'x-amz-date': amzDate };
+  const names = Object.keys(headers).sort();
+  const signedHeaders = names.join(';');
+  const canonical = ['GET', path, '', names.map(n => `${n}:${String(headers[n]).trim()}\n`).join(''), signedHeaders, payloadHash].join('\n');
+  const scope = `${day}/${region}/s3/aws4_request`;
+  const toSign = ['AWS4-HMAC-SHA256', amzDate, scope, sha256(canonical)].join('\n');
+  const key = hmac(hmac(hmac(hmac(`AWS4${secretAccessKey}`, day), region), 's3'), 'aws4_request');
+  const signature = createHmac('sha256', key).update(toSign).digest('hex');
+  const { host: _host, ...sent } = headers;
+  return { ...sent, Authorization: `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}` };
+}
+
+/** The read-only R2 settings the workflow passes, or null when this run has none. */
+export function atlasR2Config(env = process.env) {
+  const accountId = env.R2_ACCOUNT_ID, bucket = env.R2_BUCKET_NAME;
+  const accessKeyId = env.R2_RO_ACCESS_KEY_ID, secretAccessKey = env.R2_RO_SECRET_ACCESS_KEY;
+  return accountId && bucket && accessKeyId && secretAccessKey ? { accountId, bucket, accessKeyId, secretAccessKey } : null;
+}
+
+let announcedSource = false;
+/** Read one Atlas file (key like "atlas/ttc.json"): R2 with read-only keys when present, else the public domain. */
+export async function atlasJson(key, baseUrl = DEFAULT_ATLAS_BASE_URL, { r2 = atlasR2Config(), ...options } = {}) {
+  // A non-default base URL (another environment) is read as given; the keys point at production's bucket.
+  const useR2 = r2 && baseUrl.replace(/\/$/, '') === DEFAULT_ATLAS_BASE_URL;
+  if (!announcedSource) {
+    announcedSource = true;
+    console.error(useR2 ? `Atlas files: read from R2 bucket ${r2.bucket} with read-only keys (#1367)` : `Atlas files: read from ${baseUrl} (no read-only R2 keys)`);
+  }
+  if (!useR2) return json(`${baseUrl.replace(/\/$/, '')}/${key}`, options);
+  const host = `${r2.accountId}.r2.cloudflarestorage.com`;
+  const path = `/${encodeURIComponent(r2.bucket)}/${key.split('/').map(encodeURIComponent).join('/')}`;
+  // Signed per attempt, so a retry after a long backoff carries a fresh date.
+  return json(`https://${host}${path}`, { ...options, label: `r2://${r2.bucket}/${key}`, headers: () => ({ Accept: 'application/json', ...signS3Get({ host, path, accessKeyId: r2.accessKeyId, secretAccessKey: r2.secretAccessKey }) }) });
+}
+
+export async function coverageForAgencies(allAgencies, baseUrl = DEFAULT_ATLAS_BASE_URL, maxHeadwayMinutes = 15) {
   const agencies = publicMapAgencies(allAgencies);
   await loadMapCode();
   const result = [];
@@ -273,8 +334,8 @@ export async function coverageForAgencies(allAgencies, baseUrl = 'https://data.t
     const batch = agencies.slice(start, start + 6);
     result.push(...await Promise.all(batch.map(async agency => {
       const [routes, stopMeta] = await Promise.all([
-        json(`${baseUrl}/atlas/${agency.slug}.json`),
-        json(`${baseUrl}/atlas/${agency.slug}-stops-meta.json`),
+        atlasJson(`atlas/${agency.slug}.json`, baseUrl),
+        atlasJson(`atlas/${agency.slug}-stops-meta.json`, baseUrl),
       ]);
       const { rows: good, stopsFor, diagnostics } = qualifyingRows(routes.features, maxHeadwayMinutes);
       const ids = new Set(good.flatMap(stopsFor));
@@ -287,7 +348,7 @@ export async function coverageForAgencies(allAgencies, baseUrl = 'https://data.t
   return { agencies, coverage: result };
 }
 
-export async function atlasCoverage(agencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
+export async function atlasCoverage(agencies, baseUrl = DEFAULT_ATLAS_BASE_URL, maxHeadwayMinutes = 15) {
   return coverageForAgencies(agencies.filter(agency => CANADIAN_REGIONS.has(agency.region)), baseUrl, maxHeadwayMinutes);
 }
 
