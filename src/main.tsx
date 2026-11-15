@@ -19,6 +19,7 @@ import RouteSeo from './components/RouteSeo';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
+import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
 
@@ -29,9 +30,6 @@ const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
-// CIV-1550: the airport story draft, on the dev server only (registered in the DEV block below). The import itself sits behind
-// import.meta.env.DEV, so a built bundle has no chunk for it at all, not just no route.
-const AirportStory = import.meta.env.DEV ? React.lazy(() => import('./apps/AirportStory')) : () => null;
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
@@ -86,8 +84,8 @@ ReactDOM.createRoot(rootElement).render(
             <>
               <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
-              {/* CIV-1550: the airport story draft for Ryan's review; never on public or beta. */}
-              <Route path="/research/airports/story" element={<AirportStory />} />
+              {/* CIV-1550: research stories still being built, for Ryan's review; the list is empty outside the dev server. */}
+              {RESEARCH_DRAFTS.map(({ href, Component }) => <Route key={href} path={href} element={<Component />} />)}
             </>
           )}
           {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}

@@ -129,6 +129,16 @@ describe('Free child fares (CIV-1149)', () => {
     expect(card(/Free child fares/)).toHaveTextContent('Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.');
   });
 
+  it('lists draft stories after the published ones with a Draft tag, on the dev server only (CIV-1550)', () => {
+    render(<ResearchPage />);
+    const links = screen.getAllByRole('link');
+    const draft = screen.getByRole('link', { name: /Airport story/ });
+    expect(links.indexOf(draft)).toBe(links.indexOf(screen.getByRole('link', { name: /Free child fares/ })) + 1);
+    expect(draft).toHaveAttribute('href', '/research/airports/story');
+    expect(draft).toHaveTextContent(/^DraftStory/);
+    expect(screen.getByRole('link', { name: /Free child fares/ })).not.toHaveTextContent('Draft');
+  });
+
   it('maps each state and province as a square tile: its most common free age, a tie as Mix, few agencies dashed (CIV-1282)', () => {
     render(<FreeChildFaresPage />);
     const map = screen.getByRole('group', { name: 'Most common free age, by state and province, for 63 states and provinces.' });
