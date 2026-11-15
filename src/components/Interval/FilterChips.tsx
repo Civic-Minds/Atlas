@@ -90,6 +90,14 @@ export interface ConnectionsBarControls {
 /** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353). */
 const CONNECTION_SIDE_LABELS = [['after', '[Placeholder: arriving]'], ['before', '[Placeholder: leaving]']] as const;
 
+/**
+ * A chip's "filter is on" dot. Declared out here, not inside FilterChips, so it is the same component on every render
+ * and (CIV-1567, beta) can fade instead of being remounted.
+ */
+function Dot({ show }: { show: boolean }) {
+  return FEATURES.modeTransitions ? <ActiveDot className={`transition-opacity duration-300 ease-out ${show ? 'opacity-100' : 'opacity-0'}`} /> : show ? <ActiveDot /> : null;
+}
+
 const MODES = filterModeOptions(FEATURES.onDemand);
 
 export function getNowPeriod(): TimePeriod {
@@ -306,15 +314,20 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     setSelectedAgencies(next);
   };
 
-  const chipClass = (active: boolean) =>
-    `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
+  // CIV-1567 (beta): the selected fill is a layer that fades (a background image cannot ease), and the dot fades too,
+  // so a chip whose value a mode changes cross-fades instead of switching in one frame.
+  const chipClass = (active: boolean) => FEATURES.modeTransitions
+    ? `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors duration-300 ease-out whitespace-nowrap bg-[var(--bg-panel)] before:absolute before:inset-0 before:-z-10 before:rounded-full before:[background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] before:transition-opacity before:duration-300 before:ease-out ${
+      active
+        ? 'border-[var(--control-active-border)] text-[var(--control-active-fg)] before:opacity-100'
+        : `${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)] before:opacity-0`
+    }`
+    : `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
         ? CONTROL_ACTIVE_GLASS
         : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
     }`;
 
-  const Dot = ({ show }: { show: boolean }) =>
-    show ? <ActiveDot /> : null;
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
@@ -544,7 +557,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     </div>
   );
 
-  if (variant === 'history') {
+  if (variant === 'history' && !FEATURES.modeTransitions) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
@@ -564,28 +577,30 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
-  // CIV-1567 (beta): the full row and Compare's shared group are one row, so entering or leaving Compare cross-fades:
-  // Frequency, Day and Time fade and fold away, "Both maps" and the group outline fade in, and Mode and Agencies stay
-  // put (same elements) instead of blinking out and back.
-  if (FEATURES.modeTransitions && (variant === 'full' || variant === 'shared')) {
+  // CIV-1567 (beta): the full row, Compare's shared group and History's row are one row, so switching between them
+  // cross-fades: controls a mode doesn't use fade and fold away ("Both maps" and the group outline fade in for
+  // Compare), and the ones it keeps stay put (same elements) instead of blinking out and back.
+  if (FEATURES.modeTransitions && (variant === 'full' || variant === 'shared' || variant === 'history')) {
     const shared = variant === 'shared';
+    const history = variant === 'history';
+    const full = variant === 'full';
+    // The full row tucks Frequency, Day and Time into "More filters" below lg; History always shows its own.
+    const coreClass = history ? '' : 'hidden lg:block';
     return (
       <div ref={rowRef} className="flex items-center">
-        <ModeCollapse open={!shared}>
-          <div className="flex items-center gap-2 pr-2">
+        <ModeCollapse open={full}>
+          <div className="relative lg:hidden pr-2">
             {/* Compact "More filters" panel — only below lg */}
-            <div className="relative lg:hidden">
-              <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
-                More filters
-                <Dot show={hasActiveCoreFilter} />
-              </button>
-              {openChip === 'compact' && compactFiltersPanel}
-            </div>
-            {frequencyChip('hidden lg:block')}
-            {dayChip('hidden lg:block')}
-            {periodChip('hidden lg:block')}
+            <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
+              More filters
+              <Dot show={hasActiveCoreFilter} />
+            </button>
+            {openChip === 'compact' && compactFiltersPanel}
           </div>
         </ModeCollapse>
+        <ModeCollapse open={!shared}><div className="pr-2">{frequencyChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={full || (history && FEATURES.historyDayPicker)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={!shared}><div className="pr-2">{periodChip(coreClass)}</div></ModeCollapse>
         {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row; the outline fades with "Both maps". */}
         <div
           className={`flex items-center rounded-full border p-0.5 ${shared ? `${TOP_BAR_OUTLINE} ${FOLD_OUTLINE_OPEN}` : `-mx-[3px] border-transparent ${FOLD_OUTLINE_SHUT}`}`}
@@ -598,10 +613,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               {!compactTopBar && 'Both maps'}
             </span>
           </ModeCollapse>
-          <div className="flex items-center gap-2">
-            {modeChip(shared ? '' : 'hidden lg:block')}
-            {agenciesChip}
-          </div>
+          <ModeCollapse open={!history}><div className="pr-2">{modeChip(shared ? '' : 'hidden lg:block')}</div></ModeCollapse>
+          <ModeCollapse open={!history}>{agenciesChip}</ModeCollapse>
         </div>
       </div>
     );
