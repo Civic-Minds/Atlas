@@ -20,7 +20,7 @@ import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared
 import { countOf, joinList } from '../../shared/overflowText';
 import { countText, percentText } from '../../shared/numberText';
 import Pill from '../components/ui/Pill';
-import { CHART_TEXT } from '../components/charts/useActivePart';
+import { CHART_TEXT, useActivePart } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
 
 /** The story's section headings and body paragraphs, one look each. */
@@ -113,6 +113,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const coverageTableId = useId();
   const citiesTableId = useId();
   // The city chart points screen readers to both its tables (aria-details takes a list of ids).
+  // Ryan (CIV-1577): hovering "15 min" or "30 min" in the key or a column header highlights that series in both charts.
+  const coverageSeries = useActivePart();
   const coverageDetails = [coverageTableId, citiesTableId].join(' ');
   const [weekendMinutes, setWeekendMinutes] = useState<WeekendThreshold>(15);
   const [storyStage, setStoryStage] = useState(0);
@@ -282,7 +284,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <p className={STORY_PARAGRAPH}>[Ryan’s wording: cities paragraph]</p>
             </div>
             <div className="mt-10">
-              <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} />
+              <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} series={coverageSeries} />
               {/* Ryan (CIV-1577): "should [it] be two columns or smth instead of a very long graphic", then "still feels too tall":
                   Canada and the US side by side from lg, stacked below, rows at the agency chart's spacing. The cities with nobody near
                   15-minute service are one line of names under their country (their numbers stay in the screen-reader table). */}
@@ -296,6 +298,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                         details={coverageDetails}
                         firstHeader={headwayAmount(15)}
                         secondHeader={headwayAmount(30)}
+                        series={coverageSeries}
                         groups={[{
                           key: country.country,
                           pairs: [

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import DotPairs from '../DotPairs';
+import DotPairs, { DotPairKey } from '../DotPairs';
+import { FADED_OPACITY, useActivePart } from '../useActivePart';
 
 const groups = [{ key: 'ca', pairs: [
   { key: 'national', label: 'Canada', first: 0.2627, second: 0.6053, sentence: 'Canada: 26%, 61%', reference: true },
@@ -37,5 +38,27 @@ describe('DotPairs groups (CIV-1577)', () => {
     expect(screen.getByRole('heading', { name: 'None at 15' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Empty' })).toBeNull();
     expect(screen.getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual(['Toronto', 'Oshawa']);
+  });
+});
+
+describe('DotPairKey picks a series (CIV-1577, VISUAL.md legends)', () => {
+  function Harness() {
+    const series = useActivePart();
+    return <>
+      <DotPairKey first="15 min" second="30 min" series={series} />
+      <DotPairs label="Coverage" firstHeader="15 min" secondHeader="30 min" series={series} groups={groups} />
+    </>;
+  }
+
+  it('focusing a key item highlights it, fades the other series and announces it', () => {
+    render(<Harness />);
+    const item = screen.getByRole('listitem', { name: '15 min' });
+    fireEvent.focus(item);
+    expect(item).toHaveAttribute('data-active', 'true');
+    expect(screen.getByText('61%').style.opacity).toBe(String(FADED_OPACITY));
+    expect(screen.getByText('26%').style.opacity).toBe('');
+    expect(document.querySelector('[aria-live="polite"]')).toHaveTextContent('15 min');
+    fireEvent.blur(item);
+    expect(screen.getByText('61%').style.opacity).toBe('');
   });
 });
