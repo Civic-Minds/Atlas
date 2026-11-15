@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 // The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
 vi.mock('../../lib/maplibreWorker', () => ({}));
 import FrequentServiceStory from '../FrequentServiceStory';
-import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../../data/frequentServiceStory';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../../data/frequentServiceStory';
 import audit from '../../../docs/research/system-map-audit-2026-09/data.json';
 import recheck from '../../data/definition-recheck-2026-10-30.json';
 
@@ -155,5 +155,24 @@ describe('FrequentServiceStory', () => {
   it('keeps one audit record per Atlas agency', () => {
     const atlasSlugs = audit.records.flatMap(record => record.atlasSlugs);
     expect(new Set(atlasSlugs).size).toBe(atlasSlugs.length);
+  });
+
+  it('CIV-1603: shows the agencies checked, with a named network and with a number, from the method box’s counts', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const counts = screen.getAllByRole('button', { name: /^\[Label \d\]: / }).map(b => b.getAttribute('aria-label'));
+    expect(counts).toEqual([
+      `[Label 1]: ${frequentServiceDefinitionSample.agencies} agencies`,
+      `[Label 2]: ${frequentServiceDefinitionSample.namedNetwork} agencies`,
+      `[Label 3]: ${frequentServiceDefinitionSample.withWait} agencies`,
+      `[Label 4]: ${frequentServiceStoryStats.chartedAgencies} agencies`,
+    ]);
+  });
+
+  it('CIV-1603: shows each city’s weekday and Sunday routes at 15 min, and at 30 min when picked', () => {
+    render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
+    const toronto = frequentWeekendCities.find(city => city.city === 'Toronto')!;
+    expect(screen.getByRole('button', { name: `Toronto, Sunday: ${toronto.sunday15} routes` })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '≤30 min' }));
+    expect(screen.getByRole('button', { name: `Toronto, Sunday: ${toronto.sunday30} routes` })).toBeInTheDocument();
   });
 });

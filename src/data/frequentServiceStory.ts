@@ -1,5 +1,6 @@
 import recheck from './definition-recheck-2026-10-30.json';
 import definitions from './frequent-definitions-by-agency.json';
+import weekendCounts from './frequent-weekend-counts.json';
 import { headwayEvery, headwayEveryRange } from '../../shared/headwayText';
 
 const storyCountries = new Set(['Canada', 'United States']);
@@ -79,3 +80,18 @@ export const frequentServiceStoryStats = {
     agenciesOct11: chartedRowsOct11.filter(row => ruleMinutes(row) === minutes).length,
   })),
 };
+
+/**
+ * CIV-1603: the weekday-versus-Sunday chart. Routes the main map draws at every 15 (and 30) min or better on weekdays and on
+ * Sundays, in every daytime period the Toronto map checks (AM peak, midday, PM peak; shared/frequentDayCounts.ts). Source:
+ * data release release-mwh4jh9x, fetched 2026-11-14; regenerate with scripts/build-frequent-weekend-counts.ts (the file
+ * carries its release ID, fetch date and rule).
+ */
+export const frequentWeekendSource = weekendCounts.source;
+export const frequentWeekendCities = weekendCounts.cities.map(({ city, counts }) => ({
+  city,
+  weekday15: counts.Weekday['15'].daytime,
+  sunday15: counts.Sunday['15'].daytime,
+  weekday30: counts.Weekday['30'].daytime,
+  sunday30: counts.Sunday['30'].daytime,
+}));

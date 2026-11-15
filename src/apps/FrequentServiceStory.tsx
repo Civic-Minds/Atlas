@@ -8,13 +8,16 @@ import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
 import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
-import { headwayAmount, headwayOrBetter } from '../../shared/headwayText';
+import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared/headwayText';
+import { countOf } from '../../shared/overflowText';
+import Pill from '../components/ui/Pill';
+import { CHART_TEXT } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
 
 /** The story's section headings and body paragraphs, one look each. */
@@ -38,8 +41,45 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
 ];
 
+/**
+ * CIV-1603 section 1: the drop from every agency we could check, to those with a named frequent network, to those that give
+ * a number, to those the agency chart shows. The same counts as the method box (frequentServiceDefinitionSample,
+ * frequentServiceStoryStats.chartedAgencies); nothing is recounted.
+ * The bar names are placeholders until Ryan approves wording.
+ */
+const DEFINITION_FUNNEL = [
+  { key: 'checked', label: '[Label 1]', agencies: frequentServiceDefinitionSample.agencies },
+  { key: 'named', label: '[Label 2]', agencies: frequentServiceDefinitionSample.namedNetwork },
+  { key: 'number', label: '[Label 3]', agencies: frequentServiceDefinitionSample.withWait },
+  // The agency chart's own count: still confirmed on the October 30 recheck, after the tier rule (CIV-1178).
+  { key: 'charted', label: '[Label 4]', agencies: frequentServiceStoryStats.chartedAgencies },
+] as const;
+type DefinitionStep = (typeof DEFINITION_FUNNEL)[number];
+const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
+  { key: 'step', header: '[Ryan’s wording: table column]', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
+  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, className: 'tabular-nums', width: 6 },
+];
+
+/** CIV-1603 section 3: weekday and Sunday routes at a threshold (frequent-weekend-counts.json). */
+const WEEKEND_THRESHOLDS = [15, 30] as const;
+type WeekendThreshold = (typeof WEEKEND_THRESHOLDS)[number];
+type WeekendCity = (typeof frequentWeekendCities)[number];
+const weekendCounts = (city: WeekendCity, minutes: WeekendThreshold) => (minutes === 15
+  ? { weekday: city.weekday15, sunday: city.sunday15 }
+  : { weekday: city.weekday30, sunday: city.sunday30 });
+const WEEKEND_COLUMNS: DataTableColumn<WeekendCity>[] = [
+  { key: 'city', header: 'City', cell: city => city.city, rowHeader: true, className: 'font-normal', width: 8 },
+  ...WEEKEND_THRESHOLDS.flatMap(minutes => [
+    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, className: 'tabular-nums', width: 6 },
+    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, className: 'tabular-nums', width: 6 },
+  ]),
+];
+
 export default function FrequentServiceStory({ onExploreMap, agencies }: Props) {
   const tableId = useId();
+  const definitionTableId = useId();
+  const weekendTableId = useId();
+  const [weekendMinutes, setWeekendMinutes] = useState<WeekendThreshold>(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
   const storyStepRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -164,6 +204,68 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again between October 30 and November 3. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn’t be checked again.</p>
               <ChartTableDetails id={tableId} caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
+          </section>
+
+          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption
+              are placeholders until Ryan approves wording. */}
+          <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+            <div className="max-w-2xl">
+              <h2 id="definitions-heading" className={STORY_HEADING}>[Ryan’s wording: section 1 heading]</h2>
+              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 1 intro]</p>
+            </div>
+            <div className="mt-10">
+              <RankedBars
+                label="[Ryan’s wording: section 1 chart name for screen readers]"
+                bars={DEFINITION_FUNNEL.map(step => ({ key: step.key, label: step.label, value: step.agencies, fill: 'var(--text-muted)', sentence: `${step.label}: ${countOf(step.agencies, 'agency', 'agencies')}` }))}
+                max={frequentServiceDefinitionSample.agencies}
+                details={definitionTableId}
+              />
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 1 caption]</p>
+              <ChartTableDetails id={definitionTableId} caption="[Ryan’s wording: section 1 heading]" columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
+            </div>
+          </section>
+
+          {/* CIV-1603 section 2 slot: the cities (CIV-1577). Not built here; it goes between section 1 and section 3. */}
+
+          {/* CIV-1603 section 3 (Ryan's pick, 2026-11-14): how much of a city's frequent network still counts on Sunday. Each
+              bar is a count of routes the main map draws at the threshold in AM peak, midday and PM peak (the Toronto map's
+              daytime), from frequent-weekend-counts.json. Each city's bars share its weekday count as the full width, so the
+              Sunday bar reads as the share that is left. Heading, intro and caption are placeholders until Ryan approves wording. */}
+          <section aria-labelledby="weekend-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+            <div className="max-w-2xl">
+              <h2 id="weekend-heading" className={STORY_HEADING}>[Ryan’s wording: section 3 heading]</h2>
+              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 3 intro]</p>
+            </div>
+            <div className="mt-8 flex gap-1.5" role="group" aria-label="[Ryan’s wording: threshold picker name for screen readers]">
+              {WEEKEND_THRESHOLDS.map(minutes => (
+                <Pill key={minutes} size="segment" tone="outline" selected={weekendMinutes === minutes} onClick={() => setWeekendMinutes(minutes)}>
+                  {headwayFilterLabel(minutes)}
+                </Pill>
+              ))}
+            </div>
+            <div className="mt-8 grid gap-x-12 gap-y-8 sm:grid-cols-2">
+              {frequentWeekendCities.map(city => {
+                const counts = weekendCounts(city, weekendMinutes);
+                return (
+                  <div key={city.city}>
+                    <h3 className={`mb-3 font-bold ${CHART_TEXT}`}>{city.city}</h3>
+                    <RankedBars
+                      label={`${city.city}, ${headwayFilterLabel(weekendMinutes)}`}
+                      bars={[
+                        { key: 'weekday', label: 'Weekday', value: counts.weekday, fill: 'var(--text-muted)', sentence: `${city.city}, Weekday: ${countOf(counts.weekday, 'route')}` },
+                        { key: 'sunday', label: 'Sunday', value: counts.sunday, fill: 'var(--text-muted)', sentence: `${city.city}, Sunday: ${countOf(counts.sunday, 'route')}` },
+                      ]}
+                      max={Math.max(counts.weekday, counts.sunday, 1)}
+                      details={weekendTableId}
+                      // A Sunday with no route at the threshold is the point: its empty bar stays (chartCategories).
+                      keepEmpty
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 3 caption]</p>
+            <ChartTableDetails id={weekendTableId} caption="[Ryan’s wording: section 3 heading]" columns={WEEKEND_COLUMNS} rows={frequentWeekendCities} rowKey={city => city.city} />
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
