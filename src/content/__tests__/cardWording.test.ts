@@ -26,7 +26,7 @@ describe('card wording (CIV-1251), word for word', () => {
     ['row 4: tight spots', IRREGULAR_PERIOD_SHORT_LABEL, 'Irregular'],
     ['row 4: agency bar', noMiddayBarSentence(3), '3 routes run irregularly or not at all at midday'],
     ['row 4: agency bar, one', noMiddayBarSentence(1), '1 route runs irregularly or not at all at midday'],
-    ['row 4: legend', NO_MIDDAY_SHORT, 'Irregular or none'],
+    ['row 4: legend (Ryan, 2026-11-14)', NO_MIDDAY_SHORT, 'Irregular or no trips'],
     ['row 5: list title', PART_TIME_ROUTES_TITLE, 'Part-time routes'],
     ['row 5: list search', PART_TIME_ROUTES_SEARCH, 'Find part-time routes…'],
     ['row 5: list no match', noSearchMatchText(PART_TIME_ROUTES_NOUN), 'No part-time routes match your search.'],
