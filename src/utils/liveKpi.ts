@@ -9,6 +9,7 @@ import { MISSING_VALUE } from '../../shared/missingValue';
 import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText, TRIP_TIME_LABEL } from '../../shared/liveWording';
 import { minutesText, pct as pct0, pctTenth as pct1, tenth as clean } from '../../shared/liveFormat';
 import { runTimeAmount } from '../../shared/headwayText';
+import { plural } from '../../shared/overflowText';
 
 export type KpiTone = 'better' | 'worse' | 'same';
 
@@ -57,7 +58,7 @@ export function kpiDelta(key: CompareKey, now: number | null, before: number | n
   // never the unrounded one ("1.2 min") that a listener cannot square with what the card shows.
   const shownNow = leadingNumber(nowText), shownLast = leadingNumber(lastText);
   const said = shownNow != null && shownLast != null ? round1(Math.abs(shownNow - shownLast)) : mag;
-  const word = isShare ? (said === 1 ? 'point' : 'points') : 'min';
+  const word = isShare ? plural(said, 'point') : 'min';
   return {
     arrow: up ? 'up' : 'down',
     text: lastText ? `last week ${lastText}` : `${clean(mag)} ${unit}`,

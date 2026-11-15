@@ -93,6 +93,14 @@ const RULES: Rule[] = [
   { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
+  // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
+  { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
+    allowed: ['shared/overflowText.ts'] },
+
+  // CIV-1594: the map link on empty pages is OPEN_MAP_LINK in noticeCopy.ts.
+  { name: '"Open the Atlas map" typed in place (use OPEN_MAP_LINK)', doc: 'TEXT.md', pattern: /Open the Atlas map/, slip: '<ArrowLink href="/">Open the Atlas map</ArrowLink>',
+    allowed: ['src/content/noticeCopy.ts'] },
+
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },

@@ -21,7 +21,7 @@ import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
-import { andOthers, joinList, plural } from './overflowText';
+import { andOthers, joinList, plural, countOf } from './overflowText';
 import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
 
@@ -450,7 +450,7 @@ export const FREQUENCY_BANDS = [
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 /** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
-export const noMiddayBarSentence = (n: number) => `${n} ${n === 1 ? 'route runs' : 'routes run'} irregularly or not at all at midday`;
+export const noMiddayBarSentence = (n: number) => `${countOf(n, 'route runs', 'routes run')} irregularly or not at all at midday`;
 export const NO_MIDDAY_SHORT = 'Irregular or none';
 
 /**
