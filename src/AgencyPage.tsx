@@ -25,7 +25,8 @@ import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
 import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
-import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
+import { ATLAS_MODE, FEATURES, PERIOD_LABELS } from '../shared/config';
+import HoursBar from './components/charts/HoursBar';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { AgencyModeTable } from './AgencyGroupSection';
 import { parentAgencyPagePath } from '../shared/pagePaths';
@@ -103,17 +104,33 @@ function Intro({ data }: { data: AgencyPageData }) {
 }
 
 /**
+ * CIV-1605 (Ryan, pick 1): with the hours bar, a "from" equal to the bar's first time or an "until" equal to its last
+ * leaves the cell, since the bar's end says it; a time that differs (one direction's later start) keeps its words.
+ */
+function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number } {
+  if (!runs) return edge;
+  return {
+    every: edge.every,
+    ...(edge.from != null && edge.from !== runs.first ? { from: edge.from } : {}),
+    ...(edge.until != null && edge.until !== runs.last ? { until: edge.until } : {}),
+  };
+}
+
+/**
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
  * stretch), "Limited" when the route runs but has no trustworthy cadence, "Irregular" where the
  * map list says so (#1249, CIV-1238), else a dash.
  */
-function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
+function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute, hoursBar = false): string {
   const v = r[col];
   // CIV-1300 (#1311): the route card's own reading, as the map's lists show it.
   const shown = r.text?.[col];
   if (shown) return shown;
   const edge = r.edge?.[col];
-  if (v != null && edge) return periodEdgeText(edge);
+  if (v != null && edge) {
+    const kept = hoursBar ? edgeWithoutBarEnds(edge, r.runs) : edge;
+    return kept.from != null || kept.until != null ? periodEdgeText(kept) : routeListHeadwayText(edge.every);
+  }
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
@@ -158,6 +175,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   }
 
   const stats = agencyStats(agency);
+  // CIV-1605 (beta): one hour axis for every route's hours bar, from the agency's earliest to latest hour of service.
+  const runHours = FEATURES.agencyHoursBar ? agency.routes.flatMap(r => r.runs?.hours ?? []) : [];
+  const hoursAxis = runHours.length ? { first: Math.min(...runHours), last: Math.max(...runHours) } : null;
   const nearby = data!.nearby;
 
   return (
@@ -193,11 +213,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
-                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
-                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },
-                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r) },
-                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
+                      // CIV-1605 (beta prototype): the weekday hours bar. Header words are a placeholder until Ryan OKs them.
+                      ...(hoursAxis ? [{ key: 'hours', header: '[Placeholder: Hours]', align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r, !!hoursAxis) },
+                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r, !!hoursAxis) },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r, !!hoursAxis) },
+                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r, !!hoursAxis) },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r, !!hoursAxis) },
                     ]}
                   />
                 </ScrollX>

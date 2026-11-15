@@ -60,6 +60,13 @@ export interface AgencyPageRoute {
    * "Irregular", as the map's lists show them ("every 15 min, with one 32 min gap"). The number above stays the filter's.
    */
   text?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', string>>;
+  /**
+   * CIV-1605: when the route runs on weekdays. `hours`: each service-day hour (can pass 24) with a departure at any of its
+   * directions' and branches' reference stops (the published departuresByHour). `first`/`last`: the exact first and last
+   * times (minutes after midnight), only where the data has them (a period edge in the first or last hour); else the bar
+   * ends on the hour.
+   */
+  runs?: { hours: number[]; first?: number; last?: number; /** Each break inside the day: [last departure before, first after], exact or widened to the hour, never narrowed. */ gaps?: Array<[number, number]> };
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
   /** #1283: states and provinces (their config region names) where this route stops at two places inside, by the same rule. */
