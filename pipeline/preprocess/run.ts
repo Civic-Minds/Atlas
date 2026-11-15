@@ -14,6 +14,7 @@ import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-freq
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
+import { relabelCtaSameWayLoops } from '../transforms/cta-loop-directions.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeIdenticalShapes } from './merge-identical-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
@@ -23,7 +24,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs' | 'cta-loop-directions';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -188,6 +189,12 @@ export function normalizeGtfs(
     const result = dropMnrExpressBusPairs(gtfs);
     gtfs = result.gtfs;
     onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
+  }
+  if (options?.preprocess === 'cta-loop-directions') {
+    const result = relabelCtaSameWayLoops(gtfs);
+    gtfs = result.gtfs;
+    const moved = Object.entries(result.relabelled);
+    if (moved.length) onStatus?.(`CTA loops: ${moved.map(([r, n]) => `${r} ${n}`).join(', ')} trip(s) marked the other direction run the same way round as that direction's loops (#1525)`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
