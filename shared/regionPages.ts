@@ -124,7 +124,7 @@ export function regionAreasSentenceParts(d: Pick<RegionPageData, 'areas'>): { le
   // time (areaPagePath) and never puts a URL from that text in an href (CodeQL js/xss-through-dom).
   const named = d.areas.slice(0, REGION_AREAS_NAMED);
   const separators = named.map((_, i) => (i === named.length - 2 ? ' and ' : i < named.length - 2 ? ', ' : ''));
-  return { lead: 'Regions include ', named, separators, tail: '.' };
+  return { lead: 'Areas include ', named, separators, tail: '.' };
 }
 
 /** The same sentence as plain text. */

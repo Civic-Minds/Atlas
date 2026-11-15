@@ -495,7 +495,9 @@ export const NOT_FOUND_BODY = "We couldn’t find that page.";
 // N72 page-not-found
 export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 // N72 page-not-found
-export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
+export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this area';
+// N72 page-not-found. A region is a state or province (CIV-1614).
+export const REGION_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 /** The link back to the map on empty and not-found pages (CIV-1594). */

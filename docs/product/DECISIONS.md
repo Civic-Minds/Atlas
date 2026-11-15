@@ -249,6 +249,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-15 — "Area" for metro areas, "region" for states and provinces
+Ryan (Linear CIV-1614): page text and links call a metro area an "area" (/area/ pages); /region/ stays for states, provinces and territories, with no /province path and no redirects; an area still needs at least 2 agencies for its own page. The agency page names both, "Calgary area, Alberta", each linked when it has a page, and an area page links the states or provinces in its subtitle.
+
 ### 2026-11-13 — A period that starts slowly says when steady service starts
 Ryan, 2026-11-13 (Linear CIV-1411), on TTC Line 5 westbound's AM peak (two 20-minute gaps at Laird before 7:27, then every 3.6): "dont we have a 'x mins from x time' fix for this laready". A slow start doesn't set the card's figure on its own. The card says "every N from <time>", where N is the longest wait from that time to the period's end, so it never reads better than the service runs. Without a steady run from that time, the period keeps its longest wait.
 - A period starts slowly when its longest wait comes before the time, and from the time on there are at least 4 departures, no gap over 1.5 times their typical gap (to the period's end included), the earlier longest wait is over twice that typical gap, and the time is at or before the period's midpoint. The earliest time that passes is named.

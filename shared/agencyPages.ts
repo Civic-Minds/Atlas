@@ -156,7 +156,7 @@ export interface AgencyPageData {
   description: string;
   /** The place the intro names, and the text before it, so the page can link each area it names to its page (#1283). */
   place: string;
-  /** The places named in `place`, each area with its page; `others` more are counted ("and 2 other regions"). */
+  /** The places named in `place`, each area with its page; `others` more are counted ("and 2 other areas"). */
   places: { named: IntroPlace[]; others: number };
   introLead: string;
   /** Connecting agencies (stops within 150 m), with whether each has a page to link to. */
@@ -182,15 +182,15 @@ export const CONNECTS_WITH = ' and connects with ';
 /** The literal before a member's parent agency in its intro (CIV-1277); the page splits on it to link the parent. */
 export const PART_OF = ', part of ';
 
-/** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted (#1283: places count "other regions"). */
+/** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted (#1283: places count "other areas"). */
 export function namesList(names: readonly string[], named = 3, singular = 'agency', pluralForm = 'agencies'): string {
   if (names.length <= named) return joinList(names);
   const rest = names.length - named;
   return `${names.slice(0, named).join(', ')} ${andOthers(rest, singular, pluralForm)}`;
 }
 
-/** The noun the intro's place list counts its overflow in: "and 2 other regions". */
-export const PLACE_OTHERS: readonly [string, string] = ['region', 'regions'];
+/** The noun the intro's place list counts its overflow in: "and 2 other areas". */
+export const PLACE_OTHERS: readonly [string, string] = ['area', 'areas'];
 
 type PlaceRoute = { areas?: string[]; regions?: string[] };
 
@@ -229,7 +229,7 @@ export interface IntroPlace {
 /**
  * What the intro says after "operates N routes in" (#1283, Ryan's narrow rule): the areas its routes stop in when
  * there are two or more, or its one area when it crosses a state or province line or is its own area and it spans most
- * of it; otherwise its city. Up to three are named, then "and N other regions", as "connects with" counts agencies.
+ * of it; otherwise its city. Up to three are named, then "and N other areas", as "connects with" counts agencies.
  */
 export function agencyIntroPlace(
   a: Pick<AgencyPageSummary, 'city' | 'region' | 'routes' | 'bbox'>,
@@ -637,7 +637,7 @@ function sizingName(name: string, place: string): string {
 
 /**
  * The intro, then without its modes, its stops and its connections, then with its place list cut to the first place
- * ("in Greater Los Angeles and 2 other regions", #1283): the description's cuts, best wording first.
+ * ("in Greater Los Angeles and 2 other areas", #1283): the description's cuts, best wording first.
  */
 function descriptionCuts(full: string, place?: { full: string; short: string }): string[] {
   const noModes = full.replace(/ \([^)]*\)(?= in )/, '');

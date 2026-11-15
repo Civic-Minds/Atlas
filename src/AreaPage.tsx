@@ -10,7 +10,7 @@ import {
   areaIntroParts,
   areaMapHref,
   areaPageH1,
-  areaSubtitle,
+  areaSubtitleParts,
   resolveAreaSeo,
   type AreaPageData,
 } from '../shared/areaPages';
@@ -59,7 +59,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
     );
   }
 
-  const subtitle = areaSubtitle(data);
+  const subtitle = areaSubtitleParts(data);
   const intro = areaIntroParts(data);
   const joiners = areaIntroJoiners(intro);
 
@@ -68,7 +68,11 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{areaPageH1(data)}</PageTitle>
-              {subtitle && <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>}
+              {subtitle.length > 0 && (
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  {subtitle.map((part, i) => <span key={part.text}>{i > 0 && ', '}{part.href ? <a className={UNDERLINED_LINK} href={part.href}>{part.text}</a> : part.text}</span>)}
+                </p>
+              )}
             </div>
             <ArrowLink className="shrink-0 whitespace-nowrap" href={areaMapHref(data)}>{VIEW_ON_MAP}</ArrowLink>
           </div>

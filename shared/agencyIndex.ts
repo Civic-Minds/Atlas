@@ -100,11 +100,11 @@ export function buildAgencyIndexData(
 }
 
 export function agencyIndexTitle(): string {
-  return 'All transit agencies and regions | Transit Atlas';
+  return 'All transit agencies and areas | Transit Atlas';
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${countText(d.agencyCount)} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'region')}. Each agency’s page shows how often every route runs.`;
+  return `${countText(d.agencyCount)} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'area')}. Each agency’s page shows how often every route runs.`;
 }
 
 export function resolveAgencyIndexSeo(
