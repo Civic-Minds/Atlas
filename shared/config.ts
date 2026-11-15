@@ -156,7 +156,7 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
-// The footer link to the "For transit planners" page (CIV-1320).
+// The footer link to the "For Transit Planners" page (CIV-1320).
 export const PLANNERS_LINK_ENABLED = BETA_BUILD;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.

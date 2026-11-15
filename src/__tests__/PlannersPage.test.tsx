@@ -2,18 +2,18 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import PlannersPage from '../PlannersPage';
 
-describe('For transit planners page (CIV-1320)', () => {
+describe('For Transit Planners page (CIV-1320)', () => {
   it('has the approved title and section headings', () => {
     render(<PlannersPage />);
-    expect(screen.getByRole('heading', { level: 1, name: 'For transit planners' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'For Transit Planners' })).toBeInTheDocument();
     for (const name of [
-      'See frequency, not just routes',
-      'See how service changes over the day and week',
-      'Every agency in a region, on one map',
-      'A map instead of a long report',
-      'Where the data comes from',
-      "What Atlas doesn't do",
-      'Get in touch',
+      'See Frequency, Not Just Routes',
+      'See How Service Changes Over the Day and Week',
+      'Every Agency in a Region, on One Map',
+      'A Map Instead of a Long Report',
+      'Where the Data Comes From',
+      "What Atlas Doesn't Do",
+      'Get in Touch',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
 

@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
 - **Every page has one name, and titles are in title case**: "Documentation" and "What’s New" read the same on every link, heading and browser tab; page and section headings and tabs use title case; tabs share one "Page | Transit Atlas" format; link previews say "Transit Atlas"; and the map’s What’s New button shows a dot until the newest release is opened
+- **A "For Transit Planners" page explains what Atlas shows planners and where its data comes from**: so planners and agency staff get one page to start from
 - **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
 - **No more Google Fonts**: Atlas serves its Inter font itself, so loading a page no longer sends your address to Google ([#1520](https://github.com/Civic-Minds/Atlas/issues/1520))
 - **Agency and area pages say "area" for a metro area**: an agency page reads "Calgary, Alberta" with both linked, an area page links its states or provinces, and "region" now means only a state or province
@@ -257,7 +258,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [3.4.0] - 2026-11-09
 
 - **A beta research view shows how well local buses connect with Bustang**: CDOT asked to see whether local service lines up with Bustang; the regular map shows Bustang and the local agencies at its stops, a Bustang route card lists its departures and, for each stop on a trip, the local routes within 15, 30 or 60 minutes of getting off or catching it, and a stop card counts how many Bustang trips each local route meets, with local stops within 200, 400 or 800 m, a local bus that ends its trip a stop or two later not counted, and ended schedules labelled outdated
-- **A "For transit planners" page explains what Atlas shows planners and where its data comes from**: so planners and agency staff get one page to start from
 - **On the About page, the Atlas logo stays on About**: it went to the map, so it couldn't bring you back to the top of the page
 - **[Unknown addresses](https://github.com/Civic-Minds/Atlas/issues/1193) show the same not-found page as unknown agencies and areas**: /research/nope had no footer and a different link
 - **"[View on map](https://github.com/Civic-Minds/Atlas/issues/1194)" stays on one line beside long agency names**: on WETA's page it was squeezed onto two lines
