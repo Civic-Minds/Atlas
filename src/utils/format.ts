@@ -101,6 +101,29 @@ export function routeLabels(input: Parameters<typeof routeDisplay>[0]) {
   return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary };
 }
 
+/**
+ * A route named by its number in a sentence or a small label (CIV-1569): "Route " + the number as `routeLabels` shows it
+ * ("Route 504", "Route 52A", "Route 1" for "01", "Route SSSF"). Never build "Route " + a short name by hand, and never
+ * parseInt a short name (it turns "52A" into "52"). Empty when there is no short name.
+ */
+export function routeShortLabel(shortName: string | null | undefined): string {
+  const cleaned = cleanRouteShortName(shortName?.trim());
+  if (!cleaned) return '';
+  return withRouteWord(routeLabels({ shortName: cleaned, longName: null }).primary);
+}
+
+/** Several routes by number: "Route 504" for one, "Routes 501, 504" for more (each as `routeShortLabel` writes it). */
+export function routesShortLabel(shortNames: readonly string[]): string {
+  const names = shortNames.map(n => routeShortLabel(n).replace(/^Route /, '')).filter(Boolean);
+  if (names.length === 0) return '';
+  return names.length === 1 ? withRouteWord(names[0]) : `Routes ${names.join(', ')}`;
+}
+
+/** "Route " before a label already built by `routeLabels` (the map export's key: "Route 504 — King"). */
+export function withRouteWord(label: string): string {
+  return `Route ${label}`;
+}
+
 /** The word for a vehicle whose type isn't known: its fleet number then stands alone ("4508", not "Vehicle 4508"). */
 const GENERIC_VEHICLE = 'Vehicle';
 
@@ -162,19 +185,6 @@ export function formatBranchLabel(
     : cleanHeadsign(headsign.trim(), shortName, longName);
   if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
   return withToPrefix(feedPlaceName(raw));
-}
-
-/** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */
-export function formatStoredDate(value: string): string {
-  const ymd = value.length === 8
-    ? { y: value.slice(0, 4), m: value.slice(4, 6), d: value.slice(6, 8) }
-    : value.length === 10 && value[4] === '-'
-      ? { y: value.slice(0, 4), m: value.slice(5, 7), d: value.slice(8, 10) }
-      : null;
-  if (!ymd) return '';
-  const date = new Date(Date.UTC(parseInt(ymd.y, 10), parseInt(ymd.m, 10) - 1, parseInt(ymd.d, 10)));
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 /** Unified branch label for route and stop cards. */

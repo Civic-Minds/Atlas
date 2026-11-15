@@ -5,7 +5,7 @@ import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResu
 import RouteListRow from '../RouteListRow';
 import AgencyName from '../ui/AgencyName';
 import { routeRowRight } from './SearchSuggestionsPanel';
-import { nameCase } from '../../utils/format';
+import { nameCase, routesShortLabel } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import type { RouteListDisplay } from '../../utils/effectiveHeadway';
 import ListRow from '../ui/ListRow';
@@ -219,7 +219,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
               {s.routes.length > 0 && (
                 // The routes and agency in the route rows' right-hand style (CIV-971).
                 <span className={`${LIST_ROW_DIM} truncate max-w-full`}>
-                  {s.routes.length === 1 ? `Route ${s.routes[0]}` : `Routes ${s.routes.join(', ')}`}
+                  {routesShortLabel(s.routes)}
                 </span>
               )}
               <span className={`${LIST_ROW_DIM} truncate max-w-full`}>

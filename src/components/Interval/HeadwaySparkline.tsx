@@ -21,7 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
 export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -397,7 +397,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           title={titleLabel ? <RouteTitleName label={titleLabel} /> : title}
           note="All time periods are shown together."
           ariaLabel={`${title} full-day schedule`}
-          closeLabel="Close schedule"
+          closeLabel={closeLabel(CLOSE_PLACES.schedule)}
           onClose={closeExpanded}
         >
             {directionOptions && directionOptions.length > 1 && !bothDirections && (

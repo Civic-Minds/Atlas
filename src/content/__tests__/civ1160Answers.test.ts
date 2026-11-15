@@ -36,7 +36,7 @@ describe('CIV-1160 wording answers', () => {
 
   it('6: one name each', () => {
     expect(REPORT_A_PROBLEM).toBe('Report a problem');
-    expect([PART_TIME_ROUTES_TITLE, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_NOUN]).toEqual(['Part-time routes', 'Search part-time routes…', 'part-time routes']);
+    expect([PART_TIME_ROUTES_TITLE, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_NOUN]).toEqual(['Part-time routes', 'Find part-time routes…', 'part-time routes']);
     expect([DAY_LABEL, TIME_LABEL, MODE_LABEL]).toEqual(['Day', 'Time', 'Mode']);
     expect(TRIP_TIME_LABEL).toBe('Trip time');
     expect(MAP_TRIP_TIME_LABEL).toBe(TRIP_TIME_LABEL);
@@ -56,6 +56,6 @@ describe('CIV-1160 wording answers', () => {
     expect([countOf(1, 'match', 'matches'), countOf(1, 'stop'), countOf(1, 'day')]).toEqual(['1 match', '1 stop', '1 day']);
     expect(patternLabel('Kipling', 'Islington', 1)).toBe('Kipling → Islington · 1 stop');
     expect(ZOOMED_OUT_NOTICE).toBe('Zoomed out. Some less frequent routes are hidden.');
-    expect(SEARCH_ROUTES_PLACEHOLDER).toBe('Search routes…');
+    expect(SEARCH_ROUTES_PLACEHOLDER).toBe('Find routes…');
   });
 });

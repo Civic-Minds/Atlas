@@ -33,7 +33,11 @@ export function resolveDisplayHeadsign(
   return trimmed;
 }
 
-/** Fallback when a branch has headway but no displayable destination. */
+/**
+ * The one name for a direction that has nothing better (CIV-1569): its bound label ("Westbound") when it has one, else
+ * "Direction " + its number counted from 1, so GTFS direction 0 reads "Direction 1" and direction 1 "Direction 2".
+ * Route card rows, the report's details and Live's direction names all use it; never write "Direction ${id}" by hand.
+ */
 export function directionBranchFallback(
   directionId: number,
   boundLabel?: string,

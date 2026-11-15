@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { dateRange } from '../shared/dateText';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  dateRangeText, freshness, goodDayCounts,
+  freshness, goodDayCounts,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
@@ -106,7 +107,7 @@ export function DataUpTo({ dates, route = '' }: { dates: readonly string[]; rout
   const last = dates[dates.length - 1];
   if (!last) return null;
   const f = freshness({ window: { dates } } as LiveV3, route, Date.now());
-  const text = `data up to ${dateRangeText(last, last)}`;
+  const text = `data up to ${dateRange(last, last)}`;
   return f.stale
     ? <span role="status" title={f.text} className="text-sm font-bold text-[var(--status-caution-text)]">{text}</span>
     : <span className="text-sm text-[var(--text-muted)]">{text}</span>;

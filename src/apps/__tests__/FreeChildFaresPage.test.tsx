@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { MISSING_VALUE } from '../../../shared/missingValue';
 import { describe, expect, it } from 'vitest';
 import FreeChildFaresPage from '../FreeChildFaresPage';
 import ResearchPage from '../ResearchPage';
@@ -136,7 +137,7 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.getByRole('button', { name: 'Washington: most common free age 18, 24 agencies, 20 with an age limit.' })).toHaveTextContent('WA1824');
     expect(screen.getByRole('button', { name: 'Ontario: most common free age 12, 35 agencies, 33 with an age limit.' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Alberta: a tie between ages 5, 12, 6 agencies, 5 with an age limit.' })).toHaveTextContent('Mix');
-    expect(screen.getByRole('button', { name: 'Delaware: no age limit found, 1 agency, 0 with an age limit.' })).toHaveTextContent('–');
+    expect(screen.getByRole('button', { name: 'Delaware: no age limit found, 1 agency, 0 with an age limit.' })).toHaveTextContent(MISSING_VALUE);
     // One or two agencies with an age limit: dashed.
     expect(screen.getByRole('button', { name: /^Oklahoma:/ }).querySelector('.border-dashed')).not.toBeNull();
     expect(screen.getByRole('button', { name: /^California:/ }).querySelector('.border-dashed')).toBeNull();

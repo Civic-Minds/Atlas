@@ -32,7 +32,7 @@ Colour and shape
 - No dark fills. Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`). No solid near-black pills with white text.
 - Nothing has a shadow. Keep the flat look.
 - Sentence case for headings and labels ("Near you"). No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. Drop the wide letter spacing that usually comes with it. An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written, and an agency's short name is shown as the agency writes it ("MiWay", not "MIWAY"). CIV-1160, CIV-1448.
-- A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border. Every search box's clear X is `SearchClearButton` (`src/components/ui/SearchClearButton.tsx`); every close X on a panel, card or dialog is `PanelCloseButton` (`src/components/ui/PanelHeader.tsx`), each keeping its kind's look. CIV-1569.
 - Map overlays (the header row, footer pills, counts, map controls, notice and status pills, the analytics prompt) take their position from the "Map overlay slots" in `src/styles.ts`, never a hand-set `bottom-*`/`right-*`, and each carries `data-map-overlay`. After moving one, run `npm run check:overlays -- <dev server URL>`: it fails if any two overlap or one runs off the screen at 360, 640, 820, 1024 or 1440 wide. CIV-1011.
 
 Live
@@ -51,6 +51,7 @@ Agencies
 ## How Atlas talks
 
 - Every back control says "Back to " + the place it returns to, from one source (`src/content/backLinks.ts`): a text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies"); an arrow-only control or the logo says the same words to screen readers ("Back to About Atlas"). Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies"). CIV-1462.
+- A close X says "Close " + what it closes to screen readers ("Close filters"; `closeLabel`). CIV-1569.
 
 Frequencies
 
@@ -82,10 +83,16 @@ Words
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
 - Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160.
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
-- Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Search routes…". CIV-1160.
+- Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
+- Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569.
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
+- Days in a sentence read "on weekdays", "on Saturdays", "weekday midday" (`dayPlural` / `dayInSentence`). CIV-1569.
+- An empty cell, tile or figure reads "—" (`MISSING_VALUE`). CIV-1569.
+- Dates read "Oct 12, 2026" (`shortDate`), "November 3, 2026" in method boxes (`longDate`), "Oct 8–14" for ranges (`dateRange`). CIV-1569.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
+- A route named by its number reads "Route 52A" (`routeShortLabel`), never built by hand. CIV-1569.
+- A direction with no name reads "Direction 1" / "Direction 2" (`directionBranchFallback`). CIV-1569.
 - "The" before agency names (CIV-1103):
   - Names ending in Authority, Commission, District, Agency, Company, Corporation, Department, Board, Railway, Railroad, System or Service take "the". So do The Staten Island Ferry, The Cheyenne Transit Program, The Fayetteville Area System of Transit and The Yamhill County Transit Area.
   - Acronyms said letter by letter take "the" (the TTC, the MBTA, the CTA). Acronyms said as a word (MARTA, SEPTA) and brands (MiWay) don't.

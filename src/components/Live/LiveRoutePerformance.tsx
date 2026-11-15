@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { MISSING_VALUE } from '../../../shared/missingValue';
 import PillGroup from '../ui/PillGroup';
 import { CardHelpNotice, SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
@@ -149,7 +150,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     : null;
 
   const range = live?.scheduledRangeSec;
-  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? schedText({ scheduledMedianGapSec: live.scheduledSec }) : '–';
+  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? schedText({ scheduledMedianGapSec: live.scheduledSec }) : MISSING_VALUE;
   // A gap is late at twice the timetable gap where the car behind is.
   const late = (g: number, i: number) => {
     if (!period) return false;
@@ -195,7 +196,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black tabular-nums">
                     {live.gapsMin.map((g, i) => (
                       g == null
-                        ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>–</span>
+                        ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>{MISSING_VALUE}</span>
                         : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? undefined : 'text-[var(--text-primary)]'}>{g}</span>
                     ))}
                   </div>

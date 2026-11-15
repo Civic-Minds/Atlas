@@ -22,11 +22,24 @@ export function PanelBackButton({ onClick, label }: { onClick: () => void; label
   );
 }
 
-/** The close X at the end of a dropdown panel's header. */
-export function PanelCloseButton({ onClick, label, className }: { onClick: () => void; label: string; className?: string }) {
+/**
+ * The close X of every panel, card and dialog (CIV-1569). `label` is `closeLabel(place)` from noticeCopy ("Close filters").
+ * Each kind keeps the look it had:
+ * - 'panel' (default): the round button in panel and card headers (About, Settings, What's new, the report form).
+ * - 'dialog': the round button with the larger X of a chart's wide view (ExpandDialog).
+ * - 'plain': the bare X with no round button, in the map export dialog.
+ */
+export function PanelCloseButton({ onClick, label, className, size = 'panel' }: { onClick: () => void; label: string; className?: string; size?: 'panel' | 'dialog' | 'plain' }) {
+  if (size === 'plain') {
+    return (
+      <button type="button" onClick={onClick} aria-label={label} className={`text-[var(--text-dim)] hover:text-[var(--text-primary)] ${className ?? ''}`.trim()}>
+        <X className="h-4 w-4" />
+      </button>
+    );
+  }
   return (
     <RoundIconButton onClick={onClick} aria-label={label} className={className}>
-      <X className="w-3.5 h-3.5" />
+      <X className={size === 'dialog' ? 'w-4 h-4' : 'w-3.5 h-3.5'} />
     </RoundIconButton>
   );
 }

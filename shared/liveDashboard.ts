@@ -4,6 +4,8 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
+import { dateRange } from './dateText.js';
+import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min, pct } from './liveFormat.js';
 import { hourTime } from './timeText.js';
 import { TRIP_TIME_LABEL } from './liveWording.js';
@@ -65,8 +67,8 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   return dirs.length === 1 ? `over ${n}, ${ends[0]}` : `over ${n}: ${ends.join('; ')}`;
 }
 export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
-/** A direction's name from the file ("Eastbound"), or "Direction 1" where the file has none. */
-export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? `Direction ${d}`;
+/** A direction's name from the file ("Eastbound"), or the shared fallback ("Direction 1" for direction 0) where the file has none. */
+export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? directionBranchFallback(d);
 
 /** Run time against the timetable in the whole minutes the tiles show (typical and scheduled each rounded first, so the difference matches the two figures). */
 export const runTimeDiffMin = (typicalMin: number, scheduledMin: number): number => Math.round(typicalMin) - Math.round(scheduledMin);
@@ -292,16 +294,6 @@ export function rankStops(stops: readonly DashboardStop[], directionId: number |
     .sort((a, b) => b.lateShare - a.lateShare || b.n - a.n);
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/** "Oct 8–14", or "Sep 30–Oct 14" across months, from two YYYY-MM-DD dates. */
-export function dateRangeText(first: string, last: string): string {
-  const [, m1, d1] = first.split('-').map(Number);
-  const [, m2, d2] = last.split('-').map(Number);
-  if (first === last) return `${MONTHS[m1 - 1]} ${d1}`;
-  return m1 === m2 ? `${MONTHS[m1 - 1]} ${d1}–${d2}` : `${MONTHS[m1 - 1]} ${d1}–${MONTHS[m2 - 1]} ${d2}`;
-}
-
 /** The analysis is "stale" once its newest day is more than this many days old. */
 export const STALE_AFTER_DAYS = 2;
 
@@ -325,7 +317,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   return {
     upTo, daysOld, stale,
     // #1489: the short date every Live page writes ("Oct 14"), not the file's YYYY-MM-DD.
-    text: stale ? `Data up to ${dateRangeText(upTo, upTo)}, ${countOf(daysOld, 'day')} ago.` : `Data up to ${dateRangeText(upTo, upTo)}.`,
+    text: stale ? `Data up to ${dateRange(upTo, upTo)}, ${countOf(daysOld, 'day')} ago.` : `Data up to ${dateRange(upTo, upTo)}.`,
     devHint: stale ? `npm run live:analyze -- ${route} (needs fresh saved vehicle locations)` : undefined,
   };
 }

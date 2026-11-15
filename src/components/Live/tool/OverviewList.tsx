@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { MISSING_VALUE } from '../../../../shared/missingValue';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
@@ -29,7 +30,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
                 className={`grid w-full grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-2 rounded-xl px-2 py-0.5 text-left text-sm ${r.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
                 <span className="font-bold">{l.primary}</span>
                 <span className="truncate text-[var(--text-secondary)]">{l.secondary}</span>
-                <span className="tabular-nums">{f?.text ?? '–'}</span>
+                <span className="tabular-nums">{f?.text ?? MISSING_VALUE}</span>
                 {/* Under the name and figure, so the bar takes no room from the name. */}
                 <span aria-hidden className="col-span-2 col-start-2 mb-0.5 h-1">{bars[i] && <span className="block h-full rounded-full" style={{ width: `${Math.max(2, bars[i]!.width * 100)}%`, background: bars[i]!.color }} />}</span>
               </button>

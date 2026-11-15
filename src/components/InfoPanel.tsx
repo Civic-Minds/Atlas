@@ -1,6 +1,8 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import { shortDate } from '../../shared/dateText';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, Search, Radio } from 'lucide-react';
+import { Search, Radio } from 'lucide-react';
+import SearchClearButton from './ui/SearchClearButton';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
@@ -10,7 +12,7 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { formatStoredDate, nameCase } from '../utils/format';
+import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -20,7 +22,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -77,8 +79,7 @@ export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return nameCase(r.displayName, 'route');
-  const n = parseInt(r.displayRouteShortName, 10);
-  return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
+  return routeShortLabel(r.displayRouteShortName);
 }
 
 interface Props {
@@ -378,7 +379,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           </div>
 
           <div className="flex-1" />
-          <PanelCloseButton onClick={onClose} className="z-10" label="Close" />
+          <PanelCloseButton onClick={onClose} className="z-10" label={closeLabel(CLOSE_PLACES.aboutAtlas)} />
         </div>
 
         {/* Content View Container */}
@@ -442,14 +443,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     type="text"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
-                    placeholder="Search agencies…"
+                    placeholder={SEARCH_AGENCIES_PLACEHOLDER}
                     className={SEARCH_FIELD}
                   />
-                  {query && (
-                    <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
+                  {query && <SearchClearButton variant="pill" onClear={() => setQuery('')} />}
                 </div>
                 <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {
@@ -572,7 +569,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
             <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
-              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null) : ''} />
+              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, shortDate(helpContext.lastRefreshedAt)) : ''} />
           )}
           {view === 'corrected-data' && (
             <ExplainerBody layout="corrected-data" helpContext={helpContext}

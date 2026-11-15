@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { MISSING_VALUE } from '../../../../shared/missingValue';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { fadedNoteText, excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
@@ -173,7 +174,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
           const c = m.countsFor(k);
           return c && c.n > 0
             ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} thin={isThin(c.days)} />
-            : <Tile key={k} label={label} value="–" sub={LIVE_TOO_FEW_DEPARTURES} />;
+            : <Tile key={k} label={label} value={MISSING_VALUE} sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
       <h3 className="mt-6 text-base font-black">By hour of the day</h3>
