@@ -80,3 +80,27 @@ describe('prepareAgencyRouteFeaturesForTiles', () => {
     expect(routes[1].properties?.wdpch_overnight).toBe(207);
   });
 });
+
+describe('CIV-1579: the trunk value flattens to tv_, as rv_ does (shadow, nothing reads it)', () => {
+  it('routeTrunkHeadwayByPeriod becomes tv_<period>; null is the no-service sentinel; rv_ is unchanged', () => {
+    const [f] = prepareAgencyRouteFeaturesForTiles([lineFeat({
+      routeShortName: '901', day: 'Weekday', directionId: 0, tier: '30', headway: 30,
+      routeFilterHeadwayByPeriod: { amPeak: 30, midday: 30, overnight: null },
+      routeTrunkHeadwayByPeriod: { amPeak: 10, midday: 10, overnight: null },
+      trunkStopMask: '1*18,*6',
+    })], 'drt');
+    expect(f.properties?.tv_amPeak).toBe(10);
+    expect(f.properties?.tv_midday).toBe(10);
+    expect(f.properties?.tv_overnight).toBe(999999);
+    expect(f.properties?.rv_midday).toBe(30);
+    expect(f.properties?.rv_overnight).toBe(999999);
+    // The nested maps and the stop mask stay in the agency JSON.
+    expect(f.properties?.routeTrunkHeadwayByPeriod).toBeUndefined();
+    expect(f.properties?.trunkStopMask).toBeUndefined();
+  });
+  it('a route without the trunk field gets no tv_ keys', () => {
+    const [f] = prepareAgencyRouteFeaturesForTiles([lineFeat({ routeShortName: '1', day: 'Weekday', directionId: 0, tier: '15', headway: 15, routeFilterHeadwayByPeriod: { midday: 15 } })], 'x');
+    expect(Object.keys(f.properties ?? {}).filter(k => k.startsWith('tv_'))).toEqual([]);
+    expect(f.properties?.rv_midday).toBe(15);
+  });
+});
