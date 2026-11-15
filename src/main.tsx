@@ -20,6 +20,7 @@ import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
+import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
 
@@ -85,6 +86,8 @@ ReactDOM.createRoot(rootElement).render(
             <>
               <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
+              {/* CIV-1550: research stories still being built, for Ryan's review; the list is empty outside the dev server. */}
+              {RESEARCH_DRAFTS.map(({ href, Component }) => <Route key={href} path={href} element={<Component />} />)}
             </>
           )}
           {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}

@@ -183,6 +183,11 @@ const APPROVED_TEXT: Record<string, string[]> = {
     // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
     '“around every 15 minutes all day.”',
   ],
+  // The airport story: draft for Ryan's review (CIV-1550), dev only.
+  'src/apps/AirportStory.tsx': [
+    'Tuesday November 17, Saturday November 21 and Sunday November 22, 2026', 'nearby dates in November 2026',
+    'about 5 AM to 11 PM', '311 km away', '83 km away',
+  ],
   'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
   'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],
   // A round figure reads better as "about 1 km"; TriMet's own rule for its Sandy zone.
