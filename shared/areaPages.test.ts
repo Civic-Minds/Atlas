@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
   areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
-  areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
+  areaSubtitle, areaSubtitleParts, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
 import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from './agencyArea';
@@ -63,6 +63,8 @@ describe('buildAreaPageData', () => {
     const pgh = { ...d, area: { ...d.area, slug: 'pittsburgh', name: 'Pittsburgh', type: 'MSA' as const, officialName: 'Pittsburgh, PA', country: 'United States' as const, cities: ['Pittsburgh'] } };
     expect(areaSubtitle({ ...pgh, regions: ['Pennsylvania'] })).toBe('Pennsylvania');
     expect(areaSubtitle({ ...pgh, regions: ['Ohio', 'Kentucky'] })).toBe('Ohio, Kentucky');
+    // CIV-1614: a state with a /region/ page is linked; one without stays plain text.
+    expect(areaSubtitleParts({ ...pgh, regions: ['Ohio', 'Kentucky'], regionPages: { Ohio: '/region/ohio' } })).toEqual([{ text: 'Ohio', href: '/region/ohio' }, { text: 'Kentucky' }]);
     expect(areaSubtitle({ ...pgh, regions: [] })).toBe('');
     const iowa = { ...pgh, area: { ...pgh.area, slug: 'iowa-city', name: 'Iowa City', officialName: 'Iowa City, IA', cities: ['Iowa City'] } };
     expect(areaSubtitle({ ...iowa, regions: ['Iowa'] })).toBe('Iowa');

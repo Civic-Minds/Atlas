@@ -165,11 +165,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
-              {data!.area?.page !== false && data!.area
-                ? <ArrowLink tone="inline" className="mt-1" href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</ArrowLink>
-                // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
-                : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
-                : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
+              {data!.area ? (
+                // CIV-1614: "Calgary area, Alberta". An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  {data!.area.page !== false ? <a className={UNDERLINED_LINK} href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</a> : areaRegionTitle(data!.area)}
+                  {agency.region && !areaRegionTitle(data!.area).includes(agency.region) && <>, {data!.regionPage ? <a className={UNDERLINED_LINK} href={data!.regionPage}>{agency.region}</a> : agency.region}</>}
+                </p>
+              ) : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
             <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>{VIEW_ON_MAP}</ArrowLink>
           </div>

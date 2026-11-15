@@ -80,14 +80,14 @@ describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () =
     const on = regionAreasSentenceParts(page('Ontario'))!;
     expect(on.named.map(a => a.slug)).toEqual(['toronto', 'ottawa', 'kitchener']);
     expect(on.named.map(a => areaPagePath(a.slug))).toEqual(['/area/toronto', '/area/ottawa', '/area/kitchener']);
-    expect(regionAreasSentence(page('Ontario'))).toBe('Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
+    expect(regionAreasSentence(page('Ontario'))).toBe('Areas include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
     expect(page('California').areas.length).toBeGreaterThan(3);
     expect(regionAreasSentenceParts(page('California'))!.named).toHaveLength(3);
   });
 
   it('reads right with one or two areas, and says nothing with none', () => {
-    expect(regionAreasSentence(page('Colorado'))).toBe('Regions include the Denver area.');
-    expect(regionAreasSentence(page('Texas'))).toBe('Regions include the Dallas–Fort Worth area and the Houston area.');
+    expect(regionAreasSentence(page('Colorado'))).toBe('Areas include the Denver area.');
+    expect(regionAreasSentence(page('Texas'))).toBe('Areas include the Dallas–Fort Worth area and the Houston area.');
     expect(regionAreasSentenceParts(page('Nebraska'))).toBeNull();
     expect(regionAreasSentence(page('Nebraska'))).toBe('');
   });

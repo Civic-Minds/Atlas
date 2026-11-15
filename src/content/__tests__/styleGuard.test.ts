@@ -66,6 +66,8 @@ const RULES: Rule[] = [
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
   // CIV-1613: lowercase and "all-day" too ("or else all day" slipped through); the Docs page says "across the day" (Ryan, CIV-1610).
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\b[Aa]ll[-  ][Dd]ay\b(?![s-])/, slip: "'borrow an all-day average'" },
+  // CIV-1614 (Ryan): a metro area is an "area"; "region" is only a state or province.
+  { name: '"region" for a metro area (say "area")', doc: 'TEXT.md', pattern: /\b(city|metro) regions?\b|\b(agencies|transit agencies) and regions\b|\bRegions include\b/, slip: "'every agency in a city region'" },
 
   // Times (shared/timeText.ts)
   { name: 'a lowercase am/pm or a.m./p.m. (write "7 AM")', doc: 'TEXT.md', pattern: /\d ?(am|pm)\b|\b[ap]\.m\./, slip: "'Daily 6 a.m.–9 pm'" },
