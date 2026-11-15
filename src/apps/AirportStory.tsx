@@ -129,10 +129,10 @@ export default function AirportStory() {
     <ResearchMethod parts={{
       dateConducted: <>{longDate(AIRPORT_STORY_CONDUCTED)}.</>,
       sample: <>the 157 passenger airports with scheduled airline service in the cities Atlas covers in Canada and the United States, matched by stop names and distance from published airport locations.</>,
-      sources: <>each agency's own schedule data (GTFS), for Tuesday November 17, Saturday November 21 and Sunday November 22, 2026. Flight times come from published schedules for nearby dates in November 2026.</>,
+      sources: <>each agency’s own schedule data (GTFS), for Tuesday November 17, Saturday November 21 and Sunday November 22, 2026. Flight times come from published schedules for nearby dates in November 2026.</>,
       whatCounted: <>a departure counts when the same vehicle later stops within 1.2 km of downtown (city hall or the main downtown transit hub). Landable hours are the hours of the week when a departure leaves within 60 minutes of landing at the start of that hour.</>,
-      rechecked: <>every airport with no direct ride was checked by hand against the airport's and agency's own websites.</>,
-      limitations: <>only public transit in agency schedule data is counted. Airport-run and private shuttles are not. LAX FlyAway (about 5 AM to 11 PM to Union Station) has no current schedule data, so it is noted but not measured. On-demand services, such as Waterloo's route 79, are noted but not measured. Newark's round-the-clock result is for downtown Newark; Manhattan needs a change. Flight schedules change by season.</>,
+      rechecked: <>every airport with no direct ride was checked by hand against the airport’s and agency’s own websites.</>,
+      limitations: <>only public transit in agency schedule data is counted. Airport-run and private shuttles are not. LAX FlyAway (about 5 AM to 11 PM to Union Station) has no current schedule data, so it is noted but not measured. On-demand services, such as Waterloo’s route 79, are noted but not measured. Newark’s round-the-clock result is for downtown Newark; Manhattan needs a change. Flight schedules change by season.</>,
     }} />
   );
 
@@ -141,7 +141,7 @@ export default function AirportStory() {
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"
-          title="[Ryan's wording: title]"
+          title="[Ryan’s wording: title]"
           intro={<>
             <p>You land, walk out of the terminal and look for the bus. Whether one is coming depends on which airport you landed at, and when.</p>
             <p>We checked the 157 passenger airports in the cities Atlas covers in Canada and the United States. For each one, we counted the hours of the week when a bus or train leaves for downtown within an hour of landing.</p>
@@ -176,7 +176,7 @@ export default function AirportStory() {
           </StorySection>
 
           <StorySection id="airport-far-heading" heading="How far you can get">
-            <p className={STORY_PARAGRAPH}>From some airports, one ride goes a long way. The bus from Grand Junction's airport reaches Denver Union Station, 311 km away, six times a day. From Newark, a bus reaches Toms River, 83 km away.</p>
+            <p className={STORY_PARAGRAPH}>From some airports, one ride goes a long way. The bus from Grand Junction’s airport reaches Denver Union Station, 311 km away, six times a day. From Newark, a bus reaches Toms River, 83 km away.</p>
           </StorySection>
 
           <StorySection id="airport-find-heading" heading="Find your airport">
