@@ -51,7 +51,7 @@ Agencies
 ## How Atlas talks
 
 - Every back control says "Back to " + the place it returns to, from one source (`src/content/backLinks.ts`): a text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies"); an arrow-only control or the logo says the same words to screen readers ("Back to About Atlas"). Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies"). CIV-1462.
-- Every close (X) button says "Close " + what it closes to screen readers, from `closeLabel` in `src/content/noticeCopy.ts` ("Close filters", "Close chart", "Close About Atlas"): common things lower case, names keep their case. The clear X in a search box says "Clear search". CIV-1569.
+- A close X says "Close " + what it closes to screen readers ("Close filters"; `closeLabel`). CIV-1569.
 
 Frequencies
 
@@ -84,15 +84,15 @@ Words
 - Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160.
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
-- Search box hints start with "Find" (Ryan, 2026-11-14): "Find " + what the box finds + "…" ("Find routes…", "Find an agency…", "Find a MARTA route…"), from `searchPlaceholder` in `src/content/noticeCopy.ts`. No search hint is typed in place. CIV-1569.
+- Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569.
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
-- Days in a sentence: "on weekdays", "on Saturdays", "on Sundays"; one day before a noun reads "weekday midday", "Saturday schedules" ("weekday" lower case, Saturday and Sunday capitalised). From `dayPlural` / `dayInSentence` in `shared/dayTypes.ts`. CIV-1569.
-- A missing value (a table cell, tile or figure with nothing to show) reads an em dash, "—", from `MISSING_VALUE` in `shared/missingValue.ts`, the mark a missing frequency has always printed. Never type a dash by hand for an empty cell. CIV-1569.
-- Dates: "Oct 12, 2026" in notices, cards, page footers and What’s new (`shortDate`); "November 3, 2026" in a research page’s method box and "Date updated" lines (`longDate`); "Oct 8–14" or "Sep 30–Oct 14" for Live’s days and weeks (`dateRange`). All from `shared/dateText.ts`; never typed by hand. CIV-1569.
+- Days in a sentence read "on weekdays", "on Saturdays", "weekday midday" (`dayPlural` / `dayInSentence`). CIV-1569.
+- An empty cell, tile or figure reads "—" (`MISSING_VALUE`). CIV-1569.
+- Dates read "Oct 12, 2026" (`shortDate`), "November 3, 2026" in method boxes (`longDate`), "Oct 8–14" for ranges (`dateRange`). CIV-1569.
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
-- A route named by its number reads "Route " + the number as the route lists show it ("Route 504", "Route 52A", "Routes 501, 504"), from `routeShortLabel` / `routesShortLabel` in `src/utils/format.ts`; never built by hand. CIV-1569.
-- A direction with no destination or bound name reads "Direction 1" / "Direction 2" (GTFS direction 0 is "Direction 1"), from `directionBranchFallback` in `shared/headsignDisplay.ts`, on route cards, report details and Live. CIV-1569.
+- A route named by its number reads "Route 52A" (`routeShortLabel`), never built by hand. CIV-1569.
+- A direction with no name reads "Direction 1" / "Direction 2" (`directionBranchFallback`). CIV-1569.
 - "The" before agency names (CIV-1103):
   - Names ending in Authority, Commission, District, Agency, Company, Corporation, Department, Board, Railway, Railroad, System or Service take "the". So do The Staten Island Ferry, The Cheyenne Transit Program, The Fayetteville Area System of Transit and The Yamhill County Transit Area.
   - Acronyms said letter by letter take "the" (the TTC, the MBTA, the CTA). Acronyms said as a word (MARTA, SEPTA) and brands (MiWay) don't.
