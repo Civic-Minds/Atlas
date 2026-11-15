@@ -11,6 +11,7 @@ import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
 import { AGENCY_INDEX_PATH, parentAgencyPagePath } from './pagePaths';
 import { parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
+import { countText } from './numberText';
 
 export { AGENCY_INDEX_PATH };
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -103,7 +104,7 @@ export function agencyIndexTitle(): string {
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${d.agencyCount.toLocaleString('en-US')} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'region')}. Each agency’s page shows how often every route runs.`;
+  return `${countText(d.agencyCount)} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'region')}. Each agency’s page shows how often every route runs.`;
 }
 
 export function resolveAgencyIndexSeo(

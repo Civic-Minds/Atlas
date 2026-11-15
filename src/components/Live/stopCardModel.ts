@@ -5,8 +5,9 @@
  * confirm with Ryan.
  */
 import { USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
-import { pct, tenth } from '../../../shared/liveFormat';
+import { tenth } from '../../../shared/liveFormat';
 import { bunchParts, type RouteStripStop } from './routeStripModel';
+import { percentText } from '../../../shared/numberText';
 
 export interface CardGroup { heading: string | null; lines: string[] }
 
@@ -30,7 +31,7 @@ export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null
   const vehicles: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
     vehicles.push(Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early'));
-    if (stop.lateShare != null) vehicles.push(W.lateShare(pct(stop.lateShare)));
+    if (stop.lateShare != null) vehicles.push(W.lateShare(percentText(stop.lateShare)));
   } else vehicles.push(W.notMeasured);
   const wait: string[] = [];
   if (extraWaitMin != null) {

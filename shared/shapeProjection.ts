@@ -6,8 +6,7 @@
  * opposite-direction tracks on the same street — doesn't cause the
  * distance-along-shape value to jump or go non-monotonic between samples.
  */
-
-const EARTH_RADIUS_M = 6_371_000;
+import { lonLatPoint, metresBetween, projectOntoSegment } from './geoDistance.js';
 
 export interface Shape {
   pts: [number, number][]; // [lon, lat]
@@ -15,12 +14,9 @@ export interface Shape {
   total: number;
 }
 
+/** Positional form kept only for scripts/ (live-segment-delay.ts); app code calls metresBetween (CIV-1592). */
 export function haversineM(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
-  return 2 * EARTH_RADIUS_M * Math.asin(Math.sqrt(a));
+  return metresBetween({ lat: lat1, lon: lon1 }, { lat: lat2, lon: lon2 });
 }
 
 /** Build a shape from raw coordinates, optionally decimating vertices closer than `decimateM` apart. */
@@ -31,7 +27,7 @@ export function buildShape(coordinates: [number, number][], decimateM = 0): Shap
   let last: [number, number] | null = null;
   for (const [lon, lat] of coordinates) {
     if (last) {
-      const d = haversineM(last[1], last[0], lat, lon);
+      const d = metresBetween(lonLatPoint(last), { lat, lon });
       if (d < decimateM) continue;
       total += d;
     }
@@ -72,18 +68,7 @@ export function projectOntoShape(shape: Shape, lat: number, lon: number): ShapeP
   let bestPerp = Infinity;
   let bestAlong = 0;
   for (let i = 0; i < shape.pts.length - 1; i++) {
-    const [lon1, lat1] = shape.pts[i];
-    const [lon2, lat2] = shape.pts[i + 1];
-    const refLat = (lat1 + lat2) / 2;
-    const cosLat = Math.cos(refLat * Math.PI / 180);
-    const bx = (lon2 - lon1) * Math.PI / 180 * EARTH_RADIUS_M * cosLat;
-    const by = (lat2 - lat1) * Math.PI / 180 * EARTH_RADIUS_M;
-    const px = (lon - lon1) * Math.PI / 180 * EARTH_RADIUS_M * cosLat;
-    const py = (lat - lat1) * Math.PI / 180 * EARTH_RADIUS_M;
-    const segLenSq = bx * bx + by * by;
-    let t = segLenSq > 0 ? (px * bx + py * by) / segLenSq : 0;
-    t = Math.max(0, Math.min(1, t));
-    const perp = Math.hypot(px - t * bx, py - t * by);
+    const { t, offM: perp } = projectOntoSegment({ lat, lon }, shape.pts[i], shape.pts[i + 1]);
     if (perp < bestPerp) {
       bestPerp = perp;
       const segLen = shape.cum[i + 1] - shape.cum[i];

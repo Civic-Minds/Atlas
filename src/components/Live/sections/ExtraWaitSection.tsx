@@ -9,6 +9,7 @@ import Section from './Section';
 import { headwayExactAmount } from '../../../utils/headwayText';
 import { dirsOf, mins } from './figures';
 import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
+import { countText } from '../../../../shared/numberText';
 
 /** The one derivation of the extra-wait figures, so every surface draws the same numbers. */
 export function extraWaitModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -76,7 +77,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
       <PageTable>
         <SortableDataTable
           narrowFit
-          rowTitle={s => `${s.name}: ${s.gaps.toLocaleString()} gaps`}
+          rowTitle={s => `${s.name}: ${countText(s.gaps)} gaps`}
           caption="Stops where riders wait longest compared with the schedule"
           defaultSort="extra"
           rows={worst}
@@ -86,7 +87,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
             ...(dir == null ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
-            { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
+            { key: 'n', header: 'Gaps', narrowHide: true, cell: s => countText(s.gaps) },
           ]}
         />
       </PageTable>

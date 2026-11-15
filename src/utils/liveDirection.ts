@@ -1,6 +1,6 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
+import { projectOntoSegment } from '../../shared/geoDistance';
 
-const EARTH_RADIUS_M = 6_371_000;
 const MAX_MATCH_DISTANCE_M = 1_200;
 const BEARING_WEIGHT_M = 250;
 
@@ -21,18 +21,8 @@ function distanceToSegmentM(
   a: [number, number],
   b: [number, number],
 ): { distanceM: number; bearing: number } {
-  const refLat = ((a[1] + b[1]) / 2) * Math.PI / 180;
-  const cosLat = Math.cos(refLat);
-  const scale = Math.PI / 180 * EARTH_RADIUS_M;
-  const bx = (b[0] - a[0]) * scale * cosLat;
-  const by = (b[1] - a[1]) * scale;
-  const px = (lon - a[0]) * scale * cosLat;
-  const py = (lat - a[1]) * scale;
-  const lengthSq = bx * bx + by * by;
-  const t = lengthSq > 0 ? Math.max(0, Math.min(1, (px * bx + py * by) / lengthSq)) : 0;
-  const distanceM = Math.hypot(px - t * bx, py - t * by);
-  const bearing = (Math.atan2(bx, by) * 180 / Math.PI + 360) % 360;
-  return { distanceM, bearing };
+  const { offM, eastM, northM } = projectOntoSegment({ lat, lon }, a, b);
+  return { distanceM: offM, bearing: (Math.atan2(eastM, northM) * 180 / Math.PI + 360) % 360 };
 }
 
 function bearingDifference(a: number, b: number): number {

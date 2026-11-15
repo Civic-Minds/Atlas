@@ -16,6 +16,7 @@
  * pass. Route-level values are untouched by pooling.
  */
 import { PERIOD_KEYS, type PeriodKey } from './config.js';
+import { metresBetween } from './geoDistance';
 
 /** Pooled values at one shared stop. Arrays follow PERIOD_KEYS order; null or a missing tail = none. */
 export interface SharedStop {
@@ -166,13 +167,6 @@ export function hasPooledStop(index: SharedStopIndex, feature: FeatureLike, stop
 /** Opposite-direction pairing radius: covers opposite curbs and most one-way couplets. */
 export const OPPOSITE_STOP_MAX_M = 300;
 
-function haversineM(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
-  const r = Math.PI / 180;
-  const x = Math.sin(((b.lat - a.lat) * r) / 2) ** 2
-    + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(((b.lon - a.lon) * r) / 2) ** 2;
-  return 12742000 * Math.asin(Math.sqrt(x));
-}
-
 /**
  * The opposite direction's matching stop, for the every-direction rule at a shared stop:
  * the same stop, else a stop of the same parent station, else the nearest candidate within
@@ -201,7 +195,7 @@ export function pairOppositeStop(
   for (const c of candidates) {
     const there = coords.get(c);
     if (!there || Math.abs(there.lat - here.lat) > maxDLat || Math.abs(there.lon - here.lon) > maxDLon) continue;
-    const m = haversineM(here, there);
+    const m = metresBetween(here, there);
     if (m <= bestM) { bestM = m; best = c; }
   }
   return best;

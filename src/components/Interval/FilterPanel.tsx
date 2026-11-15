@@ -31,6 +31,7 @@ import { contextLayerAvailable } from './map/useContextLayer';
 import { CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/noticeCopy';
 import type { ContextMetric } from '../../utils/contextLayer';
 import { ContextKey } from './ContextLegend';
+import { countText } from '../../../shared/numberText';
 
 const CONTEXT_OPTIONS = [
   { key: 'off', label: CONTEXT_OPTION_OFF },
@@ -637,19 +638,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         {id === 'span' && (
                           <>
                             <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('hidden-routes')} className="mt-1">
-                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'}
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${countText(hiddenRoutes.length)})` : ' (…)'}
                             </ArrowLink>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
-                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({limitedServiceRouteCount.toLocaleString()})
+                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({countText(limitedServiceRouteCount)})
                           </ArrowLink>
                         )}
                         {id === 'quality' && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
                             See all degraded {plural(hiddenFeedAgencies.length, 'feed')}
-                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
+                            {hiddenFeedAgencies.length ? ` (${countText(hiddenFeedAgencies.length)})` : ''}
                           </ArrowLink>
                         )}
                       </div>

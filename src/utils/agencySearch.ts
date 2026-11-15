@@ -2,6 +2,7 @@ import type { Agency } from '../App';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import { AGENCY_CHIP_PAD } from '../../shared/config';
 import { compareAgencyName, compareSearchRelevance } from './sortCompare';
+import { metresBetween } from '../../shared/geoDistance';
 
 export function bboxInViewport(
   agency: { bbox?: [number, number, number, number]; center?: [number, number] },
@@ -22,13 +23,6 @@ export function bboxInViewport(
 
 function viewportCenter(bounds: ViewportBounds): [number, number] {
   return [(bounds.s + bounds.n) / 2, (bounds.w + bounds.e) / 2];
-}
-
-function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = (lat1 + lat2) * Math.PI / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
 }
 
 export interface AgencySearchGroup {
@@ -77,7 +71,7 @@ export function searchAgencyGroups(
     const inView = bboxInViewport(a, bounds);
     const [lat, lon] = a.center;
     const distanceM = vLat != null && vLon != null
-      ? distanceMeters(lat, lon, vLat, vLon)
+      ? metresBetween({ lat, lon }, { lat: vLat, lon: vLon })
       : Infinity;
 
     const g = byKey.get(key);

@@ -33,7 +33,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
-import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
+import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
@@ -47,7 +47,8 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
+import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS } from '../content/noticeCopy';
+import { speedText } from '../../shared/unitText';
 
 interface Props {
   agencies: Agency[];
@@ -733,7 +734,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}, vehicle ${cardVehicle.vehicleLabel ?? cardVehicle.id}`}
             details={liveVehicleReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, vehicle: cardVehicle })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -785,7 +786,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}`}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -830,7 +831,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
                 value={(v.speedKmh != null || delayLabel(v)) ? (
                   <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{v.speedKmh} km/h</span>}
+                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
                     {delayLabel(v) && (
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
@@ -1004,7 +1005,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (
-          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label="About Atlas">
+          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label={ABOUT_ATLAS}>
             <Info className="w-4 h-4" />
           </button>
         )}

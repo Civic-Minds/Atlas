@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Agency } from '../../App';
+import { MAP_EXPORT_TITLES } from '../../content/noticeCopy';
 import { COLOR_VISION_HEADWAY_TIERS, HEADWAY_TIERS, getNightServiceColor, getNightServiceTierColor } from '../colors';
 import {
   buildExportKey,
@@ -31,7 +32,7 @@ function samples(counts: Record<string, number>, color = '#22863a'): RenderedRou
 
 const BASE: MapExportState = {
   view: 'frequency',
-  viewTitle: 'Transit Frequency',
+  viewTitle: MAP_EXPORT_TITLES.frequency,
   colorMode: 'default',
   maxHeadway: 20,
   day: 'Saturday',

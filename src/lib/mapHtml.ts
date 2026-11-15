@@ -3,6 +3,7 @@ import { routeShortLabel } from '../utils/format';
 import { delayLabel } from '../components/Live/vehicleCardModel';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { escapeHtml } from './escapeHtml';
+import { speedText } from '../../shared/unitText';
 
 export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = false): string {
   const colors = STATUS_COLORS[vehicle.status];
@@ -85,12 +86,12 @@ export function vehicleTooltipHtml(v: LiveVehicle, colorMode: ColorVisionMode = 
   const color = v.status === 'no_data' ? 'var(--text-muted)' : getVehicleColors(v.status, colorMode).border;
   const routeLabel = escapeHtml(routeShortLabel(v.routeShortName));
   const headsign = v.headsign ? escapeHtml(v.headsign) : '';
-  const speed = v.speedKmh != null ? escapeHtml(String(v.speedKmh)) : null;
+  const speed = v.speedKmh != null ? escapeHtml(speedText(v.speedKmh)) : null;
   return `
     <div style="font-family:'Inter',ui-sans-serif,sans-serif;padding:8px 10px;min-width:130px;line-height:1.4;">
       <div style="font-size:9px;font-weight:800;color:var(--text-dim);">${routeLabel}</div>
       ${headsign ? `<div style="font-size:11px;font-weight:700;color:var(--text-primary);margin-top:2px;">${headsign}</div>` : ''}
-      ${speed != null ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Speed</span><span style="font-size:10px;font-weight:800;color:var(--text-primary);">${speed} km/h</span></div>` : ''}
+      ${speed != null ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Speed</span><span style="font-size:10px;font-weight:800;color:var(--text-primary);">${speed}</span></div>` : ''}
       ${label ? `<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border-primary);padding-top:5px;margin-top:6px;"><span style="font-size:9px;color:var(--text-dim);font-weight:600;">Status</span><span style="font-size:10px;font-weight:800;color:${color};">${escapeHtml(label)}</span></div>` : ''}
     </div>`;
 }

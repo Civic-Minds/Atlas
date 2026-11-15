@@ -20,10 +20,11 @@ import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
-import { haversineM } from './shapeProjection';
-import { andOthers, joinList, plural } from './overflowText';
+import { andOthers, joinList, plural, countOf } from './overflowText';
 import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
+import { countText } from './numberText';
+import { metresBetween } from './geoDistance';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -269,7 +270,7 @@ export function agencyIntroSentence(
   const n = a.routes.length;
   if (n === 0) return `${agencySentenceStart(title)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes, title, parentName)}${place}`;
-  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
+  if (a.stops) s += ` with ${countText(a.stops)} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
@@ -334,7 +335,7 @@ export function introLead(
 ): string {
   const n = a.routes.length;
   // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
-  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${countText(n)} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -450,7 +451,7 @@ export const FREQUENCY_BANDS = [
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 /** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
-export const noMiddayBarSentence = (n: number) => `${n} ${n === 1 ? 'route runs' : 'routes run'} irregularly or not at all at midday`;
+export const noMiddayBarSentence = (n: number) => `${countOf(n, 'route runs', 'routes run')} irregularly or not at all at midday`;
 export const NO_MIDDAY_SHORT = 'Irregular or none';
 
 /**
@@ -724,8 +725,9 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   return crumbs;
 }
 
+/** Centres are [lat, lon]. */
 function distanceKm(a: [number, number], b: [number, number]): number {
-  return haversineM(a[0], a[1], b[0], b[1]) / 1000;
+  return metresBetween({ lat: a[0], lon: a[1] }, { lat: b[0], lon: b[1] }) / 1000;
 }
 
 /** Other agencies with a page in the same region, nearest first. */

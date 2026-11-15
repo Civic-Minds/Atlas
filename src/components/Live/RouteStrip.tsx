@@ -1,12 +1,9 @@
 import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import {
-  LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
-  type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
-  stripLegendFlags,
-} from './routeStripModel';
+import { LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary, type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan, stripLegendFlags } from './routeStripModel';
 import { shortStopName, stretchLabel, stripStopName } from '../../utils/stopLabel';
+import { percentText, countText } from '../../../shared/numberText';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
 export { routeStripFromV3 } from './routeStripModel';
@@ -97,7 +94,7 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, anyEarl
 function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
   const v = mode === 'delay' ? (stop.n > 0 ? shownDelayMin(stop) : null) : stopValue(stop, mode);
   if (v == null) return NOT_MEASURED_CELL;
-  return mode === 'delay' ? delayText(v) : gapsOffText(pct(v));
+  return mode === 'delay' ? delayText(v) : gapsOffText(percentText(v));
 }
 
 /** One track's colours and marked stretch. */
@@ -196,9 +193,9 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
           columns={[
             { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: r => r.s.name },
             { key: 'delay', header: STRIP_COLUMNS.delay, cell: r => (shownDelayMin(r.s) != null && r.s.n > 0 ? delayText(shownDelayMin(r.s)!) : NOT_MEASURED_CELL) },
-            { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : NOT_MEASURED_CELL) },
+            { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? percentText(r.s.lateShare) : NOT_MEASURED_CELL) },
             { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: r => { const b = bunchParts(r.s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
-            { key: 'n', header: STRIP_COLUMNS.n, cell: r => r.s.n.toLocaleString() },
+            { key: 'n', header: STRIP_COLUMNS.n, cell: r => countText(r.s.n) },
             { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
           ]}
         />
