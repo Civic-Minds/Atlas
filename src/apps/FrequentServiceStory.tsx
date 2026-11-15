@@ -20,6 +20,7 @@ import { countOf } from '../../shared/overflowText';
 import Pill from '../components/ui/Pill';
 import { CHART_TEXT } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
+import { FREQUENT_SERVICE_STORY } from '../../shared/researchStories';
 
 /** The story's section headings and body paragraphs, one look each. */
 const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
@@ -128,12 +129,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"
-          title="What happens when you miss the bus?"
-          intro={<>
-            <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
-            <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We checked how {frequentServiceDefinitionSample.agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.</p>
-          </>}
+          title={FREQUENT_SERVICE_STORY.heading}
+          intro={<>{FREQUENT_SERVICE_STORY.intro!({ agencies: frequentServiceDefinitionSample.agencies }).map(text => <p key={text}>{text}</p>)}</>}
         >
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />

@@ -15,6 +15,7 @@ import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
 import { countOf } from '../../shared/overflowText';
+import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
@@ -117,13 +118,9 @@ export default function FreeChildFaresPage() {
     <PageShell stickyHeader method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
-          title="Free Child Fares"
-          intro={<>
-            {/* CIV-1281 (Ryan): the finding opens the page as an intro line, as the other research pages open, not a big heading. */}
-            <p>Where kids ride free, age {peakAge[0]} is the most common cutoff.</p>
-            <p>Most transit agencies let young children ride free. Where that free fare ends changes from one agency to the next.</p>
-            <p>We read the official fare rules of {freeChildFareStats.agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.</p>
-          </>}
+          title={FREE_CHILD_FARES_STORY.heading}
+          // CIV-1281 (Ryan): the finding opens the page as an intro line, as the other research pages open, not a big heading.
+          intro={<>{FREE_CHILD_FARES_STORY.intro!({ peakAge: peakAge[0], agencies: freeChildFareStats.agencies }).map(text => <p key={text}>{text}</p>)}</>}
         >
           <div className="text-left">
             <SplitBar segments={splitSegments} label={SPLIT_LABEL} />

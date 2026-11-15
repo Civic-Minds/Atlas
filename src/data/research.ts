@@ -1,6 +1,5 @@
 import { Moon, Ticket, Zap, type LucideIcon } from 'lucide-react';
-import { FEATURE_ROUTES } from '../../shared/config';
-import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
+import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY, type ResearchStoryText } from '../../shared/researchStories';
 
 /** One piece of Atlas research: the /research index lists them all, and the About page's "Explore our research" the newest (CIV-1205). */
 export interface ResearchEntry {
@@ -23,37 +22,32 @@ export interface ResearchEntry {
   pictureExt?: 'svg' | 'png';
 }
 
+/** A card's words and address, from the story's one entry (shared/researchStories.ts, CIV-1629). */
+function card(story: ResearchStoryText): Pick<ResearchEntry, 'href' | 'title' | 'body' | 'linkText'> {
+  return { href: story.path, title: story.cardTitle, body: story.cardBody, linkText: story.cardLink };
+}
+
 /** Every research page, in the /research index's order. A new page is added here and shows up on both pages. */
 export const RESEARCH: readonly ResearchEntry[] = [
   {
-    href: FEATURE_ROUTES.nightService,
+    ...card(OVERNIGHT_STORY),
     Icon: Moon,
     kind: 'Map',
-    title: 'Overnight service',
-    // A word joiner after the dash keeps "2–5 AM" on one line.
-    body: 'See which routes keep running from 2–\u20605 AM, and how often they come.',
-    linkText: 'Find routes running all night',
     published: '2026-08-15',
     picture: '/assets/research/share/night',
   },
   {
-    href: FEATURE_ROUTES.frequentService.story,
+    ...card(FREQUENT_SERVICE_STORY),
     Icon: Zap,
     kind: 'Story',
-    title: FREQUENT_SERVICE_TITLE,
-    body: 'What “frequent” means to each agency.',
-    linkText: 'Compare agency definitions',
     published: '2026-09-17',
     picture: '/assets/research/share/frequent',
     pictureExt: 'png',
   },
   {
-    href: FEATURE_ROUTES.freeChildFares,
+    ...card(FREE_CHILD_FARES_STORY),
     Icon: Ticket,
     kind: 'Data',
-    title: 'Free child fares',
-    body: 'The age kids stop riding free.',
-    linkText: 'See which ages ride free',
     published: '2026-10-30',
     picture: '/assets/research/share/free-child-fares',
   },
