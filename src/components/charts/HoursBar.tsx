@@ -45,7 +45,7 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
     : [...(first ? [atStart(first)] : []), ...(last ? [atEnd(last)] : [])];
   return (
     <div className="min-w-[10rem]" role="img" aria-label={label}>
-      <div className="relative h-4 text-xs tabular-nums text-[var(--text-muted)] whitespace-nowrap">
+      <div className="relative h-4 text-xs text-[var(--text-muted)] whitespace-nowrap">
         {labels.map(l => <span key={l.text} className="absolute top-0" style={l.style}>{l.text}</span>)}
       </div>
       <div className="relative mt-0.5 h-2 overflow-hidden rounded-full" style={{ background: TRACK }}>

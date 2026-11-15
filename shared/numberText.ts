@@ -14,6 +14,8 @@ export const countText = (n: number): string => minus(grouped.format(Math.round(
 
 /** "5.3": a figure to a fixed number of decimals, keeping a trailing zero ("5.0") so a column reads at one precision. */
 export const decimalText = (x: number, digits: number): string => minus(x.toFixed(digits));
+/** A machine value (a map view in the address bar) rounded to `places` decimals, as a number: Number(x.toFixed(places)). */
+export const roundTo = (x: number, places: number): number => Number(x.toFixed(places));
 
 /** "12%": a share (0–1) as a whole percent. The one writer of a whole-percent figure. */
 export const percentText = (share: number): string => `${countText(Math.round(share * 100))}%`;

@@ -1,4 +1,5 @@
 import type { Agency } from '../App';
+import { roundTo } from '../../shared/numberText';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../../shared/config';
 import { MAP_URL, readLink } from './urlSchema';
 const VIEW_KEY = 'atlas_view';
@@ -31,9 +32,8 @@ export function urlViewDecimals(zoom: number): number {
 
 /** The view as written to the address bar: lat and lon rounded to urlViewDecimals, zoom to 2 places. */
 export function urlView(lat: number, lon: number, zoom: number): SavedView {
-  const round = (value: number, places: number) => Number(value.toFixed(places));
   const places = urlViewDecimals(zoom);
-  return { lat: round(lat, places), lon: round(lon, places), zoom: round(zoom, 2) };
+  return { lat: roundTo(lat, places), lon: roundTo(lon, places), zoom: roundTo(zoom, 2) };
 }
 
 export function getSavedView(): SavedView | null {
