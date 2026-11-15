@@ -20,10 +20,10 @@ import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
-import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
 import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
+import { metresBetween } from './geoDistance';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -724,8 +724,9 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   return crumbs;
 }
 
+/** Centres are [lat, lon]. */
 function distanceKm(a: [number, number], b: [number, number]): number {
-  return haversineM(a[0], a[1], b[0], b[1]) / 1000;
+  return metresBetween({ lat: a[0], lon: a[1] }, { lat: b[0], lon: b[1] }) / 1000;
 }
 
 /** Other agencies with a page in the same region, nearest first. */

@@ -93,6 +93,12 @@ const RULES: Rule[] = [
   { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
+  // CIV-1592: one distance between two points (shared/geoDistance.ts). Not a style rule, but the same kind of one-source
+  // check: the haversine sum or a metres-per-degree constant anywhere else is a second distance function.
+  { name: 'a distance function of its own (use metresBetween from shared/geoDistance.ts)', doc: 'TEXT.md',
+    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
+    allowed: ['shared/geoDistance.ts'] },
+
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },

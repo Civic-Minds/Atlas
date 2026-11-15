@@ -251,13 +251,6 @@ export function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
 }
 
-function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = (lat1 + lat2) * Math.PI / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {
   const { query, maxHeadway, agencies, modes, day, period, selectedStop, selectedRoute, bounds, hideSpan, hideLimitedService, livePollingOnly, showCorridors, showCorridorBand, hoveredBranch } = filters;
   const q = query.trim().toLowerCase();

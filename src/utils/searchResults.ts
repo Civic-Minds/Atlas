@@ -6,6 +6,7 @@ import { buildRouteFacts, labelShortNameOf, type RouteLabel } from './routeFacts
 import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
 import { searchFold } from '../../shared/areaSearch';
 import type { SearchRoutesFile, SearchStopsFile } from '../../shared/searchIndex';
+import { metresBetween } from '../../shared/geoDistance';
 
 export interface RouteSearchResult {
   key: string;
@@ -29,13 +30,6 @@ export interface SplitSearchResults<T> {
 
 function viewportCenter(bounds: ViewportBounds): [number, number] {
   return [(bounds.s + bounds.n) / 2, (bounds.w + bounds.e) / 2];
-}
-
-function distanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = (lat1 + lat2) * Math.PI / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
 }
 
 /** Geometry bbox cache — search sorts by distance and must not re-walk every LineString on each keystroke. */
@@ -79,7 +73,7 @@ function featureDistanceM(f: GeoJSON.Feature, bounds: ViewportBounds | null): nu
   const [vLat, vLon] = viewportCenter(bounds);
   const lat = (minLat + maxLat) / 2;
   const lon = (minLon + maxLon) / 2;
-  return distanceMeters(lat, lon, vLat, vLon);
+  return metresBetween({ lat, lon }, { lat: vLat, lon: vLon });
 }
 
 const stripLeadingZeros = (s: string) => s.replace(/^0+/, '') || '0';
@@ -521,7 +515,7 @@ function pointResult(lat: number, lon: number, bounds: ViewportBounds | null): {
   const [vLat, vLon] = viewportCenter(bounds);
   return {
     inView: lat >= bounds.s && lat <= bounds.n && lon >= bounds.w && lon <= bounds.e,
-    distanceM: distanceMeters(lat, lon, vLat, vLon),
+    distanceM: metresBetween({ lat, lon }, { lat: vLat, lon: vLon }),
   };
 }
 

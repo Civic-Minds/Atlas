@@ -4,6 +4,7 @@
  * "Right now" gaps between the vehicles currently on the line.
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
+import { lonLatPoint, metresBetween } from '../../shared/geoDistance';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = 30;
@@ -37,12 +38,7 @@ export interface LineModel {
   sharedStreet: string | null;
 }
 
-const lonLatDist = (a: [number, number], b: [number, number]) => {
-  const k = Math.cos((a[1] * Math.PI) / 180);
-  const dx = (a[0] - b[0]) * 111_320 * k;
-  const dy = (a[1] - b[1]) * 110_540;
-  return Math.hypot(dx, dy);
-};
+const lonLatDist = (a: readonly number[], b: readonly number[]) => metresBetween(lonLatPoint(a), lonLatPoint(b));
 
 
 
