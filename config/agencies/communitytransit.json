@@ -16,9 +16,9 @@
     -121.7
   ],
   "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-  "lastFeedExpiry": "20261211",
-  "lastFeedVersion": "20261002-20261211",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270326",
+  "lastFeedVersion": "20261110-20270326",
+  "lastRefreshedAt": "2026-11-15",
   "cities": [
     "Shoreline, Washington",
     "Marysville, Washington",
@@ -29,10 +29,10 @@
     "Bellevue, Washington",
     "Sammamish, Washington"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261211",
+  "expiredFeedCheckExpiry": "20270326",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
@@ -46,14 +46,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 188,
-      "feedExpiry": "20261211",
+      "feedExpiry": "20270326",
       "routeCount": 39,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -61,8 +61,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-  "lastPeekedExpiry": "20261211",
-  "lastServiceWeek": "6df1504ea7f4a7ed",
-  "feedObtainedAt": "20261002",
-  "lastFeedStart": "20261002"
+  "lastPeekedExpiry": "20270326",
+  "lastServiceWeek": "3c3e551ec36b2e91",
+  "feedObtainedAt": "20261114",
+  "lastFeedStart": "20261110",
+  "lastRawArchiveKey": "20270326-7262cd1eb0fcabea",
+  "lastFeedContentKey": "4df12b66f597de8c"
 }
