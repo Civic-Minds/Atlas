@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
@@ -31,6 +30,7 @@ import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
 import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
+import SearchBox from '../ui/SearchBox';
 
 export { getNowDay };
 
@@ -184,16 +184,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   return (
     <div className={`${PANEL} w-56`}>
-      <div className={SEARCH_PILL}>
-        <Search className={SEARCH_ICON} />
-        <input
-          ref={agencySearchRef}
-          value={agencyQuery}
-          onChange={e => setAgencyQuery(e.target.value)}
-          placeholder={SEARCH_ANY_PLACEHOLDER}
-          className={SEARCH_FIELD}
-        />
-      </div>
+      <SearchBox inputRef={agencySearchRef} value={agencyQuery} onChange={setAgencyQuery} placeholder={SEARCH_ANY_PLACEHOLDER} />
       <div className="flex gap-1 px-1 pt-1">
         <Pill
           tone="outline"

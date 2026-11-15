@@ -56,6 +56,9 @@ The shared components live in `src/components/ui/`.
 - An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
 - An agency's short name is shown as the agency writes it ("MiWay", not "MIWAY").
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- Every search box has a clear X once it has text (Ryan, 2026-11-14: "Yes to clear x"). CIV-1607. (checked)
+  - Pill search boxes are `SearchBox` (`src/components/ui/SearchBox.tsx`): magnifier, field, "Find …" hint and the X.
+  - The top bar's box is built in `App.tsx` for its phone hint and results keys, and uses `SearchClearButton` too.
 - Every search box's clear X is `SearchClearButton` (`src/components/ui/SearchClearButton.tsx`). CIV-1569. (checked: no X icon elsewhere)
 - Every close X on a panel, card or dialog is `PanelCloseButton` (`src/components/ui/PanelHeader.tsx`). CIV-1569. (checked)
   - Each keeps its kind's look.
