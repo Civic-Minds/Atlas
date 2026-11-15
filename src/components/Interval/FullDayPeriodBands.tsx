@@ -1,12 +1,12 @@
 import { CARD_NOTE } from '../../styles';
-import { PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
+import { PERIOD_LABELS, type PeriodKey } from '../../hooks/useIntervalStats';
 import { PERIOD_OVERVIEW_BANDS } from '../../utils/sparklinePeriods';
 
 /**
  * The hovered (or selected) period's name: above the route card's chart, and on each full-day chart's title line
  * (CIV-1094). `className` places it.
  */
-export function HoveredPeriodName({ period, className = '' }: { period: TimePeriod | null; className?: string }) {
+export function HoveredPeriodName({ period, className = '' }: { period: PeriodKey | null; className?: string }) {
   if (!period) return null;
   return (
     <span className={`${CARD_NOTE} pointer-events-none ${className}`} data-testid="hovered-period-name">
