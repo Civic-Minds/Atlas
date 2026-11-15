@@ -10,6 +10,9 @@ import { haversineDistance } from './utils.js';
 export const SAME_TERMINUS_M = 1500;
 
 const FILLER = /\b(line|route|brt|rapid|express|bus|the|via|to|and|limited|ltd|local|crosstown|connector|shuttle)\b/g;
+/** Street-type words (#1527): "King Rd" and "Webster Rd" share only "Rd", which says nothing about the route, so they
+ *  are left out of the name comparison like the filler words. */
+const STREET_TYPES = /\b(rd|road|st|street|ave|avenue|av|blvd|boulevard|dr|drive|hwy|highway|pkwy|parkway)\b/g;
 
 /** Lower case, no punctuation or filler words, so "Red Line BRT" and "Red Line" compare equal. */
 export function normalizeRouteName(name: string | undefined | null): string {
@@ -18,6 +21,7 @@ export function normalizeRouteName(name: string | undefined | null): string {
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .replace(FILLER, ' ')
+    .replace(STREET_TYPES, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }

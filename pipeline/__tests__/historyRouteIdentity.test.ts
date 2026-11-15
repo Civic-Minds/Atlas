@@ -26,6 +26,8 @@ describe('route identity by long name and terminus, with no line (CIV-422)', () 
     expect(splitRouteHistory([p(2019, 'Red Line', [DOWNTOWN, CASTLETON]), p(2021, 'Red Line BRT', [DOWNTOWN, CASTLETON])]).splits).toEqual([]);
     expect(splitRouteHistory([p(2019, 'Meridian St', [DOWNTOWN, CASTLETON]), p(2021, 'North Meridian', [CASTLETON, DOWNTOWN])]).splits).toEqual([]);
     expect(splitRouteHistory([p(2019, 'Fort Harrison', [DOWNTOWN, CASTLETON]), p(2021, 'Fort Harrison', [DOWNTOWN, BROAD_RIPPLE])]).splits).toEqual([]);
+    // #1527: a shared street type is not a shared name (TriMet 31 King Rd, then Webster Rd).
+    expect(splitRouteHistory([p(2015, 'King Rd', [DOWNTOWN, CASTLETON]), p(2019, 'Webster Rd', [DOWNTOWN, BROAD_RIPPLE])]).splits).toHaveLength(1);
     // Different words, same two ends (a pure rename): one route.
     expect(splitRouteHistory([p(2019, 'Nora', [DOWNTOWN, CASTLETON]), p(2021, 'Keystone', [CASTLETON, DOWNTOWN])]).splits).toEqual([]);
   });
@@ -37,7 +39,7 @@ describe('route identity by long name and terminus, with no line (CIV-422)', () 
 
   it('reads names and ends as expected', () => {
     expect(normalizeRouteName('Red Line BRT')).toBe('red');
-    expect(normalizeRouteName('Crosstown - 38th St.')).toBe('38th st');
+    expect(normalizeRouteName('Crosstown - 38th St.')).toBe('38th');
     expect(terminiOf([[1, 2], [3, 4], [5, 6]])).toEqual([[1, 2], [5, 6]]);
     expect(terminiOf([[1, 2]])).toBeNull();
   });
