@@ -289,13 +289,19 @@ export function directionStretches(
   const steadyByDay = regular.length > 0;
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
   // #1513: a trip that skips some stops of a pattern, between the same two end stops, is that
-  // pattern's trip for the steady test. Each stop sequence is its own pattern, so one such trip took a
-  // rush-hour departure from its pattern: SEPTA LAN's Lansdale short turns run 16:16, 17:12, 18:12 in
-  // Sept 2026 and are steady, but Nov 2026's 16:18 skips two stops, the pattern kept two PM trips and
-  // the hourly Doylestown branch stopped being read (60 became 33). Only a pattern that is not regular
-  // takes in such trips, and only when that makes it run steadily by day beside a pattern that already
-  // does; a regular pattern's stop-skipping trips stay variants, counted where they serve. A route-day
-  // with no steady daytime pattern keeps its fallback shape (TransLink 749 on Saturdays, two-hourly).
+  // pattern's trip for the steady test when the pattern's own trips serve the skipped stops in the
+  // same period. Each stop sequence is its own pattern, so one such trip took a rush-hour departure
+  // from its pattern: SEPTA LAN's Lansdale short turns run 16:16, 17:12, 18:12 in Sept 2026 and are
+  // steady, but Nov 2026's 16:18 skips Elkins Park and Melrose Park, the pattern kept two PM trips and
+  // the hourly Doylestown branch stopped being read (60 became 33). The 17:12 and 18:12 serve both
+  // stops in the PM peak, so the 16:18 is one of those trains. A trip that skips stops in a period
+  // where the pattern's own trips do not serve them is an express run of its own and stays separate
+  // (MBTA Worcester inbound: the 15:47 and 16:30 skip West Natick, which the 11-stop pattern serves only
+  // in the AM peak; pooled, the express runs became regular and the local stops were read nowhere). Only a
+  // pattern that is not regular takes in such trips, and only when that makes it run steadily by day
+  // beside a pattern that already does; a regular pattern's stop-skipping trips stay variants, counted
+  // where they serve. A route-day with no steady daytime pattern keeps its fallback shape (TransLink
+  // 749 on Saturdays, two-hourly).
   if (steadyByDay) {
     const regularNow = new Set(regular);
     const skipsStopsOf = (v: (typeof all)[number], p: (typeof all)[number]) => {
@@ -304,20 +310,40 @@ export function directionStretches(
       for (const stop of p.stops) if (stop === v.stops[i]) i++;
       return i === v.stops.length;
     };
-    const absorbed = new Set<(typeof all)[number]>();
+    const periodOf = (minutes: number) => PERIOD_WINDOWS.find(w => minutes >= w.start && minutes < w.end)?.key ?? null;
+    // The period a trip skips its first skipped stop in: its time at the stop just before it, which it
+    // serves (the two share their first stop).
+    const skipPeriod = (trip: DirectionTrip, p: (typeof all)[number], vStops: ReadonlySet<string>) => {
+      const first = p.stops.findIndex(stop => !vStops.has(stop));
+      const visit = trip.visits.find(v => v.stopId === p.stops[first - 1]);
+      return visit ? periodOf(visit.minutes) : null;
+    };
+    const ownPeriods = (p: (typeof all)[number], at: string) =>
+      new Set(p.trips.map(t => t.visits.find(v => v.stopId === at)).filter((v): v is TripVisit => v != null).map(v => periodOf(v.minutes)));
+    const leftovers = new Map<(typeof all)[number], DirectionTrip[]>();
     for (const p of [...all].sort((x, y) => y.trips.length - x.trips.length || y.stops.length - x.stops.length)) {
-      if (regularNow.has(p) || absorbed.has(p)) continue;
-      const skippers = all.filter(v => v !== p && !regularNow.has(v) && !absorbed.has(v) && skipsStopsOf(v, p));
+      if (regularNow.has(p) || leftovers.has(p)) continue;
+      const skippers = all.filter(v => v !== p && !regularNow.has(v) && !leftovers.has(v) && skipsStopsOf(v, p));
       if (skippers.length === 0) continue;
-      const pooled = { stops: p.stops, trips: [...p.trips, ...skippers.flatMap(v => v.trips)] };
+      const taken = new Map<(typeof all)[number], DirectionTrip[]>();
+      for (const v of skippers) {
+        const vStops = new Set(v.stops);
+        const at = p.stops[p.stops.findIndex(stop => !vStops.has(stop)) - 1];
+        const served = ownPeriods(p, at);
+        const trips = v.trips.filter(t => { const k = skipPeriod(t, p, vStops); return k != null && served.has(k); });
+        if (trips.length > 0) taken.set(v, trips);
+      }
+      if (taken.size === 0) continue;
+      const pooled = { stops: p.stops, trips: [...p.trips, ...[...taken.values()].flat()] };
       if (!isEligible(pooled) || !runsSteadily(pooled.trips, p.stops[Math.floor(p.stops.length / 2)], DAYTIME_PERIODS)) continue;
       p.trips = pooled.trips;
-      for (const v of skippers) absorbed.add(v);
+      for (const [v, trips] of taken) leftovers.set(v, v.trips.filter(t => !trips.includes(t)));
       regular.push(p);
       regularNow.add(p);
     }
-    if (absorbed.size > 0) {
-      all = all.filter(v => !absorbed.has(v));
+    if (leftovers.size > 0) {
+      for (const [v, trips] of leftovers) v.trips = trips;
+      all = all.filter(v => v.trips.length > 0);
       eligible = all.filter(isEligible);
     }
   }

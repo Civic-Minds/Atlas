@@ -56,3 +56,34 @@ describe('#1513: a stop-skipping trip of a pattern does not change the branch sp
     expect(withExpress).toEqual(base);
   });
 });
+
+// #1513 attempt 3: MBTA Framingham/Worcester inbound (Dec 2026 feed), cut down. Locals stop everywhere,
+// hourly all day. The express pattern skips the four local stops (Natick to Newtonville, w7-w10) and runs
+// only in the AM peak (5:45, 6:30, 7:07); a 7:35 skips more, and two PM expresses (15:47, 16:30) also skip
+// West Natick (w6). Pooled with the PM runs, the express pattern became regular, the main stretch moved
+// to the express stops and the four local stops were read nowhere (AM 50 read 36). The PM runs skip West
+// Natick in a period where the express pattern itself never serves it, so they stay separate.
+describe('#1513: express runs that skip stops the pattern does not serve in that period stay separate', () => {
+  const w = Array.from({ length: 15 }, (_, i) => `w${i}`);
+  const wCoord = (id: string) => (id.startsWith('w') ? [42.27 + Number(id.slice(1)) * 0.0135, -71.8] as [number, number] : undefined);
+  /** A trip over `stops`, timed by each stop's place on the local line (4 minutes apart). */
+  const run = (id: string, start: string, stops: readonly string[]): DirectionTrip =>
+    ({ tripId: id, visits: stops.map(stopId => ({ stopId, minutes: hm(start) + 4 * w.indexOf(stopId) })) });
+  const express = w.filter((_, i) => i < 7 || i > 10);
+  const locals = Array.from({ length: 19 }, (_, i) => run(`loc${i}`, `${5 + i}:04`, w));
+  const amExpress = ['5:45', '6:30', '7:07'].map((t, i) => run(`exp${i}`, t, express));
+  const deepExpress = run('exp735', '7:35', ['w0', 'w5', 'w12', 'w13', 'w14']);
+  const pmExpress = ['15:47', '16:30'].map((t, i) => run(`pm${i}`, t, express.filter(s => s !== 'w6')));
+  const shape = (trips: DirectionTrip[]) => {
+    const d = directionStretches('CR-Worcester::1::Weekday', trips, wCoord);
+    return { main: d.main!.stops.length, tails: d.tails.length };
+  };
+
+  it('the local stops stay on the main stretch when PM expresses skip a stop the express pattern serves only in the AM peak', () => {
+    expect(shape([...locals, ...amExpress, deepExpress, ...pmExpress])).toEqual({ main: 15, tails: 0 });
+  });
+
+  it('the same answer as without the PM expresses', () => {
+    expect(shape([...locals, ...amExpress, deepExpress, ...pmExpress])).toEqual(shape([...locals, ...amExpress, deepExpress]));
+  });
+});
