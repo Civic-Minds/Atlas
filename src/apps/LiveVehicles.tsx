@@ -49,6 +49,7 @@ import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
+import { directionBranchFallback } from '../../shared/headsignDisplay';
 
 interface Props {
   agencies: Agency[];
@@ -581,8 +582,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection || vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
-    const [soleKey] = [...vehiclesByDirection.keys()];
-    return soleKey !== 'Outbound' && soleKey !== 'Inbound';
+    // A sole group named only by the unnamed-direction fallback says nothing; a real name (even an agency's own
+    // "Outbound") is worth showing.
+    const [[soleKey, soleVehicles]] = [...vehiclesByDirection.entries()];
+    return !soleVehicles.some(v => v.directionId != null && soleKey === directionBranchFallback(v.directionId));
   }, [vehiclesByDirection]);
 
   // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest. A picked
