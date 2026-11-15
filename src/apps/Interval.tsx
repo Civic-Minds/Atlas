@@ -61,7 +61,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -79,6 +79,7 @@ export interface ConnectionsBarState {
   setSide: (side: 'after' | 'before') => void;
 }
 import type { StopCardExtraInput } from '../components/Interval/SidebarControls';
+import { percentText } from '../../shared/numberText';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -724,7 +725,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     function onPointerDown(e: PointerEvent) {
       const target = e.target as Node;
       if (nearbyPanelRef.current?.contains(target)) return;
-      if ((target as Element).closest?.('[aria-label="Go to my location"]')) return;
+      if ((target as Element).closest?.(`[aria-label="${LOCATE_ME_LABEL}"]`)) return;
       clearUserLocation();
     }
     document.addEventListener('pointerdown', onPointerDown);
@@ -1545,7 +1546,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 {showMatchPercentage && !isLoading && (
                   <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
                     <span className={MAP_BADGE_COUNT}>
-                      {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+                      {percentText(stats.total > 0 ? stats.matching / stats.total : 0)}
                     </span>
                     <span className={MAP_BADGE_LABEL}>match</span>
                   </div>

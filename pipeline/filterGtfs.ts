@@ -1,8 +1,25 @@
 import type { GtfsData } from '../types/gtfs';
 
-/** Keep only the routes belonging to one agency inside a multi-agency feed. */
+/**
+ * The agency a route belongs to. GTFS lets a feed with one agency leave agency_id blank (agency.txt and routes.txt):
+ * a route with no agency_id then belongs to that one agency. CIV-1580: HART's feeds before 2023 have no agency_id,
+ * so the configured filter (agency_id 1) kept nothing.
+ */
+function routeAgencyId(route: { agency_id?: string | null }, soleAgencyId: string | null): string | null {
+  const own = String(route.agency_id ?? '');
+  if (own) return own;
+  return soleAgencyId;
+}
+
+/**
+ * Keep only the routes belonging to one agency inside a multi-agency feed. In a feed with one agency, a route with no
+ * agency_id is that agency's, and a sole agency with no agency_id of its own matches any requested id (the feed has
+ * nothing else to filter out).
+ */
 export function filterGtfsByAgencyId(gtfs: GtfsData, agencyId: string): GtfsData {
-  const routes = (gtfs.routes ?? []).filter(r => String(r.agency_id ?? '') === agencyId);
+  const agencies = gtfs.agencies ?? [];
+  const soleAgencyId = agencies.length === 1 ? String(agencies[0].agency_id ?? '') || agencyId : null;
+  const routes = (gtfs.routes ?? []).filter(r => routeAgencyId(r, soleAgencyId) === agencyId);
   const routeIds = new Set(routes.map(r => r.route_id));
   const trips = (gtfs.trips ?? []).filter(t => routeIds.has(t.route_id));
   const tripIds = new Set(trips.map(t => t.trip_id));
@@ -11,7 +28,7 @@ export function filterGtfsByAgencyId(gtfs: GtfsData, agencyId: string): GtfsData
 
   return {
     ...gtfs,
-    agencies: (gtfs.agencies ?? []).filter(a => String(a.agency_id ?? '') === agencyId),
+    agencies: agencies.filter(a => (String(a.agency_id ?? '') || soleAgencyId) === agencyId),
     routes,
     trips,
     stopTimes: (gtfs.stopTimes ?? []).filter(st => tripIds.has(st.trip_id)),

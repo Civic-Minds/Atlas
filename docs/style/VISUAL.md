@@ -12,6 +12,10 @@ The shared components live in `src/components/ui/`.
 - Docs-style pages (About, Docs, Terms, Privacy, Changelog, Research) use `DocsPageLayout` (`src/components/ui/DocsPageLayout.tsx`). Commit ce33bc90.
 - Data pages (agency, area, agencies index) use its data-page form. Commit ce33bc90.
 - The site header stays pinned on every docs-style page. Commit 15e232a9.
+- On every page with the shared header and footer, the Atlas logo opens the About home page and "Go to Atlas" opens the map (#1509).
+  - Ryan, 2026-11-14: "like we already have the go to atlas button so confusing". Two links to the same place were confusing.
+  - This replaces CIV-1312, where only the About page's logo stayed on /about.
+  - Pages with their own header (the Live tool, diagnostics) keep the logo on the map.
   - `DocsPageLayout` always uses `PageShell`'s sticky header.
 - The "On this page" menu is `PageContents` (`src/components/PageContents.tsx`). Commit 49f72ada.
   - It highlights the section being read.
@@ -52,6 +56,9 @@ The shared components live in `src/components/ui/`.
 - An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.
 - An agency's short name is shown as the agency writes it ("MiWay", not "MIWAY").
 - A clear (X) button inside a pill-shaped search box sits at least `right-2` in from the edge, never flush with the border.
+- Every search box has a clear X once it has text (Ryan, 2026-11-14: "Yes to clear x"). CIV-1607. (checked)
+  - Pill search boxes are `SearchBox` (`src/components/ui/SearchBox.tsx`): magnifier, field, "Find …" hint and the X.
+  - The top bar's box is built in `App.tsx` for its phone hint and results keys, and uses `SearchClearButton` too.
 - Every search box's clear X is `SearchClearButton` (`src/components/ui/SearchClearButton.tsx`). CIV-1569. (checked: no X icon elsewhere)
 - Every close X on a panel, card or dialog is `PanelCloseButton` (`src/components/ui/PanelHeader.tsx`). CIV-1569. (checked)
   - Each keeps its kind's look.

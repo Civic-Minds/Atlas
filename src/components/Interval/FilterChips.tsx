@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
@@ -30,6 +29,8 @@ import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
 import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { metresText } from '../../../shared/unitText';
+import SearchBox from '../ui/SearchBox';
 
 export { getNowDay };
 
@@ -183,16 +184,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
 
   return (
     <div className={`${PANEL} w-56`}>
-      <div className={SEARCH_PILL}>
-        <Search className={SEARCH_ICON} />
-        <input
-          ref={agencySearchRef}
-          value={agencyQuery}
-          onChange={e => setAgencyQuery(e.target.value)}
-          placeholder={SEARCH_ANY_PLACEHOLDER}
-          className={SEARCH_FIELD}
-        />
-      </div>
+      <SearchBox inputRef={agencySearchRef} value={agencyQuery} onChange={setAgencyQuery} placeholder={SEARCH_ANY_PLACEHOLDER} />
       <div className="flex gap-1 px-1 pt-1">
         <Pill
           tone="outline"
@@ -342,7 +334,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Wait" value={String(c.wait)} onChange={v => c.setWait(Number(v))}
           options={CONNECTION_WINDOWS.map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Walk" value={String(c.distance)} onChange={v => c.setDistance(Number(v))}
-          options={c.distances.map(m => [String(m), `${m} m`] as const)} />
+          options={c.distances.map(m => [String(m), metresText(m)] as const)} />
         <PillGroup outlined label="Side" value={c.side} onChange={v => c.setSide(v as 'after' | 'before')} options={CONNECTION_SIDE_LABELS} />
         {pickedLabel && (
           <div className="relative">

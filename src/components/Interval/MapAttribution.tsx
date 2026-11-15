@@ -10,7 +10,7 @@ import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
-import { CONTEXT_CREDIT_SHORT, contextCreditTitle } from '../../content/noticeCopy';
+import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 
 
@@ -60,7 +60,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
         </button>
         {aboutOpen && (
           <div className={`absolute bottom-full left-0 mb-2 ${FLOATING_CARD} min-w-44 p-1.5 flex flex-col gap-0.5`}>
-            <a href="/about" className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>About Atlas</a>
+            <a href="/about" className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</a>
             {whatsNewEnabled && (
               <button
                 type="button"
@@ -68,7 +68,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
                 aria-haspopup="dialog"
                 className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl text-left flex items-center justify-between gap-4 hover:text-[var(--text-primary)]`}
               >
-                <span>What’s new</span>
+                <span>{WHATS_NEW_TITLE}</span>
                 <span className="text-[var(--text-muted)]">v{shortVersion(appVersion)}</span>
               </button>
             )}
@@ -86,7 +86,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
         href="/about"
         className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap no-underline hover:text-[var(--text-primary)]`}
       >
-        About Atlas
+        {ABOUT_ATLAS}
       </a>
       {whatsNewEnabled && (
         <button
@@ -96,7 +96,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
           aria-haspopup="dialog"
           className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
         >
-          v{shortVersion(appVersion)} · What’s new
+          v{shortVersion(appVersion)} · {WHATS_NEW_TITLE}
         </button>
       )}
       <a

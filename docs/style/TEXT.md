@@ -38,6 +38,22 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 
+## Numbers
+
+- Every count, percent and decimal figure is written by `shared/numberText.ts`. CIV-1587. (checked)
+- Counts have a comma every three digits, the same in every browser language: "1,234 trips" (`countText`).
+- A share is a whole percent: "12%" (`percentText`). (checked)
+- Service delivered is to a tenth of a percent, rounded down, always one decimal: "99.0%", "100%" (`percentTenthText`, #1472).
+- A change in a share has a sign, and none when it rounds to 0: "+12%", "−4%", "0%" (`signedPercentText`).
+- Negative numbers use a real minus sign (−), not a hyphen.
+- Distances, speeds and densities are written by `shared/unitText.ts`. CIV-1590. (checked)
+  - Distances in whole metres: "347 m away", "within 400 m" (`metresText`), so the words match the distance a filter uses.
+  - Speeds in whole km/h: "25 km/h" (`speedText`).
+  - People per square kilometre to a tenth under 10, whole from 10: "5.3", "1,234" (`densityText`).
+  - Prose such as "about 1 km" stays as written.
+- Minutes come from `shared/headwayText.ts` and `shared/liveFormat.ts`, not from here.
+- Coordinates in links and report details are machine values and keep their own decimals.
+
 ## Words
 
 - Plain words a non-expert understands at once.
@@ -47,12 +63,16 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - "Runs irregularly in this period" on cards.
   - "Irregular" in table cells and list values.
   - Never "no regular service", which reads as if nothing runs. (checked)
+- "Report a problem" reasons are named once, in `REPORT_REASON` (`src/components/Interval/cardUi.tsx`); cards hide or pre-check them by that name. CIV-1591. (checked)
 - "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238. (checked: "one-off")
 - "Schedule", not "timetable", in all rider-facing text, on the map and in Live, including approved texts (Ryan, CIV-1079, CIV-1160). (checked)
   - Code names (`noTimetableTrip` and the like) stay.
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059. (checked)
 - Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160. (checked: `curlyApostrophes.test.ts`)
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
+- Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
+- Empty and not-found pages link back with "Open the Atlas map" (`OPEN_MAP_LINK`). CIV-1594. (checked)
+- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s new", "About Atlas", map export titles). CIV-1599. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.

@@ -14,6 +14,7 @@ import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE } from '../../content/noticeCopy';
+import { DIRECTION_LABEL, ON_TIME_LABEL } from '../../../shared/liveWording';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
 const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
@@ -175,7 +176,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
       {replacement}
 
       {/* The direction pills only steer "Right now", so they show only with it. */}
-      {live && directions.length > 1 && <PillGroup label="Direction" options={directions} value={directionId} onChange={setDir} />}
+      {live && directions.length > 1 && <PillGroup label={DIRECTION_LABEL} options={directions} value={directionId} onChange={setDir} />}
 
       {live && (
         <SidebarCardSection label={rightNowLabel}>
@@ -185,7 +186,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
             <>
               <Stats items={[
                 ['Vehicles', String(live.cars)],
-                ...(onTime != null ? [['On time', String(onTime)] as [string, string]] : []),
+                ...(onTime != null ? [[ON_TIME_LABEL, String(onTime)] as [string, string]] : []),
                 ...(period ? [['Scheduled', schedLabel] as [string, string]] : []),
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}

@@ -6,6 +6,13 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Docs page quotes the app's real notices and labels**: two notices were quoted in old wording, and the Live report pages' "What these terms mean" link landed on a glossary without the Live terms on beta
+- **A route card row's dot is never better than its number (beta)**: GO Kitchener's "[every 120 min](https://github.com/Civic-Minds/Atlas/issues/1506)" row had the route's every-30 dot beside a grey line
+- **A line with [no regular service](https://github.com/Civic-Minds/Atlas/issues/1503) in a period shows no regular sections (beta)**: GO Barrie at PM peak read every 60 between Union and Aurora while its card said it runs irregularly
+- **A [selected route](https://github.com/Civic-Minds/Atlas/issues/1504) is drawn only when it passes the map's filters (beta)**: section colours drew GO Barrie and Stouffville at midday when the public map hid them
+- **The Atlas logo on About, Docs, Research and agency pages opens the About home page**: "Go to Atlas" beside it already opens [the map](https://github.com/Civic-Minds/Atlas/issues/1509), so the two no longer lead to the same place
+- **A direction with no name reads "Direction 1" or "Direction 2" everywhere**: the schedule's direction buttons said "One way" / "Other way" and Live said "Outbound" / "Inbound" for the same case
+- **Every search box has a clear X**: the filter's agency search and the settings searches for hidden routes, part-time routes and feeds now clear in one tap, like the top bar
 - **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
 - **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
 - **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text

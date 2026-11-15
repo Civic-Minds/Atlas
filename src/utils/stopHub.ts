@@ -1,13 +1,7 @@
 /** Shared stop-hub expansion: same-name siblings + proximity hubs (150 m). */
+import { metresBetween } from '../../shared/geoDistance';
 
 export const STOP_HUB_PROXIMITY_M = 150;
-
-export function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = ((lat1 + lat2) * Math.PI) / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = ((lon2 - lon1) * 40075000 * Math.cos(latMid)) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
-}
 
 export interface StopHubCandidate {
   stopId: string;
@@ -105,7 +99,7 @@ export function collectStopHubSiblings(
 
     let isProximitySibling = false;
     if (!isExactNameSibling) {
-      const dist = getDistanceMeters(clickLat, clickLon, c.lat, c.lon);
+      const dist = metresBetween({ lat: clickLat, lon: clickLon }, c);
       isProximitySibling =
         dist <= proximityM ||
         (dist <= 250 && shareSignificantToken(primaryStopName, c.stopName));
@@ -148,7 +142,7 @@ export function nearbyRouteClosestStops(
     const p = f.properties as { stopId?: string; stopName?: string; routeIds?: string[] } | null;
     if (!p?.stopId || !p.routeIds?.length || ownStopIds?.has(p.stopId)) continue;
     const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
-    const d = getDistanceMeters(lat, lon, flat, flon);
+    const d = metresBetween({ lat, lon }, { lat: flat, lon: flon });
     if (d > maxMeters) continue;
     for (const rid of p.routeIds) {
       if (ownRouteIds?.has(rid)) continue;

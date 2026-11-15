@@ -30,8 +30,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { DELAY_STARTS_TITLE, TYPICAL_ADDED, coveredRoutesText, lateStopsIntro, bunchPartsText, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText, TRIP_TIME_LABEL } from '../shared/liveWording';
-import { pct as pctOf, pctTenth } from '../shared/liveFormat';
+import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
@@ -40,6 +39,7 @@ import { lateShareColor } from './components/Live/lateShare';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';
+import { percentTenthText, percentText, countText } from '../shared/numberText';
 
 /**
  * One column grid for every table on the page (widths in rem), in the area page's table layout: the figure columns sit
@@ -48,10 +48,10 @@ import { countOf } from '../shared/overflowText';
  */
 const FIRST_COL = 15, ROUTE_COL = 10, DIR_COL = 6.5, FIGURE_COL = PAGE_FIGURE_COLUMN_REM;
 
-const pct = (x: number | null) => (x == null ? MISSING_VALUE : pctOf(x));
+const percentOrDash = (x: number | null) => (x == null ? MISSING_VALUE : percentText(x));
 
 type Sort = LiveSort;
-const SORTS: [Sort, string][] = [['late', 'Late'], ['runTime', TRIP_TIME_LABEL], ['bunching', 'Bunching'], ['delivered', 'Service delivered']];
+const SORTS: [Sort, string][] = [['late', LATE_LABEL], ['runTime', TRIP_TIME_LABEL], ['bunching', BUNCHING_LABEL], ['delivered', SERVICE_DELIVERED_TITLE]];
 /** The value a route is sorted by, highest first. A switch, not an object lookup, so no outside value picks a method. */
 function sortValue(sort: Sort, r: AgencyRouteRow): number {
   switch (sort) {
@@ -125,11 +125,11 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rowKey={r => r.route}
             columns={[
               { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
-              { key: 'late', sortable: true, header: 'Late', width: FIGURE_COL, cell: r => <span title={`${r.lateN.toLocaleString()} trips this week`}>{pct(r.lateShare)}</span> },
-              { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => pct(r.lateLastWeek) },
+              { key: 'late', sortable: true, header: LATE_LABEL, width: FIGURE_COL, cell: r => <span title={`${countText(r.lateN)} trips this week`}>{percentOrDash(r.lateShare)}</span> },
+              { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => percentOrDash(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? MISSING_VALUE : runTimeShareText(r.runTimeOver)) },
-              { key: 'bunching', sortable: true, header: 'Bunching', width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : pct(r.bunchingShare)) },
-              { key: 'delivered', sortable: true, header: 'Delivered', width: FIGURE_COL, cell: r => (r.deliveredShare == null ? MISSING_VALUE : pctTenth(r.deliveredShare)) },
+              { key: 'bunching', sortable: true, header: BUNCHING_LABEL, width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : percentOrDash(r.bunchingShare)) },
+              { key: 'delivered', sortable: true, header: DELIVERED_LABEL, width: FIGURE_COL, cell: r => (r.deliveredShare == null ? MISSING_VALUE : percentTenthText(r.deliveredShare)) },
             ]}
           />
           </ScrollX>
@@ -145,7 +145,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
  */
 function LateStops({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STOP_TO_RANK_YET}</p>;
-  const spots = lateStopSpots(rows.map(r => ({ key: `${r.route}-${r.directionId}-${r.stopId}`, lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, name: stop(r.name), line: `${r.route} ${nameCase(r.direction, 'liveStop')}: ${pct(r.lateShare)} late`, lateShare: r.lateShare })));
+  const spots = lateStopSpots(rows.map(r => ({ key: `${r.route}-${r.directionId}-${r.stopId}`, lonLat: r.lat != null && r.lon != null ? [r.lon, r.lat] : null, name: stop(r.name), line: `${r.route} ${nameCase(r.direction, 'liveStop')}: ${percentOrDash(r.lateShare)} late`, lateShare: r.lateShare })));
   return <LateStopsMap spots={spots} routes={{ agency: s.agency }} label={`Map of the ${countOf(rows.length, 'stop')} most often late`} className="mt-6" />;
 }
 
@@ -165,7 +165,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         columns={[
           { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
           { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
-          { key: 'dir', header: 'Direction', width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
+          { key: 'dir', header: DIRECTION_LABEL, width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
       />
@@ -185,7 +185,7 @@ export default function LiveAgencyPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   // The page title is the agency's full name, as on the map's agency page; the short name stays in the subtitle and tab title (CIV-1448).
   const name = agencyTitle;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p></DocsPageLayout>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.status === 'unknown_agency' ? liveNoAgencyAnalysis(agencyName) : (state.data as { reason: string }).reason;
@@ -205,7 +205,7 @@ export default function LiveAgencyPage() {
               {liveSubtitle({ thisWeek: dates, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: coverage, agency: agencyName })}
             </p>
           </div>
-          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency)} className="shrink-0 whitespace-nowrap">{VIEW_ON_LIVE_MAP}</ArrowLink>}
         </div>
         <ErrorBoundary>
           {w && tiles.length
@@ -217,7 +217,7 @@ export default function LiveAgencyPage() {
           <RoutesTable s={s} />
         </Section>
 
-        <Section id="agency-stops" title="Stops most often late" intro={`${lateStopsIntro(Math.min(s.worstStops.length, LATE_MAP_STOPS), { scope: 'agency', dates })} ${LATE_MAP_HINT}`}>
+        <Section id="agency-stops" title={LATE_STOPS_TITLE} intro={`${lateStopsIntro(Math.min(s.worstStops.length, LATE_MAP_STOPS), { scope: 'agency', dates })} ${LATE_MAP_HINT}`}>
           <LateStops s={s} rows={s.worstStops.slice(0, LATE_MAP_STOPS)} />
         </Section>
 
@@ -225,7 +225,7 @@ export default function LiveAgencyPage() {
           <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader={TYPICAL_ADDED} format={mins} />
         </Section>
 
-        <Section id="agency-bunching" title="Where bunching forms" intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
+        <Section id="agency-bunching" title={BUNCHING_FORMS_TITLE} intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Increase" format={risePointsText} />
         </Section>
 

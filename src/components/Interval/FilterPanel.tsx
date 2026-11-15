@@ -1,9 +1,9 @@
 import { BACK_PLACES, backLinkLabel } from '../../content/backLinks';
 import { shortDate } from '../../../shared/dateText';
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
-import { Settings, SlidersHorizontal, Search } from 'lucide-react';
+import { Settings, SlidersHorizontal } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, SEARCH_FIELD, SEARCH_PILL, SEARCH_ICON, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
+import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
@@ -31,6 +31,8 @@ import { contextLayerAvailable } from './map/useContextLayer';
 import { CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/noticeCopy';
 import type { ContextMetric } from '../../utils/contextLayer';
 import { ContextKey } from './ContextLegend';
+import { countText } from '../../../shared/numberText';
+import SearchBox from '../ui/SearchBox';
 
 const CONTEXT_OPTIONS = [
   { key: 'off', label: CONTEXT_OPTION_OFF },
@@ -405,16 +407,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               {view === 'hidden-routes' || view === 'limited-routes' ? (
                 <>
                   <div className="px-5 pt-4 pb-3">
-                    <label className={SEARCH_PILL}>
-                      <Search className={SEARCH_ICON} />
-                      <input
-                        value={hiddenRoutesQuery}
-                        onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder={limitedView ? PART_TIME_ROUTES_SEARCH : SEARCH_HIDDEN_ROUTES_PLACEHOLDER}
-                        className={SEARCH_FIELD}
-                        autoFocus
-                      />
-                    </label>
+                    <SearchBox value={hiddenRoutesQuery} onChange={setHiddenRoutesQuery} placeholder={limitedView ? PART_TIME_ROUTES_SEARCH : SEARCH_HIDDEN_ROUTES_PLACEHOLDER} autoFocus />
                     <div className="flex gap-1.5 overflow-x-auto items-center mt-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
                       {['All', ...hiddenRouteRegions].map(region => {
                         const key = region === 'All' ? '' : region;
@@ -474,16 +467,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="px-5 py-3">
                   {hiddenFeedAgencies.length > 0 && (
                     <>
-                      <label className={SEARCH_PILL}>
-                        <Search className={SEARCH_ICON} />
-                        <input
-                          value={degradedFeedsQuery}
-                          onChange={event => setDegradedFeedsQuery(event.target.value)}
-                          placeholder={SEARCH_FEEDS_PLACEHOLDER}
-                          className={SEARCH_FIELD}
-                          autoFocus
-                        />
-                      </label>
+                      <SearchBox value={degradedFeedsQuery} onChange={setDegradedFeedsQuery} placeholder={SEARCH_FEEDS_PLACEHOLDER} autoFocus />
                       <div className="flex items-center gap-1.5 mt-2">
                         {(['all', 'degraded', 'unusable'] as const).map(status => (
                           <Pill
@@ -637,19 +621,19 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         {id === 'span' && (
                           <>
                             <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('hidden-routes')} className="mt-1">
-                              See all hidden routes{hiddenRoutesLoaded ? ` (${hiddenRoutes.length.toLocaleString()})` : ' (…)'}
+                              See all hidden routes{hiddenRoutesLoaded ? ` (${countText(hiddenRoutes.length)})` : ' (…)'}
                             </ArrowLink>
                           </>
                         )}
                         {id === 'limited' && limitedServiceRouteCount != null && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('limited-routes')} className="mt-1">
-                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({limitedServiceRouteCount.toLocaleString()})
+                            See all part-time {plural(limitedServiceRouteCount, 'route')} ({countText(limitedServiceRouteCount)})
                           </ArrowLink>
                         )}
                         {id === 'quality' && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
                             See all degraded {plural(hiddenFeedAgencies.length, 'feed')}
-                            {hiddenFeedAgencies.length ? ` (${hiddenFeedAgencies.length.toLocaleString()})` : ''}
+                            {hiddenFeedAgencies.length ? ` (${countText(hiddenFeedAgencies.length)})` : ''}
                           </ArrowLink>
                         )}
                       </div>

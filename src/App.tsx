@@ -58,7 +58,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
+import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
@@ -857,7 +857,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         <button
           type="button"
           onClick={toggleInfo}
-          aria-label="About Atlas"
+          aria-label={ABOUT_ATLAS}
           aria-expanded={infoOpen}
           className={TOP_BAR_ICON_BTN}
         >
@@ -888,7 +888,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
-              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Overnight service' : inBustang ? 'Bustang connections' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportTitle={inFrequentService ? MAP_EXPORT_TITLES.frequentService : inNight ? MAP_EXPORT_TITLES.night : inBustang ? MAP_EXPORT_TITLES.bustang : inHistory ? MAP_EXPORT_TITLES.history : inLive ? MAP_EXPORT_TITLES.live : MAP_EXPORT_TITLES.frequency}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}

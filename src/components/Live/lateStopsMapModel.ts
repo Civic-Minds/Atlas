@@ -2,6 +2,7 @@
  * The stops of the "Stops most often late" map (CIV-1405): one map stop per spot, from the late-stops rows. Two rows at
  * the same spot (two routes at one stop, or its two platforms) are one stop on the map, and its card lists both.
  */
+import { lonLatPoint, metresBetween } from '../../../shared/geoDistance';
 
 /** One row of the late-stops list: where it is, its stop name, and its card line ("504 King westbound: 24% late"). */
 export interface LateStopRow { key: string; lonLat: [number, number] | null; name: string; line: string; /** The row's late share, for the dot's colour. */ lateShare: number }
@@ -18,17 +19,12 @@ export const LATE_MAP_HINT = 'Click or tap a stop for its figures.';
 /** Metres within which two rows are the same stop. */
 export const SAME_SPOT_M = 40;
 
-const metres = (a: [number, number], b: [number, number]) => {
-  const k = 111320, dx = (a[0] - b[0]) * k * Math.cos(((a[1] + b[1]) / 2) * Math.PI / 180), dy = (a[1] - b[1]) * k;
-  return Math.hypot(dx, dy);
-};
-
 /** The map's stops, from rows worst first. A row with no position is left off the map. */
 export function lateStopSpots(rows: readonly LateStopRow[]): LateStopSpot[] {
   const out: LateStopSpot[] = [];
   for (const r of rows) {
     if (!r.lonLat) continue;
-    const host = out.find(o => metres(o.lonLat, r.lonLat!) < SAME_SPOT_M);
+    const host = out.find(o => metresBetween(lonLatPoint(o.lonLat), lonLatPoint(r.lonLat!)) < SAME_SPOT_M);
     if (host) host.lines.push(r.line);
     else out.push({ key: r.key, lonLat: r.lonLat, name: r.name, lines: [r.line], lateShare: r.lateShare });
   }

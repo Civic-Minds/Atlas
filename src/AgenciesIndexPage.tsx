@@ -21,6 +21,7 @@ import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
+import { countText } from '../shared/numberText';
 
 /** Shared multi-column layout for the Regions list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -92,7 +93,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                   {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <a className={UNDERLINED_LINK} href={regionPagePath(r.region)}>{r.region}</a> : r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
-                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{a.routes.toLocaleString('en-US')}{'\u00A0'}{plural(a.routes, 'route')}</span>;
+                      const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{countText(a.routes)}{'\u00A0'}{plural(a.routes, 'route')}</span>;
                       // A parent agency's row (CIV-1277) links its own page and carries no member's tags. Links are built from
                       // slugs, never read from the embedded JSON's text (CodeQL js/xss-through-dom).
                       const href = a.parent ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);

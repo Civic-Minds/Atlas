@@ -12,7 +12,7 @@ import { routeLabels } from '../utils/format';
 import { RouteTitleName } from '../components/RouteRowName';
 import { agencyCardTitle, agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell, REPORT_REASON } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -45,7 +45,7 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
-import { reportDetails } from '../utils/reportIssue';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -53,6 +53,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
+import { TRIP_TIME_LABEL } from '../../shared/liveWording';
 
 export interface RouteSnapshot {
   label: string;
@@ -156,7 +157,7 @@ function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minut
  * from here. The amounts are the shared formatters' ("15 min", "7.5 min"); should the two ever not share
  * the unit, each keeps its own.
  */
-export function changeHeadline(label: 'Frequency' | 'Trip time', firstAmount: string, lastAmount: string): string {
+export function changeHeadline(label: 'Frequency' | typeof TRIP_TIME_LABEL, firstAmount: string, lastAmount: string): string {
   const unit = ' min';
   const first = firstAmount.endsWith(unit) && lastAmount.endsWith(unit) ? firstAmount.slice(0, -unit.length) : firstAmount;
   return `${label}: ${first} → ${lastAmount}`;
@@ -344,12 +345,12 @@ function RouteHistoryCard({
             title={`History: ${agencyName} ${route.routeShortName}`}
             details={reportDetails([
               ['Agency', agencyName],
-              ['Agency slug', agencySlug],
+              [REPORT_DETAIL_LABELS.agencySlug, agencySlug],
               ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
               ['Snapshots', snaps.map(s => s.label).join(', ')],
               ...(day !== 'Weekday' ? [['Day', day] as [string, string]] : []),
             ])}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -416,7 +417,7 @@ function RouteHistoryCard({
           <ChangeBox tone={summary.worse ? 'negative' : 'positive'} headline={summary.text} dates={summary.subtext} note={frequencyChangeNote(day)} testId="history-frequency" />
         )}
         {tripTime && (
-          <ChangeBox tone={tripTime.tone} headline={changeHeadline('Trip time', tripTime.first, tripTime.last)} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
+          <ChangeBox tone={tripTime.tone} headline={changeHeadline(TRIP_TIME_LABEL, tripTime.first, tripTime.last)} dates={tripTime.dates} note={HISTORY_TRIP_TIME_NOTE} testId="history-trip-time" />
         )}
     </SidebarCardShell>
     </div>
@@ -731,8 +732,8 @@ function HistoryAgencyPanel({
           report={(
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
-              details={reportDetails([['Agency', agencyHistory.name], ['Agency slug', agencyHistory.slug]])}
-              excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+              details={reportDetails([['Agency', agencyHistory.name], [REPORT_DETAIL_LABELS.agencySlug, agencyHistory.slug]])}
+              excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
             />
           )}
         >

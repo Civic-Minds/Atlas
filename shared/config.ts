@@ -98,10 +98,11 @@ export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE ==
 // stop), with the route-level tier still deciding the filter. Beta and dev only until the
 // segment colours have been looked at on real routes.
 export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// Population density / median household income shading under the route lines (CIV-482). Beta and
-// dev only. There is no production data URL yet, so even where the flag is on the control stays hidden
+// Population density / median household income shading under the route lines (CIV-482). There is no production data URL yet, so even where the flag is on the control stays hidden
 // unless a dev-only file URL is set (CONTEXT_LAYER_URL below).
-export const CONTEXT_LAYER_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// CIV-524 (Ryan, 2026-11-14: "I think it should be local only"): local dev only, like the connections bar; off on
+// public, preview and beta.
+export const CONTEXT_LAYER_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 // Local testing only: a PMTiles URL for the context layer (served by vite from tmp/dev-context, see
 // vite.config.ts). Ignored in every built site, so a deployed build can never be pointed at other data.
 const devContextUrl: unknown =

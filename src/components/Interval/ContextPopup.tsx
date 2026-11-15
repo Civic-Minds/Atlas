@@ -5,14 +5,15 @@ import {
   closeLabel, CONTEXT_INCOME_TOP, CONTEXT_LEGEND_TITLE_DENSITY, CONTEXT_LEGEND_TITLE_INCOME, CONTEXT_NO_DENSITY,
   CONTEXT_NO_INCOME, contextDensityLine, contextIncomeLine, contextMarginLine, contextUncertainLine,
 } from '../../content/noticeCopy';
-import { formatDensity, formatIncome, formatMarginPct, readContext, type ContextMetric, type ContextProps } from '../../utils/contextLayer';
+import { formatIncome, formatMarginPct, readContext, type ContextMetric, type ContextProps } from '../../utils/contextLayer';
+import { densityText } from '../../../shared/unitText';
 
 /** The lines the popup shows for one tract: a title and one or two detail lines. Pure, so it can be tested. */
 export function contextPopupLines(metric: ContextMetric, p: ContextProps): { title: string; lines: string[] } {
   const title = metric === 'density' ? CONTEXT_LEGEND_TITLE_DENSITY : CONTEXT_LEGEND_TITLE_INCOME;
   const r = readContext(metric, p);
   if (r.kind === 'missing') return { title, lines: [metric === 'density' ? CONTEXT_NO_DENSITY : CONTEXT_NO_INCOME] };
-  if (metric === 'density') return { title, lines: [contextDensityLine(formatDensity(r.value))] };
+  if (metric === 'density') return { title, lines: [contextDensityLine(densityText(r.value))] };
   if (r.kind === 'uncertain') {
     return { title, lines: [r.marginPct === null ? CONTEXT_NO_INCOME : contextUncertainLine(formatMarginPct(r.marginPct))] };
   }

@@ -22,7 +22,7 @@ import {
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
-import { andOthers } from '../shared/overflowText';
+import { andOthers, plural } from '../shared/overflowText';
 import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, FEATURES, PERIOD_LABELS } from '../shared/config';
@@ -40,7 +40,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, OPEN_MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -76,7 +76,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
-    ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
+    ? ` ${plural(data.agency.routes.length, 'Its route has', 'Its routes have')} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
@@ -165,7 +165,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
     );
   }
 
@@ -186,7 +186,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
-            <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>{VIEW_ON_MAP}</ArrowLink>
           </div>
           <Intro data={data!} />
 
@@ -234,7 +234,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 <SectionTitle id="nearby-heading">
                   {data!.area?.page !== false && data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
                 </SectionTitle>
-                <ArrowLink href={AGENCY_INDEX_PATH}>See all agencies</ArrowLink>
+                <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
@@ -245,7 +245,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           )}
 
           {nearby.length === 0 && (
-            <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">See all agencies</ArrowLink>
+            <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">{SEE_ALL_AGENCIES}</ArrowLink>
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">

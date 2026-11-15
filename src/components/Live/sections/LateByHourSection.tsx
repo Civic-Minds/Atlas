@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { MISSING_VALUE } from '../../../../shared/missingValue';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { fadedNoteText, excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_THRESHOLD, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
@@ -13,8 +13,9 @@ import Widget from '../tool/Widget';
 import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
-import { DAYS, pct } from './figures';
+import { DAYS } from './figures';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays } from '../../../content/noticeCopy';
+import { percentText, countText } from '../../../../shared/numberText';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = 30;
@@ -107,14 +108,14 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
                     <h3 className="text-base font-black">{c.label}</h3>
                     <LeftOutDays className="text-sm text-[var(--text-dim)]" dates={c.leftOut ?? []} />
                   </div>
-                  {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${c.late.n.toLocaleString()} departures`}>{pct(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
+                  {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${countText(c.late.n)} departures`}>{percentText(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
                 </>
               )}
               {c.late && c.late.n > 0 ? (
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark departures yAxis periodBand idleText={c.thin ? THIN_HINT : undefined} barColor={lateShareColor} hover={hover} onHover={setHover} height={tall ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={axis} scale={scale} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
-                      ariaLabel={`${c.label}: share of departures late by hour of the day, ${pct(c.late.share)} late overall.`} />
+                    <HourSpark departures yAxis periodBand idleText={c.thin ? THIN_HINT : undefined} barColor={lateShareColor} hover={hover} onHover={setHover} height={tall ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={axis} scale={scale} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
+                      ariaLabel={`${c.label}: share of departures late by hour of the day, ${percentText(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">{LIVE_NO_DEPARTURES_IN_PERIOD}</p>}
                 </div>
               ) : withLabels ? <p className="mt-1 text-sm text-[var(--text-muted)]">{liveNoGoodDays(c.label)}</p> : null}
@@ -173,7 +174,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
         {DAYS.map(([k, label]) => {
           const c = m.countsFor(k);
           return c && c.n > 0
-            ? <Tile key={k} label={label} value={pct(c.lateShare)} sub={`late, of ${c.n.toLocaleString()} · ${pct(c.earlyShare)} ahead`} thin={isThin(c.days)} />
+            ? <Tile key={k} label={label} value={percentText(c.lateShare)} sub={`late, of ${countText(c.n)} · ${percentText(c.earlyShare)} ahead`} thin={isThin(c.days)} />
             : <Tile key={k} label={label} value={MISSING_VALUE} sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
@@ -194,8 +195,8 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
       <div className={`${KPI_TILE.frame} ${isThin(c.days) ? 'opacity-60' : ''}`} title={isThin(c.days) ? THIN_HINT : undefined}>
         <div className={KPI_TILE.label}>{label}</div>
-        <div className={KPI_TILE.value}>{pct(c.lateShare)}</div>
-        <div className={KPI_TILE.line}>late, of {c.n.toLocaleString()} · {pct(c.earlyShare)} ahead</div>
+        <div className={KPI_TILE.value}>{percentText(c.lateShare)}</div>
+        <div className={KPI_TILE.line}>late, of {countText(c.n)} · {percentText(c.earlyShare)} ahead</div>
         <div className={KPI_TILE.line}>{LATE_THRESHOLD}</div>
         {isThin(c.days) && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
       </div>
@@ -212,11 +213,11 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   return (
     <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
       <HourSpark
-        idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={pct} unit="departures" valueHeader="Late"
+        idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}
         shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
         hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}
-        ariaLabel={`Share of departures late by hour of the day${overall != null ? `, ${pct(overall)} late overall` : ''}.`}
+        ariaLabel={`Share of departures late by hour of the day${overall != null ? `, ${percentText(overall)} late overall` : ''}.`}
       />
     </Widget>
   );

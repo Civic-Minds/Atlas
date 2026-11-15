@@ -1,9 +1,8 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import { shortDate } from '../../shared/dateText';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { Search, Radio } from 'lucide-react';
-import SearchClearButton from './ui/SearchClearButton';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
+import { Radio } from 'lucide-react';
+import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
@@ -22,12 +21,13 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
+import SearchBox from './ui/SearchBox';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -436,18 +436,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'agencies' && (
             <div className="flex flex-col h-full min-h-0 overflow-hidden">
               <div className={AGENCY_LIST_FILTERS}>
-                <div className={SEARCH_PILL}>
-                  <Search className={SEARCH_ICON} />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                    placeholder={SEARCH_AGENCIES_PLACEHOLDER}
-                    className={SEARCH_FIELD}
-                  />
-                  {query && <SearchClearButton variant="pill" onClear={() => setQuery('')} />}
-                </div>
+                <SearchBox inputRef={searchInputRef} value={query} onChange={setQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
                 <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {
                     const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
@@ -586,7 +575,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {selectedAgency && (
                 <>
                   <LinkCard as="button"
-                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }} icon="chevron">View on map</LinkCard>
+                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }} icon="chevron">{VIEW_ON_MAP}</LinkCard>
 
                   {selectedLiveRoutes.length > 0 && (
                     <div>

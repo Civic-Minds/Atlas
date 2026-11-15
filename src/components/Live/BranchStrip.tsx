@@ -2,14 +2,11 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type Keyboard
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
-import {
-  MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption,
-  type RouteStripMode, type RouteStripStop,
-  stripLegendFlags,
-} from './routeStripModel';
+import { MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption, type RouteStripMode, type RouteStripStop, stripLegendFlags } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
 import { countOf } from '../../../shared/overflowText';
+import { percentText, countText } from '../../../shared/numberText';
 
 export interface BranchStripProps {
   model: BranchModel;
@@ -141,9 +138,9 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         columns={[
           { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: s => s.name },
           { key: 'delay', header: STRIP_COLUMNS.delay, cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : NOT_MEASURED_CELL) },
-          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : NOT_MEASURED_CELL) },
+          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? percentText(s.lateShare) : NOT_MEASURED_CELL) },
           { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
-          { key: 'n', header: STRIP_COLUMNS.n, cell: s => s.n.toLocaleString() },
+          { key: 'n', header: STRIP_COLUMNS.n, cell: s => countText(s.n) },
         ]}
       />
     </div>

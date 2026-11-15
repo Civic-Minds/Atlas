@@ -5,7 +5,7 @@ import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 import AgencyName from '../../ui/AgencyName';
 import { CardBackLink } from '../../CardBack';
 import RouteListRow from '../../RouteListRow';
-import { CardReportButton } from '../cardUi';
+import { CardReportButton, REPORT_REASON } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -61,7 +61,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
           <CardReportButton
             title="Route chooser"
             details={chooserReportDetails(disambigDetails)}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </div>

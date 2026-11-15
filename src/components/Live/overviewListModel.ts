@@ -2,12 +2,13 @@
  * The Live route list's numbers (CIV-991): each route's figure for the chosen measure, the order the list and the top
  * bar's route menu show, and each row's bar. OverviewList draws them.
  */
-import { minutesText, pct, signedPct } from '../../../shared/liveFormat';
+import { minutesText } from '../../../shared/liveFormat';
 import { runTimeDiffText } from '../../../shared/liveWording';
 import type { AgencyRouteRow, AgencySummary } from '../../../shared/liveAgency';
 import { runTimeDiffMin, weekForBand, withMainPatternTrip, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
 import { mapStep, type MapMeasure } from './routeMapModel';
 import { delayHeatPoints } from './delayHeatModel';
+import { percentText, signedPercentText } from '../../../shared/numberText';
 
 /**
  * A route's figure for one time of day (#1150, CIV-1459): this week's figure for that period, from the same week
@@ -17,13 +18,13 @@ import { delayHeatPoints } from './delayHeatModel';
 export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' | 'extraWait' | 'bunching', band: DashboardBand): { value: number; text: string } | null {
   const t = v3 ? weekForBand(withMainPatternTrip(v3).weekly, band)?.thisWeek : null;
   if (!t) return null;
-  if (measure === 'late') return t.late && t.late.n > 0 ? { value: t.late.share, text: pct(t.late.share) } : null;
+  if (measure === 'late') return t.late && t.late.n > 0 ? { value: t.late.share, text: percentText(t.late.share) } : null;
   if (measure === 'runTime') {
     if (!t.tripTime || !(t.tripTime.n > 0)) return null;
     const diff = runTimeDiffMin(t.tripTime.typicalMin, t.tripTime.scheduledMin);
     return { value: diff, text: runTimeDiffText(diff, false) };
   }
-  if (measure === 'bunching') return t.bunching && t.bunching.gaps > 0 ? { value: t.bunching.share, text: pct(t.bunching.share) } : null;
+  if (measure === 'bunching') return t.bunching && t.bunching.gaps > 0 ? { value: t.bunching.share, text: percentText(t.bunching.share) } : null;
   return t.extraWait && t.extraWait.gaps > 0 ? { value: t.extraWait.minutes, text: minutesText(t.extraWait.minutes) } : null;
 }
 
@@ -32,15 +33,15 @@ export function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMe
   // A time of day reads that period's own figure (#1150, CIV-1459).
   if (band !== 'all' && measure !== 'delayStarts') return bandFigure(v3, measure, band);
   switch (measure) {
-    case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: pct(r.lateShare) };
+    case 'late': return r.lateShare == null ? null : { value: r.lateShare, text: percentText(r.lateShare) };
     // Sorted by the minutes it shows (a share would put "4 min faster" above "8 min faster").
-    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeDiffMin ?? r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signedPct(r.runTimeOver) };
+    case 'runTime': return r.runTimeOver == null ? null : { value: r.runTimeDiffMin ?? r.runTimeOver, text: r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : signedPercentText(r.runTimeOver) };
     case 'delayStarts': {
       // The route's stop where vehicles add the most, for the map's time of day (the heatmap prototype).
       const top = v3 ? Math.max(0, ...delayHeatPoints(new Map([[r.route, v3]]), band).map(p => p.addedMin)) : null;
       return top == null ? null : { value: top, text: minutesText(top) };
     }
-    case 'bunching': return r.bunchingShare == null ? null : { value: r.bunchingShare, text: pct(r.bunchingShare) };
+    case 'bunching': return r.bunchingShare == null ? null : { value: r.bunchingShare, text: percentText(r.bunchingShare) };
     default: { const w = v3?.weekly?.thisWeek.extraWait; return w ? { value: w.minutes, text: minutesText(w.minutes) } : null; }
   }
 }
