@@ -7,6 +7,7 @@
  */
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
+import { FREQUENT_SERVICE_TITLE } from './frequentService';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
@@ -162,7 +163,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     indexable: false,
     gate: 'researchApps',
     // Ryan's pick B4 (CIV-1167): bus 1303 at a real TTC shelter. Photo credits: public/assets/research/share/CREDITS.md.
-    shareImage: { path: '/assets/research/share/frequent-light.png', alt: 'Frequent service' },
+    shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_TITLE },
   },
   {
     path: '/changelog',

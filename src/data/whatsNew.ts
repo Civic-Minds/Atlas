@@ -26,8 +26,6 @@ export interface WhatsNewItem {
 export interface WhatsNewRelease {
   /** App version from package.json this release ships as, e.g. "3.3.0". */
   version: string;
-  /** Month the changes went out, e.g. "October 2026". */
-  month: string;
   /** Day the release went out (YYYY-MM-DD), from the CHANGELOG release header. Orders the public changelog. */
   date: string;
   items: WhatsNewItem[];
@@ -36,7 +34,6 @@ export interface WhatsNewRelease {
 export const WHATS_NEW: WhatsNewRelease[] = [
   {
     version: '3.4.0',
-    month: 'November 2026',
     date: '2026-11-09',
     items: [
       { lead: 'Compare mode', text: 'now on the public map on desktop and tablet, each map with its own place, day and time', isNew: true },
@@ -47,7 +44,6 @@ export const WHATS_NEW: WhatsNewRelease[] = [
   },
   {
     version: '3.3.0',
-    month: 'October 2026',
     date: '2026-10-12',
     items: [
       { lead: 'Compare mode', text: 'put any two days, times or frequencies side by side', isNew: true, beta: true },

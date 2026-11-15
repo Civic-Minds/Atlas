@@ -8,7 +8,9 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
+import { metresText } from '../../shared/unitText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
@@ -148,7 +150,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = 'No routes within 500 m.';
+export const NO_ROUTES_NEARBY = `No routes within ${metresText(500)}.`;
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -293,7 +295,7 @@ export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
  * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
 export const MAP_EXPORT_TITLES = {
   frequency: 'Transit frequency',
-  frequentService: 'Frequent service',
+  frequentService: FREQUENT_SERVICE_TITLE,
   night: MAP_KEY_NIGHT,
   bustang: 'Bustang connections',
   history: 'Service history',

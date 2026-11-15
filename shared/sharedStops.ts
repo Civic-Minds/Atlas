@@ -16,7 +16,7 @@
  * pass. Route-level values are untouched by pooling.
  */
 import { PERIOD_KEYS, type PeriodKey } from './config.js';
-import { metresBetween } from './geoDistance';
+import { latDegreesFor, metresBetween } from './geoDistance';
 
 /** Pooled values at one shared stop. Arrays follow PERIOD_KEYS order; null or a missing tail = none. */
 export interface SharedStop {
@@ -189,8 +189,7 @@ export function pairOppositeStop(
   if (!here) return null;
   let best: string | null = null;
   let bestM = OPPOSITE_STOP_MAX_M;
-  // Cheap box test first: 1 degree of latitude is about 111 km.
-  const maxDLat = OPPOSITE_STOP_MAX_M / 111000;
+  const maxDLat = latDegreesFor(OPPOSITE_STOP_MAX_M); // a cheap box test first
   const maxDLon = maxDLat / Math.max(0.1, Math.cos(here.lat * Math.PI / 180));
   for (const c of candidates) {
     const there = coords.get(c);
