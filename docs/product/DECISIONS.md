@@ -66,6 +66,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a section needs at least 3 departures in a period for a value, then the same filter and "Hide limited service" behaviour as a whole route, with no new thresholds.
   - Why: one rule for routes and sections, so nothing special-cases a mode.
   - Source: Linear CIV-321, comment of 2026-10-18 (question 1)
+- **A selected route obeys the map's filters**
+  - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
+  - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
+  - Source: Ryan, CIV-1595 (#1504, option 1)
 - **The line is the track**
   - What: a line is coloured by every train running along it, including trains that skip a stop; the station's own stopping frequency shows on its card.
   - Why: the track really carries those trains; the stop's wait is a different fact.

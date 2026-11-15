@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A [selected route](https://github.com/Civic-Minds/Atlas/issues/1504) is drawn only when it passes the map's filters (beta)**: section colours drew GO Barrie and Stouffville at midday when the public map hid them
 - **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
 - **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
 - **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text

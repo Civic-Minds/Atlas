@@ -193,7 +193,7 @@ describe('named lines from processed data', () => {
     expect(buildSectionColourFeatures({ indygo: fixture('indygo-red-weekday') }, 'Weekday')).toEqual([]);
   });
 
-  it('the selected-route path builds from the unfiltered layers for its own day only', () => {
+  it('the accept filter keeps one route, for its own day only', () => {
     const layers = { ttc: fixture('ttc-96-weekday') };
     expect(buildSectionColourFeatures(layers, 'Weekday', 'default', p => p.routeId === '96')).toHaveLength(15);
     expect(buildSectionColourFeatures(layers, 'Weekday', 'default', p => p.routeId === '52')).toHaveLength(0);

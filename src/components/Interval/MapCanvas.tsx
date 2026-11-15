@@ -963,7 +963,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
 
   const routeSegmentFeatures = useSectionColourFeatures({
-    layers, filteredLayers, mapFilteredLayers, period, day, selectedRoute, colorMode, showRouteLayers,
+    filteredLayers, mapFilteredLayers, period, day, colorMode, showRouteLayers,
     nightServiceView, frequentServiceView,
   });
 
