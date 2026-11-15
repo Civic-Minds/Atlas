@@ -100,8 +100,13 @@ export function metros(collection) {
  * - "study": the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
  *   headwayByPeriodSustained flag, which drops some very frequent lines.
  * - "no-sustained": the same rule without that flag (a sensitivity check).
+ * - "map-filter-trunk" (CIV-1579, Ryan's option 1 on the slowest-branch study): the map-filter rule read on the
+ *   route's trunk (routeTrunkHeadwayByPeriod, the frequent shared middle; tiles carry it as tv_) instead of its D1
+ *   value. A route that passes on its own D1 value counts every stop the map draws, as map-filter does. A route that
+ *   passes only on its trunk counts only its trunk stops (trunkStopMask = 1), so a slower branch's stops are never
+ *   counted at the trunk's frequency. Branch stops are left out, never counted at a branch's own value.
  */
-export const RULES = ['study', 'no-sustained', 'map-filter'];
+export const RULES = ['study', 'no-sustained', 'map-filter', 'map-filter-trunk'];
 export function coverageRule() {
   const rule = process.env.COVERAGE_RULE || 'study';
   if (!RULES.includes(rule)) throw new Error(`COVERAGE_RULE must be one of ${RULES.join(', ')}`);
@@ -117,12 +122,13 @@ let mapCode = null;
 export async function loadMapCode() {
   if (!mapCode) {
     const { tsImport } = await import('tsx/esm/api');
-    const [filter, group] = await Promise.all(['routeHeadwayFilter.ts', 'routeGroupKey.ts'].map(file => tsImport(new URL(file, SHARED).href, import.meta.url)));
+    const [filter, group, runs] = await Promise.all(['routeHeadwayFilter.ts', 'routeGroupKey.ts', 'stopRuns.ts'].map(file => tsImport(new URL(file, SHARED).href, import.meta.url)));
     mapCode = {
       normalizeRouteFilterFeatures: filter.normalizeRouteFilterFeatures,
       routePassesHeadwayFilter: filter.routePassesHeadwayFilter,
       featurePassesHeadwayFilter: filter.featurePassesHeadwayFilter,
       routeGroupKey: group.routeGroupKey,
+      decodeStopRuns: runs.decodeStopRuns,
     };
   }
   return mapCode;
@@ -140,7 +146,7 @@ export function hasServiceTimes(properties) {
 }
 
 export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRule()) {
-  if (rule === 'map-filter') throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
+  if (rule.startsWith('map-filter')) throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
   if (properties.day !== 'Weekday') return false;
   const headways = properties.headwayByPeriod; const sustained = properties.headwayByPeriodSustained;
   if (!headways || (rule === 'study' && !sustained)) return false;
@@ -154,24 +160,68 @@ export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRul
  * short name, else the route_id, so unnamed routes such as TriMet's MAX lines stay separate).
  */
 export function qualifyingRoutes(features, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  return qualifyingRows(features, maxHeadwayMinutes, rule).rows;
+}
+
+/** The map-filter rule's verdict on grouped weekday rows: the qualifying routes' drawn rows. */
+function mapFilterRoutes(weekday, maxHeadwayMinutes, readValue) {
+  const code = requireMapCode();
+  // Copies: the map's normalization stamps route-wide values onto the rows it is given.
+  const rows = weekday.map(feature => {
+    const properties = { ...feature.properties };
+    if (readValue && readValue(properties) != null) properties.routeFilterHeadwayByPeriod = readValue(properties);
+    return { ...feature, properties };
+  });
+  code.normalizeRouteFilterFeatures(rows);
+  const routes = new Map();
+  rows.forEach((row, index) => {
+    const key = code.routeGroupKey(row.properties.routeShortName, row.properties.routeId);
+    (routes.get(key) ?? routes.set(key, []).get(key)).push({ row, original: weekday[index] });
+  });
+  const result = new Map();
+  for (const [key, route] of routes) {
+    const props = route.map(({ row }) => row.properties);
+    if (!PERIODS.every(period => code.routePassesHeadwayFilter(props, period, 'Weekday', maxHeadwayMinutes))) continue;
+    result.set(key, route.filter(({ row }) => PERIODS.some(period => code.featurePassesHeadwayFilter(row.properties, period, maxHeadwayMinutes))).map(({ original }) => original));
+  }
+  return result;
+}
+
+/**
+ * The qualifying weekday rows, and for map-filter-trunk the stops each may count. stopsFor(row) is the row's
+ * stopOrder, or only its trunk stops for a route that qualifies on its trunk alone; diagnostics count what was read.
+ */
+export function qualifyingRows(features, maxHeadwayMinutes = 15, rule = coverageRule()) {
   const code = requireMapCode();
   const weekday = features.filter(feature => feature.properties?.day === 'Weekday');
+  const allStops = row => (Array.isArray(row.properties?.stopOrder) ? row.properties.stopOrder.map(String) : []);
   if (rule === 'map-filter') {
-    // Copies: the map's normalization stamps route-wide values onto the rows it is given.
-    const rows = weekday.map(feature => ({ ...feature, properties: { ...feature.properties } }));
-    code.normalizeRouteFilterFeatures(rows);
-    const routes = new Map();
-    for (const row of rows) {
-      const key = code.routeGroupKey(row.properties.routeShortName, row.properties.routeId);
-      (routes.get(key) ?? routes.set(key, []).get(key)).push(row);
+    const rows = [...mapFilterRoutes(weekday, maxHeadwayMinutes).values()].flat();
+    return { rows, stopsFor: allStops, diagnostics: null };
+  }
+  if (rule === 'map-filter-trunk') {
+    const diagnostics = { weekdayRows: weekday.length, rowsWithTrunkValue: 0, trunkOnlyRoutes: 0, trunkOnlyRows: 0, rowsSkippedNoMask: 0, rowsSkippedMaskMismatch: 0 };
+    for (const row of weekday) if (row.properties.routeTrunkHeadwayByPeriod != null) diagnostics.rowsWithTrunkValue++;
+    const whole = mapFilterRoutes(weekday, maxHeadwayMinutes);
+    // A row without the trunk field (an older release) keeps its own D1 value.
+    const trunk = mapFilterRoutes(weekday, maxHeadwayMinutes, p => p.routeTrunkHeadwayByPeriod);
+    const trunkStops = new Map();
+    const rows = [...whole.values()].flat();
+    for (const [key, route] of trunk) {
+      if (whole.has(key)) continue;
+      diagnostics.trunkOnlyRoutes++;
+      for (const row of route) {
+        const stops = allStops(row);
+        const mask = row.properties.trunkStopMask;
+        if (mask == null) { diagnostics.rowsSkippedNoMask++; continue; }
+        const decoded = code.decodeStopRuns(mask);
+        if (decoded.length !== stops.length) { diagnostics.rowsSkippedMaskMismatch++; continue; }
+        diagnostics.trunkOnlyRows++;
+        trunkStops.set(row, stops.filter((_, i) => decoded[i] === 1));
+        rows.push(row);
+      }
     }
-    const result = [];
-    for (const route of routes.values()) {
-      const props = route.map(row => row.properties);
-      if (!PERIODS.every(period => code.routePassesHeadwayFilter(props, period, 'Weekday', maxHeadwayMinutes))) continue;
-      result.push(...route.filter(row => PERIODS.some(period => code.featurePassesHeadwayFilter(row.properties, period, maxHeadwayMinutes))));
-    }
-    return result;
+    return { rows, stopsFor: row => trunkStops.get(row) ?? allStops(row), diagnostics };
   }
   const groups = new Map();
   for (const feature of weekday) {
@@ -189,7 +239,7 @@ export function qualifyingRoutes(features, maxHeadwayMinutes = 15, rule = covera
       for (const rows of directions.values()) result.push(...rows);
     }
   }
-  return result;
+  return { rows: result, stopsFor: row => (Array.isArray(row.properties?.stopOrder) ? row.properties.stopOrder.map(String) : []), diagnostics: null };
 }
 
 // #1367: Atlas's published files, read the way the pipeline reads feeds: a named User-Agent (a bare
@@ -226,12 +276,12 @@ export async function coverageForAgencies(allAgencies, baseUrl = 'https://data.t
         json(`${baseUrl}/atlas/${agency.slug}.json`),
         json(`${baseUrl}/atlas/${agency.slug}-stops-meta.json`),
       ]);
-      const good = qualifyingRoutes(routes.features, maxHeadwayMinutes);
-      const ids = new Set(good.flatMap(feature => Array.isArray(feature.properties?.stopOrder) ? feature.properties.stopOrder.map(String) : []));
+      const { rows: good, stopsFor, diagnostics } = qualifyingRows(routes.features, maxHeadwayMinutes);
+      const ids = new Set(good.flatMap(stopsFor));
       const stops = (stopMeta.stops ?? []).filter(stop => ids.has(String(stop.id)) && num(stop.lat) != null && num(stop.lon) != null).map(stop => ({
         id: String(stop.id), lat: num(stop.lat), lon: num(stop.lon), agency: agency.slug,
       }));
-      return { slug: agency.slug, name: agency.name, lastRefreshedAt: agency.lastRefreshedAt, routes: routes.features.length, qualifyingRoutes: good.length, stops };
+      return { slug: agency.slug, name: agency.name, lastRefreshedAt: agency.lastRefreshedAt, routes: routes.features.length, qualifyingRoutes: good.length, stops, ...(diagnostics ? { trunk: diagnostics } : {}) };
     })));
   }
   return { agencies, coverage: result };

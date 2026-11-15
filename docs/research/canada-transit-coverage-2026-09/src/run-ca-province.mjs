@@ -85,7 +85,7 @@ for (const headway of headways) {
   const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population, metroBoundaries, network, walkMinutes, maxHeadwayMinutes: headway });
   const out = resolve(outRoot, `${headway}-minute`);
   await writeCoverageReport(report, out);
-  await writeFile(resolve(out, 'provenance.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), province, rule, headway, walkMinutes, atlas: { baseUrl, agencies: atlas.coverage.map(({ slug, lastRefreshedAt, routes, qualifyingRoutes }) => ({ slug, lastRefreshedAt, routes, qualifyingRoutes })) }, network: { source: pbf, bufferDegrees } }, null, 2)}\n`);
+  await writeFile(resolve(out, 'provenance.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), province, rule, headway, walkMinutes, atlas: { baseUrl, agencies: atlas.coverage.map(({ slug, lastRefreshedAt, routes, qualifyingRoutes, trunk }) => ({ slug, lastRefreshedAt, routes, qualifyingRoutes, ...(trunk ? { trunk } : {}) })) }, network: { source: pbf, bufferDegrees } }, null, 2)}\n`);
   results.push({ headway, cmas: report.scope.selectedCmaCount, population: report.scope.atlasCoveragePopulation, covered: report.scope.coveredPopulation, percent: Number(report.scope.coveredPercent.toFixed(2)) });
 }
 console.log(JSON.stringify({ province, rule, results }, null, 2));

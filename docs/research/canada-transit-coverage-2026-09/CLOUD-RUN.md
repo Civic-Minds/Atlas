@@ -8,6 +8,7 @@ The September 19 figures depend on Atlas's `headwayByPeriodSustained` flag, and 
 | rule | What it does |
 |---|---|
 | `map-filter` (workflow default; the story's numbers) | The map's own frequency filter, run through the map's own code (`shared/routeHeadwayFilter.ts`, loaded with tsx, so the jobs that read Atlas data run `npm ci` first). A route qualifies at 15 or 30 when the map draws it at that setting on weekdays in AM peak, midday and PM peak; its stops are the rows the map draws. Routes are grouped as the map's lists group them (short name, else route_id). |
+| `map-filter-trunk` (CIV-1579) | The map-filter rule read on each route's trunk, its frequent shared middle (`routeTrunkHeadwayByPeriod`), instead of the value its slowest branch sets. A route that passes on its own value counts every stop the map draws, as `map-filter` does. A route that passes only on its trunk counts only its trunk stops (`trunkStopMask` = 1), so a slower branch's stops never count at the trunk's frequency. Each agency's `trunk` diagnostics in provenance say how many rows carried the trunk fields and how many trunk-only rows were skipped for a missing or misaligned mask. |
 | `study` (default without the input) | The September 2026 rule, so the published figures can be reproduced on today's data. |
 | `no-sustained` | The same rule without the sustained flag, as a sensitivity check. |
 

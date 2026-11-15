@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { calculateReport, json, publicMapAgencies, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
+import { calculateReport, json, publicMapAgencies, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes, qualifyingRows } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const { routeGroupKey } = await loadMapCode();
@@ -135,4 +135,42 @@ test('routes with no short name are keyed by route_id, not merged (CIV-1179)', (
 test('only agencies on the public map are counted (CIV-1179)', () => {
   const kept = publicMapAgencies([{ slug: 'a' }, { slug: 'b', hiddenInProduction: true }, { slug: 'c', betaOnly: true }, { slug: 'd', staged: true }]);
   assert.deepEqual(kept.map(agency => agency.slug), ['a']);
+});
+
+// CIV-1579: the trunk rule. DRT 900's rows (D1 value every 24) with the trunk value and stop mask the 2026-11-15
+// release carries (trunk every 12/13/12); each fixture row keeps 3 stops, so the masks here are 3 long.
+const trunkRows = (masks) => realRows.drt.filter(r => r.properties.routeShortName === '900').map((r, i) => ({
+  ...r, properties: { ...r.properties, routeTrunkHeadwayByPeriod: { amPeak: 12, midday: 13, pmPeak: 12, evening: 15, late: null, overnight: null }, trunkStopMask: masks[i] },
+}));
+const countedStops = (features, minutes, rule) => {
+  const { rows, stopsFor } = qualifyingRows(features, minutes, rule);
+  return rows.flatMap(row => stopsFor(row).map(stop => `${row.properties.headsign}:${stop}`));
+};
+
+test('map-filter-trunk counts a route that passes on its trunk, at its trunk stops only (CIV-1579)', () => {
+  const rows = trunkRows(['1*2,', '1*3', ',1*2']);
+  assert.equal(qualifyingRoutes(rows, 15, 'map-filter').length, 0);
+  const counted = countedStops(rows, 15, 'map-filter-trunk');
+  const expected = rows.flatMap((row, i) => row.properties.stopOrder.filter((_, j) => [[1, 1, 0], [1, 1, 1], [0, 1, 1]][i][j]).map(stop => `${row.properties.headsign}:${stop}`));
+  assert.deepEqual(counted.sort(), expected.sort());
+  assert.equal(counted.length, 7);
+  assert.deepEqual(qualifyingRows(rows, 15, 'map-filter-trunk').diagnostics, { weekdayRows: 3, rowsWithTrunkValue: 3, trunkOnlyRoutes: 1, trunkOnlyRows: 3, rowsSkippedNoMask: 0, rowsSkippedMaskMismatch: 0 });
+  // The trunk value is a shadow: the input rows keep their own D1 value.
+  assert.equal(rows[0].properties.routeFilterHeadwayByPeriod.midday, 24);
+});
+
+test('map-filter-trunk keeps every stop of a route that passes on its own value (CIV-1579)', () => {
+  const rows = trunkRows([',*3', ',*3', ',*3']);
+  assert.deepEqual(countedStops(rows, 30, 'map-filter-trunk').sort(), countedStops(rows, 30, 'map-filter').sort());
+  assert.equal(countedStops(rows, 30, 'map-filter-trunk').length, 9);
+  // Rows without the trunk fields (an older release) read as map-filter.
+  for (const slug of ['ttc', 'windsor', 'trimet']) assert.deepEqual(routesAt(slug, 15, 'map-filter-trunk'), routesAt(slug, 15, 'map-filter'));
+});
+
+test('map-filter-trunk skips a trunk-only row whose mask is missing or the wrong length (CIV-1579)', () => {
+  const rows = trunkRows(['1*2', undefined, '1*3']);
+  const { diagnostics } = qualifyingRows(rows, 15, 'map-filter-trunk');
+  assert.equal(diagnostics.rowsSkippedMaskMismatch, 1);
+  assert.equal(diagnostics.rowsSkippedNoMask, 1);
+  assert.equal(countedStops(rows, 15, 'map-filter-trunk').length, 3);
 });
