@@ -30,7 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
+import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -805,14 +805,16 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // Each side's route count, once both maps have reported. A count is a new object only when its own map reports, so
   // (CIV-1567, beta) each label can wait for its own map's count and change in the same frame as it.
   const bothReported = compareActive && renderedA != null && renderedB != null;
-  const countA = useMemo(() => (bothReported && renderedA ? { total: renderedA.size } : null), [bothReported, renderedA]);
+  // On beta side A's count stands on its own, so A's label need not wait for map B.
+  const countA = useMemo(() => ((compareTransitions ? compareActive : bothReported) && renderedA ? { total: renderedA.size } : null), [compareTransitions, compareActive, bothReported, renderedA]);
   const countB = useMemo(() => (bothReported && renderedB ? { total: renderedB.size } : null), [bothReported, renderedB]);
   const [shownLabelA, shownCountA] = useShownWithCount(compareLabelA, countA, compareTransitions);
   const [shownLabelB, shownCountB] = useShownWithCount(compareLabelB, countB, compareTransitions);
   // Each side's label waits for its route count and fades in with it, rather than showing first and widening when
-  // the count arrives (4 s at most). Side A's also waits for map B, so it fades in with the right map rather than
-  // during the busy moment the counts arrive in (where its fade would finish unseen).
-  const compareSideAShown = useReadyOrTimeout(shownCountA != null && compareBDrawn, compareActive, compareTransitions);
+  // the count arrives (4 s at most). Map A is already drawn, so its label comes in as the split finishes: with the
+  // count map A reports at its new half width (the one before the split counted the whole screen).
+  const countAAfterSplit = useChangedSince(countA, compareTransitions && compareActive && !compareEasing);
+  const compareSideAShown = useReadyOrTimeout(shownCountA != null && countAAfterSplit, compareActive, compareTransitions);
   const compareSideBShown = useReadyOrTimeout(shownCountB != null, compareActive, compareTransitions);
 
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay

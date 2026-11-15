@@ -117,7 +117,8 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
   const settled = anchor === 'left' ? 'translateX(0px)' : `translateX(calc(-25% - ${divider} / 4))`;
   useSlide(slideRef, sliding, offset, settled);
   // The placeholder moves back by half the panel's travel, so it stays centred in the part of the panel already on
-  // screen, and fades in while that part is still too narrow to show it whole.
+  // screen, and fades in while that part is still too narrow to show it whole. The panel clips it, and it is
+  // transparent before the slide starts, so it never shows outside the panel.
   const placeholderRef = useRef<HTMLDivElement>(null);
   useSlide(placeholderRef, sliding && anchor === 'left', 'translateX(-50%)', 'translateX(0px)', true);
   if (!enabled) return <div className={className}>{children}{overlay}</div>;
@@ -127,12 +128,12 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
       return (
         <div
           ref={slideRef}
-          className="absolute inset-y-0 right-0 bg-[var(--bg-app)] will-change-transform"
+          className="absolute inset-y-0 right-0 overflow-hidden bg-[var(--bg-app)] will-change-transform"
           style={{ width: `calc(50% + ${divider} / 2)`, borderLeft: `${divider} solid var(--text-primary)`, boxSizing: 'border-box', transform }}
           data-mode-enter="sliding"
         >
           {placeholder != null && (
-            <div ref={placeholderRef} className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform" style={{ transform: entering ? 'translateX(-50%)' : 'translateX(0px)' }}>
+            <div ref={placeholderRef} className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform" style={entering ? { transform: 'translateX(-50%)', opacity: 0 } : { transform: 'translateX(0px)' }}>
               {placeholder}
             </div>
           )}
@@ -208,6 +209,13 @@ export function useReadyOrTimeout(ready: boolean, active: boolean, enabled: bool
   return !enabled || ready || timedOut;
 }
 
+/** True once `value` has changed (by identity) since `since` turned true: "a new report has come in since then". */
+export function useChangedSince<T>(value: T, since: boolean): boolean {
+  const [mark, setMark] = useState<{ since: boolean; value: T }>({ since, value });
+  if (mark.since !== since) setMark({ since, value });
+  return since && mark.since === since && !Object.is(value, mark.value);
+}
+
 /** Classes that fade a mode's new controls in: transparent with no transition while entering, then eased in. */
 export function modeFadeIn(enabled: boolean, entering: boolean): string {
   if (!enabled) return '';
@@ -260,23 +268,22 @@ export function ModeEnter({ enabled, ready, label, children }: {
     return () => window.clearTimeout(timer);
   }, [enabled, shown]);
   // The cover stays fully drawn under the view while it fades in (fading both would let the divider colour show
-  // through halfway), and is dropped once the fade has finished. Its loading label stays for the fade's first two
-  // frames, while the view is still all but transparent, then goes: so there is no frame with neither the label
-  // nor the map, and the label never shows through a half-faded map.
-  const [labelGone, setLabelGone] = useState(false);
+  // through halfway), and is dropped once the fade has finished. Its loading label fades out twice as fast as the
+  // view fades in, starting in the same frame: so there is no frame with neither, and the label is all but gone
+  // before the map is half in.
   useEffect(() => {
     if (!enabled || !shown) return;
     const timer = window.setTimeout(() => setCoverGone(true), COVER_DROP_MS);
-    let second = 0;
-    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setLabelGone(true)); });
-    return () => { window.clearTimeout(timer); cancelAnimationFrame(first); cancelAnimationFrame(second); };
+    return () => window.clearTimeout(timer);
   }, [enabled, shown]);
   if (!enabled) return <>{children}</>;
   return (
     <>
       {!coverGone && (
-        <div className="absolute inset-0 bg-[var(--bg-app)] flex items-center justify-center pointer-events-none" aria-hidden={labelGone} data-mode-enter="cover">
-          {!labelGone && <ModeLoadingLabel label={label} />}
+        <div className="absolute inset-0 bg-[var(--bg-app)] flex items-center justify-center pointer-events-none" aria-hidden={shown} data-mode-enter="cover">
+          <div className={shown ? 'opacity-0 transition-opacity duration-150 ease-out motion-reduce:transition-none' : 'opacity-100'}>
+            <ModeLoadingLabel label={label} />
+          </div>
         </div>
       )}
       <div className={`absolute inset-0 ${FADE} ${shown ? 'opacity-100' : 'opacity-0'}`} data-mode-enter={shown ? 'shown' : 'waiting'}>

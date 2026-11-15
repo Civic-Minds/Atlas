@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
+import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
 
 /**
  * A stand-in map. `fireIdle` plays MapLibre's idle event (everything loaded and drawn); `fireRender` plays one
@@ -37,11 +37,9 @@ describe('ModeEnter (CIV-1567)', () => {
     expect(screen.getByText('Loading map…')).toBeTruthy();
     rerender(<ModeEnter enabled ready label="Loading map…"><p>view</p></ModeEnter>);
     expect(screen.getByText('view').parentElement?.dataset.modeEnter).toBe('shown');
-    // The label stays for the fade's first frames (no blank frame), then goes, so it never shows through the
-    // half-faded view; the plain panel stays under it.
-    expect(screen.getByText('Loading map…')).toBeTruthy();
-    act(() => { vi.advanceTimersByTime(50); });
-    expect(screen.queryByText('Loading map…')).toBeNull();
+    // The label fades out (faster) as the view fades in, starting together, so there is no blank frame; the plain
+    // panel stays under it.
+    expect(screen.getByText('Loading map…').parentElement?.className).toContain('opacity-0');
     expect(document.querySelector('[data-mode-enter="cover"]')).not.toBeNull();
     act(() => { vi.advanceTimersByTime(1000); });
     expect(document.querySelector('[data-mode-enter="cover"]')).toBeNull();
@@ -265,6 +263,18 @@ describe('modeFadeWhen and useReadyOrTimeout (CIV-1567)', () => {
     expect(result.current).toBe(true);
     rerender({ ready: false, active: true });
     act(() => { vi.advanceTimersByTime(MODE_ENTER_MAX_WAIT_MS); });
+    expect(result.current).toBe(true);
+  });
+});
+
+describe('useChangedSince (CIV-1567)', () => {
+  it('is true only once a new value has come in after the moment started', () => {
+    const a = { total: 200 }, b = { total: 136 };
+    const { result, rerender } = renderHook(({ value, since }) => useChangedSince(value, since), { initialProps: { value: a, since: false } });
+    expect(result.current).toBe(false);
+    rerender({ value: a, since: true });
+    expect(result.current).toBe(false);
+    rerender({ value: b, since: true });
     expect(result.current).toBe(true);
   });
 });
