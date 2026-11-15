@@ -8,7 +8,7 @@
  * after it that day is ranked worst. The build step and the research page both read waits and
  * ranks from these functions only, so the list, the detail table and any summary agree.
  */
-import { haversineM } from './shapeProjection.js';
+import { metresBetween } from './geoDistance.js';
 
 /** "Nearby" (Ryan, 2026-11-03): within 400 m in a straight line by default. Labelled by distance, never "connects". */
 export const NEARBY_METERS = 400;
@@ -59,13 +59,9 @@ export interface ConnectionWait {
   waitMin: number | null;
 }
 
-/** Straight-line distance in metres. */
-export function distanceMeters(a: { lat: number; lon: number }, b: { lat: number; lon: number }): number {
-  return haversineM(a.lat, a.lon, b.lat, b.lon);
-}
 
 export function isNearby(a: { lat: number; lon: number }, b: { lat: number; lon: number }, meters = NEARBY_METERS): boolean {
-  return distanceMeters(a, b) <= meters;
+  return metresBetween(a, b) <= meters;
 }
 
 /** GTFS "HH:MM:SS" (hours may pass 24) to minutes after midnight; null when blank or malformed. */

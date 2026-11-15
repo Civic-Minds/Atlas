@@ -106,6 +106,12 @@ const RULES: Rule[] = [
 
   // CIV-1591: cards hide and pre-check report reasons by REPORT_REASON (src/components/Interval/cardUi.tsx), never a typed string.
   { name: 'a report reason typed as a string (use REPORT_REASON)', doc: 'TEXT.md', pattern: /excludeReasons=\{\[[^\]]*['"]|\breason=["']/, slip: '<FlaggableValue reason="Frequency is wrong" />' },
+  // CIV-1592: one distance between two points (shared/geoDistance.ts). Not a style rule, but the same kind of one-source
+  // check: the haversine sum, a metres-per-degree constant or the earth's radius anywhere else is a second distance function or
+  // projection (CIV-1597).
+  { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
+    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000|6_?371_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
+    allowed: ['shared/geoDistance.ts'] },
 
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },

@@ -4,20 +4,9 @@ import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
 import { routeListDisplay } from '../utils/effectiveHeadway';
 import { routeLabels } from '../utils/format';
 import { compareHeadwayThenNumber } from '../utils/sortCompare';
+import { metresBetween } from '../../shared/geoDistance';
 
 const NEARBY_RADIUS_M = 500;
-const EARTH_R = 6371000;
-
-function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return EARTH_R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
 
 export interface NearbyRoute {
   rKey: string;
@@ -67,7 +56,7 @@ export function useNearbyRoutes(
       for (const f of fc.features) {
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
-        const d = haversineMeters(lat, lon, flat, flon);
+        const d = metresBetween({ lat, lon }, { lat: flat, lon: flon });
         if (d > NEARBY_RADIUS_M) continue;
         const p = f.properties as unknown as ShapeProperties;
         if (!p.stopId || !(p as any).routeIds?.length) continue;
