@@ -256,12 +256,15 @@ function geometryBounds(geometry) {
   visit(geometry.coordinates); return bounds;
 }
 
-function graph(network, bounds) {
-  const nodes = []; const byKey = new Map(); const cells = new Map(); let edges = 0;
+export function graph(network, bounds) {
+  // Points are indexed per 0.01-degree cell (cell -> point key -> node id) rather than in one
+  // map of every point: a single Map holds at most 2^24 entries, and California's walking
+  // network has more nodes than that ("Map maximum size exceeded", CIV-1179).
+  const nodes = []; const cells = new Map(); let edges = 0;
   const add = (point) => {
-    const k = key(point[0], point[1]); const found = byKey.get(k); if (found != null) return found;
-    const id = nodes.length; nodes.push({ point, edges: [] }); byKey.set(k, id);
-    const bucket = cells.get(cell(...point)) ?? []; bucket.push(id); cells.set(cell(...point), bucket); return id;
+    const c = cell(...point); let bucket = cells.get(c); if (!bucket) { bucket = new Map(); cells.set(c, bucket); }
+    const k = key(point[0], point[1]); const found = bucket.get(k); if (found != null) return found;
+    const id = nodes.length; nodes.push({ point, edges: [] }); bucket.set(k, id); return id;
   };
   for (const feature of network.features) {
     if (feature.geometry.type !== 'LineString') continue;
@@ -282,7 +285,7 @@ function nearest(g, point) {
   let best = null; const cx = Math.floor(point[0] / 0.01); const cy = Math.floor(point[1] / 0.01);
   for (let radius = 0; radius <= 100; radius++) {
     for (let x = cx - radius; x <= cx + radius; x++) for (let y = cy - radius; y <= cy + radius; y++) {
-      for (const id of g.cells.get(`${x},${y}`) ?? []) {
+      for (const id of g.cells.get(`${x},${y}`)?.values() ?? []) {
         const metres = distance(point, g.nodes[id].point); if (!best || metres < best.metres) best = { id, metres };
       }
     }

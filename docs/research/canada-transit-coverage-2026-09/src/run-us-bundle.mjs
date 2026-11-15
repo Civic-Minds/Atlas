@@ -1,13 +1,12 @@
 import { execFile } from 'node:child_process';
 import { createReadStream } from 'node:fs';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
-import { pipeline } from 'node:stream/promises';
-import { Readable } from 'node:stream';
 import { resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { calculateReport, coverageForAgencies, metros, populationAreas, pointInGeometry, readJson } from './coverage.mjs';
 import { writeCoverageReport } from './report.mjs';
+import { download, saveJson } from './io.mjs';
 
 const run = promisify(execFile);
 const arg = name => { const i = process.argv.indexOf(`--${name}`); return i < 0 ? undefined : process.argv[i + 1]; };
@@ -49,19 +48,6 @@ const fetchJson = async url => {
   }
   throw lastError;
 };
-
-async function saveJson(path, value) {
-  await mkdir(resolve(path, '..'), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-async function download(path, url) {
-  try { const info = await stat(path); if (info.size > 100_000) return; } catch {}
-  await mkdir(resolve(path, '..'), { recursive: true });
-  const response = await fetch(url);
-  if (!response.ok || !response.body) throw new Error(`${response.status} ${url}`);
-  await pipeline(Readable.fromWeb(response.body), (await import('node:fs')).createWriteStream(path));
-}
 
 async function command(args) {
   await run(osmium, args, { maxBuffer: 1024 * 1024 * 10 });
@@ -156,7 +142,9 @@ if (!metro.features.length) {
   process.exit(0);
 }
 const metroPath = resolve(dataRoot, 'metros.geojson'); await saveJson(metroPath, metro);
-const highways = await Promise.all(stateNames.map(ensureHighways));
+// One state at a time: Geofabrik limits parallel downloads from one address.
+const highways = [];
+for (const name of stateNames) highways.push(await ensureHighways(name));
 const walking = await network(qualifying, highways);
 const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population: populationAreas(population, 'POP100'), metroBoundaries: metros(metro), network: walking, walkMinutes, maxHeadwayMinutes: headway, populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point' });
 await writeCoverageReport(report, outputRoot);
