@@ -12,7 +12,7 @@ export interface DotPair {
   second: number;
   /** What the row is, as one sentence (its accessible name). */
   sentence: string;
-  /** A reference row (such as a national figure): set apart by a rule below it. */
+  /** A reference row (such as a national figure): its name in the group-heading weight, above a rule. */
   reference?: boolean;
 }
 
@@ -23,6 +23,9 @@ export interface DotPairGroup {
   pairs: readonly DotPair[];
 }
 
+/** A reference row's name reads as its group's heading: the bold of the story's chart headings (h3, font-bold with CHART_TEXT).
+ * It stays a span, since a heading can't sit inside the row's button. */
+const GROUP_HEADING = 'font-bold';
 /** Axis labels and column headers: the chart collection's axis text (HourSpark, ProfileBars, GapsChart). */
 const AXIS_TEXT = 'text-xs text-[var(--text-dim)]';
 const AXIS_TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
@@ -89,7 +92,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                   className={`${ROW_GRID} w-full cursor-pointer rounded-sm border-0 bg-transparent py-1 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT} ${pair.reference ? 'border-b border-solid border-[var(--border-primary)] pb-2' : ''}`}
                 >
                   <span className={NAME_CELL}>
-                    <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors`}
+                    <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors ${pair.reference ? GROUP_HEADING : ''}`}
                       style={active === pair.key ? { background: ACTIVE_BG } : undefined}>{pair.label}</span>
                   </span>
                   <span className="relative block h-4 transition-opacity" style={{ opacity: isFaded ? FADED_OPACITY : undefined }} aria-hidden="true">
@@ -99,7 +102,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                     <span className={`${DOT} bg-[var(--text-primary)]`} style={{ left: `${pair.first * 100}%` }} />
                   </span>
                   <span className={`text-right tabular-nums ${CHART_COUNT}`}>{percentText(pair.first)}</span>
-                  <span className={`text-right tabular-nums ${CHART_COUNT} text-[var(--text-muted)]`}>{percentText(pair.second)}</span>
+                  <span className={`text-right tabular-nums ${CHART_COUNT}`}>{percentText(pair.second)}</span>
                 </button>
               );
             })}
