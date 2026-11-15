@@ -179,7 +179,7 @@ const APPROVED_TEXT: Record<string, string[]> = {
   // The frequent-service story: its approved prose, and agencies' own definitions (CIV-1613, manager 2026-11-14).
   'src/apps/FrequentServiceStory.tsx': [
     '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
-    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service',
     // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
     '“around every 15 minutes all day.”',
     // Ryan's CIV-1495 #6 wording, word for word (2026-11-15): the TTC's name for its network.

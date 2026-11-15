@@ -56,7 +56,7 @@ export const FREQUENT_SERVICE_STORY: ResearchStoryText = {
   heading: FREQUENT_STORY_HEADING,
   intro: ({ agencies }) => [
     'Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.',
-    'Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?',
+    'Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run?',
     `We checked how ${agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.`,
   ],
   // The story's own headline is its tab (Ryan: left as written), so it keeps its own form rather than "<name> | Transit Atlas".

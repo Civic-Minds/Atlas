@@ -13,7 +13,7 @@ describe('FrequentServiceStory', () => {
   it('guides readers from the research question through the verified examples', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Most agencies pick 15 minutes.' })).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(screen.getByText(/at the slowest wait its source gives for weekday daytime service/)).toBeInTheDocument();
   });
@@ -27,17 +27,17 @@ describe('FrequentServiceStory', () => {
 
   it('picks a threshold bar the split bar’s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
+    const tenMinuteButton = screen.getByRole('button', { name: /^10 min: 3 agencies/ });
     fireEvent.click(tenMinuteButton);
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(tenMinuteButton.querySelector('[data-active="true"]')).not.toBeNull();
-    const fifteen = screen.getByRole('button', { name: /Show examples for 15-minute service/ });
+    const fifteen = screen.getByRole('button', { name: /^15 min: 40 agencies/ });
     expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
   });
 
   it('highlights the most common threshold, 15 min, until another bar is picked (CIV-1286)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`Show examples for ${min}-minute service`) });
+    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`^${min} min: `) });
     const fill = (min: number) => (bar(min).querySelector('[style*="width"]') as HTMLElement).style.opacity;
     expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
     expect([fill(15), fill(10)]).toEqual(['', '0.35']);
@@ -128,7 +128,7 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.queryByText('Show as a table')).toBeNull();
     const chart = screen.getByRole('group', { name: /Interactive chart showing the number of agencies/ });
-    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'There is no single “frequent.”' }).parentElement!.id);
+    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'Most agencies pick 15 minutes.' }).parentElement!.id);
     expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
