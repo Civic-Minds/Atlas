@@ -17733,21 +17733,20 @@
         -73.5665
       ],
       "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-      "lastFeedExpiry": "20510930",
-      "lastFeedVersion": "124",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20501001",
+      "lastFeedVersion": "144",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Danbury, Connecticut"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20510930",
+      "expiredFeedCheckExpiry": "20501001",
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-      "lastPeekedExpiry": "20510930",
-      "listingEndedOn": "20261028",
+      "lastPeekedExpiry": "20501001",
       "feedQuality": {
         "status": "review",
         "score": 95,
@@ -17760,22 +17759,25 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
           "featureCount": 69,
-          "feedExpiry": "20510930",
+          "feedExpiry": "20501001",
           "routeCount": 19,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-02",
-        "scoredAt": "2026-11-09"
+        "checkedAt": "2026-11-15",
+        "scoredAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastServiceWeek": "175ef7d4a05f5467",
-      "feedObtainedAt": "20251028"
+      "lastServiceWeek": "42025c52ba892527",
+      "feedObtainedAt": "20261115",
+      "lastRawArchiveKey": "20501001-7dcda813ac943bda",
+      "lastFeedContentKey": "26b7c05f507cf642",
+      "lastFeedStart": "20180831"
     },
     {
       "slug": "metro-transit",
@@ -28223,7 +28225,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-15"
+        "checkedAt": "2026-11-15",
+        "scoredAt": "2026-11-15"
       },
       "lastRawArchiveKey": "20280115-c8d565a4e3fb20e9",
       "lastFeedContentKey": "7fac8279d849a761",
@@ -36537,7 +36540,45 @@
         "Craig, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true
+      "hiddenInProduction": true,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
+      "lastFeedCheckAt": "20261115",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270412",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 27,
+          "feedExpiry": "20270412",
+          "routeCount": 6,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-15"
+      },
+      "lastRawArchiveKey": "20270412-373868056e31ee96",
+      "lastFeedContentKey": "08784771286ce5b4",
+      "lastFeedExpiry": "20270412",
+      "lastPeekedExpiry": "20270412",
+      "lastFeedStart": "20261111",
+      "lastFeedVersion": "UTC: 11-Nov-2026 22:11",
+      "lastRefreshedAt": "2026-11-15",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "e846879f516ce1af",
+      "feedObtainedAt": "20261115"
     },
     {
       "slug": "gunnison-valley-rta",
@@ -36564,7 +36605,45 @@
         "Mt. Crested Butte, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true
+      "hiddenInProduction": true,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "http://mjcaction.com/MJC_GTFS_Public/gunnisonrta_google_transit.zip",
+      "lastFeedCheckAt": "20261115",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270405",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 6,
+          "feedExpiry": "20270405",
+          "routeCount": 1,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-15"
+      },
+      "lastRawArchiveKey": "20270405-7acfcf4dde2d1e2c",
+      "lastFeedContentKey": "bea1618976381b4f",
+      "lastFeedExpiry": "20270405",
+      "lastPeekedExpiry": "20270405",
+      "lastFeedStart": "20260406",
+      "lastFeedVersion": "20261103",
+      "lastRefreshedAt": "2026-11-15",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "f5e4fc98446d3258",
+      "feedObtainedAt": "20261115"
     },
     {
       "slug": "prairie-express",
@@ -36588,7 +36667,46 @@
         "Sterling, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true
+      "hiddenInProduction": true,
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip",
+      "lastFeedCheckAt": "20261115",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20270601",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 2,
+          "feedExpiry": "20270601",
+          "routeCount": 1,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-15",
+        "scoredAt": "2026-11-15"
+      },
+      "lastRawArchiveKey": "20270601-cd23f013b2440aef",
+      "lastFeedContentKey": "24a6d6bf83050f6e",
+      "lastFeedExpiry": "20270601",
+      "lastPeekedExpiry": "20270601",
+      "lastFeedStart": "20261106",
+      "lastFeedVersion": "UTC: 06-Nov-2026 18:54",
+      "lastRefreshedAt": "2026-11-15",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "afcd72ef5698c744",
+      "feedObtainedAt": "20261115"
     },
     {
       "slug": "timmins",
