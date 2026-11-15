@@ -4,12 +4,13 @@ import { ArrowDown } from 'lucide-react';
 import ArrowLink from '../components/ui/ArrowLink';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
-import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import type { DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
+import DotPairs, { DotPairKey } from '../components/charts/DotPairs';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../data/frequentServiceStory';
+import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
@@ -17,6 +18,7 @@ import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
 import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared/headwayText';
 import { countOf } from '../../shared/overflowText';
+import { countText, percentText } from '../../shared/numberText';
 import Pill from '../components/ui/Pill';
 import { CHART_TEXT } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
@@ -45,6 +47,20 @@ const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute },
   { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min` },
 ];
+
+/** CIV-1577: the city chart's rows for its screen-reader table, each country's cities in the chart's order. */
+const COVERAGE_CITY_ROWS = frequentCoverageCountries.flatMap(country => country.metros.map(metro => ({ ...metro, country: country.label })));
+type CoverageCityRow = (typeof COVERAGE_CITY_ROWS)[number];
+const CITY_COLUMNS: DataTableColumn<CoverageCityRow>[] = [
+  { key: 'city', header: 'City', cell: row => row.name, rowHeader: true, className: 'font-normal', width: 10 },
+  { key: 'country', header: 'Country', cell: row => row.country, width: 8 },
+  { key: 'population', header: 'Population', cell: row => countText(row.population), className: 'tabular-nums', width: 7 },
+  { key: 'fifteen', header: headwayAmount(15), cell: row => percentText(row.fifteenMinute), className: 'tabular-nums', width: 5 },
+  { key: 'thirty', header: headwayAmount(30), cell: row => percentText(row.thirtyMinute), className: 'tabular-nums', width: 5 },
+];
+/** A city chart row's accessible name: "Toronto: 15 min 45%, 30 min 74%". */
+const coverageSentence = (name: string, fifteen: number, thirty: number) =>
+  `${name}: ${headwayAmount(15)} ${percentText(fifteen)}, ${headwayAmount(30)} ${percentText(thirty)}`;
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
@@ -91,6 +107,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const tableId = useId();
   const definitionTableId = useId();
   const weekendTableId = useId();
+  const coverageTableId = useId();
+  const citiesTableId = useId();
   const [weekendMinutes, setWeekendMinutes] = useState<WeekendThreshold>(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
@@ -243,7 +261,47 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          {/* CIV-1603 section 2 slot: the cities (CIV-1577). Not built here; it goes between section 1 and section 3. */}
+          {/* CIV-1603 section 2 / CIV-1577: the coverage section, moved here from after "The number is only the beginning." so the
+              national figures and the cities are one section. Ryan picked "chart in place of the table, with the warning as a small
+              note" (CIV-1577): the national table is now the chart's screen-reader table, the national figures are each country's
+              first pair, and the country caveat sits under the chart. Heading, intro and the approved sentences are unchanged. */}
+          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+            <div className="max-w-2xl">
+              <h2 id="population-heading" className={STORY_HEADING}>The threshold changes who can rely on the network.</h2>
+              <p className={STORY_PARAGRAPH}>
+                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running 7 AM–7 PM. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
+              </p>
+              <p className={STORY_PARAGRAPH}>The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service.</p>
+              <p className={STORY_PARAGRAPH}>[Ryan’s wording: cities paragraph]</p>
+            </div>
+            <div className="mt-10">
+              <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} />
+              <div className="mt-6 space-y-10">
+                {frequentCoverageCountries.map(country => (
+                  <DotPairs
+                    key={country.country}
+                    label={`[Ryan’s wording: cities chart name for screen readers], ${country.label}`}
+                    details={`${coverageTableId} ${citiesTableId}`}
+                    firstHeader={headwayAmount(15)}
+                    secondHeader={headwayAmount(30)}
+                    groups={[{
+                      key: country.country,
+                      pairs: [
+                        { key: 'national', label: country.label, first: country.fifteenMinute, second: country.thirtyMinute, reference: true, sentence: coverageSentence(country.label, country.fifteenMinute, country.thirtyMinute) },
+                        ...country.metros.map(metro => ({ key: metro.id, label: metro.name, first: metro.fifteenMinute, second: metro.thirtyMinute, sentence: coverageSentence(metro.name, metro.fifteenMinute, metro.thirtyMinute) })),
+                      ],
+                    }]}
+                  />
+                ))}
+              </div>
+              <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: cities caption]</p>
+              <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
+              <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
+              <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {longDate(frequentServiceCoverageUpdated)}.</p>
+              <ChartTableDetails id={coverageTableId} caption="Population within a ten-minute walk of frequent transit by headway threshold" columns={COVERAGE_COLUMNS} rows={frequentServiceCoverageStats} rowKey={row => row.country} />
+              <ChartTableDetails id={citiesTableId} caption="[Ryan’s wording: cities table caption]" columns={CITY_COLUMNS} rows={COVERAGE_CITY_ROWS} rowKey={row => row.id} />
+            </div>
+          </section>
 
           {/* CIV-1603 section 3 (Ryan's pick, 2026-11-14): how much of a city's frequent network still counts on Sunday. Each
               bar is a count of routes the main map draws at the threshold at midday (Ryan picked midday only: Sunday has no rush
@@ -291,26 +349,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 id="more-heading" className={STORY_HEADING}>The number is only the beginning.</h2>
               <p className={STORY_PARAGRAPH}>A frequency threshold is attached to a span, a set of days and a geography. It may describe a route, a corridor, a network or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span and geography.</p>
             </div>
-          </section>
-
-          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="max-w-2xl">
-              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running 7 AM–7 PM. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
-              </p>
-            </div>
-            <div className="mt-8 overflow-x-auto">
-              <DataTable
-                caption="Population within a ten-minute walk of frequent transit by headway threshold"
-                columns={COVERAGE_COLUMNS}
-                rows={frequentServiceCoverageStats}
-                rowKey={row => row.country}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
-            <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {longDate(frequentServiceCoverageUpdated)}.</p>
-            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">

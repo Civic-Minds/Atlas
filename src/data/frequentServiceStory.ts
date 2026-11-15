@@ -1,5 +1,6 @@
 import recheck from './definition-recheck-2026-10-30.json';
 import definitions from './frequent-definitions-by-agency.json';
+import coverageMetros from './frequent-coverage-metros.json';
 import weekendCounts from './frequent-weekend-counts.json';
 import { headwayEvery, headwayEveryRange } from '../../shared/headwayText';
 
@@ -113,3 +114,17 @@ export const frequentServiceCoverageInterpretation = {
   canadaThirtyToFifteenRatio: '2.3',
   unitedStatesThirtyToFifteenRatio: '2.2',
 };
+
+/**
+ * CIV-1577: the coverage section's city chart, from the same runs as frequentServiceCoverageStats (run, date, rule and the
+ * metro rule are in the file's `source`; regenerate with scripts/build-frequent-coverage-metros.ts <artifact folder>). Per
+ * country: the 10 largest metros, plus every other metro over 250,000 people with at least 20% covered at 30 min and none
+ * at 15 min (src/data/frequentCoverageMetrosRule.ts). Shares are 0–1; each country's cities run from the highest 30-minute
+ * share down.
+ */
+export const frequentCoverageMetrosSource = coverageMetros.source;
+export const frequentCoverageCountries = coverageMetros.countries.map(country => ({
+  ...country,
+  label: country.country === 'canada' ? 'Canada' : 'United States',
+  metros: [...country.metros].sort((a, b) => b.thirtyMinute - a.thirtyMinute),
+}));

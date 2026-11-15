@@ -1,0 +1,313 @@
+{
+  "source": {
+    "runs": "Coverage cloud runs 43665829588 and 43671044866 (code 0f7c33a47), 2026-11-14",
+    "artifact": "editorial/research/civ1179-coverage-summary-rerun-2026-11-14",
+    "rule": "A route counts at 15 or 30 when the map draws it at that setting on weekdays in AM peak, midday and PM peak; public-map agencies only; a 10-minute walk; the 15-minute share on the 30-minute population base.",
+    "metros": "Per country: the 10 largest metros by population, plus every other metro over 250,000 people with at least 20% covered at 30 min and 0% at 15 min (src/data/frequentCoverageMetrosRule.ts).",
+    "script": "scripts/build-frequent-coverage-metros.ts"
+  },
+  "countries": [
+    {
+      "country": "canada",
+      "fifteenMinute": 0.2627,
+      "thirtyMinute": 0.6053,
+      "metros": [
+        {
+          "id": "535",
+          "name": "Toronto",
+          "runName": "Toronto",
+          "population": 6202225,
+          "fifteenMinute": 0.4478,
+          "thirtyMinute": 0.7441,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "462",
+          "name": "Montréal",
+          "runName": "Montréal",
+          "population": 4291732,
+          "fifteenMinute": 0.2506,
+          "thirtyMinute": 0.5629,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "933",
+          "name": "Vancouver",
+          "runName": "Vancouver",
+          "population": 2642825,
+          "fifteenMinute": 0.5522,
+          "thirtyMinute": 0.8099,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "505",
+          "name": "Ottawa–Gatineau",
+          "runName": "Ottawa - Gatineau (Ontario part / partie de l'Ontario)",
+          "population": 1488307,
+          "fifteenMinute": 0.0416,
+          "thirtyMinute": 0.3915,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "825",
+          "name": "Calgary",
+          "runName": "Calgary",
+          "population": 1481806,
+          "fifteenMinute": 0.1034,
+          "thirtyMinute": 0.7176,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "835",
+          "name": "Edmonton",
+          "runName": "Edmonton",
+          "population": 1418118,
+          "fifteenMinute": 0.2206,
+          "thirtyMinute": 0.589,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "421",
+          "name": "Québec",
+          "runName": "Québec",
+          "population": 839311,
+          "fifteenMinute": 0.3245,
+          "thirtyMinute": 0.4081,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "602",
+          "name": "Winnipeg",
+          "runName": "Winnipeg",
+          "population": 834678,
+          "fifteenMinute": 0.4606,
+          "thirtyMinute": 0.6984,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "537",
+          "name": "Hamilton",
+          "runName": "Hamilton",
+          "population": 785184,
+          "fifteenMinute": 0.3949,
+          "thirtyMinute": 0.7311,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "541",
+          "name": "Kitchener–Cambridge–Waterloo",
+          "runName": "Kitchener - Cambridge - Waterloo",
+          "population": 575847,
+          "fifteenMinute": 0.1981,
+          "thirtyMinute": 0.6554,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "555",
+          "name": "London",
+          "runName": "London",
+          "population": 543551,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.3889,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "539",
+          "name": "St. Catharines–Niagara",
+          "runName": "St. Catharines - Niagara",
+          "population": 433604,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2424,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "559",
+          "name": "Windsor",
+          "runName": "Windsor",
+          "population": 422630,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.3718,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "532",
+          "name": "Oshawa",
+          "runName": "Oshawa",
+          "population": 415311,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.6324,
+          "pickedBy": "wiped-out"
+        }
+      ]
+    },
+    {
+      "country": "us",
+      "fifteenMinute": 0.1187,
+      "thirtyMinute": 0.2562,
+      "metros": [
+        {
+          "id": "35620",
+          "name": "New York",
+          "runName": "New York-Newark-Jersey City, NY-NJ-PA Metro Area",
+          "population": 20140470,
+          "fifteenMinute": 0.4026,
+          "thirtyMinute": 0.547,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "31080",
+          "name": "Los Angeles",
+          "runName": "Los Angeles-Long Beach-Anaheim, CA Metro Area",
+          "population": 13200998,
+          "fifteenMinute": 0.2508,
+          "thirtyMinute": 0.5815,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "16980",
+          "name": "Chicago",
+          "runName": "Chicago-Naperville-Elgin, IL-IN-WI Metro Area",
+          "population": 9449351,
+          "fifteenMinute": 0.2989,
+          "thirtyMinute": 0.3781,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "19100",
+          "name": "Dallas",
+          "runName": "Dallas-Fort Worth-Arlington, TX Metro Area",
+          "population": 7637387,
+          "fifteenMinute": 0.0084,
+          "thirtyMinute": 0.1209,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "26420",
+          "name": "Houston",
+          "runName": "Houston-The Woodlands-Sugar Land, TX Metro Area",
+          "population": 7122240,
+          "fifteenMinute": 0.1129,
+          "thirtyMinute": 0.2071,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "47900",
+          "name": "Washington",
+          "runName": "Washington-Arlington-Alexandria, DC-VA-MD-WV Metro Area",
+          "population": 6327461,
+          "fifteenMinute": 0.1928,
+          "thirtyMinute": 0.3687,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "37980",
+          "name": "Philadelphia",
+          "runName": "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD Metro Area",
+          "population": 6141326,
+          "fifteenMinute": 0.1884,
+          "thirtyMinute": 0.2954,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "33100",
+          "name": "Miami",
+          "runName": "Miami-Fort Lauderdale-Pompano Beach, FL Metro Area",
+          "population": 6138333,
+          "fifteenMinute": 0.0775,
+          "thirtyMinute": 0.185,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "12060",
+          "name": "Atlanta",
+          "runName": "Atlanta-Sandy Springs-Alpharetta, GA Metro Area",
+          "population": 6089815,
+          "fifteenMinute": 0.0306,
+          "thirtyMinute": 0.1281,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "38060",
+          "name": "Phoenix",
+          "runName": "Phoenix-Mesa-Chandler, AZ Metro Area",
+          "population": 4845355,
+          "fifteenMinute": 0.0598,
+          "thirtyMinute": 0.3145,
+          "pickedBy": "largest"
+        },
+        {
+          "id": "14860",
+          "name": "Bridgeport",
+          "runName": "Bridgeport-Stamford-Norwalk, CT Metro Area",
+          "population": 957419,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2169,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "10420",
+          "name": "Akron",
+          "runName": "Akron, OH Metro Area",
+          "population": 702219,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2107,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "20500",
+          "name": "Durham",
+          "runName": "Durham-Chapel Hill, NC Metro Area",
+          "population": 649903,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2677,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "42200",
+          "name": "Santa Maria",
+          "runName": "Santa Maria-Santa Barbara, CA Metro Area",
+          "population": 448229,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2114,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "11260",
+          "name": "Anchorage",
+          "runName": "Anchorage, AK Metro Area",
+          "population": 398328,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2594,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "21660",
+          "name": "Eugene",
+          "runName": "Eugene-Springfield, OR Metro Area",
+          "population": 381718,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.2381,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "36500",
+          "name": "Olympia",
+          "runName": "Olympia-Lacey-Tumwater, WA Metro Area",
+          "population": 294793,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.4058,
+          "pickedBy": "wiped-out"
+        },
+        {
+          "id": "42100",
+          "name": "Santa Cruz",
+          "runName": "Santa Cruz-Watsonville, CA Metro Area",
+          "population": 270861,
+          "fifteenMinute": 0,
+          "thirtyMinute": 0.298,
+          "pickedBy": "wiped-out"
+        }
+      ]
+    }
+  ]
+}
