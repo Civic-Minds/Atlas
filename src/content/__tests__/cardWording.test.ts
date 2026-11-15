@@ -28,7 +28,7 @@ describe('card wording (CIV-1251), word for word', () => {
     ['row 4: agency bar, one', noMiddayBarSentence(1), '1 route runs irregularly or not at all at midday'],
     ['row 4: legend', NO_MIDDAY_SHORT, 'Irregular or none'],
     ['row 5: list title', PART_TIME_ROUTES_TITLE, 'Part-time routes'],
-    ['row 5: list search', PART_TIME_ROUTES_SEARCH, 'Search part-time routes…'],
+    ['row 5: list search', PART_TIME_ROUTES_SEARCH, 'Find part-time routes…'],
     ['row 5: list no match', noSearchMatchText(PART_TIME_ROUTES_NOUN), 'No part-time routes match your search.'],
     ['row 5: empty list', NO_LIMITED_ROUTES_IN_VIEW, 'No part-time routes in view.'],
     ['row 7: period', selectedRouteOutsideFilterNotice(Infinity, '6–9 AM'), 'This route has no trips from 6–9 AM.'],

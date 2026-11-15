@@ -15,6 +15,9 @@ import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay'
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
 import { topMapHit } from './map/mapHitTargets';
+import { useContextLayer } from './map/useContextLayer';
+import { ContextPopup } from './ContextPopup';
+import type { ContextMetric } from '../../utils/contextLayer';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
 import { useRouteStyling } from './map/useRouteStyling';
 import { useSelectionFraming } from './map/useSelectionFraming';
@@ -244,6 +247,10 @@ interface MapCanvasProps {
   agencyDataLoading?: boolean;
   /** Number of agencies whose route data failed to load. */
   agencyDataFailedCount?: number;
+  /** Population / income shading under the routes; null is off (beta trial, CIV-482). */
+  contextMetric?: ContextMetric | null;
+  /** Tells the app which survey years the shading tiles carry (last year of the 5-year window), for the credit's hover text. */
+  onContextYearChange?: (year: number | null) => void;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -318,6 +325,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   exportTitle = DEFAULT_EXPORT_TITLE,
   agencyDataLoading = false,
   agencyDataFailedCount = 0,
+  contextMetric = null,
+  onContextYearChange,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = useColorMode();
@@ -1264,6 +1273,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
+  const contextLayer = useContextLayer(mapRef, mapLoaded, contextMetric);
+  useEffect(() => { onContextYearChange?.(contextLayer.year); }, [contextLayer.year]);
   // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
@@ -1280,6 +1291,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <React.Suspense fallback={null}>
           <LiveVehiclesLayer mapRef={mapRef} deckOverlayRef={deckOverlayRef} mapLoaded={mapLoaded} />
         </React.Suspense>
+      )}
+
+      {contextMetric && contextLayer.popup && (
+        <ContextPopup metric={contextMetric} {...contextLayer.popup} onClose={contextLayer.closePopup} />
       )}
 
       {/* Geolocate Button Control Overlay */}

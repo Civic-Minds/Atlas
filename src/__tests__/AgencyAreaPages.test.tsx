@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MISSING_VALUE } from '../../shared/missingValue';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -228,7 +229,7 @@ describe('AreaPage', () => {
     expect(table.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
     const ttcRow = table.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
     const hsrRow = table.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
-    expect(hsrRow.textContent).toContain('–'); // no subway routes
+    expect(hsrRow.textContent).toContain(MISSING_VALUE); // no subway routes
   });
 
   it('names the two biggest agencies in the intro past three, each linked to its page, and none up to three (CIV-968)', () => {

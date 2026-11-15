@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { longDate } from '../../shared/dateText';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
-import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
+import { type DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
@@ -21,13 +22,10 @@ interface Props {
   agencies: Agency[];
 }
 
-type CoverageRow = (typeof frequentServiceCoverageStats)[number];
-const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
-  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
-  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
-];
+/** The method box's dates (shared/dateText.ts writes them). "Date updated" is the definitions research: the recheck of
+ * every charted agency's source, October 30 to November 3 (CIV-1569). */
+const FREQUENT_SERVICE_CONDUCTED = '2026-10-11';
+const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
@@ -67,8 +65,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>October 11, 2026.</>,
-      dateUpdated: <>November 3, 2026.</>,
+      dateConducted: <>{longDate(FREQUENT_SERVICE_CONDUCTED)}.</>,
+      dateUpdated: <>{longDate(FREQUENT_SERVICE_DEFINITIONS_UPDATED)}.</>,
       sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
@@ -169,27 +167,6 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
-          </section>
-
-          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="max-w-2xl">
-              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
-              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running 7 AM–7 PM. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
-              </p>
-            </div>
-            <div className="mt-8 overflow-x-auto">
-              <DataTable
-                variant="ruled"
-                caption="Population within a ten-minute walk of frequent transit by headway threshold"
-                columns={COVERAGE_COLUMNS}
-                rows={frequentServiceCoverageStats}
-                rowKey={row => row.country}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
-            <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {frequentServiceCoverageUpdated}.</p>
-            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">

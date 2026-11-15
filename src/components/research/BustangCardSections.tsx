@@ -3,6 +3,7 @@ import Pill from '../ui/Pill';
 import RouteRowName from '../RouteRowName';
 import { CARD_SUMMARY, SidebarCardSection } from '../Interval/cardUi';
 import { clockTime } from '../../../shared/timeText';
+import { shortDate } from '../../../shared/dateText';
 import { bestWindow, CONNECTION_WINDOWS, windowOf, type NearbyChoice, type RouteConnection } from '../../../shared/connections';
 import type { DayType } from '../../../shared/dayTypes';
 import { EXPLAINERS } from '../../content/noticeCopy';
@@ -19,8 +20,6 @@ import {
  * draft for Ryan's word-for-word OK.
  */
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const shortDate = (ymd: string) => `${MONTHS[Number(ymd.slice(4, 6)) - 1]} ${Number(ymd.slice(6, 8))}`;
 export const outdatedLabel = (a: BustangAgency) => `${EXPLAINERS['outdated-schedule'].title} (ended ${shortDate(a.feedExpiry!)})`;
 
 // Small, regular and grey, as the cards' schedule notices are (STYLE.md).

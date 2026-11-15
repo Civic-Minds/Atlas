@@ -29,7 +29,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -189,7 +189,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           ref={agencySearchRef}
           value={agencyQuery}
           onChange={e => setAgencyQuery(e.target.value)}
-          placeholder="Search…"
+          placeholder={SEARCH_ANY_PLACEHOLDER}
           className={SEARCH_FIELD}
         />
       </div>

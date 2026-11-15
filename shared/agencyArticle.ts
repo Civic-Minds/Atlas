@@ -1,5 +1,5 @@
 /**
- * An agency's name inside a sentence, with "the" where it takes one (CIV-1103, docs/STYLE.md): "not reported by the TTC",
+ * An agency's name inside a sentence, with "the" where it takes one (CIV-1103, docs/style/TEXT.md): "not reported by the TTC",
  * "not reported by MiWay". Names ending in Authority, Commission, District, Agency, Company, Corporation, Department, Board,
  * Railway, Railroad, System or Service take "the", and so do acronyms said letter by letter (the TTC, the MBTA). Acronyms
  * said as a word (MARTA, SEPTA) and brands (MiWay) don't. A name that already starts with "The" keeps it.
@@ -75,7 +75,7 @@ export function agencyArticle(name: string): string {
   return takesThe(name) ? 'the ' : '';
 }
 
-/** A slash name reads as its first name in a sentence (STYLE.md: "Lawrence Transit", not "Lawrence Transit / KU on Wheels"). */
+/** A slash name reads as its first name in a sentence (docs/style/TEXT.md: "Lawrence Transit", not "Lawrence Transit / KU on Wheels"). */
 function sentenceName(name: string): string {
   const n = name.trim();
   // Only a spaced " / " joins two names; "LADOT/DASH" is one name (the approved list reads "The LADOT/DASH’s").

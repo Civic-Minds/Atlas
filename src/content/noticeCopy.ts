@@ -8,13 +8,14 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { shortDate } from '../../shared/dateText';
 import { joinList, plural } from '../../shared/overflowText';
 import { METHOD_TITLE } from '../../shared/liveWording';
-import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
+import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -92,7 +93,7 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
-    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (STYLE.md).
+    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
     : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
@@ -110,8 +111,8 @@ export const EXPIRED_FEED_EXPLANATION =
 
 // N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
 export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
-  if (options.count != null && options.since && formatStoredDate(options.since)) {
-    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
+  if (options.count != null && options.since && shortDate(options.since)) {
+    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${shortDate(options.since)}.`;
   }
   return '';
 }
@@ -160,7 +161,7 @@ export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
 // CIV-1251: the list "See all part-time routes" opens, as the setting names them.
 export const PART_TIME_ROUTES_TITLE = 'Part-time routes';
-export const PART_TIME_ROUTES_SEARCH = 'Search part-time routes…';
+export const PART_TIME_ROUTES_SEARCH = searchPlaceholder('part-time routes');
 export const PART_TIME_ROUTES_NOUN = 'part-time routes';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
@@ -205,8 +206,35 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
-/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
-export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/**
+ * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
+ * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160
+ * question 8. With nothing named it reads "Find…". `things` is in lower case unless it holds a name ("a MARTA route"). The top bar's one-word phone hint
+ * is SEARCH_SHORT_PLACEHOLDER.
+ */
+export function searchPlaceholder(things?: string): string {
+  return things ? `Find ${things}…` : 'Find…';
+}
+/** The top bar's hint on a phone, where the box has room for one word. */
+export const SEARCH_SHORT_PLACEHOLDER = 'Find';
+/** The map's search box hint. */
+export const SEARCH_ROUTES_PLACEHOLDER = searchPlaceholder('routes');
+/** The Bustang connections list with no trips on the chosen day (CIV-101). */
+export const NO_BUSTANG_TRIPS = 'No Bustang trips this day.';
+/** The Bustang connections view's search box (CIV-101): it finds routes. */
+export const SEARCH_BUSTANG_PLACEHOLDER = searchPlaceholder('routes');
+/** The Night service view's search box. */
+export const SEARCH_NIGHT_PLACEHOLDER = searchPlaceholder('agencies or routes');
+/** Live's search box. */
+export const SEARCH_VEHICLES_PLACEHOLDER = searchPlaceholder('vehicles');
+/** About's agency list. */
+export const SEARCH_AGENCIES_PLACEHOLDER = searchPlaceholder('agencies');
+/** Settings: the hidden-routes list. */
+export const SEARCH_HIDDEN_ROUTES_PLACEHOLDER = searchPlaceholder('hidden routes');
+/** Settings: the hidden feeds list. */
+export const SEARCH_FEEDS_PLACEHOLDER = searchPlaceholder('feeds');
+/** The agency filter chip's list, where the box is narrow. */
+export const SEARCH_ANY_PLACEHOLDER = searchPlaceholder();
 /** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
 export const NEAR_YOU_TITLE = 'Near you';
 /** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
@@ -223,8 +251,26 @@ export const DEFAULT_EXPORT_TITLE = 'Transit map';
 export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
 // The button that tries a failed load again.
 export const RETRY_LABEL = 'Retry';
-// The link that closes a card that couldn't be shown.
-export const CLOSE_LABEL = 'Close';
+/**
+ * Every close (X) button's screen-reader name, in one place (CIV-1569), mirroring backLinkLabel: "Close " + the thing
+ * it closes ("Close filters", "Close chart", "Close About Atlas"). A common thing is lower case; a name keeps its case.
+ */
+export const CLOSE_PLACES = {
+  filters: 'filters',
+  settings: 'settings',
+  schedule: 'schedule',
+  chart: 'chart',
+  reportForm: 'report form',
+  exportDialog: 'export dialog',
+  whatsNew: 'what’s new',
+  privacySettings: 'privacy and analytics settings',
+  aboutAtlas: BACK_PLACES.aboutAtlas,
+} as const;
+export function closeLabel(place: string): string {
+  return `Close ${place}`;
+}
+/** The clear (X) button inside a search box, to screen readers. */
+export const CLEAR_SEARCH_LABEL = 'Clear search';
 // Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
 export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
 // Filter panel: the route settings shown outside the Frequency view.
@@ -241,6 +287,33 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
 export const MAP_KEY_NIGHT = 'Overnight service';
+
+// ---- Neighbourhood shading (beta, CIV-482/CIV-524) ----
+// Every text of the population density / median household income layer, approved word for word by Ryan
+// (_review/civ-524). Class labels ("Under 50", "$50,000–$65,000") are built from the breaks in src/utils/contextLayer.ts.
+// The settings row and its options.
+export const CONTEXT_CONTROL_TITLE = 'Neighbourhood shading';
+export const CONTEXT_OPTION_OFF = 'None';
+export const CONTEXT_OPTION_DENSITY = 'Population density';
+export const CONTEXT_OPTION_INCOME = 'Median household income';
+// Legend titles, per metric (the unit is in the density title and in the income labels' $).
+export const CONTEXT_LEGEND_TITLE_DENSITY = 'People per square kilometre';
+export const CONTEXT_LEGEND_TITLE_INCOME = 'Typical household income';
+// The grey hatched swatch.
+export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
+// The short credit after "OpenStreetMap · CARTO" while the shading is on, and its hover text with the survey years.
+export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
+export const contextCreditTitle = (years: readonly [number, number]) =>
+  `Source: U.S. Census Bureau, American Community Survey 5-year estimates (${years[0]}–${years[1]}) and TIGER/Line boundaries`;
+// The tap card's lines: "1,240 people per square kilometre", "$62,000 a year", "Could be off by about 18%".
+export const contextDensityLine = (value: string) => `${value} people per square kilometre`;
+export const contextIncomeLine = (value: string) => `${value} a year`;
+export const contextMarginLine = (pct: string) => `Could be off by about ${pct}`;
+// An area at the survey's top code (the highest figure it reports).
+export const CONTEXT_INCOME_TOP = '$250,000 or more';
+export const CONTEXT_NO_DENSITY = 'No population figure for this area.';
+export const CONTEXT_NO_INCOME = 'No income figure for this area.';
+export const contextUncertainLine = (pct: string) => `Too uncertain to show. It could be off by about ${pct}.`;
 
 // ---- Route card ----
 // N1 weekday-variation
@@ -313,13 +386,13 @@ export const HISTORY_YEAR_LABEL = 'History year';
 export const HISTORY_EXPAND_CHART = 'Expand chart';
 export const HISTORY_CHART_LABEL = 'Route history chart';
 /** The search box in History before an agency is open. */
-export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = searchPlaceholder('an agency');
 /** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
 export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 /** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
-  `This compares the oldest and newest ${day} schedules available for this route.`;
-/** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
+  `This compares the oldest and newest ${dayInSentence(day)} schedules available for this route.`;
+/** A History row whose weekend day has no trips at all: docs/style/TEXT.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
@@ -393,9 +466,8 @@ export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 
-const DAYS_PLURAL: Record<string, string> = { Weekday: 'weekdays', Saturday: 'Saturdays', Sunday: 'Sundays' };
 // N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
-export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${DAYS_PLURAL[day] ?? day}`);
+export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${isDayType(day) ? dayPlural(day) : day}`);
 // N35 stop-no-routes-in-period (Ryan)
 export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
 // N36 stop-not-found (Ryan)

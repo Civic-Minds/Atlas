@@ -70,13 +70,13 @@ describe('short-turn and burst variants (#732)', () => {
     expect(captured.find(r => r.day === 'Weekday' && r.shapeId === '1122570')?.serviceClass).toBe('time-limited');
   });
 
-  it('stl AOUT2626E: a synthesized 2-trip direction (06:09, 10:07) is irregular and leaves the route median alone', async () => {
-    // Hand count: Terminus Montmorency, 68 trips 04:47-25:01, median 17. The synthesized second
-    // direction has two trips; it read as regular with headway 238 and worst-direction 238.
+  it('stl AOUT2626E: the 2-trip short pattern (06:09, 10:07) is part of the one direction and leaves the route median alone', async () => {
+    // Hand count: Terminus Montmorency, 68 trips 04:47-25:01, median 17. STL gives each direction its own route
+    // (26E is eastbound) and no direction_id. The shape guess once made the two Notre-Dame / Clarendon starts a
+    // second direction (headway 238, then irregular); read from stop order they run the same way (CIV-1500).
     const routes = await weekdayRoutes('stl-aout2626e', 'stl');
-    const twoTrip = routes.find(p => p.directionId === 1);
+    expect(routes.find(p => p.directionId === 1)).toBeUndefined();
     const main = routes.find(p => p.directionId === 0);
-    expect(twoTrip).toMatchObject({ tier: 'span', serviceClass: 'irregular', headway: null });
     expect(main).toMatchObject({ tier: '60', serviceClass: 'regular', headway: 20 });
     expect(main.worstDirectionHeadway).toBe(20);
   });

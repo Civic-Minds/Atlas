@@ -7,7 +7,6 @@ import {
   areaAgencySummaries,
   bandCounts,
   bestRoute,
-  formatDataDate,
   formatIso,
   hasMiddayService,
   agencyTitle,
@@ -15,6 +14,7 @@ import {
   modesText,
   type AgencyPageSummary,
 } from './agencyPages';
+import { shortDate } from './dateText';
 import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
@@ -294,8 +294,8 @@ export function areaAboutParagraph(d: AreaPageData): string {
 export const AREA_BAR_NOTE = "The bar splits this area’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.";
 
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
-  const refreshed = formatDataDate(d.newestRefresh);
-  const release = formatDataDate(d.releaseDate);
+  const refreshed = shortDate(d.newestRefresh);
+  const release = shortDate(d.releaseDate);
   return ["Based on the agencies’ published schedules, not live arrivals.", refreshed ? `Newest schedule published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 

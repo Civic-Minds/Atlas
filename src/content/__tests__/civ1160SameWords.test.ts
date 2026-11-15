@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { shortDate } from '../../../shared/dateText';
 import {
   BACK_TO_MAP_LABEL,
-  CLOSE_LABEL,
   COMPARE_B_PICKER_NOTE,
   DEFAULT_EXPORT_TITLE,
   FREQUENCY_LABEL,
@@ -15,7 +15,6 @@ import {
   SHARED_STRETCH_LABEL,
 } from '../noticeCopy';
 import { FREQUENCY_LABEL as SPARKLINE_FREQUENCY_LABEL } from '../../components/Interval/HeadwaySparkline';
-import { formatStoredDate } from '../../utils/format';
 import { capitalizeFirst } from '../../utils/headwayText';
 
 // CIV-1160: these texts moved from components into noticeCopy with the same words. Each must equal the old literal.
@@ -29,7 +28,6 @@ describe('CIV-1160 shared copy keeps the same words', () => {
     expect(DEFAULT_EXPORT_TITLE).toBe('Transit map');
     expect(PRIVACY_SETTINGS_TITLE).toBe('Privacy & analytics');
     expect(RETRY_LABEL).toBe('Retry');
-    expect(CLOSE_LABEL).toBe('Close');
     expect(capitalizeFirst(LIMITED_SERVICE_LABEL)).toBe('Limited');
     expect(`A ${LIMITED_SERVICE_LABEL}`).toBe('A limited');
   });
@@ -41,7 +39,7 @@ describe('CIV-1160 shared copy keeps the same words', () => {
     expect(COMPARE_B_PICKER_NOTE).toBe('The frequency, day and time above are map A; pick map B here. Modes and agencies apply to both maps. Leave Compare from the More menu.');
   });
 
-  it('formatStoredDate matches the old SidebarControls formatter for 8-digit dates', () => {
+  it('shortDate matches the old SidebarControls formatter for 8-digit dates', () => {
     // The inline formatter SidebarControls had before CIV-1160.
     const oldFormatter = (exp: string) => {
       const y = exp.slice(0, 4);
@@ -51,8 +49,8 @@ describe('CIV-1160 shared copy keeps the same words', () => {
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
     };
     for (const exp of ['20261101', '20260101', '20261231', '20240229', '20250709']) {
-      expect(formatStoredDate(exp)).toBe(oldFormatter(exp));
+      expect(shortDate(exp)).toBe(oldFormatter(exp));
     }
-    expect(formatStoredDate('20261101')).toBe('Nov 1, 2026');
+    expect(shortDate('20261101')).toBe('Nov 1, 2026');
   });
 });

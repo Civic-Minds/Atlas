@@ -6,7 +6,7 @@ import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { headwayFilterLabel } from '../../utils/headwayText';
 import { useColorMode } from '../../hooks/useColorMode';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
-import { PERIOD_KEYS, PERIOD_LABELS, type TimePeriod } from '../../hooks/useIntervalStats';
+import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey, type TimePeriod } from '../../hooks/useIntervalStats';
 
 /**
  * The frequency, day and time pickers every filter surface uses (the Frequency / Day / Time dropdowns, the phone filter panel,
@@ -65,7 +65,7 @@ export function DayPicker({ value, onChange, fill = false }: { value: DayType; o
 
 /** The time periods. There is no All day (CIV-239). */
 export function PeriodPicker({ value, onChange }: { value: TimePeriod; onChange: (period: TimePeriod) => void }) {
-  const options: TimePeriod[] = [...PERIOD_KEYS];
+  const options: PeriodKey[] = [...PERIOD_KEYS];
   return (
     <div className="flex flex-wrap gap-1">
       {options.map(p => (

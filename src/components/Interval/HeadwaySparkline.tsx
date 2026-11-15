@@ -6,7 +6,7 @@ export { headwayToTierColor };
 import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { clockTime } from '../../../shared/timeText';
-import type { TimePeriod } from '../../hooks/useIntervalStats';
+import type { PeriodKey, TimePeriod } from '../../hooks/useIntervalStats';
 import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
@@ -21,7 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
 export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -247,7 +247,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
   const litPeriod = hourChartLitPeriod(hoverPeriod, activePeriodKey, displayedByHour, HOURS);
   const bands = litPeriod ? PERIOD_BANDS[litPeriod] : null;
   // The full-day view names the hovered period on each chart's title line (CIV-1094), so only the card's chart names it here.
-  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as TimePeriod | null;
+  const activeLabelKey = (expanded ? null : hoveredPeriod ?? (period && period !== 'all' ? period : null)) as PeriodKey | null;
   const legendSource = legendStackedByHour ?? stackedByHour;
   const stackedLegend = legendSource
     ? Array.from(new Map(
@@ -397,7 +397,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           title={titleLabel ? <RouteTitleName label={titleLabel} /> : title}
           note="All time periods are shown together."
           ariaLabel={`${title} full-day schedule`}
-          closeLabel="Close schedule"
+          closeLabel={closeLabel(CLOSE_PLACES.schedule)}
           onClose={closeExpanded}
         >
             {directionOptions && directionOptions.length > 1 && !bothDirections && (
@@ -420,7 +420,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
                   const loop = gridBlocks.some(option => option.tripTime?.loop);
                   // Each chart's title sits right above it, with the hovered hour's period name (as on the card's chart)
                   // and its number at the other end of the same line, so nothing jumps and no line is left empty.
-                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as TimePeriod | undefined) ?? null : null;
+                  const modalPeriod = modalHour != null ? (HOUR_TO_PERIOD[modalHour] as PeriodKey | undefined) ?? null : null;
                   const titleRow = (title: string, value: string, testId: string) => (
                     <div className={`flex items-baseline justify-between gap-2 leading-4 ${CHART_HEADING} ${HEADING_GAP}`} data-testid={testId}>
                       <span>{title}</span>

@@ -51,7 +51,7 @@ describe('Bustang route card departures (CIV-101)', () => {
     expect(screen.queryByText('W')).toBeNull();
     expect(screen.getByText('Arrives 10 AM, leaves 10:02 AM')).toBeTruthy();
     // An ended schedule is labelled, never shown as current.
-    expect(screen.getByText(/Mountain Metro: Outdated schedule \(ended Oct 24\)/)).toBeTruthy();
+    expect(screen.getByText(/Mountain Metro: Outdated schedule \(ended Oct 24, 2020\)/)).toBeTruthy();
   });
 
   it('reads 800 m waits when 800 m is chosen, and says when there are no trips', () => {

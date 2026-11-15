@@ -1,13 +1,14 @@
 import type { Agency } from '../App';
+import { shortDate } from '../../shared/dateText';
 import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
-import type { TimePeriod } from '../hooks/useIntervalStats';
+import type { PeriodKey, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { formatStoredDate } from './format';
+import { withRouteWord } from './format';
 import { agencyNames } from './agencyName';
 import { agencyInSentence } from '../../shared/agencyArticle';
 import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
@@ -92,8 +93,8 @@ export function describeHeadwayFilter(maxHeadway: number): string {
   return headwayFilterLabel(maxHeadway);
 }
 
-function periodPhrase(period: TimePeriod): string {
-  // "AM peak" stays, "Midday" -> "midday", "All day" -> "all day".
+function periodPhrase(period: PeriodKey): string {
+  // "AM peak" stays, "Midday" -> "midday".
   return PERIOD_LABELS[period]
     .split(' ')
     .map(word => (/^[AP]M$/.test(word) ? word : word.toLowerCase()))
@@ -265,7 +266,7 @@ export const MAP_EXPORT_SOURCE_SITE = 'transitatlas.fyi';
 /** "2026-10-09" or "2026-10-09T12:00:00Z" -> "2026-10-09"; null when it is not a real date. */
 function isoDay(value: string | null | undefined): string | null {
   const day = value?.trim().slice(0, 10);
-  if (!day || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !formatStoredDate(day)) return null;
+  if (!day || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !shortDate(day)) return null;
   return day;
 }
 
@@ -298,7 +299,7 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   const day = isoDay(releaseGeneratedAt);
 
   const parts = [source];
-  if (day) parts.push(`updated ${formatStoredDate(day)}`);
+  if (day) parts.push(`updated ${shortDate(day)}`);
   parts.push(MAP_EXPORT_SOURCE_SITE);
   return parts.join(' · ');
 }
@@ -313,7 +314,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   // With no clear place, the view name becomes the heading instead of a guessed place.
   const lines: string[] = [];
   const route = state.view === 'frequency' && state.routeLabel
-    ? { label: `Route ${state.routeLabel}`, color: state.routeColor ?? '#71717a' }
+    ? { label: withRouteWord(state.routeLabel), color: state.routeColor ?? '#71717a' }
     : null;
   const filter = filterLine(state);
   if (filter) lines.push(filter);

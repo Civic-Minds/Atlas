@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from '../../content/backLinks';
+import { shortDate } from '../../../shared/dateText';
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal, Search } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
@@ -13,7 +14,7 @@ import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './picke
 import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
-import { formatStoredDate, routeLabels } from '../../utils/format';
+import { routeLabels } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
@@ -21,10 +22,21 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
+import { SEARCH_FEEDS_PLACEHOLDER, SEARCH_HIDDEN_ROUTES_PLACEHOLDER, CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
+import MenuButton from '../ui/MenuButton';
+import { contextLayerAvailable } from './map/useContextLayer';
+import { CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/noticeCopy';
+import type { ContextMetric } from '../../utils/contextLayer';
+import { ContextKey } from './ContextLegend';
+
+const CONTEXT_OPTIONS = [
+  { key: 'off', label: CONTEXT_OPTION_OFF },
+  { key: 'density', label: CONTEXT_OPTION_DENSITY },
+  { key: 'income', label: CONTEXT_OPTION_INCOME },
+] as const;
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -63,6 +75,9 @@ interface FilterPanelProps {
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
   dataSaver: boolean;
   setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
+  /** Population / income shading under the routes (beta only; null is off). */
+  contextMetric?: ContextMetric | null;
+  setContextMetric?: (metric: ContextMetric | null) => void;
   /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
   compare?: {
     side: CompareSide | null;
@@ -134,6 +149,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   showMapLegend,
   setShowMapLegend,
   dataSaver,
+  contextMetric = null,
+  setContextMetric,
   setDataSaver,
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
@@ -381,7 +398,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
               backLabel={backLinkLabel(BACK_PLACES.settings)}
               onClose={close}
-              closeLabel={isFilters ? 'Close filters' : 'Close settings'}
+              closeLabel={closeLabel(isFilters ? CLOSE_PLACES.filters : CLOSE_PLACES.settings)}
             />
 
             <div className="overflow-y-auto flex flex-col">
@@ -393,7 +410,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <input
                         value={hiddenRoutesQuery}
                         onChange={event => setHiddenRoutesQuery(event.target.value)}
-                        placeholder={limitedView ? PART_TIME_ROUTES_SEARCH : 'Search hidden routes…'}
+                        placeholder={limitedView ? PART_TIME_ROUTES_SEARCH : SEARCH_HIDDEN_ROUTES_PLACEHOLDER}
                         className={SEARCH_FIELD}
                         autoFocus
                       />
@@ -462,7 +479,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         <input
                           value={degradedFeedsQuery}
                           onChange={event => setDegradedFeedsQuery(event.target.value)}
-                          placeholder="Search feeds…"
+                          placeholder={SEARCH_FEEDS_PLACEHOLDER}
                           className={SEARCH_FIELD}
                           autoFocus
                         />
@@ -493,7 +510,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
                         const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list;
-                        const checkedDate = formatStoredDate(quality.checkedAt.slice(0, 10)) || quality.checkedAt;
+                        const checkedDate = shortDate(quality.checkedAt) ?? quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">
                             <p className="text-xs font-bold text-[var(--text-primary)] min-w-0">
@@ -562,6 +579,26 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                 </>
+              )}
+
+              {contextLayerAvailable() && setContextMetric && (
+                <div className="px-5 pb-3">
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight whitespace-nowrap">{CONTEXT_CONTROL_TITLE}</p>
+                    </div>
+                    <MenuButton
+                      className="text-xs shrink-0 ml-auto"
+                      align="right"
+                      label={CONTEXT_OPTIONS.find(o => o.key === (contextMetric ?? 'off'))!.label}
+                      value={contextMetric ?? 'off'}
+                      options={CONTEXT_OPTIONS}
+                      onChange={key => setContextMetric(key === 'off' ? null : key)}
+                    />
+                  </div>
+                  {/* The scale is always one tap away here, even with the persistent legend off. */}
+                  {contextMetric && <div className="mt-2"><ContextKey metric={contextMetric} /></div>}
+                </div>
               )}
 
               {FEATURES.persistedSettings && (

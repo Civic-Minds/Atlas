@@ -1,4 +1,5 @@
 import DataTable from './components/ui/DataTable';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
@@ -110,7 +111,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}

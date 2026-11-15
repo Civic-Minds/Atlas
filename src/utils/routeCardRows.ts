@@ -1,5 +1,6 @@
 import type { HoveredBranch, ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { resolveBranchLabel } from './format';
+import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
@@ -338,7 +339,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     const branchLines = shown.map(({ row }) => {
       // The report's whole job is completeness: a row whose label is empty (redundant with its section) still gets
       // one (#300).
-      const reportLabel = row.label || row.feature.headsign?.trim() || `Direction ${row.feature.directionId ?? gi}`;
+      const reportLabel = row.label || row.feature.headsign?.trim() || directionBranchFallback(row.feature.directionId ?? gi);
       return `- ${reportLabel}: ${reportRowValueText(row)}`;
     });
     const spanLines = group.spanRows.filter(span => span.label).map(span => `- ${span.label}: ${limitedWord}`);

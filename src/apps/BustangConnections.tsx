@@ -7,7 +7,8 @@ import CardRouteList from '../components/Interval/CardRouteList';
 import { CARD_SUMMARY, CardSectionLabel } from '../components/Interval/cardUi';
 import ResearchInfo from '../components/ResearchInfo';
 import { outdatedLabel } from '../components/research/BustangCardSections';
-import { loadingText } from '../content/noticeCopy';
+import { loadingText, NO_BUSTANG_TRIPS } from '../content/noticeCopy';
+import { shortDate } from '../../shared/dateText';
 import { countOf } from '../../shared/overflowText';
 import { DAY_TYPES, type DayType } from '../../shared/dayTypes';
 import { LIST_DISTANCE_CHOICES, parseNearbyChoice, type NearbyChoice } from '../../shared/connections';
@@ -22,12 +23,6 @@ import { BUSTANG_INFO_HEADING, BUSTANG_LIST_TITLE, scheduleEnded, type BustangDa
  * distance live here so they work on phones too. All wording is a draft for Ryan's word-for-word OK.
  */
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-function dayDate(ymd: string): string {
-  const d = new Date(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8)));
-  return `${WEEKDAYS[d.getDay()]} ${MONTHS[d.getMonth()]} ${d.getDate()}`;
-}
 
 interface Props {
   active: boolean;
@@ -76,11 +71,11 @@ export default function BustangConnections({ active, data, day, setDay, within, 
                 options={LIST_DISTANCE_CHOICES.map(m => [String(m), `${m} m`] as const)} />
             </div>
             </>}
-            {data && <p className={CARD_SUMMARY}>Schedules for {dayDate(data.dates[day])}.</p>}
+            {data && <p className={CARD_SUMMARY}>Schedules for {shortDate(data.dates[day])}.</p>}
             {outdated.map(a => <p key={a.name} className="text-xs text-[var(--text-muted)]">{a.name}: {outdatedLabel(a)}</p>)}
           </div>
           {!data && <PanelEmpty kind="loading">{loadingText('Bustang connections')}</PanelEmpty>}
-          {data && routes.length === 0 && <PanelEmpty>No Bustang trips this day.</PanelEmpty>}
+          {data && routes.length === 0 && <PanelEmpty>{NO_BUSTANG_TRIPS}</PanelEmpty>}
           {/* With the connections top bar (local only, CIV-1353, Ryan 2026-11-13, 11b), the route is picked on the map, not from this list. */}
           {data && routes.length > 0 && !FEATURES.connectionsBar && (
             <CardRouteList

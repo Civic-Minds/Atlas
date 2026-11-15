@@ -1,10 +1,11 @@
 import { originVariantText } from '../../../utils/nameCase';
+import { shortDate } from '../../../../shared/dateText';
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
-import { routeLabels, formatBranchLabel, formatStoredDate } from '../../../utils/format';
+import { routeLabels, formatBranchLabel } from '../../../utils/format';
 import { agencyNames } from '../../../utils/agencyName';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { branchHourStack, routeHourModel, stableBranchColors, stackBranches, stackHeadway } from '../../../utils/hourChartModel';
@@ -164,7 +165,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').name;
   // An ended timetable (N2) says more, so it wins over the listing end.
-  const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? formatStoredDate(routeAgency.listingEndedOn) : '';
+  const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? shortDate(routeAgency.listingEndedOn) ?? '' : '';
   const listingEnded = !!routeAgency?.listingEndedOn && listingEndHasPassed(routeAgency.listingEndedOn, agencyTodayYmd(routeAgency));
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
@@ -185,7 +186,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/STYLE.md "Card notices").
+  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
     directions: currentRoute.directions,
     model,

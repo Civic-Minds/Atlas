@@ -22,7 +22,7 @@ const QUESTIONS = [
   { title: 'How often', body: 'Compare scheduled frequency without opening a schedule.', Icon: Repeat },
 ];
 
-/** A pale tint of a frequency colour on the page background: never a dark fill (STYLE.md). */
+/** A pale tint of a frequency colour on the page background: never a dark fill (docs/style/VISUAL.md). */
 const tint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
 
 /** A picture with a light and a dark version; CSS shows the current theme's (index.css, .theme-light-only). */

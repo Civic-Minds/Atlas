@@ -50,7 +50,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 
@@ -362,7 +362,7 @@ function RouteHistoryCard({
         </div>
       )}
       {chartExpanded && showChart && (
-        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel={HISTORY_CHART_LABEL} closeLabel="Close chart" onClose={closeChart}>
+        <ExpandDialog title={<RouteTitleName label={routeLabels({ shortName: route.routeShortName, longName: route.routeName || null, routeType: route.currentRouteType ?? undefined, agencySlug, agencyName })} />} ariaLabel={HISTORY_CHART_LABEL} closeLabel={closeLabel(CLOSE_PLACES.chart)} onClose={closeChart}>
           <div className="mt-4">
             <RouteHistoryChart wide snaps={chartSnaps} minutes={hws} lineColor={lineColor} gradientId={`${gradientId}-wide`} hoveredSnap={hoveredSnap} onHover={setHoveredSnap} />
           </div>

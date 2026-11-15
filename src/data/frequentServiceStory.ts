@@ -79,19 +79,3 @@ export const frequentServiceStoryStats = {
     agenciesOct11: chartedRowsOct11.filter(row => ruleMinutes(row) === minutes).length,
   })),
 };
-
-/**
- * CIV-1179 / CIV-1182: the coverage cloud run of 2026-11-07 (run 42337977138, the map's own frequency rule, approved
- * 2026-11-06): a 10-minute walk to weekday 7:00–19:00 service, the 15-minute share on the 30-minute population base.
- */
-export const frequentServiceCoverageStats = [
-  { country: 'Canada', populationBase: '25.96M', fifteenMinute: '17.16%', thirtyMinute: '45.13%', metros: '38 CMAs', fifteenMinuteMetros: '17' },
-  { country: 'United States', populationBase: '225.83M', fifteenMinute: '7.28%', thirtyMinute: '16.79%', metros: '148 metros', fifteenMinuteMetros: '77' },
-] as const;
-
-export const frequentServiceCoverageUpdated = 'November 7, 2026';
-
-export const frequentServiceCoverageInterpretation = {
-  canadaThirtyToFifteenRatio: '2.6',
-  unitedStatesThirtyToFifteenRatio: '2.3',
-};

@@ -15,7 +15,7 @@ import { buildDirectionGroups } from './routeCardDirectionGroups';
  * Every notice the route card shows, decided in one place (CIV-1200). The card renders what this returns and decides
  * nothing itself. Codes are noticeCopy's (N1 … N123).
  *
- * Each notice has one place (Ryan, CIV-1202; one kind of notice, one place; docs/STYLE.md "Card notices"):
+ * Each notice has one place (Ryan, CIV-1202; one kind of notice, one place; docs/style/TEXT.md "Card notices"):
  * 1 under the title, what the card is (variants, data warnings); 2 on the rows, anything about one direction or row;
  * 3 below the rows, the whole route in the period. And each fact once: a notice shows only when it says something the
  * rows don't.
