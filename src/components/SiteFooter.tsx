@@ -1,6 +1,7 @@
 import { FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
 import { ABOUT_ATLAS, ATLAS_BYLINE } from '../content/noticeCopy';
+import { ABOUT_HOME_PATH } from './SiteHeader';
 
 type FooterLink = { href: string; label: string };
 
@@ -33,12 +34,13 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
   ];
 }
 
-export default function SiteFooter({ logoHref = '/' }: { logoHref?: string }) {
+/** The shared page footer; its logo opens the About home page, like the header's (#1509). */
+export default function SiteFooter() {
   return (
     <footer className="mt-8 pt-5 sm:[html[data-consent-prompt]_&]:pb-16 text-sm text-[var(--text-dim)]" aria-label="Site footer">
       <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-x-20">
         <div className="col-span-3 sm:col-span-1">
-          <AtlasLogo href={logoHref} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" />
+          <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" />
           {/* Wraps below 1024px so the three link columns fit beside it from 640px up. */}
           <p className="mt-2 lg:whitespace-nowrap">Transit service, from schedule to street.</p>
         </div>
