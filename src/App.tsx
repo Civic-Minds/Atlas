@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { Search, X, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
+import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
+import SearchClearButton from './components/ui/SearchClearButton';
 import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
@@ -56,7 +57,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
+import { SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -528,8 +529,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const searchPlaceholder = inFrequency
     ? SEARCH_ROUTES_PLACEHOLDER
     : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
-    : inNight ? 'Search agencies or routes…'
-    : 'Search vehicles…';
+    : inNight ? SEARCH_NIGHT_PLACEHOLDER
+    : SEARCH_VEHICLES_PLACEHOLDER;
 
   function handleSearchClear() {
     setQuery('');
@@ -713,28 +714,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               className={`absolute left-8 right-2 top-1/2 -translate-y-1/2 ${CARD_NOTE} pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis`}
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
-              <span className="sm:hidden">Search</span>
+              <span className="sm:hidden">{SEARCH_SHORT_PLACEHOLDER}</span>
               <span className="hidden sm:inline">{searchPlaceholder}</span>
             </span>
           )}
-          {query !== '' && (
-            <button
-              type="button"
-              onPointerDown={event => {
-                event.preventDefault();
-                handleSearchClear();
-              }}
-              onClick={event => {
-                // Pointer activation is handled on pointerdown for immediate feedback.
-                // Keep click for keyboard activation, whose detail is zero.
-                if (event.detail === 0) handleSearchClear();
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors p-0.5"
-              aria-label="Clear search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          {query !== '' && <SearchClearButton variant="bar" onClear={handleSearchClear} />}
         </div>
         </div>
         </div>

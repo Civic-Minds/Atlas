@@ -1,4 +1,4 @@
-import type { DayType } from '../../shared/dayTypes';
+import { dayPlural, type DayType } from '../../shared/dayTypes';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { joinList } from '../../shared/overflowText';
@@ -17,7 +17,7 @@ export function nightRuleText(frequency: NightServiceFrequency): string {
 export const FREQUENT_INFO_HEADING = 'Which routes are frequent?';
 
 function dayList(days: readonly DayType[]): string {
-  const names = days.map(day => (day === 'Weekday' ? 'weekdays' : `${day}s`));
+  const names = days.map(dayPlural);
   if (names.length === 0) return 'the selected day';
   return joinList(names);
 }

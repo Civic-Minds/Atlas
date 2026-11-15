@@ -53,7 +53,7 @@ export const NARROW_TOP_BAR_QUERY = '(max-width: 1087px)';
 
 /**
  * Below this width even the selected tab and the Compare "Both maps" label fold to their icon or
- * badge, so the search bar keeps at least 128px (the width its "Search routes" hint needs) down to
+ * badge, so the search bar keeps at least 128px (the width its "Find routes…" hint needs) down to
  * 640px, the tablet lower bound. Measured with History "22+" and Compare showing, Live off; rescan
  * if a tab or top-bar chip is added (#1020).
  */

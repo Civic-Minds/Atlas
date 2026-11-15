@@ -1,5 +1,5 @@
 import { agencyInSentence } from './agencyArticle';
-import { dateRangeText } from './liveDashboard';
+import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf } from './overflowText';
 
@@ -35,7 +35,7 @@ export const TYPICAL_ADDED = 'Typical added';
  */
 export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
   const d = o.dates ?? [];
-  const days = d.length ? `, ${dateRangeText(d[0], d[d.length - 1])}` : '';
+  const days = d.length ? `, ${dateRange(d[0], d[d.length - 1])}` : '';
   return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ' (stops with 30+ departures)'}.`;
 };
 
@@ -46,7 +46,7 @@ export const fadedNoteText = (minN: number, unit: string, marks: 'bars' | 'dots'
 export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRESHOLD}`;
 
 /** The week a page's figures cover, as its subtitle opens: "Week of Oct 8–14". */
-export const weekOfText = (from: string, to: string): string => `Week of ${dateRangeText(from, to)}`;
+export const weekOfText = (from: string, to: string): string => `Week of ${dateRange(from, to)}`;
 
 /** The hover line of a late-by-hour chart (approved by Ryan), by the hour trips start: "2 PM: 8 of 167 trips left the end of the line late". */
 export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${late.toLocaleString()} of ${total.toLocaleString()} trips left the end of the line late`;
@@ -64,13 +64,13 @@ export const bunchedAndLong = (bunched: string, tooLong: string): string => `${b
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
 /** "Thursday, Oct 15": a single day where the weekly view says "Week of Oct 8–14". */
-export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRangeText(date, date)}`;
+export const dayText = (date: string): string => `${weekdayOf(date)}, ${dateRange(date, date)}`;
 /** A tile's change line against the same weekday a week before: "last week 9%" becomes "last Thursday 9%" ("same as last week" likewise). */
 export const againstLastWeekday = (line: string, compareDate: string): string => line.replace(/last week/, `last ${weekdayOf(compareDate)}`);
 export const NOT_ENOUGH_YESTERDAY = 'Not enough recordings yesterday to compare.';
 
 /** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */
-export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRangeText(from, to)}`;
+export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRange(from, to)}`;
 
 /**
  * The end of every Live page subtitle: "estimated from vehicle positions, not reported by the TTC" ("by MiWay": the agency's
@@ -86,7 +86,7 @@ export const estimatedNote = (agencyName: string): string => `estimated from veh
 export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readonly string[] | null; middle: string; /** The agency's short name ("TTC", "MiWay"). */ agency: string; /** The newest day in the figures (YYYY-MM-DD): ends the line as "data up to Oct 14". */ upTo?: string | null }): string {
   const t = o.thisWeek, l = o.lastWeek;
   const week = t.length ? weekOfText(t[0], t[t.length - 1]) + (l?.length ? `, ${changesComparedWith(l[0], l[l.length - 1])}` : '') : '';
-  return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRangeText(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');
+  return [week, o.middle, estimatedNote(o.agency), o.upTo ? `data up to ${dateRange(o.upTo, o.upTo)}` : ''].filter(Boolean).join(' · ');
 }
 
 /**
@@ -154,7 +154,7 @@ export function excludingText(dates: readonly string[]): string | null {
   if (!days.length) return null;
   let month = '';
   const parts = days.map(d => {
-    const [m, day] = dateRangeText(d, d).split(' ');
+    const [m, day] = dateRange(d, d).split(' ');
     const out = m === month ? day : `${m} ${day}`;
     month = m;
     return out;
@@ -177,7 +177,7 @@ export function leftOutReason(dates: readonly string[]): string | null {
  * weeks counted.
  */
 export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readonly string[]): string | null {
-  const days = [...[...new Set(thisWeek)].sort(), ...[...new Set(lastWeek)].sort()].map(d => dateRangeText(d, d));
+  const days = [...[...new Set(thisWeek)].sort(), ...[...new Set(lastWeek)].sort()].map(d => dateRange(d, d));
   if (!days.length) return null;
   return `Excluding ${days.length === 1 ? days[0] : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`}`;
 }

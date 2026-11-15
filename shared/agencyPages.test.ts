@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   agencyIntroSentence, agencyMention, agencyTitle, sharedOfficialNames, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
-  agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, formatDataDate, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
+  agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
   type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
 } from './agencyPages';
 import { agencyTodayYmd } from './feedAvailability';
@@ -62,11 +62,6 @@ describe('agency page text', () => {
     expect(Number(q.get('z'))).toBeGreaterThanOrEqual(7);
   });
 
-  it('formats the data date', () => {
-    expect(formatDataDate('2026-10-12')).toBe('Oct 12, 2026');
-    expect(formatDataDate('20261012')).toBe('Oct 12, 2026');
-    expect(formatDataDate(null)).toBeNull();
-  });
 });
 
 describe('breadcrumbs and nearby agencies', () => {

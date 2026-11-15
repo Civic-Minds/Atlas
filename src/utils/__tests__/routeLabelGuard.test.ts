@@ -24,6 +24,7 @@ const ALLOWED_LABEL_CALLS: Record<string, { count: number; why: string }> = {
   'src/pageParts.tsx': { count: 3, why: 'agency pages (RouteNameCell), from the page data; one more for summaries that store the feed short name (CIV-984 3B)' },
   'src/components/Live/tool/OverviewList.tsx': { count: 1, why: 'Live route list' },
   'src/LiveToolPage.tsx': { count: 1, why: 'Live route menu, named as the list rows (CIV-1117 row 5)' },
+  'src/utils/format.ts': { count: 1, why: 'routeShortLabel: "Route " + the number as routeLabels shows it, from a short name only (CIV-1569)' },
 };
 const SRC = resolve(__dirname, '../..');
 const sourceFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e => {

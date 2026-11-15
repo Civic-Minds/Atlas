@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { longDate } from '../../shared/dateText';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
@@ -20,6 +21,11 @@ interface Props {
   onExploreMap: () => void;
   agencies: Agency[];
 }
+
+/** The method box's dates (shared/dateText.ts writes them). "Date updated" is the definitions research: the recheck of
+ * every charted agency's source, October 30 to November 3 (CIV-1569). */
+const FREQUENT_SERVICE_CONDUCTED = '2026-10-11';
+const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
@@ -59,8 +65,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
 
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>October 11, 2026.</>,
-      dateUpdated: <>November 3, 2026.</>,
+      dateConducted: <>{longDate(FREQUENT_SERVICE_CONDUCTED)}.</>,
+      dateUpdated: <>{longDate(FREQUENT_SERVICE_DEFINITIONS_UPDATED)}.</>,
       sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,

@@ -1,4 +1,5 @@
 import { stopCardSiblings } from '../../utils/stopStation';
+import { shortDate } from '../../../shared/dateText';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -6,7 +7,7 @@ import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBound
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
 import { buildCurrentRoute, routeVariantFamily } from '../../utils/routeCardRoute';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT, formatStoredDate } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -803,7 +804,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
     if (!exp || exp.length !== 8) return '';
-    return formatStoredDate(exp);
+    return shortDate(exp) ?? '';
   })();
 
   if (!panelShouldRender) return null;

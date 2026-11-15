@@ -1,5 +1,5 @@
-import { formatStoredDate } from '../utils/format';
 import { shortVersion, type WhatsNewItem, type WhatsNewRelease } from '../data/whatsNew';
+import { shortDate } from '../../shared/dateText';
 
 export type ChangelogEntry = { key: string; date: string; label: string; dateLabel: string; items: WhatsNewItem[] };
 
@@ -10,7 +10,7 @@ export function buildChangelog(releases: WhatsNewRelease[]): ChangelogEntry[] {
       key: `app-${release.version}`,
       date: release.date,
       label: `Version ${shortVersion(release.version)}`,
-      dateLabel: formatStoredDate(release.date) || release.month,
+      dateLabel: shortDate(release.date) ?? release.month,
       items: release.items,
     }))
     .sort((a, b) => b.date.localeCompare(a.date));

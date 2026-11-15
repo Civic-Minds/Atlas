@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRange } from '../../../../shared/dateText';
+import type { LiveV3 } from '../../../../shared/liveDashboard';
 import { pctTenth } from '../../../../shared/liveFormat';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
@@ -13,7 +14,7 @@ export function deliveredModel(v3: LiveV3, dir: number | null) {
   const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
   const days = sd.byDay.filter(d => d.healthy);
   const skipped = sd.byDay.filter(d => !d.healthy);
-  const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
+  const points: ProfilePoint[] = days.map(d => ({ label: dateRange(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
   return { overall, skipped, points };
 }
 

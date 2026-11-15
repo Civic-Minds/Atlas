@@ -8,13 +8,14 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { shortDate } from '../../shared/dateText';
 import { joinList, plural } from '../../shared/overflowText';
 import { METHOD_TITLE } from '../../shared/liveWording';
-import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
+import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -110,8 +111,8 @@ export const EXPIRED_FEED_EXPLANATION =
 
 // N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
 export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
-  if (options.count != null && options.since && formatStoredDate(options.since)) {
-    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
+  if (options.count != null && options.since && shortDate(options.since)) {
+    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${shortDate(options.since)}.`;
   }
   return '';
 }
@@ -160,7 +161,7 @@ export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
 // CIV-1251: the list "See all part-time routes" opens, as the setting names them.
 export const PART_TIME_ROUTES_TITLE = 'Part-time routes';
-export const PART_TIME_ROUTES_SEARCH = 'Search part-time routes…';
+export const PART_TIME_ROUTES_SEARCH = searchPlaceholder('part-time routes');
 export const PART_TIME_ROUTES_NOUN = 'part-time routes';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
@@ -205,8 +206,31 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
-/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
-export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/**
+ * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
+ * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160
+ * question 8. With nothing named it reads "Find…". `things` is in lower case unless it holds a name ("a MARTA route"). The top bar's one-word phone hint
+ * is SEARCH_SHORT_PLACEHOLDER.
+ */
+export function searchPlaceholder(things?: string): string {
+  return things ? `Find ${things}…` : 'Find…';
+}
+/** The top bar's hint on a phone, where the box has room for one word. */
+export const SEARCH_SHORT_PLACEHOLDER = 'Find';
+/** The map's search box hint. */
+export const SEARCH_ROUTES_PLACEHOLDER = searchPlaceholder('routes');
+/** The Night service view's search box. */
+export const SEARCH_NIGHT_PLACEHOLDER = searchPlaceholder('agencies or routes');
+/** Live's search box. */
+export const SEARCH_VEHICLES_PLACEHOLDER = searchPlaceholder('vehicles');
+/** About's agency list. */
+export const SEARCH_AGENCIES_PLACEHOLDER = searchPlaceholder('agencies');
+/** Settings: the hidden-routes list. */
+export const SEARCH_HIDDEN_ROUTES_PLACEHOLDER = searchPlaceholder('hidden routes');
+/** Settings: the hidden feeds list. */
+export const SEARCH_FEEDS_PLACEHOLDER = searchPlaceholder('feeds');
+/** The agency filter chip's list, where the box is narrow. */
+export const SEARCH_ANY_PLACEHOLDER = searchPlaceholder();
 /** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
 export const NEAR_YOU_TITLE = 'Near you';
 /** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
@@ -223,8 +247,26 @@ export const DEFAULT_EXPORT_TITLE = 'Transit map';
 export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
 // The button that tries a failed load again.
 export const RETRY_LABEL = 'Retry';
-// The link that closes a card that couldn't be shown.
-export const CLOSE_LABEL = 'Close';
+/**
+ * Every close (X) button's screen-reader name, in one place (CIV-1569), mirroring backLinkLabel: "Close " + the thing
+ * it closes ("Close filters", "Close chart", "Close About Atlas"). A common thing is lower case; a name keeps its case.
+ */
+export const CLOSE_PLACES = {
+  filters: 'filters',
+  settings: 'settings',
+  schedule: 'schedule',
+  chart: 'chart',
+  reportForm: 'report form',
+  exportDialog: 'export dialog',
+  whatsNew: 'what’s new',
+  privacySettings: 'privacy and analytics settings',
+  aboutAtlas: BACK_PLACES.aboutAtlas,
+} as const;
+export function closeLabel(place: string): string {
+  return `Close ${place}`;
+}
+/** The clear (X) button inside a search box, to screen readers. */
+export const CLEAR_SEARCH_LABEL = 'Clear search';
 // Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
 export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
 // Filter panel: the route settings shown outside the Frequency view.
@@ -340,12 +382,12 @@ export const HISTORY_YEAR_LABEL = 'History year';
 export const HISTORY_EXPAND_CHART = 'Expand chart';
 export const HISTORY_CHART_LABEL = 'Route history chart';
 /** The search box in History before an agency is open. */
-export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = searchPlaceholder('an agency');
 /** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
 export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 /** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
-  `This compares the oldest and newest ${day} schedules available for this route.`;
+  `This compares the oldest and newest ${dayInSentence(day)} schedules available for this route.`;
 /** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
@@ -420,9 +462,8 @@ export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 
-const DAYS_PLURAL: Record<string, string> = { Weekday: 'weekdays', Saturday: 'Saturdays', Sunday: 'Sundays' };
 // N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
-export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${DAYS_PLURAL[day] ?? day}`);
+export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${isDayType(day) ? dayPlural(day) : day}`);
 // N35 stop-no-routes-in-period (Ryan)
 export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
 // N36 stop-not-found (Ryan)

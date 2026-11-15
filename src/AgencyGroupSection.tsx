@@ -1,4 +1,5 @@
 import { fitAgencyName } from './utils/agencyName';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { AREA_TABLE_OTHER, areaAgencyRowHref, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../shared/areaPages';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { LINK } from './pageStyles';
@@ -68,7 +69,7 @@ export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencie
             columns={[
               // Every area has the same mode columns (CIV-973); from md up they are narrow enough for eight to fit beside the names.
               { key: 'agency', header: 'Agency', rowHeader: true, width: AREA_NAME_COLUMN_REM, className: 'font-normal', cell: a => agencyNameLink(a, data.modeColumns.includes(AREA_TABLE_OTHER)) },
-              ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? '–' })),
+              ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? MISSING_VALUE })),
             ]}
           />
       </PageTable>

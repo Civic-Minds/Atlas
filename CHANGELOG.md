@@ -6,18 +6,20 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
+- **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
+- **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text
 - **Route card notices no longer repeat what the rows say**: a [notice](https://github.com/Civic-Minds/Atlas/issues/1221) that a row's hours or gap already give is left out, the "runs only from" line shows once, and a route whose rows all meet the filter says when it runs instead of that it misses the filter
 - **Agency names read naturally in sentences**: notices and agency pages say "The TTC’s schedule ended…" and "BC Ferries’ schedule", and renamed agencies use their current names (Green Mountain Transit, Santa Maria Regional Transit)
 - **Every back link reads "Back to" and the place it goes**: "← Back to map", "← Back to TTC", and History's agency card "← Back to agencies" (it read "All agencies"), so the way back reads the same on every screen
 - **Live's "Where delays start" rows say where delay starts** ("starts at Broadview Ave (+0.5 min)"), and the bunching table's column reads "Increase": it measures a rise in bunching, not minutes
-- **The Frequent service story shows population coverage again, with new numbers**: a rerun on current Atlas data with the map's own frequency rule finds 17.16% of Canadians and 7.28% of Americans in the studied metros within a 10-minute walk of 15-minute service (45.13% and 16.79% at 30 minutes), dated November 7, 2026
 - **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
 - **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
 - **The About page no longer describes an all-day value or threshold**: the map has no All day option, so the filter note now speaks only of periods
 - **Live writes minutes the way the map does**: "every 8–10 min", "7.5 min", "2 min late", where it had half minutes, numbers with no unit and "+2 min late"
 - **One name for each thing**: "Report a problem", "Trip time" on Live (it was also "Run time"), "Day / Time / Mode" on the phone filters and "On-demand" on the agency card
 - **Live names agencies by their own short name in link previews and missing-route messages**: "MiWay", not "MIWAY"
-- **Small wording fixes**: "Near you", "1 match" and "1 stop" instead of "1 matches" and "1 stops", "Search routes…" like the other search boxes, and the Extra wait empty message reads "at this time of day"
+- **Small wording fixes**: "Near you", "1 match" and "1 stop" instead of "1 matches" and "1 stops", "Find routes…" like the other search boxes, and the Extra wait empty message reads "at this time of day"
 - **Apostrophes are curly everywhere on the site**: notices, errors and Live text used straight ones while the About and story pages used ’
 - **Live says each thing one way on every page**: the late-stops intro, the "Where delays start" section, the faded-bar note and the left-out days had different wording on the agency and route pages
 - **The Live agency page is titled with the agency's full name**: as its page on the map is ("Toronto Transit Commission", not "TTC")

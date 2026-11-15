@@ -1,6 +1,6 @@
 import { BACK_PLACES } from '../content/backLinks';
 import type { OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { cleanRouteShortName, routeLabels } from './format';
+import { routeLabels, routeShortLabel } from './format';
 import { agencyNames } from './agencyName';
 import { onDemandCardName, onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from './onDemandSelection';
 import { splitRouteKey } from './routeKey';
@@ -59,8 +59,8 @@ export function stopBackTarget(snapshot: StopBackSnapshot | null): StopBackTarge
 
 /** "Route 504" for a route with a short name; otherwise the route card's own title. */
 export function stopBackRouteName(route: StopBackRoute, agencySlug: string, agencyName: string): string {
-  const shortName = cleanRouteShortName(route.routeShortName?.trim());
-  if (shortName) return `Route ${shortName}`;
+  const short = routeShortLabel(route.routeShortName);
+  if (short) return short;
   return routeLabels({
     shortName: route.routeShortName,
     longName: route.routeLongName,

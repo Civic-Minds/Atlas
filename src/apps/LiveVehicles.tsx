@@ -24,7 +24,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, vehicleModeCount, nameCase } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
@@ -349,7 +349,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
         const displayName = nameCase(cleanRouteDisplayName(
-          routeNamesByKey.get(key) || vs[0].displayName || `Route ${routeShortName}`,
+          routeNamesByKey.get(key) || vs[0].displayName || routeShortLabel(routeShortName),
           routeShortName,
         ), 'route');
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
