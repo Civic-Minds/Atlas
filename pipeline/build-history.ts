@@ -543,6 +543,9 @@ async function main() {
     aliasMerged += a.merged;
   }
   if (aliasMerged > 0) console.log(`Merged ${aliasMerged} aliased route keys.`);
+  // CIV-1582: today's map as the last period of the identity test (a key no archived period uses).
+  const TODAY_PERIOD_KEY = 'today';
+  const buildDate = `${buildYear}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}`;
   // CIV-422: a reused route number becomes separate routes, by long name and how much of the line ran before.
   // Off unless ATLAS_HISTORY_ROUTE_IDENTITY=1; an earlier route is published as "<number> (<years>)".
   const splitOrigin: Record<string, Record<string, string>> = {};
@@ -554,19 +557,26 @@ async function main() {
     for (const [slug, routes] of Object.entries(sidecarRoutes)) {
       for (const [key, entries] of Object.entries({ ...routes })) {
         if (!identitySplitApplies(identityFlag, identityKeys, slug, key)) continue;
-        const { segments, splits } = splitRouteHistory(entries.map(e => ({
+        // CIV-1582: today's map is the route's last period, so the test also runs across the boundary between the last
+        // archived period and today (TriMet 10: Harold St until 2022, Steele today, 65% shared). Today's segment keeps
+        // the key; an earlier route becomes "<number> (<years>)" and gets no current endpoint.
+        const today = currentHeadways[slug]?.[key];
+        const todayPeriod = today && (today.geometry || today.routeLongName)
+          ? [{ periodKey: TODAY_PERIOD_KEY, sortKey: buildDate, year: buildYear, name: today.routeLongName, termini: terminiOf(today.geometry), line: today.geometry ?? null }]
+          : [];
+        const { segments, splits } = splitRouteHistory([...entries.map(e => ({
           periodKey: e.periodKey,
           sortKey: e.v2.refDate,
           year: Number(e.v2.refDate.slice(0, 4)),
           name: e.v2.name,
           termini: terminiOf(shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c),
           line: shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c ?? null,
-        })), key);
+        })), ...todayPeriod], key);
         if (segments.length < 2) continue;
         splitCount++;
         for (const sp of splits) console.log(`  identity split ${slug}/${key}: ${sp.fromYear} "${sp.before}" -> ${sp.toYear} "${sp.after}" (${sp.verdict.reason})`);
         // Change files with no sidecar go to the segment their date falls in.
-        const starts = segments.map(seg => Math.min(...seg.periodKeys.map(getPeriodKeySortValue)));
+        const starts = segments.map(seg => Math.min(...seg.periodKeys.map(pk => (pk === TODAY_PERIOD_KEY ? Number.POSITIVE_INFINITY : getPeriodKeySortValue(pk)))));
         const segmentOf = (periodKey: string) => {
           const v = getPeriodKeySortValue(periodKey);
           let i = 0;
