@@ -10,7 +10,7 @@
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { shortDate } from '../../shared/dateText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
-import { METHOD_TITLE } from '../../shared/liveWording';
+import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
@@ -297,7 +297,7 @@ export const MAP_EXPORT_TITLES = {
   night: MAP_KEY_NIGHT,
   bustang: 'Bustang connections',
   history: 'Service history',
-  live: 'Live transit',
+  live: LIVE_VEHICLES_TITLE,
 } as const;
 /** Shared labels used in more than one place (CIV-1599). */
 export const ABOUT_ATLAS = BACK_PLACES.aboutAtlas;

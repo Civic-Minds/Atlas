@@ -20,7 +20,7 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { ALONG_ROUTE_TITLE, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
 import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 
@@ -161,7 +161,7 @@ export function periodNote(v3: LiveV3, directionId: number, uncertain: Uncertain
     return [`${label} near ${shortStopName(day.stops[end].name)}`];
   });
   if (!parts.length) return null;
-  return `${kind === 'delaysStart' ? 'Delays start' : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
+  return `${kind === 'delaysStart' ? DELAY_STARTS_LABEL : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
 }
 
 /** Each direction as two lines of stops on the same positions: delay on top, bunching underneath. */

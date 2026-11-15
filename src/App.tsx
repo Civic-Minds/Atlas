@@ -65,6 +65,7 @@ import { BustangRouteDepartures, BustangStopConnections } from './components/res
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
 import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
 import { splitRouteKey } from './utils/routeKey';
+import { LIVE_VEHICLES_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
 
 export interface Agency {
@@ -765,7 +766,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {showLiveControl && (
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
-            label="Live" extra={liveAgencyCount} ariaLabel="Live vehicles"
+            label="Live" extra={liveAgencyCount} ariaLabel={LIVE_VEHICLES_TITLE}
             active={liveTabOn}
             onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
           />

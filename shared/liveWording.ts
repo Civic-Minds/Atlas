@@ -91,6 +91,10 @@ export const LATE_THRESHOLD = 'more than 5½ min late';
 export const DELAY_STARTS_TITLE = 'Where delays start';
 /** The column and figure label for the typical minutes a stretch adds (CIV-1448). */
 export const TYPICAL_ADDED = 'Typical added';
+/** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (Ryan, CIV-1602: "Delays start" everywhere). */
+export const DELAY_STARTS_LABEL = 'Delays start';
+/** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602). */
+export const LIVE_VEHICLES_TITLE = 'Live vehicles';
 
 /**
  * The line under "Stops most often late", the same on the agency page and the route's Full analysis (CIV-1448):
