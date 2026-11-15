@@ -15,21 +15,20 @@
     -73.5665
   ],
   "feedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-  "lastFeedExpiry": "20510930",
-  "lastFeedVersion": "124",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20501001",
+  "lastFeedVersion": "144",
+  "lastRefreshedAt": "2026-11-15",
   "cities": [
     "Danbury, Connecticut"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20510930",
+  "expiredFeedCheckExpiry": "20501001",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Dutchess_County_Transit.zip",
-  "lastPeekedExpiry": "20510930",
-  "listingEndedOn": "20261028",
+  "lastPeekedExpiry": "20501001",
   "feedQuality": {
     "status": "review",
     "score": 95,
@@ -42,20 +41,22 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
       "featureCount": 69,
-      "feedExpiry": "20510930",
+      "feedExpiry": "20501001",
       "routeCount": 19,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-15"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "175ef7d4a05f5467",
-  "feedObtainedAt": "20251028"
+  "lastServiceWeek": "42025c52ba892527",
+  "feedObtainedAt": "20261115",
+  "lastRawArchiveKey": "20501001-7dcda813ac943bda",
+  "lastFeedContentKey": "26b7c05f507cf642",
+  "lastFeedStart": "20180831"
 }
