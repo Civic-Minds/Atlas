@@ -139,3 +139,53 @@ describe('row dot with section colours (#1506)', () => {
     expect(routeCardRowValue(union, { ...midday, sectionColours: true }).colorHeadway).toBe(30);
   });
 });
+
+// CIV-1156: SEPTA 67 weekday (release-mwi8lkbg). Toward Frankford, the main stretch runs every 25 in the evening (longest gap
+// 30, Verree Rd & Hartel Av); the Philadelphia Mills branch has three evening trips (19:17, 20:09, 22:58), so the direction's
+// value is 169 and the main row read "every 111–169 min".
+describe('a main row never shows more than its main stretch\'s longest gap (CIV-1156)', () => {
+  const fc = JSON.parse(readFileSync(resolve(__dirname, 'fixtures', 'septa-67-weekday.json'), 'utf8')) as GeoJSON.FeatureCollection;
+  const props = fc.features.map(f => f.properties as unknown as ShapeProperties);
+  const toFrankford = props.find(p => p.directionId === 1 && p.stretchRole === 'main' && p.tier === 'infrequent')!;
+  const evening = { ...ctx, period: 'evening' as const, stretchMode: true };
+  const uneven = (role: 'main', typical: number) => ({
+    routeId: '320', routeShortName: '320', routeLongName: 'Yonge', directionId: 0, headsign: 'Queens Quay', tier: '10',
+    headway: 7, headwayByPeriod: { overnight: 7 }, stretchRole: role, stretchIndex: 0,
+    stretchPeriodHeadway: { overnight: 18 }, stretchPeriodTypical: { overnight: typical },
+  }) as unknown as ShapeProperties;
+
+  it("reads SEPTA 67 to Frankford's evening as the main stretch's every 25, with no range", () => {
+    const row = routeCardRowValue(toFrankford, evening);
+    expect(row.headway).toBe(25);
+    expect(row.shownHeadway).toBe(25);
+    expect(row.headwayLabel).toBeUndefined();
+    expect(row.rowNoRegular).toBe(false);
+    // The filter still decides on the branch's wait: the dot keeps its colour.
+    expect(row.colorHeadway).toBe(169);
+  });
+  it('leaves the lists (own trips), the hovered hour and a tail row as they were', () => {
+    const lists = routeCardRowValue(toFrankford, { ...evening, stretchValues: false });
+    expect([lists.headway, lists.headwayLabel]).toEqual([169, 'every 111–169 min']);
+    expect(routeCardRowValue(toFrankford, { ...evening, hoveredHour: 20 }).headway).toBe(25);
+    expect(routeCardRowValue({ ...toFrankford, stretchRole: 'tail' } as ShapeProperties, evening).headway).toBeUndefined();
+  });
+  it("keeps a main row's own trips above the main stretch's longest gap (SEPTA 45 to 12th-Vine, weekday midday: 30, gap 15)", () => {
+    const fc45 = JSON.parse(readFileSync(resolve(__dirname, 'fixtures', 'septa-45-weekday.json'), 'utf8')) as GeoJSON.FeatureCollection;
+    const toVine = fc45.features.map(f => f.properties as unknown as ShapeProperties).find(p => p.headsign === '12th-Vine')!;
+    expect(toVine.stretchMeta?.main?.maxGap?.midday).toBe(15);
+    expect(routeCardRowValue(toVine, { ...ctx, stretchMode: true }).headway).toBe(30);
+  });
+  it('keeps an uneven main row whose worst wait is within the main stretch\'s longest gap (MBTA Worcester PM: 28, gap 35)', () => {
+    const worcester = {
+      ...uneven('main', 10), headwayByPeriod: { pmPeak: 30 }, stretchPeriodHeadway: { pmPeak: 28 }, stretchPeriodTypical: { pmPeak: 10 },
+      stretchMeta: { main: { refStop: 'x', period: { pmPeak: 28 }, maxGap: { pmPeak: 35 } }, tails: [] },
+    } as unknown as ShapeProperties;
+    const row = routeCardRowValue(worcester, { ...ctx, period: 'pmPeak', stretchMode: true });
+    expect(row.shownHeadway).toBe(28);
+    expect(row.headwayLabel).toBe('every 10–28 min');
+  });
+  it('keeps an uneven main row on data without the main stretch\'s longest gap', () => {
+    const row = routeCardRowValue(uneven('main', 5), { ...ctx, period: 'overnight', stretchMode: true });
+    expect(row.headway).toBe(18);
+  });
+});

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route's main row no longer shows a branch's long wait**: [SEPTA 67](https://github.com/Civic-Minds/Atlas/issues/1533) toward Frankford read every 169 on weekday evenings, though buses run every 25 on the main part of the route
 - **Route codes like [BLS-1](https://github.com/Civic-Minds/Atlas/issues/1529) keep their capitals**: CTA's Blue Line Shuttle read "Bls-1"
 - **Four commuter rail lines no longer look more frequent than they are**: Providence, Kitchener and Main/Bergen County at the evening rush, and Harlem on weekend middays had read the gap between trains on two branches as one shorter wait ([#1514](https://github.com/Civic-Minds/Atlas/issues/1514))
 - **Compare opens without a pause**: the page no longer stalls after clicking Compare or changing a Compare map's time

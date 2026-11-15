@@ -4,7 +4,7 @@ import { routeCardDisplayLimited } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { rowStretchHourValue, rowTrips, unsteadyDirectionFallback } from './rowTrips';
-import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
+import { hasRegularServiceInPeriod, isOneGapRow, stretchRowsFromMeta, variantRowHeadway, type RouteContract } from './stretchCard';
 import { rowRunsThroughNight } from '../../shared/nightService';
 
 /** The card-level facts every row of the route card reads (CIV-992). */
@@ -132,22 +132,46 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // that runs slower keeps the row at the route's own number, the same number as the route list and chooser; the map's
   // section colours show the slow end. (CIV-1595 had read it as a range, or one big slow number such as TTC 927's "every 306".)
   const rangeLow = trunkHeadway;
-  const shownHeadway = rowNoRegular ? undefined : (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined);
+  const computedShown = rowNoRegular ? undefined : (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined);
+  // CIV-1156 (Ryan, 2026-11-13, option 1): a main stretch's row that shows its direction's value (an uneven period's worst
+  // wait, or the fallback when the row has no cadence of its own) never shows a number longer than the main stretch's own
+  // longest gap: it reads the main stretch's own value. A branch's wait (the slower branch decides the direction, D1) stays
+  // the filter's and the dot's. SEPTA 67 weekday evening to Frankford runs every 25 (longest gap 30) on the main stretch,
+  // while its Philadelphia Mills branch's three evening trips (gaps 52 and 169) put "every 111–169" on the row. A row
+  // reading its own trips, a pooled value, words or the hovered hour is left alone.
+  const mainOwn = ctx.stretchValues !== false ? mainStretchOwnValue(d, period) : null;
+  const mainReplaces = mainOwn != null && computedShown != null && stretchMode && hoveredHour == null && !nightRow
+    && variantH === undefined && allDayH == null && edgeText == null && pooledH === undefined
+    && (uneven != null || (directionFallback != null && displayH === directionFallback && ownH == null)) && computedShown > mainOwn.longestGap;
+  const shownHeadway = mainReplaces ? mainOwn!.value : computedShown;
+  const shownDisplayH = mainReplaces ? mainOwn!.value : displayH;
   const dotHeadway = ctx.sectionColours && typeof branchFilterHeadway === 'number' && shownHeadway != null
     ? Math.max(branchFilterHeadway, shownHeadway)
     : branchFilterHeadway;
   return {
-    displayH,
-    headway: rowNoRegular ? undefined : displayH ?? undefined,
+    displayH: shownDisplayH,
+    headway: rowNoRegular ? undefined : shownDisplayH ?? undefined,
     shownHeadway,
     isLimited,
     rowNoRegular,
     edgeText,
-    headwayLabel: !nightRow && hoveredHour == null && variantH === undefined
+    headwayLabel: !nightRow && hoveredHour == null && variantH === undefined && !mainReplaces
       ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : undefined))
       : undefined,
     colorHeadway: hoveredHour == null && !rowNoRegular ? dotHeadway : undefined,
     trunkHeadway: rangeLow,
     dimmed,
   };
+}
+
+/**
+ * CIV-1156: a main stretch row's own value and longest gap in the period (stretchMeta.main), or null for any other row, All
+ * day, a period the main stretch has no regular cadence in, and data without them.
+ */
+function mainStretchOwnValue(d: ShapeProperties, period: TimePeriod): { value: number; longestGap: number } | null {
+  if (period === 'all' || d.stretchRole !== 'main' || (d.stretchIndex ?? 0) !== 0) return null;
+  const longestGap = d.stretchMeta?.main?.maxGap?.[period];
+  const main = stretchRowsFromMeta(d, period).find(r => r.role === 'main');
+  if (typeof longestGap !== 'number' || main?.value == null || main.noRegular || main.value > longestGap) return null;
+  return { value: main.value, longestGap };
 }
