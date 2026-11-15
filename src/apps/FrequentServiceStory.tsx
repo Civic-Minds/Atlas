@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { longDate } from '../../shared/dateText';
-import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
+import ArrowLink from '../components/ui/ArrowLink';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
 import { type DataTableColumn } from '../components/ui/DataTable';
@@ -23,6 +24,8 @@ import { hourTime } from '../../shared/timeText';
 /** The story's section headings and body paragraphs, one look each. */
 const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
 const STORY_PARAGRAPH = 'mt-5 text-base leading-8 text-[var(--text-muted)]';
+/** The hero's in-page jump buttons (Explore the research, See the method): one pill, so the two match. */
+const STORY_JUMP_BUTTON = 'inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]';
 
 interface Props {
   onExploreMap: () => void;
@@ -135,9 +138,15 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
           </div>
-          <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
-            Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
+          {/* Ryan, 2026-11-14: a second button jumps to the story's own Method section at the bottom. */}
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <a href="#story" className={STORY_JUMP_BUTTON}>
+              Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+            <a href="#research-method-heading" className={STORY_JUMP_BUTTON}>
+              See the method <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </div>
         </ResearchHeader>
 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
@@ -276,16 +285,14 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
-              <div>
                 <h2 id="atlas-heading" className={STORY_HEADING}>Now find your own network.</h2>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">The research explains the categories. Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
-              </div>
-              <button type="button" onClick={exploreMap} className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-black text-[var(--bg-app)] hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">
-                <MapPinned className="h-4 w-4" aria-hidden="true" />
-                Find your city
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
+            {/* Ryan, 2026-11-14: no dark buttons. The About page's pattern: the main action as ArrowLink, then an outline pill. */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <ArrowLink as="button" type="button" onClick={exploreMap}>Find your city</ArrowLink>
+              <a href="#research-method-heading" className={STORY_JUMP_BUTTON}>
+                See the method <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
             </div>
           </section>
         </div>
