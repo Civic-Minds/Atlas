@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE } from './components/ModeTransition';
+import { MODE_EASE, useModeEasing, useModeEntering } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
@@ -460,6 +460,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
+  // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
+  const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
+  const historyEasing = useModeEasing(inHistory, FEATURES.modeTransitions, historyEntering);
+  const historyMapFilterOn = inHistory && !historyEasing;
   // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
   useEffect(() => {
     if (inHistory) syncUrlParams(encodeHistoryView(historyView));
@@ -901,8 +906,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setFrequentServiceWindow={setFrequentServiceWindow}
               showMapContext={FEATURES.mapContext}
               showMatchPercentage={FEATURES.matchPercentage}
-              filterToAgencies={inHistory || inBustang}
-              agencyFilterSlugs={inHistory ? historyFilterSlugs : inBustang ? bustangSlugs : null}
+              filterToAgencies={historyMapFilterOn || inBustang}
+              agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService}
               onInfoOpen={openInfo}

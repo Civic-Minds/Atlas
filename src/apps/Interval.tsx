@@ -32,7 +32,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
+import { ModeCollapse, ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -195,6 +195,19 @@ function readSavedAgenciesOff(): Set<string> {
 }
 
 const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
+
+/**
+ * CIV-1567 (beta): the top bar's settings button, kept mounted and folded away (`ModeCollapse`) while a mode hides it.
+ * The negative margin cancels the row's gap, so a folded button leaves no space behind. Off: a plain pass-through.
+ */
+function SettingsFold({ hidden, children }: { hidden: boolean; children: React.ReactNode }) {
+  if (!FEATURES.modeTransitions) return <>{children}</>;
+  return (
+    <div className="flex -ml-2">
+      <ModeCollapse open={!hidden}><div className="flex items-center pl-2">{children}</div></ModeCollapse>
+    </div>
+  );
+}
 
 /** The gap between Compare's two maps (`gap-1`), which the split's entry ease draws as the divider (CIV-1567). */
 const COMPARE_DIVIDER = '0.25rem';
@@ -1813,7 +1826,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
             />
           )}
-          {!hideFilterPanel && (
+          {/* CIV-1567 (beta): the settings button fades and folds away (History, Live...) instead of vanishing. */}
+          {(FEATURES.modeTransitions || !hideFilterPanel) && (
+            <SettingsFold hidden={hideFilterPanel}>
               <FilterPanel
               contextMetric={contextMetric}
               setContextMetric={setContextMetric}
@@ -1851,6 +1866,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               setDataSaver={setDataSaver}
               compare={compareAvailable ? { side: compareActive ? compareSide : null, onStart: startCompare, onExit: exitCompare, onChange: setCompareSide } : undefined}
             />
+            </SettingsFold>
           )}
         </div>,
         headerPortalContainer
