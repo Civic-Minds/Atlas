@@ -832,6 +832,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   return (
     <>
     <div
+      data-route-card-frame="true"
       className={sheetMode
         ? bottomSheetFrameClass(panelVisible)
         : sidebarCardFrame(panelVisible, { z: searchOverlayHidesPanel(searchFocused, query) ? Z_DROPDOWN : Z_PANEL, extra: phonePanelWidth })}

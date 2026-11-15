@@ -6,7 +6,7 @@ import { getAgencyBounds, type getRegionalView } from '../../../utils/regionView
 import { splitRouteKey } from '../../../utils/routeKey';
 import { fitTargetForPoints, routeFitTarget } from '../../../utils/routeFitTarget';
 import { lineCoordinates } from '../../../../shared/routeGeometry';
-import { cardBesideMap, paddedCenter, routeFitStep, selectionFramePadding } from './routeFraming';
+import { ROUTE_CARD_FRAME_ATTR, cardBesideMap, paddedCenter, routeFitStep, selectionFramePadding } from './routeFraming';
 import { shouldApplyResetView } from './resetView';
 
 export interface SelectionFramingInput {
@@ -152,8 +152,14 @@ export function useSelectionFraming(
     }
 
     // Keeps the line clear of the route card: beside it, or above the phone bottom sheet (routeFraming). A card not in
-    // place yet is waited for, up to about two seconds; after that the phone sheet's usual padding stands in.
-    let padding = framePadding ? framePadding(map) : selectionFramePadding(map);
+    // place yet is waited for, up to about two seconds; after that the phone sheet's usual padding stands in. On wide
+    // screens the main map's own card is measured too: a link that opens on a route fits before its card shows (#1516).
+    let padding: maplibregl.PaddingOptions | null;
+    if (framePadding) padding = framePadding(map);
+    else {
+      const card = document.querySelector(`[${ROUTE_CARD_FRAME_ATTR}]`);
+      padding = !card && cardBesideMap(map) ? null : selectionFramePadding(map, undefined, card);
+    }
     if (!padding && cardWaitsRef.current < CARD_WAIT_TRIES) {
       cardWaitsRef.current += 1;
       const timer = setTimeout(() => setCardWait(n => n + 1), CARD_WAIT_MS);
