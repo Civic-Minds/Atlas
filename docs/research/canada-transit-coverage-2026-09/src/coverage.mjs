@@ -92,21 +92,55 @@ export function metros(collection) {
 }
 
 /**
- * Which frequency rule decides a qualifying route (CIV-1182). Set with COVERAGE_RULE:
- * - "study" (default): the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
- *   headwayByPeriodSustained flag, which drops some very frequent lines (CIV-1179).
+ * Which frequency rule decides a qualifying route (CIV-1182, CIV-1179). Set with COVERAGE_RULE:
+ * - "map-filter" (the story's numbers): the map's own frequency filter, run through the map's own code
+ *   (shared/routeHeadwayFilter.ts, the same expression the PMTiles layer filter uses). A route qualifies at N when
+ *   the map draws it at "every N min or less" on weekdays in each of AM peak, midday and PM peak; its stops are the
+ *   stops of the rows the map draws in those periods (a route can be drawn by different rows in different periods: TTC 167).
+ * - "study": the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
+ *   headwayByPeriodSustained flag, which drops some very frequent lines.
  * - "no-sustained": the same rule without that flag (a sensitivity check).
- * - "map-filter": the map's own frequency filter. Not built: it waits for Ryan's pick of the rule.
  */
 export const RULES = ['study', 'no-sustained', 'map-filter'];
 export function coverageRule() {
   const rule = process.env.COVERAGE_RULE || 'study';
   if (!RULES.includes(rule)) throw new Error(`COVERAGE_RULE must be one of ${RULES.join(', ')}`);
-  if (rule === 'map-filter') throw new Error('COVERAGE_RULE=map-filter is not built yet: the rule waits for Ryan (CIV-1179)');
   return rule;
 }
 
+export const MAP_FILTER_PERIODS = PERIODS;
+
+// The map's own code (TypeScript, loaded through tsx from the repository's node_modules), so this study and the map
+// make one decision per route (CIV-1179): the frequency filter and the route grouping the map's lists use.
+const SHARED = new URL('../../../../shared/', import.meta.url);
+let mapCode = null;
+export async function loadMapCode() {
+  if (!mapCode) {
+    const { tsImport } = await import('tsx/esm/api');
+    const [filter, group] = await Promise.all(['routeHeadwayFilter.ts', 'routeGroupKey.ts'].map(file => tsImport(new URL(file, SHARED).href, import.meta.url)));
+    mapCode = {
+      normalizeRouteFilterFeatures: filter.normalizeRouteFilterFeatures,
+      routePassesHeadwayFilter: filter.routePassesHeadwayFilter,
+      featurePassesHeadwayFilter: filter.featurePassesHeadwayFilter,
+      routeGroupKey: group.routeGroupKey,
+    };
+  }
+  return mapCode;
+}
+function requireMapCode() {
+  if (!mapCode) throw new Error('call loadMapCode() before qualifyingRoutes()');
+  return mapCode;
+}
+
+// A row with no weekday times at all (a "Not in service" or deadhead pattern, a span row with no trips in the day's
+// hours) is not service: it never sets a gap (CIV-1179: Windsor 1C, VTA Rapid 500, TTC 504 were rejected on these).
+export function hasServiceTimes(properties) {
+  const periods = properties.headwayByPeriod ?? {}; const hourly = properties.headwayByHour ?? {};
+  return PERIODS.some(period => num(periods[period]) != null) || HOURS.some(hour => num(hourly[hour]) != null);
+}
+
 export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  if (rule === 'map-filter') throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
   if (properties.day !== 'Weekday') return false;
   const headways = properties.headwayByPeriod; const sustained = properties.headwayByPeriodSustained;
   if (!headways || (rule === 'study' && !sustained)) return false;
@@ -115,12 +149,35 @@ export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRul
   return !hourly || HOURS.every(hour => (num(hourly[hour]) ?? Infinity) <= maxHeadwayMinutes);
 }
 
-export function qualifyingRoutes(features, maxHeadwayMinutes = 15) {
+/**
+ * The weekday rows of the routes that qualify. Routes are grouped as the map's lists group them (routeGroupKey: the
+ * short name, else the route_id, so unnamed routes such as TriMet's MAX lines stay separate).
+ */
+export function qualifyingRoutes(features, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  const code = requireMapCode();
+  const weekday = features.filter(feature => feature.properties?.day === 'Weekday');
+  if (rule === 'map-filter') {
+    // Copies: the map's normalization stamps route-wide values onto the rows it is given.
+    const rows = weekday.map(feature => ({ ...feature, properties: { ...feature.properties } }));
+    code.normalizeRouteFilterFeatures(rows);
+    const routes = new Map();
+    for (const row of rows) {
+      const key = code.routeGroupKey(row.properties.routeShortName, row.properties.routeId);
+      (routes.get(key) ?? routes.set(key, []).get(key)).push(row);
+    }
+    const result = [];
+    for (const route of routes.values()) {
+      const props = route.map(row => row.properties);
+      if (!PERIODS.every(period => code.routePassesHeadwayFilter(props, period, 'Weekday', maxHeadwayMinutes))) continue;
+      result.push(...route.filter(row => PERIODS.some(period => code.featurePassesHeadwayFilter(row.properties, period, maxHeadwayMinutes))));
+    }
+    return result;
+  }
   const groups = new Map();
-  for (const feature of features) {
-    const p = feature.properties ?? {};
-    if (p.day !== 'Weekday') continue;
-    const group = `${p.routeShortName ?? ''}::${p.routeBranch ?? ''}`;
+  for (const feature of weekday) {
+    const p = feature.properties;
+    if (!hasServiceTimes(p)) continue;
+    const group = `${code.routeGroupKey(p.routeShortName, p.routeId)}::${p.routeBranch ?? ''}`;
     const direction = String(p.directionId ?? p.headsign ?? 'unknown');
     const directions = groups.get(group) ?? new Map();
     const rows = directions.get(direction) ?? [];
@@ -128,7 +185,7 @@ export function qualifyingRoutes(features, maxHeadwayMinutes = 15) {
   }
   const result = [];
   for (const directions of groups.values()) {
-    if ([...directions.values()].every(rows => rows.every(feature => qualifies(feature.properties ?? {}, maxHeadwayMinutes)))) {
+    if ([...directions.values()].every(rows => rows.every(feature => qualifies(feature.properties ?? {}, maxHeadwayMinutes, rule)))) {
       for (const rows of directions.values()) result.push(...rows);
     }
   }
@@ -153,6 +210,7 @@ export async function json(url, { tries = 3, delayMs = 2000 } = {}) {
 }
 
 export async function coverageForAgencies(agencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
+  await loadMapCode();
   const result = [];
   for (let start = 0; start < agencies.length; start += 6) {
     const batch = agencies.slice(start, start + 6);

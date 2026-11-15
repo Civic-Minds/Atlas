@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateReport, json, ATLAS_FETCH_HEADERS, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
+import { readFileSync } from 'node:fs';
+import { calculateReport, json, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
+const { routeGroupKey } = await loadMapCode();
 const square = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
 const props = (directionId, stopOrder) => ({ routeShortName: '1', directionId, day: 'Weekday', stopOrder, headwayByPeriod: { amPeak: 10, midday: 12, pmPeak: 15 }, headwayByPeriodSustained: { amPeak: true, midday: true, pmPeak: true }, headwayByHour: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [String(i + 7), 15])) });
 
@@ -83,4 +85,49 @@ test('Atlas files are read with a named User-Agent, retried, and a refusal says 
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+// CIV-1179: real weekday rows (test/fixtures/civ1179-routes.json, cut from the published files on 2026-11-14).
+const realRows = JSON.parse(readFileSync(new URL('./fixtures/civ1179-routes.json', import.meta.url), 'utf8')).agencies;
+const routesAt = (slug, minutes, rule) => new Set(qualifyingRoutes(realRows[slug], minutes, rule).map(f => routeGroupKey(f.properties.routeShortName, f.properties.routeId)));
+
+test('map-filter rule gives the map filter\'s own verdict in AM peak, midday and PM peak (CIV-1179)', () => {
+  // Map filter values (AM/midday/PM): TTC 504 13/10/10, VTA Rapid 500 10/10/10, Windsor 1C 30/10/10,
+  // DRT 900 24/24/24 (#1499), Regina 2 30/30/30, TriMet MAX Blue 30/15/15, Portland Aerial Tram 5/5/5.
+  assert.ok(routesAt('ttc', 15, 'map-filter').has('504'));
+  assert.ok(routesAt('vta', 15, 'map-filter').has('Rapid 500'));
+  assert.equal(routesAt('windsor', 15, 'map-filter').has('1C'), false);
+  assert.ok(routesAt('windsor', 30, 'map-filter').has('1C'));
+  assert.equal(routesAt('drt', 15, 'map-filter').size, 0);
+  assert.ok(routesAt('drt', 30, 'map-filter').has('900'));
+  assert.equal(routesAt('regina', 15, 'map-filter').size, 0);
+  assert.ok(routesAt('regina', 30, 'map-filter').has('2'));
+  assert.deepEqual([...routesAt('trimet', 15, 'map-filter')], ['id:208']);
+  assert.throws(() => qualifies(realRows.ttc[0].properties, 15, 'map-filter'), /whole routes/);
+});
+
+test('map-filter rule leaves the input rows untouched', () => {
+  const before = JSON.stringify(realRows.windsor);
+  qualifyingRoutes(realRows.windsor, 15, 'map-filter');
+  assert.equal(JSON.stringify(realRows.windsor), before);
+});
+
+test('a row with no times ("Not in service") is not a gap (CIV-1179)', () => {
+  const notInService = { ...props(1, ['z']), headsign: 'NotinService', headwayByPeriod: { amPeak: null, midday: null, pmPeak: null }, headwayByHour: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [String(i + 7), null])) };
+  assert.equal(qualifyingRoutes([{ properties: props(0, ['a']) }, { properties: props(1, ['b']) }, { properties: notInService }], 15, 'no-sustained').length, 2);
+  // A row with times but a gap still fails the route.
+  const gap = { ...props(1, ['c']), headwayByHour: { ...props(1, []).headwayByHour, 12: null } };
+  assert.equal(qualifyingRoutes([{ properties: props(0, ['a']) }, { properties: gap }], 15, 'no-sustained').length, 0);
+  // Real rows: Windsor 1C, VTA Rapid 500 and TTC 504 each have a no-times row that used to reject them.
+  assert.ok(routesAt('windsor', 15, 'no-sustained').has('1C'));
+  assert.ok(routesAt('vta', 15, 'no-sustained').has('Rapid 500'));
+  assert.ok(routesAt('ttc', 15, 'no-sustained').has('504'));
+});
+
+test('routes with no short name are keyed by route_id, not merged (CIV-1179)', () => {
+  const unnamed = (routeId, directionId, minutes) => ({ properties: { ...props(directionId, [routeId]), routeShortName: '', routeId, headwayByPeriod: { amPeak: minutes, midday: minutes, pmPeak: minutes }, headwayByHour: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [String(i + 7), minutes])) } });
+  const rows = [unnamed('MAX', 0, 10), unnamed('MAX', 1, 10), unnamed('WES', 0, 30), unnamed('WES', 1, 30)];
+  assert.deepEqual(qualifyingRoutes(rows, 15, 'no-sustained').map(f => f.properties.routeId), ['MAX', 'MAX']);
+  // TriMet: MAX Blue (route_id 100) and the Aerial Tram (208), both unnamed, stay separate routes.
+  assert.deepEqual([...routesAt('trimet', 30, 'map-filter')].sort(), ['id:100', 'id:208']);
 });
