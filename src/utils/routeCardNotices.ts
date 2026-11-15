@@ -55,7 +55,7 @@ export interface RouteCardNoticeInput {
 }
 
 export type CardNoticeCode = 'N1' | 'N2' | 'N3' | 'N4' | 'N5' | 'N6' | 'N7' | 'N8' | 'N9' | 'N10' | 'N11' | 'N12' | 'N13' | 'N15' | 'N16' | 'N25' | 'N123';
-export interface CardNotice { code: CardNoticeCode; text: string; place: NoticePlace; /** N9: the hours it names, for the stop card's own words (CIV-1251). */ activeRange?: string }
+export interface CardNotice { code: CardNoticeCode; text: string; place: NoticePlace; /** CIV-1199 case 1: N12 opens the Route rating explainer (E9). */ learnMore?: true; /** N9: the hours it names, for the stop card's own words (CIV-1251). */ activeRange?: string }
 /** N4 and N5 render through their own components (they carry the agency's own wording and Learn more), so they have no text here. */
 export interface CardFooterNotice { code: Exclude<CardNoticeCode, 'N8' | 'N9' | 'N10' | 'N11' | 'N12' | 'N13' | 'N15' | 'N16' | 'N123'>; text?: string; place: NoticePlace }
 /** A note under one direction's heading: it has no rows in the period, or only its shared section meets the filter. */
@@ -312,6 +312,10 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
       if (swapped) {
         dropped.push({ code: 'N12', why: 'every row meets the filter; the part-period line says when it runs' });
         filter = swapped;
+      } else {
+        // CIV-1199 case 1: every row meets the filter and the route runs all period, so a part of it (a stretch or branch
+        // the rows don't show) runs less often: N12 stays, with a Learn more to the Route rating explainer (E9).
+        filter = { ...filter, learnMore: true };
       }
     }
   }

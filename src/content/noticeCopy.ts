@@ -609,6 +609,7 @@ export const EXPLAINERS = {
   'no-route-shape': { code: 'E6', title: 'Route map unavailable' },
   'edge-gap-allowance': { code: 'E7', title: 'Frequency allowance' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
+  'route-rating': { code: 'E9', title: 'Route rating' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -631,6 +632,8 @@ export const ROUTE_DATA_QUALITY_LEAD = "Part of this route’s line on the map m
 export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_HINT} That trip can come up to 10 minutes later than usual.`;
 // E8: N1 itself, then one more sentence.
 export const WEEKDAY_VARIATION_LEAD = `${WEEKDAY_VARIATION_NOTICE} Some weekdays run more or less often than others.`;
+// E9 (CIV-1199, Ryan 2026-11-14, word for word): N12 with its live values, then one more sentence.
+export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part of the route runs less often than the rest.`;
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
@@ -662,6 +665,8 @@ export const EXPLAINER_PIECES = {
   AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency’s website has each day’s schedule.", links: ['agency-website'], needsWebsite: true },
   REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
+  // Paragraph 2 of E9 (CIV-1199), after X9.
+  STRETCH_AND_BRANCHES_SEPARATE: { code: 'X15', text: "We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is." },
 } as const satisfies Record<string, ExplainerPieceDef>;
 export type ExplainerPiece = keyof typeof EXPLAINER_PIECES;
 export const pieceText = (piece: ExplainerPiece): string => EXPLAINER_PIECES[piece].text;
@@ -679,6 +684,7 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'no-route-shape': { p2: ['FREQUENCY_FROM_TIMETABLE_NO_LINE'], p3: 'REPORT_WITH_FLAG' },
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
+  'route-rating': { p2: ['STRETCH_AND_BRANCHES_SEPARATE'], p3: 'REPORT_WITH_FLAG' },
 };
 
 /**
@@ -694,6 +700,8 @@ export const NOTICE_EXPLAINERS = {
   N6: 'route-data-quality',
   N7: 'no-route-shape',
   N14: 'edge-gap-allowance',
+  /** CIV-1199 case 1: only when every row meets the filter but a part of the route doesn't (routeCardNotices learnMore). */
+  N12: 'route-rating',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',

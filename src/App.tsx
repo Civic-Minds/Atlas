@@ -286,6 +286,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       issueUrl: opts.issueUrl,
       issueUrls: opts.issueUrls,
       rolloutNotice: opts.rolloutNotice,
+      filterNotice: opts.filterNotice,
     } : null);
     setInfoOpen(true);
   }, []);
