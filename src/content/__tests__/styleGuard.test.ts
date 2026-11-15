@@ -56,7 +56,7 @@ const RULES: Rule[] = [
   // CIV-1238 (Ryan): "one-off sounds like it only runs once per day".
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
-  { name: '"the shared section" (say "Shared stretch")', doc: 'TEXT.md', pattern: /\bthe shared section\b/i, slip: "'Buses run on the shared section'" },
+  { name: '"the shared section" or "shared-section" (say "Shared stretch")', doc: 'TEXT.md', pattern: /\b(the shared section|shared-section)\b/i, slip: "'Buses run on the shared section'" },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing.
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\bAll day\b(?!s)/, slip: "const PERIOD = 'All day';" },
 

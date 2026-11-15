@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Docs page quotes the app's real notices and labels**: two notices were quoted in old wording, and the Live report pages' "What these terms mean" link landed on a glossary without the Live terms on beta
 - **A route card row's dot is never better than its number (beta)**: GO Kitchener's "[every 120 min](https://github.com/Civic-Minds/Atlas/issues/1506)" row had the route's every-30 dot beside a grey line
 - **A line with [no regular service](https://github.com/Civic-Minds/Atlas/issues/1503) in a period shows no regular sections (beta)**: GO Barrie at PM peak read every 60 between Union and Aurora while its card said it runs irregularly
 - **A [selected route](https://github.com/Civic-Minds/Atlas/issues/1504) is drawn only when it passes the map's filters (beta)**: section colours drew GO Barrie and Stouffville at midday when the public map hid them
