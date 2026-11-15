@@ -46,6 +46,11 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Service delivered is to a tenth of a percent, rounded down, always one decimal: "99.0%", "100%" (`percentTenthText`, #1472).
 - A change in a share has a sign, and none when it rounds to 0: "+12%", "−4%", "0%" (`signedPercentText`).
 - Negative numbers use a real minus sign (−), not a hyphen.
+- Distances, speeds and densities are written by `shared/unitText.ts`. CIV-1590. (checked)
+  - Distances in whole metres: "347 m away", "within 400 m" (`metresText`), so the words match the distance a filter uses.
+  - Speeds in whole km/h: "25 km/h" (`speedText`).
+  - People per square kilometre to a tenth under 10, whole from 10: "5.3", "1,234" (`densityText`).
+  - Prose such as "about 1 km" stays as written.
 - Minutes come from `shared/headwayText.ts` and `shared/liveFormat.ts`, not from here.
 - Coordinates in links and report details are machine values and keep their own decimals.
 

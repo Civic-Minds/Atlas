@@ -79,6 +79,9 @@ const RULES: Rule[] = [
     skipLine: /timeZone/, allowed: ['shared/numberText.ts'] }, // liveVehicleDelay reads a clock in a time zone, not a number
   { name: 'a decimal formatted outside shared/numberText.ts (toFixed)', doc: 'TEXT.md', pattern: /\.toFixed\(/, slip: '`${density.toFixed(1)} per km²`',
     skipLine: /\b(lat|lon|bounds|zoom)\b|\.[nsew]\.toFixed|key: 'z'/, allowed: ['shared/numberText.ts'] },
+  // CIV-1590: distances, speeds and densities from shared/unitText.ts.
+  { name: 'a distance or speed unit written by hand (use metresText / speedText)', doc: 'TEXT.md', pattern: /\}\s?(m|km|km\/h|mph|mi|ft|km²|m²)(?=[\s'"`<,.)]|$)/, slip: '`${Math.round(d)} m away`',
+    allowed: ['shared/unitText.ts'] },
   { name: 'a percent built by hand (use percentText)', doc: 'TEXT.md', pattern: /Math\.round\([^`]*\*\s*100\)\}?\s*%/, slip: '{Math.round((a / b) * 100)}%',
     allowed: ['shared/numberText.ts'] },
 
@@ -173,7 +176,7 @@ describe('UI code follows the style guide (docs/style/TEXT.md, docs/style/VISUAL
       "'Mon–Fri 5:30 AM–8 PM'", "'Irregular'", "'Hide occasional routes'", 'isOneOffTrip', "'Part-time routes'",
       "serviceClass === 'time-limited'", "'Shared stretch'", "'90 min'", "'tracking-normal'", '<DataTable rows={r} />',
       "'All days'", 'closeLabel(CLOSE_PLACES.filters)', 'placeholder={SEARCH_ROUTES_PLACEHOLDER}', 'shortDate(iso)',
-      'dayPlural(day)', "label.split('–')", 'countText(n)', 'percentText(share)', "params.set('lat', lat.toFixed(4))", '`${band.left * 100}%`', 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
+      'dayPlural(day)', "label.split('–')", 'countText(n)', 'percentText(share)', '`${metresText(d)} away`', '`${n} min`', '`${n} mins`', "params.set('lat', lat.toFixed(4))", '`${band.left * 100}%`', 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
     ];
     for (const rule of RULES) for (const text of fine) expect([rule.name, text, breaks(rule, text)]).toEqual([rule.name, text, false]);
     const csv = RULES.find(r => r.name === 'a CSV download in Live code')!.only!;

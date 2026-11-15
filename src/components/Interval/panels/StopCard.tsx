@@ -27,6 +27,7 @@ import { routeListHeadwayText } from '../../../utils/effectiveHeadway';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { BACK_TO_MAP_LABEL, stopNoRoutesNotice } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
+import { metresText } from '../../../../shared/unitText';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
 export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
@@ -210,7 +211,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
                 // The stop name shortens; the distance always shows (#1154).
                 subLabel={nameCase(nearestStopName, 'stop')}
-                subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
+                subLabelTrailing={` · ${metresText(distanceMeters)} away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 colorHeadway={colorHeadway}

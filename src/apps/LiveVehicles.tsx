@@ -48,6 +48,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
+import { speedText } from '../../shared/unitText';
 
 interface Props {
   agencies: Agency[];
@@ -830,7 +831,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
                 value={(v.speedKmh != null || delayLabel(v)) ? (
                   <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{v.speedKmh} km/h</span>}
+                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
                     {delayLabel(v) && (
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
