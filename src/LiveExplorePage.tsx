@@ -37,12 +37,13 @@ import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
-import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED, TRIP_TIME_LABEL } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
+import { percentText, countText } from '../shared/numberText';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -87,7 +88,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
-            <Fact label="Trips where it grows" value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
+            <Fact label="Trips where it grows" value={percentText(f.growShare)} sub={`of ${countText(f.n)}`} />
             <Fact label="Typical delay" value={mins(f.medianDelayMin)} />
             <Fact label="1 in 10 later than" value={mins(f.p90DelayMin)} />
           </Block>
@@ -100,7 +101,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     return (
       <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
-          <Fact label="Gaps off the schedule" value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
+          <Fact label="Gaps off the schedule" value={`${percentText(b.fromBadShare)} to ${percentText(b.toBadShare)}`} />
         </Block>
         <Block title={linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
@@ -124,15 +125,15 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
           <>
             <Fact label="Typical delay" value={delayText(s.delayMin)} />
             {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
-            {s.lateShare != null && <Fact label="Late" value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
+            {s.lateShare != null && <Fact label="Late" value={percentText(s.lateShare)} sub={`of ${countText(s.n)} departures`} />}
           </>
         ) : <Fact label="Typical delay" value="not measured" />}
         {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
-          <Fact label="Too close together" value={pct(bunch.bunchedShare)} />
-          <Fact label="Too far apart" value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
+          <Fact label="Too close together" value={percentText(bunch.bunchedShare)} />
+          <Fact label="Too far apart" value={percentText(bunch.gappedShare)} sub={`${countText(bunch.n)} gaps`} />
         </Block>
       )}
       {extra && (
@@ -143,7 +144,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       {into && into.n > 0 && (
         <Block title={stretchLabel(into.fromName, into.toName)}>
           <Fact label={TYPICAL_ADDED} value={mins(into.medianAddedMin)} />
-          <Fact label="Trips where it grows" value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
+          <Fact label="Trips where it grows" value={percentText(into.growShare)} sub={`of ${countText(into.n)}`} />
         </Block>
       )}
     </Panel>

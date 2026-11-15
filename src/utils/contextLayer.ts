@@ -8,6 +8,8 @@
  * Missing values are omitted from the tile, not null.
  */
 
+import { countText, decimalText, percentText } from '../../shared/numberText';
+
 export type ContextMetric = 'density' | 'income';
 export const CONTEXT_METRICS: readonly ContextMetric[] = ['density', 'income'];
 
@@ -104,10 +106,9 @@ export function contextFillColorExpr(metric: ContextMetric): Expr {
   return expr;
 }
 
-const nf = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
-export const formatDensity = (v: number): string => (v < 10 ? v.toFixed(1) : nf.format(v));
-export const formatIncome = (v: number): string => `$${nf.format(v)}`;
-export const formatMarginPct = (fraction: number): string => `${nf.format(Math.round(fraction * 100))}%`;
+export const formatDensity = (v: number): string => (v < 10 ? decimalText(v, 1) : countText(v));
+export const formatIncome = (v: number): string => `$${countText(v)}`;
+export const formatMarginPct = (fraction: number): string => percentText(fraction);
 
 /** Legend rows for a metric: a label per class. Uses an en dash for ranges and no unit (the unit is the legend's own line). */
 export function contextClassLabels(metric: ContextMetric): string[] {

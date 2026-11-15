@@ -74,6 +74,14 @@ const RULES: Rule[] = [
   // #938: a column never mixes units.
   { name: 'a frequency in hours (write "every 90 min")', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+|\d+[–-]\d+)(\\u00A0| | )?(hours?|hrs?)\b/, slip: '`every ${h} hours`' },
 
+  // Numbers (shared/numberText.ts, CIV-1587). Coordinates in links and reports are machine values, not UI numbers.
+  { name: 'a number formatted outside shared/numberText.ts (toLocaleString or Intl.NumberFormat)', doc: 'TEXT.md', pattern: /\.toLocaleString\(|Intl\.NumberFormat/, slip: '`${n.toLocaleString()} trips`',
+    skipLine: /timeZone/, allowed: ['shared/numberText.ts'] }, // liveVehicleDelay reads a clock in a time zone, not a number
+  { name: 'a decimal formatted outside shared/numberText.ts (toFixed)', doc: 'TEXT.md', pattern: /\.toFixed\(/, slip: '`${density.toFixed(1)} per km²`',
+    skipLine: /\b(lat|lon|bounds|zoom)\b|\.[nsew]\.toFixed|key: 'z'/, allowed: ['shared/numberText.ts'] },
+  { name: 'a percent built by hand (use percentText)', doc: 'TEXT.md', pattern: /Math\.round\([^`]*\*\s*100\)\}?\s*%/, slip: '{Math.round((a / b) * 100)}%',
+    allowed: ['shared/numberText.ts'] },
+
   // One source per text (CIV-1569)
   { name: 'a close or clear name typed by hand (use closeLabel / CLEAR_SEARCH_LABEL)', doc: 'TEXT.md', pattern: /(aria-label|closeLabel|label)=["'{`]*['"`]?(Close|Clear search)\b/, slip: '<button aria-label="Close filters">' },
   // The report form's text box is not a search box; the top bar's input shows its hint in a span and has an empty placeholder.
@@ -165,7 +173,7 @@ describe('UI code follows the style guide (docs/style/TEXT.md, docs/style/VISUAL
       "'Mon–Fri 5:30 AM–8 PM'", "'Irregular'", "'Hide occasional routes'", 'isOneOffTrip', "'Part-time routes'",
       "serviceClass === 'time-limited'", "'Shared stretch'", "'90 min'", "'tracking-normal'", '<DataTable rows={r} />',
       "'All days'", 'closeLabel(CLOSE_PLACES.filters)', 'placeholder={SEARCH_ROUTES_PLACEHOLDER}', 'shortDate(iso)',
-      'dayPlural(day)', "label.split('–')", 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
+      'dayPlural(day)', "label.split('–')", 'countText(n)', 'percentText(share)', "params.set('lat', lat.toFixed(4))", '`${band.left * 100}%`', 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
     ];
     for (const rule of RULES) for (const text of fine) expect([rule.name, text, breaks(rule, text)]).toEqual([rule.name, text, false]);
     const csv = RULES.find(r => r.name === 'a CSV download in Live code')!.only!;

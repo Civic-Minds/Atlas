@@ -9,13 +9,14 @@ import SortableDataTable from '../../ui/SortableDataTable';
 import { PAGE_FIGURE_COLUMN_REM } from '../../ui/DataTable';
 import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
-import { mins, pct } from './figures';
+import { mins } from './figures';
 import { lateShareColor } from '../lateShare';
 import LegendItem from '../../ui/LegendItem';
 import { LIVE_NO_STOP_TO_RANK } from '../../../content/noticeCopy';
 import LateStopsMap from '../LateStopsMapLazy';
 import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
 import { countOf } from '../../../../shared/overflowText';
+import { percentText, countText } from '../../../../shared/numberText';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -30,7 +31,7 @@ const FIGURE = PAGE_FIGURE_COLUMN_REM;
 
 /** The tool panel's short clickable list, built from the same model: a stop name and its late share. */
 export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number, onPick: (stopId: string) => void) {
-  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: liveStopName(x.name), value: pct(x.lateShare), onPick: () => onPick(x.stopId) }));
+  return worstStopsModel(v3, data, dir, uncertain, limit).top.map(x => ({ key: x.stopId, label: liveStopName(x.name), value: percentText(x.lateShare), onPick: () => onPick(x.stopId) }));
 }
 
 /**
@@ -55,12 +56,12 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   const dirText = (d: number) => directionLabels[String(d)];
   const full = columns === 'full';
   // The share, with the strip's three late colours as a dot (the Full analysis: no bar repeating the number).
-  const bar = (share: number) => <LegendItem color={lateShareColor(share)} className="gap-2">{pct(share)}</LegendItem>;
+  const bar = (share: number) => <LegendItem color={lateShareColor(share)} className="gap-2">{percentText(share)}</LegendItem>;
   const table = top.length ? (
     <PageTable>
       <SortableDataTable
         narrowFit
-        rowTitle={s => `${s.name}: ${s.n.toLocaleString()} departures`}
+        rowTitle={s => `${s.name}: ${countText(s.n)} departures`}
         caption={full ? 'Stops ranked by the share of late departures' : 'The five stops with the highest share of late departures'}
         defaultSort="late"
         rows={top}
@@ -72,18 +73,18 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
           ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
-            : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
+            : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${countText(s.n)} departures`}>{percentText(s.lateShare)}</span> },
           ...(full ? [
             { key: 'median', header: 'Typical delay', width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
             { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
-            { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
+            { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
           ] : []),
         ]}
       />
     </PageTable>
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const mapped = map && top.length ? (() => {
-    const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${pct(s.lateShare)} late`, lateShare: s.lateShare })));
+    const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${percentText(s.lateShare)} late`, lateShare: s.lateShare })));
     return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${countOf(top.length, 'stop')} most often late`} className="mt-6" />;
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map

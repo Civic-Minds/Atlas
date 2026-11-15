@@ -38,6 +38,17 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - Show the real waits for each period instead.
 - Frequency filter work: read `docs/product/FREQUENCY_RULES.md` first.
 
+## Numbers
+
+- Every count, percent and decimal figure is written by `shared/numberText.ts`. CIV-1587. (checked)
+- Counts have a comma every three digits, the same in every browser language: "1,234 trips" (`countText`).
+- A share is a whole percent: "12%" (`percentText`). (checked)
+- Service delivered is to a tenth of a percent, rounded down, always one decimal: "99.0%", "100%" (`percentTenthText`, #1472).
+- A change in a share has a sign, and none when it rounds to 0: "+12%", "−4%", "0%" (`signedPercentText`).
+- Negative numbers use a real minus sign (−), not a hyphen.
+- Minutes come from `shared/headwayText.ts` and `shared/liveFormat.ts`, not from here.
+- Coordinates in links and report details are machine values and keep their own decimals.
+
 ## Words
 
 - Plain words a non-expert understands at once.

@@ -24,6 +24,7 @@ import { haversineM } from './shapeProjection';
 import { andOthers, joinList, plural } from './overflowText';
 import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
+import { countText } from './numberText';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -269,7 +270,7 @@ export function agencyIntroSentence(
   const n = a.routes.length;
   if (n === 0) return `${agencySentenceStart(title)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes, title, parentName)}${place}`;
-  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
+  if (a.stops) s += ` with ${countText(a.stops)} ${plural(a.stops, 'stop')}`;
   if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
@@ -334,7 +335,7 @@ export function introLead(
 ): string {
   const n = a.routes.length;
   // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
-  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${countText(n)} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */

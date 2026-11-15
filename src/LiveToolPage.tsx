@@ -41,7 +41,7 @@ import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { WeekTable } from './LiveDashboardView';
-import { PERIOD_BANDS_ONLY, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { PILL_ROW } from './components/ui/PillGroup';
@@ -50,6 +50,7 @@ import LiveMapKey from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { MAP_BADGE, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
+import { percentText, countText } from '../shared/numberText';
 
 
 
@@ -114,7 +115,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
 /** The lines of a segment's card: only the segment, never its start stop. */
 function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string): string[] {
   const x = data.buildup.find(b => b.directionId === dir)?.stretches.find(t => t.fromStopId === fromStopId && t.toStopId === toStopId);
-  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `Trips where it grows ${pct(x.growShare)} of ${x.n.toLocaleString()}`] : [];
+  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `Trips where it grows ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
 }
 
 /** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */

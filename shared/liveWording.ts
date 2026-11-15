@@ -2,6 +2,7 @@ import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf } from './overflowText';
+import { countText } from './numberText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -49,7 +50,7 @@ export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRES
 export const weekOfText = (from: string, to: string): string => `Week of ${dateRange(from, to)}`;
 
 /** The hover line of a late-by-hour chart (approved by Ryan), by the hour trips start: "2 PM: 8 of 167 trips left the end of the line late". */
-export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${late.toLocaleString()} of ${total.toLocaleString()} trips left the end of the line late`;
+export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${countText(late)} of ${countText(total)} trips left the end of the line late`;
 
 /** Late departures in an hour, from its late share and its count (the share is that count over the total). */
 export const lateCount = (share: number, total: number): number => Math.round(share * total);

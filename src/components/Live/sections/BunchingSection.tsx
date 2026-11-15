@@ -9,9 +9,9 @@ import { branchNamesWrap } from '../BranchStrip';
 import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
-import { pct } from './figures';
 import Tag from '../../ui/Tag';
 import { LIVE_NOTHING_LINKED } from '../../../content/noticeCopy';
+import { percentText } from '../../../../shared/numberText';
 
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
 export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBand) {
@@ -97,7 +97,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                 <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
                   points={points}
-                  formatY={y => pct(y)}
+                  formatY={y => percentText(y)}
                   unit="gaps"
                   valueHeader="Gaps off the schedule"
                   caption="How often vehicles arrive too close together or too far apart, at each stop."

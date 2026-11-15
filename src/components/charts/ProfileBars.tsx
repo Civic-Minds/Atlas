@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import DataTable from '../ui/DataTable';
 import { fadedNoteText } from '../../../shared/liveWording';
 import { pickAxisLabels } from '../../utils/stopLabel';
+import { countText } from '../../../shared/numberText';
 
 export interface ProfilePoint {
   /** Stop or stretch name: shown in the tooltip and the table. */
@@ -136,7 +137,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
   const span = axis.max - axis.min || 1;
   const pos = (v: number) => Math.max(0, Math.min(H, ((v - axis.min) / span) * H)); // px from the bottom
   const markAt = new Map(marks.map(m => [m.index, m.label]));
-  const text = (p: ProfilePoint) => `${p.label}: ${formatY(p.y + (p.y2 ?? 0))}${p.n != null ? ` (${p.n.toLocaleString()} ${unit})` : ''}${p.lessExact ? ' (less exact)' : ''}`;
+  const text = (p: ProfilePoint) => `${p.label}: ${formatY(p.y + (p.y2 ?? 0))}${p.n != null ? ` (${countText(p.n)} ${unit})` : ''}${p.lessExact ? ' (less exact)' : ''}`;
   const count = points.length;
   const color0 = series?.[0]?.color ?? 'var(--accent)';
   const color1 = series?.[1]?.color ?? 'var(--accent)';
@@ -239,7 +240,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
               { key: 'value', header: valueHeader, cell: r => formatY(r.p.y + (r.p.y2 ?? 0)) },
               ...(points.some(p => p.ref != null) ? [{ key: 'ref', header: refHeader ?? 'Reference', cell: (r: { p: ProfilePoint }) => (r.p.ref != null ? formatY(r.p.ref) : '') }] : []),
               ...(points.some(p => p.lo != null) ? [{ key: 'range', header: points.some(p => p.ref != null) ? '1 in 10 over' : 'Most trips between', cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? (r.p.ref != null ? formatY(r.p.hi) : `${formatY(r.p.lo)} and ${formatY(r.p.hi)}`) : '') }] : []),
-              { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: r => (r.p.n != null ? r.p.n.toLocaleString() : '') },
+              { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: r => (r.p.n != null ? countText(r.p.n) : '') },
             ]}
           />
         </div>

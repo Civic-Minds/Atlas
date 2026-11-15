@@ -5,9 +5,10 @@
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { minutesText, pct, tenth } from '../../../shared/liveFormat';
+import { minutesText, tenth } from '../../../shared/liveFormat';
 import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
+import { percentText } from '../../../shared/numberText';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -121,7 +122,6 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
-export { pct };
 /** "3.1 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5). */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
@@ -257,7 +257,7 @@ export function stopDetail(stop: RouteStripStop): { name: string; lines: string[
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
     const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
-    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
+    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(percentText(stop.lateShare))}` : usual);
   } else lines.push('Delay not measured');
   const parts = bunchParts(stop);
   if (parts && stop.bunchedShare != null && stop.gappedShare != null) lines.push(bunchedAndLong(`${parts.bunched}%`, `${parts.tooLong}%`));

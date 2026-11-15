@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { dateRange } from '../../../../shared/dateText';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
-import { pctTenth } from '../../../../shared/liveFormat';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
+import { percentTenthText, countText } from '../../../../shared/numberText';
 
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
@@ -34,7 +34,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
     <ProfileBars
       ariaLabel="Share of scheduled trips that ran, day by day"
       points={points}
-      formatY={pctTenth}
+      formatY={percentTenthText}
       unit="trips"
       valueHeader="Ran"
       rowHeader="Day"
@@ -55,8 +55,8 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       {overall?.share != null && (
         <div className={TILE}>
           <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
-          <div className="mt-1 text-3xl font-black tracking-tight">{pctTenth(overall.share)}</div>
-          <div className="mt-1 text-xs text-[var(--text-dim)]">{(overall.seen + overall.notSeen).toLocaleString()} trips</div>
+          <div className="mt-1 text-3xl font-black tracking-tight">{percentTenthText(overall.share)}</div>
+          <div className="mt-1 text-xs text-[var(--text-dim)]">{countText(overall.seen + overall.notSeen)} trips</div>
         </div>
       )}
       {chart}

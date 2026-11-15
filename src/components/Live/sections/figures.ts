@@ -1,8 +1,7 @@
 import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
-import { minutesText, pct, tenth } from '../../../../shared/liveFormat';
+import { minutesText, tenth } from '../../../../shared/liveFormat';
 import { PERIOD_LABELS } from '../../../../shared/config';
 
-export { pct };
 /** A figure to one decimal, with a real minus sign. */
 export const num = tenth;
 /** A minutes value ("3.2 min", "−0.4 min"), also used as the axis value: the shared minutes format. */

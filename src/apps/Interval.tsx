@@ -79,6 +79,7 @@ export interface ConnectionsBarState {
   setSide: (side: 'after' | 'before') => void;
 }
 import type { StopCardExtraInput } from '../components/Interval/SidebarControls';
+import { percentText } from '../../shared/numberText';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -1545,7 +1546,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 {showMatchPercentage && !isLoading && (
                   <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
                     <span className={MAP_BADGE_COUNT}>
-                      {stats.total > 0 ? Math.round((stats.matching / stats.total) * 100) : 0}%
+                      {percentText(stats.total > 0 ? stats.matching / stats.total : 0)}
                     </span>
                     <span className={MAP_BADGE_LABEL}>match</span>
                   </div>
