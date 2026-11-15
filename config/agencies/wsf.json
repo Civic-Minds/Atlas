@@ -14,13 +14,13 @@
     -122.3
   ],
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-  "lastFeedExpiry": "20261129",
-  "lastFeedVersion": "PDT: 16-Oct-2026 11:51",
-  "lastRefreshedAt": "2026-11-09",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedExpiry": "20261227",
+  "lastFeedVersion": "PST: 10-Nov-2026 12:11",
+  "lastRefreshedAt": "2026-11-15",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261129",
+  "expiredFeedCheckExpiry": "20261227",
   "timezone": "America/Los_Angeles",
   "feedQuality": {
     "status": "review",
@@ -34,14 +34,14 @@
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
       "featureCount": 114,
-      "feedExpiry": "20261129",
+      "feedExpiry": "20261227",
       "routeCount": 38,
       "problemShapes": 1,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -49,8 +49,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-  "lastPeekedExpiry": "20261129",
-  "lastServiceWeek": "8616cd945905e9d1",
-  "feedObtainedAt": "20261016",
-  "lastFeedStart": "20261009"
+  "lastPeekedExpiry": "20261227",
+  "lastServiceWeek": "90e7eb807183b3ce",
+  "feedObtainedAt": "20261114",
+  "lastFeedStart": "20261104",
+  "lastRawArchiveKey": "20261227-a83f94a0ea9c3cb4",
+  "lastFeedContentKey": "09617202c4ef2c74"
 }

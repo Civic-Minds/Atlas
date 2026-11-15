@@ -7,10 +7,10 @@
     -82.7219
   ],
   "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=2063A0",
-  "lastFeedExpiry": "20270206",
-  "lastFeedVersion": "S1000246",
+  "lastFeedExpiry": "20270605",
+  "lastFeedVersion": null,
   "region": "Florida",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-15",
   "websiteUrl": "http://www.psta.net",
   "cities": [
     "St. Petersburg, Florida",
@@ -22,40 +22,39 @@
     "Tampa, Florida"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20260606-face4e6e47319b36",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270605-95e354fa400ebb92",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270206",
+  "expiredFeedCheckExpiry": "20270605",
   "feedQuality": {
-    "status": "review",
-    "score": 97,
-    "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
-    ],
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 264,
-      "feedExpiry": "20270206",
-      "routeCount": 39,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 262,
+      "feedExpiry": "20270605",
+      "routeCount": 38,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 1,
+      "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
-  "feedRefreshStatus": "stale",
-  "feedRefreshError": "fetch failed",
-  "feedRefreshErrorAt": "20261109",
-  "feedRefreshRetryCount": 1,
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
-  "lastPeekedExpiry": "20270206",
-  "lastServiceWeek": "ab4bfdf8b126158a",
-  "feedObtainedAt": "20260707",
-  "lastFeedStart": "20260607"
+  "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=2063A0",
+  "lastPeekedExpiry": "20270605",
+  "lastServiceWeek": "67d062c312783546",
+  "feedObtainedAt": "20261114",
+  "lastFeedStart": "20260607",
+  "lastFeedContentKey": "9767f848ed2a6ad2"
 }
