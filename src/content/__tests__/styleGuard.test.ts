@@ -183,7 +183,7 @@ const APPROVED_TEXT: Record<string, string[]> = {
   // The frequent-service story: its approved prose, and agencies' own definitions (CIV-1613, manager 2026-11-14).
   'src/apps/FrequentServiceStory.tsx': [
     '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
-    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service',
     // CIV-1179: the coverage section's prose as it shipped on main before the 2026-11-14 revert.
     'a 10-minute walk', 'The stricter 15-minute threshold', 'the broader 30-minute threshold', '30-minute service reaches', 'as 15-minute service',
     // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).

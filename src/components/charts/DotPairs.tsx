@@ -103,7 +103,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
         {!nameAbove && <span className="hidden sm:block" />}
         <span className="relative h-4">
           {AXIS_TICKS.map(tick => (
-            <span key={tick} className={`absolute top-0 tabular-nums ${tickLabelClass(tick)} ${tick === 0 ? '' : tick === 1 ? '-translate-x-full' : '-translate-x-1/2'}`} style={{ left: `${tick * 100}%` }}>{percentText(tick)}</span>
+            <span key={tick} className={`absolute top-0 ${tickLabelClass(tick)} ${tick === 0 ? '' : tick === 1 ? '-translate-x-full' : '-translate-x-1/2'}`} style={{ left: `${tick * 100}%` }}>{percentText(tick)}</span>
           ))}
         </span>
         {([['first', firstHeader], ['second', secondHeader]] as const).map(([key, header]) => (
@@ -145,8 +145,8 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                     <span className={`${DOT} border-2 border-[var(--text-muted)] bg-[var(--bg-panel)] ${SERIES_PART}`} style={{ ...seriesFade(series, 'second'), left: `${pair.second * 100}%` }} />
                     <span className={`${DOT} bg-[var(--text-primary)] ${SERIES_PART}`} style={{ ...seriesFade(series, 'first'), left: `${pair.first * 100}%` }} />
                   </span>
-                  <span className={`text-right tabular-nums ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'first')}>{percentText(pair.first)}</span>
-                  <span className={`text-right tabular-nums ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'second')}>{percentText(pair.second)}</span>
+                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'first')}>{percentText(pair.first)}</span>
+                  <span className={`text-right ${valueWeight} ${SERIES_PART}`} style={seriesFade(series, 'second')}>{percentText(pair.second)}</span>
                 </button>
               );
             })}

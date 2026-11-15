@@ -55,9 +55,9 @@ type CoverageCityRow = (typeof COVERAGE_CITY_ROWS)[number];
 const CITY_COLUMNS: DataTableColumn<CoverageCityRow>[] = [
   { key: 'city', header: 'City', cell: row => row.name, rowHeader: true, className: 'font-normal', width: 10 },
   { key: 'country', header: 'Country', cell: row => row.country, width: 8 },
-  { key: 'population', header: 'Population', cell: row => countText(row.population), className: 'tabular-nums', width: 7 },
-  { key: 'fifteen', header: headwayAmount(15), cell: row => percentText(row.fifteenMinute), className: 'tabular-nums', width: 5 },
-  { key: 'thirty', header: headwayAmount(30), cell: row => percentText(row.thirtyMinute), className: 'tabular-nums', width: 5 },
+  { key: 'population', header: 'Population', cell: row => countText(row.population), width: 7 },
+  { key: 'fifteen', header: headwayAmount(15), cell: row => percentText(row.fifteenMinute), width: 5 },
+  { key: 'thirty', header: headwayAmount(30), cell: row => percentText(row.thirtyMinute), width: 5 },
 ];
 /** A city chart row's accessible name: "Toronto: 15 min 45%, 30 min 74%". */
 const coverageSentence = (name: string, fifteen: number, thirty: number) =>
