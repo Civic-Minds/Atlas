@@ -228,8 +228,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           {/* CIV-1603 section 2 slot: the cities (CIV-1577). Not built here; it goes between section 1 and section 3. */}
 
           {/* CIV-1603 section 3 (Ryan's pick, 2026-11-14): how much of a city's frequent network still counts on Sunday. Each
-              bar is a count of routes the main map draws at the threshold in AM peak, midday and PM peak (the Toronto map's
-              daytime), from frequent-weekend-counts.json. Each city's bars share its weekday count as the full width, so the
+              bar is a count of routes the main map draws at the threshold at midday (Ryan picked midday only: Sunday has no rush
+              hour), from frequent-weekend-counts.json. Each city's bars share its weekday count as the full width, so the
               Sunday bar reads as the share that is left. Heading, intro and caption are placeholders until Ryan approves wording. */}
           <section aria-labelledby="weekend-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
