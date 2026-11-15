@@ -7,9 +7,11 @@ The September 19 figures depend on Atlas's `headwayByPeriodSustained` flag, and 
 
 | rule | What it does |
 |---|---|
-| `study` (default) | The September 2026 rule, so the published figures can be reproduced on today's data. |
+| `map-filter` (workflow default; the story's numbers) | The map's own frequency filter, run through the map's own code (`shared/routeHeadwayFilter.ts`, loaded with tsx, so the jobs that read Atlas data run `npm ci` first). A route qualifies at 15 or 30 when the map draws it at that setting on weekdays in AM peak, midday and PM peak; its stops are the rows the map draws. Routes are grouped as the map's lists group them (short name, else route_id). |
+| `study` (default without the input) | The September 2026 rule, so the published figures can be reproduced on today's data. |
 | `no-sustained` | The same rule without the sustained flag, as a sensitivity check. |
-| `map-filter` | The map's own frequency filter. Not built: it waits for Ryan's pick (CIV-1179). Choosing it stops the run straight away with that message. |
+
+For `study` and `no-sustained`, a row with no weekday times (a "Not in service" pattern) is skipped rather than read as a gap (CIV-1179).
 
 ## Inputs
 
