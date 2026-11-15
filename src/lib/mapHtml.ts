@@ -19,7 +19,6 @@ export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = fals
         border-radius: 50%;
         background: ${colors.bg};
         border: 1.5px solid ${colors.border};
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         cursor: pointer;
       ">
         ${vehicle.bearing !== null ? `
@@ -57,7 +56,6 @@ export function VehicleMarkerHtml(vehicle: LiveVehicle, hideText: boolean = fals
       font-weight: 900;
       font-family: 'Inter', ui-sans-serif, sans-serif;
       white-space: nowrap;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.22);
       cursor: pointer;
     ">
       ${escapeHtml(vehicle.routeShortName)}

@@ -65,7 +65,7 @@ export function swatchStyle(mode: RouteStripMode, step: Step | null, uncertain: 
   if (step == null) return { background: 'transparent', border: '1.5px dashed var(--text-dim)' };
   const c = stepColor(mode, step);
   if (uncertain) return { background: `repeating-linear-gradient(135deg, ${c} 0 1.5px, transparent 1.5px 3.5px)`, border: `1.5px solid ${c}` };
-  return { background: c, boxShadow: '0 0 0 1px var(--strip-ring)' };
+  return { background: c, outline: '1px solid var(--strip-ring)' };
 }
 
 export function Swatch({ mode, step, uncertain = false, faded = false }: { mode: RouteStripMode; step: Step | null; uncertain?: boolean; faded?: boolean }) {
@@ -313,7 +313,7 @@ export function Tooltip({ stop, x, width, top }: { stop: RouteStripStop; x: numb
   const left = Math.max(0, Math.min(width - w, x - w / 2));
   const d = stopDetail(stop);
   return (
-    <div className="pointer-events-none absolute z-10 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs shadow-sm" style={{ left, top, width: w }}>
+    <div className="pointer-events-none absolute z-10 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-2 text-xs" style={{ left, top, width: w }}>
       <div className="font-bold text-[var(--text-primary)]">{d.name}</div>
       {d.lines.map(l => <div key={l} className="mt-0.5 text-[var(--text-secondary)]">{l}</div>)}
     </div>
