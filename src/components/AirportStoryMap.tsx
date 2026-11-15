@@ -9,21 +9,22 @@ import { AIRPORTS, landableAt, landableCount, type AirportDay } from '../data/ai
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { FADED_OPACITY } from './charts/useActivePart';
 import { getAgencyArtifactUrls } from '../../shared/config';
-import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
+import { routeFilterHeadway, type HeadwayFilterPeriod } from '../../shared/routeHeadwayFilter';
 import { headwayToTierColor, type ColorVisionMode } from '../utils/colors';
 
 /**
  * CIV-1550: the airport story's sticky map (the Frequent service story's pattern, FrequentServiceStoryMap). Every airport
  * is a dot, filled when a bus or train leaves for downtown within 60 minutes of landing at the step's hour and a faint
- * outline otherwise. Pearson is ringed throughout. Dev only, like the page.
+ * outline otherwise. Pearson is ringed throughout, and so is the airport of the active zoom. At some cards the map flies in to one airport and its routes (ZOOMS).
+ * Dev only, like the page.
  */
 interface Props {
   day: AirportDay;
   hour: number;
   /** How far the scroll section has blended to the dark tokens, 0 (day) to 1 (night); 1 for a reader already in dark mode. */
   night: number;
-  /** Zoomed in on Pearson with the routes leaving its terminals at 11 PM (the 11 PM card). */
-  pearson: boolean;
+  /** The airport code of the zoom in ZOOMS the map is flown in to, or null for the continent view. */
+  zoom: string | null;
   colorMode: ColorVisionMode;
   children: ReactNode;
 }
@@ -31,38 +32,64 @@ interface Props {
 const HIGHLIGHT = 'YYZ';
 /** Canada and the lower 48, Victoria to St. John's. Anchorage, Whitehorse and the two Hawaii airports sit outside it. */
 const VIEW: maplibregl.LngLatBoundsLike = [[-126, 24.5], [-52, 54]];
-/** Pearson to Union Station, wide enough for the routes' first stretch out of the airport. */
-const PEARSON_VIEW: maplibregl.LngLatBoundsLike = [[-79.76, 43.6], [-79.33, 43.77]];
+/** One fly-in: from the slot of `hour` until the slot of `until`, the map shows one airport and the routes serving it. */
+export interface StoryZoom {
+  hour: number;
+  /** The hour the map flies back out to the continent view. */
+  until: number;
+  code: string;
+  view: maplibregl.LngLatBoundsLike;
+  /** The main map's period whose headway colours the routes. */
+  period: HeadwayFilterPeriod;
+  /** Route short names (or route IDs) by agency slug. */
+  routes: Record<string, string[]>;
+  /** Routes drawn at the charts' faded opacity: none of them leaves the airport in the zoom's hours. */
+  faded: boolean;
+}
 
-/**
- * The routes drawn at the 11 PM card, picked from the agencies' GTFS (feeds of the 2026-11-14 study): every route with a
- * departure between 11 PM and midnight on Tuesday 2026-11-17 from a stop within 400 m of the Terminal 1 and Terminal 3
- * stops. Viscount station (the terminal train's other end) is not a terminal stop, so routes serving only it are out.
- */
-const PEARSON_ROUTES: Record<string, string[]> = {
-  upexpress: ['UP'],
-  ttc: ['52', '900'],
-  miway: ['7'],
-  brampton: ['115'],
-  go: ['40', '94'],
-};
+export const ZOOMS: StoryZoom[] = [
+  // Memphis's midday gap: route 28, the only route at the airport (study of 2026-11-14), has no weekday departure in the
+  // 11 AM and 12 PM hours, so the airport shows as a faint outline and the route faded. Back out at 1 PM. The view runs
+  // from the airport to downtown, the route's full length.
+  {
+    hour: 11, until: 13, code: 'MEM', view: [[-90.07, 34.99], [-89.92, 35.17]], period: 'midday', faded: true,
+    routes: { mata: ['28'] },
+  },
+  // Pearson at 11 PM, back out at the 3 AM card; Pearson to Union Station, wide enough for the routes' first stretch out
+  // of the airport. The routes, picked from the agencies' GTFS (feeds of the 2026-11-14 study): every route with a
+  // departure between 11 PM and midnight on Tuesday 2026-11-17 from a stop within 400 m of the Terminal 1 and Terminal 3
+  // stops. Viscount station (the terminal train's other end) is not a terminal stop, so routes serving only it are out.
+  {
+    hour: 23, until: 3, code: 'YYZ', view: [[-79.76, 43.6], [-79.33, 43.77]], period: 'late', faded: false,
+    routes: { upexpress: ['UP'], ttc: ['52', '900'], miway: ['7'], brampton: ['115'], go: ['40', '94'] },
+  },
+];
+
+/** Every agency any zoom draws routes from. */
+const ZOOM_AGENCIES = [...new Set(ZOOMS.flatMap(z => Object.keys(z.routes)))];
 
 const ROUTE_WIDTH = ['interpolate', ['linear'], ['zoom'], 8, 2.5, 11, 3, 14, 4];
 const ROUTE_CASING_WIDTH = ['interpolate', ['linear'], ['zoom'], 8, 4.5, 11, 5, 14, 6.5];
 
 type RouteFeature = GeoJSON.Feature<GeoJSON.LineString | GeoJSON.MultiLineString>;
 
-/** The weekday rows of the picked routes, coloured as the main map colours a route for the Late period (11 PM on). */
-function pearsonRouteCollection(rows: Array<{ slug: string; features: GeoJSON.Feature[] }>, mode: ColorVisionMode): GeoJSON.FeatureCollection {
+/**
+ * The weekday rows of every zoom's routes, each coloured as the main map colours the route for the zoom's period and
+ * tagged with the zoom's airport code, so one layer shows only the active zoom's routes.
+ */
+function zoomRouteCollection(rows: Array<{ slug: string; features: GeoJSON.Feature[] }>, mode: ColorVisionMode): GeoJSON.FeatureCollection {
   const features: GeoJSON.Feature[] = [];
-  for (const { slug, features: all } of rows) {
-    const picked = PEARSON_ROUTES[slug] ?? [];
-    for (const f of all) {
-      const props = (f.properties ?? {}) as { day?: string; routeShortName?: string; routeId?: string };
-      if (props.day !== 'Weekday') continue;
-      if (f.geometry?.type !== 'LineString' && f.geometry?.type !== 'MultiLineString') continue;
-      if (!picked.includes(String(props.routeShortName ?? props.routeId))) continue;
-      features.push({ type: 'Feature', geometry: (f as RouteFeature).geometry, properties: { color: headwayToTierColor(routeFilterHeadway(props, 'late'), mode) } });
+  for (const zoom of ZOOMS) {
+    for (const { slug, features: all } of rows) {
+      const picked = zoom.routes[slug];
+      if (!picked) continue;
+      for (const f of all) {
+        const props = (f.properties ?? {}) as { day?: string; routeShortName?: string; routeId?: string };
+        if (props.day !== 'Weekday') continue;
+        if (f.geometry?.type !== 'LineString' && f.geometry?.type !== 'MultiLineString') continue;
+        if (!picked.includes(String(props.routeShortName ?? props.routeId))) continue;
+        features.push({ type: 'Feature', geometry: (f as RouteFeature).geometry, properties: { zoom: zoom.code, color: headwayToTierColor(routeFilterHeadway(props, zoom.period), mode) } });
+      }
     }
   }
   return { type: 'FeatureCollection', features };
@@ -70,13 +97,13 @@ function pearsonRouteCollection(rows: Array<{ slug: string; features: GeoJSON.Fe
 
 const prefersReducedMotion = () => typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function airportCollection(day: AirportDay, hour: number): GeoJSON.FeatureCollection<GeoJSON.Point> {
+function airportCollection(day: AirportDay, hour: number, zoom: string | null): GeoJSON.FeatureCollection<GeoJSON.Point> {
   return {
     type: 'FeatureCollection',
     features: AIRPORTS.map(a => ({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [a.lon, a.lat] },
-      properties: { code: a.code, on: landableAt(a, day, hour), highlight: a.code === HIGHLIGHT },
+      properties: { code: a.code, on: landableAt(a, day, hour), highlight: a.code === HIGHLIGHT || a.code === zoom },
     })),
   };
 }
@@ -102,15 +129,16 @@ function viewPadding(width: number, height: number): maplibregl.PaddingOptions {
   return { top: narrow ? Math.round(height * 0.38) : 24, bottom: 24, left: 24, right: 24 };
 }
 
-export default function AirportStoryMap({ day, hour, night, pearson, colorMode, children }: Props) {
+export default function AirportStoryMap({ day, hour, night, zoom, colorMode, children }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const collection = useMemo(() => airportCollection(day, hour), [day, hour]);
+  const collection = useMemo(() => airportCollection(day, hour, zoom), [day, hour, zoom]);
   const [routeRows, setRouteRows] = useState<Array<{ slug: string; features: GeoJSON.Feature[] }>>([]);
-  const routes = useMemo(() => pearsonRouteCollection(routeRows, colorMode), [routeRows, colorMode]);
-  const pearsonRef = useRef(pearson);
-  pearsonRef.current = pearson;
+  const routes = useMemo(() => zoomRouteCollection(routeRows, colorMode), [routeRows, colorMode]);
+  const activeZoom = ZOOMS.find(z => z.code === zoom) ?? null;
+  const viewRef = useRef(activeZoom?.view ?? VIEW);
+  viewRef.current = activeZoom?.view ?? VIEW;
   const count = useMemo(() => landableCount(AIRPORTS, day, hour), [day, hour]);
 
   // Colours come from the tokens on the map's own box, which follow the section's theme.
@@ -141,17 +169,17 @@ export default function AirportStoryMap({ day, hour, night, pearson, colorMode, 
     mapRef.current = map;
     if (import.meta.env.DEV) (window as unknown as { __airportMap?: maplibregl.Map }).__airportMap = map;
     map.on('load', () => {
-      map.addSource('pearson-routes', { type: 'geojson', data: routes });
+      map.addSource('zoom-routes', { type: 'geojson', data: routes });
       // A casing in the background colour under each route keeps the lines apart from the basemap's grey roads at night
       // (the hourly routes' brown and grey tiers otherwise sink into them); the lines are a little wider than the main
       // map's, since the story map is seen whole rather than zoomed into.
       map.addLayer({
-        id: 'pearson-routes-casing', type: 'line', source: 'pearson-routes',
+        id: 'zoom-routes-casing', type: 'line', source: 'zoom-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': '#000', 'line-width': ROUTE_CASING_WIDTH as unknown as number, 'line-opacity': 0 },
       });
       map.addLayer({
-        id: 'pearson-routes', type: 'line', source: 'pearson-routes',
+        id: 'zoom-routes', type: 'line', source: 'zoom-routes',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': ['get', 'color'], 'line-width': ROUTE_WIDTH as unknown as number, 'line-opacity': 0 },
       });
@@ -171,7 +199,7 @@ export default function AirportStoryMap({ day, hour, night, pearson, colorMode, 
       });
       setMapReady(true);
     });
-    const resize = new ResizeObserver(() => { map.resize(); map.fitBounds(pearsonRef.current ? PEARSON_VIEW : VIEW, { padding: viewPadding(map.getContainer().clientWidth, map.getContainer().clientHeight), animate: false }); });
+    const resize = new ResizeObserver(() => { map.resize(); map.fitBounds(viewRef.current, { padding: viewPadding(map.getContainer().clientWidth, map.getContainer().clientHeight), animate: false }); });
     resize.observe(box.current);
     return () => { resize.disconnect(); setMapReady(false); map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -182,12 +210,12 @@ export default function AirportStoryMap({ day, hour, night, pearson, colorMode, 
 
   useEffect(paint, [night, mapReady]);
 
-  // The routes start loading with the page, not at the 11 PM card: five agency files the main map also reads (TTC's is
+  // The routes start loading with the page, not at the first zoom: the agency files the main map also reads (TTC's is
   // about 24 MB). Each agency draws as soon as its file arrives, so a slow one does not hold back the rest, and a failed
   // load is reported in the console instead of leaving the zoom silently empty.
   useEffect(() => {
     let cancelled = false;
-    for (const slug of Object.keys(PEARSON_ROUTES)) {
+    for (const slug of ZOOM_AGENCIES) {
       fetchAgencyGeo({ slug, name: slug, url: getAgencyArtifactUrls(slug).url })
         .then(data => { if (!cancelled) setRouteRows(rows => [...rows.filter(r => r.slug !== slug), { slug, features: data.features }]); })
         .catch(err => console.warn(`Airport story: ${slug} routes did not load`, err));
@@ -196,22 +224,25 @@ export default function AirportStoryMap({ day, hour, night, pearson, colorMode, 
   }, []);
 
   useEffect(() => {
-    (mapRef.current?.getSource('pearson-routes') as maplibregl.GeoJSONSource | undefined)?.setData(routes);
+    (mapRef.current?.getSource('zoom-routes') as maplibregl.GeoJSONSource | undefined)?.setData(routes);
   }, [routes, mapReady]);
 
-  // The 11 PM card flies in to Pearson and the 3 AM card back out to the continent; with reduced motion it jumps.
+  // A zoom's first slot flies in to its airport and its `until` slot back out to the continent; with reduced motion it
+  // jumps. Only the active zoom's routes show, at the charts' faded opacity when none of them runs in the zoom's hours.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
     const container = map.getContainer();
     const reduced = prefersReducedMotion();
-    map.fitBounds(pearson ? PEARSON_VIEW : VIEW, { padding: viewPadding(container.clientWidth, container.clientHeight), duration: reduced ? 0 : 1600, essential: false });
-    if (map.getLayer('pearson-routes')) {
-      map.setPaintProperty('pearson-routes', 'line-opacity', pearson ? 0.95 : 0);
-      map.setPaintProperty('pearson-routes-casing', 'line-opacity', pearson ? 0.6 : 0);
-      map.setPaintProperty('pearson-routes-casing', 'line-color', getComputedStyle(container).getPropertyValue('--bg-app').trim() || '#000');
+    map.fitBounds(activeZoom?.view ?? VIEW, { padding: viewPadding(container.clientWidth, container.clientHeight), duration: reduced ? 0 : 1600, essential: false });
+    if (map.getLayer('zoom-routes')) {
+      const shown = (opacity: number): maplibregl.ExpressionSpecification => ['case', ['==', ['get', 'zoom'], zoom ?? ''], opacity, 0];
+      const line = activeZoom?.faded ? FADED_OPACITY : 0.95;
+      map.setPaintProperty('zoom-routes', 'line-opacity', shown(line));
+      map.setPaintProperty('zoom-routes-casing', 'line-opacity', shown(activeZoom?.faded ? 0 : 0.6));
+      map.setPaintProperty('zoom-routes-casing', 'line-color', getComputedStyle(container).getPropertyValue('--bg-app').trim() || '#000');
     }
-  }, [pearson, mapReady]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [zoom, mapReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     // The Frequent service story's sizes (#1310): pinned at top-16 below lg, top-24 from lg.
