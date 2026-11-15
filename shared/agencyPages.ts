@@ -15,7 +15,7 @@ import { countryForRegion } from './regionCountry';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
+import { AGENCY_PATH_PREFIX, agencyIndexHeadingHref, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
@@ -727,8 +727,10 @@ export interface Crumb {
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
 export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string; page?: boolean }, regionPage?: string): Crumb[] {
   const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
-  if (a.country) crumbs.push({ name: a.country });
-  if (a.region) crumbs.push({ name: a.region, ...(regionPage ? { href: regionPage } : {}) });
+  // #1521: there are no country pages, so the country (and a state or province with no page) links to its heading in
+  // the /agencies list; every step but the last needs a link for the breadcrumb markup to pass.
+  if (a.country) crumbs.push({ name: a.country, href: agencyIndexHeadingHref(a.country) });
+  if (a.region) crumbs.push({ name: a.region, href: regionPage ?? (a.country ? agencyIndexHeadingHref(a.country, a.region) : undefined) });
   if (area) crumbs.push({ name: areaRegionTitle(area), ...(area.page !== false ? { href: areaPagePath(area.slug) } : {}) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
@@ -789,11 +791,12 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
       },
       {
         '@type': 'BreadcrumbList',
-        itemListElement: crumbs.map((c, i) => ({
+        // #1521: a middle step with no page of its own (a city) is left out, so every step but the last has a link.
+        itemListElement: crumbs.filter((c, i) => c.href || i === crumbs.length - 1).map((c, i, kept) => ({
           '@type': 'ListItem',
           position: i + 1,
           name: c.name,
-          ...(c.href ? { item: `${origin}${c.href}` } : i === crumbs.length - 1 ? { item: canonicalUrl } : {}),
+          ...(c.href ? { item: `${origin}${c.href}` } : i === kept.length - 1 ? { item: canonicalUrl } : {}),
         })),
       },
       {

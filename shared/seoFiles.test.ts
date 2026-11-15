@@ -82,3 +82,33 @@ describe('vercel.json routing', () => {
     expect(sources).not.toContain('/sitemap.xml');
   });
 });
+
+describe('#1521 SEO fixes', () => {
+  const full = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string; destination: string; statusCode?: number }>; rewrites: Array<{ source: string }>; headers: Array<{ has?: Array<{ value: string }>; headers: Array<{ key: string; value: string }> }> };
+  it('/docs and /apps/night are server 301s, not the app with a 200', () => {
+    for (const [from, to] of [['/docs', '/about/docs'], ['/apps/night', '/research/night']]) {
+      for (const source of [from, `${from}/`]) {
+        expect(full.redirects.find(r => r.source === source), source).toMatchObject({ destination: to, statusCode: 301 });
+        expect(full.rewrites.some(r => r.source === source), source).toBe(false);
+      }
+    }
+  });
+  it('the preview site gets the noindex header', () => {
+    const noindex = full.headers.find(h => h.headers.some(x => x.key === 'X-Robots-Tag'))!;
+    expect(new RegExp(`^${noindex.has![0].value}$`).test('preview.transitatlas.fyi')).toBe(true);
+    expect(new RegExp(`^${noindex.has![0].value}$`).test('www.transitatlas.fyi')).toBe(false);
+  });
+  it("each build's canonicals use its own site's address, never a vercel.app one", async () => {
+    const { buildOrigin } = await import('./seo');
+    expect(buildOrigin('public', 'atlas-abc.vercel.app')).toBe(SITE_URL);
+    expect(buildOrigin('preview', 'atlas-abc.vercel.app')).toBe('https://preview.transitatlas.fyi');
+    expect(buildOrigin('beta', 'atlas-abc.vercel.app')).toBe('https://beta.transitatlas.fyi');
+  });
+  it('the sitemap gives a lastmod from the page\'s own dateModified', async () => {
+    const { jsonLdDateModified } = await import('./seo');
+    const ld = { '@graph': [{ '@type': 'BreadcrumbList' }, { '@type': 'Dataset', dateModified: '2026-11-09' }] };
+    expect(jsonLdDateModified(ld)).toBe('2026-11-09');
+    expect(buildSitemapXml([{ loc: `${SITE_URL}/agency/ttc`, lastmod: '2026-11-09' }])).toContain(`<loc>${SITE_URL}/agency/ttc</loc>\n    <lastmod>2026-11-09</lastmod>`);
+    expect(buildSitemapXml([`${SITE_URL}/agency/x`])).not.toContain('<lastmod>');
+  });
+});

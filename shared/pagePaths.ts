@@ -34,6 +34,16 @@ export function regionSlug(region: string): string {
 
 export const AGENCY_INDEX_PATH = '/agencies';
 
+/** The id of a country's or a state's or province's heading in the /agencies list (a country with no regions keeps its own). */
+export function agencyIndexHeadingId(country: string, region?: string): string {
+  return !region || region === country ? `index-${country}` : `index-${regionSlug(country)}-${regionSlug(region)}`;
+}
+
+/** #1521: a link to a country's, or a state's or province's, heading in the /agencies list (there are no country pages). */
+export function agencyIndexHeadingHref(country: string, region?: string): string {
+  return `${AGENCY_INDEX_PATH}#${encodeURIComponent(agencyIndexHeadingId(country, region))}`;
+}
+
 /** The fixed pages' paths: each page's route, prerender, SEO entry and every link to it read these (no path typed by hand). */
 export const ABOUT_PATH = '/about';
 export const DOCS_PATH = '/about/docs';

@@ -6,7 +6,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { SITE_URL, applySeoToHtml, buildSitemapXml, injectRootHtml, prerenderRoutes, researchPreviewRoutes, resolveSeo } from '../shared/seo';
+import { applySeoToHtml, buildOrigin, buildSitemapXml, injectRootHtml, jsonLdDateModified, type SitemapEntry, prerenderRoutes, resolveSeo, shellRoutes } from '../shared/seo';
 import { AGENCY_DATA_SCRIPT_ID, agencyPageData, agencyPageJsonLd, areaPageStatus, resolveAgencySeo } from '../shared/agencyPages';
 import { parentAgencyPageData, parentHome, parentMembers, parentsWithMembers } from '../shared/parentAgencies';
 import { AGENCY_INDEX_DATA_SCRIPT_ID, AGENCY_INDEX_PATH, buildAgencyIndexData, resolveAgencyIndexSeo } from '../shared/agencyIndex';
@@ -24,7 +24,7 @@ const dist = resolve('dist');
 const mod = await import(pathToFileURL(resolve('.prerender/prerender.js')).href);
 const shell = readFileSync(join(dist, 'index.html'), 'utf8');
 // Staging builds are never canonical to production; describe the host they are served from.
-const origin = mod.BUILD_MODE === 'public' ? SITE_URL : process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : SITE_URL;
+const origin = buildOrigin(mod.BUILD_MODE, process.env.VERCEL_URL);
 
 /** A <script> tag carrying JSON, with "<" escaped so the data can never close the tag. */
 const jsonScript = (attrs: string, data: unknown) => `<script ${attrs}>${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
@@ -49,10 +49,10 @@ for (const route of prerenderRoutes(mod.BUILD_FLAGS)) {
   console.log(`Prerendered ${route.path}`);
 }
 
-// Research pages without prerendered text (CIV-1167): the shell with the page's own title, description and share image,
-// so a pasted link previews that page. Crawlers do not run JS; the app mounts over it. Where the research apps are off,
-// the route resolves to the map's tags, as the app shows the map there. vercel.json serves each from its own file.
-for (const route of researchPreviewRoutes(mod.BUILD_FLAGS)) {
+// App pages without prerendered text (CIV-1167, #1521): the shell with the page's own title, description, robots and share
+// image, so a pasted link previews that page and a crawler never reads the map's tags there. The app mounts over it.
+// Only pages this build has get a file; vercel.json serves each from its own file, so a page that is off is a real 404.
+for (const route of shellRoutes(mod.BUILD_FLAGS)) {
   const seo = resolveSeo(route.path, { mode: mod.BUILD_MODE, flags: mod.BUILD_FLAGS, origin });
   const file = join(dist, route.path, 'index.html');
   mkdirSync(dirname(file), { recursive: true });
@@ -67,7 +67,7 @@ if (mod.BUILD_FLAGS.agencyPages) {
   if (agencies.length === 0) {
     console.warn('\n!!! AGENCY PAGES SKIPPED: shared/data/agency-pages.json has no agencies. Run scripts/build-agency-page-summaries.ts. !!!\n');
   } else {
-    const urls: string[] = [];
+    const urls: Array<string | SitemapEntry> = [];
     // Metro areas (config/areas): pages only for areas flagged page: true. An agency links to its area.
     const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
       .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
@@ -89,18 +89,20 @@ if (mod.BUILD_FLAGS.agencyPages) {
     for (const a of agencies) {
       const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
       const seo = { ...resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(a.slug)?.slug) };
-      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      const ld = agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
+      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
       claimTitle(seo.title, data.path);
-      urls.push(seo.canonicalUrl);
+      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
     }
     // CIV-1277: one page per parent agency, adding up its members, at its own slug.
     for (const parent of parentsWithMembers(agencies)) {
       const home = parentHome(parent, parentMembers(parent, agencies))!;
       const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
       const seo = { ...resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(home.slug)?.slug) };
-      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage));
+      const ld = agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
+      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
       claimTitle(seo.title, data.path);
-      urls.push(seo.canonicalUrl);
+      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
     }
     // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.
     const { pages: areaPages } = areaPageStatus(agencies, areas);
@@ -109,16 +111,18 @@ if (mod.BUILD_FLAGS.agencyPages) {
       const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
       // CIV-1175: area pages show their city's map picture, and agency pages (above) their area's.
       const seo = { ...resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin }), ...areaShareImageSeo(area.slug) };
-      writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, areaPageJsonLd(data, seo.canonicalUrl, origin));
-      urls.push(seo.canonicalUrl);
+      const ld = areaPageJsonLd(data, seo.canonicalUrl, origin);
+      writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, ld);
+      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
     }
     // State and province pages (CIV-976): one per place with a listed agency, the same as the agency intros' place links.
     const regions = regionPages(agencies);
     for (const region of regions) {
       const data = buildRegionPageData(region, agencies, AGENCY_PAGE_DATA.generatedAt);
       const seo = resolveRegionSeo(data, { mode: mod.BUILD_MODE, origin });
-      writePage(regionPagePath(region.name), seo, mod.renderRegionPage(data), { id: REGION_DATA_SCRIPT_ID, value: data }, regionPageJsonLd(data, seo.canonicalUrl, origin));
-      urls.push(seo.canonicalUrl);
+      const ld = regionPageJsonLd(data, seo.canonicalUrl, origin);
+      writePage(regionPagePath(region.name), seo, mod.renderRegionPage(data), { id: REGION_DATA_SCRIPT_ID, value: data }, ld);
+      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
     }
     // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
     {

@@ -32,7 +32,7 @@
       "has": [
         {
           "type": "host",
-          "value": "(beta\\.transitatlas\\.fyi|.*\\.vercel\\.app)"
+          "value": "(beta\\.transitatlas\\.fyi|preview\\.transitatlas\\.fyi|.*\\.vercel\\.app)"
         }
       ],
       "headers": [
@@ -273,6 +273,26 @@
       "source": "/agency/njt-rail/",
       "destination": "/agency/njt",
       "permanent": true
+    },
+    {
+      "source": "/docs",
+      "destination": "/about/docs",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/",
+      "destination": "/about/docs",
+      "statusCode": 301
+    },
+    {
+      "source": "/apps/night",
+      "destination": "/research/night",
+      "statusCode": 301
+    },
+    {
+      "source": "/apps/night/",
+      "destination": "/research/night",
+      "statusCode": 301
     }
   ],
   "rewrites": [
@@ -396,11 +416,11 @@
     },
     {
       "source": "/apps/history",
-      "destination": "/app.html"
+      "destination": "/apps/history/index.html"
     },
     {
       "source": "/apps/history/",
-      "destination": "/app.html"
+      "destination": "/apps/history/index.html"
     },
     {
       "source": "/apps/compare",
@@ -412,11 +432,11 @@
     },
     {
       "source": "/apps/live",
-      "destination": "/app.html"
+      "destination": "/apps/live/index.html"
     },
     {
       "source": "/apps/live/",
-      "destination": "/app.html"
+      "destination": "/apps/live/index.html"
     },
     {
       "source": "/apps/live/ttc",
@@ -507,22 +527,6 @@
       "destination": "/apps/live/ttc/512/index.html"
     },
     {
-      "source": "/docs",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/docs/",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/apps/night",
-      "destination": "/app.html"
-    },
-    {
-      "source": "/apps/night/",
-      "destination": "/app.html"
-    },
-    {
       "source": "/research",
       "destination": "/research/index.html"
     },
@@ -572,11 +576,11 @@
     },
     {
       "source": "/changelog",
-      "destination": "/app.html"
+      "destination": "/changelog/index.html"
     },
     {
       "source": "/changelog/",
-      "destination": "/app.html"
+      "destination": "/changelog/index.html"
     },
     {
       "source": "/apps/fares",

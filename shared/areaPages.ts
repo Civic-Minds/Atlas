@@ -20,7 +20,7 @@ import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabe
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
-import { agencyPagePath, parentAgencyPagePath } from './pagePaths';
+import { agencyIndexHeadingHref, agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { countOf, plural } from './overflowText';
@@ -347,7 +347,7 @@ export function resolveAreaSeo(
 
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
+  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country, item: `${origin}${agencyIndexHeadingHref(d.area.country)}` }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
   const modified = formatIso(d.newestRefresh);
   return {
     '@context': 'https://schema.org',

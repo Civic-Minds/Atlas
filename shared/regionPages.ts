@@ -8,7 +8,7 @@ import { AREA_INDEX } from './areaIndex';
 import { areaRegionName } from './areaRegions';
 import { countryForRegion } from './regionCountry';
 import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
-import { REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
+import { agencyIndexHeadingHref, REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 
@@ -198,7 +198,7 @@ export function resolveRegionSeo(
 
 /** BreadcrumbList and Dataset, as on area pages; the breadcrumb is not shown on the page. */
 export function regionPageJsonLd(d: RegionPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.region.country }, { name: d.region.name, item: canonicalUrl }];
+  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.region.country, item: `${origin}${agencyIndexHeadingHref(d.region.country)}` }, { name: d.region.name, item: canonicalUrl }];
   const modified = formatIso(d.newestRefresh);
   return {
     '@context': 'https://schema.org',

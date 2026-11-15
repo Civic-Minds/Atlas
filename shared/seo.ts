@@ -13,11 +13,24 @@ import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARC
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
 export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
+/** The preview site, for agencies' own previews (preview.transitatlas.fyi). */
+export const PREVIEW_SITE_URL = 'https://preview.transitatlas.fyi';
 export const SITE_NAME = 'Transit Atlas';
 export const ORG_NAME = 'Civic Minds';
 
 export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
+
+/**
+ * #1521: the address a build's prerendered canonicals and links use: each site's own stable domain, never the
+ * per-deployment vercel.app address. A dev build falls back to its deployment address, then the public site.
+ */
+export function buildOrigin(mode: SeoMode, vercelUrl?: string): string {
+  if (mode === 'public') return SITE_URL;
+  if (mode === 'preview') return PREVIEW_SITE_URL;
+  if (mode === 'beta') return BETA_SITE_URL;
+  return vercelUrl ? `https://${vercelUrl}` : SITE_URL;
+}
 export type SeoFlags = Partial<Record<SeoGate, boolean>>;
 
 export interface SeoRoute {
@@ -304,8 +317,18 @@ export function injectRootHtml(html: string, markup: string): string {
 
 /** Research pages with no prerendered text in this build: each still gets its own file, for its link preview (CIV-1167). */
 export function researchPreviewRoutes(flags: SeoFlags): SeoRoute[] {
+  return shellRoutes(flags).filter(r => r.path === RESEARCH_PATH_PREFIX || r.path.startsWith(`${RESEARCH_PATH_PREFIX}/`));
+}
+
+/**
+ * #1521: the app pages served from their own file (the app shell with the page's own title, description, robots and
+ * canonical), so a crawler without JS reads that page's tags, never the map's. Only pages this build has: where a
+ * page is off (History, Live and the research pages on the public site), no file is written and the address is a real
+ * 404. The map's own addresses (/ and its aliases, which point their canonical at /) stay on app.html.
+ */
+export function shellRoutes(flags: SeoFlags): SeoRoute[] {
   const prerendered = new Set(prerenderRoutes(flags).map(r => r.path));
-  return SEO_ROUTES.filter(r => (r.path === RESEARCH_PATH_PREFIX || r.path.startsWith(`${RESEARCH_PATH_PREFIX}/`)) && !prerendered.has(r.path));
+  return SEO_ROUTES.filter(r => r.path !== '/' && !r.canonicalPath && !prerendered.has(r.path) && routeExistsInBuild(r, flags));
 }
 
 /** Pages whose text is rendered into static HTML in this build. */
@@ -317,10 +340,21 @@ export function sitemapRoutes(): SeoRoute[] {
   return SEO_ROUTES.filter(r => r.indexable && r.includeInSitemap);
 }
 
+/** A sitemap URL, with its last change date (YYYY-MM-DD) where the page states one. */
+export interface SitemapEntry { loc: string; lastmod?: string | null }
+
+/** #1521: the date a page's JSON-LD says its data last changed (its Dataset's dateModified), for the sitemap. */
+export function jsonLdDateModified(ld: object): string | null {
+  for (const node of ((ld as { '@graph'?: Array<{ dateModified?: string }> })['@graph'] ?? [])) if (node?.dateModified) return node.dateModified;
+  return null;
+}
+
 /** `extraUrls` are absolute URLs added by a build whose flags enable more pages (agency pages). */
-export function buildSitemapXml(extraUrls: readonly string[] = []): string {
+export function buildSitemapXml(extraUrls: readonly (string | SitemapEntry)[] = []): string {
   const urls = [...sitemapRoutes().map(r => `${SITE_URL}${r.path === '/' ? '/' : r.path}`), ...extraUrls]
-    .map(loc => `  <url>\n    <loc>${loc}</loc>\n  </url>`)
+    .map(u => (typeof u === 'string' ? { loc: u } : u))
+    // #1521: lastmod from the same date the page's own markup gives (dateModified), never a build date.
+    .map(({ loc, lastmod }) => `  <url>\n    <loc>${loc}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}\n  </url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
