@@ -780,6 +780,32 @@ export function computeHourDepartureCounts(departureTimes: number[], hours: read
   return result;
 }
 
+/**
+ * CIV-1611: the earliest and latest departure in one clock hour, from the same membership rule as
+ * computeHourDepartureCounts (a time counts in [hour*60, hour*60+60)), in whole minutes. Null when the hour has none.
+ */
+export function departureBoundsInHour(departureTimes: readonly number[], hour: number): { first: number; last: number } | null {
+  let first = Infinity;
+  let last = -Infinity;
+  for (const t of departureTimes) {
+    if (t < hour * 60 || t >= hour * 60 + 60) continue;
+    if (t < first) first = t;
+    if (t > last) last = t;
+  }
+  return Number.isFinite(first) ? { first: Math.round(first), last: Math.round(last) } : null;
+}
+
+/**
+ * CIV-1611: the first and last departure among the hours computeHourDepartureCounts counts (its first hour's earliest
+ * time, its last hour's latest), so the span and the hour counts always come from one list. Undefined with none.
+ */
+export function computeDepartureSpan(departureTimes: readonly number[], hours: readonly number[]): { first: number; last: number } | undefined {
+  // In clock order (SPARKLINE_HOURS lists 5 AM last, as the sparkline's overnight tail).
+  const withDepartures = [...hours].sort((a, b) => a - b).map(h => departureBoundsInHour(departureTimes, h)).filter((b): b is { first: number; last: number } => b != null);
+  if (withDepartures.length === 0) return undefined;
+  return { first: withDepartures[0].first, last: withDepartures[withDepartures.length - 1].last };
+}
+
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};

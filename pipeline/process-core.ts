@@ -31,7 +31,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1500,6 +1500,8 @@ export async function processGtfsBuffer(
         headwayByHour: computeHourHeadways(result.times, SPARKLINE_HOURS),
         maxGapByHour: computeHourMaxGaps(result.times, SPARKLINE_HOURS),
         departuresByHour: computeHourDepartureCounts(result.times, SPARKLINE_HOURS),
+        // CIV-1611: the first and last of those same departures (minutes), for the agency page's hours bar.
+        departureSpan: computeDepartureSpan(result.times, SPARKLINE_HOURS),
         routeShortName: shortName,
         routeVariant: result.routeVariant ?? null,
         routeLongName: route?.route_long_name ?? null,
@@ -3771,6 +3773,8 @@ export async function processGtfsBuffer(
     const terminalHourDepartures = terminalScopedTimes
       ? computeHourDepartureCounts(terminalScopedTimes, SPARKLINE_HOURS)
       : terminalStopId ? computeHourDepartureCounts(terminalReadTimes(terminalStopId) ?? [], SPARKLINE_HOURS) : undefined;
+    // CIV-1611: the list the terminal counts read, so the span's ends come from the same departures as the counts.
+    const terminalDepartureList = terminalScopedTimes ?? (terminalStopId ? terminalReadTimes(terminalStopId) ?? [] : undefined);
     const terminalHourIsBranchScoped = !!headsignTerminalHourHw;
     const branchHourHw = feature.properties.headwayByHour as HeadwayByHour | undefined;
     if (branchHourHw) {
@@ -3779,6 +3783,7 @@ export async function processGtfsBuffer(
       const mergedHourGaps: Record<number, number | null> = {};
       const branchHourDepartures = feature.properties.departuresByHour as Record<number, number> | undefined;
       const mergedHourDepartures: Record<number, number> = {};
+      const hourFromTerminal: Record<number, boolean> = {};
       // CIV-1109 (#1214): an hour with no departure on the row's terminal list (the list the
       // departure counts above read) shows no value. The fallbacks, the stop's all-headsign list
       // and then the row's own list, only ever borrowed other service into it: Madison 80 via
@@ -3794,15 +3799,19 @@ export async function processGtfsBuffer(
           ? (h in flooredHourGap ? flooredHourGap[h] : (headsignTerminalHourGaps?.[h] ?? terminalHourGaps?.[h] ?? null))
           : (branchHourGaps?.[h] ?? null);
         const departures = resolvedH === termH ? terminalHourDepartures?.[h] : branchHourDepartures?.[h];
-        if (departures) mergedHourDepartures[h] = departures;
+        if (departures) { mergedHourDepartures[h] = departures; hourFromTerminal[h] = resolvedH === termH; }
       }
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
       feature.properties.departuresByHour = mergedHourDepartures;
+      feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as { first: number; last: number } | undefined);
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
-      if (terminalHourDepartures) feature.properties.departuresByHour = terminalHourDepartures;
+      if (terminalHourDepartures) {
+        feature.properties.departuresByHour = terminalHourDepartures;
+        feature.properties.departureSpan = terminalDepartureList ? computeDepartureSpan(terminalDepartureList, SPARKLINE_HOURS) : undefined;
+      }
     }
   }
 
@@ -4286,4 +4295,27 @@ export async function processGtfsBuffer(
     feedQuality,
     ...(directionSplit.merged.length > 0 ? { directionSplits: directionSplitsOf(directionSplit.merged) } : {}),
   };
+}
+
+/**
+ * CIV-1611: a row's first and last departure after its hours were merged from the terminal list and its own list: each end
+ * reads the list its hour's count came from. An end whose hour came from the row's own list is exact only when the row's
+ * own span ends in that hour; otherwise the span is left out rather than guessed.
+ */
+export function mergedDepartureSpan(
+  byHour: Record<number, number>,
+  fromTerminal: Record<number, boolean>,
+  terminalList: readonly number[] | undefined,
+  ownSpan: { first: number; last: number } | undefined,
+): { first: number; last: number } | undefined {
+  const hours = Object.keys(byHour).map(Number).sort((a, b) => a - b);
+  if (hours.length === 0) return undefined;
+  const end = (h: number, which: 'first' | 'last'): number | undefined => {
+    if (fromTerminal[h]) return terminalList ? departureBoundsInHour(terminalList, h)?.[which] : undefined;
+    const own = ownSpan?.[which];
+    return own != null && Math.floor(own / 60) === h ? own : undefined;
+  };
+  const first = end(hours[0], 'first');
+  const last = end(hours[hours.length - 1], 'last');
+  return first != null && last != null ? { first, last } : undefined;
 }

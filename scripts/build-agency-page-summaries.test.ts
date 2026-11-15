@@ -318,3 +318,19 @@ describe('routeRuns (CIV-1605, hours bar prototype)', () => {
     expect(routeRuns([{}], undefined)).toBeNull();
   });
 });
+
+describe('routeRuns from the stretches (CIV-1611)', () => {
+  it("reads the exact first and last departure from every stretch's span, and the hours from their counts", async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const rows = [
+      { stretchMeta: { main: { departuresByHour: { '7': 2, '21': 1 }, span: { first: 436, last: 1276 } }, tails: [{ departuresByHour: { '6': 1 }, span: { first: 410, last: 415 } }] } },
+      { stretchMeta: { main: { departuresByHour: { '8': 1, '22': 1 }, span: { first: 480, last: 1330 } }, tails: [] } },
+    ];
+    expect(routeRuns(rows, undefined)).toEqual({ hours: [6, 7, 8, 21, 22], first: 410, last: 1330 });
+  });
+
+  it('falls back to the rows when any stretch lacks a span (a release built before CIV-1611)', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    expect(routeRuns([{ departuresByHour: { '7': 1 }, stretchMeta: { main: { departuresByHour: { '7': 1 } }, tails: [] } }], undefined)).toEqual({ hours: [7] });
+  });
+});

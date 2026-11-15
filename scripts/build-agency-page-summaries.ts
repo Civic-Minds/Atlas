@@ -224,13 +224,38 @@ export function summarize(
 /** The agency page's period columns, by the map's period key. */
 const COLUMN_OF_PERIOD: Partial<Record<string, 'am' | 'midday' | 'pm' | 'evening' | 'overnight'>> = { amPeak: 'am', midday: 'midday', pmPeak: 'pm', evening: 'evening', overnight: 'overnight' };
 
+type StretchHours = { departuresByHour?: Record<string, number> | null; span?: { first: number; last: number } | null };
+
 /**
- * CIV-1605: the weekday hours a route runs (every hour with a departure at any of its directions' or branches' reference
- * stops, from the published departuresByHour), and its exact first and last times where a period edge gives them: an
- * edge's "from" counts as the first time only when it falls in the first hour, and "until" as the last only in the last
- * hour, so a time is never moved to an end it doesn't belong to. Null when the data has no per-hour departures.
+ * CIV-1605, CIV-1611: the weekday hours a route runs and its exact first and last times. Read from each direction's
+ * stretches (stretchMeta main and tails): the hours with departures at their reference stops, and the earliest and latest
+ * departure there (span), the same times the period edges are read from. A release built before spans were published
+ * falls back to the rows' own departuresByHour, with an exact end only where a period edge falls in that first or last
+ * hour, so a time is never guessed or moved. Null when the data has no per-hour departures.
  */
-export function routeRuns(rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null }>, edge: AgencyPageRoute['edge']): AgencyPageRoute['runs'] | null {
+export function routeRuns(
+  rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: { first: number; last: number } | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
+  edge: AgencyPageRoute['edge'],
+): AgencyPageRoute['runs'] | null {
+  // Every list a route's hours are read from: each row's own (departuresByHour with departureSpan) and its stretches'.
+  const lists: StretchHours[] = rows.flatMap(p => [
+    { departuresByHour: p.departuresByHour, span: p.departureSpan },
+    p.stretchMeta?.main,
+    ...(p.stretchMeta?.tails ?? []),
+  ]).filter((s): s is StretchHours => !!s && Object.values(s.departuresByHour ?? {}).some(n => n > 0));
+  if (lists.length > 0 && lists.every(s => s.span)) {
+    const hours = new Set<number>();
+    for (const s of lists) for (const [h, n] of Object.entries(s.departuresByHour ?? {})) if (n > 0) hours.add(Number(h));
+    const sorted = [...hours].sort((a, b) => a - b);
+    const first = Math.min(...lists.map(s => s.span!.first));
+    const last = Math.max(...lists.map(s => s.span!.last));
+    // Each end must sit in the first or last hour with departures, or it isn't the same fact.
+    return {
+      hours: sorted,
+      ...(Math.floor(first / 60) === sorted[0] ? { first } : {}),
+      ...(Math.floor(last / 60) === sorted[sorted.length - 1] ? { last } : {}),
+    };
+  }
   const hours = new Set<number>();
   for (const p of rows) for (const [h, n] of Object.entries(p.departuresByHour ?? {})) if (n > 0) hours.add(Number(h));
   if (hours.size === 0) return null;
