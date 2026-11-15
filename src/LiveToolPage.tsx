@@ -57,7 +57,7 @@ import { percentText, countText } from '../shared/numberText';
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
+/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delays start" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
   return (

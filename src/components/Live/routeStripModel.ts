@@ -6,7 +6,7 @@
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
 import { minutesText, tenth } from '../../../shared/liveFormat';
-import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STARTS_LABEL, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
 import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
 import { percentText } from '../../../shared/numberText';
@@ -221,7 +221,7 @@ export function stretchSpan(stops: readonly RouteStripStop[], s: RouteStripStret
   const a = stops.findIndex(x => x.stopId === s.fromStopId);
   const b = stops.findIndex(x => x.stopId === s.toStopId);
   if (a < 0 || b < 0) return null;
-  return { kind, label: kind === 'delaysStart' ? 'Delays start' : 'Bunching forms', from: Math.min(a, b), to: Math.max(a, b) };
+  return { kind, label: kind === 'delaysStart' ? DELAY_STARTS_LABEL : 'Bunching forms', from: Math.min(a, b), to: Math.max(a, b) };
 }
 
 /** One sentence for screen readers: the direction, its ends, how many stops fall in each step, and the marked stretch. */
