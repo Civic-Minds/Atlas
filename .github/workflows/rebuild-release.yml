@@ -356,6 +356,12 @@ jobs:
         run: |
           # #1523: a live release always reads the real date.
           [ -z "$RUN_AT_INPUT" ] || { echo "run_at is for dry runs only; publish reads the real date."; exit 1; }
+          # #1380: read it once, at the start. A run that crosses midnight Toronto otherwise picks a feed as of one
+          # day and gates it as of the next (tank's feed ending 20261106 was picked on Nov 6 and refused as expired
+          # on Nov 7, which blocked the whole release). Every step reads this one date (shared/runClock.ts).
+          run_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "ATLAS_RUN_AT=$run_at" >> "$GITHUB_ENV"
+          echo "Run date pinned to the start of the run: $run_at"
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
           [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do

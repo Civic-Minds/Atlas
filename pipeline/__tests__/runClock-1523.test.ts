@@ -68,3 +68,16 @@ describe('no raw clock reads on the processing path (#1523)', () => {
     expect(raw).toEqual([]);
   });
 });
+
+describe('a publish run reads one date from start to finish (#1380)', () => {
+  it('pins ATLAS_RUN_AT to the start of the publish job, before any step reads the date', () => {
+    const yml = readFileSync(resolve(__dirname, '..', '..', '.github/workflows/rebuild-release.yml'), 'utf8');
+    const publish = yml.slice(yml.indexOf('\n  publish:'));
+    const pin = publish.indexOf('echo "ATLAS_RUN_AT=$run_at" >> "$GITHUB_ENV"');
+    expect(pin).toBeGreaterThan(0);
+    // Pinned in the first step, so the feed pick and the release gate in the reprocess step agree.
+    expect(pin).toBeLessThan(publish.indexOf('npm ci'));
+    // Still the real date: publish refuses a given run_at.
+    expect(publish).toContain('run_at is for dry runs only');
+  });
+});
