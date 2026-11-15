@@ -184,6 +184,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     nightView,
     stableColors,
     hideSpan,
+    sectionColours: FEATURES.segmentColours,
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;

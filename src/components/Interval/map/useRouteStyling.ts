@@ -212,7 +212,12 @@ export function useRouteStyling(
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-route-segments-layer')) {
-      map.setFilter('selected-route-segments-layer', (selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], '']) as any);
+      // #1504: the selected route's section pieces obey the map's filters like its line does (selectedRouteFilter). The
+      // pieces carry none of the tile fields routeFilter reads, so its frequency, day and limited-service clauses are
+      // applied where the pieces are cut, from the map-filtered lines (sectionColourFeatures); Live's allowlist is
+      // added here.
+      const selectedPieces = selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], ''];
+      map.setFilter('selected-route-segments-layer', (liveRoutesOnly ? concatFilters(selectedPieces, liveRoutesFilter()) : selectedPieces) as any);
     }
     if (map.getLayer('route-segments-layer')) {
       // With a route selected the other lines' pieces step back like their base lines do.
@@ -425,8 +430,8 @@ export function useRouteStyling(
         // the real qualifying stretch on top, so the full-length base line reads as background
         // context, not a (wrong) claim that the whole route runs at that frequency. Scoped to
         // this default state only: a selected/hovered/stop-focused route already gets its own
-        // full-geometry-at-full-opacity treatment above by design (selecting a route bypasses
-        // the frequency filter entirely), so this doesn't need to layer on top of those too.
+        // full-geometry-at-full-opacity treatment above by design (a selected route is drawn only
+        // when it passes the map's filters, #1504), so this doesn't need to layer on top of those too.
         if (frequencySegmentOverlay.partialMatches.length > 0) {
           const partialMatch = buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches);
           if (hasRoutes) {
