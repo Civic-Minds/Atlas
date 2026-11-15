@@ -21,7 +21,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, DOCS_LINK_LABEL, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_LINK_LABEL, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -32,7 +32,7 @@ import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
@@ -54,6 +54,8 @@ export type HelpContext = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  /** E9 (CIV-1199): the card's N12 notice, with its live values, as paragraph 1. */
+  filterNotice?: string;
   rolloutNotice?: string;
 };
 export type OpenInfoOptions = {
@@ -74,6 +76,7 @@ export type OpenInfoOptions = {
   overrideNote?: string;
   issueUrl?: string;
   issueUrls?: string[];
+  filterNotice?: string;
   rolloutNotice?: string;
 };
 export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
@@ -203,6 +206,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'no-route-shape' ? 'no-route-shape'
         : helpContext?.topic === 'edge-gap-allowance' ? 'edge-gap-allowance'
         : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
+        : helpContext?.topic === 'route-rating' ? 'route-rating'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
@@ -557,6 +561,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           })()}
           {view === 'edge-gap-allowance' && <ExplainerBody layout="edge-gap-allowance" lead={EDGE_GAP_ALLOWANCE_LEAD} helpContext={helpContext} />}
           {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
+          {view === 'route-rating' && helpContext?.filterNotice && <ExplainerBody layout="route-rating" lead={routeRatingLead(helpContext.filterNotice)} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
             <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
               lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, shortDate(helpContext.lastRefreshedAt)) : ''} />
