@@ -95,6 +95,8 @@ export interface RouteCardModelInput {
   /** CIV-995 (b): rows read their stretch's values (default). false keeps each row's own trips: the lists' range and History
    * (routeCardLowestHeadway) and the stop card's no-number words (routeCardNoNumberWords) don't change with the card. */
   stretchValues?: boolean;
+  /** #1506: the map colours lines section by section (beta, FEATURES.segmentColours); see RouteCardRowContext.sectionColours. */
+  sectionColours?: boolean;
 }
 
 export interface RouteCardModel {
@@ -216,7 +218,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   });
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
     rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues };
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {

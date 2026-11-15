@@ -30,6 +30,12 @@ export interface RouteCardRowContext {
   maxHeadway: number;
   /** CIV-995 (b): rows read their stretch's values (default); false keeps each row's own trips (lists, History, stop card). */
   stretchValues?: boolean;
+  /**
+   * #1506: the map colours lines section by section (beta). The line along a row's stretch then takes that stretch's own
+   * grade, not the route's one colour, so the row's dot is never better than the number it shows (GO KI midday: "every
+   * 120 min" to Kitchener had the route's orange dot, every 30, beside a grey line). The lists' range dot does the same.
+   */
+  sectionColours?: boolean;
 }
 
 /** What one route card row shows: its number, its words and its colour (CIV-992; moved out of RouteCardHeadway). */
@@ -122,17 +128,21 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
+  const shownHeadway = rowNoRegular ? undefined : (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined);
+  const dotHeadway = ctx.sectionColours && typeof branchFilterHeadway === 'number' && shownHeadway != null
+    ? Math.max(branchFilterHeadway, shownHeadway)
+    : branchFilterHeadway;
   return {
     displayH,
     headway: rowNoRegular ? undefined : displayH ?? undefined,
-    shownHeadway: rowNoRegular ? undefined : (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined),
+    shownHeadway,
     isLimited,
     rowNoRegular,
     edgeText,
     headwayLabel: !nightRow && hoveredHour == null && variantH === undefined
       ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : undefined))
       : undefined,
-    colorHeadway: hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined,
+    colorHeadway: hoveredHour == null && !rowNoRegular ? dotHeadway : undefined,
     trunkHeadway,
     dimmed,
   };
