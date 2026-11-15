@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes with a [midday gap](https://github.com/Civic-Minds/Atlas/issues/1534) no longer read far slower than they run**: Fairfax 334 read every 180 for a bus every 30 at the evening rush, and LA Metro 108 to Mesmer / Major read every 40 where buses come at least every 21 at midday
 - **Route codes like [BLS-1](https://github.com/Civic-Minds/Atlas/issues/1529) keep their capitals**: CTA's Blue Line Shuttle read "Bls-1"
 - **Four commuter rail lines no longer look more frequent than they are**: Providence, Kitchener and Main/Bergen County at the evening rush, and Harlem on weekend middays had read the gap between trains on two branches as one shorter wait ([#1514](https://github.com/Civic-Minds/Atlas/issues/1514))
 - **Compare opens without a pause**: the page no longer stalls after clicking Compare or changing a Compare map's time
