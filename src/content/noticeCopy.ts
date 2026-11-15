@@ -9,7 +9,7 @@
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { shortDate } from '../../shared/dateText';
-import { joinList, plural } from '../../shared/overflowText';
+import { joinList, plural, countOf } from '../../shared/overflowText';
 import { METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
@@ -400,7 +400,7 @@ export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
 
 // ---- Map ----
 // N46 networks-failed
-export const networksFailedText = (count: number) => (count === 1 ? "1 agency couldn’t load" : `${count} agencies couldn’t load`);
+export const networksFailedText = (count: number) => `${countOf(count, 'agency', 'agencies')} couldn’t load`;
 // N46 networks-failed (hover)
 /** The agencies' names: "TTC and YRT couldn't load." */
 export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn’t load.`;
@@ -465,6 +465,8 @@ export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
+/** The link back to the map on empty and not-found pages (CIV-1594). */
+export const OPEN_MAP_LINK = 'Open the Atlas map';
 
 // N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
 export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${isDayType(day) ? dayPlural(day) : day}`);
@@ -688,7 +690,6 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
   });
   const count = stops.length;
   const allTransferPoints = count > 0 && stops.every(stop => (stop.properties as OnDemandPickupStop | undefined)?.serviceType === 'on-demand-transfer-point');
-  const plural = (singular: string, pluralForm: string) => `${count} ${count === 1 ? singular : pluralForm}`;
   const scope = areaName ? 'This zone' : 'This service';
   const pickup = resolved.pickup;
   let sentence: string | null = null;
@@ -701,12 +702,12 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'fixed-stops':
       sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('set stop', 'set stops')}, shown on the map.`
+        ? `Pickups and drop-offs are at ${countOf(count, 'set stop', 'set stops')}, shown on the map.`
         : 'Pickups and drop-offs are at set stops, not door to door.';
       break;
     case 'virtual-stops':
       sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('virtual stop', 'virtual stops')}, shown on the map.`
+        ? `Pickups and drop-offs are at ${countOf(count, 'virtual stop', 'virtual stops')}, shown on the map.`
         : 'Pickups and drop-offs are at virtual stops, not door to door.';
       break;
     case 'connection-points':
@@ -714,12 +715,12 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'transfer-point-trips':
       sentence = count > 0
-        ? `Every trip starts or ends at this zone’s ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        ? `Every trip starts or ends at this zone’s ${plural(count, 'transfer point')}, shown on the map.`
         : 'Every trip starts or ends at a transfer point.';
       break;
     default:
       if (count > 0) {
-        sentence = `${scope} has ${allTransferPoints ? plural('transfer point', 'transfer points') : plural('stop', 'stops')}, shown on the map.`;
+        sentence = `${scope} has ${allTransferPoints ? countOf(count, 'transfer point', 'transfer points') : countOf(count, 'stop', 'stops')}, shown on the map.`;
       }
   }
   if (!sentence) return null;

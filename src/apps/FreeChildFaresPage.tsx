@@ -14,6 +14,7 @@ import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
+import { countOf } from '../../shared/overflowText';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
@@ -32,7 +33,7 @@ const ageCountOf = (age: number) => ageCounts.get(age) ?? 0;
 const ages = FREE_CHILD_AGE_COUNTS.map(([age]) => age);
 const SPLIT_GREYS = [100, 78, 60, 46, 34, 24];
 const splitFill = (i: number, unknown: boolean) => (unknown ? HATCHED : `color-mix(in srgb, var(--text-muted) ${SPLIT_GREYS[i]}%, transparent)`);
-const agencies = (n: number) => `${n} ${n === 1 ? 'agency' : 'agencies'}`;
+const agencies = (n: number) => countOf(n, 'agency', 'agencies');
 const ageColumns: SparkColumn[] = Array.from({ length: Math.max(...ages) - Math.min(...ages) + 1 }, (_, i) => {
   const age = Math.min(...ages) + i;
   return { key: age, label: String(age), value: ageCountOf(age), fill: 'var(--text-muted)', sentence: `Up to ${age}: ${agencies(ageCountOf(age))}` };

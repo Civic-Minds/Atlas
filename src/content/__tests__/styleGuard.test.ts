@@ -112,6 +112,13 @@ const RULES: Rule[] = [
   { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
     pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000|6_?371_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
     allowed: ['shared/geoDistance.ts'] },
+  // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
+  { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
+    allowed: ['shared/overflowText.ts'] },
+
+  // CIV-1594: the map link on empty pages is OPEN_MAP_LINK in noticeCopy.ts.
+  { name: '"Open the Atlas map" typed in place (use OPEN_MAP_LINK)', doc: 'TEXT.md', pattern: /Open the Atlas map/, slip: '<ArrowLink href="/">Open the Atlas map</ArrowLink>',
+    allowed: ['src/content/noticeCopy.ts'] },
 
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },

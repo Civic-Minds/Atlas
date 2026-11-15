@@ -1,7 +1,7 @@
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
-import { countOf } from './overflowText';
+import { countOf, plural } from './overflowText';
 import { countText } from './numberText';
 
 /**
@@ -95,7 +95,7 @@ export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readon
  * (503, 507), which the agency figures can't tell apart (Ryan, CIV-1075).
  */
 export function coveredRoutesText(/** The agency's short name (useLiveAgencyName). */ agency: string, routes: ReadonlyArray<unknown>): string {
-  return `${routes.length} ${agency} route${routes.length === 1 ? '' : 's'}`;
+  return `${routes.length} ${agency} ${plural(routes.length, 'route')}`;
 }
 
 /** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp (shared/timeText.ts). */
@@ -169,7 +169,7 @@ const leftOutList = (dates: readonly string[]): string => (excludingText(dates) 
 /** The hover reason, naming the days: "Oct 11 left out: gaps in our recordings that day" ("…those days" for several). Null when none. */
 export function leftOutReason(dates: readonly string[]): string | null {
   const days = [...new Set(dates)];
-  return days.length ? `${leftOutList(days)} left out: gaps in our recordings ${days.length > 1 ? 'those days' : 'that day'}` : null;
+  return days.length ? `${leftOutList(days)} left out: gaps in our recordings ${plural(days.length, 'that day', 'those days')}` : null;
 }
 
 /**
