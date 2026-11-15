@@ -40,6 +40,7 @@ import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';
 import { percentTenthText, percentText, countText } from '../shared/numberText';
+import { LIVE_PATH } from '../shared/pagePaths';
 
 /**
  * One column grid for every table on the page (widths in rem), in the area page's table layout: the figure columns sit
@@ -185,7 +186,7 @@ export default function LiveAgencyPage() {
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   // The page title is the agency's full name, as on the map's agency page; the short name stays in the subtitle and tab title (CIV-1448).
   const name = agencyTitle;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink> : null;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><p className="mt-24 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(agencyName)}</p></DocsPageLayout>;
   if (state.kind === 'error' || state.data.status !== 'ready') {
     const reason = state.kind === 'error' ? state.reason : state.data.status === 'no_analysis' ? devOnly(state.data.reason) : state.data.status === 'unknown_agency' ? liveNoAgencyAnalysis(agencyName) : (state.data as { reason: string }).reason;

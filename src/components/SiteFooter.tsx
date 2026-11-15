@@ -1,7 +1,8 @@
-import { FEATURES } from '../../shared/config';
+import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
 import { ABOUT_ATLAS, ATLAS_BYLINE, DOCS_LINK_LABEL } from '../content/noticeCopy';
 import { ABOUT_HOME_PATH } from './SiteHeader';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 type FooterLink = { href: string; label: string };
 
@@ -14,21 +15,21 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: 'Explore',
       links: [
         { href: '/', label: 'Map' },
-        ...(FEATURES.agencyPages ? [{ href: '/agencies', label: 'Agencies' }] : []),
+        ...(FEATURES.agencyPages ? [{ href: AGENCY_INDEX_PATH, label: 'Agencies' }] : []),
       ],
     },
     {
       title: 'Learn',
       links: [
-        { href: '/about/docs', label: DOCS_LINK_LABEL },
-        ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
+        { href: DOCS_PATH, label: DOCS_LINK_LABEL },
+        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: 'Research' }] : []),
       ],
     },
     {
       title: 'About',
       links: [
-        { href: '/about', label: ABOUT_ATLAS },
-        ...(FEATURES.whatsNew ? [{ href: '/changelog', label: 'Changelog' }] : []),
+        { href: ABOUT_PATH, label: ABOUT_ATLAS },
+        ...(FEATURES.whatsNew ? [{ href: CHANGELOG_PATH, label: 'Changelog' }] : []),
       ],
     },
   ];
@@ -58,8 +59,8 @@ export default function SiteFooter() {
         </nav>
         <span className="order-1 col-span-3 -mt-4 sm:order-none sm:col-span-1 sm:mt-0">© {new Date().getFullYear()} Civic Minds.</span>
         <nav className="col-span-3 grid grid-cols-subgrid" aria-label="Legal links">
-          <a className={`col-start-2 justify-self-start whitespace-nowrap ${LINK}`} href="/terms">Terms</a>
-          <a className={`col-start-3 justify-self-start whitespace-nowrap ${LINK}`} href="/privacy">Privacy</a>
+          <a className={`col-start-2 justify-self-start whitespace-nowrap ${LINK}`} href={TERMS_PATH}>Terms</a>
+          <a className={`col-start-3 justify-self-start whitespace-nowrap ${LINK}`} href={PRIVACY_PATH}>Privacy</a>
         </nav>
       </div>
     </footer>

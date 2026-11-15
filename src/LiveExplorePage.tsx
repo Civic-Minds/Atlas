@@ -44,6 +44,7 @@ import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRout
 import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
+import { LIVE_PATH } from '../shared/pagePaths';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -206,7 +207,7 @@ export default function LiveExplorePage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;

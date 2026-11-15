@@ -6,7 +6,7 @@
 import type { ReactElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { ATLAS_MODE, seoFlags, FEATURES } from '../shared/config';
+import { FEATURE_ROUTES, ATLAS_MODE, seoFlags, FEATURES } from '../shared/config';
 import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
@@ -22,14 +22,14 @@ import type { RegionPageData } from '../shared/regionPages';
 import AgenciesIndexPage from './AgenciesIndexPage';
 import { agencyNames } from './utils/agencyName';
 import type { AgencyIndexData } from '../shared/agencyIndex';
-import { AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, regionPagePath } from '../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, DOCS_PATH, PRIVACY_PATH, regionPagePath, TERMS_PATH } from '../shared/pagePaths';
 
 const PAGES: Record<string, () => ReactElement> = {
-  '/about': () => <AboutPage />,
-  '/about/docs': () => <AboutDocsPage />,
-  '/privacy': () => <LegalPage document="privacy" />,
-  '/terms': () => <LegalPage document="terms" />,
-  '/research': () => <ResearchPage />,
+  [ABOUT_PATH]: () => <AboutPage />,
+  [DOCS_PATH]: () => <AboutDocsPage />,
+  [PRIVACY_PATH]: () => <LegalPage document="privacy" />,
+  [TERMS_PATH]: () => <LegalPage document="terms" />,
+  [FEATURE_ROUTES.research]: () => <ResearchPage />,
   '/research/free-child-fares': () => <FreeChildFaresPage />,
 };
 

@@ -42,6 +42,7 @@ import { dirsOf } from './components/Live/sections/figures';
 import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
 import { countText } from '../shared/numberText';
+import { LIVE_PATH } from '../shared/pagePaths';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -147,7 +148,7 @@ function AnalysisPage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;

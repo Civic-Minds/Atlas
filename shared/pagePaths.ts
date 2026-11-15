@@ -33,3 +33,12 @@ export function regionSlug(region: string): string {
 }
 
 export const AGENCY_INDEX_PATH = '/agencies';
+
+/** The fixed pages' paths: each page's route, prerender, SEO entry and every link to it read these (no path typed by hand). */
+export const ABOUT_PATH = '/about';
+export const DOCS_PATH = '/about/docs';
+export const TERMS_PATH = '/terms';
+export const PRIVACY_PATH = '/privacy';
+export const CHANGELOG_PATH = '/changelog';
+export const LIVE_PATH = '/apps/live';
+export const RESEARCH_PATH = '/research';
