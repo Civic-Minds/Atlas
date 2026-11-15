@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -79,5 +79,19 @@ describe('a publish run reads one date from start to finish (#1380)', () => {
     expect(pin).toBeLessThan(publish.indexOf('npm ci'));
     // Still the real date: publish refuses a given run_at.
     expect(publish).toContain('run_at is for dry runs only');
+  });
+});
+
+describe('tests ignore a job-wide ATLAS_RUN_AT (#1523, run 43737647894)', () => {
+  // rebuild-release.yml pins ATLAS_RUN_AT for the whole publish job. The vitest setup clears it, so a
+  // test that fakes the date reads its fake date. Fails if the suite runs with ATLAS_RUN_AT exported
+  // and the setup no longer clears it.
+  it('starts every test file with ATLAS_RUN_AT unset', () => {
+    expect(saved).toBeUndefined();
+  });
+
+  it('follows fake timers when unset', () => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-12T12:00:00') });
+    try { expect(runNow().getTime()).toBe(new Date('2026-10-12T12:00:00').getTime()); } finally { vi.useRealTimers(); }
   });
 });

@@ -410,6 +410,9 @@ jobs:
 
       - name: Test
         if: inputs.start_at == 'reprocess'
+        # Tests fake their own dates; the job's pinned ATLAS_RUN_AT must not reach them (#1523).
+        env:
+          ATLAS_RUN_AT: ''
         run: npm run test
 
       - name: Install tippecanoe
