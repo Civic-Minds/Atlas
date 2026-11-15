@@ -2,7 +2,7 @@ import Panel from '../ui/Panel';
 import { PanelCloseButton } from '../ui/PanelHeader';
 import { Z_PANEL } from '../../styles';
 import {
-  CLOSE_LABEL, CONTEXT_INCOME_TOP, CONTEXT_LEGEND_TITLE_DENSITY, CONTEXT_LEGEND_TITLE_INCOME, CONTEXT_NO_DENSITY,
+  closeLabel, CONTEXT_INCOME_TOP, CONTEXT_LEGEND_TITLE_DENSITY, CONTEXT_LEGEND_TITLE_INCOME, CONTEXT_NO_DENSITY,
   CONTEXT_NO_INCOME, contextDensityLine, contextIncomeLine, contextMarginLine, contextUncertainLine,
 } from '../../content/noticeCopy';
 import { formatDensity, formatIncome, formatMarginPct, readContext, type ContextMetric, type ContextProps } from '../../utils/contextLayer';
@@ -32,7 +32,7 @@ export function ContextPopup({ metric, x, y, props, pinned, onClose }: { metric:
       <div className="flex items-start justify-between gap-3">
         <p className="text-xs font-bold text-[var(--text-primary)]">{title}</p>
         {pinned && (
-          <PanelCloseButton onClick={onClose} label={CLOSE_LABEL} className="shrink-0 -mr-1.5 -mt-1" />
+          <PanelCloseButton onClick={onClose} label={closeLabel(title)} className="shrink-0 -mr-1.5 -mt-1" />
         )}
       </div>
       {lines.map(line => <p key={line} className="mt-0.5 text-xs text-[var(--text-muted)]">{line}</p>)}
