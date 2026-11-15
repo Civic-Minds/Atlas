@@ -219,6 +219,10 @@ export function searchPlaceholder(things?: string): string {
 export const SEARCH_SHORT_PLACEHOLDER = 'Find';
 /** The map's search box hint. */
 export const SEARCH_ROUTES_PLACEHOLDER = searchPlaceholder('routes');
+/** The Bustang connections list with no trips on the chosen day (CIV-101). */
+export const NO_BUSTANG_TRIPS = 'No Bustang trips this day.';
+/** The Bustang connections view's search box (CIV-101): it finds routes. */
+export const SEARCH_BUSTANG_PLACEHOLDER = searchPlaceholder('routes');
 /** The Night service view's search box. */
 export const SEARCH_NIGHT_PLACEHOLDER = searchPlaceholder('agencies or routes');
 /** Live's search box. */

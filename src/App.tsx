@@ -17,6 +17,7 @@ const Interval = React.lazy(() => import('./apps/Interval'));
 import { useDebouncedValue } from './hooks/useDebouncedValue';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from './hooks/useMediaQuery';
 const NightService = React.lazy(() => import('./apps/NightService'));
+const BustangConnections = React.lazy(() => import('./apps/BustangConnections'));
 // Lazy-loaded and rendered only when their flag is on (shared/config.ts) -- keeps this code out
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
@@ -57,9 +58,14 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
+import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
+import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
+import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
+import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
+import { splitRouteKey } from './utils/routeKey';
+import type { StopCardExtraInput } from './components/Interval/SidebarControls';
 
 export interface Agency {
   slug: string;
@@ -162,6 +168,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
   '/apps/compare': 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
+  [FEATURE_ROUTES.bustangConnections]: 'bustang',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -169,6 +176,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   history: '/apps/history',
   live: '/apps/live',
   night: FEATURE_ROUTES.nightService,
+  bustang: FEATURE_ROUTES.bustangConnections,
 };
 
 /** Fill in R2 artifact URLs for catalog entries that don't carry their own. */
@@ -343,6 +351,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const handleAgencyCardClose = useCallback(() => setSelectedAgencySlug(null), []);
   const handlePendingHandled = useCallback(() => setPendingLiveRoute(null), []);
   const handleNightPendingHandled = useCallback(() => setPendingNightRoute(null), []);
+  const [pendingBustangRoute, setPendingBustangRoute] = useState<{ slug: string; routeId: string } | null>(null);
+  const handleBustangRouteClick = useCallback((slug: string, routeId: string) => { setPendingBustangRoute({ slug, routeId }); closeInfo(); }, [closeInfo]);
+  const handleBustangPendingHandled = useCallback(() => setPendingBustangRoute(null), []);
   const [lightMode, setLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') !== 'dark';
@@ -477,6 +488,33 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const [nightOpened, setNightOpened] = useState(false);
   useEffect(() => { if (activeApp === 'history') setHistoryOpened(true); }, [activeApp]);
   useEffect(() => { if (inNight) setNightOpened(true); }, [inNight]);
+  // Bustang connections (CIV-101, beta): the map limited to Bustang and the local agencies at its stops, with its own
+  // sections on the route and stop cards. Its data loads only once the view opens.
+  const inBustang = activeApp === 'bustang';
+  const bustangData = useBustangData(inBustang);
+  const [bustangWithin, setBustangWithin] = useState<NearbyChoice>(() => parseNearbyChoice(new URLSearchParams(currentSearch()).get(BUSTANG_WITHIN_PARAM)));
+  useEffect(() => {
+    if (inBustang) syncUrlParams({ [BUSTANG_WITHIN_PARAM]: bustangWithin === NEARBY_METERS ? null : String(bustangWithin) });
+  }, [inBustang, bustangWithin, pathname]);
+  const bustangSlugs = useMemo(() => bustangMapSlugs(bustangData), [bustangData]);
+  // The connections top bar (CIV-1353, local only): its wait and side; the walk is the view's distance above.
+  const [connectionWait, setConnectionWait] = useState(15);
+  const [connectionSide, setConnectionSide] = useState<'after' | 'before'>('after');
+  const connectionsBar = useMemo(() => (inBustang && FEATURES.connectionsBar ? {
+    wait: connectionWait, setWait: setConnectionWait,
+    distance: bustangWithin, setDistance: (m: number) => setBustangWithin(parseNearbyChoice(String(m))),
+    side: connectionSide, setSide: setConnectionSide,
+  } : null), [inBustang, connectionWait, bustangWithin, connectionSide]);
+  const bustangRouteExtra = useCallback((key: string) => {
+    if (!bustangData) return null;
+    const { agencySlug, routeId } = splitRouteKey(key);
+    if (agencySlug !== bustangData.hub.slug) return null;
+    return <BustangRouteDepartures data={bustangData} day={day} within={bustangWithin} routeId={routeId} />;
+  }, [bustangData, day, bustangWithin]);
+  const bustangStopExtra = useCallback((stop: StopCardExtraInput) => {
+    const found = bustangData ? bustangStopFor(bustangData, stop) : null;
+    return found && bustangData ? <BustangStopConnections data={bustangData} day={day} within={bustangWithin} stop={found} /> : null;
+  }, [bustangData, day, bustangWithin]);
   const loadedAgencySlugs = useMemo(
     () => new Set([
       ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
@@ -488,7 +526,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // One rule for the desktop mode tabs (beta): while any non-map view is on, the unselected tabs
   // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
   const nonMapViewActive = FEATURES.collapseModeTabs
-    && (inLive || inHistory || inNight || inFrequentService || compareActive);
+    && (inLive || inHistory || inNight || inBustang || inFrequentService || compareActive);
   const showCompareControl = compareOn && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
     LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
@@ -530,6 +568,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     ? SEARCH_ROUTES_PLACEHOLDER
     : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
     : inNight ? SEARCH_NIGHT_PLACEHOLDER
+    : inBustang ? SEARCH_BUSTANG_PLACEHOLDER
     : SEARCH_VEHICLES_PLACEHOLDER;
 
   function handleSearchClear() {
@@ -842,14 +881,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               query={deferredQuery}
               setQuery={setQuery}
               showUi={inFrequency || inFrequentService}
-              showSelectionUi={inLive || inNight}
-              showRouteLayers={inFrequency || inLive || inHistory || inNight || inFrequentService}
+              showSelectionUi={inLive || inNight || inBustang}
+              showRouteLayers={inFrequency || inLive || inHistory || inNight || inBustang || inFrequentService}
               liveRoutesOnly={inLive}
               nightServiceView={inNight}
               nightServiceFrequency={nightServiceFrequency}
               setNightServiceFrequency={setNightServiceFrequency}
               exportEnabled={FEATURES.mapExport || inFrequentService}
-              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Overnight service' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
+              exportTitle={inFrequentService ? 'Frequent Service' : inNight ? 'Overnight service' : inBustang ? 'Bustang connections' : inHistory ? 'Service History' : inLive ? 'Live Transit' : 'Transit Frequency'}
               frequentServiceView={inFrequentService}
               frequentServiceDays={frequentServiceDays}
               frequentServiceFrequency={frequentServiceFrequency}
@@ -859,10 +898,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setFrequentServiceWindow={setFrequentServiceWindow}
               showMapContext={FEATURES.mapContext}
               showMatchPercentage={FEATURES.matchPercentage}
-              filterToAgencies={inHistory}
-              agencyFilterSlugs={inHistory ? historyFilterSlugs : null}
+              filterToAgencies={inHistory || inBustang}
+              agencyFilterSlugs={inHistory ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              hideFilterPanel={inLive || inHistory || inNight || inFrequentService}
+              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -871,6 +910,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onPendingLiveRouteHandled={handlePendingHandled}
               pendingNightRoute={pendingNightRoute}
               onPendingNightRouteHandled={handleNightPendingHandled}
+              bustangView={inBustang}
+              pendingBustangRoute={inBustang ? pendingBustangRoute : null}
+              onPendingBustangRouteHandled={handleBustangPendingHandled}
+              // With the connections bar the route card holds nothing of its own (CIV-1353).
+              routeCardExtra={inBustang && !FEATURES.connectionsBar ? bustangRouteExtra : undefined}
+              connectionsBar={connectionsBar}
+              stopCardExtra={inBustang ? bustangStopExtra : undefined}
+              fallbackMapBounds={inBustang ? BUSTANG_MAP_BOUNDS : null}
               searchFocused={searchFocused}
               setSearchFocused={setSearchFocused}
               day={day}
@@ -914,6 +961,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
                 <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
+              </React.Suspense>
+            )}
+            {FEATURES.researchApps && inBustang && (
+              <React.Suspense fallback={null}>
+                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (

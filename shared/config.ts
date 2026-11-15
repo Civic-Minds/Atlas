@@ -154,6 +154,11 @@ export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
+// The connections top bar (CIV-1353): pick a route's trip, a wait and a walk, and the map shows the connecting
+// routes. Local only for now (Ryan, 2026-11-06: "can it be local only for now"): on the Vite dev server, as Live is,
+// never on beta or public builds.
+// Plain import.meta.env, as getAtlasMode reads it, so Vite and Vitest both resolve it; the guard covers tsx scripts.
+export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -192,6 +197,7 @@ export const FEATURES = {
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
+  connectionsBar: CONNECTIONS_BAR_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -209,6 +215,8 @@ export const FEATURE_ROUTES = {
   research: '/research',
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
+  /** CIV-101: beta-only, not listed on /research yet. */
+  bustangConnections: '/research/bustang-connections',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',

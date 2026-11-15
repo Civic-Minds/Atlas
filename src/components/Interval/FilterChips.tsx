@@ -18,6 +18,7 @@ import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
+import { CONNECTION_WINDOWS } from '../../../shared/connections';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -63,8 +64,29 @@ interface FilterChipsProps {
    * without it History is weekday only.
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
+  /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
+  connectionsBar?: ConnectionsBarControls | null;
 
 }
+
+/** The connections top bar's choices (CIV-1353). Day is the bar's own day/setDay. */
+export interface ConnectionsBarControls {
+  wait: number;
+  setWait: (minutes: number) => void;
+  distance: number;
+  setDistance: (meters: number) => void;
+  /** The distances offered: the bar's choices this route's data was built for. */
+  distances: readonly number[];
+  side: 'after' | 'before';
+  setSide: (side: 'after' | 'before') => void;
+  /** The picked route's trips, grouped by direction; empty until a route with connection data is picked. */
+  trips: Array<[string, Array<{ id: string; label: string }>]>;
+  tripId: string | null;
+  setTripId: (id: string) => void;
+}
+
+/** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353). */
+const CONNECTION_SIDE_LABELS = [['after', '[Placeholder: arriving]'], ['before', '[Placeholder: leaving]']] as const;
 
 const MODES = filterModeOptions(FEATURES.onDemand);
 
@@ -94,7 +116,7 @@ export function getNowPeriodForTimezone(timezone?: string | null, now: Date = ne
   }
 }
 
-type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact';
+type ChipId = 'frequency' | 'day' | 'period' | 'mode' | 'agencies' | 'compact' | 'trip';
 
 const PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
@@ -254,6 +276,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceFrequency = 60,
   setNightServiceFrequency,
   variant = 'full',
+  connectionsBar = null,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
   const colorMode = useColorMode();
@@ -303,6 +326,40 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
   const hasActiveCoreFilter = maxHeadway !== Infinity || period !== 'all' || selectedModes.size > 0;
+
+  if (connectionsBar) {
+    const c = connectionsBar;
+    const pickedLabel = c.trips.flatMap(([, list]) => list).find(t => t.id === c.tripId)?.label;
+    // The research bar's controls (Frequent Service's Day menu, Night's outlined pills), CIV-1353.
+    return (
+      <div ref={rowRef} className="flex items-center gap-2">
+        <div className="relative">
+          <button onClick={() => toggle('day')} className={chipClass(true)}>Day<Dot show /></button>
+          {openChip === 'day' && <div className={`${PANEL} w-40`}>
+            {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => { setDay(dayType); setOpenChip(null); }} className={rowBtn(day === dayType)}>{dayType}</button>)}
+          </div>}
+        </div>
+        <PillGroup outlined label="Wait" value={String(c.wait)} onChange={v => c.setWait(Number(v))}
+          options={CONNECTION_WINDOWS.map(value => [String(value), headwayAmount(value)] as const)} />
+        <PillGroup outlined label="Walk" value={String(c.distance)} onChange={v => c.setDistance(Number(v))}
+          options={c.distances.map(m => [String(m), `${m} m`] as const)} />
+        <PillGroup outlined label="Side" value={c.side} onChange={v => c.setSide(v as 'after' | 'before')} options={CONNECTION_SIDE_LABELS} />
+        {pickedLabel && (
+          <div className="relative">
+            <button onClick={() => toggle('trip')} className={chipClass(true)}>{pickedLabel}<Dot show /></button>
+            {openChip === 'trip' && <div className={`${PANEL} w-64 max-h-[70vh] overflow-y-auto`}>
+              {c.trips.map(([title, list]) => (
+                <div key={title}>
+                  <p className="px-2 pt-1 pb-0.5 text-xs font-bold text-[var(--text-muted)]">{title}</p>
+                  {list.map(t => <button key={t.id} onClick={() => { c.setTripId(t.id); setOpenChip(null); }} className={rowBtn(t.id === c.tripId)}>{t.label}</button>)}
+                </div>
+              ))}
+            </div>}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (nightServiceMode && setNightServiceFrequency) {
     return (

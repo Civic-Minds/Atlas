@@ -159,6 +159,8 @@ interface MapCanvasProps {
   highlightRoutes?: string[];
   /** Route key hovered in search results — highlighted on the map, others faded. */
   hoveredSearchRoute?: string | null;
+  /** Routes shown together as the selection (the connections bar, CIV-1353); see useRouteStyling. */
+  focusRoutes?: string[] | null;
   hoveredBranch?: HoveredBranch | null;
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
@@ -263,6 +265,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   liveSelectedRoute = null,
   highlightRoutes = [],
   hoveredSearchRoute = null,
+  focusRoutes = null,
   hoveredBranch = null,
   setSelectedRoute,
   selectedStop,
@@ -1265,7 +1268,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
   });
 
   // Overlay layers (history, live vehicles) — extracted to hooks
