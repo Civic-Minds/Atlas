@@ -262,6 +262,8 @@ interface AgencyEntry {
   feedApiKeyParam?: string;
   mdbFeedUrl?: string | null;
   supplementalFeedUrls?: string[];
+  /** CIV-1485: the History sidecar keeps route_desc for routes with no long name (historyRefreshSidecar). */
+  historyNameFromDesc?: boolean;
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
@@ -666,7 +668,7 @@ async function refreshAgency(
   }
 
   // Write a compact headway snapshot for history tracking (all agencies with a feedUrl).
-  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds) : undefined);
+  const histResult = await writeHistorySnapshot(agency.slug, geojson, feedExpiry, feedVersion, historyV2Enabled(process.env.ATLAS_HISTORY_V2) ? historyV2InputFor(primary, buf, supplementalFeeds, agency) : undefined);
   writeLog(`  history: ${histResult}\n`);
 
   if (nightServiceCollector) {

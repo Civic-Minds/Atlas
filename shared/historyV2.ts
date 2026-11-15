@@ -51,6 +51,11 @@ export interface HistorySnapshotV2 {
 /** One route inside an immutable sidecar object history-v2/{slug}/{periodKey}.json. */
 export interface HistoryV2SidecarRoute {
   name?: string;
+  /**
+   * CIV-1485: the feed's route_desc, written only for an agency with historyNameFromDesc and only when the route has
+   * no long name of its own (King County Metro). The reused-number test reads it as the name; History does not show it.
+   */
+  desc?: string;
   rep: HistoryRep;
   sat?: HistoryDayValue;
   sun?: HistoryDayValue;

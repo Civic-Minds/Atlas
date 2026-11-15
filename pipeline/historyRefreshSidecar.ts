@@ -27,11 +27,14 @@ export interface HistoryV2Input {
   /** Supplemental feeds (e.g. rail) and which merged features came from which feed. */
   supplemental?: Array<{ url: string; buf: Buffer }>;
   featureSources?: Array<{ url: string | null; count: number }>;
+  /** CIV-1485: the agency's historyNameFromDesc (see BuildV2Options.nameFromDesc). */
+  nameFromDesc?: boolean;
 }
 
 /** The sidecar input from one processAgencyFeeds result, as refresh passes it. */
-export function historyV2InputFor(primary: Pick<AgencyFeedResult, 'referenceDate' | 'serviceWeekStart' | 'supplementalFeatureCounts' | 'featureSources'>, buf: Buffer, supplementalFeeds: ReadonlyArray<{ url: string; buf: Buffer }>): HistoryV2Input {
+export function historyV2InputFor(primary: Pick<AgencyFeedResult, 'referenceDate' | 'serviceWeekStart' | 'supplementalFeatureCounts' | 'featureSources'>, buf: Buffer, supplementalFeeds: ReadonlyArray<{ url: string; buf: Buffer }>, agency: { historyNameFromDesc?: boolean } = {}): HistoryV2Input {
   return {
+    ...(agency.historyNameFromDesc ? { nameFromDesc: true } : {}),
     buf,
     referenceDate: primary.referenceDate,
     serviceWeekStart: primary.serviceWeekStart,
@@ -60,7 +63,8 @@ export async function buildMergedV2Routes(
   features: Array<{ properties: Record<string, unknown> }>,
   v2Input: HistoryV2Input,
 ): Promise<{ evidence: Awaited<ReturnType<typeof readFeedEvidence>>; built: ReturnType<typeof buildV2RoutesMerged> }> {
-  const evidence = await readFeedEvidence(v2Input.buf, { referenceDate: v2Input.referenceDate });
+  const routeDesc = !!v2Input.nameFromDesc;
+  const evidence = await readFeedEvidence(v2Input.buf, { referenceDate: v2Input.referenceDate, routeDesc });
   const supplementalBufs = new Map((v2Input.supplemental ?? []).map(f => [f.url, f.buf]));
   const parts: V2FeedPart[] = [];
   for (const part of splitFeaturesBySource(features, v2Input.featureSources)) {
@@ -70,9 +74,9 @@ export async function buildMergedV2Routes(
     // Never re-pick a week here: a supplemental without the processor's date is a caller bug.
     const referenceDate = v2Input.supplementalReferenceDates?.[part.url];
     if (!referenceDate) throw new Error(`${slug}: no processor reference date for supplemental feed ${part.url}; History sidecar not written`);
-    parts.push({ url: part.url, features: part.features, evidence: await readFeedEvidence(partBuf, { referenceDate }) });
+    parts.push({ url: part.url, features: part.features, evidence: await readFeedEvidence(partBuf, { referenceDate, routeDesc }) });
   }
-  const built = buildV2RoutesMerged(parts, { weekendPeriods: historyWeekendPeriodsFor(slug) });
+  const built = buildV2RoutesMerged(parts, { weekendPeriods: historyWeekendPeriodsFor(slug), ...(routeDesc ? { nameFromDesc: true } : {}) });
   return { evidence, built };
 }
 

@@ -30,6 +30,7 @@
     "Sammamish, Washington",
     "Redmond, Washington"
   ],
+  "historyNameFromDesc": true,
   "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,

@@ -19,6 +19,7 @@ import { routeListLowEnd } from '../src/utils/effectiveHeadway.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { positivelyNoService, weekendDay, type FeedEvidence } from './historyWeekend.js';
 import { periodsOf } from './historyRoutePeriods.js';
+import { normalizeRouteName } from './historyRouteIdentity.js';
 
 type Props = Record<string, unknown>;
 
@@ -110,6 +111,21 @@ export interface BuildV2Result {
 export interface BuildV2Options {
   /** CIV-1425: also store Saturday/Sunday per-period values (`p`). Off = the output is unchanged. */
   weekendPeriods?: boolean;
+  /**
+   * CIV-1485 (the agency's historyNameFromDesc): a route with no long name of its own, or one that is only its number,
+   * stores the feed's route_desc as `desc` (from evidence.descByKey, read with EvidenceOptions.routeDesc), unless the
+   * description too is only the number ("Route 7"). Off = the output is unchanged.
+   */
+  nameFromDesc?: boolean;
+}
+
+/** CIV-1485: the route_desc to store for `key`, or undefined (see BuildV2Options.nameFromDesc). */
+export function descForKey(key: string, longName: string | undefined, evidence: FeedEvidence | undefined): string | undefined {
+  const own = normalizeRouteName(longName);
+  if (own && own !== normalizeRouteName(key)) return undefined;
+  const desc = evidence?.descByKey?.get(key);
+  const n = normalizeRouteName(desc);
+  return desc && n && n !== normalizeRouteName(key) ? desc : undefined;
 }
 
 export function buildV2Routes(features: Array<{ properties?: Props | null }>, evidence?: FeedEvidence, opts: BuildV2Options = {}): BuildV2Result {
@@ -135,6 +151,10 @@ export function buildV2Routes(features: Array<{ properties?: Props | null }>, ev
     if (e.Weekday.length === 0) continue;
     const { rep, conflict } = representativeRep(e.Weekday);
     const rec: HistoryV2SidecarRoute = { name: e.name ?? key, rep };
+    if (opts.nameFromDesc) {
+      const desc = descForKey(key, e.name, evidence);
+      if (desc) rec.desc = desc;
+    }
     for (const [field, day] of [['sat', 'Saturday'], ['sun', 'Sunday']] as const) {
       const day0 = weekendDay(e[day], evidence ? positivelyNoService(evidence, key, day) : false, { periods: opts.weekendPeriods });
       // CIV-1431: the day's shared-stretch values, with its per-period values (same switch, so it is off by default).

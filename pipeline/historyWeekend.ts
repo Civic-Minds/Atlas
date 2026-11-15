@@ -26,7 +26,7 @@ export interface FeedRows {
   calendar: GtfsCalendar[];
   calendarDates: GtfsCalendarDate[];
   trips: Array<{ route_id: string; service_id: string }>;
-  routes: Array<{ route_id: string; route_short_name?: string; route_long_name?: string }>;
+  routes: Array<{ route_id: string; route_short_name?: string; route_long_name?: string; route_desc?: string }>;
 }
 
 export interface FeedEvidence {
@@ -42,6 +42,8 @@ export interface FeedEvidence {
   servicesByKey: Map<string, Set<string>>;
   /** Every service_id that has a trip. */
   allServices: Set<string>;
+  /** CIV-1485: historyRouteKey -> the first non-blank route_desc, only when asked for (EvidenceOptions.routeDesc). */
+  descByKey?: Map<string, string>;
 }
 
 const DOW_FIELDS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
@@ -66,6 +68,8 @@ export interface EvidenceOptions {
   referenceDate?: string;
   /** The picker's anchor when no referenceDate is given; serviceAnchor() of the run date when unset. */
   anchor?: string;
+  /** CIV-1485: also collect each route key's route_desc (the agency's historyNameFromDesc). Off = no descByKey. */
+  routeDesc?: boolean;
 }
 
 export function computeFeedEvidence(rows: FeedRows, opts: EvidenceOptions = {}): FeedEvidence {
@@ -88,7 +92,14 @@ export function computeFeedEvidence(rows: FeedRows, opts: EvidenceOptions = {}):
     servicesByKey.get(key)!.add(t.service_id);
   }
   const calendar = realCalendar.filter(c => allServices.has(c.service_id) && DOW_FIELDS.some(f => c[f] === '1'));
-  return { refDate, calendar, calendarDates, servicesByKey, allServices };
+  if (!opts.routeDesc) return { refDate, calendar, calendarDates, servicesByKey, allServices };
+  const descByKey = new Map<string, string>();
+  for (const r of rows.routes) {
+    const key = keyByRouteId.get(r.route_id);
+    const desc = r.route_desc?.trim();
+    if (key && desc && !descByKey.has(key)) descByKey.set(key, desc);
+  }
+  return { refDate, calendar, calendarDates, servicesByKey, allServices, descByKey };
 }
 
 /** The week the one service-day model picks for these rows (the old picker under the kill switch). */
@@ -114,7 +125,7 @@ export async function readFeedEvidence(buf: Buffer, opts: EvidenceOptions = {}):
     calendar: await read<GtfsCalendar>('calendar.txt'),
     calendarDates: await read<GtfsCalendarDate>('calendar_dates.txt'),
     trips: await read<{ route_id: string; service_id: string }>('trips.txt'),
-    routes: await read<{ route_id: string; route_short_name?: string; route_long_name?: string }>('routes.txt'),
+    routes: await read<{ route_id: string; route_short_name?: string; route_long_name?: string; route_desc?: string }>('routes.txt'),
   }, opts);
 }
 

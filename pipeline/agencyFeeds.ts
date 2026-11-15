@@ -51,6 +51,8 @@ export interface AgencyFeedConfig {
   mergeIdenticalShapeIds?: boolean;
   /** CIV-1551: see GtfsTransformOptions.routeNumberFromLongName. */
   routeNumberFromLongName?: boolean;
+  /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
+  historyNameFromDesc?: boolean;
   referenceDateFromRunDate?: boolean;
   /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
   skipBlockTripHeadways?: boolean;

@@ -574,7 +574,8 @@ async function main() {
           periodKey: e.periodKey,
           sortKey: e.v2.refDate,
           year: Number(e.v2.refDate.slice(0, 4)),
-          name: e.v2.name,
+          // CIV-1485: a route whose only name is its number reads the feed's description (historyNameFromDesc).
+          name: e.v2.desc ?? e.v2.name,
           termini: terminiOf(lineOf(e.periodKey)),
           line: lineOf(e.periodKey) ?? null,
         })), ...todayPeriod], key);

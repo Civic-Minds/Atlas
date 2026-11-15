@@ -139,15 +139,17 @@ async function main(): Promise<void> {
       let supplementalRoutes: Record<string, string[]> | undefined;
       let collisions: Array<{ key: string; droppedFrom: string }> = [];
       if (supplemental.length > 0) {
-        const merged = await buildMergedV2Routes(slug, features, historyV2InputFor(processed, buf, supplemental));
+        const merged = await buildMergedV2Routes(slug, features, historyV2InputFor(processed, buf, supplemental, agency));
         evidence = merged.evidence;
         built = merged.built;
         supplementalRoutes = merged.built.supplementalRoutes;
         collisions = merged.built.collisions;
         if (collisions.length) console.log(`\n${zip}: ${collisions.length} route-key collision(s) between feeds, main route kept: ${collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`);
       } else {
-        evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
-        built = buildV2Routes(features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
+        // CIV-1485: an agency with historyNameFromDesc also stores route_desc for routes with no long name.
+        const nameFromDesc = !!agency.historyNameFromDesc;
+        evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate, routeDesc: nameFromDesc });
+        built = buildV2Routes(features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug), ...(nameFromDesc ? { nameFromDesc } : {}) });
       }
       let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, supplementalRoutes);
       let result: Awaited<ReturnType<typeof writeSidecar>>;
