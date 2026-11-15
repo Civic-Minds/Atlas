@@ -56,7 +56,7 @@ describe('routeCardNotices (CIV-1200)', () => {
     const night = { headsign: 'A', headwayByHour: { 25: 20, 27: 20, 29: 20 } } as any;
     const partial = { ...model, hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [night], contract: { filterValue: 60 } } as unknown as RouteCardNoticeInput['model'];
     const n = routeCardNotices({ ...base, directions: [night], model: partial, period: 'overnight', maxHeadway: 15, selectedRouteOutOfFilter: true });
-    const named = `${formatPeriodRangeLong(27, 28)}, ${formatPeriodRangeLong(29, 30)}`;
+    const named = `${formatPeriodRangeLong(27, 28)} and ${formatPeriodRangeLong(29, 30)}`;
     expect(n.filter?.code).toBe('N13');
     // The notices keep their ranges on one line (word joiners, no-break spaces).
     const plain = (text: string | undefined) => text?.replaceAll('\u2060', '').replace(/[\u00a0\u202f]/g, ' ');
@@ -321,6 +321,13 @@ describe('CIV-1199: each fact once (Ryan, 2026-11-14), on the audit\'s cards', (
     // With no row giving hours, the line stays and never says "No frequency is shown" (#1226).
     const kept = routeCardNotices({ ...base, directions: [x4], model: withRows([{ headway: 13 }, { headway: 12 }], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [x4] }), period: 'amPeak', maxHeadway: Infinity });
     expect(plain(kept.period?.text)).toBe('This route runs only from 7–9 AM.');
+  });
+
+  it('N9: two runs in the period join with "and" (CIV-1251, TTC 10 Van Horne weekday midday)', () => {
+    const vanHorne = { headsign: 'A', departuresByHour: { 9: 1, 14: 2 } } as any;
+    const m = withRows([], { hasPeriodService: false, hasPartialPeriodService: true, activeRangeDirections: [vanHorne] });
+    const n = routeCardNotices({ ...base, directions: [vanHorne], model: m, period: 'midday', maxHeadway: Infinity });
+    expect(plain(n.period?.text)).toBe('This route runs only from 9–10 AM and 2–3 PM.');
   });
 
   it('N9: drops where a row gives the same hours', () => {

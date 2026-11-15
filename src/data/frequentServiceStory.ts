@@ -88,7 +88,6 @@ export const frequentServiceStoryStats = {
  * data release release-mwh4jh9x, fetched 2026-11-14; regenerate with scripts/build-frequent-weekend-counts.ts (the file
  * carries its release ID, fetch date and rule).
  */
-export const frequentWeekendSource = weekendCounts.source;
 export const frequentWeekendCities = weekendCounts.cities.map(({ city, counts }) => ({
   city,
   weekday15: counts.Weekday['15'].midday,

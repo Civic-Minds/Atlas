@@ -60,7 +60,7 @@
       "mismatchRoutes": 7,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
@@ -71,5 +71,15 @@
   "lastPeekedExpiry": "20261127",
   "lastServiceWeek": "d1b72d45f1f34124",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261104"
+  "lastFeedStart": "20261104",
+  "branchReadCorrections": [
+    {
+      "routeShortName": "KI",
+      "directionId": 0,
+      "day": "Weekday",
+      "period": "pmPeak",
+      "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+      "reason": "Kitchener line westbound: beyond Bramalea the Kitchener branch runs far less often than the every-30 trunk to Bramalea in the PM peak; its trains skip different stops, so the branch was never read."
+    }
+  ]
 }

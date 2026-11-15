@@ -210,6 +210,13 @@ describe('routeLabels case', () => {
     expect(routeLabels({ shortName: 'SSSF', longName: 'Sausalito - San Francisco Ferry', routeType: 4 }).primary).toBe('SSSF');
     expect(routeLabels({ shortName: 'RWXP', longName: 'Ridgway Express', routeType: 3 }).text).toBe('RWXP — Ridgway Express');
   });
+
+  it('#1529: a short letter prefix joined to a code keeps its capitals; a word or an ordinal does not', () => {
+    expect(routeLabelCase('BLS-1')).toBe('BLS-1');
+    expect(routeLabelCase('BLS-1 SHUTTLE')).toBe('BLS-1 Shuttle');
+    expect(routeLabelCase('KING-2')).toBe('King-2');
+    expect(routeLabelCase('MIAMI GRDNS-OMNI VIA NW 32 AVE-20ST')).toBe('Miami Grdns-Omni via NW 32 Ave-20st');
+  });
   it('keeps compass directions and US highway numbers in capitals', () => {
     expect(routeLabelCase('NW 5TH AVE')).toBe('NW 5th Ave');
     expect(routeLabelCase('US 41')).toBe('US 41');

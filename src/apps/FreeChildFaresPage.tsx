@@ -15,13 +15,16 @@ import ResearchHeader from '../components/research/ResearchHeader';
 import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
 import { countOf } from '../../shared/overflowText';
+import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
+/** CIV-1642: the ledger was brought up to the current agency list and its fare-free rows rechecked on this day. */
+const FREE_CHILD_FARES_UPDATED = '2026-11-15';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
-  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, className: 'tabular-nums', width: 6 },
+  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, width: 6 },
 ];
 
 // "Not found" is drawn hatched: no current official rule, not a policy.
@@ -87,8 +90,8 @@ const regionTiles: MapTile[] = regionRows.map(r => {
 const REGION_COLUMNS: DataTableColumn<(typeof regionRows)[number]>[] = [
   { key: 'region', header: 'State or province', cell: r => r.region, rowHeader: true, className: 'font-normal', width: 12 },
   { key: 'age', header: 'Most common free age', cell: r => (r.age != null ? r.age : r.tie ? `Tie: ${r.tie.join(', ')}` : 'None'), width: 8 },
-  { key: 'withAge', header: 'With an age limit', cell: r => r.withAge, className: 'tabular-nums', width: 6 },
-  { key: 'total', header: 'Agencies', cell: r => r.total, className: 'tabular-nums', width: 6 },
+  { key: 'withAge', header: 'With an age limit', cell: r => r.withAge, width: 6 },
+  { key: 'total', header: 'Agencies', cell: r => r.total, width: 6 },
 ];
 const MAP_TITLE = 'Most common free age, by state and province';
 
@@ -105,7 +108,7 @@ export default function FreeChildFaresPage() {
   const mapTableId = useId();
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>{longDate(FREE_CHILD_FARES_SNAPSHOT)}.</>,
+      dateConducted: <>{longDate(FREE_CHILD_FARES_SNAPSHOT)}; updated {longDate(FREE_CHILD_FARES_UPDATED)}.</>,
       sample: <>Canada and the United States only. All {freeChildFareStats.agencies} agencies Atlas covered on that date: {FREE_CHILD_AGENCIES_BY_COUNTRY['United States']} in the United States and {FREE_CHILD_AGENCIES_BY_COUNTRY.Canada} in Canada.</>,
       sources: <>Only an agency’s own fare page, or its city or county fare bylaw, counted.</>,
       whatCounted: <>Each bar uses the oldest age that rides free: "under 6 ride free" counts as 5. When two official pages disagreed, we used the narrower rule. "Fare-free" means the whole system is free for every rider. Free fares that apply only in some seasons, with a pass or for residents are counted under "Program only", not as a free child fare. Free fares up to 17 or 18 are usually youth programs.</>,
@@ -117,13 +120,9 @@ export default function FreeChildFaresPage() {
     <PageShell stickyHeader method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
-          title="Free child fares"
-          intro={<>
-            {/* CIV-1281 (Ryan): the finding opens the page as an intro line, as the other research pages open, not a big heading. */}
-            <p>Where kids ride free, age {peakAge[0]} is the most common cutoff.</p>
-            <p>Most transit agencies let young children ride free. Where that free fare ends changes from one agency to the next.</p>
-            <p>We read the official fare rules of {freeChildFareStats.agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.</p>
-          </>}
+          title={FREE_CHILD_FARES_STORY.heading}
+          // CIV-1281 (Ryan): the finding opens the page as an intro line, as the other research pages open, not a big heading.
+          intro={<>{FREE_CHILD_FARES_STORY.intro!({ peakAge: peakAge[0], agencies: freeChildFareStats.agencies }).map(text => <p key={text}>{text}</p>)}</>}
         >
           <div className="text-left">
             <SplitBar segments={splitSegments} label={SPLIT_LABEL} />
@@ -139,12 +138,12 @@ export default function FreeChildFaresPage() {
               {keyFigures.map(figure => (
                 <div key={figure.label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-4">
                   <dt className="text-xs font-bold leading-5 text-[var(--text-muted)]">{figure.label}</dt>
-                  <dd className="mt-1 text-3xl font-black tabular-nums tracking-tight sm:text-4xl">{figure.value}</dd>
+                  <dd className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{figure.value}</dd>
                 </div>
               ))}
             </dl>
             <div className="mt-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
-              <h2 id="free-child-age-chart" className="text-xs font-black text-[var(--text-primary)]">Free up to a set age</h2>
+              <h2 id="free-child-age-chart" className="text-xs font-black text-[var(--text-primary)]">Free Up to a Set Age</h2>
               {/* keepEmpty: the ages run as a continuous scale, so an age no agency uses (15, 16) keeps its place and the gap shows. */}
               <CategorySpark columns={ageColumns} keepEmpty label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
               <ChartTableDetails id={tableId} caption="Free up to a set age" columns={TABLE_COLUMNS} rows={freeChildAgeBars} rowKey={bar => bar.label} />

@@ -13,7 +13,7 @@ describe('FrequentServiceStory', () => {
   it('guides readers from the research question through the verified examples', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.getByRole('heading', { name: 'What happens when you miss the bus?' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'There is no single “frequent.”' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Most agencies pick 15 minutes.' })).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(screen.getByText(/at the slowest wait its source gives for weekday daytime service/)).toBeInTheDocument();
   });
@@ -27,17 +27,17 @@ describe('FrequentServiceStory', () => {
 
   it('picks a threshold bar the split bar’s way: it fades the other bars and highlights its name, without agency tabs', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const tenMinuteButton = screen.getByRole('button', { name: /Show examples for 10-minute service/ });
+    const tenMinuteButton = screen.getByRole('button', { name: /^10 min: 3 agencies/ });
     fireEvent.click(tenMinuteButton);
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(tenMinuteButton.querySelector('[data-active="true"]')).not.toBeNull();
-    const fifteen = screen.getByRole('button', { name: /Show examples for 15-minute service/ });
+    const fifteen = screen.getByRole('button', { name: /^15 min: 40 agencies/ });
     expect((fifteen.querySelector('[style*="width"]') as HTMLElement).style.opacity).toBe('0.35');
   });
 
   it('highlights the most common threshold, 15 min, until another bar is picked (CIV-1286)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`Show examples for ${min}-minute service`) });
+    const bar = (min: number) => screen.getByRole('button', { name: new RegExp(`^${min} min: `) });
     const fill = (min: number) => (bar(min).querySelector('[style*="width"]') as HTMLElement).style.opacity;
     expect(bar(15).querySelector('[data-active="true"]')).not.toBeNull();
     expect([fill(15), fill(10)]).toEqual(['', '0.35']);
@@ -56,7 +56,7 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     const bridge = [...screen.getByRole('heading', { name: 'Every map tells it differently.' }).closest('section')!.querySelectorAll('p')].map(p => p.textContent!.replace(/[\u2060\u00a0\u202f]/g, m => (m === '\u2060' ? '' : ' ')));
     expect(bridge).toEqual([
-      "Each agency decides what its map shows, so one map is hard to compare with the next. Toronto’s Ten-Minute Network means a bus or streetcar every 10 min or better, from 6 AM to 1 AM. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
+      "Each agency decides what its map shows, so one map is hard to compare with the next. The TTC’s own 10-minute network runs every 10 min or better from 6 AM to 1 AM (from 8 AM on Sundays). The map below uses a broader test: every 15 min or better on weekday daytimes. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until 9 PM every day of the week, and Los Angeles only on weekdays until 6 PM. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.",
       "The maps also differ in what they draw. Vancouver’s and Portland’s show only the frequent network, so a slower route isn’t on the map. Toronto’s, Ottawa’s and Seattle’s draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.",
       "Atlas starts from the schedules instead. Here is Toronto’s network, built from the TTC’s own schedule data, one step at a time.",
     ]);
@@ -105,7 +105,7 @@ describe('FrequentServiceStory', () => {
 
   it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and 61 stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
@@ -128,7 +128,7 @@ describe('FrequentServiceStory', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
     expect(screen.queryByText('Show as a table')).toBeNull();
     const chart = screen.getByRole('group', { name: /Interactive chart showing the number of agencies/ });
-    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'There is no single “frequent.”' }).parentElement!.id);
+    expect(chart).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'Most agencies pick 15 minutes.' }).parentElement!.id);
     expect(screen.getByRole('columnheader', { name: /^Agencies, Oct\s30$/ })).toBeInTheDocument();
   });
 
@@ -159,12 +159,12 @@ describe('FrequentServiceStory', () => {
 
   it('CIV-1603: shows the agencies checked, with a named network and with a number, from the method box’s counts', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const counts = screen.getAllByRole('button', { name: /^\[Label \d\]: / }).map(b => b.getAttribute('aria-label'));
+    const counts = screen.getAllByRole('button', { name: /^(Checked|Named frequent network|Say how often|In the chart above): / }).map(b => b.getAttribute('aria-label'));
     expect(counts).toEqual([
-      `[Label 1]: ${frequentServiceDefinitionSample.agencies} agencies`,
-      `[Label 2]: ${frequentServiceDefinitionSample.namedNetwork} agencies`,
-      `[Label 3]: ${frequentServiceDefinitionSample.withWait} agencies`,
-      `[Label 4]: ${frequentServiceStoryStats.chartedAgencies} agencies`,
+      `Checked: ${frequentServiceDefinitionSample.agencies} agencies`,
+      `Named frequent network: ${frequentServiceDefinitionSample.namedNetwork} agencies`,
+      `Say how often: ${frequentServiceDefinitionSample.withWait} agencies`,
+      `In the chart above: ${frequentServiceStoryStats.chartedAgencies} agencies`,
     ]);
   });
 

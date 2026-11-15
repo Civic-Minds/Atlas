@@ -6,6 +6,27 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route codes like [BLS-1](https://github.com/Civic-Minds/Atlas/issues/1529) keep their capitals**: CTA's Blue Line Shuttle read "Bls-1"
+- **Four commuter rail lines no longer look more frequent than they are**: Providence, Kitchener and Main/Bergen County at the evening rush, and Harlem on weekend middays had read the gap between trains on two branches as one shorter wait ([#1514](https://github.com/Civic-Minds/Atlas/issues/1514))
+- **Compare opens without a pause**: the page no longer stalls after clicking Compare or changing a Compare map's time
+- **A route that runs twice in a time of day lists the times with "and"**: "only from 9–10 AM and 2–3 PM" read like a list of the whole day's hours with a comma
+- **Free child fares counts are current again (beta)**: fare-free systems rechecked against official pages (partly free and unconfirmed ones no longer count, Athens and newer free systems added), NJ Transit counted once, newer agencies included, and the link preview's agency count matches the page
+- **A route card's branch row names the pattern that actually runs then**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1526)'s Long Branch row named a 30th Street pattern with no midday trips next to another pattern's every 30
+- **History reads an old feed from its real timetable (beta)**: a one- or two-trip shuttle in force months earlier had left CTA's 2021–23 periods out, and holiday dates listed months ahead had left King County Metro's 2013 period blank
+- **Route cards say when Atlas fixed a route's data**: Brampton and New Orleans routes with removed “Not in Service” trips, and Brownsville's route with a removed placeholder stop, now show the corrected-data line, and Learn more says what was removed
+- **The beta Documentation page no longer ships a render error in its page source**: the Live terms load in the browser instead of breaking the prerender ([#1524](https://github.com/Civic-Minds/Atlas/issues/1524))
+- **Counts read cleanly everywhere**: large counts get commas ("1,234 routes"), a range whose ends match reads as one value instead of "every 60–60 min", and the map's loading notice says "Loading 1 of 1 agency"
+- **Shared Free child fares links show their own picture**: the page's age chart instead of the site's map
+- **The Frequent Service story reads more plainly**: the method paragraph lists every kind of official source used, the Toronto line gives the TTC's Sunday start and says the map uses a broader test, the chart says most agencies pick 15 minutes and names each bar by its count, the opening maps change about once a second, the map steps say "part-time", and the step text no longer covers the map on narrow screens
+- **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
+- **Every page has one name, and titles are in title case**: "Documentation" and "What’s New" read the same on every link, heading and browser tab; page and section headings and tabs use title case; tabs share one "Page | Transit Atlas" format; link previews say "Transit Atlas"; and the map’s What’s New button shows a dot until the newest release is opened
+- **Research pages open with their title**: the tiny "Atlas research" line above it is gone
+- **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
+- **No more Google Fonts**: Atlas serves its Inter font itself, so loading a page no longer sends your address to Google ([#1520](https://github.com/Civic-Minds/Atlas/issues/1520))
+- **Agency and area pages say "area" for a metro area**: an agency page reads "Calgary, Alberta" with both linked, an area page links its states or provinces, and "region" now means only a state or province
+- **Route card rows keep the route's own number when a short end runs slower (beta)**: the card matches the route list again, and the map's section colours show the slow end
+- **The [Frequent Service story](https://github.com/Civic-Minds/Atlas/issues/1517) map keeps up with a fast scroll**: it jumps straight to the stage you land on instead of fading through each one
+- **Numbers use the font's normal digits everywhere**: charts and tables no longer switch to fixed-width digits
 - **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
 - **A selected line's ends stay clear of the [route card](https://github.com/Civic-Minds/Atlas/issues/1516) on wide screens**: CTA Green's Harlem end sat under the card
 - **The Frequent Service story counts coverage with the map's own frequency test (beta)**: a counting mistake had left out routes such as Toronto's streetcars, and the old test asked for frequent service in every hour from 7 AM to 7 PM

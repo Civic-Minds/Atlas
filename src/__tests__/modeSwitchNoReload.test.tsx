@@ -8,17 +8,19 @@ let mapMounts = 0;
 // The agency list the map loads from: a new list object makes the real map reload its data.
 const agencyLists = new Set<unknown>();
 vi.mock('../apps/Interval', () => ({
-  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange }: {
+  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange, compareTabElsewhere }: {
     agencies?: unknown;
     onViewportAgencySlugsChange?: (slugs: string[]) => void;
     onCompareActiveChange?: (active: boolean) => void;
+    compareTabElsewhere?: () => void;
   }) {
     // The real map turns Compare on at Compare's own address.
     const { pathname } = useLocation();
     useEffect(() => { mapMounts++; onViewportAgencySlugsChange?.(['ttc']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => { onCompareActiveChange?.(pathname === '/apps/compare'); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
     agencyLists.add(agencies);
-    return <div data-testid="map" />;
+    // With mode transitions on (CIV-1567), the map keeps drawing the Compare tab in Live and History too.
+    return <div data-testid="map">{compareTabElsewhere && <button type="button" aria-label="Compare two maps" onClick={compareTabElsewhere} />}</div>;
   },
 }));
 vi.mock('../apps/LiveVehicles', () => ({ default: () => null }));
@@ -28,7 +30,7 @@ vi.mock('../components/InfoPanel', () => ({ default: () => null }));
 vi.mock('../../shared/data/history-agencies.json', () => ({ default: { minYears: 10, slugs: ['ttc'] } }));
 vi.mock('../../shared/config', async importOriginal => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
-  return { ...actual, FEATURES: { ...actual.FEATURES, live: true, history: true, compareMode: true, collapseModeTabs: true } };
+  return { ...actual, FEATURES: { ...actual.FEATURES, live: true, history: true, collapseModeTabs: true } };
 });
 
 import App from '../App';

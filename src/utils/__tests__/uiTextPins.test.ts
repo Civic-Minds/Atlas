@@ -30,8 +30,8 @@ describe('list and count wording stays exactly as it was', () => {
   });
 
   it('agency index description', () => {
-    expect(agencyIndexDescription({ agencyCount: 1, areas: [{}] } as never)).toContain('1 transit agency and 1 region.');
-    expect(agencyIndexDescription({ agencyCount: 1234, areas: [{}, {}] } as never)).toContain('1,234 transit agencies and 2 regions.');
+    expect(agencyIndexDescription({ agencyCount: 1, areas: [{}] } as never)).toContain('1 transit agency and 1 area.');
+    expect(agencyIndexDescription({ agencyCount: 1234, areas: [{}, {}] } as never)).toContain('1,234 transit agencies and 2 areas.');
   });
 
   it('feed quality reasons', () => {

@@ -20,7 +20,7 @@ export default function PageShell({ variant = 'docs', stickyHeader = false, foot
     <main className={`flex min-h-screen flex-col overflow-x-clip bg-[var(--bg-app)] text-[var(--text-primary)] ${GUTTER[variant]}`}>
       <div className={`mx-auto flex w-full ${maxWidth} flex-1 flex-col`}>
         {stickyHeader ? (
-          <div className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
+          <div data-page-header className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
             <SiteHeader />
           </div>
         ) : <SiteHeader />}

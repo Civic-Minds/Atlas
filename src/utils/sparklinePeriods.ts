@@ -27,11 +27,6 @@ export function periodOverviewBandsFor(hours: readonly number[]) {
   }).filter((band): band is (typeof TIME_PERIODS)[number] & { left: number; width: number } => band != null);
 }
 
-/** The sparkline hour under a pointer position, from the chart element's box. */
-export function sparklineHourAt(clientX: number, rect: { left: number; width: number }): number {
-  return hourAtOn(SPARKLINE_HOURS, clientX, rect);
-}
-
 /**
  * The Live hour charts' axis: 5 AM to 4 AM next day (GTFS hours 5-28) in one unbroken run, trimmed at both ends to the
  * hours that have enough trips. Never an overnight tail after 12a: late-night hours follow on from midnight, and an

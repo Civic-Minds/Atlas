@@ -8,7 +8,7 @@ export interface CurrentHistoryRoute {
   busSubType?: string;
   headway: number | null;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than the headway (routeTrunkHeadway). */
+  /** CIV-555: the route's shared-stretch value when better than the headway (historyListLowEnd). */
   trunkHeadway?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];

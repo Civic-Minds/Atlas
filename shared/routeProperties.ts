@@ -48,6 +48,8 @@ export interface RouteProperties {
   maxGapByHour?: HeadwayByHourMaxGap;
   /** CIV-1010: departures leaving in each clock hour, only hours with one or more (the last hour of the day included). */
   departuresByHour?: Record<number, number>;
+  /** CIV-1611: the first and last of the departuresByHour departures (minutes after midnight). */
+  departureSpan?: RouteDepartureSpan;
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;
@@ -97,6 +99,15 @@ export interface RouteProperties {
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
   /** Each direction's own filter value. */
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /**
+   * CIV-1579 shadow, nothing reads it yet: routeFilterHeadwayByPeriod read on each direction's main stretch alone (the
+   * trunk), every direction passing; tiles carry it as tv_. Where a trunk is under 5 stops or 1 km (no trunk value),
+   * it is routeFilterHeadwayByPeriod's own value; null only where that is null. Same all-or-none rule. Overnight is the
+   * night value, as in routeFilterHeadwayByPeriod.
+   */
+  routeTrunkHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** CIV-1579 shadow: aligned to this row's stopOrder (never fullStopOrder), "1" where the stop is on the direction's main stretch, empty where off it (shared/stopRuns decodeStopRuns). */
+  trunkStopMask?: string;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
   /** The direction's own value per period (pipeline stampStretchShadow): for an uneven period, its longest wait. Display only. */
@@ -130,8 +141,8 @@ export interface RouteProperties {
   stretchCovers?: ('main' | number)[];
   /** CIV-321 S2: period = each stretch's own filter value per period (same rules as a whole route); maxGap = the longest gap of the same departures (CIV-1069); noRegular = periods its card row reads "Irregular" (one gap, or under three departures). */
   stretchMeta?: {
-    main: { stops: number; refStop: string; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; rows?: StretchRowValues } | null;
-    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; notThrough?: PeriodKey[]; rows?: StretchRowValues }>;
+    main: { stops: number; refStop: string; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; rows?: StretchRowValues } | null;
+    tails: Array<{ refStop: string; stops: number; km: number; trips: number; /** #1343: departures per clock hour at refStop. */ departuresByHour?: Record<number, number>; /** CIV-1611: first and last departure at refStop (minutes). */ span?: RouteDepartureSpan; period?: Partial<Record<PeriodKey, number | null>>; maxGap?: Partial<Record<PeriodKey, number | null>>; noRegular?: PeriodKey[]; /** CIV-1251: this stretch's own late start or early end per period ({from|until, every}). */ edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>; notThrough?: PeriodKey[]; rows?: StretchRowValues }>;
   };
   /** The row's night grade (pipeline/process-core.ts): it passes the 2am to 5am check at 30, 60 or 90 minutes; nightService is the older 60. 90 is for the Night Service page only (CIV-1329); the Overnight view counts 30 and 60. */
   nightService30?: boolean;
@@ -143,3 +154,9 @@ export interface RouteProperties {
   nightServiceStops?: string[];
   researchFrequentService?: { daytime15: boolean; daytime30: boolean; extended15: boolean; extended30: boolean };
 }
+
+/**
+ * CIV-1611, CIV-1605: a list's exact first and last departure (minutes), each left out when the list runs earlier or later
+ * than the counted hours, and each empty run of hours inside the day as [last departure before, first after].
+ */
+export interface RouteDepartureSpan { first?: number; last?: number; gaps?: Array<[number, number]> }

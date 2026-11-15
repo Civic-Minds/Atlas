@@ -383,12 +383,6 @@ export function getMapExportLayout(
   return layoutFromPlan(plan, sourceWidth, sourceHeight, size);
 }
 
-/** Output size of an export, including the header and footer this view needs. */
-export function getMapExportOutputSize(sourceWidth: number, sourceHeight: number, size: MapExportSize, text: MapExportText = { title: '' }): { width: number; height: number } {
-  const layout = getMapExportLayout(sourceWidth, sourceHeight, size, text);
-  return { width: layout.width, height: layout.height };
-}
-
 function roundedRectPath(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
   context.beginPath();
   context.moveTo(x + radius, y);

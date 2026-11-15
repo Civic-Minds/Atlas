@@ -366,7 +366,11 @@ function routeLabelCase(part: string): string {
       if (/^\d+(st|nd|rd|th)$/i.test(tok)) return tok.toLowerCase();
       // A route code with a digit ("sl1" after titleCase lowered it) is a code, not a word.
       return /\d/.test(tok) ? up : tok;
-    });
+    })
+    // #1529: a short letter prefix joined to a code keeps its capitals, as stop names do (keepFeedCodes): CTA's Blue
+    // Line Shuttle "BLS-1", not "Bls-1". A longer word joined to one stays a word ("KING-2" -> "King-2"), and so does a
+    // word joined to an ordinal (Miami-Dade's "NW 32 Ave-20st").
+    .replace(/(?<![\p{L}\p{N}])(\p{L}{1,3})(?=-(?!\d+(?:st|nd|rd|th)(?![\p{L}\p{N}]))[\p{L}\p{N}]*\p{N})/giu, (letters: string) => letters.toUpperCase());
 }
 
 /**

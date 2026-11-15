@@ -4,17 +4,18 @@ import { buildChangelog } from './lib/changelog';
 import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { PAGE_NAMES } from '../shared/pageNames';
 
 export default function ChangelogPage() {
   const entries = buildChangelog(visibleWhatsNew(FEATURES.whatsNewBetaItems, WHATS_NEW));
 
   return (
     <DocsPageLayout
-      contents={{ title: 'Changelog', items: entries.map(entry => ({ id: entry.key, label: entry.label })) }}
+      contents={{ title: PAGE_NAMES.whatsNew, items: entries.map(entry => ({ id: entry.key, label: entry.label })) }}
       articleClassName="text-sm leading-relaxed text-[var(--text-dim)]"
     >
             <header>
-              <PageTitle className="text-[var(--text-primary)]">Changelog</PageTitle>
+              <PageTitle className="text-[var(--text-primary)]">{PAGE_NAMES.whatsNew}</PageTitle>
               <p className="mt-3">What changed in Atlas.</p>
             </header>
             {entries.map(entry => (

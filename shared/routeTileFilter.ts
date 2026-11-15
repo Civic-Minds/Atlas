@@ -49,6 +49,7 @@ export function buildRouteTileFilter(input: RouteTileFilterInput): unknown[] {
 }
 
 const filterCache = new Map<string, unknown[]>();
+const filterCacheBySet = new WeakMap<ReadonlySet<string>, Map<string, unknown[]>>();
 
 /**
  * The one route predicate (CIV-1135): whether a route feature passes the map's route filter, by evaluating the very
@@ -59,12 +60,24 @@ const filterCache = new Map<string, unknown[]>();
  * lacks the stamp the tiles carry.
  */
 export function routeFeaturePassesMapFilter(props: object, input: RouteTileFilterInput, agencySlug?: string): boolean {
-  const key = JSON.stringify([[...input.agencies].sort(), input.day, input.period, String(input.maxHeadway), !!input.hideSpan, !!input.hideLimitedService, input.hoveredDirection ?? null]);
-  let expr = filterCache.get(key);
+  // CIV-1598: the expression is found by the agency Set first, so the agency list (every agency, about 700, by
+  // default) is sorted into the key once per Set, not on every feature check. Doing that per check made one pass over
+  // the loaded features (30,000 near Toronto) take about 0.3 s: the pause after clicking Compare and after each change
+  // to a Compare side. The agency selection is React state, replaced (never edited in place) when it changes.
+  let bySet = filterCacheBySet.get(input.agencies);
+  if (!bySet) filterCacheBySet.set(input.agencies, bySet = new Map());
+  const settings = JSON.stringify([input.day, input.period, String(input.maxHeadway), !!input.hideSpan, !!input.hideLimitedService, input.hoveredDirection ?? null]);
+  let expr = bySet.get(settings);
   if (!expr) {
-    expr = buildRouteTileFilter({ ...input, modes: new Set() });
-    if (filterCache.size > 32) filterCache.clear();
-    filterCache.set(key, expr);
+    const key = JSON.stringify([[...input.agencies].sort(), input.day, input.period, String(input.maxHeadway), !!input.hideSpan, !!input.hideLimitedService, input.hoveredDirection ?? null]);
+    expr = filterCache.get(key);
+    if (!expr) {
+      expr = buildRouteTileFilter({ ...input, modes: new Set() });
+      if (filterCache.size > 32) filterCache.clear();
+      filterCache.set(key, expr);
+    }
+    if (bySet.size > 32) bySet.clear();
+    bySet.set(settings, expr);
   }
   const view = routeFilterTileProps(props);
   if (!evaluateMapFilter(expr, agencySlug && view.agencySlug == null ? { ...view, agencySlug } : view)) return false;

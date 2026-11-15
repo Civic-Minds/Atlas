@@ -201,3 +201,19 @@ describe('real routes with alternating gaps (#772)', () => {
     expect((await headlines('mata-42-weekday', 'mata', 'Weekday'))['1 FRAYSER at WOODROW']).toBe(60);
   });
 });
+
+describe('paired trips whose median lands on a lone middle gap (#1515)', () => {
+  // LIRR Babylon outbound, weekday midday, the same trains at two stops 3 minutes apart. At Seaford
+  // the 14:59 is at 15:02 (PM peak), so one 12-minute gap drops out and the median is the lone 34.
+  const wantagh = [34, 18, 45, 15, 48, 14, 46, 12, 48, 12, 48, 13];
+  const seaford = [34, 18, 45, 15, 48, 14, 46, 12, 48, 12, 48];
+  it('reads the long half of the pairs at both stops, not the lone 34', () => {
+    expect(typicalOfGaps(wantagh)).toBe(48);
+    expect(typicalOfGaps(seaford)).toBeGreaterThanOrEqual(45);
+  });
+  it('leaves regular service and a slower finish alone', () => {
+    expect(typicalOfGaps([10, 10, 10, 10, 30])).toBe(10);
+    expect(typicalOfGaps([10, 10, 10, 20, 30, 30, 30])).toBe(20); // slower finish, not alternation
+    expect(typicalOfGaps([15, 15, 16, 15, 30, 15, 15])).toBe(15); // one odd gap
+  });
+});

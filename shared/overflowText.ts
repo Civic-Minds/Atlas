@@ -5,6 +5,8 @@
  * "and 3 others" or "+3 more".
  */
 
+import { countText } from './numberText';
+
 /** The singular for exactly one, the plural otherwise (0 is plural): plural(1, 'route') is "route", plural(0, 'agency', 'agencies') is "agencies". */
 export function plural(count: number, singular: string, pluralForm: string = `${singular}s`): string {
   return count === 1 ? singular : pluralForm;
@@ -19,9 +21,9 @@ export function joinList(items: readonly string[], options: { oxford?: boolean }
 
 /** The count and its noun: countOf(1, 'agency', 'agencies') is "1 agency", countOf(3, 'route') is "3 routes". */
 export function countOf(count: number, singular: string, pluralForm: string = `${singular}s`): string {
-  return `${count} ${plural(count, singular, pluralForm)}`;
+  return `${countText(count)} ${plural(count, singular, pluralForm)}`;
 }
 
 export function andOthers(count: number, singular: string, pluralForm: string = `${singular}s`): string {
-  return `and ${count} other ${plural(count, singular, pluralForm)}`;
+  return `and ${countText(count)} other ${plural(count, singular, pluralForm)}`;
 }

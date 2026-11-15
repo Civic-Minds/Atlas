@@ -21,7 +21,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_LINK_LABEL, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -29,6 +29,7 @@ import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 import SearchBox from './ui/SearchBox';
 import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
+import { PAGE_NAMES } from '../../shared/pageNames';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -339,7 +340,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   // Current page title (not the back destination — back is the arrow alone)
   const headerTitle =
-    view === 'agencies' ? 'Agencies'
+    view === 'agencies' ? PAGE_NAMES.agencies
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? 'Sources'
@@ -360,9 +361,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               view === 'home' ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
             }`}
           >
-            <p className="text-sm font-black text-[var(--text-primary)]">
-              Atlas <span className="font-normal text-[var(--text-dim)]">by Civic Minds</span>
-            </p>
+            {/* The panel's one name, the same words as the buttons that open it and the back links to it (page-names refactor). */}
+            <p className="text-sm font-black text-[var(--text-primary)]">{PAGE_NAMES.aboutPage}</p>
           </div>
 
           {/* Back (arrow only) + current page title */}
@@ -427,11 +427,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {/* Pinned to the panel's bottom edge, below the scrolling content. */}
               <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                  <a href={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_LINK_LABEL}</a>
+                  <a href={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_PAGE_TITLE}</a>
                   <span aria-hidden="true">·</span>
-                  <a href={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">Terms</a>
+                  <a href={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.termsLink}</a>
                   <span aria-hidden="true">·</span>
-                  <a href={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
+                  <a href={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.privacyLink}</a>
                 </div>
                 <p>© 2026 Civic Minds.</p>
               </div>

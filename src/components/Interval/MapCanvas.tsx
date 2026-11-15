@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { flushSync } from 'react-dom';
+import { useMapHold } from '../ModeTransition';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { getRegionalView, getSavedView } from '../../utils/regionView';
+import { getRegionalView, getSavedView, urlView } from '../../utils/regionView';
 import { mergeUrlSearchParams } from '../../utils/syncUrlParams';
 import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
@@ -1141,7 +1142,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const buildLocationUrl = (lat: number, lon: number, medium?: ShareMedium): string => {
     const map = mapRef.current;
-    const qs = mergeUrlSearchParams(window.location.search, linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, { lat, lon, zoom: map?.getZoom() ?? zoom }));
+    const qs = mergeUrlSearchParams(window.location.search, linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, urlView(lat, lon, map?.getZoom() ?? zoom)));
     const url = `${window.location.origin}${window.location.pathname}?${qs}`;
     return withShareTags(url, medium);
   };
@@ -1280,6 +1281,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
     frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
   });
+  // CIV-1567 (beta): entering History, the map keeps its old picture until it has redrawn for History's agencies.
+  const mapHoldRef = useMapHold(mapRef, mapLoaded, `${filterToAgencies}|${(agencyFilterSlugs ?? []).join(',')}`, FEATURES.modeTransitions);
 
   // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
@@ -1296,6 +1299,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     <div style={{ height: '100%', width: '100%', position: 'relative', background: 'var(--bg-app)' }}>
       {/* Map Element */}
       <div ref={mapContainerRef} style={{ height: '100%', width: '100%' }} />
+      {FEATURES.modeTransitions && (
+        <canvas ref={mapHoldRef} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" style={{ visibility: 'hidden' }} />
+      )}
 
       {LiveVehiclesLayer && liveLayerRequested && (
         <React.Suspense fallback={null}>

@@ -7,7 +7,7 @@
  * Pure (no DOM, no import.meta), so the function, the prerender and the tests share it.
  */
 import { SHARE_CITIES, type ShareCity } from './shareCities.js';
-import { SITE_URL, imageMimeType, resolveSeo, type SeoMode } from './seo.js';
+import { SITE_NAME, SITE_URL, imageMimeType, resolveSeo, type SeoMode } from './seo.js';
 import { metresBetween } from './geoDistance';
 
 export type { ShareCity };
@@ -99,7 +99,7 @@ export function sharePreviewHtml(opts: { search: string; mode: SeoMode; origin?:
     `<meta name="description" content="${d}" />`,
     `<link rel="canonical" href="${escapeAttr(seo.canonicalUrl)}" />`,
     '<meta property="og:type" content="website" />',
-    '<meta property="og:site_name" content="Atlas" />',
+    `<meta property="og:site_name" content="${SITE_NAME}" />`,
     `<meta property="og:title" content="${t}" />`,
     `<meta property="og:description" content="${d}" />`,
     `<meta property="og:url" content="${u}" />`,

@@ -7,17 +7,34 @@
  */
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
-import { FREQUENT_SERVICE_TITLE } from './frequentService';
+import { PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
+import { FEATURE_ROUTES } from './config';
+import { titleCase } from './titleCase';
 import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
+import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
 export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
-export const SITE_NAME = 'Transit Atlas';
-export const ORG_NAME = 'Civic Minds';
+/** The preview site, for agencies' own previews (preview.transitatlas.fyi). */
+export const PREVIEW_SITE_URL = 'https://preview.transitatlas.fyi';
+export { SITE_NAME } from './pageNames';
+/** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
+export const HOME_TITLE = `${SITE_NAME}: Scheduled Frequency Map`;
 
-export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
+export type SeoGate = 'researchApps' | 'live' | 'history';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
+
+/**
+ * #1521: the address a build's prerendered canonicals and links use: each site's own stable domain, never the
+ * per-deployment vercel.app address. A dev build falls back to its deployment address, then the public site.
+ */
+export function buildOrigin(mode: SeoMode, vercelUrl?: string): string {
+  if (mode === 'public') return SITE_URL;
+  if (mode === 'preview') return PREVIEW_SITE_URL;
+  if (mode === 'beta') return BETA_SITE_URL;
+  return vercelUrl ? `https://${vercelUrl}` : SITE_URL;
+}
 export type SeoFlags = Partial<Record<SeoGate, boolean>>;
 
 export interface SeoRoute {
@@ -44,45 +61,45 @@ export interface SeoRoute {
 /** Every research page gets its own static file at build time, so a shared link shows its own preview (CIV-1167). */
 export const RESEARCH_PATH_PREFIX = RESEARCH_PATH;
 
-const HOME_DESCRIPTION =
+export const HOME_DESCRIPTION =
   'See how often transit routes actually run. Atlas maps scheduled frequency by agency, day and time of day, using published agency schedules.';
 
 export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     path: '/',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: true,
     includeInSitemap: true,
   },
   {
     path: '/apps/frequency',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: true,
     canonicalPath: '/',
   },
   {
     path: ABOUT_PATH,
-    title: 'About Transit Atlas: frequency maps for planners',
+    title: tabTitle(PAGE_NAMES.aboutPage, 'Frequency Maps for Planners'),
     description:
-      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place. Built by Civic Minds for riders, planners and researchers.',
+      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place, for riders, planners and researchers.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,
   },
   {
     path: DOCS_PATH,
-    title: 'How Transit Atlas works: data, frequency and methods',
+    title: tabTitle(PAGE_NAMES.docs, 'Data, Frequency and Methods'),
     description:
-      'How Atlas turns published transit schedules into frequency maps: the data it uses, how frequency is measured, how service is classified and how errors are corrected.',
+      'How Atlas turns published schedules into frequency maps: its data, how frequency is measured, how service is classified and how errors are corrected.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,
   },
   {
     path: PRIVACY_PATH,
-    title: 'Privacy policy: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.privacy),
     description: 'What Transit Atlas collects, how analytics and location are handled, and how to ask for your information to be removed.',
     indexable: true,
     prerender: true,
@@ -90,7 +107,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: TERMS_PATH,
-    title: 'Terms of service: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.terms),
     description: 'The terms for using Transit Atlas, including what its scheduled-service data can and cannot be relied on for.',
     indexable: true,
     prerender: true,
@@ -98,7 +115,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/apps/history',
-    title: 'Service history: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.serviceHistory),
     description: 'See how scheduled transit service changed over time, using dated snapshots of agency schedules.',
     indexable: false,
     gate: 'history',
@@ -106,72 +123,73 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     // Compare's own address: the frequency map split in two, so it keeps the map's title and points at the map.
     path: '/apps/compare',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: false,
     canonicalPath: '/',
   },
   {
     path: LIVE_PATH,
-    title: `${LIVE_VEHICLES_TITLE}: Transit Atlas`,
+    title: tabTitle(titleCase(LIVE_VEHICLES_TITLE)),
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',
     indexable: false,
     gate: 'live',
   },
   {
-    path: '/research/night',
-    title: 'Overnight service: Transit Atlas',
-    description: 'Find routes with sustained scheduled service from 2–5 AM.',
+    path: OVERNIGHT_STORY.path,
+    title: OVERNIGHT_STORY.tabTitle,
+    description: OVERNIGHT_STORY.description,
     indexable: false,
     gate: 'researchApps',
     // Ryan's pick 1 (CIV-1167), rendered from public/assets/research/share/night-light.svg.
-    shareImage: { path: '/assets/research/share/night.png', alt: 'Overnight service' },
+    shareImage: { path: '/assets/research/share/night.png', alt: OVERNIGHT_STORY.shareImageAlt! },
   },
   {
     path: RESEARCH_PATH,
-    title: 'Research: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.research),
     description: 'Research tools that show the service patterns the everyday frequency map cannot show on its own.',
     indexable: false,
     gate: 'researchApps',
     prerender: true,
   },
   {
-    path: '/research/bustang-connections',
-    title: 'Bustang connections: Transit Atlas',
+    path: FEATURE_ROUTES.bustangConnections,
+    title: tabTitle('Bustang Connections'),
     description: 'How long riders wait for a local bus after each Bustang arrival.',
     indexable: false,
     gate: 'researchApps',
   },
   {
-    path: '/research/free-child-fares',
-    title: 'Free child fares: Transit Atlas',
-    description: 'See up to what age children ride free at 697 transit agencies.',
+    path: FREE_CHILD_FARES_STORY.path,
+    title: FREE_CHILD_FARES_STORY.tabTitle,
+    description: FREE_CHILD_FARES_STORY.description,
+    // Ryan's yes (CIV-1629 follow-up, 2026-11-15): its card picture, rendered from free-child-fares-light.svg with Inter.
+    shareImage: { path: '/assets/research/share/free-child-fares.png', alt: FREE_CHILD_FARES_STORY.shareImageAlt! },
     indexable: false,
     gate: 'researchApps',
     prerender: true,
   },
   {
-    path: '/research/frequent-service',
-    title: 'Frequent service map: Transit Atlas',
+    path: FEATURE_ROUTES.frequentService.map,
+    title: tabTitle('Frequent Service Map'),
     description: 'Routes that meet Atlas sustained-frequency thresholds, mapped across agencies.',
     indexable: false,
     gate: 'researchApps',
   },
   {
-    path: '/research/frequent-service/story',
-    title: 'What happens when you miss the bus? Transit Atlas',
-    description: 'A source-backed look at what frequent service means across transit networks.',
+    path: FREQUENT_SERVICE_STORY.path,
+    title: FREQUENT_SERVICE_STORY.tabTitle,
+    description: FREQUENT_SERVICE_STORY.description,
     indexable: false,
     gate: 'researchApps',
     // Ryan's pick B4 (CIV-1167): bus 1303 at a real TTC shelter. Photo credits: public/assets/research/share/CREDITS.md.
-    shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_TITLE },
+    shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_STORY.shareImageAlt! },
   },
   {
     path: CHANGELOG_PATH,
-    title: 'Changelog: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.whatsNew),
     description: 'Every Atlas version and map data update, newest first.',
     indexable: false,
-    gate: 'whatsNew',
   },
 ];
 
@@ -304,8 +322,18 @@ export function injectRootHtml(html: string, markup: string): string {
 
 /** Research pages with no prerendered text in this build: each still gets its own file, for its link preview (CIV-1167). */
 export function researchPreviewRoutes(flags: SeoFlags): SeoRoute[] {
+  return shellRoutes(flags).filter(r => r.path === RESEARCH_PATH_PREFIX || r.path.startsWith(`${RESEARCH_PATH_PREFIX}/`));
+}
+
+/**
+ * #1521: the app pages served from their own file (the app shell with the page's own title, description, robots and
+ * canonical), so a crawler without JS reads that page's tags, never the map's. Only pages this build has: where a
+ * page is off (History, Live and the research pages on the public site), no file is written and the address is a real
+ * 404. The map's own addresses (/ and its aliases, which point their canonical at /) stay on app.html.
+ */
+export function shellRoutes(flags: SeoFlags): SeoRoute[] {
   const prerendered = new Set(prerenderRoutes(flags).map(r => r.path));
-  return SEO_ROUTES.filter(r => (r.path === RESEARCH_PATH_PREFIX || r.path.startsWith(`${RESEARCH_PATH_PREFIX}/`)) && !prerendered.has(r.path));
+  return SEO_ROUTES.filter(r => r.path !== '/' && !r.canonicalPath && !prerendered.has(r.path) && routeExistsInBuild(r, flags));
 }
 
 /** Pages whose text is rendered into static HTML in this build. */
@@ -317,10 +345,21 @@ export function sitemapRoutes(): SeoRoute[] {
   return SEO_ROUTES.filter(r => r.indexable && r.includeInSitemap);
 }
 
+/** A sitemap URL, with its last change date (YYYY-MM-DD) where the page states one. */
+export interface SitemapEntry { loc: string; lastmod?: string | null }
+
+/** #1521: the date a page's JSON-LD says its data last changed (its Dataset's dateModified), for the sitemap. */
+export function jsonLdDateModified(ld: object): string | null {
+  for (const node of ((ld as { '@graph'?: Array<{ dateModified?: string }> })['@graph'] ?? [])) if (node?.dateModified) return node.dateModified;
+  return null;
+}
+
 /** `extraUrls` are absolute URLs added by a build whose flags enable more pages (agency pages). */
-export function buildSitemapXml(extraUrls: readonly string[] = []): string {
+export function buildSitemapXml(extraUrls: readonly (string | SitemapEntry)[] = []): string {
   const urls = [...sitemapRoutes().map(r => `${SITE_URL}${r.path === '/' ? '/' : r.path}`), ...extraUrls]
-    .map(loc => `  <url>\n    <loc>${loc}</loc>\n  </url>`)
+    .map(u => (typeof u === 'string' ? { loc: u } : u))
+    // #1521: lastmod from the same date the page's own markup gives (dateModified), never a build date.
+    .map(({ loc, lastmod }) => `  <url>\n    <loc>${loc}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}\n  </url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }

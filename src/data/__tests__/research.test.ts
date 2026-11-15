@@ -14,8 +14,8 @@ describe('research list (CIV-1205)', () => {
 
   it("uses Ryan's approved card wording, on /research and /about alike", () => {
     const body = (title: string) => RESEARCH.find(e => e.title === title)?.body;
-    expect(body('Free child fares')).toBe('Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.');
-    expect(body('Frequent service')).toBe('What agencies in Canada and the US mean when they call a bus frequent.');
+    expect(body('Free child fares')).toBe('The age kids stop riding free.');
+    expect(body('Frequent service')).toBe('What “frequent” means to each agency.');
     expect(body('Overnight service')).toBe('See which routes keep running from 2–\u20605 AM, and how often they come.');
   });
 

@@ -32,6 +32,6 @@ describe('Live dashboard view', () => {
     expect(tiles[0].querySelector('[data-tone]')!.className).toMatch(/text-muted/);
     expect(tiles[0].getAttribute('title')).toMatch(/900 departures this week/);
     expect(screen.getByRole('table', { name: /five stops/ }).querySelectorAll('tbody tr')).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(expect.arrayContaining(['All days', 'Weekdays', 'Weekends']));
+    expect(screen.getAllByRole('heading', { level: 3 }).map(h => h.textContent)).toEqual(expect.arrayContaining(['All Days', 'Weekdays', 'Weekends']));
   });
 });

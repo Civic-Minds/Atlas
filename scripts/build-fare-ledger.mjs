@@ -25,7 +25,30 @@ const officialBySlug = new Map(official.records.map((record) => [record.slug, re
 const manualBySlug = new Map(manual.records.map((record) => [record.slug, record]));
 const secondPassBySlug = new Map(secondPass.records.map((record) => [record.slug, record]));
 
-const records = base.records.map((record) => {
+// The ledger follows today's registry (CIV-1640): an agency renamed or merged takes over its former slugs' base records
+// (NJ Transit's bus and rail became "njt"), and one added after the base snapshot gets an empty base record, so its
+// fare comes only from manual-verified-fares.json.
+const registry = JSON.parse(await fs.readFile(path.join(ROOT, 'public/data/index.json'), 'utf8')).agencies;
+const baseBySlug = new Map(base.records.map((record) => [record.slug, record]));
+const formerSlugsOf = (agency) => (agency.formerSlugs ?? []).map((former) => (typeof former === 'string' ? former : former.slug));
+const baseRecords = registry.map((agency) => {
+  const own = baseBySlug.get(agency.slug);
+  if (own) return own;
+  const former = formerSlugsOf(agency).map((slug) => baseBySlug.get(slug)).filter(Boolean);
+  if (former.length) return { ...former[0], slug: agency.slug, agencyName: agency.name ?? former[0].agencyName, formerRecords: former.map((record) => record.slug) };
+  return {
+    slug: agency.slug,
+    agencyName: agency.name ?? agency.slug,
+    region: agency.region ?? null,
+    amount: null, currency: null, fareType: null, label: null, sourceUrl: null, sourceType: null, effectiveDate: null,
+    researchDate: outputDate,
+    confidence: 'unresolved',
+    status: 'no fare found',
+    notes: `Added to the Atlas registry after the ${baseDate} base snapshot; no GTFS fare review.`,
+  };
+});
+
+const records = baseRecords.map((record) => {
   const site = officialBySlug.get(record.slug);
   const verified = manualBySlug.get(record.slug);
   const officialSources = (site?.sources ?? []).filter((source) => /(fare|fares|tarif|pricing|price)/i.test(`${source.title} ${source.url}`)).slice(0, 8);

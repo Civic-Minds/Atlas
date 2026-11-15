@@ -6,7 +6,7 @@ describe('npm run flags (CIV-1402)', () => {
   it('computes FEATURES with shared/config.ts for a given env', async () => {
     const pub = await featuresForEnv({ VITE_ATLAS_MODE: 'public', PROD: true, DEV: false });
     expect(pub.mode).toBe('public');
-    expect(pub.features).toMatchObject({ beta: false, history: false, liveReports: false, mapExport: true });
+    expect(pub.features).toMatchObject({ beta: false, history: false, liveReports: false });
     const beta = await featuresForEnv({ VITE_ATLAS_MODE: 'beta', VITE_HISTORY_ENABLED: 'true', VITE_LIVE_REPORTS_ENABLED: 'true', PROD: true, DEV: false });
     expect(beta.features).toMatchObject({ beta: true, history: true, liveReports: true, live: false });
   });

@@ -107,9 +107,9 @@ export const MAP_URL = {
     parse: raw => raw.split(',').map(s => s.trim()).filter(Boolean),
     serialize: () => null,
   } satisfies UrlParam<string[]>,
-  /** The shared view: all three or none (regionView.parseUrlView). Written as the map moves. */
-  lat: { key: 'lat', presence: 'nonEmpty', parse: raw => (Number.isFinite(parseFloat(raw)) ? parseFloat(raw) : undefined), serialize: value => value.toFixed(5) } satisfies UrlParam<number>,
-  lon: { key: 'lon', presence: 'nonEmpty', parse: raw => (Number.isFinite(parseFloat(raw)) ? parseFloat(raw) : undefined), serialize: value => value.toFixed(5) } satisfies UrlParam<number>,
+  /** The shared view: all three or none (regionView.parseUrlView). Written as the map moves, rounded by regionView.urlView (#1519). */
+  lat: { key: 'lat', presence: 'nonEmpty', parse: raw => (Number.isFinite(parseFloat(raw)) ? parseFloat(raw) : undefined), serialize: value => String(Number(value.toFixed(5))) } satisfies UrlParam<number>,
+  lon: { key: 'lon', presence: 'nonEmpty', parse: raw => (Number.isFinite(parseFloat(raw)) ? parseFloat(raw) : undefined), serialize: value => String(Number(value.toFixed(5))) } satisfies UrlParam<number>,
   zoom: { key: 'z', presence: 'nonEmpty', parse: raw => (Number.isFinite(parseFloat(raw)) ? parseFloat(raw) : undefined), serialize: value => value.toFixed(2) } satisfies UrlParam<number>,
 } as const;
 

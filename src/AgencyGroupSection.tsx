@@ -47,7 +47,7 @@ function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
 export default function AgencyGroupSection({ data, barNote }: { data: AgencyGroupData; barNote: string }) {
   // CIV-1297: the page's one map link is at its top; "See all agencies" follows the table, as on agency pages.
   return (
-    <PageSection id="agencies-heading" title="Agencies and weekday frequency">
+    <PageSection id="agencies-heading" title="Agencies and Weekday Frequency">
       <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
       <FrequencyBar counts={data.bands} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>

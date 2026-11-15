@@ -39,7 +39,8 @@ describe('AgencyPage', () => {
     const alone = agencyPageData(TTC, [TTC, HSR], null, { slug: 'toronto', name: 'Toronto' });
     expect(alone.area).toEqual({ slug: 'toronto', name: 'Toronto', page: false });
     view(<AgencyPage data={alone} />);
-    expect(screen.getByText('Greater Toronto and Hamilton Area').tagName).toBe('P');
+    // CIV-1614: the area, then the province.
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && el.textContent === 'Greater Toronto and Hamilton Area, Ontario')).toBeTruthy();
     expect(screen.queryByRole('link', { name: 'Greater Toronto and Hamilton Area' })).toBeNull();
     expect(screen.queryByRole('heading', { name: /Nearby agencies in/ })).toBeNull();
     const crumbs = agencyBreadcrumbs(TTC, alone.area, '/region/ontario');
@@ -131,7 +132,13 @@ describe('AgencyPage intro', () => {
   it('says after the intro when an agency has no regular midday service (CIV-965)', () => {
     const none = { ...HSR, routes: [r('A', 3, null), r('B', 3, null)] };
     view(<AgencyPage data={agencyPageData(none, [none, TTC], null)} />);
-    expect(screen.getByText(/Its routes have no regular midday service\./)).toBeTruthy();
+    expect(screen.getByText(/Its routes run irregularly at midday\./)).toBeTruthy();
+  });
+
+  it('says it of one route in the singular (CIV-1613)', () => {
+    const one = { ...HSR, routes: [r('A', 3, null)] };
+    view(<AgencyPage data={agencyPageData(one, [one, TTC], null)} />);
+    expect(screen.getByText(/Its route runs irregularly at midday\./)).toBeTruthy();
   });
 
   it('says "Irregular" where the map list does, and a dash where the route does not run (#1249)', () => {
@@ -179,14 +186,14 @@ describe('AgencyPage other agencies list', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR, GO], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
-    const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
+    const heading = screen.getByRole('heading', { name: 'Nearby Agencies in the Greater Toronto and Hamilton Area' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
 
   it('keeps "Nearby agencies" when there is no area page', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
-    expect(screen.getByRole('heading', { name: 'Nearby agencies' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Nearby Agencies' })).toBeTruthy();
   });
 });
 
@@ -275,19 +282,19 @@ describe('not found is never shown while loading', () => {
 
   it('agency page: blank first, the page once its data resolves, not-found only for a missing slug', async () => {
     const { unmount } = at('/agency/ttc', <AgencyPage />, '/agency/:slug');
-    expect(screen.queryByText('No page for this agency')).toBeNull();
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
     await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toBeTruthy(), { timeout: 25000 });
-    expect(screen.queryByText('No page for this agency')).toBeNull();
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
     unmount();
     at('/agency/no-such-agency', <AgencyPage />, '/agency/:slug');
-    expect(screen.queryByText('No page for this agency')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this agency')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No Page for This Agency')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 
   it('area page: blank first, not-found only for a missing slug', async () => {
     at('/area/no-such-area', <AreaPage />, '/area/:slug');
-    expect(screen.queryByText('No page for this region')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this region')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No Page for This Area')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No Page for This Area')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 });
 
@@ -297,12 +304,12 @@ describe('AgencyPage "See all agencies"', () => {
     view(<AgencyPage data={data} />);
     const links = screen.getAllByRole('link', { name: 'See all agencies' });
     expect(links).toHaveLength(1);
-    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby agencies/ }).parentElement);
+    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby Agencies/ }).parentElement);
   });
 
   it('still has the link when there are no nearby agencies', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
-    expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
+    expect(screen.queryByRole('heading', { name: /Nearby Agencies/ })).toBeNull();
     expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
   });
 });
@@ -333,12 +340,12 @@ describe('RegionPage (CIV-976)', () => {
     // A second agency in Los Angeles and the Inland Empire only, so just those two areas have pages.
     const other = { ...HSR, slug: 'other', routes: [tagged('9', ['los-angeles', 'riverside'])] };
     const d = agencyPageData(wide, [wide, other], null);
-    expect(d.place).toBe('Greater Los Angeles, the Inland Empire, the Bakersfield area and 2 other regions');
+    expect(d.place).toBe('Greater Los Angeles, the Inland Empire, the Bakersfield area and 2 other areas');
     view(<AgencyPage data={d} />);
     expect(screen.getByRole('link', { name: 'Greater Los Angeles' }).getAttribute('href')).toBe('/area/los-angeles');
     expect(screen.getByRole('link', { name: 'the Inland Empire' }).getAttribute('href')).toBe('/area/riverside');
     expect(screen.queryByRole('link', { name: 'the Bakersfield area' })).toBeNull();
-    expect(screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').includes('and 2 other regions')).textContent).toBe(d.intro);
+    expect(screen.getByText((_, el) => el?.tagName === 'P' && (el.textContent ?? '').includes('and 2 other areas')).textContent).toBe(d.intro);
   });
 });
 

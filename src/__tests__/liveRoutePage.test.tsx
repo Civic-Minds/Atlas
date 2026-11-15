@@ -58,7 +58,7 @@ describe('Live route dashboard', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: /max-width: (479|639)px/.test(q), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     renderPage(ready);
     expect(await screen.findByRole('heading', { level: 1, name: 'TTC 505' })).toBeTruthy();
-    for (const name of [/Where delays start/, /Where bunching forms/]) {
+    for (const name of [/Where Delays Start/, /Where Bunching Forms/]) {
       const section = screen.getByRole('region', { name });
       expect(section.querySelectorAll('[aria-roledescription="route strip"]').length).toBe(2);
       expect(within(section).queryByRole('img', { name: /typical delay at each stop|share of gaps that are too close/ })).toBeNull();
@@ -72,7 +72,7 @@ describe('Live route dashboard', () => {
     // U9: a link is shown as a link, never as a verdict.
     expect(document.body.textContent).not.toMatch(/caused by|because of/i);
     // B1: all days, weekdays and weekends side by side, each the share late with its count; no pill swaps a number.
-    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
+    const b1 = screen.getByRole('region', { name: /Late Departures by Hour/ });
     expect(within(b1).getAllByText('All days', { selector: 'div' })[0].nextElementSibling!.textContent).toBe('9%');
     expect(within(b1).getAllByText(/late, of 1,000/).length).toBeGreaterThan(0);
     expect(within(b1).getAllByText('Weekdays', { selector: 'div' }).length).toBeGreaterThan(0);
@@ -83,7 +83,7 @@ describe('Live route dashboard', () => {
     // The stretches that add the most delay: at most three per direction on this page (the rest are in Explore's table).
     for (const t of screen.getAllByRole('table', { name: /the stretches that add the most delay/ })) expect(t.querySelectorAll('tbody tr').length).toBeLessThanOrEqual(3);
     // B2: a map of the stops most often late (CIV-1405), no table.
-    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
+    const b2 = screen.getByRole('region', { name: /Stops Most Often Late/ });
     expect(within(b2).queryByRole('table')).toBeNull();
     expect(within(b2).getByText(/Click or tap a stop for its figures\./)).toBeTruthy();
     // B4: forms sentence, every link with its number, linked wording.
@@ -166,7 +166,7 @@ describe('Live route dashboard', () => {
     expect(screen.queryByRole('button', { name: 'AM peak' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Weekends' })).toBeNull();
     // All days, weekdays and weekends: three hourly charts side by side.
-    const b1 = screen.getByRole('region', { name: /Late departures by hour/ });
+    const b1 = screen.getByRole('region', { name: /Late Departures by Hour/ });
     expect(within(b1).getAllByRole('img').length).toBe(3);
     expect(screen.getAllByText('By time of day').length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Westbound' }));
@@ -217,7 +217,7 @@ describe('Live route dashboard', () => {
     renderPage({ ...ready, v3: rich });
     await screen.findByRole('heading', { level: 1 });
     // This week against last week: the dashboard's own tiles (same labels and change rule as the dashboard view).
-    const weekRegion = screen.getAllByRole('region', { name: /This week compared with last week/ })[0];
+    const weekRegion = screen.getAllByRole('region', { name: /This Week Compared With Last Week/ })[0];
     for (const label of ['Late', 'Trip time', 'Extra wait', 'Bunching', 'Service delivered']) expect(within(weekRegion).getByText(label)).toBeTruthy();
     expect(within(weekRegion).queryByText('Typical trip')).toBeNull();
     // The subtitle names both weeks, and counts this week's trips only (CIV-1445); no separate line under the tiles. The method says it once, in groups.
@@ -264,7 +264,7 @@ describe('Live route dashboard', () => {
     expect(screen.getByText('Delay at the first few stops is less exact.')).toBeTruthy();
     expect(screen.getByText(/Not ranked: the first 4 stops/)).toBeTruthy();
     // Westbound (direction 1) has 3 fixture stops, all within the first 4, so only eastbound rows are ranked.
-    const b2 = screen.getByRole('region', { name: /Stops most often late/ });
+    const b2 = screen.getByRole('region', { name: /Stops Most Often Late/ });
     expect(within(b2).queryAllByText('Westbound').length).toBe(0);
   });
 
@@ -298,7 +298,7 @@ describe('Live route dashboard', () => {
     const broken = { ...ready, v3: { ...v3, bands: { ...v3.bands, all: { ...v3.bands.all, buildup: undefined as unknown as LiveV3['buildup'] } } }, uncertainStart: undefined as unknown as UncertainStart[] };
     renderPage(broken);
     expect(await screen.findByText(/Where delays start could not be drawn/)).toBeTruthy();
-    expect(screen.getByRole('region', { name: /Late departures by hour/ })).toBeTruthy();
+    expect(screen.getByRole('region', { name: /Late Departures by Hour/ })).toBeTruthy();
     expect(screen.getByText('How this is measured')).toBeTruthy();
     vi.restoreAllMocks();
   });
@@ -338,7 +338,7 @@ describe('Live route dashboard', () => {
   it('every route page leads back to the agency page with the Live map’s "← TTC", held and unknown routes too (CIV-1446)', async () => {
     const back = () => screen.getByRole('link', { name: '← Back to TTC' }).getAttribute('href');
     const a = renderPage(ready);
-    await screen.findByRole('region', { name: /Late departures by hour/ });
+    await screen.findByRole('region', { name: /Late Departures by Hour/ });
     expect(back()).toBe('/apps/live/ttc');
     a.unmount();
     const b = renderPage({ status: 'held', reason: "The 512 isn’t included yet." }, '/apps/live/ttc/512');

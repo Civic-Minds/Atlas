@@ -70,18 +70,44 @@ export function serviceAnchor(runDateYmd: string = pipelineRunDateYmd()): string
   return ymdOf(dayNumber(runDateYmd) + 1);
 }
 
+/** A service with fewer than this share of a feed's trips is a token service to firstFullWeekAnchor (CIV-1641). */
+const TOKEN_SERVICE_SHARE = 0.01;
+
 /**
  * CIV-1101 Part B: the anchor for an archived zip (a History backfill), the Monday of its first
  * full Monday-Sunday week in force: the first Monday on or after the first date any service with
  * trips can run. The picker then reads the period in force from there, so a holiday is a day that
  * loses the vote, with no holiday list. null when the calendar holds no service.
+ *
+ * CIV-1641: a token service (under 1% of the feed's trips) doesn't start the period. CTA's 2021-23
+ * zips keep one- and two-trip Blue Line shuttles in force months before the timetable, which put
+ * the anchor on a week where only a shuttle runs. When no service is above the bar, they all count.
  */
 export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips'>): string | null {
-  const { span } = buildServiceDayTable({ ...input, anchor: '20000103', weeksAfter: 1 });
+  const tripsPerService = new Map<string, number>();
+  for (const t of input.trips) tripsPerService.set(t.service_id, (tripsPerService.get(t.service_id) ?? 0) + 1);
+  const trips = input.trips.filter(t => tripsPerService.get(t.service_id)! >= input.trips.length * TOKEN_SERVICE_SHARE);
+  const rows = { ...input, trips: trips.length ? trips : input.trips };
+  const { span } = buildServiceDayTable({ ...rows, anchor: '20000103', weeksAfter: 1 });
   if (!span) return null;
   const start = dayNumber(span.start);
-  return ymdOf(start + ((7 - dayIndex(start)) % 7));
+  const first = start + ((7 - dayIndex(start)) % 7);
+  // CIV-1485: the week must be in force, with service on most of its days. KCM's Oct 2013 zip lists
+  // holiday dates from Jan 1 2013 (Sunday service added on 8 single days), which put the anchor on a
+  // January week where only those holidays run, and the period came out blank. Single added days
+  // never make a week; with no such week the first Monday stands, as before.
+  const end = dayNumber(span.end);
+  for (let monday = first, n = 0; monday <= end && n < MAX_ANCHOR_WEEKS; monday += 7, n++) {
+    const { days } = buildServiceDayTable({ ...rows, anchor: ymdOf(monday), daysBefore: 0, weeksAfter: 1 });
+    const inWeek = days.filter(d => { const x = dayNumber(d.date); return x >= monday && x < monday + 7 && d.signature !== ''; });
+    if (inWeek.length >= MIN_DAYS_IN_FORCE) return ymdOf(monday);
+  }
+  return ymdOf(first);
 }
+/** firstFullWeekAnchor: days of a Monday-Sunday week with service for the week to count as in force (CIV-1485). */
+const MIN_DAYS_IN_FORCE = 4;
+/** firstFullWeekAnchor: weeks searched for one in force before falling back to the first Monday. */
+const MAX_ANCHOR_WEEKS = 60;
 
 export interface ServiceDay {
   date: string;

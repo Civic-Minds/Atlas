@@ -22,6 +22,7 @@ import { countText, percentText } from '../../shared/numberText';
 import Pill from '../components/ui/Pill';
 import { CHART_TEXT, useActivePart } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
+import { FREQUENT_SERVICE_STORY } from '../../shared/researchStories';
 
 /** The story's section headings and body paragraphs, one look each. */
 const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
@@ -76,19 +77,19 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
  * CIV-1603 section 1: the drop from every agency we could check, to those with a named frequent network, to those that give
  * a number, to those the agency chart shows. The same counts as the method box (frequentServiceDefinitionSample,
  * frequentServiceStoryStats.chartedAgencies); nothing is recounted.
- * The bar names are placeholders until Ryan approves wording.
+ * Bar names, heading, intro, note and chart name approved word for word by Ryan (2026-11-15).
  */
 const DEFINITION_FUNNEL = [
-  { key: 'checked', label: '[Label 1]', agencies: frequentServiceDefinitionSample.agencies },
-  { key: 'named', label: '[Label 2]', agencies: frequentServiceDefinitionSample.namedNetwork },
-  { key: 'number', label: '[Label 3]', agencies: frequentServiceDefinitionSample.withWait },
+  { key: 'checked', label: 'Checked', agencies: frequentServiceDefinitionSample.agencies },
+  { key: 'named', label: 'Named frequent network', agencies: frequentServiceDefinitionSample.namedNetwork },
+  { key: 'number', label: 'Say how often', agencies: frequentServiceDefinitionSample.withWait },
   // The agency chart's own count: still confirmed on the October 30 recheck, after the tier rule (CIV-1178).
-  { key: 'charted', label: '[Label 4]', agencies: frequentServiceStoryStats.chartedAgencies },
+  { key: 'charted', label: 'In the chart above', agencies: frequentServiceStoryStats.chartedAgencies },
 ] as const;
 type DefinitionStep = (typeof DEFINITION_FUNNEL)[number];
 const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
-  { key: 'step', header: '[Ryan’s wording: table column]', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
-  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, className: 'tabular-nums', width: 6 },
+  { key: 'step', header: 'Step', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
+  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, width: 6 },
 ];
 
 /** CIV-1603 section 3: weekday and Sunday routes at a threshold (frequent-weekend-counts.json). */
@@ -101,8 +102,8 @@ const weekendCounts = (city: WeekendCity, minutes: WeekendThreshold) => (minutes
 const WEEKEND_COLUMNS: DataTableColumn<WeekendCity>[] = [
   { key: 'city', header: 'City', cell: city => city.city, rowHeader: true, className: 'font-normal', width: 8 },
   ...WEEKEND_THRESHOLDS.flatMap(minutes => [
-    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, className: 'tabular-nums', width: 6 },
-    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, className: 'tabular-nums', width: 6 },
+    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, width: 6 },
+    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, width: 6 },
   ]),
 ];
 
@@ -152,7 +153,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
-      rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage’s and VIA’s maps are gone, DART’s site returned an error, Foothill’s and Sun Tran’s sites block automated visits, and STM’s page doesn’t show the times to one.</>,
+      rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and {frequentServiceStoryStats.chartedAgencies} stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage’s and VIA’s maps are gone, DART’s site returned an error, Foothill’s and Sun Tran’s sites block automated visits, and STM’s page doesn’t show the times to one.</>,
       limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
     }} />
   );
@@ -162,12 +163,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"
-          title="What happens when you miss the bus?"
-          intro={<>
-            <p>Miss one when the next vehicle comes in 10 minutes? Annoying, but manageable. Miss one when the next one takes 30? That can change your whole trip.</p>
-            <p>Transit maps show where routes go. Transit planning asks the harder questions: how often does service come, how long does it run, and who is it designed to reach?</p>
-            <p>We checked how {frequentServiceDefinitionSample.agencies} agencies define frequent service on their own websites, to show how those decisions turn a network of lines into service people can actually rely on.</p>
-          </>}
+          title={FREQUENT_SERVICE_STORY.heading}
+          intro={<>{FREQUENT_SERVICE_STORY.intro!({ agencies: frequentServiceDefinitionSample.agencies }).map(text => <p key={text}>{text}</p>)}</>}
         >
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
@@ -186,11 +183,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
         <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
           <h2 id="story-break-heading" className={STORY_HEADING}>Every map tells it differently.</h2>
-          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge),
+          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge); its Toronto
+              sentences are Ryan's CIV-1495 #6 wording (2026-11-15), with the TTC's Sunday start and the map's own test.
               with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
               maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className={STORY_PARAGRAPH}>
-            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto’s Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+            Each agency decides what its map shows, so one map is hard to compare with the next. The TTC’s own 10-minute network runs {headwayOrBetter(10)} from {hourTime(6)} to {hourTime(25)} (from {hourTime(8)} on Sundays). The map below uses a broader test: {headwayOrBetter(15)} on weekday daytimes. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
           </p>
           <p className={STORY_PARAGRAPH}>
             The maps also differ in what they draw. Vancouver’s and Portland’s show only the frequent network, so a slower route isn’t on the map. Toronto’s, Ottawa’s and Seattle’s draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
@@ -221,50 +219,50 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Coverage asks: can transit reach my neighbourhood? Frequency asks: how long will I wait once it does? A route can be useful for coverage without coming often enough to be useful for a spontaneous trip.
               </p>
               <p className={STORY_PARAGRAPH}>
-                Planners often run more service where many people travel, while keeping less-frequent routes so more places stay connected. Good networks need both—but they serve different purposes.
+                Planners often run more service where many people travel, while keeping less-frequent routes so more places stay connected. Good networks need both, but they serve different purposes.
               </p>
               <p className={STORY_PARAGRAPH}>
-                We reviewed current official system maps and approved rider guides. If the source was unavailable, we recorded that result rather than substituting a schedule, planning document or service-definition page.
+                We reviewed each agency’s official sources: system maps, rider guides, frequent network pages, service guidelines and planning documents. If we found none, we recorded that.
               </p>
             </div>
           </section>
 
           <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="chart-heading" className={STORY_HEADING}>There is no single “frequent.”</h2>
+              {/* CIV-1495 #4 (Ryan, 2026-11-15): the heading names the most common choice, read from the bars. */}
+              <h2 id="chart-heading" className={STORY_HEADING}>Most agencies pick {commonBar.minutes} minutes.</h2>
               <p className={STORY_PARAGRAPH}>
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.
+                Each bar counts the agencies that use that number of minutes. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes. Transit planner <a className={UNDERLINED_LINK} href="https://humantransit.org/2011/12/how-frequent-is-freedom.html" rel="noopener noreferrer">Jarrett Walker</a> puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.” The industry’s <a className={UNDERLINED_LINK} href="https://onlinepubs.trb.org/onlinepubs/tcrp/tcrp_rpt_165ch-05.pdf" rel="noopener noreferrer">planning manual</a> says that at 10 minutes or better there is “no need for passengers to consult schedules.”
               </p>
             </div>
             <div className="mt-10">
               <RankedBars
                 label="Interactive chart showing the number of agencies by the selected published frequent-service threshold"
-                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `Show examples for ${bar.minutes}-minute service (${bar.agencies} agencies)` }))}
+                bars={frequentServiceStoryStats.headwayBars.map(bar => ({ key: bar.minutes, label: headwayAmount(bar.minutes), value: bar.agencies, fill: 'var(--text-muted)', sentence: `${headwayAmount(bar.minutes)}: ${countOf(bar.agencies, 'agency', 'agencies')}` }))}
                 max={maxBar}
                 defaultKey={commonBar.minutes}
                 details={tableId}
               />
               <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again between October 30 and November 3. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn’t be checked again.</p>
-              <ChartTableDetails id={tableId} caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
+              <ChartTableDetails id={tableId} caption={`Most agencies pick ${commonBar.minutes} minutes.`} columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
 
-          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption
-              are placeholders until Ryan approves wording. */}
+          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15). */}
           <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="definitions-heading" className={STORY_HEADING}>[Ryan’s wording: section 1 heading]</h2>
-              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 1 intro]</p>
+              <h2 id="definitions-heading" className={STORY_HEADING}>Most agencies don’t publish a number.</h2>
+              <p className={STORY_PARAGRAPH}>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. Not finding a definition does not mean an agency has no frequent service.</p>
             </div>
             <div className="mt-10">
               <RankedBars
-                label="[Ryan’s wording: section 1 chart name for screen readers]"
+                label="Chart showing how many agencies define frequent service, from every agency checked to the ones in the chart above"
                 bars={DEFINITION_FUNNEL.map(step => ({ key: step.key, label: step.label, value: step.agencies, fill: 'var(--text-muted)', sentence: `${step.label}: ${countOf(step.agencies, 'agency', 'agencies')}` }))}
                 max={frequentServiceDefinitionSample.agencies}
                 details={definitionTableId}
               />
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 1 caption]</p>
-              <ChartTableDetails id={definitionTableId} caption="[Ryan’s wording: section 1 heading]" columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. The last bar counts the agencies still confirmed when we checked again between October 30 and November 3.</p>
+              <ChartTableDetails id={definitionTableId} caption="Most agencies don’t publish a number." columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
             </div>
           </section>
 
@@ -367,13 +365,13 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="more-heading" className={STORY_HEADING}>The number is only the beginning.</h2>
-              <p className={STORY_PARAGRAPH}>A frequency threshold is attached to a span, a set of days and a geography. It may describe a route, a corridor, a network or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span and geography.</p>
+              <p className={STORY_PARAGRAPH}>A frequency threshold is attached to a span, a set of days and a geography. It may describe a route, a corridor, a network or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening.</p>
             </div>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
                 <h2 id="atlas-heading" className={STORY_HEADING}>Now find your own network.</h2>
-                <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">The research explains the categories. Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
+                <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
             {/* Ryan, 2026-11-14: no dark buttons. The About page's pattern: the main action as ArrowLink, then an outline pill. */}
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <ArrowLink as="button" type="button" onClick={exploreMap}>Find your city</ArrowLink>

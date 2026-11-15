@@ -25,15 +25,15 @@ describe('Live agency page', () => {
   });
   it('shows the rise in bunching for each stretch, like the delays table shows the minutes added', async () => {
     render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
-    const bunching = within(await screen.findByRole('region', { name: 'Where bunching forms' }));
+    const bunching = within(await screen.findByRole('region', { name: 'Where Bunching Forms' }));
     expect(bunching.getByRole('columnheader', { name: /Increase/ })).toBeTruthy();
     expect(bunching.getByText('+33 pt')).toBeTruthy();
-    const delays = within(screen.getByRole('region', { name: 'Where delays start' }));
+    const delays = within(screen.getByRole('region', { name: 'Where Delays Start' }));
     expect(delays.getByText('2.4 min')).toBeTruthy();
   });
   it('keeps how this is measured open, with no disclosure to click', async () => {
     const { container } = render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
-    await screen.findByRole('region', { name: 'Where bunching forms' });
+    await screen.findByRole('region', { name: 'Where Bunching Forms' });
     expect(container.querySelector('details')).toBeNull();
     expect(container.querySelector('#agency-method')).toBeTruthy();
   });
@@ -41,6 +41,6 @@ describe('Live agency page', () => {
     // The answer is TTC's file, asked for MiWay (a local stub serving one file for every agency).
     render(<MemoryRouter initialEntries={['/apps/live/miway']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     expect(await screen.findByText(/no route analysis for/i)).toBeTruthy();
-    expect(screen.queryByRole('region', { name: 'Where bunching forms' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Where Bunching Forms' })).toBeNull();
   });
 });

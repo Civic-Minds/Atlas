@@ -19,7 +19,7 @@ const TTC: AgencyPageSummary = {
 
 describe('agency page text', () => {
   it('uses the agreed title and H1', () => {
-    expect(agencyPageTitle(TTC)).toBe('TTC frequency: how often routes run | Transit Atlas');
+    expect(agencyPageTitle(TTC)).toBe('TTC Frequency: How Often Routes Run | Transit Atlas');
     expect(agencyPageH1(TTC)).toBe('Toronto Transit Commission');
     expect(agencyPageH1({ name: 'Hamilton Street Railway' })).toBe('Hamilton Street Railway');
     expect(agencyPageH1({ name: 'University of Michigan Transit Services (Ann Arbor)' })).toBe('University of Michigan Transit Services');
@@ -276,16 +276,27 @@ describe('agency page search titles (#1291)', () => {
   });
 
   it('adds what tells same-named agencies apart, and leaves a one-of-a-kind name alone', () => {
-    expect(titleOf('/agency/nyct-bus-bronx')).toBe('MTA NYCT Bus (Bronx) frequency: how often routes run');
+    expect(titleOf('/agency/nyct-bus-bronx')).toBe('MTA NYCT Bus (Bronx) Frequency | Transit Atlas');
     // The registry bracket is only the short name again, so the place tells them apart.
-    expect(titleOf('/agency/dart')).toBe('DART (Dallas) frequency: how often routes run');
-    expect(titleOf('/agency/des-moines')).toBe('DART (Des Moines) frequency: how often routes run');
-    expect(titleOf('/agency/exo-trains')).toBe('exo (Trains) frequency: how often routes run | Transit Atlas');
-    expect(titleOf('/agency/ttc')).toBe('TTC frequency: how often routes run | Transit Atlas');
+    expect(titleOf('/agency/dart')).toBe('DART (Dallas) Frequency | Transit Atlas');
+    expect(titleOf('/agency/des-moines')).toBe('DART (Des Moines) Frequency | Transit Atlas');
+    expect(titleOf('/agency/exo-trains')).toBe('exo (Trains) Frequency: How Often Routes Run | Transit Atlas');
+    expect(titleOf('/agency/ttc')).toBe('TTC Frequency: How Often Routes Run | Transit Atlas');
   });
 
   it('a parent keeps its own name; a member named like it says what it runs', () => {
-    expect(titleOf('/agency/exo')).toBe('exo frequency: how often routes run | Transit Atlas');
-    expect(titleOf('/agency/bustang-interregional')).toBe('Bustang · Interregional frequency: how often routes run');
+    expect(titleOf('/agency/exo')).toBe('exo Frequency: How Often Routes Run | Transit Atlas');
+    expect(titleOf('/agency/bustang-interregional')).toBe('Bustang · Interregional Frequency | Transit Atlas');
+  });
+});
+
+describe('#1521: breadcrumb markup passes Google\'s check', () => {
+  it('links every step but the last: the country to its heading in the /agencies list, a city with no page left out', () => {
+    const ld = agencyPageJsonLd(TTC, 'https://x/agency/ttc', 'https://x') as { '@graph': Array<{ '@type': string; itemListElement?: Array<{ name: string; item?: string; position: number }> }> };
+    const items = ld['@graph'].find(n => n['@type'] === 'BreadcrumbList')!.itemListElement!;
+    expect(items.every(i => i.item)).toBe(true);
+    expect(items.find(i => i.name === 'Canada')?.item).toBe('https://x/agencies#index-Canada');
+    expect(items.find(i => i.name === 'Ontario')?.item).toBe('https://x/agencies#index-canada-ontario');
+    expect(items.map(i => i.position)).toEqual(items.map((_, i) => i + 1));
   });
 });

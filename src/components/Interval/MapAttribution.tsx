@@ -4,7 +4,7 @@ import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
-import { trackEvent } from '../../lib/analytics';
+import { trackEvent, withoutMapPosition } from '../../lib/analytics';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
@@ -13,11 +13,24 @@ import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
+import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
+
+/** A small dot on What's New while this release hasn't been opened here (light, no fill around it; VISUAL.md). */
+function UnseenDot() {
+  return <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-brand)]" aria-hidden="true" />;
+}
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLayerOn = false, contextYear = null }: { whatsNewEnabled?: boolean; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  // The dot shows until What's New is opened, and returns with the next release.
+  const [unseen, setUnseen] = useState(() => whatsNewUnseen(appVersion));
+  useEffect(() => {
+    if (!whatsNewOpen) return;
+    markWhatsNewSeen(appVersion);
+    setUnseen(false);
+  }, [whatsNewOpen]);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
   // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
   const consent = useConsentPrompt();
@@ -39,7 +52,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       document.removeEventListener('keydown', onKey);
     };
   }, [aboutOpen]);
-  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${window.location.href}\n`)}`;
+  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${withoutMapPosition(window.location.href)}\n`)}`;
 
   return (
     <>
@@ -55,24 +68,23 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
           onClick={() => setAboutOpen(open => !open)}
           aria-expanded={aboutOpen}
           aria-haspopup="true"
-          className={`${MAP_BADGE} h-[32px] ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
+          className={`${MAP_BADGE} h-[32px] ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)] inline-flex items-center gap-1.5`}
         >
           About
+          {unseen && <UnseenDot />}
         </button>
         {aboutOpen && (
           <div className={`absolute bottom-full left-0 mb-2 ${FLOATING_CARD} min-w-44 p-1.5 flex flex-col gap-0.5`}>
             <a href={ABOUT_PATH} className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</a>
-            {whatsNewEnabled && (
-              <button
-                type="button"
-                onClick={() => { setAboutOpen(false); setWhatsNewOpen(true); }}
-                aria-haspopup="dialog"
-                className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl text-left flex items-center justify-between gap-4 hover:text-[var(--text-primary)]`}
-              >
-                <span>{WHATS_NEW_TITLE}</span>
-                <span className="text-[var(--text-muted)]">v{shortVersion(appVersion)}</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => { setAboutOpen(false); setWhatsNewOpen(true); }}
+              aria-haspopup="dialog"
+              className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl text-left flex items-center justify-between gap-4 hover:text-[var(--text-primary)]`}
+            >
+              <span className="flex items-center gap-1.5">{WHATS_NEW_TITLE}{unseen && <UnseenDot />}</span>
+              <span className="text-[var(--text-muted)]">v{shortVersion(appVersion)}</span>
+            </button>
             <a
               href={feedbackHref}
               onClick={() => { trackEvent('feedback_opened', { source: 'map_attribution' }); setAboutOpen(false); }}
@@ -89,17 +101,15 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       >
         {ABOUT_ATLAS}
       </a>
-      {whatsNewEnabled && (
-        <button
-          type="button"
-          onClick={() => setWhatsNewOpen(open => !open)}
-          aria-expanded={whatsNewOpen}
-          aria-haspopup="dialog"
-          className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
-        >
-          v{shortVersion(appVersion)} · {WHATS_NEW_TITLE}
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setWhatsNewOpen(open => !open)}
+        aria-expanded={whatsNewOpen}
+        aria-haspopup="dialog"
+        className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
+      >
+        v{shortVersion(appVersion)} · {WHATS_NEW_TITLE}{unseen && <span className="ml-1.5 inline-flex align-middle"><UnseenDot /></span>}
+      </button>
       <a
         href={feedbackHref}
         onClick={() => trackEvent('feedback_opened', { source: 'map_attribution' })}
@@ -125,7 +135,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       </div>
       {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>
-    {whatsNewEnabled && whatsNewOpen && (
+    {whatsNewOpen && (
       // The map's bottom row turns pointer events off; the panel's backdrop needs them back.
       <div className="contents pointer-events-auto">
         <WhatsNewPanel onClose={closeWhatsNew} includeBeta={FEATURES.whatsNewBetaItems} />

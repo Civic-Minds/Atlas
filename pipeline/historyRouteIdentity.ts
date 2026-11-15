@@ -10,6 +10,15 @@ import { haversineDistance } from './utils.js';
 export const SAME_TERMINUS_M = 1500;
 
 const FILLER = /\b(line|route|brt|rapid|express|bus|the|via|to|and|limited|ltd|local|crosstown|connector|shuttle)\b/g;
+/** Street-type words (#1527): "King Rd" and "Webster Rd" share only "Rd", which says nothing about the route, so a
+ *  shared street type never counts as a shared word. They stay in the name, so a name made of them ("Avenue Road")
+ *  still counts as a name and still sizes the comparison ("Jamaica Avenue East"). */
+const STREET_WORD = /^(rd|road|st|street|ave|avenue|av|blvd|boulevard|dr|drive|hwy|highway|pkwy|parkway)$/;
+/** Hub words (CIV-1485): "Downtown" names the hub many routes run to, not the route, so, like a street type, a shared
+ *  "downtown" never counts as a shared word but still sizes the comparison (KCM 16: "Northgate TC to Downtown Seattle"
+ *  and "Broadview/Carkeek Park - Downtown Seattle" share 1 word of 4, "seattle"). Only "downtown": no other hub word
+ *  (center, station, TC, ...) or city name was needed, and the wider list read more unlisted keys as renamed. */
+const HUB_WORD = /^downtown$/;
 
 /** Lower case, no punctuation or filler words, so "Red Line BRT" and "Red Line" compare equal. */
 export function normalizeRouteName(name: string | undefined | null): string {
@@ -28,7 +37,7 @@ function nameOverlap(a: string, b: string): number {
   const wb = new Set(b.split(' ').filter(Boolean));
   if (wa.size === 0 || wb.size === 0) return 0;
   let shared = 0;
-  for (const w of wa) if (wb.has(w)) shared++;
+  for (const w of wa) if (wb.has(w) && !STREET_WORD.test(w) && !HUB_WORD.test(w)) shared++;
   return shared / Math.min(wa.size, wb.size);
 }
 

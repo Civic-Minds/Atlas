@@ -6,7 +6,7 @@ import { clockTime } from '../../../shared/timeText';
 import { shortDate } from '../../../shared/dateText';
 import { bestWindow, CONNECTION_WINDOWS, windowOf, type NearbyChoice, type RouteConnection } from '../../../shared/connections';
 import type { DayType } from '../../../shared/dayTypes';
-import { EXPLAINERS } from '../../content/noticeCopy';
+import { EXPLAINERS, NO_BUSTANG_TRIPS } from '../../content/noticeCopy';
 import { compareRouteNumber } from '../../utils/sortCompare';
 import { metresText } from '../../../shared/unitText';
 import {
@@ -94,13 +94,13 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
 
   return (
     <SidebarCardSection label={`Departures (${day})`}>
-      {trips.length === 0 && <p className={CARD_SUMMARY}>No Bustang trips this day.</p>}
+      {trips.length === 0 && <p className={CARD_SUMMARY}>{NO_BUSTANG_TRIPS}</p>}
       {directions.map(([title, list]) => (
         <div key={title} className="mb-2">
           <p className="text-xs font-bold text-[var(--text-muted)] mb-1">{title}</p>
           <div className="flex flex-wrap gap-1">
             {list.map(t => (
-              <Pill key={t.id} selected={t.id === picked} onClick={() => setPicked(p => (p === t.id ? null : t.id))} className="tabular-nums">
+              <Pill key={t.id} selected={t.id === picked} onClick={() => setPicked(p => (p === t.id ? null : t.id))}>
                 {clockTime(t.stops[0].departure)}
               </Pill>
             ))}
@@ -117,7 +117,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
                   return (
                     <li key={`${ts.stop}-${i}`} className="py-2">
                       <p className="text-xs font-bold text-[var(--text-primary)]">{stop.name}</p>
-                      <p className={`${CARD_SUMMARY} mt-0 tabular-nums`}>
+                      <p className={`${CARD_SUMMARY} mt-0`}>
                         {ts.after ? `Arrives ${clockTime(ts.arrival)}` : `Leaves ${clockTime(ts.departure)}`}
                         {ts.after && ts.before && ts.departure !== ts.arrival ? `, leaves ${clockTime(ts.departure)}` : ''}
                       </p>
@@ -166,7 +166,7 @@ function StopSide({ data, routes, trips, side, nameAgency }: { data: BustangData
                         <span className="ml-1.5 min-w-0 truncate text-[var(--text-muted)]">{route.stopName}</span>
                         <span className="shrink-0 whitespace-nowrap text-[var(--text-muted)]">, {route.distanceM}&nbsp;m</span>
                       </span>
-                      <span className="shrink-0 whitespace-nowrap tabular-nums">{best!.count} of {best!.of}</span>
+                      <span className="shrink-0 whitespace-nowrap">{best!.count} of {best!.of}</span>
                     </li>
                   ))}
                 </ul>

@@ -78,7 +78,7 @@
       "mismatchRoutes": 6,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -122,5 +122,15 @@
   "lastPeekedExpiry": "20261212",
   "lastServiceWeek": "38ea6ab81b5a20f2",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261027"
+  "lastFeedStart": "20261027",
+  "branchReadCorrections": [
+    {
+      "routeShortName": "id:CR-Providence",
+      "directionId": 1,
+      "day": "Weekday",
+      "period": "pmPeak",
+      "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+      "reason": "Inbound, the Providence branch beyond Canton Junction runs hourly in the PM peak (Mansfield 15:25, 16:28, 17:34, 18:37) while the trunk it shares with Stoughton runs every 25; its trains each skip a different stop, so the branch was never read."
+    }
+  ]
 }

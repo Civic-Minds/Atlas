@@ -58,6 +58,10 @@ on:
         description: 'Dry run only. Space-separated agency slugs (e.g. "ttc translink") whose regenerated JSON (routes, stops, corridors, trips, stops-meta) is uploaded as an artifact.'
         required: false
         type: string
+      run_at:
+        description: 'Dry run only (#1523). Pin the run date every date read uses, as an ISO UTC time (e.g. 2026-11-15T04:00:00Z), so a base and fix pair read the same service day. Give both runs of a pair the same value (or the base run''s runAt from its build-settings.json). Empty: now, recorded in build-settings.json.'
+        required: false
+        type: string
       resume_run_id:
         description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded, and its staged agency files under atlas/runs/<id>/ are used). Required for every start_at after reprocess.'
         required: false
@@ -96,6 +100,7 @@ jobs:
       CONCURRENCY_INPUT: ${{ inputs.concurrency }}
       SHARDS_INPUT: ${{ inputs.shards }}
       AGENCIES_INPUT: ${{ inputs.agencies }}
+      RUN_AT_INPUT: ${{ inputs.run_at }}
       NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - name: Check the inputs and the read-only keys
@@ -111,6 +116,15 @@ jobs:
           for slug in $AGENCIES_INPUT; do
             [[ "$slug" =~ ^[a-z0-9-]+$ ]] || { echo "Bad agencies value: $slug (expected an agency slug)"; exit 1; }
           done
+          # #1523: every step reads the same pinned clock (shared/runClock.ts), given or now.
+          if [ -n "$RUN_AT_INPUT" ]; then
+            [[ "$RUN_AT_INPUT" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2})?Z$ ]] || { echo "run_at must be an ISO UTC time like 2026-11-15T04:00:00Z, got: $RUN_AT_INPUT"; exit 1; }
+            run_at="$RUN_AT_INPUT"
+          else
+            run_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          fi
+          echo "ATLAS_RUN_AT=$run_at" >> "$GITHUB_ENV"
+          echo "Run date pinned to $run_at"
           if [ -z "$RO_KEY" ] || [ -z "$RO_SECRET" ]; then
             echo "Missing the read-only R2 keys. Add repository secrets R2_RO_ACCESS_KEY_ID and R2_RO_SECRET_ACCESS_KEY:"
             echo "an R2 API token with Object Read only, scoped to the data and archive buckets."
@@ -181,7 +195,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p tmp/derived-reprocess
-          printf '{"commit":"%s"}\n' "$(git rev-parse HEAD)" > tmp/derived-reprocess/build-settings.json
+          printf '{"commit":"%s","runAt":"%s"}\n' "$(git rev-parse HEAD)" "$ATLAS_RUN_AT" > tmp/derived-reprocess/build-settings.json
 
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
@@ -337,7 +351,17 @@ jobs:
       RUN_PREFIX: atlas/runs/${{ inputs.resume_run_id || github.run_id }}
     steps:
       - name: Check the inputs
+        env:
+          RUN_AT_INPUT: ${{ inputs.run_at }}
         run: |
+          # #1523: a live release always reads the real date.
+          [ -z "$RUN_AT_INPUT" ] || { echo "run_at is for dry runs only; publish reads the real date."; exit 1; }
+          # #1380: read it once, at the start. A run that crosses midnight Toronto otherwise picks a feed as of one
+          # day and gates it as of the next (tank's feed ending 20261106 was picked on Nov 6 and refused as expired
+          # on Nov 7, which blocked the whole release). Every step reads this one date (shared/runClock.ts).
+          run_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "ATLAS_RUN_AT=$run_at" >> "$GITHUB_ENV"
+          echo "Run date pinned to the start of the run: $run_at"
           [[ "$CONCURRENCY_INPUT" =~ ^[1-4]$ ]] || { echo "concurrency must be 1-4, got: $CONCURRENCY_INPUT"; exit 1; }
           [[ "$SHARDS_INPUT" =~ ^[1-4]$ ]] || { echo "shards must be 1-4, got: $SHARDS_INPUT"; exit 1; }
           for pair in $ALLOW_INPUT; do
@@ -386,6 +410,9 @@ jobs:
 
       - name: Test
         if: inputs.start_at == 'reprocess'
+        # Tests fake their own dates; the job's pinned ATLAS_RUN_AT must not reach them (#1523).
+        env:
+          ATLAS_RUN_AT: ''
         run: npm run test
 
       - name: Install tippecanoe

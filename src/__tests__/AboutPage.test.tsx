@@ -26,7 +26,7 @@ describe('About page (CIV-1206 D)', () => {
 
   it.runIf(FEATURES.researchApps)('lists the newest research as story tiles in a region named by its heading', () => {
     render(<AboutPage />);
-    const row = screen.getByRole('region', { name: 'Explore our research' });
+    const row = screen.getByRole('region', { name: 'Explore Our Research' });
     const links = within(row).getAllByRole('link');
     expect(links.map(a => a.getAttribute('href'))).toEqual(newestResearch(3).map(e => e.href));
     for (const entry of newestResearch(3)) {

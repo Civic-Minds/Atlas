@@ -36,7 +36,7 @@ describe('buildAgencyIndexData', () => {
   });
 
   it('writes a description and a canonical, noindex outside public', () => {
-    expect(agencyIndexDescription(d)).toBe("5 transit agencies and 1 region. Each agency’s page shows how often every route runs.");
+    expect(agencyIndexDescription(d)).toBe("5 transit agencies and 1 area. Each agency’s page shows how often every route runs.");
     const seo = resolveAgencyIndexSeo(d, { mode: 'beta' });
     expect(seo.canonicalUrl).toBe('https://www.transitatlas.fyi/agencies');
     expect(seo.noindex).toBe(true);

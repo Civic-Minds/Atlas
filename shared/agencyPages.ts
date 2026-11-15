@@ -15,7 +15,7 @@ import { countryForRegion } from './regionCountry';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
+import { AGENCY_PATH_PREFIX, agencyIndexHeadingHref, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
@@ -25,6 +25,7 @@ import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
 import { countText } from './numberText';
 import { metresBetween } from './geoDistance';
+import { SITE_NAME } from './pageNames';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -60,6 +61,13 @@ export interface AgencyPageRoute {
    * "Irregular", as the map's lists show them ("every 15 min, with one 32 min gap"). The number above stays the filter's.
    */
   text?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', string>>;
+  /**
+   * CIV-1605: when the route runs on weekdays. `hours`: each service-day hour (can pass 24) with a departure at any of its
+   * directions' and branches' reference stops (the published departuresByHour). `first`/`last`: the exact first and last
+   * times (minutes after midnight), only where the data has them (a period edge in the first or last hour); else the bar
+   * ends on the hour.
+   */
+  runs?: { hours: number[]; first?: number; last?: number; /** Each break inside the day: [last departure before, first after], exact or widened to the hour, never narrowed. */ gaps?: Array<[number, number]> };
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
   /** #1283: states and provinces (their config region names) where this route stops at two places inside, by the same rule. */
@@ -156,7 +164,7 @@ export interface AgencyPageData {
   description: string;
   /** The place the intro names, and the text before it, so the page can link each area it names to its page (#1283). */
   place: string;
-  /** The places named in `place`, each area with its page; `others` more are counted ("and 2 other regions"). */
+  /** The places named in `place`, each area with its page; `others` more are counted ("and 2 other areas"). */
   places: { named: IntroPlace[]; others: number };
   introLead: string;
   /** Connecting agencies (stops within 150 m), with whether each has a page to link to. */
@@ -182,15 +190,15 @@ export const CONNECTS_WITH = ' and connects with ';
 /** The literal before a member's parent agency in its intro (CIV-1277); the page splits on it to link the parent. */
 export const PART_OF = ', part of ';
 
-/** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted (#1283: places count "other regions"). */
+/** "A", "A and B", "A, B and C", "A, B, C and 4 other agencies": the first three named, the rest counted (#1283: places count "other areas"). */
 export function namesList(names: readonly string[], named = 3, singular = 'agency', pluralForm = 'agencies'): string {
   if (names.length <= named) return joinList(names);
   const rest = names.length - named;
   return `${names.slice(0, named).join(', ')} ${andOthers(rest, singular, pluralForm)}`;
 }
 
-/** The noun the intro's place list counts its overflow in: "and 2 other regions". */
-export const PLACE_OTHERS: readonly [string, string] = ['region', 'regions'];
+/** The noun the intro's place list counts its overflow in: "and 2 other areas". */
+export const PLACE_OTHERS: readonly [string, string] = ['area', 'areas'];
 
 type PlaceRoute = { areas?: string[]; regions?: string[] };
 
@@ -229,7 +237,7 @@ export interface IntroPlace {
 /**
  * What the intro says after "operates N routes in" (#1283, Ryan's narrow rule): the areas its routes stop in when
  * there are two or more, or its one area when it crosses a state or province line or is its own area and it spans most
- * of it; otherwise its city. Up to three are named, then "and N other regions", as "connects with" counts agencies.
+ * of it; otherwise its city. Up to three are named, then "and N other areas", as "connects with" counts agencies.
  */
 export function agencyIntroPlace(
   a: Pick<AgencyPageSummary, 'city' | 'region' | 'routes' | 'bbox'>,
@@ -387,7 +395,10 @@ const MAX_AREA_LIST = 12;
 
 export { AGENCY_PATH_PREFIX, agencyPagePath };
 
-/** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
+/**
+ * "TTC Frequency: How Often Routes Run | Transit Atlas", in the one tab format (shared/pageNames.ts tabTitle): the
+ * phrase goes first, then the brand, for long names (60 characters at most). Title case (VISUAL.md).
+ */
 export function agencyPageTitle(
   a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'city' | 'region' | 'parentAgency' | 'pageTitleQualifier'>>,
   /** sharedShortLabels: the short names more than one agency page would use. */
@@ -401,11 +412,10 @@ export function agencyPageTitle(
     : a.pageTitleQualifier && a.name ? agencyTitle({ name: a.name, pageTitleQualifier: a.pageTitleQualifier })
     : `${short} (${titlePlace(a, short)})`;
   return firstThatFits([
-    `${name} frequency: how often routes run | Transit Atlas`,
-    `${name} frequency: how often routes run`,
-    `${name} frequency | Transit Atlas`,
-    `${name} frequency`,
-    `${truncateAtWord(name, TITLE_MAX - ' frequency'.length)} frequency`,
+    `${name} Frequency: How Often Routes Run | ${SITE_NAME}`,
+    `${name} Frequency | ${SITE_NAME}`,
+    `${name} Frequency`,
+    `${truncateAtWord(name, TITLE_MAX - ' Frequency'.length)} Frequency`,
   ], TITLE_MAX);
 }
 
@@ -450,7 +460,8 @@ export const FREQUENCY_BANDS = [
   { key: 'b60', phrase: headwayEveryRange(31, 60), short: '31–60', test: (m: number) => m <= 60 },
   { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
-export const NO_MIDDAY_PHRASE = 'with no regular midday service';
+/** The agency intro's sentence when no route has a regular midday cadence (CIV-965; Ryan's words, CIV-1613). */
+export const noMiddayIntroSentence = (routes: number) => (routes === 1 ? 'Its route runs irregularly at midday.' : 'Its routes run irregularly at midday.');
 /** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
 export const noMiddayBarSentence = (n: number) => `${countOf(n, 'route runs', 'routes run')} irregularly or not at all at midday`;
 /** Ryan, 2026-11-14 (was "Irregular or none"). */
@@ -617,11 +628,15 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string, size
   // description keeps (#1245): it stays as before apart from the names.
   const sized = sizedBy ? descriptionCuts(sizedBy, place) : shown;
   const at = sized.findIndex(c => c.length <= DESCRIPTION_MAX);
-  const base = at >= 0 ? shown[at] : truncateAtWord(shown[shown.length - 1], DESCRIPTION_MAX);
+  const picked = at >= 0 ? shown[at] : truncateAtWord(shown[shown.length - 1], DESCRIPTION_MAX);
+  // The shown names can be longer than the sizing names ("Maryland Transit Administration · Bus, Metro and Light Rail"):
+  // a cut that then runs past the limit gives way to the next shown cut that fits, so no description is cut off in search.
+  const base = picked.length <= DESCRIPTION_MAX ? picked
+    : shown.slice(Math.max(at, 0)).find(c => c.length <= DESCRIPTION_MAX) ?? truncateAtWord(picked, DESCRIPTION_MAX);
   const sizedBase = at >= 0 ? sized[at] : truncateAtWord(sized[sized.length - 1], DESCRIPTION_MAX);
   if (sizedBase.length >= DESCRIPTION_MIN || !sizedBase.endsWith('.')) return base;
   const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
-    .find(t => sizedBase.length + t.length <= DESCRIPTION_MAX);
+    .find(t => sizedBase.length + t.length <= DESCRIPTION_MAX && base.length + t.length <= DESCRIPTION_MAX);
   return tail ? `${base}${tail}` : base;
 }
 
@@ -636,7 +651,7 @@ function sizingName(name: string, place: string): string {
 
 /**
  * The intro, then without its modes, its stops and its connections, then with its place list cut to the first place
- * ("in Greater Los Angeles and 2 other regions", #1283): the description's cuts, best wording first.
+ * ("in Greater Los Angeles and 2 other areas", #1283): the description's cuts, best wording first.
  */
 function descriptionCuts(full: string, place?: { full: string; short: string }): string[] {
   const noModes = full.replace(/ \([^)]*\)(?= in )/, '');
@@ -718,9 +733,11 @@ export interface Crumb {
 
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
 export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string; page?: boolean }, regionPage?: string): Crumb[] {
-  const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
-  if (a.country) crumbs.push({ name: a.country });
-  if (a.region) crumbs.push({ name: a.region, ...(regionPage ? { href: regionPage } : {}) });
+  const crumbs: Crumb[] = [{ name: SITE_NAME, href: '/' }];
+  // #1521: there are no country pages, so the country (and a state or province with no page) links to its heading in
+  // the /agencies list; every step but the last needs a link for the breadcrumb markup to pass.
+  if (a.country) crumbs.push({ name: a.country, href: agencyIndexHeadingHref(a.country) });
+  if (a.region) crumbs.push({ name: a.region, href: regionPage ?? (a.country ? agencyIndexHeadingHref(a.country, a.region) : undefined) });
   if (area) crumbs.push({ name: areaRegionTitle(area), ...(area.page !== false ? { href: areaPagePath(area.slug) } : {}) });
   else if (a.city && a.city !== a.region && a.city !== a.displayName) crumbs.push({ name: a.city });
   crumbs.push({ name: a.displayName });
@@ -781,11 +798,12 @@ export function agencyPageJsonLd(a: AgencyPageSummary, canonicalUrl: string, ori
       },
       {
         '@type': 'BreadcrumbList',
-        itemListElement: crumbs.map((c, i) => ({
+        // #1521: a middle step with no page of its own (a city) is left out, so every step but the last has a link.
+        itemListElement: crumbs.filter((c, i) => c.href || i === crumbs.length - 1).map((c, i, kept) => ({
           '@type': 'ListItem',
           position: i + 1,
           name: c.name,
-          ...(c.href ? { item: `${origin}${c.href}` } : i === crumbs.length - 1 ? { item: canonicalUrl } : {}),
+          ...(c.href ? { item: `${origin}${c.href}` } : i === kept.length - 1 ? { item: canonicalUrl } : {}),
         })),
       },
       {

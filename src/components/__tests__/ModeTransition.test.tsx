@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
+import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeCrossFadeText, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
 
 /**
  * A stand-in map. `fireIdle` plays MapLibre's idle event (everything loaded and drawn); `fireRender` plays one
@@ -276,5 +276,19 @@ describe('useChangedSince (CIV-1567)', () => {
     expect(result.current).toBe(false);
     rerender({ value: b, since: true });
     expect(result.current).toBe(true);
+  });
+});
+
+describe('ModeCrossFadeText (CIV-1567)', () => {
+  it('keeps the old words while the new ones fade in, then drops them; plain words with the switch off', () => {
+    vi.useFakeTimers();
+    const { container, rerender } = render(<ModeCrossFadeText text="Find routes…" enabled />);
+    rerender(<ModeCrossFadeText text="Find an agency…" enabled />);
+    expect(container.textContent).toBe('Find routes…Find an agency…');
+    act(() => { vi.advanceTimersByTime(400); });
+    expect(container.textContent).toBe('Find an agency…');
+    vi.useRealTimers();
+    const off = render(<ModeCrossFadeText text="Find routes…" enabled={false} />);
+    expect(off.container.innerHTML).toBe('Find routes…');
   });
 });

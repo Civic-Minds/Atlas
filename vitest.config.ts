@@ -21,7 +21,7 @@ export default defineConfig({
                     name: 'dom',
                     environment: 'jsdom',
                     include: ['src/**/*.test.tsx', 'src/**/*.dom.test.ts'],
-                    setupFiles: ['./src/test/setup.ts'],
+                    setupFiles: ['./src/test/clearRunClock.ts', './src/test/setup.ts'],
                 },
             },
             {
@@ -39,6 +39,7 @@ export default defineConfig({
                         'workers/**/*.test.ts',
                     ],
                     exclude: [...configDefaults.exclude, '**/*.dom.test.ts'],
+                    setupFiles: ['./src/test/clearRunClock.ts'],
                 },
             },
         ],

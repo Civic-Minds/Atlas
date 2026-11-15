@@ -1,0 +1,63 @@
+{
+  "slug": "steamboat-springs",
+  "officialName": "Steamboat Springs Transit",
+  "commonName": "SST",
+  "websiteUrl": "https://steamboatsprings.net/166/Transit",
+  "center": [
+    40.4844,
+    -106.8317
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5757/latest.zip",
+  "bbox": [
+    40.4421,
+    -107.596,
+    40.5379,
+    -106.7994
+  ],
+  "cities": [
+    "Hayden, Colorado",
+    "Craig, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "hiddenInProduction": true,
+  "lastFeedSourceKind": "configured",
+  "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
+  "lastFeedCheckAt": "20261115",
+  "expiredFeedCheckCount": 0,
+  "expiredFeedCheckSince": null,
+  "expiredFeedCheckExpiry": "20270412",
+  "feedQuality": {
+    "status": "healthy",
+    "score": 100,
+    "reasons": [],
+    "metrics": {
+      "validationErrors": 0,
+      "validationWarnings": 0,
+      "shapeAnomalies": 0,
+      "routeHeadwayMismatches": 0,
+      "featureCount": 27,
+      "feedExpiry": "20270412",
+      "routeCount": 6,
+      "problemShapes": 0,
+      "problemShapeRoutes": 0,
+      "mismatchRoutes": 0,
+      "resumesOn": null
+    },
+    "checkedAt": "2026-11-15"
+  },
+  "lastRawArchiveKey": "20270412-373868056e31ee96",
+  "lastFeedContentKey": "08784771286ce5b4",
+  "lastFeedExpiry": "20270412",
+  "lastPeekedExpiry": "20270412",
+  "lastFeedStart": "20261111",
+  "lastFeedVersion": "UTC: 11-Nov-2026 22:11",
+  "lastRefreshedAt": "2026-11-15",
+  "feedRefreshStatus": "current",
+  "feedRefreshError": null,
+  "feedRefreshErrorAt": null,
+  "feedRefreshRetryCount": 0,
+  "lastServiceWeek": "e846879f516ce1af",
+  "feedObtainedAt": "20261115"
+}

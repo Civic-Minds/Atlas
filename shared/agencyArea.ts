@@ -17,15 +17,13 @@ export function agencyRegionTitle(agencySlug: string, map: Record<string, [strin
 }
 
 /**
- * The area page an agency's links should point to: only when the area pages are on (beta flag) and
- * the agency belongs to an area that actually has a page. Otherwise null, so no link is drawn.
+ * The area page an agency's links should point to: only when the agency belongs to an area that actually has a
+ * page. Otherwise null, so no link is drawn.
  */
 export function areaLinkFor(
   agencySlug: string,
-  flagOn: boolean,
   map: Record<string, [string, string]> = AGENCY_AREAS,
 ): { href: string; label: string } | null {
-  if (!flagOn) return null;
   const hit = map[agencySlug];
   // Says what the link opens (Ryan, 2026-10-20): "All Metro Atlanta agencies"; the arrow comes from ArrowLink.
   return hit ? { href: areaPagePath(hit[0]), label: `All ${areaRegionTitle({ slug: hit[0], name: hit[1] })} agencies` } : null;

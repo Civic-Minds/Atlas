@@ -30,7 +30,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(d.region.kind).toBe('state');
     expect(d.bbox).toEqual([39, -107.3, 40, -104.5]);
     expect(regionPageH1(d)).toBe('Colorado');
-    expect(regionPageTitle(d)).toBe('Colorado: how often transit runs across 2 agencies');
+    expect(regionPageTitle(d)).toBe('Colorado Transit Frequency | Transit Atlas');
     expect(regionPageDescription(d)).toBe('Compare 2 transit agencies in Colorado side by side: routes and weekday waits by time of day, from published schedules.');
     expect(regionIntroParts(d).lead).toBe('Colorado has 2 transit agencies operating 4 routes (1 commuter rail, 3 bus)');
     expect(regionBarNote(d)).toBe("The bar splits this state’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.");
@@ -80,14 +80,14 @@ describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () =
     const on = regionAreasSentenceParts(page('Ontario'))!;
     expect(on.named.map(a => a.slug)).toEqual(['toronto', 'ottawa', 'kitchener']);
     expect(on.named.map(a => areaPagePath(a.slug))).toEqual(['/area/toronto', '/area/ottawa', '/area/kitchener']);
-    expect(regionAreasSentence(page('Ontario'))).toBe('Regions include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
+    expect(regionAreasSentence(page('Ontario'))).toBe('Areas include the Greater Toronto and Hamilton Area, the Ottawa area and Waterloo Region.');
     expect(page('California').areas.length).toBeGreaterThan(3);
     expect(regionAreasSentenceParts(page('California'))!.named).toHaveLength(3);
   });
 
   it('reads right with one or two areas, and says nothing with none', () => {
-    expect(regionAreasSentence(page('Colorado'))).toBe('Regions include the Denver area.');
-    expect(regionAreasSentence(page('Texas'))).toBe('Regions include the Dallas–Fort Worth area and the Houston area.');
+    expect(regionAreasSentence(page('Colorado'))).toBe('Areas include the Denver area.');
+    expect(regionAreasSentence(page('Texas'))).toBe('Areas include the Dallas–Fort Worth area and the Houston area.');
     expect(regionAreasSentenceParts(page('Nebraska'))).toBeNull();
     expect(regionAreasSentence(page('Nebraska'))).toBe('');
   });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgencyPageRoute, AgencyPageSummary } from './agencyPages';
 import {
   areaAboutParagraph, areaDatesText, areaIntroJoiners, areaIntroParts, areaMapHref, areaPageDescription, areaPageH1, areaPageJsonLd, areaPageTitle,
-  areaSubtitle, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
+  areaSubtitle, areaSubtitleParts, areaTableColumnTitle, buildAreaPageData, resolveAreaSeo, type AreaPageData,
 } from './areaPages';
 import { rankLargeMetros, parseCsv } from './largeMetros';
 import { AREA_LINK_MAX_CHARS, agencyRegionTitle, areaLinkFor, areaLinkName } from './agencyArea';
@@ -54,7 +54,7 @@ describe('buildAreaPageData', () => {
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
-    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
+    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area Transit Frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
     // The cities stay while one adds to the title (Oshawa); this title names both, so the province shows instead.
     expect(areaSubtitle({ ...d, area: { ...d.area, cities: ['Toronto', 'Hamilton', 'Oshawa'] } })).toBe('Toronto, Hamilton, Oshawa');
@@ -63,6 +63,8 @@ describe('buildAreaPageData', () => {
     const pgh = { ...d, area: { ...d.area, slug: 'pittsburgh', name: 'Pittsburgh', type: 'MSA' as const, officialName: 'Pittsburgh, PA', country: 'United States' as const, cities: ['Pittsburgh'] } };
     expect(areaSubtitle({ ...pgh, regions: ['Pennsylvania'] })).toBe('Pennsylvania');
     expect(areaSubtitle({ ...pgh, regions: ['Ohio', 'Kentucky'] })).toBe('Ohio, Kentucky');
+    // CIV-1614: a state with a /region/ page is linked; one without stays plain text.
+    expect(areaSubtitleParts({ ...pgh, regions: ['Ohio', 'Kentucky'], regionPages: { Ohio: '/region/ohio' } })).toEqual([{ text: 'Ohio', href: '/region/ohio' }, { text: 'Kentucky' }]);
     expect(areaSubtitle({ ...pgh, regions: [] })).toBe('');
     const iowa = { ...pgh, area: { ...pgh.area, slug: 'iowa-city', name: 'Iowa City', officialName: 'Iowa City, IA', cities: ['Iowa City'] } };
     expect(areaSubtitle({ ...iowa, regions: ['Iowa'] })).toBe('Iowa');
@@ -214,9 +216,8 @@ describe('agencyRegionTitle', () => {
 describe('areaLinkFor', () => {
   const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
   it('links only agencies in a paged area, and only with the flag on', () => {
-    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'All Greater Toronto and Hamilton Area agencies' });
-    expect(areaLinkFor('ttc', false, map)).toBeNull();
-    expect(areaLinkFor('nowhere', true, map)).toBeNull();
+    expect(areaLinkFor('ttc', map)).toEqual({ href: '/area/toronto', label: 'All Greater Toronto and Hamilton Area agencies' });
+    expect(areaLinkFor('nowhere', map)).toBeNull();
   });
 
   it('is built from paged areas only', () => {

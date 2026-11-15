@@ -10,6 +10,7 @@ import {
   formatIso,
   hasMiddayService,
   agencyTitle,
+  regionPageHref,
   sharedOfficialNames,
   modesText,
   type AgencyPageSummary,
@@ -19,7 +20,7 @@ import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabe
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
-import { agencyPagePath, parentAgencyPagePath } from './pagePaths';
+import { agencyIndexHeadingHref, agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { countOf, plural } from './overflowText';
@@ -27,6 +28,8 @@ import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { agencyInSentence } from './agencyArticle';
+import { titleCase } from './titleCase';
+import { SITE_NAME } from './pageNames';
 
 export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
@@ -71,6 +74,8 @@ export interface AreaPageData extends AgencyGroupData {
   area: Pick<AreaConfig, 'slug' | 'name' | 'type' | 'officialName' | 'country' | 'cities' | 'bbox' | 'center' | 'note'>;
   /** States or provinces of the area's own listed agencies, most routes first (CIV-968: the subtitle when the cities only repeat the title). */
   regions?: string[];
+  /** CIV-1614: the /region/ page of each listed state or province that has one, so the subtitle can link to it. */
+  regionPages?: Record<string, string>;
 }
 
 /**
@@ -172,6 +177,12 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     if (a.region && (a.members ?? [a.slug]).some(s => area.agencies.includes(s))) regionRoutes.set(a.region, (regionRoutes.get(a.region) ?? 0) + a.routes.length);
   }
   const regions = [...regionRoutes.entries()].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).map(([r]) => r);
+  const allList = [...all.values()];
+  const regionPages: Record<string, string> = {};
+  for (const r of regions) {
+    const href = regionPageHref({ country: members.find(a => a.region === r)?.country, region: r }, allList);
+    if (href) regionPages[r] = href;
+  }
   const group = agencyGroupData(members, all, releaseDate);
   const { totalRoutes, bands, best, byMode, agencies, modeColumns, newestRefresh } = group;
   return {
@@ -182,6 +193,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     byMode,
     agencies,
     regions,
+    ...(Object.keys(regionPages).length ? { regionPages } : {}),
     modeColumns,
     newestRefresh,
     releaseDate,
@@ -189,23 +201,26 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
 }
 
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  return groupPageTitle(areaRegionTitle(d.area), d);
+  return groupPageTitle(areaPageH1(d), d);
 }
 
-/** A page title for agencies in one place (an area's title, a state's or province's name). */
+/**
+ * A page title for agencies in one place (an area's title, a state's or province's name), in the one tab format
+ * (shared/pageNames.ts tabTitle): the phrase goes first, then the brand. Title case (VISUAL.md).
+ */
 export function groupPageTitle(region: string, d: Pick<AgencyGroupData, 'agencies'>): string {
-  const across = `how often transit runs across ${countOf(d.agencies.length, 'agency', 'agencies')}`;
+  const across = `How Often Transit Runs Across ${countOf(d.agencies.length, 'Agency', 'Agencies')}`;
   return firstThatFits([
-    `${region}: ${across} | Transit Atlas`,
-    `${region}: ${across}`,
-    `${region} transit frequency | Transit Atlas`,
-    `${region} transit frequency`,
-    `${truncateAtWord(region, TITLE_MAX - ' transit frequency'.length)} transit frequency`,
+    `${region}: ${across} | ${SITE_NAME}`,
+    `${region} Transit Frequency | ${SITE_NAME}`,
+    `${region} Transit Frequency`,
+    `${truncateAtWord(region, TITLE_MAX - ' Transit Frequency'.length)} Transit Frequency`,
   ], TITLE_MAX);
 }
 
+/** The area page's title, in title case (VISUAL.md): "Pittsburgh Area", "Greater Toronto and Hamilton Area". */
 export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
-  return areaRegionTitle(d.area);
+  return titleCase(areaRegionTitle(d.area));
 }
 
 /**
@@ -213,16 +228,16 @@ export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
  * area" over "Pittsburgh"), its states or provinces instead; '' when the title is just the state or province.
  * A state inside a city's name still adds the state ("Iowa City area" over "Iowa").
  */
-export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions'>): string {
-  const title = areaRegionTitle(d.area).toLowerCase();
-  if (d.area.cities.some(c => !title.includes(c.toLowerCase()))) return d.area.cities.join(', ');
-  const titlePlace = title.replace(/\b(greater|metro|metropolitan|area|region)\b/g, '').replace(/\s+/g, ' ').trim();
-  return (d.regions ?? []).filter(r => r.toLowerCase() !== titlePlace).join(', ');
+export function areaSubtitle(d: Pick<AreaPageData, 'area' | 'regions' | 'regionPages'>): string {
+  return areaSubtitleParts(d).map(p => p.text).join(', ');
 }
 
-/** One sentence that stands alone, used as the meta description's opening. */
-export function areaLeadSentence(d: AreaPageData): string {
-  return groupLeadSentence(areaRegionName(d.area), d);
+/** The same line as separate places; a state or province with a /region/ page carries its link (CIV-1614). */
+export function areaSubtitleParts(d: Pick<AreaPageData, 'area' | 'regions' | 'regionPages'>): Array<{ text: string; href?: string }> {
+  const title = areaRegionTitle(d.area).toLowerCase();
+  if (d.area.cities.some(c => !title.includes(c.toLowerCase()))) return d.area.cities.map(text => ({ text }));
+  const titlePlace = title.replace(/\b(greater|metro|metropolitan|area|region)\b/g, '').replace(/\s+/g, ' ').trim();
+  return (d.regions ?? []).filter(r => r.toLowerCase() !== titlePlace).map(text => ({ text, ...(d.regionPages?.[text] ? { href: d.regionPages[text] } : {}) }));
 }
 
 /** The lead sentence for agencies in one place, named as inside a sentence ("the Calgary area", "Colorado"). */
@@ -332,7 +347,7 @@ export function resolveAreaSeo(
 
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
+  const crumbs = [{ name: SITE_NAME, item: `${origin}/` }, { name: d.area.country, item: `${origin}${agencyIndexHeadingHref(d.area.country)}` }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
   const modified = formatIso(d.newestRefresh);
   return {
     '@context': 'https://schema.org',

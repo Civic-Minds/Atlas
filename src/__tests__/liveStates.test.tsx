@@ -32,7 +32,7 @@ describe('Live states have words, not silence', () => {
 
   it('Live switched off in a local copy says so and keeps the address, instead of redirecting', async () => {
     render(<BrowserRouter><App /></BrowserRouter>);
-    expect(await screen.findByRole('heading', { name: /Live is switched off in this copy of Atlas/ })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: /Live Is Switched Off in This Copy of Atlas/ })).toBeTruthy();
     expect(screen.getByText('npm run live')).toBeTruthy();
     expect(window.location.pathname).toBe('/apps/live');
   });

@@ -1,11 +1,12 @@
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { REPORT_DETAIL_LABELS, reportDetails } from '../../utils/reportIssue';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
+import { delayAmount } from '../../../shared/headwayText';
 
 /** A vehicle as a report lists it: id, trip, direction, delay and when its position was sent. */
 function vehicleLine(v: LiveVehicle): string {
   const sent = v.tsEpoch != null ? new Date(v.tsEpoch * 1000).toISOString() : 'unknown';
-  const delay = v.delayMin != null ? `${v.delayMin} min` : 'no delay';
+  const delay = v.delayMin != null ? delayAmount(v.delayMin) : 'no delay';
   return `- ${v.vehicleLabel ?? v.id} (vehicle ${v.id}, trip ${v.tripId}, direction ${v.directionId ?? '?'}, ${v.headsign ?? 'no headsign'}): ${v.status}, ${delay}, position sent ${sent}`;
 }
 

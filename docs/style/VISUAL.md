@@ -9,7 +9,7 @@ The shared components live in `src/components/ui/`.
 
 ## Pages and layout
 
-- Docs-style pages (About, Docs, Terms, Privacy, Changelog, Research) use `DocsPageLayout` (`src/components/ui/DocsPageLayout.tsx`). Commit ce33bc90.
+- Docs-style pages (About, Documentation, Terms, Privacy, What’s New, Research) use `DocsPageLayout` (`src/components/ui/DocsPageLayout.tsx`). Commit ce33bc90.
 - Data pages (agency, area, agencies index) use its data-page form. Commit ce33bc90.
 - The site header stays pinned on every docs-style page. Commit 15e232a9.
 - On every page with the shared header and footer, the Atlas logo opens the About home page and "Go to Atlas" opens the map (#1509).
@@ -24,6 +24,7 @@ The shared components live in `src/components/ui/`.
 
 ## Tables, controls and labels
 
+- Digits are the font's normal (proportional) digits everywhere, charts and tables included. No fixed-width digits (`tabular-nums`, `font-variant-numeric`). Ryan, 2026-11-15: "1". (checked)
 - Tables use `DataTable` (`src/components/ui/DataTable.tsx`) with one of its variants (compact, ruled, card). (checked: no `<table>` outside `DataTable`)
 - Page tables (area and agency pages) keep their columns in place. CIV-958, CIV-973.
   - Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry), with a dash where a mode is missing.
@@ -50,7 +51,12 @@ The shared components live in `src/components/ui/`.
   - Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`).
   - No solid near-black pills with white text.
 - Nothing has a shadow. Keep the flat look. (checked)
-- Sentence case for headings and labels ("Near you"). CIV-1160, CIV-1448.
+- Case (Ryan, 2026-11-15; it replaces CIV-1160's sentence case everywhere):
+  - Titles are title case: page headings, section headings, header nav links, footer column names and links, and browser tab titles ("What’s New", "All Agencies and Areas", "Terms of Service"). Section headings are cased by `SectionTitle` and `SubsectionTitle` themselves; page titles that aren't a proper name use `titleCase` (`shared/titleCase.ts`).
+  - The standard for short words: articles, coordinating conjunctions and short prepositions stay lowercase (a, an, the, and, but, or, nor, for, as, at, by, in, of, on, per, to, via, vs), unless they start or end the title, follow a colon or begin a hyphenated word ("On-Demand"). Every other word is capitalized, including "up", "off" and "so" ("Free Up to a Set Age"). Words that already have a capital keep their spelling (TTC, GTFS-Flex); units after a number stay as written ("15 min").
+  - A heading written as a sentence, ending in a full stop or question mark, stays a sentence ("Built for looking closer."), and so do the research stories' headlines and any "[Ryan’s wording: …]" placeholder.
+  - Everything else is sentence case: sentences, buttons, notices, labels, map panel titles, chart text and map exports ("Near you", "Report a problem").
+  - (checked: `src/content/__tests__/titleCase.test.ts`, both halves)
 - No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. (checked: `uppercase` and `textTransform`)
 - Drop the wide letter spacing that usually comes with it. (checked: `tracking-wide*` and `letterSpacing`)
 - An agency's own route code in capitals ("SSSF", "WCE") is the route's name and stays as written.

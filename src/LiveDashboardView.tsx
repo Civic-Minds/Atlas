@@ -21,7 +21,7 @@ import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
 import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
-import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 
@@ -68,7 +68,7 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 export function KpiTile({ k, className = '', math, bare = false, caption = false }: { k: Kpi; className?: string; /** With `bare`: still show the one caption line under the figure. */ caption?: boolean; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${faded ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}>
       <div className={KPI_TILE.label}>{k.label}</div>
       <div className={KPI_TILE.value}>{k.value}</div>
       {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
@@ -104,16 +104,16 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
         caption={WEEK_COMPARE_TITLE}
         rows={tiles}
         rowKey={k => k.key}
-        rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
+        rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}
         columns={[
           { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
+          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}

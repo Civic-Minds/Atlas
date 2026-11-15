@@ -30,7 +30,7 @@ describe('free child fares chart counts (CIV-1149)', () => {
   it('keeps the heading true: age 5 is the most common cutoff', () => {
     const [topAge] = [...FREE_CHILD_AGE_COUNTS].sort((a, b) => b[1] - a[1])[0];
     expect(topAge).toBe(5);
-    expect(freeChildFareStats).toMatchObject({ agencies: 553, freeUpToAge: 374, notFound: 34 });
+    expect(freeChildFareStats).toMatchObject({ agencies: 565, freeUpToAge: 375, notFound: 42 });
   });
 
   it('counts every state and province from the ledger, each with one tile of its own (CIV-1282)', () => {

@@ -3,12 +3,14 @@ import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentSer
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { joinList } from '../../shared/overflowText';
 import { headwayOrBetter } from '../../shared/headwayText';
+import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
 /** The rule shown in each research view's info panel, always using the numbers currently selected. */
 
-export const NIGHT_INFO_HEADING = 'Which routes run overnight?';
+/** The Overnight view's info panel heading: the story's heading (shared/researchStories.ts, CIV-1629). */
+export const NIGHT_INFO_HEADING = OVERNIGHT_STORY.heading;
 /** The Night Service route list's title, also the back link of a route opened from it (#1326). */
-export const NIGHT_LIST_TITLE = 'Overnight service';
+export const NIGHT_LIST_TITLE = OVERNIGHT_STORY.cardTitle;
 
 export function nightRuleText(frequency: NightServiceFrequency): string {
   return `Routes with a departure ${headwayOrBetter(frequency)} from 2–5 AM.`;

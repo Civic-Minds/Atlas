@@ -26,6 +26,8 @@ describe('route identity by long name and terminus, with no line (CIV-422)', () 
     expect(splitRouteHistory([p(2019, 'Red Line', [DOWNTOWN, CASTLETON]), p(2021, 'Red Line BRT', [DOWNTOWN, CASTLETON])]).splits).toEqual([]);
     expect(splitRouteHistory([p(2019, 'Meridian St', [DOWNTOWN, CASTLETON]), p(2021, 'North Meridian', [CASTLETON, DOWNTOWN])]).splits).toEqual([]);
     expect(splitRouteHistory([p(2019, 'Fort Harrison', [DOWNTOWN, CASTLETON]), p(2021, 'Fort Harrison', [DOWNTOWN, BROAD_RIPPLE])]).splits).toEqual([]);
+    // #1527: a shared street type is not a shared name (TriMet 31 King Rd, then Webster Rd).
+    expect(splitRouteHistory([p(2015, 'King Rd', [DOWNTOWN, CASTLETON]), p(2019, 'Webster Rd', [DOWNTOWN, BROAD_RIPPLE])]).splits).toHaveLength(1);
     // Different words, same two ends (a pure rename): one route.
     expect(splitRouteHistory([p(2019, 'Nora', [DOWNTOWN, CASTLETON]), p(2021, 'Keystone', [CASTLETON, DOWNTOWN])]).splits).toEqual([]);
   });
@@ -60,6 +62,15 @@ describe('route identity by the share of today\'s line that ran before (CIV-422)
     expect(splitRouteHistory([pl(2019, 'Downtown Boston', long), pl(2020, 'Newton Corner', line(DOWNTOWN, MID_NORTH))], '558').splits).toEqual([]);
     // Today's line ran before only where it overlaps the old one: about half, so the renamed, grown route splits.
     expect(splitRouteHistory([pl(2019, 'Newton Corner', line(DOWNTOWN, MID_NORTH)), pl(2020, 'Assembly Row', long)], '85').splits).toHaveLength(1);
+  });
+
+  it('does not count a shared "downtown" as a shared name word (KCM 16, CIV-1485)', () => {
+    // "northgate tc downtown seattle" / "broadview carkeek park downtown seattle": only "seattle" counts, 1 of 4.
+    expect(splitRouteHistory([pl(2015, 'Northgate TC to Downtown Seattle', line(DOWNTOWN, EAST, CASTLETON)), pl(2021, 'Broadview/Carkeek Park - Downtown Seattle', line(DOWNTOWN, MID_NORTH, BROAD_RIPPLE))], '16').splits).toHaveLength(1);
+    // A hub-only overlap is no shared name: "Downtown - Nora" and "Downtown - Keystone" read as renamed.
+    expect(splitRouteHistory([p(2019, 'Downtown - Nora', null), p(2021, 'Downtown - Keystone', null)]).splits).toHaveLength(1);
+    // "downtown" still sizes the comparison, and a real shared word still keeps one route.
+    expect(splitRouteHistory([p(2019, 'Kinnear - Downtown', null), p(2021, 'Kinnear - Downtown Seattle', null)]).splits).toEqual([]);
   });
 
   it('keeps a route whose old name was only its number (MBTA "21" -> "Ashmont - Forest Hills")', () => {

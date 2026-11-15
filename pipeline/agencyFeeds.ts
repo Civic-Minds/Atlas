@@ -1,3 +1,4 @@
+import type { BranchReadCorrection } from './branchReadCorrections.js';
 /**
  * One place to turn an agency's GTFS inputs into published route artifacts.
  *
@@ -40,12 +41,18 @@ export interface AgencyFeedConfig {
   routeSplits?: RouteSplit[];
   /** #1292: the main stretch's reference stop for a route and direction (NYC J, skip-stop). */
   refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
+  /** #1514: route-periods whose slower branch is read by branch pooling (pipeline/branchReadCorrections.ts). */
+  branchReadCorrections?: BranchReadCorrection[];
   /** #1289: names for separate lines that share a short name (preprocess/same-name-routes.ts). */
   sameNameRoutes?: SameNameRoute[];
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   mergeIdenticalShapeIds?: boolean;
+  /** CIV-1551: see GtfsTransformOptions.routeNumberFromLongName. */
+  routeNumberFromLongName?: boolean;
+  /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
+  historyNameFromDesc?: boolean;
   referenceDateFromRunDate?: boolean;
   /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
   skipBlockTripHeadways?: boolean;
@@ -110,6 +117,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
+    routeNumberFromLongName: agency.routeNumberFromLongName,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,
@@ -118,6 +126,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     routeSplits: agency.routeSplits,
     refStopOverrides: agency.refStopOverrides,
+    branchReadCorrections: agency.branchReadCorrections,
     sameNameRoutes: agency.sameNameRoutes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,

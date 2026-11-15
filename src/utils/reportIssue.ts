@@ -1,3 +1,4 @@
+import { withoutMapPosition } from '../lib/analytics';
 const ATLAS_FEEDBACK_EMAIL = 'hey@ryanisnota.pro';
 const ATLAS_ISSUE_URL = 'https://github.com/Civic-Minds/Atlas/issues/new';
 const MAX_MAILTO_LENGTH = 18_000;
@@ -8,8 +9,9 @@ export interface IssueReportContext {
   description: string;
 }
 
+/** The page a report is about, without the map view's lat and lon (#1519: after "locate me" they are the visitor's position). */
 export function currentAtlasUrl(): string {
-  return window.location.href;
+  return withoutMapPosition(window.location.href);
 }
 
 /** One line of a report's details: a labelled field ("**Agency:** TTC") or a line as written (a list item, a blank line). */

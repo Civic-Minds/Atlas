@@ -22,10 +22,10 @@
     "Youngstown, Ohio"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261128",
+  "expiredFeedCheckExpiry": "20270301",
   "feedQuality": {
     "status": "review",
     "score": 92,
@@ -46,7 +46,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
@@ -58,5 +58,6 @@
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "fb14b2e1d4c5e904",
   "feedObtainedAt": "20260908",
-  "lastFeedStart": "20260909"
+  "lastFeedStart": "20260909",
+  "heldFeedStart": "20261123"
 }

@@ -18,9 +18,11 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
+import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
+import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, AGENCY_PATH_PREFIX, AREA_PATH_PREFIX, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, REGION_PATH_PREFIX, TERMS_PATH } from '../shared/pagePaths';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
@@ -52,14 +54,15 @@ function MapOrNotFound() {
 /** /docs is the short address for the Docs page at /about/docs. */
 function DocsRedirect() {
   const { search, hash } = useLocation();
-  return <Navigate to={`/about/docs${search}${hash}`} replace />;
+  return <Navigate to={`${DOCS_PATH}${search}${hash}`} replace />;
 }
 
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
 if (import.meta.env.PROD && !isInternalTestSession()) {
-  inject();
-  injectSpeedInsights();
+  // #1519: Vercel gets the address without the map's lat and lon.
+  inject({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
+  injectSpeedInsights({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
 }
 
 trackKeyboardFocus();
@@ -83,12 +86,14 @@ ReactDOM.createRoot(rootElement).render(
             <>
               <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
+              {/* CIV-1550: research stories still being built, for Ryan's review; the list is empty outside the dev server. */}
+              {RESEARCH_DRAFTS.map(({ href, Component }) => <Route key={href} path={href} element={<Component />} />)}
             </>
           )}
           {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/tool" element={<LiveToolPage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency/:route" element={<LiveRoutePage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path="/apps/live/:agency" element={<LiveAgencyPage />} />}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
+          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
@@ -97,14 +102,14 @@ ReactDOM.createRoot(rootElement).render(
           <Route path={DOCS_PATH} element={<AboutDocsPage />} />
           <Route path={ABOUT_PATH} element={<AboutPage />} />
           {/* On in every build; beta-tagged entries still show only on beta. */}
-          {FEATURES.whatsNew && <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />}
-          {FEATURES.agencyPages && <Route path="/agency/:slug" element={<AgencyPage />} />}
+          <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />
+          <Route path={`${AGENCY_PATH_PREFIX}:slug`} element={<AgencyPage />} />
           {FEATURES.researchApps && <Route path={FEATURE_ROUTES.research} element={<ResearchPage />} />}
-          {FEATURES.researchApps && <Route path="/research/free-child-fares" element={<FreeChildFaresPage />} />}
+          {FEATURES.researchApps && <Route path={FEATURE_ROUTES.freeChildFares} element={<FreeChildFaresPage />} />}
           {FEATURES.frequentService && <Route path={FEATURE_ROUTES.frequentService.story} element={<FrequentServiceStoryPage />} />}
-          {FEATURES.agencyPages && <Route path="/area/:slug" element={<AreaPage />} />}
-          {FEATURES.agencyPages && <Route path="/region/:slug" element={<RegionPage />} />}
-          {FEATURES.agencyPages && <Route path={AGENCY_INDEX_PATH} element={<AgenciesIndexPage />} />}
+          <Route path={`${AREA_PATH_PREFIX}:slug`} element={<AreaPage />} />
+          <Route path={`${REGION_PATH_PREFIX}:slug`} element={<RegionPage />} />
+          <Route path={AGENCY_INDEX_PATH} element={<AgenciesIndexPage />} />
           <Route path="/*" element={<MapOrNotFound />} />
           </Routes>
         </React.Suspense>

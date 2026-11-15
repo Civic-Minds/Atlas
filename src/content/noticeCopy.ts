@@ -7,11 +7,13 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { PAGE_NAMES } from '../../shared/pageNames';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
+import { countText } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
@@ -19,6 +21,7 @@ import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
+import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -289,7 +292,7 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 // K3 frequency-key other
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
-export const MAP_KEY_NIGHT = 'Overnight service';
+export const MAP_KEY_NIGHT = OVERNIGHT_STORY.cardTitle;
 /** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
 export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
 /**
@@ -311,12 +314,15 @@ export const MAP_EXPORT_TITLES = {
 export const ABOUT_ATLAS = BACK_PLACES.aboutAtlas;
 export const VIEW_ON_MAP = 'View on map';
 export const SEE_ALL_AGENCIES = 'See all agencies';
-export const WHATS_NEW_TITLE = 'What’s new';
+/** The link to the Docs page (About page, and the home page's static text, #1522). */
+export const READ_HOW_ATLAS_WORKS = 'Read how Atlas works';
+/** CIV-1605 (Ryan): the agency table's hours-bar column, and the start of each bar's screen-reader name. */
+export const WEEKDAY_HOURS_LABEL = 'Weekday hours';
+export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
-/** The Docs page: "Docs" on every link to it, "Documentation" as its title (Ryan, CIV-1610). */
-export const DOCS_LINK_LABEL = 'Docs';
-export const DOCS_PAGE_TITLE = 'Documentation';
+/** The Docs page's one name, on its links, heading and tab (Ryan, page-names refactor; it replaced CIV-1610's "Docs" link label). */
+export const DOCS_PAGE_TITLE = PAGE_NAMES.docs;
 export const EXPORT_MAP_TITLE = 'Export map image';
 /** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
 export const LOCATE_ME_LABEL = 'Go to my location';
@@ -438,7 +444,7 @@ export const networksFailedText = (count: number) => `${countOf(count, 'agency',
 /** The agencies' names: "TTC and YRT couldn't load." */
 export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn’t load.`;
 // N45 networks-loading
-export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
+export const networksLoadingText = (loaded: number, requested: number) => `Loading ${countText(loaded)} of ${countOf(requested, 'agency', 'agencies')}…`;
 // N34 on-demand-failed
 export const ON_DEMAND_AREAS_FAILED = loadErrorText('on-demand areas');
 // N121 map-errors (phones): one pill in place of the map's error notices; tapping it lists them (CIV-1057, Ryan's pick).
@@ -495,7 +501,9 @@ export const NOT_FOUND_BODY = "We couldn’t find that page.";
 // N72 page-not-found
 export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 // N72 page-not-found
-export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
+export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this area';
+// N72 page-not-found. A region is a state or province (CIV-1614).
+export const REGION_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
 /** The link back to the map on empty and not-found pages (CIV-1594). */

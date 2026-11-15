@@ -59,7 +59,12 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Plain words a non-expert understands at once.
 - Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
 - No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
-- The Docs page is "Docs" on every link to it and "Documentation" as its title (`DOCS_LINK_LABEL`, `DOCS_PAGE_TITLE`). Ryan, CIV-1610. (checked)
+- Every page has one name, in `shared/pageNames.ts` (`PAGE_NAMES`): its heading, the header and footer links to it, back and close links, and the start of its browser tab all read it. Ryan, 2026-11-15. (checked)
+  - "Documentation" on every link to the Docs page and as its title (`DOCS_PAGE_TITLE`); it replaced CIV-1610's "Docs" link label. The URL stays /about/docs.
+  - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.
+  - The footer's Atlas column links "About" (link names are one word); the page is "About Atlas", as are the map's About panel and its buttons. The legal links read "Terms" and "Privacy"; the pages are "Terms of Service" and "Privacy Policy".
+  - A research story's words (card title, text and link, page heading and intro, tab, preview description, share image alt) are one entry in `shared/researchStories.ts`; nothing else types them. Ryan, CIV-1629. (checked: `researchStories.test.ts`)
+  - Browser tabs: "<page name> | Transit Atlas", with an optional detail after the name ("Documentation: Data, Frequency and Methods | Transit Atlas"), at most 60 characters: the detail goes first, then the brand (`tabTitle`). Only the home page leads with the brand ("Transit Atlas: Scheduled Frequency Map"). Link previews name the site "Transit Atlas".
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.
@@ -67,6 +72,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - "Irregular" in table cells and list values.
   - Never "no regular service", which reads as if nothing runs. (checked)
 - "Report a problem" reasons are named once, in `REPORT_REASON` (`src/components/Interval/cardUi.tsx`); cards hide or pre-check them by that name. CIV-1591. (checked)
+- "Area" is a metro area (the Calgary area, the Greater Toronto and Hamilton Area), in text and in /area/ links. "Region" is only a state or province (/region/ pages). An agency page reads "Calgary, Alberta" (the area's name without a trailing lowercase "area"; "Greater Toronto and Hamilton Area, Ontario" keeps its name). Ryan, CIV-1614. (checked)
 - "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238. (checked: "one-off")
 - "Schedule", not "timetable", in all rider-facing text, on the map and in Live, including approved texts (Ryan, CIV-1079, CIV-1160). (checked)
   - Code names (`noTimetableTrip` and the like) stay.
@@ -75,7 +81,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
 - Empty and not-found pages link back with "Open the Atlas map" (`OPEN_MAP_LINK`). CIV-1594. (checked)
-- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s new", "About Atlas", map export titles). CIV-1599. (checked)
+- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s New", "About Atlas", map export titles). CIV-1599. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
@@ -115,6 +121,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 ## Research pages
 
 - Every research page ends with the "Method" section (`ResearchMethod`, `src/components/research/ResearchMethod.tsx`), in its fixed parts and order. CIV-1167.
+- Don't say "in Canada and the US" in titles, cards or subtitles: Atlas only covers those two countries. State the countries only where a method box gives the sample. Ryan, 2026-11-15.
 - New data is an update, not a correction: it only changes the page's "Date updated". CIV-1171.
 - A "Corrections:" part is added to the method section only when we fix a mistake we published, saying what was wrong and when it was fixed (Ryan, 2026-11-13, asked "Is it a correction or just updated data though").
 
@@ -160,6 +167,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - The card has no All day row (CIV-1279: the map has no All day).
   - A route that doesn't run reads "no trips".
   - Part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence.
+    - Several runs join with "and": "This route runs only from 9–10 AM and 2–3 PM." CIV-1251.
 
 ## New wording needs a yes
 

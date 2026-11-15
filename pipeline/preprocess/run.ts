@@ -8,11 +8,13 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
+import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
 import { interpolateUntimedStops } from '../transforms/interpolate-untimed-stops.js';
 import { dropMnrExpressBusPairs } from '../transforms/mnr-bus-pairs.js';
+import { relabelCtaSameWayLoops } from '../transforms/cta-loop-directions.js';
 import { mergeEquivalentShapeVariants } from './merge-equivalent-shapes.js';
 import { mergeIdenticalShapes } from './merge-identical-shapes.js';
 import { splitRoutes, type RouteSplit } from './split-routes.js';
@@ -22,7 +24,7 @@ import { poolSingleTripShapes } from './pool-single-trip-shapes.js';
 
 // WVU PRT publishes route geometry separately from the schedule feed.
 // Keep this agency-specific transform opt-in rather than changing shared shape handling.
-export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs';
+export type GtfsPreprocess = 'nrt-day-night' | 'nrt-cleanup' | 'london-route-names' | 'metrolink-shapes' | 'wvu-prt-shapes' | 'wvu-prt-line' | 'brantford-route-labels' | 'st-george-labels' | 'interpolate-untimed-stops' | 'mountain-line-frequency-fix' | 'santafe-pickup-schedule' | 'mnr-bus-pairs' | 'cta-loop-directions';
 
 export interface GtfsTransformOptions {
   agencyId?: string;
@@ -30,6 +32,8 @@ export interface GtfsTransformOptions {
   agencyName?: string;
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  /** CIV-1551: take a leading route number out of route_long_name when route_short_name is blank (Manchester NH). */
+  routeNumberFromLongName?: boolean;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -81,6 +85,12 @@ export function normalizeGtfs(
   if (options?.agencyId) {
     gtfs = filterGtfsByAgencyId(gtfs, options.agencyId);
     onStatus?.(`Agency filter: kept agency_id=${options.agencyId}`);
+  }
+  if (options?.routeNumberFromLongName) {
+    // Before the short-name exclusions, so a config can exclude a route by the number it now has.
+    const result = splitLeadingRouteNumber(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`Route numbers: ${result.split} taken from the start of the long name (CIV-1551)`);
   }
   if (options?.excludeRouteShortNames?.length) {
     gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);
@@ -179,6 +189,12 @@ export function normalizeGtfs(
     const result = dropMnrExpressBusPairs(gtfs);
     gtfs = result.gtfs;
     onStatus?.(`MNR buses: ${result.dropped} express trips left out beside the local that leaves with them (CIV-1086)`);
+  }
+  if (options?.preprocess === 'cta-loop-directions') {
+    const result = relabelCtaSameWayLoops(gtfs);
+    gtfs = result.gtfs;
+    const moved = Object.entries(result.relabelled);
+    if (moved.length) onStatus?.(`CTA loops: ${moved.map(([r, n]) => `${r} ${n}`).join(', ')} trip(s) marked the other direction run the same way round as that direction's loops (#1525)`);
   }
   if (options?.preprocess === 'interpolate-untimed-stops') {
     const result = interpolateUntimedStops(gtfs);
