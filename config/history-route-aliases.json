@@ -236,5 +236,10 @@
     "939": ["199"],
     "944": ["188"],
     "996": ["186"]
+  },
+  "kingcountymetro": {
+    "South Lake Union Streetcar": ["98", "Stcr SLU"],
+    "First Hill Streetcar": ["Stcr FHS"],
+    "Valley Shuttle": ["629", "SVT"]
   }
 }
