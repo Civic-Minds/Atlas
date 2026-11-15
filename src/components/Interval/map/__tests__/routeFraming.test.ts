@@ -95,6 +95,23 @@ describe('selectionFramePadding (main map route selection)', () => {
     expect(selectionFramePadding(fakeMap(1200, 800), true)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
     expect(selectionFramePadding(fakeMap(1200, 800), false)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
   });
+
+  it('keeps a long line clear of the route card where it really ends on wide screens (#1516)', () => {
+    // The card at 1300x810 runs from x=133 to x=413: the fixed 320px left a line's end under it (CTA Green's Harlem end).
+    const card = { getBoundingClientRect: () => ({ top: 56, bottom: 361, left: 133, right: 413 }) } as Element;
+    expect(selectionFramePadding(fakeMap(1300, 810), false, card)).toEqual({ top: 80, bottom: 80, left: 437, right: 80 });
+    expect(selectionFramePadding(fakeMap(1300, 810), true, card)).toEqual({ top: 80, bottom: 80, left: 437, right: 80 });
+    // A narrower card never gives the line less room than the side-card padding.
+    const small = { getBoundingClientRect: () => ({ top: 56, bottom: 361, left: 24, right: 200 }) } as Element;
+    expect(selectionFramePadding(fakeMap(1300, 810), false, small).left).toBe(320);
+    // No card in the page yet: the side-card padding.
+    expect(selectionFramePadding(fakeMap(1300, 810), false, null)).toEqual({ top: 80, bottom: 80, left: 320, right: 80 });
+  });
+
+  it('leaves the phone framing unchanged when a card is passed', () => {
+    const sheet = { getBoundingClientRect: () => ({ top: 500, bottom: 874, left: 0, right: 402 }) } as Element;
+    expect(selectionFramePadding(fakeMap(402, 874), true, sheet)).toEqual(selectionFramePadding(fakeMap(402, 874), true));
+  });
 });
 
 describe('routeFramePadding measured from the card (Live)', () => {
