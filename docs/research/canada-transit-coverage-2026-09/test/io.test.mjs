@@ -63,3 +63,32 @@ test('walking graph indexes points per cell: shared points join, distinct points
   assert.equal(g.cells.size, 2);
   assert.equal([...g.cells.values()].reduce((sum, bucket) => sum + bucket.size, 0), 4);
 });
+
+test('downloadFirst falls back past a refused source and a missing one, without retrying a 404', async () => {
+  const { downloadFirst } = await import('../src/io.mjs');
+  const dir = await mkdtemp(join(tmpdir(), 'coverage-io-'));
+  const calls = [];
+  const fetchImpl = async url => { calls.push(url); if (url.includes('geofabrik')) throw refused(); if (url.includes('state')) return new Response('missing', { status: 404 }); return new Response('z'.repeat(200_000)); };
+  const picked = await downloadFirst([
+    { path: join(dir, 'a.pbf'), url: 'https://geofabrik/a', attempts: 3 },
+    { path: join(dir, 'a.pbf'), url: 'https://mirror/state/a', attempts: 6 },
+    { path: join(dir, 'region.pbf'), url: 'https://mirror/region', attempts: 6 },
+  ], { fetchImpl, ...quiet });
+  assert.equal(picked.url, 'https://mirror/region');
+  assert.deepEqual(calls, ['https://geofabrik/a', 'https://geofabrik/a', 'https://geofabrik/a', 'https://mirror/state/a', 'https://mirror/region']);
+  assert.equal((await stat(join(dir, 'region.pbf'))).size, 200_000);
+});
+
+test('state sources: Geofabrik, then the mirror state file, then its region; Hawaii has Geofabrik only', async () => {
+  const { stateSources, mirrorRegion } = await import('../src/osmSources.mjs');
+  assert.deepEqual(stateSources('Alabama', '/s').map(s => s.url), [
+    'https://download.geofabrik.de/north-america/us/alabama-latest.osm.pbf',
+    'https://download.openstreetmap.fr/extracts/north-america/us-south/alabama-latest.osm.pbf',
+    'https://download.openstreetmap.fr/extracts/north-america/us-south-latest.osm.pbf',
+  ]);
+  assert.equal(stateSources('District of Columbia', '/s')[0].url, 'https://download.geofabrik.de/north-america/us/district-of-columbia-latest.osm.pbf');
+  assert.equal(stateSources('Hawaii', '/s').length, 1);
+  // Every state but Alaska and Hawaii, plus DC, has a mirror region.
+  assert.equal(['Alaska', 'Hawaii'].map(mirrorRegion).filter(Boolean).length, 0);
+  assert.equal(mirrorRegion('New York'), 'us-northeast');
+});

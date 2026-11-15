@@ -53,6 +53,8 @@ The workflow tries StatCan first. If StatCan refuses, it reads the archive copy.
 
 ## Runner size, time and cost
 - **Runner:** ubuntu-latest, 4 vCPU, 16 GB RAM, about 14 GB free disk, plus about 25 GB once the workflow deletes the preinstalled toolchains. Node gets a 12 GB heap. The biggest jobs are Ontario, Quebec and BC, and the California, Texas, Florida and New York bundles. Clipping the network to qualifying stops keeps them inside 16 GB. If one runs out of memory, rerun only that job (`bundles` or `provinces` input) on a larger runner.
+- **Rerunning only failed jobs:** dispatch again with `provinces` and/or `bundles` set to the failed ones and `reuse_run` set to the earlier run's id (same `rule`). The summary then merges this run's reports with the earlier run's for everything not redone.
+- **OSM downloads:** Geofabrik first, then the openstreetmap.fr mirror (a US state's own file, else its Census-region file; Alaska and Hawaii have no mirror). Each source retries with backoff, one state at a time.
 - **Time (estimate):**
   - Small provinces and bundles: 10–30 minutes each.
   - The big ones: 1–3 hours each.

@@ -13,7 +13,7 @@ export async function withRetry(task, { attempts = 6, baseMs = 10_000, label = '
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try { return await task(attempt); } catch (error) {
       lastError = error;
-      if (attempt === attempts) break;
+      if (attempt === attempts || error?.permanent) break;
       const delay = baseMs * 2 ** (attempt - 1);
       log(`${label} failed (attempt ${attempt} of ${attempts}: ${error?.cause?.code ?? error?.message ?? error}); retrying in ${Math.round(delay / 1000)} s`);
       await wait(delay);
@@ -22,18 +22,35 @@ export async function withRetry(task, { attempts = 6, baseMs = 10_000, label = '
   throw lastError;
 }
 
+export const USER_AGENT = 'Atlas coverage study (github.com/Civic-Minds/Atlas)';
+
 // Downloads to a temporary file and renames it into place, so a dropped connection never
-// leaves a partial file that a later run would take as complete.
+// leaves a partial file that a later run would take as complete. A 4xx answer is final (the
+// file isn't there), so it is not retried.
 export async function download(path, url, { fetchImpl = fetch, ...retry } = {}) {
   try { const info = await stat(path); if (info.size > 100_000) return; } catch {}
   await mkdir(resolve(path, '..'), { recursive: true });
   const partial = `${path}.partial`;
   await withRetry(async () => {
-    const response = await fetchImpl(url);
-    if (!response.ok || !response.body) throw new Error(`${response.status} ${url}`);
+    const response = await fetchImpl(url, { headers: { 'User-Agent': USER_AGENT } });
+    if (!response.ok || !response.body) throw Object.assign(new Error(`${response.status} ${url}`), { permanent: response.status >= 400 && response.status < 500 });
     try { await pipeline(Readable.fromWeb(response.body), createWriteStream(partial)); } catch (error) { await rm(partial, { force: true }); throw error; }
   }, { label: `Download ${url}`, ...retry });
   await rename(partial, path);
+}
+
+// Tries each source in order ({ path, url, attempts }), each with its own retries, and returns
+// the first that downloads. Used for Geofabrik first, then the openstreetmap.fr mirror
+// (Geofabrik refused GitHub's runners on the CIV-1179 cloud runs).
+export async function downloadFirst(sources, { log = console.warn, ...options } = {}) {
+  let lastError;
+  for (const source of sources) {
+    try { await download(source.path, source.url, { ...options, log, attempts: source.attempts ?? options.attempts }); return source; } catch (error) {
+      lastError = error;
+      log(`Giving up on ${source.url} (${error?.cause?.code ?? error?.message ?? error})`);
+    }
+  }
+  throw lastError ?? new Error('No download sources');
 }
 
 // Writes JSON without building the whole text in memory. A FeatureCollection is written one
