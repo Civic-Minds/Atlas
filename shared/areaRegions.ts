@@ -49,6 +49,14 @@ export function areaRegionSentenceStart(area: { slug: string; name: string }): s
   return areaRegionName(area).replace(/^\w/, c => c.toUpperCase());
 }
 
+/**
+ * The agency page's subtitle name: the title without a lowercase trailing "area" ("Calgary", "New York"); a name that
+ * is itself an Area keeps it ("Greater Toronto and Hamilton Area"). Ryan, CIV-1614: "Calgary, Alberta".
+ */
+export function areaSubtitleName(area: { slug: string; name: string }): string {
+  return areaRegionTitle(area).replace(/ (metropolitan area|metro area|area)$/, '');
+}
+
 /** The name without the trailing "area", "metro area" or "region": "Chicago", "Ann Arbor", "Mid-Hudson". Proper names such as "Bay Area" or "Waterloo Region" are kept. */
 export function areaShortName(area: { slug: string; name: string }): string {
   return areaRegionTitle(area).replace(/ (metropolitan area|metro area|area|region)$/, '');

@@ -19,7 +19,7 @@ import {
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
-import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { areaRegionName, areaSubtitleName } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
@@ -166,10 +166,10 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <div className="min-w-0">
               <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
               {data!.area ? (
-                // CIV-1614: "Calgary area, Alberta". An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
+                // CIV-1614: "Calgary, Alberta", "Greater Toronto and Hamilton Area, Ontario". An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  {data!.area.page !== false ? <a className={UNDERLINED_LINK} href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</a> : areaRegionTitle(data!.area)}
-                  {agency.region && !areaRegionTitle(data!.area).includes(agency.region) && <>, {data!.regionPage ? <a className={UNDERLINED_LINK} href={data!.regionPage}>{agency.region}</a> : agency.region}</>}
+                  {data!.area.page !== false ? <a className={UNDERLINED_LINK} href={areaPagePath(data!.area.slug)}>{areaSubtitleName(data!.area)}</a> : areaSubtitleName(data!.area)}
+                  {agency.region && !areaSubtitleName(data!.area).includes(agency.region) && <>, {data!.regionPage ? <a className={UNDERLINED_LINK} href={data!.regionPage}>{agency.region}</a> : agency.region}</>}
                 </p>
               ) : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
