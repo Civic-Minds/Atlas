@@ -30,6 +30,21 @@ describe('stretchRowFeatures', () => {
     ], 'midday');
     expect(rows.map(r => r.headsign)).toEqual(['long']);
   });
+  it('on a stops tie, picks the pattern that runs through the period (#1526, TTC 110 Long Branch at midday)', () => {
+    const stops = Array.from({ length: 31 }, (_, i) => `s${i}`);
+    const thirtieth = f({ headsign: 'Long Branch via Horner and 30th Street', stretchRole: 'tail', stretchIndex: 1, stopOrder: stops, headwayByPeriod: { midday: 30 }, periodCoverageHeadway: { midday: 302 } });
+    const brownsLine = f({ headsign: 'Long Branch via Horner and Browns Line', stretchRole: 'tail', stretchIndex: 1, stopOrder: stops, headwayByPeriod: { midday: 30 }, periodCoverageHeadway: { midday: 30 } });
+    for (const order of [[thirtieth, brownsLine], [brownsLine, thirtieth]]) {
+      expect(stretchRowFeatures(order, 'midday').map(r => r.headsign)).toEqual(['Long Branch via Horner and Browns Line']);
+    }
+  });
+  it('more stops still beats a shorter wait', () => {
+    const rows = stretchRowFeatures([
+      f({ headsign: 'long', stretchRole: 'tail', stretchIndex: 0, stopOrder: ['a', 'b', 'c'], periodCoverageHeadway: { midday: 200 } }),
+      f({ headsign: 'short', stretchRole: 'tail', stretchIndex: 0, stopOrder: ['a', 'b'], periodCoverageHeadway: { midday: 20 } }),
+    ], 'midday');
+    expect(rows.map(r => r.headsign)).toEqual(['long']);
+  });
 });
 
 describe('hasStretchRoles', () => {
