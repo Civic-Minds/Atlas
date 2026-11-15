@@ -8,6 +8,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 - **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
 - **A selected line's ends stay clear of the [route card](https://github.com/Civic-Minds/Atlas/issues/1516) on wide screens**: CTA Green's Harlem end sat under the card
+- **The Frequent Service story counts coverage with the map's own frequency test (beta)**: a counting mistake had left out routes such as Toronto's streetcars, and the old test asked for frequent service in every hour from 7 AM to 7 PM
 - **The frequency bar's last group reads "Irregular or no trips"**: "Irregular or none" read oddly
 - **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"

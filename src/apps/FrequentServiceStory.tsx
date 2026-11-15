@@ -269,7 +269,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="population-heading" className={STORY_HEADING}>The threshold changes who can rely on the network.</h2>
               <p className={STORY_PARAGRAPH}>
-                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running 7 AM–7 PM. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
+                We applied the same test to Atlas route data and population geography: a 10-minute walk to a route the map shows at that threshold in the weekday AM peak, midday and PM peak. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
               </p>
               <p className={STORY_PARAGRAPH}>The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service.</p>
               <p className={STORY_PARAGRAPH}>[Ryan’s wording: cities paragraph]</p>
