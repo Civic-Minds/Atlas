@@ -32,3 +32,13 @@ describe('on-demand map focus', () => {
     expect(isOnDemandZoneFocused({ slug: 'x', zoneId: '3' }, 'x', undefined)).toBe(false);
   });
 });
+
+describe('a separately run service in focus (#1440)', () => {
+  const target = { slug: 'hamilton', zoneId: null, zoneIds: ['West Glanbrook', 'Lower East Stoney Creek'] };
+  it("keeps that service's zones and their stops, and fades the rest of the agency", () => {
+    expect(isOnDemandZoneFocused(target, 'hamilton', 'West Glanbrook')).toBe(true);
+    expect(isOnDemandZoneFocused(target, 'hamilton', 'Waterdown')).toBe(false);
+    expect(isOnDemandStopFocused(target, 'hamilton', ['Lower East Stoney Creek'])).toBe(true);
+    expect(isOnDemandStopFocused(target, 'hamilton', [])).toBe(false);
+  });
+});

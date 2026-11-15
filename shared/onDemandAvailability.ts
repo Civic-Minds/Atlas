@@ -8,7 +8,15 @@ export interface OnDemandHours {
   endHour: number;
 }
 
-export type OnDemandAvailability = Partial<Record<DayType, readonly OnDemandHours[]>>;
+/**
+ * Hours by day type. `Friday` is optional and set only for a service whose Friday differs from Monday to Thursday
+ * (CyRide's Moonlight Express runs Friday and Saturday nights, #1440). With it, `Weekday` means Monday to Thursday on
+ * the hours rows; the map and the running note still read `Weekday` alone, so Friday-only service is never claimed
+ * for Monday to Thursday. Older data without `Friday` reads exactly as before.
+ */
+export type OnDemandAvailability = Partial<Record<DayType, readonly OnDemandHours[]>> & {
+  Friday?: readonly OnDemandHours[];
+};
 
 /** Unknown availability stays visible; authored schedules can opt into exact filtering. */
 export function isOnDemandActive(
@@ -52,6 +60,8 @@ export interface OnDemandZoneDetails {
   hoursSource?: { url: string; retrievedAt: string };
   /** Last day a temporary zone is expected to run (YYYY-MM-DD); the publish gate blocks it after. */
   validUntil?: string;
+  /** Where a trip can go in this zone, when it differs from the service's rule (CIV-1427: Tri Delta's Brentwood). */
+  tripRules?: string;
 }
 
 /** Structural subset of an agency's on-demand service used for hours and pickup lookups. */
@@ -104,7 +114,7 @@ export function resolveOnDemandZone(service: OnDemandServiceDetails, areaName: s
     eligibility: zone.eligibility ?? service.eligibility,
     availability: zone.availability ?? service.availability,
     pickup: zone.pickup ?? service.pickup,
-    tripRules: service.tripRules,
+    tripRules: zone.tripRules ?? service.tripRules,
   };
 }
 
@@ -251,24 +261,64 @@ export interface OnDemandHoursLine {
  */
 export function formatOnDemandHoursLines(availability: OnDemandAvailability | undefined): OnDemandHoursLine[] {
   if (!availability) return [];
+  // A separate Friday splits the weekday row into Mon–Thu and Fri (#1440); without one, rows read as before.
+  if (availability.Friday) return formatHoursLinesWithFriday(availability);
   const groups = new Map<string, DayType[]>();
   for (const day of DAY_TYPE_ORDER) {
     const windows = availability[day];
     if (!windows) continue;
-    const key = JSON.stringify(windows.map(window => [Math.round(window.startHour * 60), Math.round(window.endHour * 60)]));
-    groups.set(key, [...(groups.get(key) ?? []), day]);
+    groups.set(windowsKey(windows), [...(groups.get(windowsKey(windows)) ?? []), day]);
   }
-  return [...groups.entries()].map(([key, dayTypes]) => {
-    const label = DAY_GROUP_LABELS[dayTypes.join(',')];
-    const windows = availability[dayTypes[0]] ?? [];
-    return {
-      dayTypes,
-      text: key === '[]' ? `${label}: no service` : `${label} ${formatWindows(windows)}`,
-      days: label,
-      times: key === '[]' ? 'No service' : formatWindows(windows),
-      windows,
-    };
-  });
+  return [...groups.entries()].map(([key, dayTypes]) => hoursLine(key, dayTypes, DAY_GROUP_LABELS[dayTypes.join(',')], availability[dayTypes[0]] ?? []));
+}
+
+function windowsKey(windows: readonly OnDemandHours[]): string {
+  return JSON.stringify(windows.map(window => [Math.round(window.startHour * 60), Math.round(window.endHour * 60)]));
+}
+
+function hoursLine(key: string, dayTypes: DayType[], label: string, windows: readonly OnDemandHours[]): OnDemandHoursLine {
+  return {
+    dayTypes,
+    text: key === '[]' ? `${label}: no service` : `${label} ${formatWindows(windows)}`,
+    days: label,
+    times: key === '[]' ? 'No service' : formatWindows(windows),
+    windows,
+  };
+}
+
+/** Days of the week in order, Monday first, and the short names a run of them reads as ("Fri–Sat"). */
+const WEEK_DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+const FRIDAY_SLOTS = [
+  { slot: 'Weekday', dayType: 'Weekday', days: [0, 1, 2, 3] },
+  { slot: 'Friday', dayType: 'Weekday', days: [4] },
+  { slot: 'Saturday', dayType: 'Saturday', days: [5] },
+  { slot: 'Sunday', dayType: 'Sunday', days: [6] },
+] as const;
+
+/** "Mon–Thu", "Fri–Sat", "Mon–Thu, Sat": runs of consecutive days, joined. */
+function weekDaysLabel(days: readonly number[]): string {
+  const sorted = [...days].sort((a, b) => a - b);
+  const runs: number[][] = [];
+  for (const day of sorted) {
+    const run = runs[runs.length - 1];
+    if (run && run[run.length - 1] === day - 1) run.push(day); else runs.push([day]);
+  }
+  if (sorted.length === 7) return 'Daily';
+  return runs.map(run => run.length === 1 ? WEEK_DAY_NAMES[run[0]] : `${WEEK_DAY_NAMES[run[0]]}–${WEEK_DAY_NAMES[run[run.length - 1]]}`).join(', ');
+}
+
+function formatHoursLinesWithFriday(availability: OnDemandAvailability): OnDemandHoursLine[] {
+  const groups = new Map<string, { days: number[]; dayTypes: Set<DayType>; windows: readonly OnDemandHours[] }>();
+  for (const { slot, dayType, days } of FRIDAY_SLOTS) {
+    const windows = availability[slot];
+    if (!windows) continue;
+    const key = windowsKey(windows);
+    const group = groups.get(key) ?? { days: [], dayTypes: new Set<DayType>(), windows };
+    group.days.push(...days);
+    group.dayTypes.add(dayType);
+    groups.set(key, group);
+  }
+  return [...groups.entries()].map(([key, group]) => hoursLine(key, [...group.dayTypes], weekDaysLabel(group.days), group.windows));
 }
 
 const RUNNING_DAY_LABELS: Record<DayType, string> = { Weekday: 'weekday', Saturday: 'Saturday', Sunday: 'Sunday' };

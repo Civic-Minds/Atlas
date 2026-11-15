@@ -79,10 +79,32 @@ describe('an uneven tail reads its longest gap between its own departures (NYC 6
     expect(stretchFilterValue(tail)).toBe(18);
     // CIV-1064: the same departures as a main stretch with a departure before 19:00 (service continues
     // from the PM peak): the 41 minutes from 19:00 are a real wait the window cuts, and still count.
+    // CIV-1414 follow-up: the real tail also runs in the morning (603N from 2:20) but no local in the
+    // PM peak, so 19:41 starts its evening after a break: still 18, never 41.
+    const withMorning = stretchPeriods({ ...main([140, 400, 430, 460, ...times]), kind: 'tail' }).evening;
+    expect(withMorning.value).toBe(18);
+    expect(stretchPeriods(main([140, 400, 430, 460, ...times])).evening.value).toBe(18);
     const asMain = stretchPeriods(main([ev.start - 20, ...times])).evening;
     expect(asMain.uneven).toBe(true);
     expect(asMain.value).toBe(asMain.coverage);
     expect(asMain.coverage).toBeGreaterThanOrEqual(41);
+  });
+});
+
+describe('an uneven tail counts a wait the window cuts, as a main stretch does (CIV-1414, Sherbrooke 1)', () => {
+  it('never reads only the gaps between its own departures when the window cuts a longer wait', () => {
+    // Sherbrooke 1's tail at 268, weekdays: 7:07, 7:24, 8:01, then nothing until 10:23. The 59 minutes
+    // from 8:01 to 9:00 are part of a 142-minute wait the window cuts; it read 37 between its own departures.
+    // Its AM starts 67 minutes in, longer than the coverage cap, so it keeps the full-window wait (67),
+    // as a main stretch does; either way never the 37 between its own departures.
+    const am = PERIOD_MINUTES.amPeak;
+    const times = [am.start + 67, am.start + 84, am.start + 121, am.start + 263, am.start + 300];
+    const tail = stretchPeriods({ ...main(times), kind: 'tail' }).amPeak;
+    expect(tail.uneven).toBe(true);
+    expect(tail.value).toBe(67);
+    expect(stretchPeriods(main(times)).amPeak.value).toBe(67);
+    expect(stretchFilterValue(tail)).toBe(67);
+    // A cut wait under the cap is read as is: the TTC 320 tail case below (28).
   });
 });
 
@@ -131,8 +153,10 @@ describe('an uneven main stretch leaves out only a true start or end of its serv
     expect(stretchFilterValue(p)).toBe(70);
   });
 
-  it('leaves a tail as it was (NYC 6: no guard on its edges)', () => {
-    expect(stretchPeriods({ ...main([...night, on.end + 10]), kind: 'tail' }).overnight.value).toBe(15);
+  it('reads a tail the same way (CIV-1414): the 28 minutes the window cuts count', () => {
+    expect(stretchPeriods({ ...main([...night, on.end + 10]), kind: 'tail' }).overnight.value).toBe(28);
+    // Without the 6:10 bus, the run to 6:00 is the end of its service and stays out.
+    expect(stretchPeriods({ ...main(night), kind: 'tail' }).overnight.value).toBe(15);
   });
 });
 

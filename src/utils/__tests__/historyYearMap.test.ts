@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
+import { historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyPeriodValue, historyYearColorExpression, historyYearRoutes, onTodaysLines, passesHistoryLimit } from '../historyYearMap';
 import { localRouteHeadwayColor } from '../../components/Interval/map/routeStyle';
 
 const snap = (year: number, v2: Record<string, unknown> | undefined, extra: Record<string, unknown> = {}) =>
@@ -65,15 +65,87 @@ describe('History period and frequency limit (CIV-389, CIV-392)', () => {
   });
 
   it('the limit compares like the map filter; All passes everything, limited or unknown fail a limit', () => {
-    expect(passesHistoryLimit({ kind: 'value', min: 15 }, 15)).toBe(true);
-    expect(passesHistoryLimit({ kind: 'value', min: 16 }, 15)).toBe(false);
-    expect(passesHistoryLimit({ kind: 'limited' }, 60)).toBe(false);
-    expect(passesHistoryLimit({ kind: 'blank' }, Infinity)).toBe(true);
+    expect(passesHistoryLimit({ kind: 'value', min: 15 }, 15, 'midday')).toBe(true);
+    expect(passesHistoryLimit({ kind: 'value', min: 16 }, 15, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'limited' }, 60, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'blank' }, Infinity, 'midday')).toBe(true);
   });
 
   it("the year's map routes follow the period and the limit", () => {
-    const view = { period: 'all' as const, maxHeadway: 15 };
+    const view = { period: 'all' as const, maxHeadway: 15, day: 'Weekday' as const };
     expect(historyYearRoutes(agency, 2014, 'default', view).map(r => r.routeShortName)).toEqual(['6']);
     expect(historyYearRoutes(agency, 2020, 'default', view)).toEqual([]);
+  });
+});
+
+describe('History weekend days (CIV-1425)', () => {
+  const v2 = (extra: Record<string, unknown>) => ({ refDate: '20240301', rep: { h: 10, p: { midday: 10, evening: 20 } }, ...extra });
+  const satP = snap(2024, v2({ sat: { h: 30, p: { midday: 25 } }, sun: { lim: true, p: { midday: 40 } } }), { headwayByPeriod: { midday: 9, evening: 9 } });
+
+  it("Saturday and Sunday read the day's own value by time of day", () => {
+    expect(historyDayPeriodValue(satP, 'Saturday', 'midday')).toEqual({ kind: 'value', min: 25 });
+    expect(historyDayPeriodValue(satP, 'Sunday', 'midday')).toEqual({ kind: 'value', min: 40 });
+  });
+
+  it("a period without a stored weekend value is blank: never the weekday's rep.p, headwayByPeriod or the day's h", () => {
+    expect(historyDayPeriodValue(satP, 'Saturday', 'evening')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(satP, 'Sunday', 'evening')).toEqual({ kind: 'blank' });
+    const noP = snap(2024, v2({ sat: { h: 30 } }), { headwayByPeriod: { midday: 9 } });
+    expect(historyDayPeriodValue(noP, 'Saturday', 'midday')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(noP, 'Sunday', 'midday')).toEqual({ kind: 'blank' });
+  });
+
+  it('a day with no trips is "none" in every period and fails any frequency limit', () => {
+    const none = snap(2024, v2({ sat: { none: true } }));
+    for (const period of ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight', 'all'] as const) {
+      expect(historyDayPeriodValue(none, 'Saturday', period)).toEqual({ kind: 'none' });
+    }
+    expect(passesHistoryLimit({ kind: 'none' }, 60, 'midday')).toBe(false);
+    // CIV-1434: under All with a period picked, no trips that day is dropped, as the main map drops it.
+    expect(passesHistoryLimit({ kind: 'none' }, Infinity, 'midday')).toBe(false);
+    expect(passesHistoryLimit({ kind: 'limited' }, Infinity, 'midday')).toBe(true);
+  });
+
+  it('an old v1 snapshot is blank on the weekend', () => {
+    const v1 = snap(2014, undefined, { headwayByPeriod: { midday: 12 } });
+    expect(historyDayPeriodValue(v1, 'Saturday', 'midday')).toEqual({ kind: 'blank' });
+    expect(historyDayPeriodValue(v1, 'Sunday', 'all')).toEqual({ kind: 'blank' });
+  });
+
+  it('Weekday is exactly historyPeriodValue', () => {
+    for (const period of ['all', 'midday', 'evening', 'late'] as const) {
+      expect(historyDayPeriodValue(satP, 'Weekday', period)).toEqual(historyPeriodValue(satP, period));
+    }
+  });
+
+  it("a weekend day's shared-stretch low end is its own t / tp, never the weekday's (CIV-1431)", () => {
+    const withTrunk = snap(2024, v2({ rep: { h: 10, t: 6, tp: { midday: 6 } }, sat: { h: 30, p: { midday: 25 }, t: 15, tp: { midday: 12 } }, sun: { lim: true, p: { midday: 40 } } }));
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'midday')).toBe(12);
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'all')).toBe(15);
+    expect(historyDayTrunk(withTrunk, 'Saturday', 'evening')).toBeUndefined();
+    expect(historyDayTrunk(withTrunk, 'Sunday', 'midday')).toBeUndefined();
+    expect(historyDayTrunk(satP, 'Saturday', 'midday')).toBeUndefined();
+    expect(historyDayTrunk(snap(2014, undefined), 'Saturday', 'all')).toBeUndefined();
+  });
+
+  it('knows whether a weekend day stores values by time of day', () => {
+    expect(historyDayHasPeriods(satP, 'Saturday')).toBe(true);
+    expect(historyDayHasPeriods(snap(2024, v2({ sat: { h: 30 } })), 'Saturday')).toBe(false);
+    expect(historyDayHasPeriods(snap(2024, v2({ sat: { none: true } })), 'Saturday')).toBe(true);
+    expect(historyDayHasPeriods(snap(2014, undefined), 'Sunday')).toBe(false);
+  });
+
+  it("the year's map routes follow the view's day", () => {
+    const weekend: Parameters<typeof historyYearRoutes>[0] = {
+      routes: [
+        { routeShortName: 'A', snapshots: [satP] },
+        { routeShortName: 'N', snapshots: [snap(2024, v2({ sat: { none: true } }))] },
+      ],
+    };
+    const sat = historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Saturday' });
+    // CIV-1434: N has no Saturday trips, so it isn't drawn, as the main map drops a route with no service then.
+    expect(sat.map(r => [r.routeShortName, r.headway])).toEqual([['A', 25]]);
+    expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: 30, day: 'Saturday' }).map(r => r.routeShortName)).toEqual(['A']);
+    expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Weekday' })[0].headway).toBe(10);
   });
 });

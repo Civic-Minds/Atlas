@@ -1,14 +1,14 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { periodKeyForHour } from '../../../../shared/config';
 import { runTimeStretchLabel, runTimeTakeaway, runningTimeSentence, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
-import { nameCase } from '../../../utils/format';
-import { shortStopName } from '../../../utils/stopLabel';
+import { liveStopName } from '../../../utils/stopLabel';
 import { liveChartHours } from '../../../utils/sparklinePeriods';
 import RunTimeChart, { runTimeScale } from '../../charts/RunTimeChart';
-import { SectionTitle } from '../../ui/PageTitle';
 import Section from './Section';
 import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
+import { liveTooFewTrips } from '../../../content/noticeCopy';
+import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -25,7 +25,7 @@ export const runTimeLine = (f: { typicalMin: number; scheduledMin: number; p90Mi
   `Usually ${Math.round(f.typicalMin)} min · scheduled ${Math.round(f.scheduledMin)} · 1 in 10 over ${Math.round(f.p90Min)}`;
 
 /** The stretch the run time covers, in short stop names (empty when the file does not say). */
-export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], n => shortStopName(nameCase(n, 'stop')));
+export const runTimeStretchOf = (v3: LiveV3, d: number) => runTimeStretchLabel(v3.runningTime?.stretch?.[String(d)], liveStopName);
 
 const INSET = 6; // px each end, so a dot on the first or last minute is not clipped
 /** Room on the right of the rows for "min" at the end of the scale (and the slow end's number). */
@@ -70,7 +70,7 @@ function PatternRow({ row, scale, width, dense, showLabel, unit }: { row: RunTim
   const tone: Record<RowLabel['id'], string> = { usual: 'font-bold text-[var(--text-primary)]', scheduled: 'text-[var(--text-secondary)]', slow: 'text-[var(--text-muted)]' };
   return (
     <li className={`min-w-0 ${few ? 'text-[var(--text-dim)]' : ''}`} title={row.figures || undefined}>
-      {showLabel && row.label && <div className={dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
+      {showLabel && row.label && <div className={`text-pretty ${dense ? 'text-xs leading-4 text-[var(--text-secondary)]' : 'text-sm leading-5 text-[var(--text-secondary)]'}`}>{row.label}{few ? ' Few trips: treat with care.' : ''}</div>}
       {row.figures && <span className="sr-only">{row.figures}</span>}
       <div className={`relative ${dense ? 'h-[36px]' : 'h-[44px]'} ${few ? 'opacity-60' : ''}`} aria-hidden="true">
         <div className="absolute inset-y-0" style={{ left: INSET, right: INSET }}>
@@ -140,11 +140,11 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
   const m = runTimeModel(v3, band, dir);
   const { rt, dirs, hoursOf, scale, axis } = m;
   const frame = (children: ReactNode) => id
-    ? <Section id={id} title="Run time" shrink={shrink} boundary={boundary}>{children}</Section>
-    : <section aria-labelledby="dash-runtime" className="mt-10"><SectionTitle id="dash-runtime">Run time</SectionTitle>{children}</section>;
+    ? <Section id={id} title={TRIP_TIME_LABEL} shrink={shrink} boundary={boundary}>{children}</Section>
+    : <Section id="dash-runtime" title={TRIP_TIME_LABEL}>{children}</Section>;
   if (!rt && detail !== 'brief') return id && detail === 'compact' ? frame(null) : null;
   const full = detail === 'full', compact = detail === 'compact';
-  const rowsByDir = runTimeRows(v3, band, dirs, n => shortStopName(nameCase(n, 'stop')));
+  const rowsByDir = runTimeRows(v3, band, dirs, liveStopName);
   const rowScale = runTimeRowScale(Object.values(rowsByDir).flat());
   return frame(<>
     {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>}
@@ -166,14 +166,14 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
             {full && mainThin && <p className="mt-1 text-sm leading-6">{sentence}</p>}
             <PatternRows rows={rowsByDir[d] ?? []} scale={rowScale} hideMainLabel={!!stretch} />
             {compact ? (
-              hours.length > 1 && <div className="mt-4"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts.`} /></div>
+              hours.length > 1 && <div className="mt-4"><RunTimeChart hours={hours} scale={scale} ariaLabel={`${label}: trip time against the schedule by the hour the trip starts.`} /></div>
             ) : hours.length > 1 ? (
               <>
                 {/* Full analysis: the chart says it (the usual and scheduled times, the slow end are on it); the Dashboard keeps its one-line takeaway. */}
                 {!full && <p className="mt-4 text-sm font-bold">{runTimeTakeaway(label, hours)}</p>}
-                <div className={full ? 'mt-4' : 'mt-2'}><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: run time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
+                <div className={full ? 'mt-4' : 'mt-2'}><RunTimeChart hours={hours} axis={axis} scale={scale} ariaLabel={`${label}: trip time against the schedule by the hour the trip starts. ${full ? sentence : runTimeTakeaway(label, hours)}`} /></div>
               </>
-            ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">Too few trips were measured {BAND_WORDS[band]} to draw this.</p>}
+            ) : !full && <p className="mt-1 text-sm text-[var(--text-muted)]">{liveTooFewTrips(BAND_WORDS[band])}</p>}
           </div>
         );
       })}

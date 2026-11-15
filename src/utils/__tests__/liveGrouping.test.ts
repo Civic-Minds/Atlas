@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../liveGrouping';
+import { DIRECTION_UNCLEAR, compareLiveRoutes, destinationKind, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels, vehicleDirectionKey } from '../liveGrouping';
 
 const v = (id: string, extra: Partial<LiveVehicle> = {}): LiveVehicle => ({
   id, routeShortName: '501', displayName: '501', tripId: 't', lat: 43.65, lon: -79.4, bearing: null, speedKmh: null, tsEpoch: null,
@@ -33,5 +33,156 @@ describe('groupVehiclesByDirection (every vehicle placed)', () => {
   it('falls back to Outbound / Inbound when a direction has no named shape', () => {
     const groups = groupVehiclesByDirection([v('a', { directionId: 0 }), v('b', { directionId: 1 })], new Map());
     expect([...groups.keys()]).toEqual(['Outbound', 'Inbound']);
+  });
+});
+
+describe('vehicleDirectionKey (the direction a vehicle card keeps emphasised)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+
+  it('names the same group the direction list puts the vehicle in', () => {
+    const vehicles = [v('a', { directionId: 0 }), v('b', { directionId: 1, headsign: 'Humber Loop' }), v('c'), v('d', { directionId: 1 })];
+    const groups = groupVehiclesByDirection(vehicles, labels);
+    for (const vehicle of vehicles) {
+      expect(groups.get(vehicleDirectionKey(vehicle, labels))).toContain(vehicle);
+    }
+    expect(vehicleDirectionKey(vehicles[2], labels)).toBe(DIRECTION_UNCLEAR);
+  });
+});
+
+describe('focusDirectionKey (what a Live pick narrows the fade to)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+
+  it('uses the picked direction row first', () => {
+    expect(focusDirectionKey('Long Branch', v('a', { directionId: 0 }), labels)).toBe('Long Branch');
+  });
+
+  it('otherwise uses the direction of the vehicle whose card is open (a dot click)', () => {
+    expect(focusDirectionKey(null, v('a', { directionId: 0 }), labels)).toBe('Neville Park');
+    expect(focusDirectionKey(null, v('b'), labels)).toBe(DIRECTION_UNCLEAR);
+  });
+
+  it('is the whole route with neither', () => {
+    expect(focusDirectionKey(null, null, labels)).toBeNull();
+  });
+});
+
+describe('orderDirectionGroups (fixed row order, CIV-899)', () => {
+  const labels = new Map([[0, 'Neville Park'], [1, 'Long Branch']]);
+  const order = (vehicles: LiveVehicle[]) => orderDirectionGroups(groupVehiclesByDirection(vehicles, labels), labels).map(([k]) => k);
+
+  it('lists direction 0, then direction 1 (main destination before short turns), then the rest, with "Direction unclear" last', () => {
+    const vehicles = [
+      v('u'),
+      v('s', { directionId: 1, headsign: 'Humber Loop' }),
+      v('b', { directionId: 1 }),
+      v('h', { headsign: 'Dundas West Station' }),
+      v('d', { directionId: 0, headsign: 'Distillery' }),
+      v('a', { directionId: 0 }),
+    ];
+    expect(order(vehicles)).toEqual(['Neville Park', 'Distillery', 'Long Branch', 'Humber Loop', 'Dundas West Station', DIRECTION_UNCLEAR]);
+  });
+
+  it('gives the same order whatever order the feed lists the vehicles in', () => {
+    const vehicles = [v('u'), v('b', { directionId: 1 }), v('a', { directionId: 0 }), v('d', { directionId: 0, headsign: 'Distillery' })];
+    const expected = order(vehicles);
+    expect(order([...vehicles].reverse())).toEqual(expected);
+    expect(order([vehicles[2], vehicles[0], vehicles[3], vehicles[1]])).toEqual(expected);
+    expect(expected[expected.length - 1]).toBe(DIRECTION_UNCLEAR);
+  });
+
+  it('puts Outbound before Inbound when no shape names the directions', () => {
+    const groups = groupVehiclesByDirection([v('b', { directionId: 1 }), v('a', { directionId: 0 })], new Map());
+    expect(orderDirectionGroups(groups, new Map()).map(([k]) => k)).toEqual(['Outbound', 'Inbound']);
+  });
+});
+
+describe('compareLiveRoutes (route list order)', () => {
+  const r = (agencySlug: string, routeShortName: string) => ({ agencySlug, routeShortName });
+  const order = (list: ReturnType<typeof r>[]) => [...list].sort(compareLiveRoutes).map(x => `${x.agencySlug} ${x.routeShortName}`);
+
+  it('sorts by agency, then route number in natural order', () => {
+    expect(order([r('ttc', '510'), r('ttc', '7'), r('miway', '1'), r('ttc', '10'), r('ttc', '506')]))
+      .toEqual(['miway 1', 'ttc 7', 'ttc 10', 'ttc 506', 'ttc 510']);
+  });
+
+  it('puts lettered branches in a fixed order whatever order the feed lists them', () => {
+    expect(order([r('ttc', '7B'), r('ttc', '7'), r('ttc', '7A')])).toEqual(['ttc 7', 'ttc 7A', 'ttc 7B']);
+    expect(order([r('ttc', '7A'), r('ttc', '7B'), r('ttc', '7')])).toEqual(['ttc 7', 'ttc 7A', 'ttc 7B']);
+  });
+
+  it('keeps numbered routes ahead of named ones', () => {
+    expect(order([r('sfmta', 'N'), r('sfmta', '38'), r('sfmta', 'F')])).toEqual(['sfmta 38', 'sfmta F', 'sfmta N']);
+  });
+});
+
+describe('destinationKind (CIV-1043)', () => {
+  // TTC 504 and 506 as the Live analysis has them.
+  const p504 = {
+    0: [{ kind: 'main', fromName: 'Distillery Loop', toName: 'Dundas St West at Bloor St West' }, { kind: 'branch', fromName: 'Broadview Station at Bay 7', toName: 'Dufferin St at Liberty St' }],
+    1: [{ kind: 'main', fromName: 'Dundas West Station at Bay 4', toName: 'King St East at Sumach St' }, { kind: 'branch', fromName: 'Dufferin Gate Loop', toName: 'Broadview Ave at Wolfrey Ave' }],
+  };
+  const p506 = { 0: [{ kind: 'main', fromName: 'Main Street Station at Bay 7', toName: 'Howard Park Ave at Indian Rd' }], 1: [{ kind: 'main', fromName: 'High Park Loop', toName: 'Main St at Danforth Ave' }] };
+  const stops506 = ['College St at Spadina Ave', 'Gerrard St East at Broadview Ave', 'Howard Park Ave at Indian Rd', 'High Park Loop'];
+  it('calls a destination that names one of the route\'s stops a short turn on a route with no branch', () => {
+    expect(destinationKind(p506, 'Spadina', stops506)).toBe('shortTurn');
+    expect(destinationKind(p506, 'Broadview & Gerrard', stops506)).toBe('shortTurn');
+  });
+  it('never tags an end or a destination that isn\'t a stop on the route', () => {
+    // "High Park" leads "High Park Loop", a main end (the other direction's, or this one's under another name).
+    expect(destinationKind(p506, 'High Park', stops506)).toBeNull();
+    expect(destinationKind(p506, 'Main Street', stops506)).toBeNull();
+    expect(destinationKind(p506, 'Replacement Bus', stops506)).toBeNull();
+    // Without the route's stop names nothing can be checked: no tag.
+    expect(destinationKind(p506, 'Spadina')).toBeNull();
+  });
+  it('names a branch only on a clear match, and nothing when unsure', () => {
+    expect(destinationKind(p504, 'Dufferin Gate')).toBe('branch');
+    expect(destinationKind(p504, 'Broadview')).toBe('branch');
+    // On a route with a branch, a destination that matches no end is unclear: no tag.
+    expect(destinationKind(p504, 'Broadview & Queen')).toBeNull();
+    // It matches a main end too: unclear.
+    expect(destinationKind(p504, 'Distillery')).toBeNull();
+    expect(destinationKind(null, 'Spadina')).toBeNull();
+  });
+});
+
+describe('riderHeadsign', () => {
+  it('drops an internal short-turn name (CIV-1062)', () => {
+    expect(riderHeadsign('506 Carlton Short Turn', '506')).toBeNull();
+    expect(riderHeadsign('512 St Clair Short Turn', '512')).toBeNull();
+    expect(riderHeadsign('88S South Leaside Short Turn', '88')).toBeNull();
+    expect(riderHeadsign('301S Queen Replacement Bus Short Turn', '301')).toBeNull();
+  });
+  it('keeps every real destination', () => {
+    expect(riderHeadsign('Broadview & Gerrard', '506')).toBe('Broadview & Gerrard');
+    expect(riderHeadsign('Roncesvalles (short turn)', '501')).toBe('Roncesvalles (short turn)');
+    expect(riderHeadsign('506 Carlton Short Turn', '505')).toBe('506 Carlton Short Turn');
+    expect(riderHeadsign('88S South Leaside Short Turn', '8')).toBe('88S South Leaside Short Turn');
+    expect(riderHeadsign('5065 Carlton Short Turn', '506')).toBe('5065 Carlton Short Turn');
+    expect(riderHeadsign(null, '506')).toBeNull();
+  });
+});
+
+describe('orderAlongRoute (CIV-1125)', () => {
+  // Direction 0 runs east from -79.5, direction 1 runs west from -79.3 (its line starts at the east end).
+  const east = line(0, 'East', 0.2);
+  const west: GeoJSON.Feature = { type: 'Feature', properties: { routeShortName: '501', directionId: 1, headsign: 'West' }, geometry: { type: 'LineString', coordinates: [[-79.3, 43.6], [-79.5, 43.6]] } };
+  const shortTurn = line(0, 'Short', 0.05);
+  const at = (id: string, lon: number, directionId: number | null, lat = 43.6) => v(id, { lon, lat, directionId });
+
+  it('lists each direction first stop to last, by distance along its main (longest) line', () => {
+    const out = orderAlongRoute([at('c', -79.32, 0), at('a', -79.48, 0), at('b', -79.4, 0)], [shortTurn, east, west], '501');
+    expect(out.map(x => x.id)).toEqual(['a', 'b', 'c']);
+    // Direction 1 starts at the east end, so its order runs the other way.
+    expect(orderAlongRoute([at('w1', -79.48, 1), at('w2', -79.32, 1)], [east, west], '501').map(x => x.id)).toEqual(['w2', 'w1']);
+  });
+
+  it('puts direction 0 before direction 1, and vehicles it cannot place last in the order they came', () => {
+    const out = orderAlongRoute([at('none', -79.4, null), at('w', -79.4, 1), at('far', -79.4, 0, 43.7), at('e', -79.4, 0), at('none2', -79.45, null)], [east, west], '501');
+    expect(out.map(x => x.id)).toEqual(['e', 'w', 'none', 'far', 'none2']);
+  });
+
+  it('leaves the list as it is when the route has no shapes', () => {
+    expect(orderAlongRoute([at('b', -79.4, 0), at('a', -79.45, 0)], [], '501').map(x => x.id)).toEqual(['b', 'a']);
   });
 });

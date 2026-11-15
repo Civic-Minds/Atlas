@@ -13,6 +13,7 @@ describe('buildChangelog', () => {
     const entries = buildChangelog(RELEASES);
     expect(entries.map(e => e.label)).toEqual(['Version 3.3', 'Version 3.2']);
     expect(entries.map(e => e.key)).toEqual(['app-3.3.0', 'app-3.2.0']);
+    expect(entries.map(e => e.dateLabel)).toEqual(['Oct 12, 2026', 'Sep 22, 2026']);
   });
 
   it('has the real releases', () => {

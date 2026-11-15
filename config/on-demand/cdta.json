@@ -14,7 +14,7 @@
       "Guilderland": {
         "serviceName": "CDTA FLEX",
         "serviceHours": "Monday - Saturday: 6AM - 10:45PM / Sunday: 10AM - 6PM",
-        "hoursNote": "The Town Hall stop runs only on Thursdays, 4:00 PM to 8:30 PM. Holiday service is not stated.",
+        "hoursNote": "The Town Hall stop runs only on Thursdays, 4–8:30 PM.",
         "availability": {
           "Weekday": [
             {
@@ -43,7 +43,6 @@
       "Southern Saratoga": {
         "serviceName": "CDTA FLEX",
         "serviceHours": "Monday - Friday: 7AM - 8PM / Saturday and Sunday: 10AM - 6PM",
-        "hoursNote": "Holiday service is not stated.",
         "availability": {
           "Weekday": [
             {
@@ -72,7 +71,6 @@
       "Saratoga Springs": {
         "serviceName": "CDTA FLEX",
         "serviceHours": "Weekdays: 6AM - 9PM / Saturday: 6AM - 9PM / Sunday: 8AM - 7PM",
-        "hoursNote": "Holiday service is not stated.",
         "availability": {
           "Weekday": [
             {

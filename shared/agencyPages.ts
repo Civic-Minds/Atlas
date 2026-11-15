@@ -16,6 +16,7 @@ import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtW
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
+import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
 import { haversineM } from './shapeProjection';
@@ -51,6 +52,11 @@ export interface AgencyPageRoute {
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
   /** #1292: a period whose value is a late start or early end: the card's reading of it ("every 9 min from 7:12 AM"). */
   edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number }>>;
+  /**
+   * CIV-1300 (#1311): a period whose route card reads differently from the filter's number: the card's own words, range or
+   * "Irregular", as the map's lists show them ("every 15 min, with one 32 min gap"). The number above stays the filter's.
+   */
+  text?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', string>>;
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
   /** #1283: states and provinces (their config region names) where this route stops at two places inside, by the same rule. */
@@ -260,10 +266,10 @@ export function agencyIntroSentence(
   parentName?: string,
 ): string {
   const n = a.routes.length;
-  if (n === 0) return `${title} has no weekday routes in the data.`;
+  if (n === 0) return `${agencySentenceStart(title)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes, title, parentName)}${place}`;
   if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
-  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
+  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
 
@@ -327,7 +333,7 @@ export function introLead(
 ): string {
   const n = a.routes.length;
   // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
-  return `${title}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -594,7 +600,7 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
 
 /** The fuller sentence for structured data: the intro plus what the page is. */
 export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): string {
-  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${agencyInSentence(a.displayName)}, from the published schedule.`;
 }
 
 /**
@@ -669,7 +675,7 @@ function dateParts(value: string | null | undefined): RegExpExecArray | null {
  */
 // N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
 // Ryan: "ended is past but ends is upcoming": "ends" before the listing-end date (agency-local), "ended" from it on.
-export const listingEndedNotice = (date: string, ended: boolean) => `This agency's scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
+export const listingEndedNotice = (date: string, ended: boolean) => `This agency’s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data.`;
 /** Whether the listing-end date (yyyymmdd) has arrived, given today's agency-local yyyymmdd. */
 export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) => todayYmd >= listingEndedOn;
 // N112 listing-ended-page (Ryan's exact text, CIV-1055): agency pages only, when the timetable has a through date.
@@ -683,7 +689,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
   const listingEnded = formatDataDate(a.listingEndedOn);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
   const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
-    ? `This schedule ended on ${through}; the agency hasn't published a newer one yet.`
+    ? `This schedule ended on ${through}; the agency hasn’t published a newer one yet.`
     // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
     : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
@@ -691,7 +697,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : published ? `This schedule was published ${published}.`
     : through ? `This schedule covers service until ${through}.`
     : '';
-  return ["Based on the agency's published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency’s published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */

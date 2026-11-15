@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { agencyPageData, agencyPageJsonLd, agencyPlaces, areaPageStatus, type AgencyPageSummaries, type AgencyPageSummary } from './agencyPages';
 import { buildAgencyIndexData } from './agencyIndex';
-import { areaRedirects, mergeAreaRedirects } from '../scripts/build-area-page-list';
+import { agencyRedirects, areaRedirects, mergeAreaRedirects, otherRedirects, readFormerSlugs } from '../scripts/build-area-page-list';
 import { agencyPageSummaries } from './agencyPagesData';
 import type { AreaConfig } from './areas';
 import { AREA_INDEX } from './areaIndex';
@@ -132,6 +132,32 @@ describe('areas need two agencies for a page (Ryan, 2026-11-01)', () => {
     expect(area).toEqual(mergeAreaRedirects(area, areaRedirects(summaries), status.pages));
     for (const r of areaRedirects(summaries)) expect(area).toContainEqual(r);
     expect(JSON.parse(readFileSync('shared/data/area-page-slugs.json', 'utf8'))).toEqual([...status.pages].sort());
+  });
+
+  it('vercel.json and former-slugs.json carry every agency config\'s formerSlugs (run scripts/build-area-page-list.ts after a change)', () => {
+    const vercel = JSON.parse(readFileSync('vercel.json', 'utf8')) as { redirects: Array<{ source: string }> };
+    const former = readFormerSlugs();
+    for (const r of agencyRedirects(former)) expect(vercel.redirects).toContainEqual(r);
+    expect(JSON.parse(readFileSync('shared/data/former-slugs.json', 'utf8'))).toEqual(former);
+    // NJ Transit: the two old agencies are one (Ryan, 2026-11-02), rail's route ids prefixed.
+    expect(former).toMatchObject({ 'njt-bus': { slug: 'njt' }, 'njt-rail': { slug: 'njt', idPrefix: 'rail:' } });
+  });
+
+  it('agencyRedirects sends both forms of a former slug to its agency page', () => {
+    expect(agencyRedirects({ 'njt-bus': { slug: 'njt' }, 'njt-rail': { slug: 'njt', idPrefix: 'rail:' } })).toEqual([
+      { source: '/agency/njt-bus', destination: '/agency/njt', permanent: true },
+      { source: '/agency/njt-bus/', destination: '/agency/njt', permanent: true },
+      { source: '/agency/njt-rail', destination: '/agency/njt', permanent: true },
+      { source: '/agency/njt-rail/', destination: '/agency/njt', permanent: true },
+    ]);
+  });
+
+  it('keeps hand-added /agency/ redirects; a former slug replaces one for the same path', () => {
+    const hand = { source: '/agency/old-name', destination: '/agency/new-name', permanent: true };
+    const stale = { source: '/agency/njt-bus', destination: '/agency/somewhere-else', permanent: true };
+    const area = { source: '/area/austin', destination: '/agency/capmetro', permanent: true };
+    const other = { source: '/fares', destination: '/', permanent: true };
+    expect(otherRedirects([hand, stale, area, other], { 'njt-bus': { slug: 'njt' } })).toEqual([hand, other]);
   });
 
   it('keeps the redirect of an area that loses its page, so old links still work', () => {

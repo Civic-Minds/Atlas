@@ -5,20 +5,29 @@
  * stop's bunching, an infrequent stop's extra wait) has no step and draws grey. Lines come from `v3.segmentLines` when the
  * analysis has them (street lines), else straight between stops.
  */
-import type { DashboardBand, LiveV3 } from '../../../shared/liveDashboard';
+import type { DashboardBand, LiveV3, UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { shortStopName } from '../../utils/stopLabel';
+import { stretchLabel } from '../../utils/stopLabel';
+import { delayHeatPoints } from './delayHeatModel';
+import { BUNCHING_STEP_LIMITS } from './routeStripModel';
+import { TRIP_TIME_LABEL } from '../../../shared/liveWording';
 
-export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching';
+export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayStarts';
 /** The measure switch, in order, with the labels the tiles already use. */
-export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', 'Late'], ['runTime', 'Run time'], ['extraWait', 'Extra wait'], ['bunching', 'Bunching']];
+export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', 'Late'], ['runTime', TRIP_TIME_LABEL], ['extraWait', 'Extra wait'], ['bunching', 'Bunching']];
+/** "Delay starts" is the CIV-942 heatmap prototype (label to confirm): its own toggle on the map, not in the switch (the top bar has no room for a fifth pill). */
+export const DELAY_STARTS_LABEL = 'Delay starts';
+export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : MEASURES.find(([k]) => k === m)![1]);
 
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */
 export const MAP_STEP_LIMITS: Record<MapMeasure, readonly [number, number]> = {
   late: [0.1, 0.2],
-  bunching: [0.15, 0.25],
+  // The strips' bunching steps, so the map and the strips colour a stop the same.
+  bunching: BUNCHING_STEP_LIMITS,
   runTime: [0.5, 1.5],
   extraWait: [1, 2],
+  // Minutes added since the previous stop: across the analysed routes 90% of stretches add under 0.3 min, 95% under 0.5.
+  delayStarts: [0.25, 0.5],
 };
 
 export type MapStep = 0 | 1 | 2;
@@ -44,7 +53,7 @@ function stopPairs(v3: LiveV3, directionId: number, mainOrder: string[]): Array<
   return out;
 }
 
-export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBand, measure: MapMeasure): RouteMapModel {
+export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBand, measure: MapMeasure, uncertain: readonly UncertainStart[] = []): RouteMapModel {
   const bandData = v3.bands[band];
   const stopsHere = bandData.stops.filter(s => s.directionId === directionId);
   const byId = new Map(stopsHere.map(s => [s.stopId, s]));
@@ -53,6 +62,7 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
   const waitById = new Map((v3.extraWait?.[band] ?? []).filter(s => s.directionId === directionId).map(s => [s.stopId, s]));
   const stretchBy = new Map((bandData.buildup.find(b => b.directionId === directionId)?.stretches ?? []).map(s => [key(s.fromStopId, s.toStopId), s]));
   const lines = new Map((v3.segmentLines?.[String(directionId)] ?? []).map(l => [key(l.from, l.to), l.coordinates]));
+  const heatById = measure === 'delayStarts' ? new Map(delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId }, uncertain: () => uncertain }).map(p => [p.stopId, p])) : null;
 
   const stopValue = (stopId: string): number | null => {
     const s = byId.get(stopId);
@@ -61,24 +71,26 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
       case 'late': return s.lateShare;
       case 'bunching': { const b = bunchById.get(stopId); return b && b.n > 0 ? b.badShare : null; }
       case 'extraWait': { const w = waitById.get(stopId); return w ? Math.max(0, w.extraWaitMin) : null; }
+      case 'delayStarts': return heatById!.get(stopId)?.addedMin ?? null;
       default: return null;
     }
   };
   const segmentValue = (from: string, to: string): number | null => {
     if (measure === 'runTime') { const s = stretchBy.get(key(from, to)); return s && s.n > 0 ? Math.max(0, s.medianAddedMin) : null; }
-    return stopValue(from);
+    // Delay starts colours the stops only; the lines stay neutral (the heat is the map's one colour scale).
+    return measure === 'delayStarts' ? null : stopValue(from);
   };
 
   const stops: MapStop[] = stopsHere.filter(s => s.lonLat && (mainOrder.includes(s.stopId) || v3.patterns?.[String(directionId)]?.some(p => p.stops.some(x => x.stopId === s.stopId)))).map(s => {
     const value = measure === 'runTime' ? null : stopValue(s.stopId);
-    return { stopId: s.stopId, name: nameCase(s.name, 'stop'), lonLat: s.lonLat as [number, number], value, step: mapStep(measure, value), n: s.n };
+    return { stopId: s.stopId, name: nameCase(s.name, 'liveStop'), lonLat: s.lonLat as [number, number], value, step: mapStep(measure, value), n: s.n };
   });
   const segments: MapSegment[] = [];
   for (const [from, to] of stopPairs(v3, directionId, mainOrder)) {
     const a = byId.get(from), b = byId.get(to);
     if (!a?.lonLat || !b?.lonLat) continue;
     const value = segmentValue(from, to);
-    segments.push({ label: `${shortStopName(nameCase(a.name, 'stop'))} to ${shortStopName(nameCase(b.name, 'stop'))}`, fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
+    segments.push({ label: stretchLabel(nameCase(a.name, 'liveStop'), nameCase(b.name, 'liveStop')), fromStopId: from, toStopId: to, coordinates: lines.get(key(from, to)) ?? [a.lonLat as [number, number], b.lonLat as [number, number]], value, step: mapStep(measure, value) });
   }
   return { directionId, segments, stops };
 }

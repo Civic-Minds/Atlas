@@ -26,7 +26,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
-import { CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
+import { REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -297,8 +297,8 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
         type="button"
         ref={reportButtonRef}
         onClick={() => openReport()}
-        aria-label="Report a problem with this card"
-        title="Report a problem with this card"
+        aria-label={`${REPORT_A_PROBLEM} with this card`}
+        title={`${REPORT_A_PROBLEM} with this card`}
         className="shrink-0 p-1 text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors"
       >
         <Flag className="w-3.5 h-3.5" />
@@ -325,7 +325,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
           >
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
-                <h2 id={dialogTitleId} className={CARD_TITLE}>Report a problem</h2>
+                <h2 id={dialogTitleId} className={CARD_TITLE}>{REPORT_A_PROBLEM}</h2>
                 <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
               </div>
               <RoundIconButton onClick={reset} aria-label="Close report form">
@@ -561,13 +561,30 @@ function twoPartSplit(text: string | undefined): [string, string] | null {
   const limit = text.search(/ (from|until) /);
   return limit > 0 ? [text.slice(0, limit), text.slice(limit + 1)] : null;
 }
-const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
+/** Whether a value splits into two parts ("every 15 min," / "with one 32 min gap"; "every 60 min" / "until 5:05 PM"). */
+export const twoPart = (text: string | undefined) => twoPartSplit(text) != null;
 
 function TwoPartBadge({ dot, text, className }: { dot: React.ReactNode; text: string; className: string }) {
   const [first, second] = twoPartSplit(text) ?? [text, ''];
   return (
     <span className={`inline-flex flex-wrap justify-end gap-x-1 min-w-0 ${className}`}>
       <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
+      {' '}
+      <span className="whitespace-nowrap">{second}</span>
+    </span>
+  );
+}
+
+/**
+ * CIV-1300: a two-part value as two lines in a route list's value column, both ending at the row's right edge like every
+ * other value (Ryan, 2026-11-13), the dot beside the first line.
+ */
+function StackedBadge({ dot, text }: { dot: React.ReactNode; text: string }) {
+  const [first, second] = twoPartSplit(text) ?? [text, ''];
+  return (
+    <span className="inline-flex flex-col items-end min-w-0">
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">{dot}{first}</span>
+      {/* Read as one phrase ("every 9 min from 7:17 AM"); the space takes no room between the lines. */}
       {' '}
       <span className="whitespace-nowrap">{second}</span>
     </span>
@@ -584,6 +601,7 @@ export function HeadwayBadge({
   suffixTone = 'dim',
   className = '',
   secondLine = false,
+  stacked = false,
 }: {
   headway: number;
   colorHeadway?: number | null;
@@ -597,6 +615,11 @@ export function HeadwayBadge({
   className?: string;
   /** In a lighter second line of text (search suggestions): the dot and words take that line's own style. */
   secondLine?: boolean;
+  /**
+   * A route list's value column (CIV-1300, Ryan): words in two parts ("every 15 min," "with one 32 min gap") always sit on
+   * two lines, both right-aligned like the other rows' values, the dot beside the first, so the value keeps its column.
+   */
+  stacked?: boolean;
 }) {
   const colorMode = useColorMode();
   const words = label ?? fmtHeadway(headway);
@@ -607,7 +630,7 @@ export function HeadwayBadge({
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
       {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
-      {twoPart(words) ? <TwoPartBadge dot={dot} text={words} className={base} /> : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
+      {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
   );

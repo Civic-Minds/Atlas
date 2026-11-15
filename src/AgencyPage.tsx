@@ -23,6 +23,7 @@ import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
+import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
@@ -49,12 +50,13 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
-function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string }>; others: number; counted: readonly [string, string] }) {
+function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string; before?: string }>; others: number; counted: readonly [string, string] }) {
   return (
     <>
       {items.map((p, i) => (
         <span key={p.name}>
           {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {p.before}
           {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
         </span>
       ))}
@@ -92,7 +94,7 @@ function Intro({ data }: { data: AgencyPageData }) {
       {at >= 0 && named.length > 0 && (
         <>
           {CONNECTS_WITH}
-          <LinkedNames items={named.map(c => ({ name: c.name, href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
+          <LinkedNames items={named.map(c => ({ name: c.name, before: agencyArticle(c.name), href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
         </>
       )}
       .{noMidday}
@@ -107,6 +109,9 @@ function Intro({ data }: { data: AgencyPageData }) {
  */
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
   const v = r[col];
+  // CIV-1300 (#1311): the route card's own reading, as the map's lists show it.
+  const shown = r.text?.[col];
+  if (shown) return shown;
   const edge = r.edge?.[col];
   if (v != null && edge) return periodEdgeText(edge);
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
@@ -174,7 +179,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <SectionTitle id="routes-heading">Routes and weekday frequency</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} />
-            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency's routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4">
                 <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>

@@ -1,3 +1,4 @@
+import { BACK_PLACES, backLinkLabel } from './content/backLinks';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AtlasLogo from './components/AtlasLogo';
 import { useAgencies } from './hooks/useAgencies';
@@ -80,7 +81,7 @@ export default function DiagnosticsPerformancePage() {
   return (
     <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
       <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex flex-wrap items-center gap-x-2 gap-y-3">
-        <AtlasLogo href="/" ariaLabel="Back to the frequency map" />
+        <AtlasLogo href="/" ariaLabel={backLinkLabel(BACK_PLACES.frequencyMap)} />
         <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
         <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Performance</span>
         <Pill tone="outline" size="segment" className="ml-auto" onClick={() => window.location.reload()}>

@@ -19,7 +19,7 @@ const MANUAL = {
   'valley-metro-phoenix': { slugs: ['valleymetro'], relation: 'one-to-one', note: 'Audit mergedAgencyIds already names valleymetro; same official name, Arizona.' },
   'mountain-metro': { slugs: ['mountainmetro'], relation: 'one-to-one', note: 'Official name Mountain Metropolitan Transit, Colorado Springs; the reviewed map is on coloradosprings.gov (the city runs the agency).' },
   'embark-oklahoma-city': { slugs: ['embark'], relation: 'one-to-one', note: 'Same official name, Oklahoma City. Registry websiteUrl for embark points at OU CART (ou.edu/cart), which looks like a registry error.' },
-  'nj-transit': { slugs: ['njt-bus', 'njt-rail'], relation: 'one-to-many', note: 'One NJ Transit system map covers both registry feeds.' },
+  'nj-transit': { slugs: ['njt'], relation: 'one-to-one', note: 'One NJ Transit system map covers the agency (bus and rail feeds, one registry agency).' },
   'mta-nyc': { slugs: ['nyct-subway', 'nyct-bus-manhattan', 'nyct-bus-brooklyn', 'nyct-bus-queens', 'nyct-bus-bronx', 'nyct-bus-si'], relation: 'one-to-many', note: 'New York City Transit is split into one subway and five borough bus feeds in the registry. MTA Bus Company, LIRR and Metro-North are separate operators and are not included.' },
 };
 

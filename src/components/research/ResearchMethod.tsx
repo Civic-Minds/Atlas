@@ -8,7 +8,7 @@ import { SectionTitle } from '../ui/PageTitle';
  */
 export interface ResearchMethodParts {
   dateConducted: ReactNode;
-  /** Only on pages whose sources were checked again. */
+  /** Only on pages whose sources were checked again or whose data was refreshed. New data changes only this date (CIV-1171). */
   dateUpdated?: ReactNode;
   /** How many agencies were checked and what kind of source, numbers fed from the page's data. Empty on every page
    *  until Ryan approves Editorial's wording; its place in the order is provisional. */
@@ -23,6 +23,8 @@ export interface ResearchMethodParts {
   /** When the sources were checked again later. */
   rechecked?: ReactNode;
   limitations: ReactNode;
+  /** Only when we fix a mistake we published: what was wrong and when it was fixed. New data is not a correction (CIV-1171). */
+  corrections?: ReactNode;
 }
 
 const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
@@ -36,6 +38,7 @@ const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
   ['notFound', 'Not found yet:'],
   ['rechecked', 'Rechecked:'],
   ['limitations', 'Limitations:'],
+  ['corrections', 'Corrections:'],
 ];
 
 /** The heading and the parts. No outer margin or border: the page (or its layout's method slot) places it. */

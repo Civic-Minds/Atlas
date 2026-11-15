@@ -127,3 +127,34 @@ export function collectStopHubSiblings(
 
   return { siblingIdsByAgency, routesByAgency, allRouteIds };
 }
+
+/**
+ * The stop card's "Nearby routes" candidates (CIV-1345): for each route at a stop within `maxMeters` of the clicked
+ * point, its closest such stop. The card's own stops and routes are skipped (CIV-1305's card siblings, not the whole
+ * hub), so a route that only uses the stop across the road is listed, and a route that serves this stop is never
+ * "nearby", even in a period it has no service here (#1117).
+ */
+export function nearbyRouteClosestStops(
+  features: readonly GeoJSON.Feature[],
+  lat: number,
+  lon: number,
+  ownStopIds: ReadonlySet<string> | undefined,
+  ownRouteIds: ReadonlySet<string> | undefined,
+  maxMeters: number,
+): Map<string, { stopName: string; dist: number }> {
+  const closest = new Map<string, { stopName: string; dist: number }>();
+  for (const f of features) {
+    if (f.geometry?.type !== 'Point') continue;
+    const p = f.properties as { stopId?: string; stopName?: string; routeIds?: string[] } | null;
+    if (!p?.stopId || !p.routeIds?.length || ownStopIds?.has(p.stopId)) continue;
+    const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
+    const d = getDistanceMeters(lat, lon, flat, flon);
+    if (d > maxMeters) continue;
+    for (const rid of p.routeIds) {
+      if (ownRouteIds?.has(rid)) continue;
+      const existing = closest.get(rid);
+      if (!existing || d < existing.dist) closest.set(rid, { stopName: p.stopName ?? '', dist: d });
+    }
+  }
+  return closest;
+}

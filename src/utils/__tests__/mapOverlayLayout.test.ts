@@ -12,6 +12,7 @@ const PINNED = {
     MAP_FOOTER_NOTICE_SLOT: "flex shrink-0 pointer-events-none",
     MAP_FOOTER_PILLS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-6 max-sm:left-6 max-sm:max-w-[calc(100vw-3rem)]",
     MAP_COUNTS_PHONE_SLOT: "max-sm:absolute max-sm:bottom-16 max-sm:left-6",
+    MAP_COUNTS_COMPARE_SLOT: "sm:fixed sm:bottom-6 sm:right-14",
     MAP_LEGEND_SLOT: "absolute max-sm:bottom-[6.5rem] sm:bottom-[calc(2rem+var(--map-footer-h,2rem))] left-6",
     MAP_CONTROLS_SLOT: "absolute bottom-6 right-3 max-sm:right-6",
     MAP_NOTICE_SLOT: "absolute bottom-[calc(6.5rem+var(--map-key-h,0px))] sm:bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))] left-6 right-24 sm:right-56 flex justify-center",
@@ -33,10 +34,18 @@ describe('map overlay layout', () => {
     expect(layout.MAP_FOOTER_ROW_SLOT).toContain(R.edge);
     expect(layout.MAP_CONTROLS_SLOT).toContain(R.edge);
     expect(layout.MAP_COUNTS_PHONE_SLOT).toContain(R.phoneCounts);
+    expect(layout.MAP_COUNTS_COMPARE_SLOT).toContain(`sm:${R.edge}`);
     expect(layout.MAP_LEGEND_SLOT).toContain(R.aboveFooter);
     expect(layout.MAP_LEGEND_SLOT).toContain(R.phoneAboveCounts);
     expect(layout.MAP_NOTICE_SLOT).toContain(R.notice);
     expect(layout.MAP_NOTICE_SLOT_RAISED).toContain(R.noticeRaised);
     expect(layout.MAP_STATUS_SLOT).toContain(R.status);
+  });
+  it('Compare puts the loading pills at the screen bottom-right, where they sit outside Compare', () => {
+    // Same right inset as the footer row's end in normal mode, so they sit beside the map controls.
+    expect(layout.MAP_COUNTS_COMPARE_SLOT).toContain(`sm:${layout.MAP_OVERLAY_EDGES.footerRight}`);
+    expect(layout.MAP_FOOTER_ROW_SLOT).toContain(layout.MAP_OVERLAY_EDGES.footerRight);
+    // Phones keep their own slot: the compare slot only applies from sm.
+    expect(layout.MAP_COUNTS_COMPARE_SLOT.split(' ').every(c => c.startsWith('sm:'))).toBe(true);
   });
 });

@@ -14,9 +14,8 @@ import { mergeUrlSearchParams } from '../syncUrlParams';
 import { parseHistoryView, encodeHistoryView } from '../historyViewUrl';
 import { DAY_TYPES } from '../../../shared/dayTypes';
 import { PERIOD_KEYS } from '../../../shared/config';
-import { BANDS } from '../../components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
 import { MEASURES } from '../../components/Live/routeMapModel';
-import { SEGMENT_BAND_OPTIONS } from '../segmentDelayView';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Table = Record<string, UrlParam<any>>;
@@ -121,6 +120,10 @@ describe('older names and odd values still read', () => {
     expect(linkUpdate(LIVE_ROUTE_URL, { view: 'explore', day: 'all', band: 'midday' })).toEqual({ view: 'explore', day: null, band: 'midday' });
     expect(readLink('?route=504&band=pmPeak&measure=bunching&seg=a>b', LIVE_TOOL_URL)).toMatchObject({ route: '504', band: 'pmPeak', measure: 'bunching', segment: 'a>b' });
     expect(linkUpdate(LIVE_TOOL_URL, { view: null, tab: null, measure: 'late' })).toEqual({ view: null, tab: null, measure: null });
+    // CIV-1451: the Live map has no All day (the map has none, CIV-1097): an old band=all link reads as absent and opens on
+    // the current period; the period is always written.
+    expect(readLink('?band=all', LIVE_TOOL_URL).band).toBeUndefined();
+    expect(linkUpdate(LIVE_TOOL_URL, { band: 'midday' })).toEqual({ band: 'midday' });
     expect(readLink('?sort=delivered', LIVE_AGENCY_URL).sort).toBe('delivered');
     // Live's band shares p with the map's period, and is always written while a route is open.
     expect(readLink('?p=midday', LIVE_MAP_URL).band).toBe('midday');
@@ -137,8 +140,8 @@ describe('older names and odd values still read', () => {
 
 describe('the schema matches the controls', () => {
   it('Live band, measure and route-performance band lists', () => {
-    expect(LIVE_BAND_IDS).toEqual(BANDS.map(([id]) => id));
-    expect(LIVE_BAND_IDS).toEqual(SEGMENT_BAND_OPTIONS.map(o => o.id));
+    // No All day anywhere (CIV-1097, CIV-1451): links carry the periods the Live map's menu offers.
+    expect(LIVE_BAND_IDS).toEqual(PERIOD_BANDS_ONLY.map(([id]) => id));
     expect(LIVE_MEASURE_IDS).toEqual(MEASURES.map(([id]) => id));
   });
 });

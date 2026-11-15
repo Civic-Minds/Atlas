@@ -25,7 +25,7 @@ describe('History rows with a shared stretch (CIV-555)', () => {
   it('headline "every 15–52 min" in the selected period, as the live route card does, and the plain value where its range rule says no', async () => {
     window.history.replaceState(null, '', '/apps/history?agency=septa&hroute=17&year=2024&p=midday');
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => [septa] })));
-    const { container } = render(<HistoryMapOverlayProvider><History active view={{ period: 'midday', maxHeadway: Infinity }} query="" searchFocused={false} setQuery={() => {}} /></HistoryMapOverlayProvider>);
+    const { container } = render(<HistoryMapOverlayProvider><History active view={{ period: 'midday', maxHeadway: Infinity, day: 'Weekday' }} query="" searchFocused={false} setQuery={() => {}} /></HistoryMapOverlayProvider>);
     await waitFor(() => expect(container.textContent).toContain('Jun 2015'));
     const text = container.textContent ?? '';
     expect(text).toContain('every 15–52 min');

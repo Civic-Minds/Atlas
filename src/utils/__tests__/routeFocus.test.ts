@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createPropertyExpression, latest, type StylePropertySpecification } from '@maplibre/maplibre-gl-style-spec';
 import { buildFocusedRouteLineOpacityExpression } from '../colors';
-import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY, focusOpacity, liveHandoffSettled, mapFocusRoute } from '../routeFocus';
 
 const routeMatch = ['==', ['get', 'routeId'], '201'];
 
@@ -53,5 +53,53 @@ describe('shared selection fade (routes and on-demand zones)', () => {
     const faded = buildFocusedRouteLineOpacityExpression(['==', ['get', 'routeId'], ''], ['get', 'headway']);
     expect(opacity(faded, { routeId: '201', headway: 10 })).toBe(FOCUS_DIM_OPACITY);
     expect(opacity(faded, { routeId: '201', headway: 10000 }, 8)).toBe(0);
+  });
+});
+
+describe('the same selection fade for Live vehicles (focusOpacity)', () => {
+  const v = (id: string, routeShortName: string, agencySlug = 'ttc') => ({ id, routeShortName, agencySlug });
+
+  it('keeps every vehicle at full strength with nothing picked', () => {
+    expect(focusOpacity(v('1', '504'), null)).toBe(1);
+    expect(focusOpacity(v('2', '506'), undefined)).toBe(1);
+  });
+
+  it('fades every other route to the shared fade value when a route is picked', () => {
+    const focus = { agencySlug: 'ttc', routeShortName: '504' };
+    expect(focusOpacity(v('1', '504'), focus)).toBe(1);
+    expect(focusOpacity(v('2', '506'), focus)).toBe(FOCUS_DIM_OPACITY);
+    expect(focusOpacity(v('3', '504', 'yrt'), focus)).toBe(FOCUS_DIM_OPACITY);
+  });
+
+  it('fades the same route\'s other directions when one direction is picked', () => {
+    const focus = { agencySlug: 'ttc', routeShortName: '504', ids: ['1', '4'] };
+    expect(focusOpacity(v('1', '504'), focus)).toBe(1);
+    expect(focusOpacity(v('4', '504'), focus)).toBe(1);
+    expect(focusOpacity(v('2', '504'), focus)).toBe(FOCUS_DIM_OPACITY);
+    // An id match on another route never brings that route back.
+    expect(focusOpacity(v('1', '506'), focus)).toBe(FOCUS_DIM_OPACITY);
+  });
+});
+
+describe('a route handed from the map to Live stays selected until Live takes it (liveHandoffSettled)', () => {
+  const handoff = { route: 'ttc::506', liveRouteAtHandoff: 'ttc::504' };
+
+  it('holds while Live still shows the route it had (no flash back to 504)', () => {
+    expect(liveHandoffSettled(handoff, { route: 'ttc::504', mapRouteKey: 'ttc::504' })).toBe(false);
+  });
+
+  it('lets go once Live shows the handed route, or Live moved on, or closed', () => {
+    expect(liveHandoffSettled(handoff, { route: 'ttc::506', mapRouteKey: 'ttc::506' })).toBe(true);
+    expect(liveHandoffSettled(handoff, { route: null, mapRouteKey: null })).toBe(true);
+    expect(liveHandoffSettled(handoff, null)).toBe(true);
+  });
+
+  it('treats a branch key of the same route as taken', () => {
+    expect(liveHandoffSettled({ route: 'ttc::504::branch:A', liveRouteAtHandoff: 'ttc::504' }, { route: 'ttc::504', mapRouteKey: 'ttc::504' })).toBe(true);
+  });
+
+  it('names the focused route', () => {
+    expect(mapFocusRoute({ agencySlug: 'ttc', routeShortName: '504', ids: ['1'] })).toBe('ttc::504');
+    expect(mapFocusRoute(null)).toBeNull();
   });
 });

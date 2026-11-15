@@ -27,6 +27,11 @@ describe('agency short names (CIV-998)', () => {
     expect(agencyNames('STM (Montréal)').name).toBe('STM');
   });
 
+  it('uses the current name of a renamed agency (SMAT became SMRT in 2022, CIV-1103)', () => {
+    expect(agencyNames(bySlug.get('smat')!).official).toBe('Santa Maria Regional Transit');
+    expect(agencyNames(bySlug.get('ccta')!).official).toBe('Green Mountain Transit');
+  });
+
   it('lists show the short name with the place beside it (#1134)', () => {
     expect(agencyNames(bySlug.get('ttc')!).list).toEqual({ primary: 'TTC', secondary: 'Toronto' });
     expect(agencyNames(bySlug.get('gptc')!).list).toEqual({ primary: 'Gary Public Transportation Corporation' }); // the name already says Gary

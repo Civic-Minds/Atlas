@@ -91,12 +91,23 @@ export function collapseBunched(sorted: readonly number[]): number[] {
 }
 
 export function pooledHeadwayInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): number | null {
+  return pooledReadingInWindow(times, start, end, minDeps, allDay, own).value;
+}
+
+/**
+ * pooledHeadwayInWindow's value, and, when the evenness guard refused the merged list, its
+ * worst wait: the longest gap between two of its departures in the window (CIV-1072, Ryan
+ * 2026-11-10: an uneven pooled window shows its longest wait instead of nothing). Two 30s three
+ * minutes apart read 27, never 15; #813's 165-minute hole reads 165, never 98. worstWait is null
+ * whenever value is set or the list is too short to read.
+ */
+export function pooledReadingInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): { value: number | null; worstWait: number | null } {
   const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
-  if (inWindow.length < minDeps) return null;
+  if (inWindow.length < minDeps) return { value: null, worstWait: null };
   const typical = allDay
     ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)
     : medianHeadwayInWindow(inWindow, start, end, minDeps, true);
-  if (typical == null || inWindow.length < 2) return typical;
+  if (typical == null || inWindow.length < 2) return { value: typical, worstWait: null };
   const mean = (inWindow[inWindow.length - 1] - inWindow[0]) / (inWindow.length - 1);
   let longest = 0;
   for (let i = 1; i < inWindow.length; i++) longest = Math.max(longest, inWindow[i] - inWindow[i - 1]);
@@ -112,8 +123,8 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
   // Each ratio allows at least the grace over its base: one held bus on a dense service is
   // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
   if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return null;
-  return value;
+    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest };
+  return { value, worstWait: null };
 }
 
 /**

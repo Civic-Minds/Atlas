@@ -26,6 +26,7 @@ import { countOf } from './overflowText';
 import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
+import { agencyInSentence } from './agencyArticle';
 
 export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
@@ -239,7 +240,7 @@ export function groupPageDescription(where: string, d: Pick<AgencyGroupData, 'to
   return firstThatFits([
     `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where} side by side: routes and weekday waits by time of day, from published schedules.`,
     `Compare ${countOf(n, 'transit agency', 'transit agencies')} in ${where}: routes and weekday waits by time of day.`,
-    `${groupLeadSentence(where, d)} Compare each agency's routes and frequency.`,
+    `${groupLeadSentence(where, d)} Compare each agency’s routes and frequency.`,
     groupLeadSentence(where, d),
   ], DESCRIPTION_MAX);
 }
@@ -286,16 +287,16 @@ export function areaIntroName(_d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgency
 export function areaAboutParagraph(d: AreaPageData): string {
   const parts = areaIntroParts(d);
   const j = areaIntroJoiners(parts);
-  return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
+  return `${parts.lead}${j.opener}${parts.named.map((a, i) => agencyInSentence(areaIntroName(d, a)) + j.separators[i]).join('')}${j.tail}`;
 }
 
 /** The line under an area page's frequency bar. */
-export const AREA_BAR_NOTE = "The bar splits this area's routes by how often they run on a weekday midday. Each route is judged by its slower direction.";
+export const AREA_BAR_NOTE = "The bar splits this area’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.";
 
 export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
   const refreshed = formatDataDate(d.newestRefresh);
   const release = formatDataDate(d.releaseDate);
-  return ["Based on the agencies' published schedules, not live arrivals.", refreshed ? `Newest schedule published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agencies’ published schedules, not live arrivals.", refreshed ? `Newest schedule published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /**

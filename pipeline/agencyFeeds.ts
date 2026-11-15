@@ -45,6 +45,7 @@ export interface AgencyFeedConfig {
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
+  mergeIdenticalShapeIds?: boolean;
   referenceDateFromRunDate?: boolean;
   /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
   skipBlockTripHeadways?: boolean;
@@ -121,6 +122,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
+    mergeIdenticalShapeIds: agency.mergeIdenticalShapeIds,
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     skipBlockTripHeadways: agency.skipBlockTripHeadways,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,

@@ -12,7 +12,7 @@ name: Rebuild data release
 #          Runs the branch's code with READ-ONLY R2 credentials and a read-only GitHub token, so
 #          it cannot write R2 or the repo even if the code under test misbehaves.
 # publish: reprocess --write -> build-pmtiles -> verify-pmtiles-remote -> build-history ->
-#          publish-data-release. Refuses unless `ref` is the current tip of main.
+#          publish-data-release -> promote -> night service summary. Refuses unless `ref` is the current tip of main.
 on:
   workflow_dispatch:
     inputs:
@@ -167,6 +167,22 @@ jobs:
           CATA_LANSING_API_KEY: ${{ secrets.CATA_LANSING_API_KEY }}
           GRAND_EST_API_KEY: ${{ secrets.GRAND_EST_API_KEY }}
 
+      # Every route's and direction's period figures, small enough to upload for every agency, so
+      # two dry runs (an old rule and a new one) compare with scripts/diff-period-figures.ts.
+      - name: Summarize the period figures
+        if: always()
+        continue-on-error: true
+        run: npx tsx scripts/diff-period-figures.ts --summary=tmp/derived-reprocess --out=tmp/derived-reprocess/period-figures.json
+
+      # The settings this dry run processed with, kept beside its figures so a comparison knows which side is which.
+      # (The release manifest is written by the tile build, which only the publish job runs.)
+      - name: Record the build settings
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p tmp/derived-reprocess
+          printf '{"commit":"%s"}\n' "$(git rev-parse HEAD)" > tmp/derived-reprocess/build-settings.json
+
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
         id: summary
@@ -229,6 +245,18 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
           ATLAS_LOCAL_PREVIEW_DIR: tmp/derived-reprocess
 
+      # CIV-1341 (#1333): the night service summary is built fresh from every agency's route file
+      # (this run's dry-run output, the published copy for refused agencies). Local file only.
+      - name: Build the night service summary (dry run)
+        if: always() && steps.summary.outputs.report == 'true'
+        run: npx tsx pipeline/build-night-service.ts --dry-run --local-dir tmp/derived-reprocess
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+
       - name: Upload the reprocess report and release diff
         if: always()
         uses: actions/upload-artifact@v7
@@ -236,6 +264,8 @@ jobs:
           name: rebuild-report-dry-run-${{ github.run_id }}
           path: |
             tmp/derived-reprocess/report.json
+            tmp/derived-reprocess/period-figures.json
+            tmp/derived-reprocess/build-settings.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
           if-no-files-found: warn
@@ -637,6 +667,18 @@ jobs:
       # start_at=promote; it never touches the public release.
       - name: Promote the run's agency files to top-level
         run: npx tsx pipeline/promote-run-artifacts.ts --run-prefix "$RUN_PREFIX"
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # CIV-1341 (#1333): only the weekly refresh wrote atlas/night-service.json, and it merges, so a
+      # rebuild left it stale. Build it fresh from the now-promoted route files, once, after every
+      # agency has finished. A failure leaves the old file in place.
+      - name: Build and upload the night service summary
+        run: npx tsx pipeline/build-night-service.ts
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}

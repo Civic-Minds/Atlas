@@ -35,6 +35,17 @@ export interface WhatsNewRelease {
 
 export const WHATS_NEW: WhatsNewRelease[] = [
   {
+    version: '3.4.0',
+    month: 'November 2026',
+    date: '2026-11-09',
+    items: [
+      { lead: 'Compare mode', text: 'now on the public map on desktop and tablet, each map with its own place, day and time', isNew: true },
+      { lead: 'Route cards on phones', text: 'slide up from the bottom, with the route shown above', isNew: true },
+      { lead: 'Agency and area pages', text: 'every agency, metro area, state and province has its own frequency page', isNew: true },
+      { lead: 'Simpler route filters', text: 'two switches hide occasional and part-time routes' },
+    ],
+  },
+  {
     version: '3.3.0',
     month: 'October 2026',
     date: '2026-10-12',

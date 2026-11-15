@@ -6,7 +6,8 @@ import type { TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats'
 import type { HistoryMapOverlay } from '../../../context/HistoryMapOverlay';
 import { LIVE_ANALYSIS_ROUTES } from '../../../../shared/livePollingConfig';
 import { tileEffectiveHeadwayExpr } from '../../../../shared/tileFilterExprs';
-import { buildFocusCase, buildFocusedRoutePaint } from '../../../utils/routeFocus';
+import { buildFocusCase, buildFocusedRoutePaint, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
+import { LIVE_CONTEXT_LAYER_IDS, LIVE_CONTEXT_OPACITY } from './mapLayers';
 import { buildPartialMatchFilterExpression, broadenFilterForPartialMatches, selectedSharedStretchRoutes, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
 import { buildRouteSortKeyExpression } from '../../../utils/routeSort';
 import type { OnDemandFocusTarget } from './onDemandFocus';
@@ -65,6 +66,46 @@ export interface RouteStylingInput {
  * Route, selected-route and stop filters and paint: search, agency and Live allowlists, the
  * headway colours, and the focus treatment for a selected route, branch, stop or History route.
  */
+/** The routes Live draws: those with Live route data (LIVE_ANALYSIS_ROUTES), matched on agency and route number. */
+export function liveRoutesFilter(): unknown[] {
+  const pairs = LIVE_ANALYSIS_ROUTES
+    .map(key => key.split('::'))
+    .map(([slug, rsn]) => ['all', ['==', ['get', 'agencySlug'], slug], ['==', ['get', 'routeShortName'], rsn]]);
+  return pairs.length > 0 ? ['any', ...pairs] : ['==', ['get', 'agencySlug'], ''];
+}
+
+/**
+ * Layers drawn beside the route lines whose filters are not built from `routeFilter`: local (non-tile) routes and their
+ * click target, the beta section colours over the lines and the frequency filter's partial pieces. In Live they keep to Live's routes like the
+ * lines do (CIV-1090: other routes' sections stayed drawn), and outside Live they carry no filter. Layer filters, so
+ * switching modes never rebuilds their data.
+ */
+export const LIVE_ONLY_FILTERED_LAYERS = [
+  'local-routes-layer',
+  'local-routes-hit-layer',
+  'route-segments-layer',
+  'frequency-qualifying-segments-layer',
+  'frequency-qualifying-segments-hit-layer',
+] as const;
+
+/** Per map, the layers applyLiveOnlyFilters has filtered, so leaving Live clears only those and never another filter. */
+const liveFilteredLayers = new WeakMap<object, Set<string>>();
+
+export function applyLiveOnlyFilters(map: Pick<maplibregl.Map, 'getLayer' | 'setFilter'>, liveRoutesOnly: boolean): void {
+  const filtered = liveFilteredLayers.get(map) ?? new Set<string>();
+  for (const id of LIVE_ONLY_FILTERED_LAYERS) {
+    if (!map.getLayer(id)) continue;
+    if (liveRoutesOnly) {
+      map.setFilter(id, liveRoutesFilter() as maplibregl.FilterSpecification);
+      filtered.add(id);
+    } else if (filtered.has(id)) {
+      map.setFilter(id, null);
+      filtered.delete(id);
+    }
+  }
+  liveFilteredLayers.set(map, filtered);
+}
+
 export function useRouteStyling(
   mapRef: React.RefObject<maplibregl.Map | null>,
   mapLoaded: boolean,
@@ -157,20 +198,13 @@ export function useRouteStyling(
     const historyYearAgencyMatch: any = historyOverlay?.slug && historyOverlay.yearRoutes ? ['==', ['get', 'agencySlug'], historyOverlay.slug] : null;
     if (historyYearAgencyMatch) {
       const names = onTodaysLines(historyOverlay!.yearRoutes!).map(r => r.routeShortName);
-      const yearClause = ['all', historyYearAgencyMatch, ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
+      // That day's line only, by the map's own day clause (buildRouteTileFilter); without it every day's copy drew.
+      const yearClause = ['all', historyYearAgencyMatch, ['==', ['get', 'day'], historyOverlay!.day ?? 'Weekday'], ['in', ['to-string', ['get', 'routeShortName']], ['literal', names]]];
       routeFilter = ['any', concatFilters(routeFilter, ['!', historyYearAgencyMatch]) ?? true, yearClause];
     }
 
-    if (liveRoutesOnly) {
-      // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
-      const livePairs = LIVE_ANALYSIS_ROUTES
-        .map(key => key.split('::'))
-        .map(([slug, rsn]) => ['all',
-          ['==', ['get', 'agencySlug'], slug],
-          ['==', ['get', 'routeShortName'], rsn],
-        ]);
-      routeFilter = concatFilters(routeFilter, livePairs.length > 0 ? ['any', ...livePairs] : ['==', ['get', 'agencySlug'], '']);
-    }
+    // Live draws only the routes with Live route data; vehicles of other routes still show as dots.
+    if (liveRoutesOnly) routeFilter = concatFilters(routeFilter, liveRoutesFilter());
 
     const selectedRouteFilter = selectedRoute
       ? concatFilters(routeFilter, routeKeyMatchExpression(selectedRoute))
@@ -189,11 +223,19 @@ export function useRouteStyling(
       map.setPaintProperty('route-segments-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
     }
 
+    // Live's thin context lines step back behind a picked route like every other line.
+    for (const id of LIVE_CONTEXT_LAYER_IDS) {
+      if (!map.getLayer(id)) continue;
+      map.setPaintProperty(id, 'line-opacity', (selectedRoute
+        ? buildFocusCase(routeKeyMatchExpression(selectedRoute), LIVE_CONTEXT_OPACITY, FOCUS_DIM_OPACITY)
+        : LIVE_CONTEXT_OPACITY) as any);
+    }
+
     if (hasOverviewRoutes) map.setFilter('overview-routes-layer', routeFilter as any);
     if (hasRoutes) map.setFilter('routes-layer', routeFilter as any);
     // Local (non-tile) routes: Live's route allowlist as a layer filter, so switching modes never
     // rebuilds the local route data.
-    if (hasLocalRoutes) map.setFilter('local-routes-layer', liveRoutesOnly ? ['any', ...LIVE_ANALYSIS_ROUTES.map(k => k.split('::')).map(([slug, rsn]) => ['all', ['==', ['get', 'agencySlug'], slug], ['==', ['get', 'routeShortName'], rsn]])] as any : null);
+    applyLiveOnlyFilters(map, liveRoutesOnly);
     const routeSortKey = buildRouteSortKeyExpression(headwayExpr);
     if (hasOverviewRoutes) map.setLayoutProperty('overview-routes-layer', 'line-sort-key', routeSortKey as any);
     if (hasRoutes) map.setLayoutProperty('routes-layer', 'line-sort-key', routeSortKey as any);

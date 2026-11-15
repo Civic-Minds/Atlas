@@ -27,7 +27,7 @@ import { resolve } from 'path';
 import { canRebuildPmtilesAfterRefresh, clearDataRefreshHandoff, writeDataRefreshMarker, writeRefreshRunResult, type RefreshAgencyStatus } from './dataRefreshMarker.js';
 // loadEnv first so shared/config sees staging R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
-import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, rawFeedArchiveKey } from './r2.js';
+import { r2Put, r2Get, r2PutArchive, r2PutArchiveJson, r2GetArchive, r2ListArchiveObjects, rawFeedArchiveKey, rawFeedDigest } from './r2.js';
 import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
@@ -36,7 +36,7 @@ import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceInd
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { R2_PUBLIC_URL } from '../shared/config.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
-import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource } from './feedPeek.js';
+import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
 import {
   clearOverrideUserFacingOnFeedChange,
@@ -46,9 +46,9 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
-import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
+import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { compareStopSnapshots, formatStopAuditLog, type AuditedStop } from './stopAudit.js';
-import { feedFileDate, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
+import { feedContentsChanged, feedFileDate, feedPeriodStart, isNewFeedFile, lowerStoredFeedExpiry, candidateIsOlderThanActive, shouldClearStaged, decideRefreshSkipUnchanged, rawArchiveKeyDigest, isFeedExpired, markFeedStale, shouldSkipAllExpiredFeeds, shouldStampFeedMeta, stampFeedMeta, refreshedFeedExpiry, routeLineCount, stampSupplementalFeedMeta } from './refreshMeta.js';
 import {
   COUNTRY_LAUNCH_FLAG,
   isCountryLaunchBlocked,
@@ -67,7 +67,7 @@ import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
-import { peekFeedDates, zipFileDate } from './archiveSelection.js';
+import { newestArchivedZipStem, peekFeedDates, zipFileDate } from './archiveSelection.js';
 import { tryArchiveUnchangedFeed } from './archiveIfMissing.js';
 import { futureFeedHoldUntil, heldFeedSummary } from './futureFeedHold.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
@@ -265,7 +265,12 @@ interface AgencyEntry {
   lastSupplementalFeeds?: SupplementalFeedMeta[];
   lastFeedExpiry?: string | null;
   lastPeekedExpiry?: string | null;
+  lastFeedStart?: string | null;
   lastFeedVersion?: string | null;
+  /** Archive key of the zip the live artifacts came from; its hash decides "unchanged" (#1423). */
+  lastRawArchiveKey?: string | null;
+  /** The processed zip's content key (zipContentKey), compared before the byte hash (#1423). */
+  lastFeedContentKey?: string | null;
   lastRefreshedAt?: string | null;
   lastFeedCheckAt?: string | null;
   /** A fetched timetable starting on this date waits until then (#1144). */
@@ -292,6 +297,7 @@ interface AgencyEntry {
   keepLongShapeJumps?: boolean;
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
+  mergeIdenticalShapeIds?: boolean;
   referenceDateFromRunDate?: boolean;
   skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
@@ -304,12 +310,23 @@ interface AgencyEntry {
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   feedReviewStatus?: 'review' | 'verified';
+  /** CIV-828: a hand-set feed_version whose file shows the "still being verified" notice; any other file retires it. */
+  reviewFeedVersion?: string;
   lastFeedSourceKind?: FeedCandidate['kind'] | null;
   lastFeedSourceUrl?: string | null;
   feedQuality?: FeedQuality;
 }
 
 type GeoJsonFc = { type: string; features: unknown[] };
+
+/** #1423: the newest archived zip's stem for an agency with no recorded key; null when the archive is empty or unreadable. */
+async function newestArchivedRawKey(agency: AgencyEntry, todayYmd: string): Promise<string | null> {
+  try {
+    return newestArchivedZipStem(await r2ListArchiveObjects(`gtfs/archive/${agency.slug}/`), agency, todayYmd);
+  } catch {
+    return null;
+  }
+}
 
 async function refreshAgency(
   agency: AgencyEntry,
@@ -372,7 +389,9 @@ async function refreshAgency(
 
   // #1144: a timetable that hasn't started waits while the current one still runs. The zip is
   // archived and the agency marked, so the run on its start date (heldFeedsDue) processes it.
-  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const peekedDates = await peekFeedDates(buf, agency.excludeRouteShortNames);
+  const { feedStart: peekedStart, feedExpiry: peekedCalendarEnd, feedInfoEnd: peekedFeedInfoEnd, calendarOnlyEnd: peekedCalendarOnlyEnd } = peekedDates;
+  const peekedPeriodStart = feedPeriodStart(peekedDates);
   const heldUntil = futureFeedHoldUntil({ feedStart: peekedStart, todayYmd: expiryToday, liveFeedExpiry: agency.lastFeedExpiry });
   if (heldUntil) {
     agency.heldFeedStart = heldUntil;
@@ -416,14 +435,26 @@ async function refreshAgency(
     return { summary: `stale (${reason})`, stale: true };
   }
 
-  if (!forceRefresh && candidateIsOlderThanActive({ candidateExpiry: peekedExpiry, existingExpiry: agency.lastFeedExpiry })) {
+  if (!forceRefresh && candidateIsOlderThanActive({
+    candidateExpiry: peekedExpiry, candidateStart: peekedPeriodStart, existingExpiry: agency.lastFeedExpiry,
+    existingStart: agency.lastFeedStart, existingObtainedAt: agency.feedObtainedAt,
+    existingPeekedExpiry: agency.lastPeekedExpiry, recordedAt: agency.lastRefreshedAt, todayYmd: today,
+  })) {
     writeLog(`\n  [warn] downloaded feed is older than the active snapshot (${peekedExpiry ?? 'unknown'} < ${agency.lastFeedExpiry}); keeping the active snapshot\n  `);
     return { summary: `skipped (older feed: ${peekedExpiry ?? 'unknown'})` };
   }
 
-  // CIV-1011 safeguard: when Atlas first obtained this file. A new version or expiry is obtained
-  // today; an unchanged one keeps its recorded date, else the zip's own date (#1253).
-  const newFile = (peekedVersion ?? null) !== (agency.lastFeedVersion ?? null) || (peekedExpiry ?? null) !== (agency.lastPeekedExpiry ?? agency.lastFeedExpiry ?? null);
+  // #1429: one "did the feed change" answer, from the zip's contents when recorded, for the obtained
+  // date, the review flag and the override note below (the skip check reads the same keys).
+  const feedContentKey = zipContentKey(buf);
+  const feedDigest = rawFeedDigest(buf);
+  const contentsChanged = feedContentsChanged({
+    contentKey: feedContentKey, lastFeedContentKey: agency.lastFeedContentKey,
+    zipDigest: feedDigest, lastRawArchiveKey: agency.lastRawArchiveKey,
+  })?.changed ?? null;
+  // CIV-1011 safeguard: when Atlas first obtained this file. A new file is obtained today; an
+  // unchanged one keeps its recorded date, else the zip's own date (#1253).
+  const newFile = isNewFeedFile(agency, peekedExpiry, peekedVersion, contentsChanged);
   // The run date in the pipeline's time zone, as the picker's anchor reads it (CIV-1101), not UTC `today`.
   const runDate = pipelineRunDateYmd();
   const feedObtainedAt = feedFileDate({
@@ -445,6 +476,11 @@ async function refreshAgency(
     referenceDateFromRunDate: agency.referenceDateFromRunDate,
     serviceWeek,
     lastServiceWeek: agency.lastServiceWeek,
+    zipDigest: feedDigest,
+    lastRawArchiveKey: agency.lastRawArchiveKey,
+    archivedRawKey: rawArchiveKeyDigest(agency.lastRawArchiveKey) ? null : await newestArchivedRawKey(agency, expiryToday),
+    contentKey: feedContentKey,
+    lastFeedContentKey: agency.lastFeedContentKey,
   });
   if (skipDecision.skip) {
     // A current feed can still have a legacy processed artifact. Do not let
@@ -476,10 +512,12 @@ async function refreshAgency(
 
   // A drop-guard refusal must leave the agency's metadata exactly as it was.
   const agencyBeforeRebuild = structuredClone(agency);
-  const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion);
-  const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion);
+  const clearedOverrideNote = clearOverrideUserFacingOnFeedChange(agency, peekedExpiry, peekedVersion, contentsChanged);
+  const feedChanged = upstreamFeedChanged(agency, peekedExpiry, peekedVersion, contentsChanged);
   if (feedChanged) {
-    agency.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[agency.slug] ?? []) ? 'review' : undefined;
+    agency.feedReviewStatus = reviewStatusForNewFeed(readFeedReviewHistory().agencies[agency.slug] ?? [], agency.reviewFeedVersion, peekedVersion);
+    // CIV-828: the hand-set version is for one file; a different file retires it.
+    if (agency.reviewFeedVersion && agency.reviewFeedVersion !== peekedVersion) delete agency.reviewFeedVersion;
   }
   if (clearedOverrideNote) {
     writeLog(`\n  ${formatOverrideUserFacingClearedLog(agency.slug)}\n  `);
@@ -620,6 +658,9 @@ async function refreshAgency(
       listingEnd: primary.listingEnd,
       serviceWeek,
       feedObtainedAt,
+      feedStart: peekedPeriodStart,
+      rawArchiveKey: archiveKey,
+      contentKey: feedContentKey,
     });
     stampSupplementalFeedMeta(agency, supplementalMeta);
   }

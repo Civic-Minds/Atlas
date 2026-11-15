@@ -42,6 +42,8 @@ export interface SuggestedRoute {
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
   edgeText?: string;
+  /** CIV-1447: the number the dot is coloured by, where slower than `headway` (routeListDisplay). */
+  colorHeadway?: number;
 }
 
 interface SearchSuggestionsPanelProps {
@@ -74,7 +76,7 @@ export function routeRowLabels(route: Parameters<typeof routeLabels>[0]) {
 /** The dot between an agency and its frequency in a suggestion's second line. */
 const SEP = <span className="text-[var(--text-dim)] font-normal"> · </span>;
 
-export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string) {
+export function routeRowRight(agencyName: string, headway?: number | null, stacked = false, limited = false, sharedHeadway?: number | null, noRegular = false, compare?: RouteListDisplay['compare'], edgeText?: string, colorHeadway?: number) {
   const agency = agencyNames(agencyName).name;
   // #1292: on its own line (stacked) a long value wraps to a second line instead of being cut off: "every 9 min from…"
   // hid the time that explains it. Beside the name (not stacked) the row keeps its one-line truncation.
@@ -105,7 +107,7 @@ export function routeRowRight(agencyName: string, headway?: number | null, stack
       <span className={`${LIST_ROW_DIM} ${layout}`}>
         {agency}
         {SEP}
-        <HeadwayBadge secondLine headway={headway} label={edgeText ?? routeListHeadwayText(headway, sharedHeadway)} />
+        <HeadwayBadge secondLine headway={headway} colorHeadway={colorHeadway} label={edgeText ?? routeListHeadwayText(headway, sharedHeadway)} />
       </span>
     );
   }
@@ -180,7 +182,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       name={labels.name}
                       right={(() => {
                         const display = displayForRouteKey(r.key);
-                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText);
+                        return routeRowRight(r.agencyName, display.headway, true, display.limited, display.sharedHeadway, display.noRegular, display.compare, display.edgeText, display.colorHeadway);
                       })()}
                       stacked
                       onClick={() => pickRoute(r.key)}
@@ -204,7 +206,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
                       key={r.key}
                       shortName={labels.shortName}
                       name={labels.name}
-                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText)}
+                      right={routeRowRight(r.agencyName, r.headway, true, r.limited, r.sharedHeadway, r.noRegular, displayForRouteKey(r.key).compare, r.edgeText, r.colorHeadway)}
                       stacked
                       onClick={() => pickRoute(r.key)}
                     />

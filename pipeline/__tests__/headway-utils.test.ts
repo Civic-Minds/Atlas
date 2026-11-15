@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -128,6 +128,43 @@ describe('adaptiveMedianHeadwayInWindow', () => {
   it('still returns null when neither the strict nor the widened window has enough departures', () => {
     expect(adaptiveMedianHeadwayInWindow([13 * 60 + 20, 13 * 60 + 30], 13 * 60, 3)).toBeNull();
   });
+
+  // CIV-1109 (#1214): Madison Metro 80 "Memorial Union via Eagle Heights", weekday. Nothing reaches
+  // the terminal between 4 and 5 PM; the first afternoon arrivals are 5:02, 5:17 and 5:26. The
+  // 90-minute window read them as "every 12" at 4 PM. An hour with no departure of its own has no value.
+  it('never widens an hour that has no departure of its own', () => {
+    const times = [17 * 60 + 2, 17 * 60 + 17, 17 * 60 + 26, 17 * 60 + 33, 17 * 60 + 40];
+    expect(adaptiveMedianHeadwayInWindow(times, 16 * 60, 3)).toBeNull();
+    expect(adaptiveMedianHeadwayInWindow(times, 17 * 60, 3)).toBe(8);
+  });
+
+  // The one departure at 4:45 still lets the hour widen (#282's rescue is unchanged).
+  it('still widens an hour that has one or two departures of its own', () => {
+    const times = [16 * 60 + 45, 17 * 60 + 2, 17 * 60 + 17];
+    expect(adaptiveMedianHeadwayInWindow(times, 16 * 60, 3)).toBe(16);
+  });
+
+  // A departure at exactly the next hour's :00 belongs to the next hour, so it does not let this one widen.
+  it('does not count a departure at the next hour\'s start as this hour\'s own', () => {
+    const times = [17 * 60, 17 * 60 + 10, 17 * 60 + 20];
+    expect(adaptiveMedianHeadwayInWindow(times, 16 * 60, 3)).toBeNull();
+    expect(adaptiveMedianHeadwayInWindow(times, 17 * 60, 3)).toBe(10);
+  });
+});
+
+describe('hasDepartureInClockHour', () => {
+  it('reads [start, start + 60) only', () => {
+    expect(hasDepartureInClockHour([16 * 60 + 59], 16 * 60)).toBe(true);
+    expect(hasDepartureInClockHour([17 * 60], 16 * 60)).toBe(false);
+    expect(hasDepartureInClockHour([], 16 * 60)).toBe(false);
+  });
+
+  // #297: plain-notation 2-4 AM trips count in the overnight hours through the +1440 fold.
+  it('counts plain-notation overnight trips in the folded hour', () => {
+    expect(hasDepartureInClockHour([2 * 60 + 10], 26 * 60)).toBe(true);
+    expect(hasDepartureInClockHour([4 * 60 + 39], 27 * 60)).toBe(false);
+    expect(hasDepartureInClockHour([4 * 60 + 39], 28 * 60)).toBe(true);
+  });
 });
 
 describe('forCrossMidnightWindow', () => {
@@ -167,6 +204,16 @@ describe('adaptiveMedianHeadwayInWindow — cross-midnight (#297)', () => {
   it('does not fabricate overnight service when there truly is none in either notation', () => {
     const times = [420, 480, 540]; // normal daytime service only
     expect(adaptiveMedianHeadwayInWindow(times, 26 * 60, 3)).toBeNull();
+  });
+
+  // CIV-1106 / CIV-1109: TTC 504 westbound weekday. Three 2 AM streetcars, none at 3 AM, and the
+  // next morning's first trips at 4:39, 4:49 and 4:59 (plain notation). 3 AM read the 4 AM trips
+  // through the widened window; it has no value. 2 AM and 4 AM keep theirs (the fold stays).
+  it('leaves an empty overnight hour empty while the folded next-morning hour keeps its value', () => {
+    const times = [26 * 60 + 5, 26 * 60 + 25, 26 * 60 + 45, 4 * 60 + 39, 4 * 60 + 49, 4 * 60 + 59];
+    expect(adaptiveMedianHeadwayInWindow(times, 26 * 60, 3)).toBe(20);
+    expect(adaptiveMedianHeadwayInWindow(times, 27 * 60, 3)).toBeNull();
+    expect(adaptiveMedianHeadwayInWindow(times, 28 * 60, 3)).toBe(10);
   });
 });
 

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
-import { FLOATING_CARD, GLASS_PILL, PILL_SURFACE, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE } from '../../styles';
+import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
@@ -15,7 +15,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
 import { parentAgency } from '../../../shared/parentAgencyList';
 import { bboxInViewport } from '../../utils/agencySearch';
-import { filterModeOptions } from '../../../shared/modes';
+import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
 import { CONNECTION_WINDOWS } from '../../../shared/connections';
@@ -29,7 +29,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { FREQUENCY_LABEL, NO_AGENCIES_IN_VIEW, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
 
 export { getNowDay };
 
@@ -59,14 +59,14 @@ interface FilterChipsProps {
   /**
    * Compare mode. 'shared': only the filters both maps share (Mode and Agencies), labelled as
    * such. 'side': only Frequency, Day and Time, for one map's own controls. Same chips and menus
-   * as the full bar either way. 'history': only Frequency and Time (History is weekday only), with the
-   * map's own Time menu (CIV-389, CIV-392; no "All day" since CIV-1097).
+   * as the full bar either way. 'history': Frequency and Time, with the map's own Time menu (CIV-389,
+   * CIV-392; no "All day" since CIV-1097), and the Day chip only behind the beta day picker flag (CIV-1425);
+   * without it History is weekday only.
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
-  /** Accessible name for the 'side' variant's group, e.g. "Map B settings". */
-  groupLabel?: string;
   /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
   connectionsBar?: ConnectionsBarControls | null;
+
 }
 
 /** The connections top bar's choices (CIV-1353). Day is the bar's own day/setDay. */
@@ -276,7 +276,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceFrequency = 60,
   setNightServiceFrequency,
   variant = 'full',
-  groupLabel,
   connectionsBar = null,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
@@ -382,7 +381,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         <div className="relative">
-          <button onClick={() => toggle('day')} className={chipClass(true)}>Day<Dot show /></button>
+          <button onClick={() => toggle('day')} className={chipClass(true)}>{DAY_LABEL}<Dot show /></button>
           {openChip === 'day' && <div className={`${PANEL} w-40`}>
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
@@ -392,7 +391,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
           options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
-          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>Mode<Dot show={selectedModes.size > 0} /></button>
+          <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>{MODE_LABEL}<Dot show={selectedModes.size > 0} /></button>
           {openChip === 'mode' && <div className={`${PANEL} w-48`}>
             {modesForView(MODES, 'frequent-service').map(mode => <button key={mode.id} onClick={() => toggleMode(mode.id)} className={researchButton(modeIsActive(mode.id))}>{mode.label}</button>)}
           </div>}
@@ -432,7 +431,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const dayChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('day')} className={chipClass(true)}>
-        Day
+        {DAY_LABEL}
         <Dot show={true} />
       </button>
       {openChip === 'day' && (
@@ -455,7 +454,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const periodChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('period')} className={chipClass(true)}>
-        Time
+        {TIME_LABEL}
         <Dot show={true} />
       </button>
       {openChip === 'period' && (
@@ -504,7 +503,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   const modeChip = (className: string) => (
     <div className={`relative ${className}`}>
       <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>
-        Mode
+        {MODE_LABEL}
         <Dot show={selectedModes.size > 0} />
       </button>
       {openChip === 'mode' && (
@@ -519,6 +518,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               {m.label}
             </button>
           ))}
+          {MODES.some(m => m.id === ON_DEMAND_MODE) && (
+            <p className="px-2 pt-1 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+          )}
         </div>
       )}
     </div>
@@ -528,6 +530,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
+        {FEATURES.historyDayPicker && dayChip('')}
         {periodChip('')}
       </div>
     );
@@ -535,7 +538,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   if (variant === 'side') {
     return (
-      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label={groupLabel}>
+      <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
         {dayChip('')}
         {periodChip('')}
@@ -545,8 +548,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   if (variant === 'shared') {
     return (
-      <div ref={rowRef} className="flex items-center gap-2" role="group" aria-label="Filters for both maps">
-        <span title={compactTopBar ? 'Both maps' : undefined} className={`${PILL_SURFACE} px-3 gap-1.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap`}>
+      <div ref={rowRef} className={COMPARE_GROUP} role="group" aria-label="Filters for both maps">
+        <span title={compactTopBar ? 'Both maps' : undefined} className="flex items-center gap-1.5 pl-1.5 pr-0.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap cursor-default select-none">
           <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
         </span>
@@ -570,12 +573,12 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {/* Frequency */}
             <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
             {/* Day */}
-            <PickerSection title="Day"><DayPicker value={day} onChange={setDay} /></PickerSection>
+            <PickerSection title={DAY_LABEL}><DayPicker value={day} onChange={setDay} /></PickerSection>
             {/* Time */}
-            <PickerSection title="Time"><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
+            <PickerSection title={TIME_LABEL}><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
             {/* Mode */}
             <div>
-              <p className={`${CARD_SECTION} mb-1.5`}>Mode</p>
+              <p className={`${CARD_SECTION} mb-1.5`}>{MODE_LABEL}</p>
               <div className="flex flex-wrap gap-1">
                 {MODES.map(m => (
                   <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
@@ -583,6 +586,9 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
                   </Pill>
                 ))}
               </div>
+              {MODES.some(m => m.id === ON_DEMAND_MODE) && (
+                <p className="mt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+              )}
             </div>
           </div>
         )}

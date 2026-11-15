@@ -1,6 +1,6 @@
 import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, bottomSheetFrameClass, useBottomSheet } from '../BottomSheet';
+import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, bottomSheetFrameClass, useBottomSheet } from '../BottomSheet';
 
 function Sheet({ subject }: { subject: string }) {
   const { expanded, handle } = useBottomSheet(subject);
@@ -18,6 +18,14 @@ describe('BottomSheet (#1028 item 23)', () => {
     expect(screen.getByTestId('body').className).toContain('h-[42dvh]');
     fireEvent.pointerDown(handle, { clientY: 500 }); fireEvent.pointerUp(handle, { clientY: 380 });
     expect(screen.getByRole('button', { name: 'Show less' })).toBeInTheDocument();
+  });
+
+  it('a card of a few lines can be only as tall as its content, never past the short height (CIV-1413 D)', () => {
+    const short = bottomSheetBodyClass(false, BOTTOM_SHEET_FIT_CONTENT);
+    expect(short).toContain('h-auto');
+    expect(short).toContain('max-h-[42dvh]');
+    expect(short).not.toContain(' h-[42dvh]');
+    expect(bottomSheetBodyClass(true, BOTTOM_SHEET_FIT_CONTENT)).toContain('h-[calc(100dvh-76px)]');
   });
 
   it('goes back to short when the subject changes', () => {

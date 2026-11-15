@@ -40,7 +40,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: the earlier "no regular service during this period" read as if nothing runs in the period.
   - Source: Ryan, 2026-10-31 (Linear CIV-1238), superseding the 2026-10-17 wording; [#954](https://github.com/Civic-Minds/Atlas/issues/954), [#955](https://github.com/Civic-Minds/Atlas/issues/955)
 - **A route with no all-day value stays without one**
-  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route.
+  - What: a direction that does not run at midday is "limited" and gets no all-day value; a busy stretch alone never passes a route. The all-day value is internal (the map has no All day option); riders see only the "limited".
   - Why: a peak-only route is not all-day service.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) rules 7, 8 and 11, [#899](https://github.com/Civic-Minds/Atlas/issues/899)
 - **The route grade follows the existing branch and steady filter rule**
@@ -112,6 +112,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: never show wrong or misleading information; hide or hold first, fix after.
   - Why: a wrong number on the map costs more trust than a missing one.
   - Source: Ryan, standing rule (data integrity first: "never show wrong or misleading info"); [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md) (Why this matters)
+- **Manual corrections only fix errors inside the feed**
+  - What: a manual correction only fixes an error inside the agency's GTFS file, and Atlas adds no note carrying information that is only on the agency's website.
+  - Why: Ryan: "The GTFS is live. It is the truth."
+  - Source: Ryan, 2026-10-27 (Linear CIV-1060, the FXBGO! note)
 - **Narrow fixes, and stop after two rule attempts**
   - What: write pass criteria first, count every change outside the target, hand-check all day types, then stop and report after two rule attempts.
   - Why: broad fixes built from one case regressed other agencies (#263, 32 routes in 18 cities).
@@ -237,6 +241,16 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-13 — A period that starts slowly says when steady service starts
+Ryan, 2026-11-13 (Linear CIV-1411), on TTC Line 5 westbound's AM peak (two 20-minute gaps at Laird before 7:27, then every 3.6): "dont we have a 'x mins from x time' fix for this laready". A slow start doesn't set the card's figure on its own. The card says "every N from <time>", where N is the longest wait from that time to the period's end, so it never reads better than the service runs. Without a steady run from that time, the period keeps its longest wait.
+- A period starts slowly when its longest wait comes before the time, and from the time on there are at least 4 departures, no gap over 1.5 times their typical gap (to the period's end included), the earlier longest wait is over twice that typical gap, and the time is at or before the period's midpoint. The earliest time that passes is named.
+- It replaces the one-gap reading (D6) where both apply: Halifax 1 weekday AM read "every 11, one 30-minute gap" and now reads "every 15 from 6:30". One hole in service that already ran at the steady pace before it is not a slow start and keeps the one-gap reading.
+- Card wording only. The filter value, the map line colour and every other figure are unchanged (same as #1277).
+
+### 2026-11-10 — A night belongs to the service day it starts on
+Ryan, 2026-11-10 (#1416, Linear CIV-1384), on MiWay 2 and 17 (Sunday's last bus 0:32, Monday's first 2:19): "Technically, The gap would be "Sunday" because it is during the Sunday service day." Each day type's night is its own evening with the morning after it, whichever day the early trips are written on, and counts against that day (FREQUENCY_RULES.md rule 10).
+- Pending Ryan's OK: Friday evening into Saturday morning starts on a weekday, so it counts toward Weekday as the rule reads literally. MiWay 2 and 17 still fail Weekday on it (their Saturday buses start at 4:40 to 5:26, after Friday's last at about 2:00); without it they would pass at 30, 60 and 90.
+
 ### 2026-11-01 — A route that starts late or ends early in a period shows its frequency with the time
 Ryan, 2026-11-01 (#1277, Linear CIV-1248): a period the route covers only part of reads "every 30 from 7:52 AM" (TTC 110 Sunday AM) instead of "No frequency is shown".
 - The time and frequency are read on every stretch that starts or ends in the period, and the slowest decides (D1), as for the filter value: TTC 110's trunk runs every 15 from 7:52, its branches every 30, so it reads every 30. A branch with under three trips in the period does not count.
@@ -266,7 +280,7 @@ Implementation choices, confirmed by Ryan on 2026-11-01:
 Ryan, 2026-10-31 (Linear CIV-1204 and CIV-1161): approved the run-shape gate, recommendations 1, 2 and 4 of the run-shape study. A row's headline is replaced by the wait a rider arriving at random faces on the main stretch (CIV-1161: the time-weighted median gap, in the headline's own window: midday, then PM peak, then all day) only when that wait is 10+ minutes longer than the headline, and only when the direction runs through that window at every boarding stop with a reading, by the settled verdicts.
 - Midday: the midpoint and hole test (FREQUENCY_RULES rule 5) and the #899 midday test (rule 7).
 - PM peak: the midpoint and hole test.
-- All day: the direction is not limited (rule 7).
+- All day (the internal 07:00-22:00 window, not a map option): the direction is not limited (rule 7).
 
 Why: a peak route's last morning and first afternoon trips reaching into midday are not a five-hour wait. Examples are TTC 945 (every 10 to 9:28, then 14:40) and CAT Harrisburg 14 (five trips a day).
 - A blocked row keeps its headline and tier. It is marked as having no regular cadence in the headline's window, so no fallback prints the headline as "every N". Route cards already read "Runs irregularly in this period" there (wording from CIV-1238).

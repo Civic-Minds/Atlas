@@ -6,7 +6,7 @@
     "sourceLabel": "Saint John Transit Flex service page and City of Saint John Flex zone layers",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://saintjohn.ca/en/transit/flex-service",
-    "tripRules": "Riders can travel from stop to stop within the zone, or transfer at common stops on fixed routes in the zone.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "fixed-stops"
     },

@@ -29,7 +29,7 @@
     "sourceLabel": "City of Grande Prairie public transit pages and Transit On Demand Zones layer",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://cityofgp.com/roads-transportation/public-transit",
-    "tripRules": "Pickup is at the closest bus stop in your neighbourhood. Drop-off is at the nearest transit hub or another On-Demand neighbourhood stop.",
+    "tripRules": "Trips can start and end anywhere in the On-Demand area, or at the nearest transit hub outside it.",
     "pickup": {
       "method": "fixed-stops"
     },

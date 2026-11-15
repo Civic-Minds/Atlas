@@ -50,6 +50,18 @@ describe('direction-split routes in History (#1285)', () => {
     expect(lim.routes.Yellow[0].v2).toEqual({ refDate: '20230901', rep: { lim: true } });
   });
 
+  it("weekend days keep their per-period and shared-stretch values when two directions merge, as the weekday's do (CIV-1431)", () => {
+    const merged = worseSidecarEntry(
+      { v2: { rep: { h: 10 }, sat: { h: 20, p: { midday: 20, late: 30 }, t: 10, tp: { midday: 12 } }, sun: { lim: true, p: { midday: 60 } } } } as never,
+      { v2: { rep: { h: 12 }, sat: { h: 30, p: { midday: 25, late: null }, t: 14, tp: { midday: 9 } }, sun: { h: 40, p: { midday: 50 } } } } as never,
+    ) as { v2: { sat: unknown; sun: unknown } };
+    expect(merged.v2.sat).toEqual({ h: 30, p: { midday: 25, late: null }, t: 14, tp: { midday: 12 } });
+    expect(merged.v2.sun).toEqual({ lim: true, p: { midday: 60 } });
+    // A trunk only where both directions have one; none stays exactly none.
+    const one = worseSidecarEntry({ v2: { rep: { h: 10 }, sat: { h: 20, t: 10 } } } as never, { v2: { rep: { h: 12 }, sat: { h: 30 }, sun: { none: true } } } as never) as { v2: { sat: unknown; sun?: unknown } };
+    expect(one.v2.sat).toEqual({ h: 30 });
+  });
+
   it('a direction with no value in a period leaves the route without one there (blank, null), as today', () => {
     expect(worseSidecarEntry({ v2: { rep: {} } }, { v2: { rep: { h: 10 } } }).v2.rep).toEqual({});
     expect(worseArchiveChange({ headway: 10, headwayByPeriod: { late: null } as never }, { headway: 12, headwayByPeriod: { late: 30 } as never }).headwayByPeriod).toEqual({ late: null });
@@ -61,16 +73,22 @@ describe('direction-split routes in History (#1285)', () => {
     expect(() => mergeAliasedRoutes({ 'Yellow-N': [{ periodKey: 'a', headway: 1 }] }, YELLOW)).toThrow(/needs a combine/);
   });
 
-  it('BART\'s six lines and SLO RTA 12 come from the merge recorded in the artifact; the config entries are the same aliases (CIV-1275)', () => {
-    // The config entries stay until a full rebuild has published artifacts that carry directionSplits; a
-    // config entry wins over the generated one, so keeping them changes nothing.
+  it('BART\'s six lines and SLO RTA 12 come only from the merge recorded in the artifact (CIV-1275, CIV-1314)', () => {
+    // The 2026-11-06 full publish carries directionSplits for bart and slorta, so their hand-written config entries
+    // are gone (CIV-1314); the generated aliases below are the same ones.
     const aliases = JSON.parse(readFileSync('config/history-route-aliases.json', 'utf8')) as HistoryRouteAliases;
-    expect(aliases.bart).toEqual(aliasesFromDirectionSplits(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow'].map(base => ({ base, halves: [`${base}-N`, `${base}-S`] }))));
-    expect(aliases.slorta).toEqual(aliasesFromDirectionSplits([{ base: '12', halves: ['12N', '12S'] }]));
+    expect(aliases.bart).toBeUndefined();
+    expect(aliases.slorta).toBeUndefined();
     const bart = aliasesFromDirectionSplits(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow'].map(base => ({ base, halves: [`${base}-N`, `${base}-S`] })));
     expect(Object.keys(bart).sort()).toEqual(['Blue', 'Green', 'Grey', 'Orange', 'Red', 'Yellow']);
     expect(currentRouteShortNamesFor('Yellow-N', undefined, bart)).toEqual(['Yellow']);
-    expect(currentRouteShortNamesFor('12S', undefined, aliasesFromDirectionSplits([{ base: '12', halves: ['12N', '12S'] }]))).toEqual(['12']);
+    // The published slorta artifact lists the halves as 12S, 12N; either order names the same route.
+    const slorta = aliasesFromDirectionSplits([{ base: '12', halves: ['12S', '12N'] }]);
+    expect(currentRouteShortNamesFor('12S', undefined, slorta)).toEqual(['12']);
+    expect(currentRouteShortNamesFor('12N', undefined, slorta)).toEqual(['12']);
+    const halves = { '12N': [{ periodKey: '20220901', headway: 60 }], '12S': [{ periodKey: '20220901', headway: 55 }] };
+    expect(mergeAliasedRoutes(halves, slorta, projectArchiveByDay, archive))
+      .toEqual(mergeAliasedRoutes(halves, aliasesFromDirectionSplits([{ base: '12', halves: ['12N', '12S'] }]), projectArchiveByDay, archive));
   });
 });
 

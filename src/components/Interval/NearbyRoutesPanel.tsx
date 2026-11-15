@@ -11,7 +11,7 @@ import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';
 import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
-import { loadingText, NO_ROUTES_NEARBY } from '../../content/noticeCopy';
+import { loadingText, NEAR_YOU_TITLE, NO_ROUTES_NEARBY } from '../../content/noticeCopy';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -63,9 +63,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       {/* The list shows data, so it has the report flag (CIV-932), as the Night list does. */}
-      <PanelTitleBar title="Near You" action={(
+      <PanelTitleBar title={NEAR_YOU_TITLE} action={(
         <CardReportButton
-          title="Near You"
+          title={NEAR_YOU_TITLE}
           details={nearYouReportDetails(routes, point, day, period)}
           excludeReasons={['Route line is missing or follows the wrong path']}
         />
@@ -104,7 +104,9 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   {r.headway != null ? (
                     <HeadwayBadge
                       headway={r.headway}
+                      colorHeadway={r.colorHeadway}
                       label={r.edgeText ?? (r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined)}
+                      stacked
                       className="ml-auto"
                     />
                   ) : (r.limited || r.noRegular) ? (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabels, shouldHideNumericRouteShortName, nameCase } from '../format';
+import { COMPARE_PANEL_TOP, comparePanelTop, fmtHeadway, getRouteLabel, ROUTE_NAME_ACRONYMS, routeLabels, shouldHideNumericRouteShortName, nameCase, vehicleModeCount, vehicleModeWord } from '../format';
 
 import { agencyNames } from '../agencyName';
 
@@ -280,6 +280,18 @@ describe('comparePanelTop', () => {
   });
 });
 
+describe('vehicleModeCount', () => {
+  it('counts vehicles in the same words the Live direction rows used', () => {
+    // A streetcar route counts vehicles: buses replace streetcars on it (CIV-926).
+    expect(vehicleModeCount(1, vehicleModeWord(0))).toBe('1 vehicle');
+    expect(vehicleModeCount(10, vehicleModeWord(0))).toBe('10 vehicles');
+    expect(vehicleModeCount(3, 'Bus')).toBe('3 buses');
+    expect(vehicleModeCount(1, 'Bus')).toBe('1 bus');
+    expect(vehicleModeCount(2, 'Ferry')).toBe('2 ferries');
+    expect(vehicleModeCount(0, 'Train')).toBe('0 trains');
+  });
+});
+
 describe('names in capitals with French linking words (CIV-1054)', () => {
   it('cases STO names whose only small letters are linking words, keeping those words as written', () => {
     expect(stopNameCase('SPORTHÈQUE')).toBe('Sporthèque');
@@ -306,6 +318,23 @@ describe('names in capitals with French linking words (CIV-1054)', () => {
     expect(stopNameCase('Saint-Joseph/Jean-Proulx')).toBe('Saint-Joseph/Jean-Proulx');
     expect(stopNameCase('Granville-YVR')).toBe('Granville-YVR');
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
+  });
+});
+
+// CIV-1117 row 6 (Ryan): westbound and eastbound stay in capitals, even in a name the feed wrote in mixed case.
+describe('Live stop names keep WB and EB in capitals (the map keeps the feed casing)', () => {
+  const stopNameCase = (s: string) => nameCase(s, 'liveStop');
+  it('fixes a mixed-case feed name', () => {
+    expect(stopNameCase('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)')).toBe('Park Lawn Rd at Gardiner Expressway (WB On Ramp)');
+    expect(stopNameCase('Penn St. & 2nd St. Farside Eb')).toBe('Penn St. & 2nd St. Farside EB');
+  });
+  it('leaves words that only start with the letters alone', () => {
+    expect(stopNameCase('Webb Ave')).toBe('Webb Ave');
+    expect(stopNameCase('Eby St')).toBe('Eby St');
+    expect(stopNameCase('125 The Queensway')).toBe('125 The Queensway');
+  });
+  it("the map's stop names keep the feed's casing until Ryan OKs the rule there", () => {
+    expect(nameCase('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)', 'stop')).toBe('Park Lawn Rd at Gardiner Expressway (Wb On Ramp)');
   });
 });
 

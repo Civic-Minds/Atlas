@@ -41,7 +41,7 @@ export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -51,6 +51,9 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 // delay stay behind VITE_LIVE_ENABLED and the local-only endpoints (#867).
 export const LIVE_REPORTS_ENABLED = envFlag('VITE_LIVE_REPORTS_ENABLED');
 export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
+// CIV-1425: History's Weekday/Saturday/Sunday picker. Off everywhere (beta included) until it is set;
+// only meaningful where History itself is on.
+export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && envFlag('VITE_HISTORY_DAY_PICKER_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
@@ -106,9 +109,9 @@ const devOnDemandUrl: unknown =
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
   typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
 // "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
-// Beta-only while the wording and placement are tried out.
-export function whatsNewEnabledFor(mode: AtlasMode): boolean {
-  return mode === 'beta' || mode === 'dev';
+// On in every build since 3.4; entries tagged beta stay beta-only (WHATS_NEW_BETA_ITEMS_ENABLED).
+export function whatsNewEnabledFor(_mode: AtlasMode): boolean {
+  return true;
 }
 export const WHATS_NEW_ENABLED = whatsNewEnabledFor(ATLAS_MODE);
 
@@ -158,6 +161,7 @@ export const FEATURES = {
   live: LIVE_ENABLED,
   liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED,
   history: HISTORY_ENABLED,
+  historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
   // Map-image export graduated from beta to every deployment (Ryan, 2026-10-10).
   mapExport: true,

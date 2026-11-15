@@ -34,7 +34,7 @@ import {
   routeShortNamesInGtfsZip,
   upstreamFeedChanged,
 } from './overrideAudit.js';
-import { readFeedReviewHistory, shouldReviewNextFeed } from './feedReview.js';
+import { readFeedReviewHistory, reviewStatusForNewFeed } from './feedReview.js';
 import { todayUtcYmd } from './utils.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { configFromIndexEntry, withRegistryName } from '../shared/agencyRegistryName.js';
@@ -171,15 +171,19 @@ async function main() {
   const indexPath = resolve('public/data/index.json');
   let agencyConfig: AgencyFeedConfig = { slug };
   let previousFeedExpiry: string | null = null;
+  let previousPeekedExpiry: string | null = null;
+  let previousRefreshedAt: string | null = null;
   let issueUrl: string | undefined;
   let manualBaseFare: number | undefined;
   if (existsSync(indexPath)) {
     const index = JSON.parse(readFileSync(indexPath, 'utf8')) as {
-      agencies: Array<AgencyFeedConfig & { issueUrl?: string; lastFeedExpiry?: string | null }>;
+      agencies: Array<AgencyFeedConfig & { issueUrl?: string; lastFeedExpiry?: string | null; lastPeekedExpiry?: string | null; lastRefreshedAt?: string | null }>;
     };
     const entry = index.agencies.find(a => a.slug === slug);
     if (entry) agencyConfig = entry;
     previousFeedExpiry = entry?.lastFeedExpiry ?? null;
+    previousPeekedExpiry = entry?.lastPeekedExpiry ?? null;
+    previousRefreshedAt = entry?.lastRefreshedAt ?? null;
     issueUrl = entry?.issueUrl;
     if (entry?.fare != null) manualBaseFare = entry.fare; // legacy fallback
   }
@@ -219,7 +223,10 @@ async function main() {
   const feedExpiry = recordedFeedExpiry(feedInfoExpiry, calendarExpiry, todayYmd, calendarOnlyEnd);
   // --force is the explicit maintainer override for a known-current source that omits or
   // misstates feed_info metadata; validation and the zero-feature guard still apply below.
-  if (!dryRun && !force && candidateIsOlderThanActive({ candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry })) {
+  if (!dryRun && !force && candidateIsOlderThanActive({
+    candidateExpiry: feedExpiry, existingExpiry: previousFeedExpiry,
+    existingPeekedExpiry: previousPeekedExpiry, recordedAt: previousRefreshedAt, todayYmd,
+  })) {
     throw new Error(`Refusing to replace ${slug}: downloaded feed ends ${feedExpiry ?? 'unknown'}, older than active snapshot ${previousFeedExpiry}`);
   }
   if (!dryRun && (featureCount === 0 || routeLineCount(geojson) === 0)) {
@@ -304,7 +311,8 @@ async function main() {
     };
     stampListingEnd(updated, listingEnd);
     if (upstreamFeedChanged(prev, calendarExpiry, feedVersion)) {
-      updated.feedReviewStatus = shouldReviewNextFeed(readFeedReviewHistory().agencies[slug] ?? []) ? 'review' : undefined;
+      updated.feedReviewStatus = reviewStatusForNewFeed(readFeedReviewHistory().agencies[slug] ?? [], updated.reviewFeedVersion, feedVersion);
+      if (updated.reviewFeedVersion && updated.reviewFeedVersion !== feedVersion) delete updated.reviewFeedVersion;
       delete updated.issueUrl;
       delete updated.overrideNote;
       if (prev.issueUrl || prev.overrideNote) console.log(`  ${formatOverrideUserFacingClearedLog(slug)}`);

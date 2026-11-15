@@ -7,13 +7,13 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.cota.com/services/cota-plus/",
     "eligibility": "Children under 12 ride free and must ride with a COTA//Plus account holder 12 or older.",
-    "tripRules": "Rides are only provided within the designated service zones.",
+    "tripRules": "Trips can start and end anywhere in the service zones.",
     "bookingInfo": "Book in the COTA//Plus app or by phone at 614-308-4400. COTA//Plus accepts only credit or debit cards.",
     "zoneMetadata": {
       "Grove City": {
         "serviceName": "COTA//Plus",
         "serviceHours": "Monday-Friday: 5:30 a.m.-8 p.m.",
-        "hoursNote": "The page says standard operating hours do not include weekends except for occasional special events service. Holiday service is not stated.",
+        "hoursNote": "No weekend service, except occasional special events.",
         "availability": {
           "Weekday": [
             {
@@ -32,7 +32,7 @@
       "Westerville": {
         "serviceName": "COTA//Plus",
         "serviceHours": "Monday-Wednesday: 5:30 a.m.-8 p.m. (the same page also says Monday-Friday: 5:30 a.m.-8 p.m.)",
-        "hoursNote": "The COTA//Plus page gives both Monday-Wednesday and Monday-Friday for Westerville, so weekday service is left unset until confirmed. The page says standard operating hours do not include weekends except for occasional special events service. Holiday service is not stated.",
+        "hoursNote": "No weekend service, except occasional special events.",
         "availability": {
           "Saturday": [],
           "Sunday": []
@@ -45,7 +45,6 @@
       "South Side": {
         "serviceName": "COTA//Plus",
         "serviceHours": "Seven Days a Week, 5:30 a.m.-8 p.m.",
-        "hoursNote": "One version of the South Side block on the page still carries the general line that standard hours do not include weekends; the South Side hours themselves say seven days a week. Holiday service is not stated.",
         "availability": {
           "Weekday": [
             {

@@ -3,12 +3,24 @@ import PageShell from './PageShell';
 import { PageTitle } from './PageTitle';
 
 /** A whole page that says "nothing here" (no such agency, no such region, no such address) with one way out. */
-export default function EmptyPage({ title, body, action, footer = true }: { title: string; body: string; /** Usually an ArrowLink. */ action: ReactNode; footer?: boolean }) {
+export default function EmptyPage({ title, body, action, footer = true, maxWidth, above }: {
+  title: ReactNode;
+  /** Text, or text with inline parts (a command in `code`). */
+  body: ReactNode;
+  /** Usually an ArrowLink. Left out when there is nowhere to send people. */
+  action?: ReactNode;
+  footer?: boolean;
+  /** The page column's width, for a page whose loaded state is wider than the default. */
+  maxWidth?: string;
+  /** A line above the title (a back link). */
+  above?: ReactNode;
+}) {
   return (
-    <PageShell variant="wide" footer={footer}>
-      <PageTitle className="mt-24">{title}</PageTitle>
+    <PageShell variant="wide" footer={footer} maxWidth={maxWidth}>
+      {above && <div className="mt-24">{above}</div>}
+      <PageTitle className={above ? 'mt-2' : 'mt-24'}>{title}</PageTitle>
       <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{body}</p>
-      <div className="mt-6">{action}</div>
+      {action && <div className="mt-6">{action}</div>}
     </PageShell>
   );
 }

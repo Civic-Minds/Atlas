@@ -19,7 +19,7 @@
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271126",
@@ -42,13 +42,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-02",
-    "scoredAt": "2026-11-02"
+    "checkedAt": "2026-11-09",
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "pipeline produced 0 route lines",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 1,
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 2,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip"
 }

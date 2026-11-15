@@ -6,6 +6,7 @@ import { readFile, readdir, stat } from 'fs/promises';
 import { resolve } from 'path';
 import { agencyHasLiveAnalysis } from '../shared/livePollingConfig.js';
 import type { AgencySummary } from '../shared/liveAgency.js';
+import { liveAgencyName } from './agencyName.js';
 
 export type LiveAgencyResponse =
   | { status: 'ready'; summary: AgencySummary }
@@ -19,7 +20,7 @@ async function handler(req: Request): Promise<Response> {
   const agency = new URL(req.url, 'http://localhost').searchParams.get('agency')?.trim().toLowerCase();
   if (!agency) return json({ status: 'unknown_agency', reason: 'Give an agency, for example ?agency=ttc.' }, 400);
   // Whitelist: only agencies with Live analysis map to a file name (no path input reaches the filesystem).
-  if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: `Live has no route analysis for ${agency}.` }, 404);
+  if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: `Live has no route analysis for ${await liveAgencyName(agency)}.` }, 404);
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
   try {
     const file = resolve(dir, `${agency}-agency.json`);
@@ -31,7 +32,7 @@ async function handler(req: Request): Promise<Response> {
     for (const f of routeFiles) if ((await stat(resolve(dir, f))).mtimeMs > built) throw new Error('stale summary');
     return json({ status: 'ready', summary });
   } catch {
-    return json({ status: 'no_analysis', reason: `No agency summary for ${agency.toUpperCase()} yet. Build it with "npx tsx scripts/live-agency-summary.ts ${agency}" after the route analyses (npm run live:analyze).` });
+    return json({ status: 'no_analysis', reason: `No agency summary for ${await liveAgencyName(agency)} yet. Build it with "npx tsx scripts/live-agency-summary.ts ${agency}" after the route analyses (npm run live:analyze).` });
   }
 }
 

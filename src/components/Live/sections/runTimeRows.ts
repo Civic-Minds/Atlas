@@ -1,4 +1,5 @@
 import { branchFigures, runningTimeFigures, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
+import { countOf } from '../../../../shared/overflowText';
 
 /** A pattern with fewer trips than this is too thin to draw (the main stretch) or drawn dim with a care note (a longer pattern). */
 export const MIN_PATTERN_TRIPS = 30;
@@ -21,7 +22,7 @@ export interface RunTimeRow {
 }
 
 const finite = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
-export const patternLabel = (from: string, to: string, stops: number) => `${from} → ${to} · ${stops} stops`;
+export const patternLabel = (from: string, to: string, stops: number) => `${from} → ${to} · ${countOf(stops, 'stop')}`;
 
 /** Rows for the Run time section: per direction the main stretch first, then the longer patterns in the file's order. */
 export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly number[], nice: (name: string) => string): Record<number, RunTimeRow[]> {
@@ -44,6 +45,36 @@ export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly numb
     out[d] = rows;
   }
   return out;
+}
+
+/** The kind words on the planner's per-pattern rows (CIV-945, wording to confirm). */
+export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: 'Short turn', branch: 'Branch' } as const;
+
+/**
+ * The planner's rows for one direction, one per regular pattern timed on its own trips (CIV-945), the main pattern first,
+ * each labelled "Main: From → To", the stop count in its hover. Null when the file has no per-pattern figures (older files).
+ */
+export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, nice: (name: string) => string): RunTimeRow[] | null {
+  const list = v3.runningTime?.patterns?.[String(d)];
+  if (!list?.length) return null;
+  const dirName = v3.directionLabels?.[String(d)];
+  // A main pattern trimmed at a poorly measured end to no more stops than a short turn would read as no longer than it
+  // (the 510 northbound at the Union tunnel): its row is left out; the week table still gives the main pattern's figure.
+  const main = list.find(p => p.kind === 'main');
+  const hideMain = !!main && main.stops < main.patternStops && list.some(p => p.kind === 'shortTurn' && p.stops >= main.stops);
+  return list.filter(p => !(hideMain && p === main)).flatMap(p => {
+    const f = branchFigures(p, band);
+    if (!f) return [];
+    return [{
+      key: `${d}-${p.kind}-${p.fromStopId}-${p.toStopId}`, direction: d, main: p.kind === 'main',
+      // The row names only its ends, so it fits one line on the card; the stop count is in the hover, with a pattern
+      // trimmed at a poorly measured end saying how much of it is timed: "13 of 18 stops".
+      label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)}`,
+      trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
+      typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
+      figures: `${dirName ? `${dirName}: ` : ''}${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops, ${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
+    }];
+  });
 }
 
 /** One minutes range for every row of the section (both directions), whole 5-minute steps with a little headroom. Thin main rows are left out. */

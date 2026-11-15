@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { isMajorStop, shortStopName } from '../../utils/stopLabel';
+import { isMajorStop, shortStopName, stripStopName } from '../../utils/stopLabel';
 import {
-  MIN_N, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan,
-  type RouteStripMode, type RouteStripStop, type Step,
+  MIN_N, NOT_MEASURED_CELL, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, bunchParts, delayText, labelWidth, pct, shownDelayMin, stopDetail, stopN, stopStep, stretchSpan, showAllStopsText, stripTableCaption,
+  type RouteStripMode, type RouteStripStop,
+  stripLegendFlags,
 } from './routeStripModel';
 import { COL_X, NAME_LEFT, StretchBracketPiece, StretchNote, phoneDotSize, phoneRowHeight, StripLegend, Tooltip, swatchStyle } from './RouteStrip';
 import { allBranchStops, columnsOf, phoneSections, phoneStretchRows, type BranchModel } from './branchStripModel';
+import { countOf } from '../../../shared/overflowText';
 
 export interface BranchStripProps {
   model: BranchModel;
@@ -21,6 +23,8 @@ export interface BranchStripProps {
   /** Use the two-line row height even when this strip's names fit on one line, for the same reason. */
   twoLineNames?: boolean;
   minN?: number;
+  /** Draw the key under the strip (default); false when the section shows one key for all its strips (CIV-1448). */
+  legend?: boolean;
   /** The strip becomes a vertical list on phones (under 480px), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
   className?: string;
@@ -40,7 +44,6 @@ const LABEL_H = 22;
 const GROUP_GAP = 10;
 /** A branch's bar beside its names: a thin dashed line, so it never reads as the solid bracket of a marked stretch. */
 const BRANCH_BAR = { width: 1, backgroundImage: 'repeating-linear-gradient(to bottom, var(--text-dim) 0 2px, transparent 2px 6px)', opacity: 0.7 } as const;
-const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
 
 let measurer: CanvasRenderingContext2D | null | undefined;
 /** Whether a line's name needs two lines in the gutter (measured in the gutter's own 12px type; about 6px a letter where there is no canvas). */
@@ -81,7 +84,8 @@ function useWidth() {
 
 /** Which labels fit on one line: `want` first (always tried), then `majors` evenly spaced candidates; each is centred on its x, kept inside the plot, and none overlaps another. */
 function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: readonly number[], majors: number, min: number, max: number, gap = 12): number[] {
-  const widths = items.map(i => labelWidth(i.text) + 6);
+  // Full stop names never wrap here, so they are measured at their whole length (CIV-910 Q3): a long name can't spill into the next one.
+  const widths = items.map(i => labelWidth(i.text, Infinity) + 6);
   const span = (i: number): [number, number] => { const l = Math.max(min, Math.min(max - widths[i], items[i].x - widths[i] / 2)); return [l, l + widths[i]]; };
   const placed: number[] = [];
   const fits = (i: number) => { const [a, b] = span(i); return placed.every(j => { const [c, d] = span(j); return b + gap <= c || d + gap <= a; }); };
@@ -102,7 +106,7 @@ function fitLabels(items: ReadonlyArray<{ x: number; text: string }>, want: read
  * ends, a branch names the stop where it ends. A branch stop shows its own delay; bunching is only measured along the
  * main pattern, so branch stops show it as not measured. Phones get a vertical list: the branches one after another.
  */
-export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, verticalBelow = 360, className = '' }: BranchStripProps) {
+export default function BranchStrip({ model, selected = null, onSelect, modes = ['delay', 'bunching'], reserveBracket = false, twoLineNames = false, minN = MIN_N, legend = true, verticalBelow = 360, className = '' }: BranchStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<string | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -112,13 +116,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const vertical = phone || (width > 0 && width < verticalBelow);
   const stops = useMemo(() => allBranchStops(model), [model]);
   const faded = (s: RouteStripStop, mode: RouteStripMode) => stopN(s, mode) > 0 && stopN(s, mode) < minN;
-  const anyUncertain = stops.some(s => modes.some(m => !!s.uncertain));
-  const anyFaded = stops.some(s => modes.some(m => faded(s, m)));
-  const anyMissing = stops.some(s => modes.some(m => stopStep(s, m) == null));
-  const anyEarly = stops.some(s => modes.includes('delay') && stopStep(s, 'delay') === 'early');
+  const flags = stripLegendFlags(stops, modes, minN);
   const activeStop = stops.find(s => s.stopId === active) ?? null;
   const announce = activeStop ? `${activeStop.name}. ${stopDetail(activeStop).lines.join('. ')}.` : '';
-  const summary = `${model.label}: ${model.trunk.length} stops on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
+  const summary = `${model.label}: ${countOf(model.trunk.length, 'stop')} on the shared line, then ${model.starts.length + model.ends.length} branches, ending at ${[...new Set(model.endLabels.map(e => e.stop.name))].join(', ')}. Use the left and right arrow keys to hear each stop.`;
 
   const onKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     const at = stops.findIndex(s => s.stopId === active);
@@ -134,15 +135,15 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
   const table = (
     <div id={tableId} className="sr-only">
       <DataTable
-        caption={`${model.label}: delay and bunching at each stop`}
+        caption={stripTableCaption(model.label)}
         rows={stops}
         rowKey={s => s.stopId}
         columns={[
-          { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => s.name },
-          { key: 'delay', header: 'Typical delay', cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : 'not measured') },
-          { key: 'late', header: 'Late', cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : '') },
-          { key: 'bunch', header: 'Gaps off', cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : 'not measured'; } },
-          { key: 'n', header: 'Departures', cell: s => s.n.toLocaleString() },
+          { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: s => s.name },
+          { key: 'delay', header: STRIP_COLUMNS.delay, cell: s => (shownDelayMin(s) != null && s.n > 0 ? delayText(shownDelayMin(s)!) : NOT_MEASURED_CELL) },
+          { key: 'late', header: STRIP_COLUMNS.late, cell: s => (s.lateShare != null && s.n > 0 ? pct(s.lateShare) : NOT_MEASURED_CELL) },
+          { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: s => { const b = bunchParts(s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
+          { key: 'n', header: STRIP_COLUMNS.n, cell: s => s.n.toLocaleString() },
         ]}
       />
     </div>
@@ -188,7 +189,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       const first = l[0];
       if (serving.get(first.stopId) !== 1) return;
       const x = xOf(colOf.get(first.stopId)!) - dot / 2 - 6;
-      if (x - GUTTER >= labelWidth(shortStopName(first.name)) + 6) out.push({ stop: first, row: r, right: x });
+      if (x - GUTTER >= labelWidth(stripStopName(first.name), Infinity) + 6) out.push({ stop: first, row: r, right: x });
     });
     return out;
   }, [vertical, width, model, cols, dot]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -199,7 +200,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
     if (vertical || width === 0) return [] as Array<{ stop: RouteStripStop; x: number; end: boolean }>;
     const exclusiveEnd = (id: string) => serving.get(id) === 1 && model.lines.some(l => l.at(-1)!.stopId === id);
     const keep = cols.map((id, i) => ({ id, i })).filter(c => !named.has(c.id) && !exclusiveEnd(c.id));
-    const items = keep.map(c => ({ x: xOf(c.i), text: shortStopName(byId.get(c.id)!.name) }));
+    const items = keep.map(c => ({ x: xOf(c.i), text: stripStopName(byId.get(c.id)!.name) }));
     const ends = [...new Set(model.lines.flatMap(l => [l[0], l.at(-1)!]).map(s => s.stopId))];
     const want = ends.map(id => keep.findIndex(c => c.id === id)).filter(i => i >= 0 && !named.has(keep[i].id));
     const picked = fitLabels(items, want, Math.max(2, Math.min(6, Math.floor(plotW / 150))), GUTTER, width);
@@ -272,10 +273,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
         onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(null); }}
       />
       {startNames.map(n => (
-        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(shortStopName(n.stop.name)) + 6), width: labelWidth(shortStopName(n.stop.name)) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{shortStopName(n.stop.name)}</span>
+        <span key={`start-${n.row}`} className="pointer-events-none absolute whitespace-nowrap text-right text-xs font-bold leading-4 text-[var(--text-primary)]" style={{ left: n.right - (labelWidth(stripStopName(n.stop.name), Infinity) + 6), width: labelWidth(stripStopName(n.stop.name), Infinity) + 6, top: rowY(0, n.row) - 8 }} title={n.stop.name}>{stripStopName(n.stop.name)}</span>
       ))}
       {labels.map(l => {
-        const w = labelWidth(shortStopName(l.stop.name)) + 6;
+        const w = labelWidth(stripStopName(l.stop.name), Infinity) + 6;
         const left = Math.max(GUTTER, Math.min(width - w, l.x - w / 2));
         return (
           <span
@@ -283,7 +284,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
             className={`pointer-events-none absolute whitespace-nowrap text-center text-xs leading-4 ${l.end ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-dim)]'}`}
             style={{ left, width: w, top: namesTop + 3 }}
             title={l.stop.name}
-          >{shortStopName(l.stop.name)}</span>
+          >{stripStopName(l.stop.name)}</span>
         );
       })}
       {activeStop && colOf.has(activeStop.stopId) && <Tooltip stop={activeStop} x={xOf(colOf.get(activeStop.stopId)!)} width={width} top={namesTop + 14} />}
@@ -295,7 +296,7 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       <div
         ref={ref}
         role="group"
-        aria-roledescription="route strip"
+        aria-roledescription={STRIP_ROLE}
         aria-label={summary}
         aria-describedby={tableId}
         tabIndex={0}
@@ -308,10 +309,10 @@ export default function BranchStrip({ model, selected = null, onSelect, modes = 
       </div>
       {vertical && stops.length > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
-          {allStops ? 'Show key stops only' : `Show all ${stops.length} stops`}
+          {allStops ? SHOW_KEY_STOPS : showAllStopsText(stops.length)}
         </button>
       )}
-      <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />
+      {legend && <StripLegend modes={modes} {...flags} minN={minN} />}
       {table}
     </figure>
   );
@@ -339,6 +340,22 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
   sections.forEach(sec => sec.stops.forEach(s => { if (!rowOf.has(s.stopId)) rowOf.set(s.stopId, rowOf.size); }));
   const routeFirst = model.starts.length === 0 ? model.trunk[0]?.stopId : null;
   const routeLast = model.ends.length === 0 ? model.trunk[model.trunk.length - 1]?.stopId : null;
+  const isNamed = (sec: (typeof sections)[number], s: (typeof sections)[number]['stops'][number], i: number) =>
+    allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretches.some(st => st && (st.firstId === s.stopId || st.lastId === s.stopId));
+  // Each stop is named once (a branch split starts every branch after it, #1473), and where two different stops would
+  // get the same short name (Cherry St at Front St East, its North Side stop), both show their full names.
+  const { firstNamedAt, shortTaken } = useMemo(() => {
+    const first = new Map<string, string>(), byShort = new Map<string, Set<string>>();
+    sections.forEach(sec => sec.stops.forEach((s, i) => {
+      if (!isNamed(sec, s, i)) return;
+      if (!first.has(s.stopId)) first.set(s.stopId, `${sec.key}:${i}`);
+      const short = shortStopName(s.name);
+      byShort.set(short, (byShort.get(short) ?? new Set()).add(s.stopId));
+    }));
+    return { firstNamedAt: first, shortTaken: byShort };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections, allStops, stretches]);
+  const nameOf = (name: string) => { const short = shortStopName(name); return (shortTaken.get(short)?.size ?? 0) > 1 ? name : short; };
   return (
     <div aria-hidden="true">
       <div className="relative h-5 text-xs font-bold text-[var(--text-secondary)]">
@@ -348,8 +365,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
         <div key={sec.key}>
           {sec.stops.map((s, i) => {
             const isEnd = (sec.branch && i === sec.terminal) || s.stopId === routeFirst || s.stopId === routeLast;
-            const stretchEnd = stretches.some(st => st && (st.firstId === s.stopId || st.lastId === s.stopId));
-            const named = allStops || i === 0 || i === sec.stops.length - 1 || isMajorStop(s.name) || stretchEnd;
+            const named = isNamed(sec, s, i) && firstNamedAt.get(s.stopId) === `${sec.key}:${i}`;
             const marked = stretches.some(st => st?.ids.has(s.stopId));
             const note = stretches.filter(st => st && st.firstId === s.stopId).map(st => st!.label).join(', ');
             const on = active === s.stopId;
@@ -370,7 +386,7 @@ function VerticalBranches({ model, modes, minN, allStops, active, setActive }: {
                 {sec.branch && i === sec.terminal && <span className="pointer-events-none absolute h-px w-2 bg-[var(--text-dim)]" style={{ left: NAME_LEFT - 10, top: '50%' }} />}
                 {named && (
                   <span className="flex min-w-0 flex-1 items-baseline gap-2">
-                    <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{shortStopName(s.name)}</span>
+                    <span className={`min-w-0 ${note ? '' : 'flex-1'} break-words py-0.5 text-sm leading-5 ${isEnd || marked ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{nameOf(s.name)}</span>
                     {note && <StretchNote>{note}</StretchNote>}
                   </span>
                 )}

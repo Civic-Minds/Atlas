@@ -23,5 +23,12 @@ export function useLiveDashboard(agency: string | null | undefined, route: strin
   return state;
 }
 
+/** The agency's Live page: where a route page's "← TTC" goes (CIV-1446). */
+export const liveAgencyPath = (agency: string) => `/apps/live/${encodeURIComponent(agency)}`;
+
 /** The page's URL for a route's full analysis. */
 export const liveDashboardPath = (agency: string, route: string) => `/apps/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}`;
+
+/** The Live planner's URL, with a route picked when given (#1153): where "View on Live map" goes. */
+export const liveToolPath = (agency: string, route?: string | null) =>
+  `/apps/live/${encodeURIComponent(agency)}/tool${route ? `?route=${encodeURIComponent(route)}` : ''}`;

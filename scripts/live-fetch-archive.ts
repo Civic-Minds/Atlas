@@ -14,8 +14,12 @@
  *
  * Writes <--out, or LIVE_DATA/archive, or ../_live-data/archive>/<route>-<day>.jsonl, the format scripts/live-segment-delay.ts reads:
  * one line per snapshot, {"ts": capturedAt, "v": [[vehicleId, tripId, lat, lon, positionTime, bearing, speed], ...]}.
- * A day is skipped when its marker (archive/.<agency>-<day>.all, or .<agency>-<day>.<routes hash> for a --routes
- * list) exists, unless --force. A marker is written only for a complete UTC day with no failed snapshots. Read-only on R2. Needs the R2
+ * A day is skipped only when its marker (archive/.<agency>-<day>.all, or .<agency>-<day>.<routes hash> for a --routes
+ * list) exists, unless --force; files without a marker are fetched again, because they may be a day that was cut at
+ * 4 a.m. while it was still filling. A marker is written only for a complete UTC day with no failed snapshots.
+ * Snapshots that could not be read are counted per day; when any day loses more than --max-failed-share of its
+ * snapshots (default 2%) the run exits 1 after every day is fetched. --report <file> writes the per-day counts.
+ * Read-only on R2. Needs the R2
  * keys in .env.local. Heavy on the network (about 1,400 snapshots a day): run it during the day, one copy at a time.
  */
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'fs';
@@ -76,6 +80,24 @@ export function fileSafe(s: string): string {
   return safe === s ? s : `${safe}~${createHash('sha1').update(s).digest('hex').slice(0, 6)}`;
 }
 
+/**
+ * A day is already fetched only when a completeness marker says so. The day files being there is not enough: today's
+ * folder is cut at 4 a.m. Toronto and never marked, so the next run must fetch it again in full.
+ */
+export function dayIsDone(o: { force: boolean; cutBefore: number | null; markerExists: boolean }): boolean {
+  return !o.force && o.cutBefore == null && o.markerExists;
+}
+
+/** Share of a day's snapshots that may fail to download before the run is failed. */
+export const MAX_FAILED_SHARE = 0.02;
+
+export interface FetchDayReport { day: string; snapshots: number; failed: number; skipped: boolean; cut: boolean }
+
+/** The days that lost more than `maxShare` of their snapshots. */
+export function daysOverFailedShare(days: readonly FetchDayReport[], maxShare: number): FetchDayReport[] {
+  return days.filter(d => d.snapshots > 0 && d.failed / d.snapshots > maxShare);
+}
+
 type Vehicle = { id: string; r: string; tripId?: string; lat: number; lon: number; t?: number | null; brg?: number | null; spd?: number | null };
 
 /**
@@ -126,12 +148,15 @@ async function main() {
     }
   }
 
+  const report: FetchDayReport[] = [];
   for (const { day, cutBefore } of folders) {
     const allMarker = resolve(dir, `.${fileSafe(agency)}-${fileSafe(day)}.all`);
     const marker = resolve(dir, `.${fileSafe(agency)}-${fileSafe(day)}.${routeSetTag}`);
-    // With a --routes list, a day whose files are all already there is done too (e.g. fetched by the old fetcher).
-    const filesThere = !!only && [...only].every(r => existsSync(resolve(dir, `${fileSafe(r)}-${fileSafe(day)}.jsonl`)));
-    if (args.force !== 'true' && cutBefore == null && (existsSync(allMarker) || existsSync(marker) || filesThere)) { console.log('skip', day); continue; }
+    if (dayIsDone({ force: args.force === 'true', cutBefore, markerExists: existsSync(allMarker) || existsSync(marker) })) {
+      console.log('skip', day);
+      report.push({ day, snapshots: 0, failed: 0, skipped: true, cut: false });
+      continue;
+    }
     const started = Date.now();
     const keys: string[] = [];
     let token: string | undefined;
@@ -163,6 +188,14 @@ async function main() {
     if (complete) writeFileSync(marker, new Date().toISOString());
     const note = failed ? `, ${failed} snapshots failed (day not marked done)` : cutBefore != null ? ' (cut at 4 a.m. Toronto, not marked done)' : '';
     console.log(day, keys.length, 'snapshots,', lines.size, 'routes', note, `${Math.round((Date.now() - started) / 1000)}s`);
+    report.push({ day, snapshots: keys.length, failed, skipped: false, cut: cutBefore != null });
+  }
+  const maxFailedShare = args['max-failed-share'] != null ? Number(args['max-failed-share']) : MAX_FAILED_SHARE;
+  const over = daysOverFailedShare(report, maxFailedShare);
+  if (args.report && args.report !== 'true') writeFileSync(resolve(args.report), JSON.stringify({ schema: 1, maxFailedShare, days: report, ok: over.length === 0 }, null, 2));
+  if (over.length) {
+    console.error(`live-fetch-archive: more than ${(maxFailedShare * 100).toFixed(0)}% of the snapshots could not be read on ${over.map(d => `${d.day} (${d.failed} of ${d.snapshots})`).join(', ')}. Run again; the days are not marked done.`);
+    process.exit(1);
   }
 }
 

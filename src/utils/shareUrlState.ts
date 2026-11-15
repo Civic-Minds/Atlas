@@ -19,6 +19,9 @@ import { AREA_INDEX, AREA_PARAM, areaMatchingSelection, lookupArea, type AreaInd
 import { FEATURES } from '../../shared/config';
 import { filterModeOptions } from '../../shared/modes';
 import { MAP_URL } from './urlSchema';
+import { COMPARE_PATH, MAP_PATHS } from './appGate';
+import { mergeUrlSearchParams } from './syncUrlParams';
+import { currentAgencyKey, currentAgencySlug } from './formerSlugs';
 
 export const AGENCY_URL_MAX_SLUGS = 60;
 export const AGENCIES_PARAM = 'agencies';
@@ -34,7 +37,7 @@ export type AgencyUrlRule =
   | { kind: 'exclude'; slugs: ReadonlySet<string> };
 
 function splitList(raw: string): string[] {
-  return raw.split(/[.,]/).map(s => s.trim().toLowerCase()).filter(Boolean);
+  return raw.split(/[.,]/).map(s => currentAgencySlug(s.trim().toLowerCase())).filter(Boolean);
 }
 
 function toSearchParams(search: string | URLSearchParams): URLSearchParams {
@@ -207,6 +210,18 @@ export function encodeCompareSideParams(side: CompareSideParams | null): Record<
 }
 
 /**
+ * The address to move to when Compare turns on or off on the map, or null when the address already fits.
+ * On: the map's path becomes /apps/compare and every setting stays in the query. Off: back to the map's path,
+ * without side B's settings. An old map link carrying side B's settings uses the "on" address (replacing it).
+ */
+export function compareAddress(pathname: string, search: string, compareActive: boolean): string | null {
+  if (compareActive) return MAP_PATHS.includes(pathname) ? `${COMPARE_PATH}${search}` : null;
+  if (pathname !== COMPARE_PATH) return null;
+  const qs = mergeUrlSearchParams(search, encodeCompareSideParams(null));
+  return qs ? `/?${qs}` : '/';
+}
+
+/**
  * History app (/apps/history). These have their own names because the frequency map stays
  * mounted underneath History and owns `route` (an `agency::routeId` key) and `agencies`;
  * sharing those names would let the map's own sync delete History's values.
@@ -307,7 +322,7 @@ export const ROUTE_CHOOSER_PARAM = 'routes';
 /** The agency card's slug from a link, or null. Slugs are [a-z0-9-]; anything else is ignored. */
 export function parseAgencyCardParam(search: string | URLSearchParams): string | null {
   const raw = toSearchParams(search).get(AGENCY_CARD_PARAM)?.trim().toLowerCase();
-  return raw && /^[a-z0-9-]+$/.test(raw) ? raw : null;
+  return raw && /^[a-z0-9-]+$/.test(raw) ? currentAgencySlug(raw) : null;
 }
 
 /** The chooser's route keys joined by `,`; null when fewer than two (nothing to choose). */
@@ -324,6 +339,6 @@ export function encodeRouteChooserParam(keys: readonly string[] | null | undefin
 export function parseRouteChooserParam(search: string | URLSearchParams): string[] | null {
   const raw = toSearchParams(search).get(ROUTE_CHOOSER_PARAM);
   if (!raw) return null;
-  const keys = [...new Set(raw.split(/,(?=[a-z0-9-]+::)/).map(s => s.trim()).filter(key => /^[a-z0-9-]+::./.test(key)))];
+  const keys = [...new Set(raw.split(/,(?=[a-z0-9-]+::)/).map(s => s.trim()).filter(key => /^[a-z0-9-]+::./.test(key)).map(key => currentAgencyKey(key, true)))];
   return keys.length > 1 ? keys : null;
 }

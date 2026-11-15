@@ -22,7 +22,7 @@
   "lastFeedExpiry": "20300725",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
   "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261109",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300925",
@@ -44,7 +44,7 @@
       "feedExpiry": "20300725"
     },
     "checkedAt": "2026-10-12",
-    "scoredAt": "2026-11-02"
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

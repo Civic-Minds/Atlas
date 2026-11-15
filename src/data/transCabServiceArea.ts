@@ -46,6 +46,24 @@ export const HAMILTON_TRANS_CAB_TRANSFER_POINTS: GeoJSON.Feature<GeoJSON.Point>[
     properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Garth Street and Rymal Road West', areaName: 'West Glanbrook' },
     geometry: { type: 'Point', coordinates: [-79.912301, 43.20714] },
   },
+  // The other three transfer points on hamilton.ca's Trans-Cab page (#1451), placed at HSR's own stops in its GTFS feed
+  // (opendata.hamilton.ca, 2026-11-12) for the routes the page names: Mountain Transit Centre (Routes 20 and 27) is the
+  // centre of its four platforms; HWY 8 and Jones Road and Winona Crossing are the Route 55 stops at those places.
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Mountain Transit Centre', areaName: 'West Glanbrook' },
+    geometry: { type: 'Point', coordinates: [-79.901973, 43.184724] },
+  },
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'HWY 8 and Jones Road', areaName: 'Lower East Stoney Creek' },
+    geometry: { type: 'Point', coordinates: [-79.694382, 43.212001] },
+  },
+  {
+    type: 'Feature',
+    properties: { agencySlug: 'hamilton', serviceType: 'on-demand-transfer-point', stopName: 'Winona Crossing', areaName: 'Lower East Stoney Creek' },
+    geometry: { type: 'Point', coordinates: [-79.644492, 43.21694] },
+  },
 ];
 
 export const HAMILTON_TRANS_CAB_SOURCE = {
@@ -63,5 +81,18 @@ export const HAMILTON_TRANS_CAB_SOURCE = {
     Weekday: [{ startHour: 4.5, endHour: 26 }],
     Saturday: [{ startHour: 4.5, endHour: 26 }],
     Sunday: [{ startHour: 5.5, endHour: 25 }],
+  } satisfies OnDemandAvailability,
+};
+
+/**
+ * West Glanbrook's own hours, which differ from the two Stoney Creek zones on Saturday and Sunday (hamilton.ca
+ * Trans-Cab page, checked 2026-11-11): "Saturday: 4:30 am to 1 am / Sundays/Holidays: 4:30 am to 12 am".
+ */
+export const HAMILTON_TRANS_CAB_WEST_GLANBROOK_HOURS = {
+  serviceHours: 'Mon–Fri 4:30 AM–2 AM; Sat 4:30 AM–1 AM; Sun/holidays 4:30 AM–midnight.',
+  availability: {
+    Weekday: [{ startHour: 4.5, endHour: 26 }],
+    Saturday: [{ startHour: 4.5, endHour: 25 }],
+    Sunday: [{ startHour: 4.5, endHour: 24 }],
   } satisfies OnDemandAvailability,
 };

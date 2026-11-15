@@ -1,3 +1,4 @@
+import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { X, Search, Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
@@ -19,7 +20,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -120,7 +121,7 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
     const data = kind === 'report-data';
     return (
       <LinkCard key={kind} href={`mailto:hey@ryanisnota.pro?subject=Atlas%20${data ? 'data' : 'schedule'}%20feedback`}
-        onClick={() => trackEvent('feedback_opened', { source: data ? 'info_panel_data' : 'info_panel_schedule' })} icon="mail">Report a problem</LinkCard>
+        onClick={() => trackEvent('feedback_opened', { source: data ? 'info_panel_data' : 'info_panel_schedule' })} icon="mail">{REPORT_A_PROBLEM}</LinkCard>
     );
   };
   return (
@@ -369,7 +370,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}

@@ -8,12 +8,6 @@ export type SegmentBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 
 const periodLabel = (key: SegmentBand) => TIME_PERIODS.find(p => p.key === key)?.label ?? key;
 
-/** Atlas's shared period names (late night and overnight have too few trips to show). */
-export const SEGMENT_BAND_OPTIONS: { id: SegmentBand; label: string }[] = [
-  { id: 'all', label: 'All day' },
-  ...(['amPeak', 'midday', 'pmPeak', 'evening'] as const).map(id => ({ id, label: periodLabel(id) })),
-];
-
 /** A stop pair needs at least this many observed trips, over this many days, to be shown. */
 export const MIN_SEGMENT_TRIPS = 30;
 export const MIN_DAYS = 5;

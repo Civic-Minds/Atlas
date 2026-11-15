@@ -409,14 +409,14 @@ export type TripStopStatus =
 /** Plain-language labels for the statuses (for the card, after review). */
 export const TRIP_STOP_STATUS_LABELS: Record<TripStopStatus, string> = {
   ran: 'Timed here',
-  timing_gap: 'Vehicle reporting nearby, but this stop wasn\'t timed',
+  timing_gap: 'Vehicle reporting nearby, but this stop wasn’t timed',
   quiet_spell: 'Vehicle went quiet here and reported again later',
-  off_route: "Off this trip's route here",
-  not_seen: 'No vehicle reported under this trip\'s number. Not a count of cancellations; trips cut short aren\'t included.',
+  off_route: "Off this trip’s route here",
+  not_seen: 'No vehicle reported under this trip’s number. Not a count of cancellations; trips cut short aren’t included.',
   unlisted_cover: 'No vehicle reported this trip number, but cars on unlisted trip numbers were running; not counted',
   started_other_trip: 'Vehicle started another trip partway along',
   joined_late: 'Vehicle first appeared on the route after this stop',
-  stopped_reporting: 'Vehicle\'s last report on the route was before this stop',
+  stopped_reporting: 'Vehicle’s last report on the route was before this stop',
   feed_gap: 'Live feed was down or incomplete; not counted',
 };
 

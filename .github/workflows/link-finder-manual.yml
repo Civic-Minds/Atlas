@@ -1,0 +1,49 @@
+name: Link finder test run
+
+# A small test of the expired-timetable link finder (CIV-1362), started only by hand. It asks
+# Claude about a few agencies and, by default, prints the comment in the log without posting it.
+# It writes no data and changes no config. The weekly run stays in refresh-feeds.yml.
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'How many agencies to check (at most 40).'
+        required: false
+        type: number
+        default: 3
+      post:
+        description: 'Post the result as a comment on the "Agencies on expired timetables" issue. Off: only print it in the log.'
+        required: false
+        type: boolean
+        default: false
+
+# issues: write is what lets the finder read the issue's comments and post one.
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  link-finder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # The inputs reach the shell only as environment variables, never pasted into the script.
+      - name: Run the link finder
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMIT: ${{ inputs.limit }}
+          POST: ${{ inputs.post }}
+        run: |
+          args=(--limit "$LIMIT")
+          if [ "$POST" != "true" ]; then args+=(--dry-run); fi
+          npx tsx scripts/find-expired-feed-links.ts "${args[@]}"

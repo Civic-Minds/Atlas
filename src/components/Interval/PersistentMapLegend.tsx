@@ -3,7 +3,8 @@ import { FLOATING_CARD, MAP_LEGEND_SLOT, Z_MAP_OVERLAY } from '../../styles';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
 import { useHeadwayTiers } from '../../hooks/useHeadwayTiers';
 import MapKey from '../ui/MapKey';
-import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED } from '../../content/noticeCopy';
+import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED, ON_DEMAND_PARTIAL_COVERAGE } from '../../content/noticeCopy';
+import { FEATURES } from '../../../shared/config';
 
 /** The map's colour key. It reads the same palette as the map, so with colour-vision mode on it shows the friendly colours. */
 export function PersistentMapLegend() {
@@ -36,6 +37,9 @@ export function PersistentMapLegend() {
               { color: 'var(--text-primary)', label: MAP_KEY_SELECTED, className: 'flex text-xs text-[var(--text-primary)]' },
               { color: 'var(--text-muted)', label: MAP_KEY_OTHER, className: 'flex text-xs text-[var(--text-muted)]', swatchClassName: 'opacity-40' },
             ]} />
+            {FEATURES.onDemand && (
+              <p className="border-t border-[var(--border-primary)] mt-1.5 pt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+            )}
           </div>
         )}
       />

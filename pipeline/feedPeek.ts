@@ -10,6 +10,41 @@ import { feedZipProblem } from './feedZipCheck.js';
 import { parseCsv } from './parseGtfs.js';
 import { isFeedExpired, shouldReplaceExpiredFeed } from './refreshMeta.js';
 
+/**
+ * #1423: a key for a zip's contents, not its bytes: sha256 (first 16 hex) of its file entries' sorted
+ * (name, CRC32, uncompressed size), read from the central directory without unpacking. Some publishers
+ * re-zip the same files on every download (zenbus, passio3, ridesystems), so the byte hash changes weekly
+ * with no schedule change. Null when the central directory can't be read (not a zip, ZIP64 sizes).
+ */
+export function zipContentKey(buf: Buffer): string | null {
+  const EOCD = 0x06054b50;
+  const CDH = 0x02014b50;
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= Math.max(0, buf.length - 22 - 0xffff); i--) {
+    if (buf.readUInt32LE(i) === EOCD) { eocd = i; break; }
+  }
+  if (eocd < 0) return null;
+  const count = buf.readUInt16LE(eocd + 10);
+  const cdOffset = buf.readUInt32LE(eocd + 16);
+  if (count === 0xffff || cdOffset === 0xffffffff) return null;
+  const entries: string[] = [];
+  let p = cdOffset;
+  for (let n = 0; n < count; n++) {
+    if (p + 46 > buf.length || buf.readUInt32LE(p) !== CDH) return null;
+    const crc = buf.readUInt32LE(p + 16);
+    const size = buf.readUInt32LE(p + 24);
+    const nameLen = buf.readUInt16LE(p + 28);
+    const extraLen = buf.readUInt16LE(p + 30);
+    const commentLen = buf.readUInt16LE(p + 32);
+    if (size === 0xffffffff || p + 46 + nameLen > buf.length) return null;
+    const name = buf.subarray(p + 46, p + 46 + nameLen).toString('utf8');
+    if (!name.endsWith('/')) entries.push(`${name}\t${crc}\t${size}`);
+    p += 46 + nameLen + extraLen + commentLen;
+  }
+  if (entries.length === 0) return null;
+  return createHash('sha256').update(entries.sort().join('\n')).digest('hex').slice(0, 16);
+}
+
 export async function peekFeedInfo(buf: Buffer): Promise<{ feedExpiry: string | null; feedVersion: string | null }> {
   try {
     const zip = await JSZip.loadAsync(buf);

@@ -16,9 +16,10 @@ import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
 import { isRailReplacementBus } from '../../../shared/modes';
+import { hiddenAgencyNoteFor } from '../../../shared/hiddenAgencyNote';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
-import { agencyNames } from '../../utils/agencyName';
+import { agencyCardTitle } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
@@ -28,7 +29,7 @@ import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails } from '../../utils/reportIssue';
 import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
-import { onDemandCardName } from '../../utils/onDemandSelection';
+import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
   formatOnDemandHoursLines,
@@ -54,6 +55,8 @@ interface RouteRow {
   noRegular?: boolean;
   /** Lower end of a shared-stretch range (display only). */
   sharedHeadway?: number;
+  /** CIV-1447: the number the dot is coloured by, where slower than `headway`. */
+  colorHeadway?: number;
   /** #1292: the card's late-start or early-end words when they explain the value. */
   edgeText?: string;
   tier: string | null;
@@ -157,6 +160,34 @@ export function getRoutes(
       matchesFilter: row.matchesFilter,
     }))
     .sort(compareHeadwayThenNumber);
+}
+
+export interface OnDemandZoneHoursRow {
+  zoneId: string;
+  serviceHours?: string;
+  availability?: OnDemandAvailability;
+}
+
+/**
+ * The whole-service card's zone rows (Ryan, 2026-11-11: "one row per zone, each clickable"): when a service has no
+ * hours of its own and sets them zone by zone (RTD FlexRide, C-TRAN, Edmonton), every drawn zone of that service is
+ * listed by name with its hours. Empty when the service has its own hours or no zone sets any.
+ */
+export function onDemandZoneHoursRows(service: NonNullable<Agency['onDemandServiceArea']>): OnDemandZoneHoursRow[] {
+  if (service.availability || service.serviceHours) return [];
+  const names = new Set<string>();
+  for (const feature of service.features) {
+    const name = (feature.properties as { areaName?: string } | undefined)?.areaName;
+    if (name) names.add(name);
+  }
+  const rows: OnDemandZoneHoursRow[] = [];
+  for (const name of names) {
+    const zone = resolveOnDemandZone(service, name);
+    if (!zone.sameServiceAsParent) continue;
+    rows.push({ zoneId: name, serviceHours: zone.serviceHours, availability: zone.availability });
+  }
+  if (!rows.some(row => row.availability || row.serviceHours)) return [];
+  return rows.sort((a, b) => a.zoneId.localeCompare(b.zoneId));
 }
 
 /** Separate services that own some zones (e.g. Hamilton Trans-Cab beside myRide), listed once each. */
@@ -288,7 +319,8 @@ export function buildHeaderSummary(
 ): string {
   const matching = routes.filter(r => r.matchesFilter).length;
   const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
-  if (maxHeadway !== Infinity) parts.push(`${matching} match filters`);
+  // CIV-1471: correct singulars (STYLE.md): "1 matches filters", "3 match filters".
+  if (maxHeadway !== Infinity) parts.push(`${matching} ${plural(matching, 'matches', 'match')} filters`);
   return parts.join(' · ');
 }
 
@@ -333,6 +365,8 @@ interface Props {
   onDemandZoneId?: string | null;
   /** The on-demand card's back link to the agency card (CIV-900); shown only when that is a different card. */
   onBackToAgency?: () => void;
+  /** Opens one zone's card, as clicking the zone on the map does (the whole-service card's zone rows). */
+  onSelectOnDemandZone?: (zoneId: string) => void;
   /** Closes the card: the "← Map" back link every card with nothing before it gets (CIV-929). */
   onClose: () => void;
   /** The agency's route data failed to load (N27). */
@@ -354,6 +388,7 @@ function RouteListSection({
     key: `${r.agencySlug}::${r.routeId}`,
     route: r.label,
     headway: r.headway ?? undefined,
+    colorHeadway: r.colorHeadway,
     headwayLabel: r.headway != null ? r.edgeText ?? (r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined) : undefined,
     limited: r.limited || r.noRegular === true,
     limitedLabel: r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : undefined,
@@ -361,6 +396,24 @@ function RouteListSection({
     live: FEATURES.live && liveShortNames.has(r.shortName),
   }));
   return <CardRouteList rows={rows} onSelect={onRouteSelect} dimmed={dimmed} />;
+}
+
+/**
+ * The agency card's message when no route rows show. A hidden agency's note (CIV-1060) already says why nothing
+ * shows, so its card adds no second message: not the "couldn't load" error (with or without a filter on), and not the
+ * no-routes text. Every other agency keeps them.
+ */
+export function agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, noServiceToday, day }: {
+  activeFilterLabel: string | null | undefined;
+  loadFailed: boolean;
+  hiddenNote: string | null;
+  noServiceToday: boolean;
+  day: string;
+}): { text: string; kind?: 'error' } | null {
+  if (hiddenNote) return null;
+  if (activeFilterLabel) return { text: noRoutesMatchText(activeFilterLabel), ...(loadFailed ? { kind: 'error' as const } : {}) };
+  if (loadFailed) return { text: AGENCY_ROUTES_FAILED, kind: 'error' };
+  return { text: noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED };
 }
 
 export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard({
@@ -379,6 +432,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   onDemandFocus = false,
   onDemandZoneId = null,
   onBackToAgency,
+  onSelectOnDemandZone,
   onClose,
   loadFailed = false,
 }, ref) {
@@ -426,7 +480,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);
   const { primary: agencyNamePrimary, secondary: agencyNameSecondary } = useMemo(
-    () => agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card,
+    () => agencyCardTitle(agency),
     [agency.name, agency.cities, agency.displayArea],
   );
   // An on-demand-only agency's cards are named by its service ("GP Transit On-Demand"), with no place beside it,
@@ -455,6 +509,8 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
     hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
   ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
+  // CIV-1060: a hidden agency's note says why nothing shows, in the one approved pattern; no Learn more.
+  const hiddenNote = hiddenAgencyNoteFor(agency.hiddenReason);
   const coverageNote = FEATURES.onDemand ? onDemandCoverageNote(agency) : null;
   // Zone not on the map yet: an "On-Demand" pill beside the mode pills instead of a notice block.
   const hasOnDemandPill = !agency.onDemandOnly && coverageNote?.kind === 'not-mapped';
@@ -479,24 +535,30 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   if (onDemandFocus && !agency.onDemandServiceArea) return null;
 
   if (onDemandFocus && agency.onDemandServiceArea) {
-    const service = agency.onDemandServiceArea;
-    const selectedZone = onDemandZoneId
-      ? service.features.find(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === onDemandZoneId)
-      : undefined;
-    const zoneName = (selectedZone?.properties as { areaName?: string } | undefined)?.areaName;
+    // The link's id names a zone, a separately run service (Trans-Cab), or nothing (#1440).
+    const linkTarget = resolveOnDemandLinkTarget(agency.onDemandServiceArea, onDemandZoneId);
+    const service = linkTarget.kind === 'named-service'
+      ? namedOnDemandService(agency.onDemandServiceArea, linkTarget.serviceName, linkTarget.zoneIds)
+      : agency.onDemandServiceArea;
+    const zoneName = linkTarget.kind === 'zone' ? linkTarget.zoneId : undefined;
     const zone = resolveOnDemandZone(service, zoneName);
     const pickupSentence = onDemandPickupSentence(service, zoneName);
     // Only claim a shaded area when one belongs to this service (Hamilton's shaded zones are Trans-Cab, not myRide).
     const showsShadedArea = zoneName
-      ? true
+      // A stop-only zone (Grande Prairie's Late Night) has no shaded area.
+      ? service.features.some(feature => (feature.properties as { areaName?: string } | undefined)?.areaName === zoneName)
       : service.features.some(feature => resolveOnDemandZone(service, (feature.properties as { areaName?: string } | undefined)?.areaName).sameServiceAsParent);
     const runningNote = onDemandRunningNote(zone.availability, day, period);
+    // A service with Friday hours but none Monday to Thursday (CyRide Moonlight, #1440): on a weekday the note would
+    // read "Hours unavailable" above a Fri–Sat row, so the rows speak alone and Mon–Thu service is never claimed.
+    const fridayOnlyWeekday = day === 'Weekday' && !!zone.availability?.Friday && !zone.availability.Weekday;
+    const zoneRows = zoneName ? [] : onDemandZoneHoursRows(service);
     const backToAgency = onBackToAgency && (onDemandZoneId || !agency.onDemandOnly) ? onBackToAgency : undefined;
     // An on-demand card's report names the service, the zone and its hours as published (CIV-932), so a report about the
     // area or its hours says which one; the agency's own report says only the agency.
     const onDemandReport = (
       <CardReportButton
-        title={`On-demand issue: ${onDemandCardName(service, onDemandZoneId, agencyNamePrimary)}`}
+        title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
           ['Agency', agency.name],
           ['Agency slug', agency.slug],
@@ -524,7 +586,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             // A zone (or a fixed-route agency's service) reads like a route card: "← Agency" back to the agency
             // card, then the bold zone name (Ryan: "the on demand should be closer to the route card").
             <div className="flex items-start gap-2">
-              <SidebarCardHeader title={onDemandCardName(service, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
+              <SidebarCardHeader title={onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)} back={{ to: agencyCardName, onClick: backToAgency }} />
               {onDemandReport}
             </div>
           ) : (
@@ -559,12 +621,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               <CardBodyText>{notOnMapYetNotice(coverageNote.missing)}</CardBodyText>
             )}
           </div>
-          {zone.eligibility && (
-            <div>
-              <CardSectionLabel>Who can ride</CardSectionLabel>
-              <CardBodyText>{zone.eligibility}</CardBodyText>
-            </div>
-          )}
+          {/* No "Who can ride" section (CIV-1427): Atlas maps only services open to the public. */}
           {zone.tripRules && (
             <div>
               <CardSectionLabel>Trip rules</CardSectionLabel>
@@ -573,15 +630,47 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           )}
           <div>
             <CardSectionLabel>Service hours</CardSectionLabel>
-            <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>
-            <OnDemandHoursRows
-              availability={zone.availability}
-              serviceHours={zone.serviceHours}
-              day={day}
-              className={CARD_BODY_TEXT}
-            />
-            {zone.availability && zone.hoursNote && (
-              <CardBodyText>{zone.hoursNote}</CardBodyText>
+            {zoneRows.length > 0 ? (
+              // Hours set zone by zone: one row per zone, each opening that zone's card.
+              <div className="-mx-2 mt-1 space-y-1" data-testid="on-demand-zone-rows">
+                {zoneRows.map(row => {
+                  const body = (
+                    <>
+                      <p className="text-xs text-[var(--text-primary)] leading-snug"><RouteRowName shortName={row.zoneId} /></p>
+                      {row.availability || row.serviceHours ? (
+                        <OnDemandHoursRows availability={row.availability} serviceHours={row.serviceHours} day={day} className={CARD_BODY_TEXT} />
+                      ) : (
+                        <p className={CARD_SUMMARY}>{onDemandRunningNote(undefined, day, period)}</p>
+                      )}
+                    </>
+                  );
+                  return onSelectOnDemandZone ? (
+                    <button
+                      key={row.zoneId}
+                      type="button"
+                      onClick={() => onSelectOnDemandZone(row.zoneId)}
+                      className="block w-full rounded-md px-2 py-1 text-left transition-colors hover:bg-[var(--bg-btn-hover)]"
+                    >
+                      {body}
+                    </button>
+                  ) : (
+                    <div key={row.zoneId} className="px-2 py-1">{body}</div>
+                  );
+                })}
+              </div>
+            ) : (
+              <>
+                {!fridayOnlyWeekday && <CardBodyText data-testid="on-demand-running-note">{runningNote}</CardBodyText>}
+                <OnDemandHoursRows
+                  availability={zone.availability}
+                  serviceHours={zone.serviceHours}
+                  day={day}
+                  className={CARD_BODY_TEXT}
+                />
+                {zone.availability && zone.hoursNote && (
+                  <CardBodyText>{zone.hoursNote}</CardBodyText>
+                )}
+              </>
             )}
           </div>
           {zone.bookingInfo && (
@@ -669,8 +758,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
               )}
             </ModeFilterPillRow>
           )}
-          {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice) && onInfoOpen && (
+          {/* CIV-1060: the hidden-agency note has no Learn more, so it shows even where the card has no info panel. */}
+          {hiddenNote && !onInfoOpen && (
             <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              <CardHelpNotice message={hiddenNote} />
+            </div>
+          )}
+          {(agency.feedReviewStatus === 'review' || agency.overrideNote || rolloutNotice || hiddenNote) && onInfoOpen && (
+            <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+              {hiddenNote && <CardHelpNotice message={hiddenNote} />}
               {rolloutNotice && (rolloutNotice === BETA_SERVICE_ROLLOUT_NOTICE || rolloutNotice === BETA_ROLLOUT_NOTICE ? (
                 // N20 and N108 (Ryan): a beta-only agency or service points to the same page on beta, never preview; on beta itself, no link.
                 <CardHelpNotice
@@ -702,7 +798,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {onDemandOn ? (
           <PanelEmpty>{ON_DEMAND_NOT_MAPPED_NOTE}</PanelEmpty>
         ) : filteredRoutes.length === 0 ? (
-          <PanelEmpty kind={loadFailed ? 'error' : undefined}>{activeFilterLabel ? noRoutesMatchText(activeFilterLabel) : loadFailed ? AGENCY_ROUTES_FAILED : noServiceToday ? noServiceOnDayNotice('agency', day) : NO_ROUTES_LOADED}</PanelEmpty>
+          (() => {
+            const empty = agencyEmptyMessage({ activeFilterLabel, loadFailed, hiddenNote, noServiceToday, day });
+            return empty ? <PanelEmpty kind={empty.kind}>{empty.text}</PanelEmpty> : null;
+          })()
         ) : hasFilterSplit ? (
           <>
             {matchingRoutes.length > 0 && (

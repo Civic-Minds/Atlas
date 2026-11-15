@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
+import { pctTenth } from '../../../../shared/liveFormat';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
+import LeftOutDays from '../LeftOutDays';
 
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
@@ -31,18 +33,19 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
     <ProfileBars
       ariaLabel="Share of scheduled trips that ran, day by day"
       points={points}
-      formatY={y => `${Math.round(y * 1000) / 10}%`}
+      formatY={pctTenth}
       unit="trips"
       valueHeader="Ran"
       rowHeader="Day"
       caption="How many of the scheduled trips ran, each day."
       scale={{ min: 0.9, max: 1 }}
+      everyLabel
     />
   );
   if (full) {
     return frame(<>
       {points.length > 1 && <div className="mt-4 max-w-2xl">{chart}</div>}
-      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren't counted.{skipped.length > 0 && <> Not counted: {skipped.map(d => dateRangeText(d.date, d.date)).join(', ')} (gaps in our recordings).</>}</p>
+      <p className="mt-2 text-xs text-[var(--text-dim)]">Trips during gaps in our recordings aren’t counted.{skipped.length > 0 && <> <LeftOutDays dates={skipped.map(d => d.date)} />.</>}</p>
     </>);
   }
   if (points.length < 2) return frame(null);
@@ -51,7 +54,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       {overall?.share != null && (
         <div className={TILE}>
           <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
-          <div className="mt-1 text-3xl font-black tracking-tight">{Math.round(overall.share * 1000) / 10}%</div>
+          <div className="mt-1 text-3xl font-black tracking-tight">{pctTenth(overall.share)}</div>
           <div className="mt-1 text-xs text-[var(--text-dim)]">{(overall.seen + overall.notSeen).toLocaleString()} trips</div>
         </div>
       )}

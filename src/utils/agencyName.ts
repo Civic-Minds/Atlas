@@ -322,7 +322,6 @@ function shortenedName(name: string): string {
   if (lower.includes('hamilton street')) return 'HSR';
   if (lower.includes('blue water area')) return 'Blue Water';
   if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
-  if (lower.includes('santa maria area')) return 'SMAT';
   if (lower.includes('redding area')) return 'RABA';
   if (lower.includes('rockford mass') || hasWord(lower, 'rmtd')) return 'RMTD';
 
@@ -442,6 +441,15 @@ export function agencyNames(agency: AgencyNameInput): AgencyNames {
     list: where && !placeAlreadyInName(row, where) ? { primary: row, secondary: where } : { primary: row },
     short: shortenedName(name),
   };
+}
+
+/**
+ * The agency card's title and place ("MARTA", "Atlanta"), the one source for the map's agency card and History's
+ * agency card (CIV-1428, #1027): neither view builds its own, so they can never name a different place.
+ * A bare name (History's fallback for an agency missing from the catalog) is read the same way.
+ */
+export function agencyCardTitle(agency: string | { name: string; cities?: string[]; displayArea?: string }): { primary: string; secondary?: string } {
+  return agencyNames(typeof agency === 'string' ? agency : { name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card;
 }
 
 /**

@@ -254,7 +254,7 @@ slug,agencyName,status,sourceUrl,verificationStatus,verificationCheckedAt,compar
 "miami-dade-transit","Miami-Dade Transit","no_transfer_policy_published","https://www.miamidade.gov/global/transportation/transit-pass.page","accessible","2026-10-01","changed-or-new-policy-found","true","","true"
 "broward-transit","Broward County Transit","no_transfer_policy_published","https://www.broward.org/bct/fares","accessible","2026-10-01","manual-review-required","true","","true"
 "transfort","Transfort (Fort Collins)","confirmed","https://www.fortcollins.gov/Department-Directory/Transfort","accessible","2026-10-01","manual-review-required","true","","true"
-"septa","SEPTA (Philadelphia)","confirmed","https://wwww.septa.org/fares/","accessible","2026-10-01","supports-existing-policy","true","","false"
+"septa","SEPTA (Philadelphia)","confirmed","https://www.septa.org/fares/","accessible","2026-10-01","supports-existing-policy","true","","false"
 "wmata","WMATA (Washington, DC)","no_transfer_policy_published","https://www.wmata.com/pay/fare-programs.html","accessible","2026-10-01","supports-no-policy-found","true","","false"
 "vre","Virginia Railway Express (VRE)","no_transfer_policy_published","https://www.vre.org/service/buying-tickets/","accessible","2026-10-01","supports-no-policy-found","true","","false"
 "marc","MARC Train (MTA Maryland)","no_transfer_policy_published","https://www.mta.maryland.gov/regular-fares","accessible","2026-10-01","supports-no-policy-found","true","","false"

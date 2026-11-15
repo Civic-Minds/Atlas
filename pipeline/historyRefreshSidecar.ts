@@ -15,6 +15,7 @@ import { readPickedWeekQuality } from './historyRefQuality.js';
 import { feedSetSha256 } from './feedPeek.js';
 import type { AgencyFeedResult } from './agencyFeeds.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
+import { historyWeekendPeriodsFor } from './historyV2Flag.js';
 
 export interface HistoryV2Input {
   buf: Buffer;
@@ -69,7 +70,7 @@ export async function writeRefreshSidecar(
     if (!referenceDate) throw new Error(`${slug}: no processor reference date for supplemental feed ${part.url}; History sidecar not written`);
     parts.push({ url: part.url, features: part.features, evidence: await readFeedEvidence(partBuf, { referenceDate }) });
   }
-  const built = buildV2RoutesMerged(parts);
+  const built = buildV2RoutesMerged(parts, { weekendPeriods: historyWeekendPeriodsFor(slug) });
   let note = built.collisions.length > 0
     ? `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`
     : '';

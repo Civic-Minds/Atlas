@@ -1,45 +1,45 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
+import { dateRangeText, goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
-import { builtText, coveredRoutesText, METHOD_GROUPS } from '../../../../shared/liveWording';
+import { pct } from '../../../../shared/liveFormat';
+import { joinList } from '../../../../shared/overflowText';
+import { builtText, coveredRoutesText, DELAY_STARTS_TITLE, METHOD_GROUPS } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
-import MethodFootnote, { OwnLine, Term } from '../MethodFootnote';
-import { aheadLine, bunchingLine, colourLine, deliveredLine, delaysStartLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
+import MethodFootnote, { Term } from '../MethodFootnote';
+import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 
-/** The two weeks, then the days left out on a line of their own (no line when every day counted). */
-const weekWindowItems = (w: NonNullable<LiveV3['weekly']>): ReactNode[] => { const p = weekWindowParts(w); return p.days ? [p.weeks, <OwnLine key="days" title={p.reason ?? undefined}>{p.days}</OwnLine>] : [p.weeks]; };
+/**
+ * The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). `namedAbove`
+ * is the same note when the page already shows it ("Excluding Oct 14"): the days are not named a second time (#1490).
+ */
+const weekWindowItems = (w: Parameters<typeof weekWindowParts>[0], namedAbove?: string | null): ReactNode[] => {
+  const p = weekWindowParts(w);
+  return p.days && p.days !== `${namedAbove}.` ? [p.weeks, <span key="days" title={p.reason ?? undefined}>{p.days}</span>] : [p.weeks];
+};
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /**
- * "How this is measured", the one block every Live surface ends with. The scope picks the lines: the week comparison
- * (dashboard), one route's full method, or the agency's. Each scope keeps its element id, so #method still anchors.
+ * "How this is measured", the one block every Live surface ends with. The scope picks the lines: one route's full
+ * method (its Summary and Full analysis alike, CIV-308), or the agency's. Each scope keeps its element id, so #method
+ * still anchors.
  */
 export type MethodSectionProps =
-  | { scope: 'week'; v3: LiveV3; toFull: (hash: string) => void }
-  | { scope: 'route'; data: Ready }
-  | { scope: 'agency'; s: AgencySummary };
+  | { scope: 'route'; data: Ready; /** The left-out days' note the page already shows above, if any (#1490). */ namedAbove?: string | null }
+  | { scope: 'agency'; s: AgencySummary; /** The agency's short name (useLiveAgencyName). */ agencyName: string };
 
 export default function MethodSection(props: MethodSectionProps): ReactNode {
-  if (props.scope === 'week') {
-    const { v3, toFull } = props;
-    if (!v3.weekly) return null;
-    return (
-      <MethodFootnote id="dash-method" after={<p className="mt-2 text-xs"><ArrowLink href="?view=analysis#method" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull('method'); }}>The full method, in Full analysis</ArrowLink></p>}
-        groups={[
-          { label: METHOD_GROUPS.data, items: weekWindowItems(v3.weekly) },
-          { label: METHOD_GROUPS.colours, items: [colourLine] },
-          { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
-        ]} />
-    );
-  }
   if (props.scope === 'route') {
     const { data } = props;
     const { v3 } = data;
-    const [first, last] = [v3.window.dates[0], v3.window.dates[v3.window.dates.length - 1]];
+    // The good days only, the days every figure counts (CIV-910).
+    const good = goodDayCounts(v3);
+    const [first, last] = [good.dates[0], good.dates[good.dates.length - 1]];
     const lo = v3.leftOut;
+    // The unscheduled-trips, mismatched-trip-numbers and near-a-limit figures over the good days too (CIV-910).
+    const lim = goodDayLimits(v3);
+    const glo = lim.leftOut;
     const unknown = v3.serviceDelivered?.overall.unknown ?? 0;
     return (
       <MethodFootnote id="method" groups={[
@@ -50,32 +50,34 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         extraWaitLine,
         bunchingLine(Math.round(v3.thresholds.bunchedGapSec / 60)),
         deliveredLine(true),
-        <Term t="Where delay builds up">the biggest jump in delay that holds for the next few stops (3 stops or about 1 km).</Term>,
-        <Term t="Linked to">measured in the same stretch, not the cause.</Term>,
+        <Term t={DELAY_STARTS_TITLE}>is the stop where vehicles fall furthest behind and don’t catch up over the next 3 stops (about 1 km).</Term>,
+        <Term t="Linked to">shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
-        `Last ${v3.window.days} service days, ${dateRangeText(first, last)}: ${v3.totals.runs.toLocaleString()} trips and ${v3.totals.stopPassages.toLocaleString()} stop departures.`,
-        ...(v3.weekly ? weekWindowItems(v3.weekly) : []),
+        `Last ${good.days} service days, ${dateRangeText(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
+        ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),
-        data.replacementBuses && <Term t="Replacement buses">this route is run by replacement buses in this schedule, so every figure describes the buses.</Term>,
+        data.replacementBuses && <Term t="Replacement buses">run this route in this schedule, so every figure describes the buses.</Term>,
         `${builtText(data.generatedAt)}.`,
       ] },
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
         recordingGapsLine,
-        <Term t="Near a limit">vehicles are seen only about once a minute, so the {pct(v3.uncertainty.nearCutoffShare)} of trips leaving the end of the line within {Math.round(v3.uncertainty.withinMin * 60)} seconds of a limit could land on either side of it.</Term>,
-        lo && lo.noTimetableTrip > 0 && <Term t="Unscheduled trips">{lo.noTimetableTrip.toLocaleString()} runs ({pct(lo.noTimetableTrip / (lo.kept + lo.noTimetableTrip + lo.excluded))} of the vehicle trips seen) under a trip number not on the schedule, such as extra or unscheduled buses, are left out; the figures describe the {lo.kept.toLocaleString()} scheduled trips kept.</Term>,
-        lo && lo.excluded > 0 && <Term t="Other services">{lo.excluded.toLocaleString()} runs by {lo.excludedLabel ?? 'another service'} that share this route number are left out.</Term>,
-        <Term t="Mismatched trip numbers">{pct(v3.swaps.rate)} of trips ran under a trip number that did not fit their own schedule slot: {v3.swaps.reassigned} were matched to the slot that fit, {v3.swaps.dropped} were left out.</Term>,
-        unknown > 0 && <Term t="Unjudged trips">{unknown.toLocaleString()} trips that could not be judged are left out of Delivered.</Term>,
+        <Term t="Near a limit" colon>{pct(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
+        // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
+        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn’t on the schedule, such as extra buses. We left out {glo.noTimetableTrip.toLocaleString()} of them ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {good.runs.toLocaleString()} scheduled trips.</Term>,
+        // Counted over the good days, like every other figure (Ryan, CIV-910 Q4).
+        glo && glo.excluded > 0 && <Term t="Other services">are runs by {lo?.excludedLabel ?? 'another service'} that shares this route number. We left out {glo.excluded.toLocaleString()} of them.</Term>,
+        <Term t="Mismatched trip numbers">are trips that ran far from the time their trip number is scheduled for ({pct(lim.swaps.rate)} of trips). We matched {lim.swaps.reassigned} to the trip they fit and left out {lim.swaps.dropped}.</Term>,
+        unknown > 0 && <Term t="Unjudged trips">are trips we couldn’t judge as run or not run. We left out {unknown.toLocaleString()} of them from Delivered.</Term>,
       ] },
     
       ]} />
     );
   }
-  const { s } = props;
-  const coverage = coveredRoutesText(s.agency, s.routes);
+  const { s, agencyName } = props;
+  const coverage = coveredRoutesText(agencyName, s.routes);
   const w = s.weekly;
   return (
     <MethodFootnote id="agency-method" groups={[
@@ -85,13 +87,12 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
             extraWaitLine,
             bunchingLine(),
             deliveredLine(),
-            delaysStartLine,
           ] },
           { label: METHOD_GROUPS.data, items: [
             ...(w ? weekWindowItems({ ...w, health: [] }) : []),
             positionsLine,
             tripMatchLine(),
-            <Term t="Covered">{coverage}{s.held.length ? ` (${s.held.map(h => h.route).join(', ')} not included)` : ''}.</Term>,
+            <Term t="Routes covered" colon>{coverage}{s.held.length ? `, not including ${joinList(s.held.map(h => h.route))}` : ''}.</Term>,
             networkFiguresLine,
             stopsLine,
             builtText(s.generatedAt) + '.',

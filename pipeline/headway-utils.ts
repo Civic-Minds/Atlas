@@ -1,4 +1,5 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
+import type { HeadwayByHour } from '../shared/routeProperties.js';
 import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 
@@ -174,6 +175,16 @@ export const ADAPTIVE_WINDOW_BASE_MINUTES = 60;
 export const ADAPTIVE_WINDOW_MAX_MINUTES = 90;
 
 /**
+ * True when the list has a departure in the clock hour starting at `start` ([start, start + 60)),
+ * read on the same cross-midnight fold as the hour windows (#297). An hour without one shows no
+ * value (CIV-1109, #1214).
+ */
+export function hasDepartureInClockHour(departureTimes: readonly number[], start: number): boolean {
+  const end = start + 60;
+  return forCrossMidnightWindow([...departureTimes], end).some(t => t >= start && t < end);
+}
+
+/**
  * Like medianHeadwayInWindow, but only widens past a strict `baseMinutes`-wide window when that
  * window doesn't already have enough departures on its own -- rescuing sparse hours (TTC 10
  * above) without blending hours that don't need it (TTC 5 above).
@@ -188,6 +199,10 @@ export function adaptiveMedianHeadwayInWindow(
   const narrowEnd = start + baseMinutes;
   const narrow = medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, narrowEnd), start, narrowEnd, minDeps);
   if (narrow != null) return narrow;
+  // CIV-1109 (#1214): an hour with no departure of its own never widens. The wider window only
+  // ever borrowed the next hour's trips into it (Madison 80 via Eagle Heights read 12 at 4 PM from
+  // its 5:02, 5:17 and 5:26 arrivals; TTC 504 westbound read 3 AM from the 4 AM trips, CIV-1106).
+  if (!hasDepartureInClockHour(departureTimes, start)) return null;
   const wideEnd = start + maxMinutes;
   return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, wideEnd), start, wideEnd, minDeps);
 }
@@ -475,6 +490,24 @@ export function isSustainedHeadway(
 }
 
 /**
+ * #1432: whether a period's gaps are even enough for its typical gap to be the wait. With exactly two
+ * gaps (three departures) the median is their mean, which takes in the long gap itself: GO 33's PM at
+ * Mount Pleasant (15:40, 18:18, 18:58: gaps 158 and 40) read "every 99" though riders wait 158. There
+ * the longer gap is tested against the shorter one, under the settled 1.7x / 15-minute test (two gaps
+ * of 15 and 4 pass: TTC 300's Victoria Park short turn). With three or more gaps the median is one of
+ * the gaps or the mean of two middle ones, and the settled test is unchanged. It decides how a period
+ * reads (isUnevenPeriod), not whether it is steady: the steadiness
+ * flag also decides whether a branch counts for its direction (D1), and flipping it there dropped
+ * sparse branches and made headlines read faster (SEPTA T3 Saturday 91 to 15). The pooled reading
+ * (stopPools) keeps its own guard: sending its three-departure windows to their longest wait let the
+ * per-stop fallbacks read faster (GO 41's headline 68 to 35).
+ */
+export function isSteadyPeriodGaps(gaps: readonly number[], typical: number): boolean {
+  if (gaps.length === 2) return isSustainedHeadway([Math.max(gaps[0], gaps[1])], Math.min(gaps[0], gaps[1]));
+  return isSustainedHeadway([...gaps], typical);
+}
+
+/**
  * Shared by hasSustainedNightService and hasSustainedFrequentService below -- only the window
  * and threshold differ between them. At least one departure every maxGapMinutes across the whole
  * [start, end] window, with no gap -- including the boundary gaps from window start to the first
@@ -682,6 +715,38 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
   return result;
 }
 
+/**
+ * The longest gap between two departures inside [start, end], without the clipped run from the window's start to its
+ * first departure or from its last departure to the window's end (CIV-990). Null with under two departures. One
+ * calculation for the published longest gap (CIV-995) and runsThroughPeriod's hole check.
+ */
+export function innerMaxGapInWindow(departureTimes: readonly number[], start: number, end: number): number | null {
+  const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+  let longest: number | null = null;
+  for (let i = 1; i < t.length; i++) longest = Math.max(longest ?? 0, t[i] - t[i - 1]);
+  return longest;
+}
+
+/** CIV-995: innerMaxGapInWindow for each period. */
+export function computePeriodInnerMaxGaps(departureTimes: readonly number[]): HeadwayByPeriodMaxGap {
+  const result: HeadwayByPeriodMaxGap = {};
+  for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
+    result[key] = innerMaxGapInWindow(departureTimes, start, end);
+  }
+  return result;
+}
+
+/**
+ * The sparkline hour headways: per hour, the median over at least three departures, widening past the strict hour
+ * only when it has fewer than three on its own (#282; two departures can be an accidental cluster, HRT 967). One
+ * calculation for a feature's headwayByHour, the per-stop hours, the headsign terminal's hours and a stretch's rows.
+ */
+export function computeHourHeadways(departureTimes: number[], hours: readonly number[]): HeadwayByHour {
+  const byHour: HeadwayByHour = {};
+  for (const h of hours) byHour[h] = adaptiveMedianHeadwayInWindow(departureTimes, h * 60, 3);
+  return byHour;
+}
+
 /** Return the largest gap that starts during each 60-minute sparkline hour. */
 export function computeHourMaxGaps(departureTimes: number[], hours: readonly number[]): HeadwayByHourMaxGap {
   const times = [...new Set(departureTimes)].sort((a, b) => a - b);
@@ -792,6 +857,8 @@ export function isUnevenPeriod(departureTimes: readonly number[], start: number,
   if (typical == null || typical <= 0) return false;
   const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
   const gaps = t.slice(1).map((x, i) => x - t[i]);
+  // #1432: three departures read their longest wait when the two gaps are not even (isSteadyPeriodGaps).
+  if (gaps.length === 2) return !isSteadyPeriodGaps(gaps, typical);
   const slow = gaps.map((g, i) => ({ g, i })).filter(({ g }) => g >= UNEVEN_GAP_RATIO * typical);
   if (slow.length < UNEVEN_MIN_GAPS) return false;
   const total = slow.reduce((n, { g }) => n + g, 0);

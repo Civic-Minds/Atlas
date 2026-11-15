@@ -6,7 +6,7 @@ import {
   ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopRunsOnlyText,
   selectedRoutePartMeetsFilterNotice, unevenServiceNotice, variantsIncludedNotice, WEEKDAY_VARIATION_NOTICE,
 } from '../content/noticeCopy';
-import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges } from './periodActiveRanges';
+import { partPeriodNoticeApplies, partPeriodNoticeHeadway, partPeriodOutside, periodTripRanges, refStopHourDirections } from './periodActiveRanges';
 import { routePartMeetsFilter } from './routeCardTrunk';
 import { buildRouteCardModel, type RouteCardModel } from './routeCardRows';
 import { buildDirectionGroups } from './routeCardDirectionGroups';
@@ -88,9 +88,16 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // hours has trips; "This route runs only from …" names those hours, and the "no scheduled trips" line shows only
   // when there are none (TTC 504 Sunday read both: its run from 1 AM counted the hour before the period).
   // Whether it runs reads every direction, as the period check does; the hours named are the chart's where it has some.
-  const tripRangesOf = (list: ShapeProperties[]) => (selectedPeriod ? periodTripRanges(list, selectedPeriod.startHour, selectedPeriod.endHour) : []);
+  const tripRangesOf = (list: Parameters<typeof periodTripRanges>[0]) => (selectedPeriod ? periodTripRanges(list, selectedPeriod.startHour, selectedPeriod.endHour) : []);
   const allDirectionRanges = tripRangesOf(directions);
-  const chartRanges = tripRangesOf(model.activeRangeDirections);
+  // #1343: the hours named are the chart's (#1186), except where they fill the whole period: "only from 7–11 PM" in
+  // 7–11 PM says nothing. There the hours come from the reference stop, where the period decision is read (Bustang
+  // South's last evening bus passes mid-route about 8:45 PM but reaches Colorado Springs at 10:20, so its chart's
+  // end-of-line hours fill the evening). Those hours then differ from the chart's bars. Data without them keeps the chart's.
+  const rowChartRanges = tripRangesOf(model.activeRangeDirections);
+  const fillsPeriod = periodRange != null && rowChartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ') === periodRange;
+  const refDirections = fillsPeriod ? refStopHourDirections(model.activeRangeDirections) : null;
+  const chartRanges = refDirections ? tripRangesOf(refDirections) : rowChartRanges;
   const periodRanges = chartRanges.length > 0 ? chartRanges : allDirectionRanges;
   // #1277: a route the filter says doesn't run (no rows) can still have trips inside the period: TTC 110 Sunday AM, first
   // trip 7:52: its directions carry AM values, but the route reads as not running. It has trips there, so it never reads "no scheduled trips".
@@ -99,6 +106,9 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // The filter line. #1186: a route with trips inside the period never also reads "no scheduled trips" there; the
   // period notice says when it runs.
   let filter: CardNotice | null = null;
+  // N13's run of service in the period (its first and last hour), and the line itself, for "each fact once" below.
+  let partPeriodRun: [number, number] | null = null;
+  let swapToPartPeriod: () => CardNotice | null = () => null;
   const sharedPassDirections = input.selectedRouteOutOfFilter ? routePartMeetsFilter(input.agencyFeatures, directions, period, maxHeadway) : [];
   if (input.selectedRouteOutOfFilter && !(model.doesNotRun && runsInPeriod)) {
     // #1186: the hours named are the chart's, inside the period (TTC 31 overnight read "runs from 1–2 AM, but not
@@ -109,16 +119,17 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     // a route running the whole period that misses the frequency filter gets the filter notice.
     const showPartPeriodNotice = selectedPeriod != null
       && partPeriodNoticeApplies(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour, maxHeadway, model.contract?.filterValue);
-    if (model.doesNotRun) {
-      filter = { code: 'N11', text: selectedRouteOutsideFilterNotice(Infinity, periodRange), place: 3 };
-    } else if (selectedPeriod && activePeriodRangeText && activePeriodRangeText !== periodRange && showPartPeriodNotice) {
+    // N13 (Ryan): name what the rest of the period has, from the card's own hourly data. CIV-1069: the notice names
+    // the rows' own value (the slowest row), not the route's filter value; CIV-975's rule still checks it against every row.
+    // #1343: the reference stop's hours carry no hourly headways to split the period by; the notice names them alone.
+    const split = selectedPeriod && !refDirections ? partPeriodOutside(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour) : null;
+    partPeriodRun = split ? split.active : chartRanges.length > 0 ? [chartRanges[0][0], chartRanges[chartRanges.length - 1][1]] : null;
+    const partPeriodLine = (): CardNotice | null => {
       // CIV-1251: "only from 3–7 PM" would name the whole period (OC Transpo 226 PM: one direction has no trips); the
       // direction's own "No trips from 3–7 PM" says why the route misses the filter.
-      // N13 (Ryan): name what the rest of the period has, from the card's own hourly data. CIV-1069: the notice names
-      // the rows' own value (the slowest row), not the route's filter value; CIV-975's rule still checks it against every row.
-      const split = partPeriodOutside(model.activeRangeDirections, selectedPeriod.startHour, selectedPeriod.endHour);
+      if (!selectedPeriod || !activePeriodRangeText || (activePeriodRangeText === periodRange && !split?.parts.length)) return null;
       const rowHeadways = model.rowHeadways;
-      filter = {
+      return {
         code: 'N13',
         place: 3,
         text: selectedRouteFilterNotice({
@@ -134,6 +145,12 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
           periodRange: formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour),
         }),
       };
+    };
+    swapToPartPeriod = partPeriodLine;
+    if (model.doesNotRun) {
+      filter = { code: 'N11', text: selectedRouteOutsideFilterNotice(Infinity, periodRange), place: 3 };
+    } else if (selectedPeriod && activePeriodRangeText && activePeriodRangeText !== periodRange && showPartPeriodNotice) {
+      filter = partPeriodLine();
     } else if (sharedPassDirections.length > 0) {
       // CIV-514: part of the route qualifies, as the map's shared-stretch overlay shows. CIV-1251: one line, naming the
       // direction when only one is like this (the direction note it replaces is gone).
@@ -193,10 +210,12 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   const rowNumbers: number[] = [];
   const rowWords: string[] = [];
   const hoursText = /\b(until|from) \d/;
-  // Whether every row names its own hours: only then do the rows say when the whole route runs (AC Transit 70: one row
-  // "from 7:14 AM" and one "every 30 min" don't say the route has no trips from 6–7 AM).
+  // Whether every row names its own hours (#1226). The part-period lines also drop when one row gives their same hours
+  // (CIV-1199, rowsGiveSameHours below).
   let everyRowGivesHours = true;
   let rowCount = 0;
+  // Whether every row shows a number (no "Runs irregularly", no limited row).
+  let everyRowNumbered = true;
   // CIV-1241 (Ryan, 2026-11-01): the rows that fall short of the filter, and whether each names its until or from time
   // from its period edge, the words the row prints (rowReadsPeriodEdge, as the stop card reads them).
   let shortRows = 0;
@@ -222,8 +241,11 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
         shortRows++;
         if (!hoursText.test(v.edgeText ?? '')) everyShortRowGivesEdge = false;
       }
-      if (v.rowNoRegular || v.isLimited) continue;
-      if (v.headway != null) rowNumbers.push(v.headway);
+      if (v.rowNoRegular || v.isLimited || v.headway == null) {
+        everyRowNumbered = false;
+        continue;
+      }
+      rowNumbers.push(v.headway);
     }
   }
   const words = rowWords.join(' | ');
@@ -231,6 +253,20 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   // The gaps the rows name: "with a 32 min gap", "longest gap 32 min", and a range's top ("every 25–30 min").
   const rowGaps = [...words.matchAll(/(\d+) min gap|longest gap (\d+) min|\u2013(\d+) min/g)].map(m => Number(m[1] ?? m[2] ?? m[3]));
   const rowsGiveHours = rowCount > 0 && everyRowGivesHours;
+  // CIV-1199 (Ryan, 2026-11-14): a row gives the same hours as a line naming the run [start, end) when, for each edge of
+  // the run inside the period, a row's "from" time falls in its first hour or a row's "until" time in its last
+  // (AC Transit 70 AM: "every 30 min from 7:14 AM" beside "runs only from 7–9 AM, no trips from 6–7 AM").
+  const rowTimes = [...words.matchAll(/\b(from|until) (\d{1,2})(?::(\d{2}))?\s*([AP])M/g)]
+    .map(m => ({ kind: m[1], hour: (Number(m[2]) % 12) + (m[4] === 'P' ? 12 : 0), minute: Number(m[3] ?? 0) }));
+  const rowsGiveSameHours = (run: [number, number] | null): boolean => {
+    if (!run || !selectedPeriod) return false;
+    const [start, end] = run;
+    const edges = [
+      start > selectedPeriod.startHour ? rowTimes.some(t => t.kind === 'from' && t.hour === start % 24) : null,
+      end < selectedPeriod.endHour ? rowTimes.some(t => t.kind === 'until' && (t.hour === (end - 1) % 24 || (t.hour === end % 24 && t.minute === 0))) : null,
+    ].filter((edge): edge is boolean => edge != null);
+    return edges.length > 0 && edges.every(Boolean);
+  };
   const dropped: RouteCardNotices['dropped'] = [];
   const drop = (notice: CardNotice | null, why: string): null => {
     if (notice) dropped.push({ code: notice.code, why });
@@ -244,12 +280,19 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     else if (rowNumbers.length > 0 && gap <= Math.max(...rowNumbers)) periodNotice = drop(periodNotice, "the gap isn't longer than a row's wait");
     else if (rowGivesHours) periodNotice = drop(periodNotice, 'a row gives its hours, so the route does not run all period');
   }
-  // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").
-  // CIV-1251: N13 opens with N9's sentence and adds the rest of the period, so N9 beside it says the same thing again.
-  if (periodNotice && filter && (periodNotice.text === filter.text || (periodNotice.code === 'N9' && filter.code === 'N13' && filter.text.startsWith(periodNotice.text)))) periodNotice = drop(periodNotice, 'the filter line says the same');
   // #1226: every row giving its hours already says what the line says (CIV-1251 row 8: nothing below the rows).
   if (periodNotice?.code === 'N9' && rowsGiveHours) periodNotice = drop(periodNotice, 'every row gives its hours');
+  // CIV-1199 (audit proposal, approved): N9 drops entirely when a row already gives its hours (CTA 82 Sunday late); a row
+  // showing only a number keeps the line (CTA X4 AM: the number says how often, not when).
+  const periodRun: [number, number] | null = periodRanges.length > 0 ? [periodRanges[0][0], periodRanges[periodRanges.length - 1][1]] : null;
+  if (periodNotice?.code === 'N9' && rowsGiveSameHours(periodRun)) periodNotice = drop(periodNotice, 'a row gives the same hours');
   if (filter?.code === 'N13' && rowsGiveHours) filter = drop(filter, 'every row gives its hours');
+  if (filter?.code === 'N13' && rowsGiveSameHours(partPeriodRun)) filter = drop(filter, 'a row gives the same hours');
+  // #1225: the period line and the filter line can be the same sentence ("no scheduled trips from 6–9 AM").
+  // CIV-1251: N13 names the same hours as N9 ("This route runs every 20 min, only from 11 PM–12 AM. …") and adds the rest
+  // of the period, so N9 beside it says the same thing again. Read after N13's own drops, so the hours always show once.
+  const sameRun = periodNotice?.code === 'N9' && filter?.code === 'N13' && filter.text.includes(periodNotice.text.replace(/^This route runs /, ''));
+  if (periodNotice && filter && (periodNotice.text === filter.text || sameRun)) periodNotice = drop(periodNotice, 'the filter line says the same');
   // CIV-1241 (Ryan, 2026-11-01): "Only part of this route runs every 60 minutes or better" says what a falling-short row's
   // "every 30 min until 9:18 PM" already does (OC Transpo 11 evening, CIV-1241 crops). It stays while any falling-short row has no such time.
   if (filter?.code === 'N123' && shortRows > 0 && everyShortRowGivesEdge) filter = drop(filter, 'every row that falls short gives its until or from time');
@@ -262,6 +305,15 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     else if (periodNotice?.code === 'N10') filter = drop(filter, 'the gap line says why');
     else if (rowGaps.some(g => g > maxHeadway)) filter = drop(filter, "a row's gap is longer than the filter");
     else if (rowGivesHours) filter = drop(filter, 'a row gives its hours');
+    // CIV-1199 (Ryan, 2026-11-14, question 2): every row meets the filter, but the route doesn't run all period at it
+    // (OC Transpo 6 and AC Transit 1T at ≤15): the existing part-period line says when it runs, the real reason.
+    else if (everyRowNumbered && rowNumbers.length > 0 && rowNumbers.every(h => h <= maxHeadway)) {
+      const swapped = swapToPartPeriod();
+      if (swapped) {
+        dropped.push({ code: 'N12', why: 'every row meets the filter; the part-period line says when it runs' });
+        filter = swapped;
+      }
+    }
   }
 
   return {
@@ -288,6 +340,8 @@ export function routeCardNoNumberWords(features: readonly ShapeProperties[], per
   const model = buildRouteCardModel({
     ...route, directionGroups: buildDirectionGroups(route, period), agencyFeatures: undefined,
     period, maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false,
+    // CIV-995 (b): each row's own trips, so this stays as before the card read its stretches.
+    stretchValues: false,
   });
   const rows = model.groups.flatMap(group => group.rows.filter(row => !row.night).map(row => row.display(null).value));
   if (model.groups.some(group => group.shared) || rows.some(value => !value.rowNoRegular)) return null;

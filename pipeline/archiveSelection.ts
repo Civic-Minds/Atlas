@@ -10,6 +10,7 @@
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import { effectiveFeedExpiry, effectiveFeedStart } from './feedFreshness.js';
+import { isYmd } from '../shared/feedAvailability.js';
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 import { COUNTRY_LAUNCH_FLAG, isCountryLaunchBlocked, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
 
@@ -53,15 +54,19 @@ function newestUpload(zips: ArchiveObject[]): ArchiveObject | null {
  *    archive carries a later service date in its key. That happens when old
  *    feeds are backfilled or bulk-migrated after the current one was archived
  *    (norta, halifax, path), so upload time stops meaning recency.
- * 2. In that case, or when upload times are missing or tied, fall back to the
- *    latest service date, but only when it matches the expiry of the feed the
- *    live data was built from (`lastFeedExpiry`). Hash variants sharing that
- *    date are ordered by upload time.
+ * 2. In that case, or when upload times are missing or tied, take the zip whose
+ *    service date is the expiry of the feed the live data was built from
+ *    (`lastFeedExpiry`), whatever later date another zip carries: a zip with a
+ *    placeholder service date years out (st-george's old feed, 20310130, #1355)
+ *    never outranks the live feed. Hash variants sharing that date are ordered
+ *    by upload time.
  * 3. Anything else is refused rather than guessed. Alphabetical order is never used.
  */
 export function selectArchiveForAgency(
   objects: ArchiveObject[],
   agency: { lastFeedExpiry?: string | null },
+  /** #1355: a live feed that has already ended is not matched; the second look finds the current zip (grt). */
+  todayYmd?: string,
 ): ArchiveSelection {
   const zips = objects.filter(obj => obj.key.endsWith('.zip'));
   if (zips.length === 0) return { ok: false, noArchive: true, reason: 'no archived GTFS zip' };
@@ -83,13 +88,26 @@ export function selectArchiveForAgency(
     : 'upload times are missing or tied';
   if (!maxDate) return refuse(`${why}, and no zip carries a service date`);
   const liveExpiry = agency.lastFeedExpiry ?? null;
-  if (liveExpiry !== maxDate) {
-    return refuse(`${why}, and the latest service date ${maxDate} does not match the live feed's ${liveExpiry ?? 'unknown'} expiry`);
+  const liveCurrent = liveExpiry != null && (todayYmd == null || liveExpiry >= todayYmd);
+  const candidates = liveCurrent ? zips.filter(obj => archiveKeyServiceDate(obj.key) === liveExpiry) : [];
+  if (candidates.length === 0) {
+    return refuse(`${why}, and no archived zip carries the live feed's ${liveExpiry ?? 'unknown'} expiry (latest service date ${maxDate})`);
   }
-  const candidates = zips.filter(obj => archiveKeyServiceDate(obj.key) === maxDate);
   const pick = candidates.length === 1 ? candidates[0] : newestUpload(candidates);
-  if (!pick) return refuse(`${why}, and ${candidates.length} zips share service date ${maxDate} with no upload order`);
-  return { ok: true, key: pick.key, reason: `latest service date ${maxDate}, matching the live feed (${why})` };
+  if (!pick) return refuse(`${why}, and ${candidates.length} zips share the live feed's service date ${liveExpiry} with no upload order`);
+  const later = liveExpiry === maxDate ? '' : `; the later ${maxDate} is not the live feed (#1355)`;
+  return { ok: true, key: pick.key, reason: `service date ${liveExpiry}, matching the live feed (${why}${later})` };
+}
+
+/**
+ * #1423: the archive stem (`<label>-<hash>`, no `.zip`) of the zip an agency's live data most likely came
+ * from, for refresh's unchanged check on records without lastRawArchiveKey. Same pick as reprocess
+ * (selectArchiveForAgency); null when the archive is empty or the pick is ambiguous.
+ */
+export function newestArchivedZipStem(objects: ArchiveObject[], agency: { lastFeedExpiry?: string | null }, todayYmd?: string): string | null {
+  const selection = selectArchiveForAgency(objects, agency, todayYmd);
+  if (!selection.ok) return null;
+  return (selection.key.split('/').pop() ?? selection.key).replace(/\.zip$/, '');
 }
 
 /** An archived zip with the service dates read from inside it (`peekFeedDates`). */
@@ -104,12 +122,15 @@ export interface PeekedArchive {
  * whose date is not the service end (cascades-east). Here only the dates inside each zip count:
  * among the zips still in service today, the one running latest wins. Zips tied on that date must
  * be the same feed (same start, end and feed_version); then the newest upload is taken. No zip in
- * service, or a tie between different feeds, stays refused.
+ * service, or a tie between different feeds, stays refused. #1355: a zip in service whose own end date
+ * is the live feed's expiry is the live feed, and is taken before any zip running later by its own
+ * dates (st-george's old feed carried a 2031 placeholder and won over the city feed ending 20271231).
  */
-export function selectByFeedDates(peeked: PeekedArchive[], todayYmd: string, priorReason: string): ArchiveSelection {
+export function selectByFeedDates(peeked: PeekedArchive[], todayYmd: string, priorReason: string, liveFeedExpiry?: string | null): ArchiveSelection {
   const current = peeked.filter(p => !!p.dates.feedExpiry && p.dates.feedExpiry >= todayYmd);
   if (current.length === 0) return refuse(`${priorReason}, and no archived zip is in service by its own dates`);
-  const latest = current.map(p => p.dates.feedExpiry!).sort().at(-1)!;
+  const live = liveFeedExpiry ? current.filter(p => p.dates.feedExpiry === liveFeedExpiry) : [];
+  const latest = live.length ? liveFeedExpiry! : current.map(p => p.dates.feedExpiry!).sort().at(-1)!;
   const top = current.filter(p => p.dates.feedExpiry === latest);
   const feedId = (d: FeedDates) => `${d.feedStart}|${d.feedExpiry}|${d.feedVersion}`;
   if (new Set(top.map(p => feedId(p.dates))).size > 1) {
@@ -117,7 +138,8 @@ export function selectByFeedDates(peeked: PeekedArchive[], todayYmd: string, pri
   }
   const pick = top.length === 1 ? top[0].obj : newestUpload(top.map(p => p.obj)) ?? top[0].obj;
   const same = top.length > 1 ? `; ${top.length} archived copies of the same feed` : '';
-  return { ok: true, key: pick.key, reason: `in service to ${latest} by its own dates${same} (${priorReason})` };
+  const how = live.length ? `in service to ${latest} by its own dates, the live feed's expiry (#1355)` : `in service to ${latest} by its own dates`;
+  return { ok: true, key: pick.key, reason: `${how}${same} (${priorReason})` };
 }
 
 
@@ -126,6 +148,8 @@ export interface FeedDates {
   /** Latest service date across feed_info, calendar.txt and calendar_dates.txt; uncapped. */
   feedExpiry: string | null;
   feedVersion: string | null;
+  /** feed_info.txt feed_start_date alone; with feedStart it gives feedPeriodStart (#1359). */
+  feedInfoStart?: string | null;
   /** feed_info.txt feed_end_date alone, for recordedFeedExpiry (#875). */
   feedInfoEnd: string | null;
   /** Latest service date from calendar.txt and added calendar_dates alone, for recordedFeedExpiry (#1039). */
@@ -195,6 +219,7 @@ export async function peekFeedDates(buf: Buffer, excludeRouteShortNames?: readon
         calendarDates,
       }),
       feedVersion: feedInfo.feed_version || null,
+      feedInfoStart: isYmd(feedInfo.feed_start_date) ? feedInfo.feed_start_date : null,
       feedInfoEnd: feedInfo.feed_end_date || null,
       calendarOnlyEnd: effectiveFeedExpiry({
         calendarEnds: calendar.map(row => row.end_date),

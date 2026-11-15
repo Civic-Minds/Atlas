@@ -3,7 +3,8 @@ import { formatRemDisplay, getRouteLabel } from '../../shared/routeDisplay';
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
-import { nameCase } from './nameCase';
+import { countOf } from '../../shared/overflowText';
+import { feedPlaceName, nameCase } from './nameCase';
 export { cleanHeadsign, formatRemDisplay, getRouteLabel };
 // Name casing lives in nameCase.ts (CIV-1001); these keep the older import path working.
 export { nameCase, ROUTE_NAME_ACRONYMS, writtenInCapitals, type NameCaseMode } from './nameCase';
@@ -100,15 +101,27 @@ export function routeLabels(input: Parameters<typeof routeDisplay>[0]) {
   return { primary, secondary, text: secondary ? `${primary} — ${secondary}` : primary };
 }
 
-/** Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). */
+/** The word for a vehicle whose type isn't known: its fleet number then stands alone ("4508", not "Vehicle 4508"). */
+const GENERIC_VEHICLE = 'Vehicle';
+
+/**
+ * Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). A streetcar route says "Vehicle":
+ * buses replace streetcars on it and the feed does not say which is which (CIV-926, Ryan's pick).
+ */
 export function vehicleModeWord(routeType: number | null | undefined): string {
   switch (routeType) {
-    case 0: return 'Streetcar';
+    case 0: return GENERIC_VEHICLE;
     case 1:
     case 2: return 'Train';
     case 4: return 'Ferry';
     default: return 'Bus';
   }
+}
+
+/** The count and its vehicle word, lower-case: "1 streetcar", "10 streetcars", "3 buses", "2 ferries". */
+export function vehicleModeCount(count: number, modeWord: string): string {
+  const word = modeWord.toLowerCase();
+  return countOf(count, word, word === 'bus' ? 'buses' : word === 'ferry' ? 'ferries' : undefined);
 }
 
 /** Sidebar label for a live vehicle row when headsign is unavailable. */
@@ -118,13 +131,14 @@ export function liveVehicleRowLabel(
   modeWord: string = 'Bus'
 ): string {
   if (v.headsign) return v.headsign;
+  const named = (n: string) => (modeWord === GENERIC_VEHICLE ? n : `${modeWord} ${n}`);
   const fleet = v.vehicleLabel?.trim();
-  if (fleet && !UUID_LIKE.test(fleet)) return `${modeWord} ${fleet}`;
+  if (fleet && !UUID_LIKE.test(fleet)) return named(fleet);
   const id = v.id.trim();
-  if (/^\d{3,7}$/.test(id)) return `${modeWord} ${id}`;
+  if (/^\d{3,7}$/.test(id)) return named(id);
   if (!UUID_LIKE.test(id)) {
     const tail = id.match(/\d{4,}$/)?.[0];
-    if (tail) return `${modeWord} ${tail}`;
+    if (tail) return named(tail);
   }
   return `Vehicle ${index + 1}`;
 }
@@ -147,7 +161,7 @@ export function formatBranchLabel(
     ? headsign.trim()
     : cleanHeadsign(headsign.trim(), shortName, longName);
   if (!raw || isRedundantWithRouteName(raw, shortName, longName)) return withToPrefix(fallback);
-  return withToPrefix(nameCase(raw, 'stop'));
+  return withToPrefix(feedPlaceName(raw));
 }
 
 /** Format YYYYMMDD or YYYY-MM-DD for display (UTC). */

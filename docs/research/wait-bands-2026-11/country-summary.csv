@@ -1,0 +1,253 @@
+country,day,period,band,route_km,share_pct,routes
+Canada,Weekday,amPeak,10,1966.5,4.45,130
+Canada,Weekday,amPeak,15,3424.6,7.75,219
+Canada,Weekday,amPeak,20,3538.4,8.00,244
+Canada,Weekday,amPeak,30,11329.3,25.62,811
+Canada,Weekday,amPeak,60,9590.5,21.69,634
+Canada,Weekday,amPeak,slower_than_60,7579.2,17.14,393
+Canada,Weekday,amPeak,no_service,6788.2,15.35,387
+Canada,Weekday,midday,10,1173.6,2.65,85
+Canada,Weekday,midday,15,3058.7,6.92,206
+Canada,Weekday,midday,20,2520.5,5.70,176
+Canada,Weekday,midday,30,12402.1,28.05,899
+Canada,Weekday,midday,60,6764.3,15.30,465
+Canada,Weekday,midday,slower_than_60,8019.5,18.14,383
+Canada,Weekday,midday,no_service,10278.1,23.24,604
+Canada,Weekday,pmPeak,10,2135.0,4.83,146
+Canada,Weekday,pmPeak,15,3898.9,8.82,248
+Canada,Weekday,pmPeak,20,3157.2,7.14,228
+Canada,Weekday,pmPeak,30,11476.1,25.95,819
+Canada,Weekday,pmPeak,60,8684.4,19.64,568
+Canada,Weekday,pmPeak,slower_than_60,9364.3,21.18,495
+Canada,Weekday,pmPeak,no_service,5501.0,12.44,314
+Canada,Weekday,evening,10,777.8,1.76,55
+Canada,Weekday,evening,15,1483.5,3.36,98
+Canada,Weekday,evening,20,1538.2,3.48,110
+Canada,Weekday,evening,30,8813.5,19.93,629
+Canada,Weekday,evening,60,7796.4,17.63,518
+Canada,Weekday,evening,slower_than_60,7972.3,18.03,423
+Canada,Weekday,evening,no_service,15835.0,35.81,985
+Canada,Weekday,late,10,512.6,1.16,38
+Canada,Weekday,late,15,355.6,0.80,20
+Canada,Weekday,late,20,557.8,1.26,49
+Canada,Weekday,late,30,2283.2,5.16,166
+Canada,Weekday,late,60,1891.7,4.28,120
+Canada,Weekday,late,slower_than_60,7520.5,17.01,431
+Canada,Weekday,late,no_service,31095.4,70.32,1994
+Canada,Weekday,overnight,10,0.0,0.00,0
+Canada,Weekday,overnight,15,18.5,0.04,1
+Canada,Weekday,overnight,20,83.3,0.19,5
+Canada,Weekday,overnight,30,537.3,1.22,29
+Canada,Weekday,overnight,60,778.1,1.76,35
+Canada,Weekday,overnight,slower_than_60,23.8,0.05,2
+Canada,Weekday,overnight,no_service,42775.7,96.74,2746
+Canada,Saturday,amPeak,10,654.1,1.48,45
+Canada,Saturday,amPeak,15,766.1,1.73,48
+Canada,Saturday,amPeak,20,1437.9,3.25,101
+Canada,Saturday,amPeak,30,5567.5,12.59,420
+Canada,Saturday,amPeak,60,6096.7,13.79,442
+Canada,Saturday,amPeak,slower_than_60,8773.1,19.84,483
+Canada,Saturday,amPeak,no_service,20921.4,47.32,1279
+Canada,Saturday,midday,10,875.8,1.98,61
+Canada,Saturday,midday,15,1907.9,4.31,126
+Canada,Saturday,midday,20,1736.0,3.93,125
+Canada,Saturday,midday,30,10139.2,22.93,730
+Canada,Saturday,midday,60,7114.7,16.09,507
+Canada,Saturday,midday,slower_than_60,7554.0,17.08,383
+Canada,Saturday,midday,no_service,14889.1,33.67,886
+Canada,Saturday,pmPeak,10,1108.9,2.51,78
+Canada,Saturday,pmPeak,15,2081.7,4.71,138
+Canada,Saturday,pmPeak,20,1934.0,4.37,131
+Canada,Saturday,pmPeak,30,10230.7,23.14,739
+Canada,Saturday,pmPeak,60,8362.2,18.91,554
+Canada,Saturday,pmPeak,slower_than_60,5620.7,12.71,288
+Canada,Saturday,pmPeak,no_service,14878.5,33.65,890
+Canada,Saturday,evening,10,691.0,1.56,49
+Canada,Saturday,evening,15,1135.4,2.57,74
+Canada,Saturday,evening,20,1335.8,3.02,101
+Canada,Saturday,evening,30,6478.6,14.65,461
+Canada,Saturday,evening,60,8858.7,20.03,595
+Canada,Saturday,evening,slower_than_60,6440.9,14.57,324
+Canada,Saturday,evening,no_service,19276.4,43.60,1214
+Canada,Saturday,late,10,574.0,1.30,41
+Canada,Saturday,late,15,327.1,0.74,20
+Canada,Saturday,late,20,607.3,1.37,50
+Canada,Saturday,late,30,2108.9,4.77,158
+Canada,Saturday,late,60,1861.9,4.21,122
+Canada,Saturday,late,slower_than_60,6396.2,14.47,346
+Canada,Saturday,late,no_service,32341.6,73.14,2081
+Canada,Saturday,overnight,10,0.0,0.00,0
+Canada,Saturday,overnight,15,55.2,0.12,2
+Canada,Saturday,overnight,20,83.3,0.19,5
+Canada,Saturday,overnight,30,535.7,1.21,30
+Canada,Saturday,overnight,60,734.2,1.66,32
+Canada,Saturday,overnight,slower_than_60,23.8,0.05,2
+Canada,Saturday,overnight,no_service,42784.5,96.76,2747
+Canada,Sunday,amPeak,10,180.4,0.41,9
+Canada,Sunday,amPeak,15,597.1,1.35,35
+Canada,Sunday,amPeak,20,719.8,1.63,47
+Canada,Sunday,amPeak,30,3048.9,6.90,204
+Canada,Sunday,amPeak,60,3293.8,7.45,231
+Canada,Sunday,amPeak,slower_than_60,8834.5,19.98,471
+Canada,Sunday,amPeak,no_service,27542.4,62.29,1821
+Canada,Sunday,midday,10,789.3,1.78,54
+Canada,Sunday,midday,15,1589.9,3.60,106
+Canada,Sunday,midday,20,1424.6,3.22,100
+Canada,Sunday,midday,30,7607.7,17.21,543
+Canada,Sunday,midday,60,7356.7,16.64,530
+Canada,Sunday,midday,slower_than_60,9208.0,20.82,495
+Canada,Sunday,midday,no_service,16240.6,36.73,990
+Canada,Sunday,pmPeak,10,964.5,2.18,69
+Canada,Sunday,pmPeak,15,1709.9,3.87,114
+Canada,Sunday,pmPeak,20,1710.1,3.87,113
+Canada,Sunday,pmPeak,30,8666.3,19.60,621
+Canada,Sunday,pmPeak,60,8822.1,19.95,601
+Canada,Sunday,pmPeak,slower_than_60,5970.6,13.50,298
+Canada,Sunday,pmPeak,no_service,16373.2,37.03,1002
+Canada,Sunday,evening,10,656.8,1.49,46
+Canada,Sunday,evening,15,1040.5,2.35,67
+Canada,Sunday,evening,20,1048.6,2.37,79
+Canada,Sunday,evening,30,5185.7,11.73,362
+Canada,Sunday,evening,60,7006.5,15.85,468
+Canada,Sunday,evening,slower_than_60,6377.4,14.42,325
+Canada,Sunday,evening,no_service,22901.4,51.79,1471
+Canada,Sunday,late,10,519.5,1.17,38
+Canada,Sunday,late,15,177.6,0.40,10
+Canada,Sunday,late,20,489.5,1.11,43
+Canada,Sunday,late,30,1440.2,3.26,121
+Canada,Sunday,late,60,1260.5,2.85,79
+Canada,Sunday,late,slower_than_60,5367.2,12.14,263
+Canada,Sunday,late,no_service,34962.3,79.07,2264
+Canada,Sunday,overnight,10,36.7,0.08,1
+Canada,Sunday,overnight,15,18.5,0.04,1
+Canada,Sunday,overnight,20,83.3,0.19,5
+Canada,Sunday,overnight,30,483.6,1.09,27
+Canada,Sunday,overnight,60,726.2,1.64,32
+Canada,Sunday,overnight,slower_than_60,45.2,0.10,3
+Canada,Sunday,overnight,no_service,42823.3,96.85,2749
+United States,Weekday,amPeak,10,6224.4,3.42,374
+United States,Weekday,amPeak,15,10522.4,5.79,609
+United States,Weekday,amPeak,20,8986.3,4.94,494
+United States,Weekday,amPeak,30,36150.3,19.88,2005
+United States,Weekday,amPeak,60,48024.7,26.41,2402
+United States,Weekday,amPeak,slower_than_60,49244.8,27.08,2248
+United States,Weekday,amPeak,no_service,22674.5,12.47,1008
+United States,Weekday,midday,10,4434.0,2.44,315
+United States,Weekday,midday,15,11400.5,6.27,723
+United States,Weekday,midday,20,8579.3,4.72,534
+United States,Weekday,midday,30,36412.2,20.03,2113
+United States,Weekday,midday,60,47039.5,25.87,2576
+United States,Weekday,midday,slower_than_60,48502.7,26.68,1873
+United States,Weekday,midday,no_service,25459.3,14.00,1006
+United States,Weekday,pmPeak,10,6116.9,3.36,414
+United States,Weekday,pmPeak,15,11559.4,6.36,718
+United States,Weekday,pmPeak,20,9219.9,5.07,534
+United States,Weekday,pmPeak,30,36216.8,19.92,2053
+United States,Weekday,pmPeak,60,46039.5,25.32,2447
+United States,Weekday,pmPeak,slower_than_60,56432.9,31.04,2275
+United States,Weekday,pmPeak,no_service,16242.1,8.93,699
+United States,Weekday,evening,10,1678.1,0.92,107
+United States,Weekday,evening,15,3422.1,1.88,239
+United States,Weekday,evening,20,4497.0,2.47,284
+United States,Weekday,evening,30,17759.7,9.77,979
+United States,Weekday,evening,60,25790.8,14.18,1303
+United States,Weekday,evening,slower_than_60,50194.2,27.61,2270
+United States,Weekday,evening,no_service,78485.7,43.16,3958
+United States,Weekday,late,10,137.8,0.08,11
+United States,Weekday,late,15,549.4,0.30,34
+United States,Weekday,late,20,775.9,0.43,52
+United States,Weekday,late,30,3121.4,1.72,199
+United States,Weekday,late,60,4690.9,2.58,251
+United States,Weekday,late,slower_than_60,23862.8,13.12,1035
+United States,Weekday,late,no_service,148689.3,81.77,7558
+United States,Weekday,overnight,10,29.5,0.02,4
+United States,Weekday,overnight,15,80.9,0.04,5
+United States,Weekday,overnight,20,542.8,0.30,23
+United States,Weekday,overnight,30,860.3,0.47,46
+United States,Weekday,overnight,60,2673.0,1.47,149
+United States,Weekday,overnight,slower_than_60,23.3,0.01,2
+United States,Weekday,overnight,no_service,177617.7,97.68,8911
+United States,Saturday,amPeak,10,1084.0,0.60,57
+United States,Saturday,amPeak,15,4353.8,2.39,263
+United States,Saturday,amPeak,20,4063.2,2.23,238
+United States,Saturday,amPeak,30,17768.9,9.77,969
+United States,Saturday,amPeak,60,28078.5,15.44,1423
+United States,Saturday,amPeak,slower_than_60,47407.4,26.07,2245
+United States,Saturday,amPeak,no_service,79071.7,43.49,3945
+United States,Saturday,midday,10,2614.0,1.44,166
+United States,Saturday,midday,15,7050.5,3.88,454
+United States,Saturday,midday,20,6538.5,3.60,400
+United States,Saturday,midday,30,25648.2,14.11,1469
+United States,Saturday,midday,60,45768.6,25.17,2470
+United States,Saturday,midday,slower_than_60,48421.8,26.63,2011
+United States,Saturday,midday,no_service,45786.0,25.18,2170
+United States,Saturday,pmPeak,10,2795.9,1.54,188
+United States,Saturday,pmPeak,15,6974.6,3.84,448
+United States,Saturday,pmPeak,20,6408.0,3.52,396
+United States,Saturday,pmPeak,30,25975.1,14.29,1448
+United States,Saturday,pmPeak,60,44516.6,24.48,2327
+United States,Saturday,pmPeak,slower_than_60,43182.3,23.75,1883
+United States,Saturday,pmPeak,no_service,51975.1,28.58,2450
+United States,Saturday,evening,10,1088.6,0.60,76
+United States,Saturday,evening,15,3307.6,1.82,221
+United States,Saturday,evening,20,4229.7,2.33,267
+United States,Saturday,evening,30,14836.0,8.16,815
+United States,Saturday,evening,60,23203.5,12.76,1171
+United States,Saturday,evening,slower_than_60,40489.2,22.27,1764
+United States,Saturday,evening,no_service,94672.8,52.07,4826
+United States,Saturday,late,10,268.0,0.15,18
+United States,Saturday,late,15,689.3,0.38,34
+United States,Saturday,late,20,960.9,0.53,66
+United States,Saturday,late,30,3091.6,1.70,194
+United States,Saturday,late,60,5104.3,2.81,271
+United States,Saturday,late,slower_than_60,21671.8,11.92,931
+United States,Saturday,late,no_service,150041.7,82.52,7626
+United States,Saturday,overnight,10,29.5,0.02,4
+United States,Saturday,overnight,15,80.9,0.04,5
+United States,Saturday,overnight,20,729.5,0.40,33
+United States,Saturday,overnight,30,1009.8,0.56,56
+United States,Saturday,overnight,60,2652.3,1.46,151
+United States,Saturday,overnight,slower_than_60,10.1,0.01,1
+United States,Saturday,overnight,no_service,177315.3,97.52,8890
+United States,Sunday,amPeak,10,775.2,0.43,36
+United States,Sunday,amPeak,15,3476.1,1.91,211
+United States,Sunday,amPeak,20,3196.9,1.76,189
+United States,Sunday,amPeak,30,14051.4,7.73,753
+United States,Sunday,amPeak,60,19975.3,10.99,942
+United States,Sunday,amPeak,slower_than_60,34794.1,19.14,1575
+United States,Sunday,amPeak,no_service,105558.5,58.05,5434
+United States,Sunday,midday,10,2112.8,1.16,127
+United States,Sunday,midday,15,5881.5,3.23,367
+United States,Sunday,midday,20,5320.9,2.93,336
+United States,Sunday,midday,30,21711.9,11.94,1215
+United States,Sunday,midday,60,32477.1,17.86,1678
+United States,Sunday,midday,slower_than_60,40640.4,22.35,1716
+United States,Sunday,midday,no_service,73683.0,40.52,3701
+United States,Sunday,pmPeak,10,2353.7,1.29,147
+United States,Sunday,pmPeak,15,5975.3,3.29,382
+United States,Sunday,pmPeak,20,5298.2,2.91,339
+United States,Sunday,pmPeak,30,21628.9,11.90,1177
+United States,Sunday,pmPeak,60,35996.0,19.80,1810
+United States,Sunday,pmPeak,slower_than_60,33363.2,18.35,1421
+United States,Sunday,pmPeak,no_service,77212.2,42.46,3864
+United States,Sunday,evening,10,845.0,0.46,49
+United States,Sunday,evening,15,2469.9,1.36,165
+United States,Sunday,evening,20,3901.0,2.15,253
+United States,Sunday,evening,30,12298.9,6.76,665
+United States,Sunday,evening,60,17106.7,9.41,838
+United States,Sunday,evening,slower_than_60,32553.7,17.90,1321
+United States,Sunday,evening,no_service,112652.4,61.96,5849
+United States,Sunday,late,10,174.9,0.10,9
+United States,Sunday,late,15,360.9,0.20,24
+United States,Sunday,late,20,926.2,0.51,55
+United States,Sunday,late,30,2143.8,1.18,145
+United States,Sunday,late,60,4605.0,2.53,244
+United States,Sunday,late,slower_than_60,19201.1,10.56,816
+United States,Sunday,late,no_service,154415.5,84.92,7847
+United States,Sunday,overnight,10,29.5,0.02,4
+United States,Sunday,overnight,15,80.9,0.04,5
+United States,Sunday,overnight,20,353.1,0.19,19
+United States,Sunday,overnight,30,1186.6,0.65,59
+United States,Sunday,overnight,60,2772.3,1.52,157
+United States,Sunday,overnight,slower_than_60,85.4,0.05,4
+United States,Sunday,overnight,no_service,177319.6,97.52,8892

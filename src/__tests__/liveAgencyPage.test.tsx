@@ -8,6 +8,8 @@ vi.mock('../../shared/config', async importOriginal => {
 });
 
 import LiveAgencyPage from '../LiveAgencyPage';
+// The late-stops map (CIV-1405) needs a browser with WebGL; its dots are tested in lateStopsMapModel.test.ts.
+vi.mock('../components/Live/LateStopsMapLazy', () => ({ default: () => null }));
 
 const stretch = { route: '510', routeLabel: '510 Spadina', directionId: 1, direction: 'Northbound', fromStopId: 'a', toStopId: 'b', fromName: 'Queens Quay West', toName: 'King St West', n: 500 };
 const summary = {
@@ -24,15 +26,21 @@ describe('Live agency page', () => {
   it('shows the rise in bunching for each stretch, like the delays table shows the minutes added', async () => {
     render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     const bunching = within(await screen.findByRole('region', { name: 'Where bunching forms' }));
-    expect(bunching.getByRole('columnheader', { name: /Added/ })).toBeTruthy();
+    expect(bunching.getByRole('columnheader', { name: /Increase/ })).toBeTruthy();
     expect(bunching.getByText('+33 pt')).toBeTruthy();
     const delays = within(screen.getByRole('region', { name: 'Where delays start' }));
-    expect(delays.getByText('+2.4 min')).toBeTruthy();
+    expect(delays.getByText('2.4 min')).toBeTruthy();
   });
   it('keeps how this is measured open, with no disclosure to click', async () => {
     const { container } = render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     await screen.findByRole('region', { name: 'Where bunching forms' });
     expect(container.querySelector('details')).toBeNull();
     expect(container.querySelector('#agency-method')).toBeTruthy();
+  });
+  it('never shows another agency\'s figures under this agency\'s name (#1486)', async () => {
+    // The answer is TTC's file, asked for MiWay (a local stub serving one file for every agency).
+    render(<MemoryRouter initialEntries={['/apps/live/miway']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
+    expect(await screen.findByText(/no route analysis for/i)).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Where bunching forms' })).toBeNull();
   });
 });

@@ -9,9 +9,9 @@
     -106.0384
   ],
   "feedUrl": "https://mybreckfreeride.com/gtfs",
-  "lastFeedExpiry": "20261113",
-  "lastFeedVersion": "111-Resort.Winter25/26.1,103-Summer 2026.8,124-UWM Summer 26",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270404",
+  "lastFeedVersion": "124-UWM Summer 26,103-Winter 26/27.1,111-Winter 26/27.2,111-Winter 26/27.3",
+  "lastRefreshedAt": "2026-11-14",
   "cities": [
     "Breckenridge, Colorado"
   ],
@@ -26,26 +26,29 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 27,
-      "feedExpiry": "20261113",
+      "feedExpiry": "20270404",
       "routeCount": 6,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-03"
+    "checkedAt": "2026-11-14"
   },
-  "lastFeedCheckAt": "20261102",
+  "lastFeedCheckAt": "20261114",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20991231",
+  "expiredFeedCheckExpiry": "20270404",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs",
-  "lastPeekedExpiry": "20261113",
-  "lastServiceWeek": "cd7d5ba8b00cfe66",
-  "feedObtainedAt": "20261102"
+  "lastPeekedExpiry": "20270404",
+  "lastServiceWeek": "5c43af96ffa5d778",
+  "feedObtainedAt": "20261114",
+  "lastFeedStart": "20260531",
+  "lastRawArchiveKey": "20270404-0d7f8bba4f095db2",
+  "lastFeedContentKey": "35ffa0a90ea1d95d"
 }

@@ -1,3 +1,4 @@
+import type { DayType } from '../../shared/dayTypes';
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import type { HistoryYearRoute } from '../utils/historyYearMap';
 
@@ -9,6 +10,8 @@ export interface HistoryMapOverlay {
   selectedYear?: number;
   /** The selected year's routes (#1028 batch A): drawn on their own shape when they have one, else on today's map line. */
   yearRoutes?: HistoryYearRoute[];
+  /** History's day: routes on today's map lines draw that day's line only, as the map does. */
+  day?: DayType;
 }
 
 interface ContextValue {

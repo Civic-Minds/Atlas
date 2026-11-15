@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { PersistentMapLegend } from '../PersistentMapLegend';
 import ResearchLegend from '../ResearchLegend';
+import { FEATURES } from '../../../../shared/config';
+import { ON_DEMAND_PARTIAL_COVERAGE } from '../../../content/noticeCopy';
 
 // CIV-957: both keys draw the shared MapKey with their words from noticeCopy; the text is unchanged.
 describe('map keys', () => {
@@ -10,7 +12,9 @@ describe('map keys', () => {
     const text = render(<PersistentMapLegend />).container.textContent ?? '';
     expect(text.startsWith('Frequency')).toBe(true);
     expect(text).toContain('Infrequent');
-    expect(text.endsWith('Selected / qualifyingOther routes')).toBe(true);
+    // With on-demand on, the key ends with the partial-coverage line (CIV-23).
+    const end = `Selected / qualifyingOther routes${FEATURES.onDemand ? ON_DEMAND_PARTIAL_COVERAGE : ''}`;
+    expect(text.endsWith(end)).toBe(true);
   });
 
   it('night key: one shade per grade up to the one selected (CIV-1329)', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { halfMinutes, halfMinutesDown, stopNameParts, tidyStopName, usableStandingStill, SEGMENT_BAND_OPTIONS, type SegmentDelayData } from '../segmentDelayView';
+import { halfMinutes, halfMinutesDown, stopNameParts, tidyStopName, usableStandingStill, type SegmentDelayData } from '../segmentDelayView';
 
 
 describe('segmentDelayView', () => {
@@ -40,9 +40,5 @@ describe('segmentDelayView', () => {
       ] },
     };
     expect(usableStandingStill(data, 'all').map(x => x.stop.stopId)).toEqual(['sumach']);
-  });
-
-  it('band chips use Atlas\'s period names', () => {
-    expect(SEGMENT_BAND_OPTIONS.map(o => o.label)).toEqual(['All day', 'AM peak', 'Midday', 'PM peak', 'Evening']);
   });
 });

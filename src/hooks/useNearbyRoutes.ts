@@ -36,6 +36,8 @@ export interface NearbyRoute {
   sharedHeadway?: number;
   /** #1292: the card's late-start or early-end words when they explain the value (routeListDisplay). */
   edgeText?: string;
+  /** CIV-1447: the number the dot is coloured by, where slower than `headway`. */
+  colorHeadway?: number;
   tier: string | null;
   nearestStopName: string;
   distanceMeters: number;
@@ -108,7 +110,7 @@ export function useNearbyRoutes(
               (candidateProps.day === undefined || candidateProps.day === currentDay);
           })
           .map(candidate => candidate.properties as unknown as ShapeProperties);
-        const { headway, limited, sharedHeadway, noRegular, edgeText } = routeListDisplay(routeFeatures, period);
+        const { headway, limited, sharedHeadway, noRegular, edgeText, colorHeadway } = routeListDisplay(routeFeatures, period);
 
         if (!routeMap.has(mapKey)) {
           const label = routeLabels({ shortName: p.routeShortName, longName: p.routeLongName as string | null, routeType: p.routeType, agencySlug: slug, agencyName: p.agencyName });
@@ -125,6 +127,7 @@ export function useNearbyRoutes(
             noRegular,
             sharedHeadway,
             edgeText,
+            colorHeadway,
             tier: (p.tier as string | null) ?? null,
             nearestStopName: stop.stopName,
             distanceMeters: stop.distanceMeters,
@@ -135,6 +138,7 @@ export function useNearbyRoutes(
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
             existing.edgeText = edgeText;
+            existing.colorHeadway = colorHeadway;
           }
           existing.limited = existing.headway == null && (existing.limited || limited);
           existing.noRegular = existing.headway == null && (existing.noRegular === true || noRegular === true);

@@ -39,12 +39,18 @@ export type FeedVersionSnapshot = {
   lastFeedVersion?: string | null;
 };
 
-/** True when upstream feed_info differs from the last processed snapshot in index.json. */
+/**
+ * True when the upstream feed differs from the last processed snapshot in index.json. refresh passes
+ * contentsChanged (feedContentsChanged): when known it decides, so a corrected feed with the same end
+ * date and version counts and a re-zipped copy doesn't (#1429). Without it, feed_info's end and version.
+ */
 export function upstreamFeedChanged(
   agency: FeedVersionSnapshot,
   peekedExpiry: string | null,
   peekedVersion: string | null,
+  contentsChanged: boolean | null = null,
 ): boolean {
+  if (contentsChanged !== null) return contentsChanged;
   const lastExpiry = agency.lastPeekedExpiry ?? agency.lastFeedExpiry;
   if (!lastExpiry && !agency.lastFeedVersion) return false;
 
@@ -64,9 +70,10 @@ export function clearOverrideUserFacingOnFeedChange(
   agency: FeedVersionSnapshot & { issueUrl?: string; overrideNote?: string },
   peekedExpiry: string | null,
   peekedVersion: string | null,
+  contentsChanged: boolean | null = null,
 ): boolean {
   if (!agency.issueUrl && !agency.overrideNote) return false;
-  if (!upstreamFeedChanged(agency, peekedExpiry, peekedVersion)) return false;
+  if (!upstreamFeedChanged(agency, peekedExpiry, peekedVersion, contentsChanged)) return false;
   delete agency.issueUrl;
   delete agency.overrideNote;
   return true;

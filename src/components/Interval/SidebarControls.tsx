@@ -1,3 +1,4 @@
+import { stopCardSiblings } from '../../utils/stopStation';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -33,7 +34,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
-import { collectStopHubSiblings, getDistanceMeters } from '../../utils/stopHub';
+import { collectStopHubSiblings, nearbyRouteClosestStops } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
@@ -47,6 +48,7 @@ import { useRecentSearches } from '../../hooks/useRecentSearches';
 import { useFadePresence } from '../../hooks/useFadePresence';
 import { bottomSheetFrameClass, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../ui/BottomSheet';
 import { chooserRouteRow } from '../../utils/chooserRoutes';
+import { countOf } from '../../../shared/overflowText';
 
 interface SidebarControlsProps {
   query: string;
@@ -288,7 +290,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // quadratic in route features and reran on every layer update (froze Live zooming, CIV-218).
   const notableRoutes = useMemo(() => {
     if (!searchFocused) return [];
-    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string }>();
+    const routes = new Map<string, { key: string; shortName: string; labelShortName: string; agencySlug: string; longNames: string[]; agencyName: string; routeType?: number; headway: number; limited: boolean; noRegular?: boolean; sharedHeadway?: number; edgeText?: string; colorHeadway?: number }>();
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
       if (!fc?.features) continue;
       for (const f of fc.features) {
@@ -309,19 +311,21 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         const limited = display.limited;
         const noRegular = display.noRegular === true;
         const sharedHeadway = display.sharedHeadway;
+        const colorHeadway = display.colorHeadway;
         const edgeText = display.edgeText;
         const shortName = facts.shortName;
         const longName = facts.longName || '';
         const agencyName = agencyNames(facts.agencyName).name;
         const existing = routes.get(groupKey);
         if (!existing) {
-          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText });
+          routes.set(groupKey, { key: facts.key, shortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : shortName, labelShortName: slug === 'bart' ? suggestedRouteGroupKey(slug, shortName) : labelShortNameOf(p), agencySlug: slug, longNames: longName ? [longName] : [], agencyName, routeType: facts.routeType, headway, limited, noRegular, sharedHeadway, edgeText, colorHeadway });
         } else {
           if (longName && !existing.longNames.includes(longName)) existing.longNames.push(longName);
           if (headway < existing.headway) {
             existing.headway = headway;
             existing.sharedHeadway = sharedHeadway;
             existing.edgeText = edgeText;
+            existing.colorHeadway = colorHeadway;
           }
           existing.limited = existing.headway >= 999 && (existing.limited || limited);
           existing.noRegular = existing.headway >= 999 && (existing.noRegular === true || noRegular);
@@ -481,11 +485,22 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       routesByAgency = hub.routesByAgency;
     }
 
-    // CIV-1052: each route's periods at the stop and its siblings, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
+    // CIV-1305: the card lists only what stops at the clicked stop or elsewhere in its station; the hub's other stops of
+    // the same agency (the stop across the road) stay in the hub for the map and Nearby. Other agencies keep the hub's
+    // grouping (GO and UP at TTC Union), since station ids don't cross feeds.
+    const ownSiblings = allFeatures
+      .filter(f => f.geometry.type === 'Point' && (f.properties as any).agencySlug === slug && siblingIdsByAgency[slug]?.has((f.properties as any).stopId))
+      .map(f => f.properties as any);
+    const toStation = (p: any) => ({ stopId: p.stopId, stopName: p.stopName, parentStation: p.parentStation, parentStationName: p.parentStationName, routeIds: Array.isArray(p.routeIds) ? p.routeIds : [] });
+    const { siblingIdsByAgency: cardSiblingIdsByAgency, routesByAgency: cardRoutesByAgency } = stopCardSiblings(
+      slug, toStation(props), ownSiblings.map(toStation), siblingIdsByAgency, routesByAgency,
+    );
+
+    // CIV-1052: each route's periods at the stop and its station, so the card can tell a route with no trips here in the period (left off, CIV-1310) from one with trips but no number (#1278).
     const routePeriodBitsByAgency: Record<string, Map<string, Array<number | undefined>>> = {};
     for (const f of allFeatures) {
       const p = f.properties as any;
-      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !siblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
+      if (f.geometry.type !== 'Point' || !p?.stopId || !p.agencySlug || !cardSiblingIdsByAgency[p.agencySlug]?.has(p.stopId)) continue;
       const rids: string[] = Array.isArray(p.routeIds) ? p.routeIds : [];
       const bits: unknown[] | undefined = Array.isArray(p.routePeriodBits) ? p.routePeriodBits : undefined;
       const byRoute = routePeriodBitsByAgency[p.agencySlug] ??= new Map();
@@ -500,6 +515,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       ...props,
       siblingIdsByAgency,
       routesByAgency,
+      cardSiblingIdsByAgency,
+      cardRoutesByAgency,
       routePeriodBitsByAgency,
       lat: clickLat,
       lon: clickLon,
@@ -509,8 +526,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // The stop card's routes and destination rows, built in one tested place (utils/stopRoutes.ts, CIV-997).
   const stopRoutes = useMemo(() => (currentStop
     ? buildStopRoutes({
-      siblingIdsByAgency: currentStop.siblingIdsByAgency || {},
-      routesByAgency: currentStop.routesByAgency || {},
+      siblingIdsByAgency: currentStop.cardSiblingIdsByAgency || {},
+      routesByAgency: currentStop.cardRoutesByAgency || {},
       routePeriodBitsByAgency: currentStop.routePeriodBitsByAgency,
       layers: nonCorridorLayers,
       day: currentDay,
@@ -548,27 +565,10 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     const connectionRows = new Map<string, ShapeProperties[]>();
 
     for (const [slug, fc] of Object.entries(nonCorridorLayers)) {
-      // Find stops in the transfer band (beyond sibling radius, within walking radius)
-      const routeIdToClosest = new Map<string, { stopName: string; dist: number }>();
-      // A route that serves this stop is never "nearby", even in a period it has no service here (#1117: MiWay 314 and
-      // 315 at stop 0814 showed as 423 m away at midday).
-      const ownRouteIds = currentStop.routesByAgency?.[slug];
-      for (const f of fc.features) {
-        if (f.geometry.type !== 'Point') continue;
-        const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
-        const d = getDistanceMeters(lat, lon, flat, flon);
-        const p = f.properties as any;
-        if (!p.stopId || !p.routeIds?.length) continue;
-        const isSibling = currentStop.siblingIdsByAgency?.[slug]?.has(p.stopId);
-        if (isSibling || d > TRANSFER_MAX_M) continue;
-        for (const rid of p.routeIds as string[]) {
-          if (ownRouteIds?.has(rid)) continue;
-          const existing = routeIdToClosest.get(rid);
-          if (!existing || d < existing.dist) {
-            routeIdToClosest.set(rid, { stopName: p.stopName ?? '', dist: d });
-          }
-        }
-      }
+      // Routes at stops within walking distance, other than the card's own stops and routes (CIV-1305, CIV-1345, #1117).
+      const routeIdToClosest = nearbyRouteClosestStops(
+        fc.features, lat, lon, currentStop.cardSiblingIdsByAgency?.[slug], currentStop.cardRoutesByAgency?.[slug], TRANSFER_MAX_M,
+      );
       if (routeIdToClosest.size === 0) continue;
 
       for (const f of fc.features) {
@@ -613,8 +613,11 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
       }
     }
 
-    // The same number the lists and the map use: the slower direction's filter value, not the best branch.
-    for (const [mapKey, rows] of connectionRows) seen.get(mapKey)!.headway = routeListDisplay(rows, period).headway;
+    // The same reading the other route lists use (CIV-1447: the route card's own range), not the best branch.
+    for (const [mapKey, rows] of connectionRows) {
+      const display = routeListDisplay(rows, period);
+      Object.assign(seen.get(mapKey)!, { headway: display.headway, sharedHeadway: display.sharedHeadway, colorHeadway: display.colorHeadway, edgeText: display.edgeText });
+    }
 
     return Array.from(seen.values())
       .filter(conn => !departingKeys.has(conn.rKey))
@@ -695,8 +698,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   }, [searchStopMatchResults, showAllSearchResults]);
 
   const stopResultsHeadLabel = stopSearchDisplay.truncated
-    ? `Stops · ${stopSearchDisplay.stops.length} of ${stopSearchDisplay.totalMatches} matches`
-    : `Stops · ${stopSearchDisplay.totalMatches} matches`;
+    ? `Stops · ${stopSearchDisplay.stops.length} of ${countOf(stopSearchDisplay.totalMatches, 'match', 'matches')}`
+    : `Stops · ${countOf(stopSearchDisplay.totalMatches, 'match', 'matches')}`;
 
   const stopSections = useMemo(
     () => splitStopResults(stopSearchDisplay.stops),
@@ -749,9 +752,9 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
     [query, displayRouteResults, matchedAgencyGroups],
   );
   const routeResultsHeadLabel = routeSearchDisplay.truncated
-    ? `Routes · ${routeSearchDisplay.routes.length} of ${routeSearchDisplay.totalMatches} matches`
-    : `Routes · ${routeSearchDisplay.totalMatches} matches`;
-  const agencyResultsHeadLabel = `Agencies · ${agencySearchDisplay.totalMatches} matches`;
+    ? `Routes · ${routeSearchDisplay.routes.length} of ${countOf(routeSearchDisplay.totalMatches, 'match', 'matches')}`
+    : `Routes · ${countOf(routeSearchDisplay.totalMatches, 'match', 'matches')}`;
+  const agencyResultsHeadLabel = `Agencies · ${countOf(agencySearchDisplay.totalMatches, 'match', 'matches')}`;
   const hasMoreSearchResults = agencySearchDisplay.truncated
     || routeSearchDisplay.truncated
     || stopSearchDisplay.truncated;

@@ -7,19 +7,18 @@
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://www.charlottenc.gov/CATS/CATS-Micro",
     "eligibility": "Riders aged 13 and older may ride independently. Children 12 and under must ride with an adult.",
-    "tripRules": "Pickup and destination must both be inside the same zone.",
+    "tripRules": "Trips can start and end anywhere in your zone.",
     "pickup": {
       "method": "virtual-stops"
     },
     "zoneMetadata": {
       "North Mecklenburg": {
         "serviceName": "CATS Micro",
-        "serviceHours": "Service runs daily, 7 a.m. - 9 p.m.",
-        "hoursNote": "Holiday service is not stated on the CATS Micro page.",
+        "serviceHours": "Weekdays 6 AM–9 PM; weekends 7 AM–9 PM.",
         "availability": {
           "Weekday": [
             {
-              "startHour": 7,
+              "startHour": 6,
               "endHour": 21
             }
           ],
@@ -38,17 +37,16 @@
         },
         "hoursSource": {
           "url": "https://www.charlottenc.gov/CATS/CATS-Micro",
-          "retrievedAt": "2026-10-11"
+          "retrievedAt": "2026-11-11"
         }
       },
       "West Boulevard": {
         "serviceName": "CATS Micro",
-        "serviceHours": "Service runs daily, 7 a.m. - 9 p.m.",
-        "hoursNote": "Holiday service is not stated on the CATS Micro page.",
+        "serviceHours": "Weekdays 6 AM–9 PM; weekends 7 AM–9 PM.",
         "availability": {
           "Weekday": [
             {
-              "startHour": 7,
+              "startHour": 6,
               "endHour": 21
             }
           ],
@@ -67,7 +65,7 @@
         },
         "hoursSource": {
           "url": "https://www.charlottenc.gov/CATS/CATS-Micro",
-          "retrievedAt": "2026-10-11"
+          "retrievedAt": "2026-11-11"
         }
       }
     }

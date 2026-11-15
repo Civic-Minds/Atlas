@@ -1,5 +1,5 @@
 import type { Agency } from '../App';
-import { DEFAULT_EXPORT_TITLE } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -9,6 +9,7 @@ import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentSer
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { formatStoredDate } from './format';
 import { agencyNames } from './agencyName';
+import { agencyInSentence } from '../../shared/agencyArticle';
 import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
@@ -291,7 +292,7 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   const known = inView.filter((agency): agency is Agency => !!agency);
 
   let source = 'Transit schedules';
-  if (!unknownAgency && known.length === 1) source = `Schedules from ${known[0].name}`;
+  if (!unknownAgency && known.length === 1) source = `Schedules from ${agencyInSentence(known[0].name)}`;
   else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
 
   const day = isoDay(releaseGeneratedAt);
@@ -317,7 +318,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const filter = filterLine(state);
   if (filter) lines.push(filter);
   if (state.view === 'frequency') {
-    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push('Zoomed out. Some less frequent routes are hidden');
+    if (zoomCeiling(state.zoom) < state.maxHeadway) lines.push(ZOOMED_OUT_NOTICE);
     if (state.query?.trim()) lines.push(`Matching “${state.query.trim()}”`);
   }
 

@@ -38,14 +38,7 @@ export function buildCurrentRoute(selectedRoute: string | null, nonCorridorLayer
     ];
   }
 
-    const directions = features
-    .map(f => f.properties as unknown as ShapeProperties)
-    .sort((a, b) => {
-      const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
-      const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
-      if (aH !== bH) return aH - bH;
-      return (a.directionId ?? 0) - (b.directionId ?? 0);
-    });
+  const directions = routeCardDirectionOrder(features.map(f => f.properties as unknown as ShapeProperties), period);
   return {
     ...first,
     agencySlug: slug,
@@ -55,6 +48,16 @@ export function buildCurrentRoute(selectedRoute: string | null, nonCorridorLayer
     directions,
     features,
   };
+}
+
+/** The order the route card takes its features in: fastest first, then by direction. The lists build the same card (routeCardRange). */
+export function routeCardDirectionOrder(features: readonly ShapeProperties[], period: TimePeriod): ShapeProperties[] {
+  return [...features].sort((a, b) => {
+    const aH = branchDisplayPeriodHeadway(a, period) ?? Infinity;
+    const bH = branchDisplayPeriodHeadway(b, period) ?? Infinity;
+    if (aH !== bH) return aH - bH;
+    return (a.directionId ?? 0) - (b.directionId ?? 0);
+  });
 }
 
 /** The route's lettered variant family (GRTC 1/1A/1B/1C style) on that day and period. */

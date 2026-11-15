@@ -1,3 +1,5 @@
+import { nameCase } from './format';
+
 // "Station" as a stop's name, not part of a street name ("Village Station Rd", "Station Av").
 const STATION = /\bStation\b(?!\s+(?:Rd|Road|Av|Ave|Avenue|St|Street|Dr|Drive|Blvd|Ln|Lane|Way|Sq|Square|Pl|Place)\b)/i;
 
@@ -57,6 +59,15 @@ export function shortStopName(name: string): string {
   return short.split('(').length > short.split(')').length ? `${short})` : short;
 }
 
+/**
+ * A stop's whole name under a route strip (Ryan, CIV-910 Q3: "Bathurst St - Toronto Western Hospital", not the cross street
+ * alone). Only closes a bracket the feed leaves open, as shortStopName does.
+ */
+export function stripStopName(name: string): string {
+  const n = name.trim();
+  return n.split('(').length > n.split(')').length ? `${n})` : n;
+}
+
 /** A stop worth naming on an axis even when space is short: stations, loops and terminals. */
 export function isMajorStop(name: string): boolean {
   return /\b(station|loop|terminal)\b/i.test(name);
@@ -99,3 +110,28 @@ export function stretchEnds(fromName: string, toName: string): [string, string] 
   };
   return [withCross(fromName, a), withCross(toName, b)];
 }
+
+/** The one name for a stretch on every Live surface: "Church St to Dundas Station" (CIV-910). */
+export function stretchLabel(fromName: string, toName: string): string {
+  return stretchEnds(fromName, toName).join(' to ');
+}
+
+/** Words that make a side of " and " a place rather than a street ("Jane and Finch Station", "Guild Park and Gardens"). */
+const PLACE_WORDS = /\b(station|stn|college|park|gardens?|hospital|centre|center|library|mall|plaza|loop|square|village|campus|school|university|terminal|beach)\b/i;
+const STREET_SIDE = /^[A-Z][A-Za-z.'-]*( [A-Z][A-Za-z.'-]*){0,2}$/;
+
+/**
+ * "Broadview & Queen" for "Broadview and Queen": two street names joined with "&", as Live writes them (CIV-1043).
+ * Only a whole name of exactly two sides, each one to three capitalized words with no place word ("Station",
+ * "Park"...), so "Jane and Finch Station", "Guild Park and Gardens" and "… via Distillery and Ookwemin Minising"
+ * are left as they are.
+ */
+export function streetJoin(name: string): string {
+  const m = /^(.+?) and (.+)$/.exec(name);
+  if (!m || / and | via /.test(m[2]) || / via /.test(m[1])) return name;
+  const [a, b] = [m[1], m[2]];
+  return STREET_SIDE.test(a) && STREET_SIDE.test(b) && !PLACE_WORDS.test(a) && !PLACE_WORDS.test(b) ? `${a} & ${b}` : name;
+}
+
+/** A stop as Live lists it: normal case, then the short name ("Bathurst", not "KING ST WEST AT BATHURST ST"), streets joined with "&". */
+export const liveStopName = (name: string): string => streetJoin(shortStopName(nameCase(name, 'liveStop')));

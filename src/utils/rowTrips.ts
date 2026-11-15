@@ -1,8 +1,10 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { routeCardDisplayHeadway, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
+import { routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
-import { isOneGapRow, SHARED_STRETCH_RATIO } from './stretchCard';
+import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
+import { pairedTripSafeHeadway } from './pairedTripFloor';
+import { periodKeyForHour } from '../../shared/config';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -14,6 +16,8 @@ export interface RowTrips {
   longestGap: number | null;
   /** #934 / D6 wording for a main stretch's late start, early end or one gap inside steady service. */
   partPeriod: string | undefined;
+  /** The number `partPeriod`'s words name ("every 31 min, …" -> 31), so a notice can name the same number (CIV-1199). */
+  partPeriodEvery?: number;
   /** The headsign runs under three times itself in the period: its value is other headsigns' (CTA 77 Belmont & Octavia). */
   noOwnService: boolean;
 }
@@ -65,6 +69,27 @@ function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number;
 }
 
 /**
+ * CIV-995 (b): the stretch reading a row's value uses, with the guards routeCardDisplayHeadway applies to the row's own
+ * value: an infrequent row whose longest gap is over 1.5 times the cadence shows no stretch number (MBTA SLW Saturday
+ * midday: 100 beside a 162 gap keeps its own reading), and the paired-trip floor (#761) still raises it. Null keeps the
+ * row's own trips. The hovered hour reads the same way (rowStretchHourValue).
+ */
+export function rowStretchValue(d: ShapeProperties, period: TimePeriod): (StretchRowReading & { cadence: number }) | null {
+  const r = rowStretchReading(d, period);
+  if (!r || r.cadence == null) return null;
+  if (d.tier === 'infrequent' && r.longestGap != null && r.longestGap > r.cadence * 1.5) return null;
+  const cadence = pairedTripSafeHeadway(d, period, r.cadence);
+  return cadence == null ? null : { ...r, cadence };
+}
+
+/** CIV-995 (b): the hovered hour's number from the row's stretch, under the row's own checks; undefined keeps the row's own hours. */
+export function rowStretchHourValue(d: ShapeProperties, hour: number): number | null | undefined {
+  const period = periodKeyForHour(hour);
+  if (!period || !rowStretchValue(d, period)) return undefined;
+  return pairedTripSafeHeadway(d, period, rowStretchReading(d, period)?.hourly?.[hour] ?? null);
+}
+
+/**
  * One row's value, longest gap and part-period words for a period, all from the trips the value reads (CIV-1069).
  * - A headsign with no service of its own in the period (noOwnServiceByPeriod) reads nothing: the row shows Irregular.
  * - A period that is not steady for the row's own trips reads its stretch's value where the stretch runs regularly and is not
@@ -75,18 +100,24 @@ function mainFilterReading(d: ShapeProperties, key: PeriodKey): { every: number;
  *   faster or slower than its stretch (NYCT R late; Phoenix 35's branch rows), keeps its own trips' gap.
  * - Otherwise the row's own value and its own longest gap (maxGapByPeriod follows the value's source, #281).
  */
-export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean } = {}): RowTrips {
+export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean } = {}): RowTrips {
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
-  let partPeriod = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period) ? routeCardPeriodShapeText(d, period) : undefined;
-  let value = routeCardDisplayHeadway(d, period);
+  const readsShape = (d.stretchRole === 'main' || rowReadsPeriodEdge(d, period)) && !isOneGapRow(d, period);
+  let partPeriod = readsShape ? routeCardPeriodShapeText(d, period) : undefined;
+  let partPeriodEvery = partPeriod != null ? routeCardPeriodShapeEvery(d, period) : undefined;
+  // CIV-995 (b): a main or tail row reads its stretch's own values (every trip at the stretch's stop) where the stretch runs
+  // through the period: its cadence, steadiness and longest gap. Elsewhere, and on older data, the row's own trips. The
+  // shared and pooled rows' comparison (ownTrips) and the stop card (stretch: false) keep reading the row's own trips.
+  const stretch = opts.ownTrips || opts.stretch === false ? null : rowStretchValue(d, period);
+  let value = stretch ? stretch.cadence : routeCardDisplayHeadway(d, period);
   // ownTrips: the card's shared and pooled rows compare the rows' own trips with the stretch's, so they stay as they are
   // (SEPTA 19 Saturday midday keeps "Shared stretch every 63" over its two destinations every 120).
   const filterReading = partPeriod == null && value != null && !opts.ownTrips ? mainFilterReading(d, key) : null;
   if (filterReading) {
     value = filterReading.every;
-    if (filterReading.gap != null) partPeriod = headwayPeriodShape(filterReading);
+    if (filterReading.gap != null) { partPeriod = headwayPeriodShape(filterReading); partPeriodEvery = filterReading.every ?? undefined; }
   }
   const slot = stretchSlot(d);
   const slotGap = slot?.maxGap?.[key];
@@ -94,7 +125,7 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   // CIV-1074 2a: a period that is not steady for the row's own trips reads the trips its riders get. A main or tail row on a
   // stretch with regular service reads the stretch (CTA 9 Ashland & 95th midday: every 10 at 74th-95th, where its own 8 trips
   // start at 13:04); any other row reads its full-window wait (the settled rule, #567-#571), not the median of its gaps.
-  const unsteady = value != null && !partPeriod && !filterReading && d.headwayByPeriodSustained?.[key] === false;
+  const unsteady = value != null && !partPeriod && !filterReading && (stretch ? stretch.consistent === false : d.headwayByPeriodSustained?.[key] === false);
   const wait = d.periodCoverageHeadway?.[key];
   if (unsteady && typeof slotValue === 'number' && !slot?.noRegular?.includes(key)) {
     // A short burst can't take the shared stretch's number. Where the stretch is materially better than the row's own trips
@@ -111,8 +142,9 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   const ownGap = d.maxGapByPeriod?.[key];
   return {
     value,
-    longestGap: fromSlot ? slotGap : typeof ownGap === 'number' ? ownGap : null,
+    longestGap: stretch ? stretch.longestGap : fromSlot ? slotGap : typeof ownGap === 'number' ? ownGap : null,
     partPeriod,
+    ...(partPeriodEvery != null ? { partPeriodEvery } : {}),
     noOwnService: false,
   };
 }

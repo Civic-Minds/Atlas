@@ -3,8 +3,8 @@ import { sidebarFrameStyle } from '../../styles';
 import Panel from '../ui/Panel';
 import { useDelayedFlag } from '../../hooks/useDelayedFlag';
 import PanelEmpty from '../ui/PanelEmpty';
-import ArrowLink from '../ui/ArrowLink';
-import { CLOSE_LABEL, loadingText, loadErrorText } from '../../content/noticeCopy';
+import { CardBackLink } from '../CardBack';
+import { BACK_TO_MAP_LABEL, loadingText, loadErrorText } from '../../content/noticeCopy';
 
 interface SelectionLoadPanelProps {
   /** What is being opened, for the message ("route" or "stop"). */
@@ -27,9 +27,7 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
       style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}
     >
       {failed ? (
-        <PanelEmpty kind="error" action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">{CLOSE_LABEL}</ArrowLink>}>
-          {loadErrorText(`this ${kind}`)}
-        </PanelEmpty>
+        <NoteWithBack onClose={onClose} kind="error">{loadErrorText(`this ${kind}`)}</NoteWithBack>
       ) : (
         <PanelEmpty kind="loading">{loadingText(kind)}</PanelEmpty>
       )}
@@ -37,13 +35,24 @@ export default function SelectionLoadPanel({ kind, failed, onClose, sidebarLeft,
   );
 }
 
-/** A card that can't be shown says why in its place (N17, N18, N30), with Close. */
+/**
+ * A note in a card's place, closed the way every map card is: "← Map" above it (CIV-1145), not a link-styled "Close →"
+ * at the end of the line.
+ */
+function NoteWithBack({ onClose, kind, children }: { onClose: () => void; kind?: 'error'; children: React.ReactNode }) {
+  return (
+    <>
+      <div className="px-4 pt-3"><CardBackLink onClick={onClose}>{BACK_TO_MAP_LABEL}</CardBackLink></div>
+      <div className="-mt-2"><PanelEmpty kind={kind}>{children}</PanelEmpty></div>
+    </>
+  );
+}
+
+/** A card that can't be shown says why in its place (N17, N18, N30). */
 export function SelectionNoticePanel({ message, onClose, sidebarLeft, searchBarWidth }: { message: string; onClose: () => void; sidebarLeft?: number; searchBarWidth?: number }) {
   return (
     <Panel sidebar enter style={sidebarFrameStyle(sidebarLeft, searchBarWidth)}>
-      <PanelEmpty action={<ArrowLink as="button" tone="inline" size="xs" onClick={onClose} className="shrink-0 whitespace-nowrap">{CLOSE_LABEL}</ArrowLink>}>
-        {message}
-      </PanelEmpty>
+      <NoteWithBack onClose={onClose}>{message}</NoteWithBack>
     </Panel>
   );
 }

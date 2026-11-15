@@ -109,15 +109,21 @@ export function useOnDemandData(enabled: boolean = FEATURES.onDemand): OnDemandD
   );
 }
 
-const OnDemandContext = createContext<Pick<OnDemandData, 'status' | 'setVisible'>>({ status: 'off', setVisible: () => {} });
+const OnDemandContext = createContext<Pick<OnDemandData, 'status' | 'setVisible'> & { serviceSlugs: ReadonlySet<string> | null }>({ status: 'off', setVisible: () => {}, serviceSlugs: null });
 
 export function OnDemandStatusProvider({ data, children }: { data: OnDemandData; children: React.ReactNode }) {
-  const value = useMemo(() => ({ status: data.status, setVisible: data.setVisible }), [data.status, data.setVisible]);
+  const serviceSlugs = useMemo(() => (data.index ? new Set(data.index.services.map(s => s.slug)) : null), [data.index]);
+  const value = useMemo(() => ({ status: data.status, setVisible: data.setVisible, serviceSlugs }), [data.status, data.setVisible, serviceSlugs]);
   return <OnDemandContext.Provider value={value}>{children}</OnDemandContext.Provider>;
 }
 
 export function useOnDemandStatus(): OnDemandLoadStatus {
   return useContext(OnDemandContext).status;
+}
+
+/** Every on-demand service's slug once the on-demand list has loaded, else null (#1191: a link to one Atlas doesn't have). */
+export function useOnDemandServiceSlugs(): ReadonlySet<string> | null {
+  return useContext(OnDemandContext).serviceSlugs;
 }
 
 /** The map reports whether it shows on-demand, so files load only when they'd be drawn. */

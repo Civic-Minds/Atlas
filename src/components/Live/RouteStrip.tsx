@@ -1,11 +1,12 @@
 import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import DataTable from '../ui/DataTable';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { shortStopName } from '../../utils/stopLabel';
 import {
-  LEGEND_TITLE, MIN_N, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stepFor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
+  LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pct, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary,
   type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan,
+  stripLegendFlags,
 } from './routeStripModel';
+import { shortStopName, stretchLabel, stripStopName } from '../../utils/stopLabel';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
 export { routeStripFromV3 } from './routeStripModel';
@@ -23,6 +24,8 @@ export interface RouteStripProps {
   bunchingForms?: RouteStripStretch | null;
   /** Stops measured fewer times than this are faded. Default 30. */
   minN?: number;
+  /** Draw the key under the strip (default). A section that draws several strips passes false and shows one StripsLegend under them all (CIV-1448). */
+  legend?: boolean;
   /** The strip becomes a vertical list on phones (screens under 480px wide), or when its own column is narrower than this (px). Default 360. */
   verticalBelow?: number;
   className?: string;
@@ -40,7 +43,6 @@ const INSET = 10;
 const GUTTER = 72;
 const MARK_H = 26;
 const LINE_H = 24;
-const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
 
 /** Measures the element's width, so the layout follows the column it sits in, not the window. */
 function useWidth() {
@@ -79,23 +81,23 @@ export function StripLegend({ modes, anyUncertain, anyFaded, anyMissing, anyEarl
     <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[var(--text-legend)]">
       {modes.map(mode => (
         <span key={mode} className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
-          <span className="font-bold text-[var(--text-secondary)]">{LEGEND_TITLE[mode]}:</span>
-          {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map(step => (
-            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}</span>
+          <span className="w-full font-bold text-[var(--text-secondary)] sm:w-auto">{LEGEND_TITLE[mode]}:</span>
+          {legendSteps(mode).filter(step => step !== 'early' || anyEarly).map((step, i, shown) => (
+            <span key={step} className="inline-flex items-center gap-1"><Swatch mode={mode} step={step} />{stepLabel(mode, step)}{i === shown.length - 1 ? LEGEND_LAST_STEP_TAIL[mode] ?? '' : ''}</span>
           ))}
         </span>
       ))}
-      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />Less exact</span>}
-      {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />Fewer than {minN} departures or gaps</span>}
-      {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />Not measured</span>}
+      {anyUncertain && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} uncertain />{LESS_EXACT}</span>}
+      {anyFaded && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={1} faded />{fewerThanText(minN)}</span>}
+      {anyMissing && <span className="inline-flex items-center gap-1.5"><Swatch mode={modes[0]} step={null} />{NOT_MEASURED_KEY}</span>}
     </div>
   );
 }
 
 function valueText(stop: RouteStripStop, mode: RouteStripMode): string {
   const v = mode === 'delay' ? (stop.n > 0 ? shownDelayMin(stop) : null) : stopValue(stop, mode);
-  if (v == null) return 'not measured';
-  return mode === 'delay' ? delayText(v) : `${pct(v)} of gaps off`;
+  if (v == null) return NOT_MEASURED_CELL;
+  return mode === 'delay' ? delayText(v) : gapsOffText(pct(v));
 }
 
 /** One track's colours and marked stretch. */
@@ -114,7 +116,7 @@ interface Track {
  * named, and a "Show all stops" switch for the full list. The strip is one focusable unit: its label sums it up, the
  * arrow keys step through the stops, and the same figures are in a table for screen readers.
  */
-export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
+export default function RouteStrip({ stops, modes = ['delay', 'bunching'], directionLabel, delaysStart, bunchingForms, minN = MIN_N, legend: showLegend = true, verticalBelow = 360, className = '', selected = null, onSelect, selectedStretch = null, onSelectStretch }: RouteStripProps) {
   const [ref, width] = useWidth();
   const [active, setActive] = useState<number | null>(null);
   const [allStops, setAllStops] = useState(false);
@@ -133,10 +135,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const phone = useMediaQuery('(max-width: 479px)');
   const vertical = phone || (width > 0 && width < verticalBelow);
   const count = stops.length;
-  const anyUncertain = stops.some(s => s.uncertain);
-  const anyFaded = tracks.some(t => stops.some(t.faded));
-  const anyMissing = tracks.some(t => t.steps.some(s => s == null));
-  const anyEarly = tracks.some(t => t.mode === 'delay' && t.steps.some(s => s === 'early'));
+  const flags = useMemo(() => stripLegendFlags(stops, modes, minN), [stops, modes, minN]);
 
   const onKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (count === 0) return;
@@ -162,7 +161,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
   const xs = useMemo(() => stops.map((_, i) => GUTTER + INSET + (count > 1 ? (i * inner) / (count - 1) : inner / 2)), [stops, count, inner]);
   const spacing = count > 1 ? inner / (count - 1) : inner;
   const dot = Math.max(6, Math.min(12, Math.floor(spacing - 3)));
-  const labelText = useMemo(() => stops.map(s => shortStopName(s.name)), [stops]);
+  const labelText = useMemo(() => stops.map(s => stripStopName(s.name)), [stops]);
   const priority = useMemo(() => tracks.flatMap(t => (t.stretch ? [t.stretch.from, t.stretch.to] : [])), [tracks]);
   const labels = useMemo(() => {
     if (vertical || width === 0) return [];
@@ -186,20 +185,20 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
     if (e.type === 'pointerdown') onSelect?.(at);
   };
 
-  const legend = <StripLegend modes={modes} anyUncertain={anyUncertain} anyFaded={anyFaded} anyMissing={anyMissing} anyEarly={anyEarly} minN={minN} />;
+  const legend = showLegend ? <StripLegend modes={modes} {...flags} minN={minN} /> : null;
 
   const table = (
     <div id={tableId} className="sr-only">
         <DataTable
-          caption={`${directionLabel}: delay and bunching at each stop`}
+          caption={stripTableCaption(directionLabel)}
           rows={stops.map((s, i) => ({ s, i }))}
           rowKey={r => `${r.s.stopId}-${r.i}`}
           columns={[
-            { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: r => r.s.name },
-            { key: 'delay', header: 'Typical delay', cell: r => (shownDelayMin(r.s) != null && r.s.n > 0 ? delayText(shownDelayMin(r.s)!) : 'not measured') },
-            { key: 'late', header: 'Late', cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : '') },
-            { key: 'bunch', header: 'Gaps off', cell: r => { const b = bunchParts(r.s); return b ? `${b.total}%` : 'not measured'; } },
-            { key: 'n', header: 'Departures', cell: r => r.s.n.toLocaleString() },
+            { key: 'stop', header: STRIP_COLUMNS.stop, rowHeader: true, className: 'font-normal', cell: r => r.s.name },
+            { key: 'delay', header: STRIP_COLUMNS.delay, cell: r => (shownDelayMin(r.s) != null && r.s.n > 0 ? delayText(shownDelayMin(r.s)!) : NOT_MEASURED_CELL) },
+            { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? pct(r.s.lateShare) : NOT_MEASURED_CELL) },
+            { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: r => { const b = bunchParts(r.s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
+            { key: 'n', header: STRIP_COLUMNS.n, cell: r => r.s.n.toLocaleString() },
             { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
           ]}
         />
@@ -211,7 +210,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
       <div
         ref={ref}
         role="group"
-        aria-roledescription="route strip"
+        aria-roledescription={STRIP_ROLE}
         aria-label={summary}
         aria-describedby={tableId}
         tabIndex={0}
@@ -238,19 +237,33 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             {tracks.map((t, k) => (
               <Fragment key={t.mode}>
                 <span className="absolute left-0 text-xs font-bold text-[var(--text-secondary)]" style={{ top: lineY(k) - 8, width: GUTTER - 8 }}>{TRACK_NAME[t.mode]}</span>
-                {t.stretch && (
-                  <div
-                    className={`absolute ${onSelectStretch ? 'cursor-pointer' : 'pointer-events-none'}`}
-                    style={{ left: xs[t.stretch.from] - 7, width: xs[t.stretch.to] - xs[t.stretch.from] + 14, top: trackTop(k) + 4, height: MARK_H - 4 }}
-                    onPointerDown={onSelectStretch ? e => { e.stopPropagation(); onSelectStretch(t.mode); } : undefined}
-                  >
-                    <div className={`absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 ${selectedStretch === t.mode ? 'border-[var(--accent)]' : 'border-[var(--text-secondary)]'}`} />
-                    <span
-                      className="absolute bottom-3 whitespace-nowrap text-xs font-bold text-[var(--text-primary)]"
-                      style={xs[t.stretch.from] < GUTTER + plotW / 2 ? { left: 0 } : { right: 0 }}
-                    >{labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${labelText[t.stretch.from]} to ${labelText[t.stretch.to]}`}</span>
-                  </div>
-                )}
+                {t.stretch && (() => {
+                  const pick = onSelectStretch ? (e: PointerEvent<HTMLElement>) => { e.stopPropagation(); onSelectStretch(t.mode); } : undefined;
+                  const bracketLeft = xs[t.stretch.from] - 7, bracketRight = xs[t.stretch.to] + 7;
+                  const fromLeft = xs[t.stretch.from] < GUTTER + plotW / 2;
+                  // The name starts at the bracket's left end (or ends at its right end) but never leaves this strip: the gap
+                  // beside it gives way, so a long name slides back inside instead of running into the next column (CIV-910).
+                  const gap = <span aria-hidden="true" style={{ flex: `0 1 ${Math.max(0, fromLeft ? bracketLeft : width - bracketRight)}px`, minWidth: 0 }} />;
+                  const name = (
+                    <span className={`max-w-full text-xs font-bold text-[var(--text-primary)] ${fromLeft ? '' : 'text-right'} ${onSelectStretch ? 'pointer-events-auto cursor-pointer' : ''}`} style={{ flex: 'none' }} onPointerDown={pick}>
+                      {labels.includes(t.stretch.from) && labels.includes(t.stretch.to) ? t.stretch.label : `${t.stretch.label}: ${stretchLabel(stops[t.stretch.from].name, stops[t.stretch.to].name)}`}
+                    </span>
+                  );
+                  return (
+                    <>
+                      <div
+                        className={`absolute ${onSelectStretch ? 'cursor-pointer' : 'pointer-events-none'}`}
+                        style={{ left: bracketLeft, width: bracketRight - bracketLeft, top: trackTop(k) + 4, height: MARK_H - 4 }}
+                        onPointerDown={pick}
+                      >
+                        <div className={`absolute inset-x-0 bottom-0 h-2 rounded-t-sm border-x-2 border-t-2 ${selectedStretch === t.mode ? 'border-[var(--accent)]' : 'border-[var(--text-secondary)]'}`} />
+                      </div>
+                      <div className="pointer-events-none absolute inset-x-0 flex items-end" style={{ top: trackTop(k) + 4, height: MARK_H - 4 - 12, justifyContent: fromLeft ? 'flex-start' : 'flex-end' }}>
+                        {fromLeft ? <>{gap}{name}</> : <>{name}{gap}</>}
+                      </div>
+                    </>
+                  );
+                })()}
                 <div className="absolute rounded-full bg-[var(--text-dim)] opacity-40" style={{ left: GUTTER + INSET, right: INSET, top: lineY(k) - 1, height: 2 }} />
                 {stops.map((s, i) => (
                   <span
@@ -286,7 +299,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
       </div>
       {vertical && count > 2 && (
         <button type="button" onClick={() => setAllStops(v => !v)} aria-expanded={allStops} className="mt-2 text-xs font-bold text-[var(--accent)]">
-          {allStops ? 'Show key stops only' : `Show all ${count} stops`}
+          {allStops ? SHOW_KEY_STOPS : showAllStopsText(count)}
         </button>
       )}
       {legend}

@@ -21,10 +21,10 @@ import {
   type HoldEvent, type Pattern, type TripPing, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
-import { BUNCHED_GAP_SEC, MIN_GAPS, bunchingLinks, bunchingProfile, stopBunching, type GapWindow } from '../shared/bunching.js';
+import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
 import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
-import { dayHealth, delivered, goodDates, keepGoodDays, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
+import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
@@ -344,9 +344,9 @@ const allRunDates = new Set<string>();
 /** End-to-end trip time per run: first-stop departure to last-stop arrival, against the timetable's. */
 const runTimes: { date: string; directionId: number; startHour: number; schedSec: number; actualSec: number; tripId: string; patternId: string }[] = [];
 /** Per run: when it left each stop (25 m past) and reached each stop, and the timetable's times there, for run time over the main stretch. */
-const stretchRuns: { date: string; directionId: number; dep: Map<string, number>; arr: Map<string, number>; sched: Map<string, { dep: number; arr: number }>; base: number }[] = [];
+const stretchRuns: { date: string; directionId: number; patternId: string; dep: Map<string, number>; arr: Map<string, number>; sched: Map<string, { dep: number; arr: number }>; base: number }[] = [];
 /** One entry per scheduled trip: did a vehicle run it, was it not seen, or can't we tell (data gap)? */
-const tripOutcomes: { date: string; directionId: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
+const tripOutcomes: { date: string; directionId: number; /** Local hour the trip is scheduled to start (its time of day, CIV-1459). */ startHour: number; outcome: 'seen' | 'not_seen' | 'unknown' }[] = [];
 let runsWithDelays = 0;
 const swapLog: { date: string; outcome: 'reassigned' | 'dropped' }[] = [];
 const shortTurnEvents: { stopId: string; directionId: number; date: string }[] = [];
@@ -479,7 +479,7 @@ for (const [key, samples] of runs) {
         for (const p of observed) dep.set(p.stopId, p.t);
         for (const p of legs.flat()) if (!arr.has(p.stopId)) arr.set(p.stopId, p.t);
         for (const st of tt) if (!sched.has(st.stopId)) sched.set(st.stopId, { dep: st.dep, arr: st.arr });
-        stretchRuns.push({ date: svcDate, directionId: pattern.directionId, dep, arr, sched, base });
+        stretchRuns.push({ date: svcDate, directionId: pattern.directionId, patternId: pattern.id, dep, arr, sched, base });
       }
       const stopsOut: RunStopDelay[] = [];
       for (const r of rows) {
@@ -787,7 +787,7 @@ for (const { svcDate, trip, base } of tripInstanceList) {
   }
   if (statuses.every(st => st === 'not_seen')) tripsNotSeen++;
   tripOutcomes.push({
-    date: svcDate, directionId: Number(trip.direction_id),
+    date: svcDate, directionId: Number(trip.direction_id), startHour: hourOf(scheduledT[0]),
     outcome: statuses.every(st => st === 'not_seen') ? 'not_seen' : statuses.every(st => st === 'feed_gap' || st === 'unlisted_cover' || st === 'not_seen') ? 'unknown' : 'seen',
   });
   if (statuses.every(st => st === 'unlisted_cover')) tripsUnlistedCover++;
@@ -916,12 +916,13 @@ const orderIndex = (dir: number, stopId: string) => stopOrder.get(dir)?.indexOf(
 const r1 = (x: number | null) => (x == null ? null : Math.round(x * 10) / 10);
 const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000);
 
-const leftOutInWindow = (reason: 'excluded' | 'no_timetable_trip') => leftOutRuns.filter(x => x.reason === reason && inWindow.has(x.date)).length;
-const swapsInWindow = swapLog.filter(x => inWindow.has(x.date));
-const swapsReassigned = swapsInWindow.filter(x => x.outcome === 'reassigned').length;
-const swapsDropped = swapsInWindow.length - swapsReassigned;
-const tpMinutes = windowRuns.flatMap(r => r.stops.filter(s => s.tripStart).map(s => s.delaySec / 60));
-const nearCutoffShare = tpMinutes.length ? tpMinutes.filter(m => Math.abs(m - EARLY_AT_OR_BELOW_MIN) < 0.75 || Math.abs(m - LATE_AT_OR_ABOVE_MIN) < 0.75).length / tpMinutes.length : 0;
+// The Limits counts (unscheduled trips, mismatched trip numbers, near a limit) over the whole window, and over the good days
+// only, which the pages show so these shares leave out a bad-recording day like every other figure (CIV-910).
+const limitInput = { leftOut: leftOutRuns, kept: keptRuns, swaps: swapLog, runs: windowRuns };
+const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, withinMin: 0.75 };
+const windowLimits = limitCounts(limitInput, inWindow, limitCutoffs);
+const goodLimits = limitCounts(limitInput, inGoodDays, limitCutoffs);
+const nearCutoffShare = windowLimits.nearCutoffShare;
 const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
 // B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
 // diversion or odd pattern with a few late trips cannot top the list. Other stops are listed, not ranked.
@@ -1051,9 +1052,9 @@ const mainPatternRunTimes = runTimes.filter(r => mainPatternId.get(r.directionId
 const stretchInfo: Record<string, { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; routeStops: number; fullRoute: boolean; mainPatternTrips: number; trips: number }> = {};
 const mainRunTimes: RunTimeRow[] = [];
 /** Run time between two stops for every run that left the first and reached the second, against the timetable there. */
-function runTimesBetween(d: number, a: string, b: string): RunTimeRow[] {
+function runTimesBetween(d: number, a: string, b: string, onlyPatterns?: ReadonlySet<string>): RunTimeRow[] {
   const out: RunTimeRow[] = [];
-  for (const r of stretchRuns.filter(x => x.directionId === d)) {
+  for (const r of stretchRuns.filter(x => x.directionId === d && (!onlyPatterns || onlyPatterns.has(x.patternId)))) {
     const sa = r.sched.get(a), sb = r.sched.get(b), ta = r.dep.get(a), tb = r.arr.get(b) ?? r.dep.get(b);
     if (!sa || !sb || ta == null || tb == null) continue;
     const schedSec = sb.arr - sa.dep, actualSec = tb - ta;
@@ -1063,10 +1064,19 @@ function runTimesBetween(d: number, a: string, b: string): RunTimeRow[] {
 }
 type BranchRunTime = { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: NonNullable<ReturnType<typeof runTimeStat>>; bands: Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>; byHour: Array<{ hour: number } & NonNullable<ReturnType<typeof runTimeStat>>> };
 const branchesByDir: Record<string, BranchRunTime[]> = {};
+// Run time per regular pattern (CIV-945): each timed on its own trips only, over its own stops trimmed to reliably measured
+// ends, the main one first. Patterns with the same stops (two shapes) are one line. `kind`: the main pattern, a short turn
+// (its stops are a run of the main pattern's), or a branch.
+type PatternRunTime = BranchRunTime & { kind: 'main' | 'shortTurn' | 'branch'; patternStops: number; fullPattern: boolean };
+const patternsRunTimeByDir: Record<string, PatternRunTime[]> = {};
+const mainPatternRows: RunTimeRow[] = [];
+type PatternGroup = { stops: string[]; ids: Set<string>; trips: number };
+const patternGroupsByDir = new Map<number, { groups: PatternGroup[]; coverage: (stopId: string) => number }>();
 for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   const dirPatterns = [...patterns.values()].filter(p => p.directionId === d);
   const main = mainStretchStops(dirPatterns.map(p => ({ stops: p.stops.map(s => s.stopId), trips: tripsPerShape.get(p.id) ?? 0 })));
-  const runs = stretchRuns.filter(r => r.directionId === d && inWindow.has(r.date));
+  // Coverage on good days only (CIV-318): a recording gap must not move the stretch that run time is measured over.
+  const runs = stretchRuns.filter(r => r.directionId === d && inGoodDays.has(r.date));
   // The first stops of the route that are known to be measured poorly (the 510's tunnel) never end a stretch.
   const poorFirst = LIVE_DASHBOARD_UNCERTAIN_START[`ttc::${ROUTE}`]?.find(u => u.directionId === d)?.stops ?? 0;
   const coverage = (stopId: string) => {
@@ -1100,6 +1110,14 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
     });
   }
   if (branchLines.length) branchesByDir[String(d)] = branchLines;
+  {
+    const groups = new Map<string, { stops: string[]; ids: Set<string>; trips: number }>();
+    for (const p of regularPatterns(dirPatterns.map(q => ({ p: q, stops: q.stops.map(st => st.stopId), trips: tripsPerShape.get(q.id) ?? 0 })))) {
+      const g = groups.get(p.stops.join('|')) ?? groups.set(p.stops.join('|'), { stops: p.stops, ids: new Set(), trips: 0 }).get(p.stops.join('|'))!;
+      g.ids.add(p.p.id); g.trips += p.trips;
+    }
+    patternGroupsByDir.set(d, { groups: [...groups.values()].sort((x, y) => y.trips - x.trips), coverage });
+  }
   const longest = dirPatterns.reduce<Pattern | null>((x, y) => (!x || y.stops.length > x.stops.length ? y : x), null);
   stretchInfo[String(d)] = {
     fromStopId: a, toStopId: b, fromName: stopInfo(a).name, toName: stopInfo(b).name, stops: stretch.length, routeStops: longest?.stops.length ?? stretch.length,
@@ -1109,6 +1127,54 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   };
 }
 console.log(`runtime branches: ${Object.entries(branchesByDir).map(([d, bs]) => bs.map(x => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) n ${x.all.n}`).join('; ')).join('; ') || 'none'}`);
+// The main pattern is picked once per route (the busiest of either direction), and in the other direction it is the
+// pattern running the same way back: the one whose ends are nearest its ends swapped. So "Main" is one service both ways.
+{
+  const all = [...patternGroupsByDir].flatMap(([d, x]) => x.groups.map(g => ({ d, g })));
+  const top = all.reduce<(typeof all)[number] | null>((a, b) => (!a || b.g.trips > a.g.trips ? b : a), null);
+  const mainOf = new Map<number, PatternGroup>();
+  if (top) {
+    mainOf.set(top.d, top.g);
+    const [f, l] = [stopInfo(top.g.stops[0]).lonLat, stopInfo(top.g.stops[top.g.stops.length - 1]).lonLat];
+    for (const [d, x] of patternGroupsByDir) {
+      if (d === top.d || !x.groups.length) continue;
+      const gap = (g: PatternGroup) => { const a = stopInfo(g.stops[0]).lonLat, b = stopInfo(g.stops[g.stops.length - 1]).lonLat; return haversineM(a[1], a[0], l[1], l[0]) + haversineM(b[1], b[0], f[1], f[0]); };
+      mainOf.set(d, x.groups.reduce((a, b) => (gap(b) < gap(a) ? b : a)));
+    }
+  }
+  for (const [d, { groups, coverage }] of patternGroupsByDir) {
+    const main = mainOf.get(d);
+    if (!main) continue;
+    const ordered = [main, ...groups.filter(g => g !== main)];
+    const mainStops = main.stops;
+    // A short turn: the main pattern's stops in a row, allowing for its own turning loop (up to 2 stops at either end off the main pattern).
+    const isRunOfMain = (st: readonly string[]) => {
+      let a = 0, b = st.length;
+      while (a < 2 && a < b && !mainStops.includes(st[a])) a++;
+      while (st.length - b < 2 && b > a && !mainStops.includes(st[b - 1])) b--;
+      const core = st.slice(a, b), i = mainStops.indexOf(core[0]);
+      return core.length >= 2 && i >= 0 && core.every((x, k) => mainStops[i + k] === x);
+    };
+    const lines: PatternRunTime[] = [];
+    ordered.forEach((g, i) => {
+      const span = reliableStretch(g.stops, coverage);
+      if (!span) return;
+      const rows = runTimesBetween(d, span[0], span[span.length - 1], g.ids).filter(r => inGoodDays.has(r.date));
+      if (i === 0) mainPatternRows.push(...runTimesBetween(d, span[0], span[span.length - 1], g.ids));
+      const stat = runTimeStat(rows);
+      if (!stat) return;
+      lines.push({
+        kind: i === 0 ? 'main' : isRunOfMain(g.stops) ? 'shortTurn' : 'branch', patternStops: g.stops.length, fullPattern: span.length === g.stops.length,
+        fromStopId: span[0], toStopId: span[span.length - 1], fromName: stopInfo(span[0]).name, toName: stopInfo(span[span.length - 1]).name, stops: span.length,
+        all: stat,
+        bands: Object.fromEntries(BANDS.map(band => [band, runTimeStat(rows.filter(r => band === 'all' || bandForHour(r.startHour) === band))])) as Record<TimeBand | 'all', ReturnType<typeof runTimeStat>>,
+        byHour: [...new Set(rows.map(r => r.startHour % 24))].sort((x, y) => x - y).map(h => ({ hour: h, ...runTimeStat(rows.filter(r => r.startHour % 24 === h))! })),
+      });
+    });
+    if (lines.length) patternsRunTimeByDir[String(d)] = lines;
+  }
+}
+console.log(`runtime patterns: ${Object.entries(patternsRunTimeByDir).map(([d, ls]) => ls.map(x => `dir ${d} ${x.kind} ${x.fromName} -> ${x.toName} (${x.stops}/${x.patternStops} stops) n ${x.all.n} typ ${x.all.typicalMin}`).join('; ')).join('; ') || 'none'}`);
 console.log(`runtime stretch: ${Object.entries(stretchInfo).map(([d, x]) => `dir ${d} ${x.fromName} -> ${x.toName} (${x.stops} stops) trips ${x.mainPatternTrips} -> ${x.trips}`).join('; ')}`);
 const windowRunTimes = mainRunTimes.filter(r => inWindow.has(r.date));
 const goodRunTimes = keepGoodDays(mainRunTimes, inGoodDays);
@@ -1117,6 +1183,7 @@ const rtFor = (rows: readonly RunTimeRow[]) => runTimeStat(rows);
 const runningTimeV3 = {
   stretch: stretchInfo,
   branches: branchesByDir,
+  patterns: patternsRunTimeByDir,
   bands: Object.fromEntries(BANDS.map(band => [band, Object.fromEntries(directionsSeen.map(d => [String(d), rtFor(goodRunTimes.filter(r => r.directionId === d && (band === 'all' || bandForHour(r.startHour) === band)))]))])),
   byHour: Object.fromEntries(directionsSeen.map(d => [String(d), [...new Set(goodRunTimes.filter(r => r.directionId === d).map(r => r.startHour % 24))].sort((a, b) => a - b)
     .map(h => ({ hour: h, ...rtFor(goodRunTimes.filter(r => r.directionId === d && r.startHour % 24 === h))! }))])),
@@ -1132,23 +1199,32 @@ const extraWaitV3 = Object.fromEntries(BANDS.map(band => [band, [...headwayBySto
 // Which days of the archive are healthy, then the same measures for this week and last week.
 const allValidDates = [...new Set(runDelays.map(r => r.date))].filter(d => scheduleKeyForDate(d)).sort();
 const weeks = weekSplit(allValidDates, healthV3);
-function weekMetrics(days: readonly string[]) {
+/**
+ * The week's figures over `days`, for the whole day or one time of day (CIV-1459: the Live map's week tables follow the
+ * period picked). A trip's time of day is the hour it starts, as the late-by-hour chart and run time count it.
+ */
+function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all') {
   const ds = new Set(days);
-  const tp = adherenceReport(runDelays.filter(r => ds.has(r.date)), { tripStartsOnly: true }).overall;
+  const inBand = (hour: number) => band === 'all' || bandForHour(hour) === band;
+  const runs = runDelays.filter(r => ds.has(r.date)).map(r => (band === 'all' ? r : { ...r, stops: r.stops.filter(x => inBand(x.hour)) })).filter(r => r.stops.length > 0);
+  const tp = adherenceReport(runs, { tripStartsOnly: true }).overall;
   let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0, close = 0, far = 0;
   for (const [key, m] of headwayByStop) {
-    const wins = (m.get('all') ?? []).filter(w => ds.has(w.date));
+    const wins = (m.get(band) ?? []).filter(w => ds.has(w.date));
     const stat = headwayBandStat(wins);
     if (stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 10) { ewtSum += stat.excessWaitSec * stat.gaps; ewtW += stat.gaps; }
     const sb = stopBunching(key.split('|')[0], wins);
     bad += sb.badShare * sb.n; gaps += sb.n; close += sb.bunchedShare * sb.n; far += sb.gappedShare * sb.n;
   }
-  const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date)));
-  const dv = delivered(tripOutcomes.filter(o => ds.has(o.date)));
+  const rt = runTimeStat(mainRunTimes.filter(r => ds.has(r.date) && inBand(r.startHour)));
+  const mp = runTimeStat(mainPatternRows.filter(r => ds.has(r.date) && inBand(r.startHour)));
+  const dv = delivered(tripOutcomes.filter(o => ds.has(o.date) && inBand(o.startHour)));
   return {
     days: days.length,
     late: tp.n ? { share: r3(tp.lateShare), n: tp.n } : null,
     tripTime: rt && { n: rt.n, scheduledMin: rt.scheduledMin, typicalMin: rt.typicalMin, overMin: rt.overMin },
+    // The same over each direction's main pattern only (CIV-945: the planner's Run time for a picked route).
+    mainPatternTrip: mp && { n: mp.n, scheduledMin: mp.scheduledMin, typicalMin: mp.typicalMin, overMin: mp.overMin },
     extraWait: ewtW ? { minutes: r1(ewtSum / ewtW / 60), gaps: ewtW } : null,
     // The two parts of the bunching share: gaps too close (under 2 min) and too far apart (over twice the timetable's).
     bunching: gaps ? { share: r3(bad / gaps), gaps, bunched: r3(close / gaps), gapped: r3(far / gaps) } : null,
@@ -1179,6 +1255,11 @@ const weeklyV3 = {
   thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy) },
   lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy) },
   comparable: weeks.thisHealthy.length >= MIN_HEALTHY_DAYS && weeks.lastHealthy.length >= MIN_HEALTHY_DAYS,
+  // The same two weeks for each time of day (CIV-1459), on the same days.
+  bands: Object.fromEntries(BANDS.filter((b): b is TimeBand => b !== 'all').map(band => [band, {
+    thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy, band) },
+    lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy, band) },
+  }])),
 };
 
 // Regular patterns per direction (20%+ of the direction's trips), each as its ordered stops, so the page can draw the
@@ -1240,15 +1321,24 @@ const v3 = {
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {
     /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */
-    noTimetableTrip: leftOutInWindow('no_timetable_trip'),
+    noTimetableTrip: windowLimits.noTimetableTrip,
     /** Runs of the service left out on purpose (see `excludedLabel`). */
-    excluded: leftOutInWindow('excluded'),
+    excluded: windowLimits.excluded,
     excludedLabel: EXCLUDE_HEADSIGN ? 'replacement buses' : null,
-    kept: keptRuns.filter(d => inWindow.has(d)).length,
+    kept: windowLimits.kept,
+    // The same over the good days (window.goodDates) only, which the pages show (CIV-910).
+    goodNoTimetableTrip: goodLimits.noTimetableTrip, goodExcluded: goodLimits.excluded, goodKept: goodLimits.kept,
   },
-  swaps: { reassigned: swapsReassigned, dropped: swapsDropped, rate: r3(windowRuns.length + swapsDropped ? swapsInWindow.length / (windowRuns.length + swapsDropped) : 0) },
-  uncertainty: { nearCutoffShare: r3(nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
-  totals: { runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded },
+  swaps: {
+    reassigned: windowLimits.reassigned, dropped: windowLimits.dropped, rate: r3(windowLimits.swapRate),
+    goodReassigned: goodLimits.reassigned, goodDropped: goodLimits.dropped, goodRate: r3(goodLimits.swapRate),
+  },
+  uncertainty: { nearCutoffShare: r3(nearCutoffShare), goodNearCutoffShare: r3(goodLimits.nearCutoffShare), withinMin: 0.75, note: 'Share of terminal departures within 0.75 min of an on-time cutoff; positions are about a minute apart, so those can land on either side.' },
+  totals: {
+    runs: windowRuns.length, stopPassages: windowRuns.reduce((n, r) => n + r.stops.length, 0), droppedOffTimetable: delaysExcluded,
+    // The same over the good days (window.goodDates) only: what the pages show, so the counts match every figure (CIV-910).
+    ...(({ runs, stopPassages }) => ({ goodRuns: runs, goodStopPassages: stopPassages }))(goodDayTotals(windowRuns, inGoodDays)),
+  },
   directionLabels,
   // The headline adherence counts each trip's departure from the end of the line (its first stop), as the TTC does; the
   // key stays 'timepoints' for older readers. allStops counts every stop.
@@ -1333,24 +1423,16 @@ const result = {
 };
 writeFileSync(OUT, JSON.stringify(result));
 
-// Gaps through the day (B4 chart): every measured gap at each stop with enough gaps, in the window. A separate file
-// beside the analysis, loaded only when the chart is shown. Per stop: m = minutes after the service day's start (GTFS
-// style, so 1 am is 1500), g = the gap in seconds, s = the timetable's typical gap in that stretch of service, seconds.
-const gapsOut: Record<string, Record<string, { m: number[]; g: number[]; s: number[] }>> = {};
+// Gaps through the day (B4 chart): every measured gap at each stop with enough gaps, on the window's good days only
+// (CIV-318). A separate file beside the analysis, loaded only when the chart is shown. Per stop: m = minutes after the
+// service day's start (GTFS style, so 1 am is 1500), g = the gap in seconds, s = the timetable's typical gap in that stretch of service, seconds.
+const gapsOut: Record<string, Record<string, StopGapsRow>> = {};
 for (const [key, m] of headwayByStop) {
   const [stopId, dir] = key.split('|');
-  const wins = (m.get('all') ?? []).filter(w => inWindow.has(w.date) && w.actualAt);
-  const total = wins.reduce((n, w) => n + w.actualGaps.length, 0);
-  if (total < MIN_GAPS) continue;
-  const row = { m: [] as number[], g: [] as number[], s: [] as number[] };
-  for (const w of wins) {
-    const sched = Math.round(median(w.scheduledGaps) ?? 0);
-    const start = serviceDayStart(w.date);
-    w.actualGaps.forEach((g, i) => { row.m.push(Math.round((w.actualAt![i] - start) / 60)); row.g.push(Math.round(g)); row.s.push(sched); });
-  }
-  (gapsOut[dir] ??= {})[stopId] = row;
+  const row = stopGapsRow(m.get('all') ?? [], inGoodDays, serviceDayStart);
+  if (row) (gapsOut[dir] ??= {})[stopId] = row;
 }
-writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: windowDates, directions: gapsOut }));
+writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
 console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
 
 // The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the

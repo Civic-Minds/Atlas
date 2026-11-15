@@ -13,19 +13,12 @@ export function liveDashboardDataUrl(agency: string, route: string): string {
     : `/api/live-dashboard?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
 }
 
-/** One service day's per-trip stop times for the string-line chart. Published beside the route's analysis (R2), or the local API in dev. */
-export function liveStringsDataUrl(agency: string, route: string, date: string): string {
-  return fromR2
-    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/strings/${encodeURIComponent(route)}-${date}.json`
-    : `/api/live-strings?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}&date=${date}`;
-}
-
 export function liveAgencyDataUrl(agency: string): string {
   return fromR2 ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/agency.json` : `/api/live-agency?agency=${encodeURIComponent(agency)}`;
 }
 
 /** What the report pages say outside dev when their data fails to load (wording approved by Ryan, 2026-10-16). */
-export const LIVE_REPORT_UNAVAILABLE = "This report isn't available right now.";
+export const LIVE_REPORT_UNAVAILABLE = "This report isn’t available right now.";
 
 /** Setup instructions ("npm run live", "npm run live:analyze") are for dev only; outside dev the approved line stands in. */
 export const devOnly = (devText: string): string => (fromR2 ? LIVE_REPORT_UNAVAILABLE : devText);
@@ -45,11 +38,23 @@ export function liveYesterdayDataUrl(agency: string, route: string | null): stri
     : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
 }
 
-export function liveGapsDataUrl(agency: string, route: string): string {
-  return fromR2
-    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}-gaps.json`
-    : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
+/**
+ * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because
+ * scripts/live-publish.ts publishes no gaps file, so asking R2 only logged a 404 on every route page (#1475). When the
+ * publish uploads `<route>-gaps.json`, return its R2 URL here again.
+ */
+export function liveGapsDataUrl(agency: string, route: string): string | null {
+  return fromR2 ? null : `/api/live-gaps?agency=${encodeURIComponent(agency)}&route=${encodeURIComponent(route)}`;
 }
 
 /** R2 answers a missing file with an error page, not JSON: read that as "no such route", the API's own answer. */
 export const liveDataMissing = (r: Response) => fromR2 && !r.ok;
+
+/**
+ * A Live page's route title in parts, for RouteTitleName (CIV-1128): the analysis file's title ("510 Spadina") starts
+ * with the route's number; the rest is its name. A title that doesn't is shown whole.
+ */
+export function liveRouteTitleLabel(title: string, route: string): { primary: string; secondary?: string; text: string } {
+  const rest = title.startsWith(`${route} `) ? title.slice(route.length + 1).trim() : '';
+  return rest ? { primary: route, secondary: rest, text: `${route} — ${rest}` } : { primary: title, text: title };
+}

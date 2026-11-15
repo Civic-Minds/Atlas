@@ -230,6 +230,31 @@ describe('period section colours (CIV-321 S3)', () => {
     expect(buildSectionColourFeatures({ go: line({ directionFilterHeadwayByPeriod: { midday: null } }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
   });
 
+  it('CIV-1350: a stop inside the line with no overnight value is infrequent, never a better neighbour', () => {
+    // Night buses every 20; stop c has no overnight value (its first night bus is after 3:00 with nothing before).
+    const night = (values: string, extra: Record<string, unknown> = {}): GeoJSON.FeatureCollection => ({
+      type: 'FeatureCollection',
+      features: [
+        { type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [10, 0]] },
+          properties: { routeId: 'N1', day: 'Weekday', directionId: 0, headsign: 'East', tier: '20', headway: 20,
+            stopOrder: ['a', 'b', 'c', 'd', 'e'], stopPositions: [0, 0.25, 0.5, 0.75, 1], stopTiers: { a: '20', b: '20', c: '20', d: '20', e: '20' },
+            directionFilterHeadwayByPeriod: { overnight: 20, midday: 20 },
+            stretchStopPeriodValues: { overnight: values, midday: values }, ...extra } },
+      ],
+    });
+    const at = (fc: GeoJSON.FeatureCollection, period: 'overnight' | 'midday') =>
+      buildSectionColourFeatures({ x: fc }, 'Weekday', 'default', undefined, period).map(f => [f.properties.tier, f.properties.headway]);
+    // The null stop draws infrequent with no number of its own.
+    expect(at(night('20*2,,20*2'), 'overnight')).toEqual([['infrequent', null]]);
+    // The same null in another period keeps the worse-neighbour rule.
+    expect(at(night('20*2,,20*2'), 'midday')).toEqual([]);
+    // A null terminal keeps its neighbour's grade; a drop-off-only null stop too (#879).
+    expect(at(night('20*4,'), 'overnight')).toEqual([]);
+    expect(at(night('20*2,,20*2', { dropOffOnlyStops: ['c'] }), 'overnight')).toEqual([]);
+    // A null run at the start is limited, as before.
+    expect(at(night(',,20*3'), 'overnight')).toEqual([['infrequent', null]]);
+  });
+
   it('reads the same run-length values the pipeline writes', () => {
     const p = periodSectionProps(line().features[0].properties as unknown as ShapeProperties, 'midday')!;
     expect(p.stopTiers).toEqual({ k: '60', g: '60', b: '30', u: '30' });

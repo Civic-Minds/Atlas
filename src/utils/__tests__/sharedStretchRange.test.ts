@@ -17,8 +17,8 @@ describe('route lists show a range where alternating branches share a stretch', 
     expect(routeListDisplay(lw, 'midday')).toEqual({ headway: 60, limited: false, sharedHeadway: 30 });
     expect(routeListHeadwayText(60, 30)).toBe('every 30–60 min');
     expect(routeListHeadwayText(60, 30, true)).toBe('30–60 min');
-    // No pooled PM value on the shared stretch: the single number (the map's 64) stays.
-    expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 64, limited: false });
+    // CIV-1447: the list reads the card's own numbers, 30 toward Union and 60 and 71 on the branches (the map's number is 64).
+    expect(routeListDisplay(lw, 'pmPeak')).toEqual({ headway: 71, limited: false, sharedHeadway: 30 });
     // Limited stays limited, never a range.
     expect(routeListDisplay(lw, 'amPeak')).toEqual({ headway: null, limited: true, noRegular: true });
   });
@@ -31,9 +31,9 @@ describe('route lists show a range where alternating branches share a stretch', 
     expect(routeListDisplay(expo, 'midday').sharedHeadway).toBeUndefined();
   });
 
-  it('a short shared stretch never makes a range (Miami 37)', () => {
+  it('a list reads the card\'s Shared stretch row too (Miami 37: the card\'s Shared stretch every 15 and rows 29 to 31, CIV-1447)', () => {
     const m37 = rows('miami37');
-    expect(routeListDisplay(m37, 'midday')).toEqual({ headway: 31, limited: false });
+    expect(routeListDisplay(m37, 'midday')).toEqual({ headway: 31, limited: false, sharedHeadway: 15 });
   });
 
   it('the single number reads as before without a range', () => {

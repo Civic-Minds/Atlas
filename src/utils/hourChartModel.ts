@@ -1,3 +1,4 @@
+import { feedPlaceName } from './nameCase';
 import type { AxisTick } from '../components/Interval/TripTimeStrip';
 import type { HeadwayByPeriod } from '../hooks/useAgencyData';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
@@ -53,8 +54,9 @@ export function tripsPerHourAxisTicks(maxFreq: number, height: number): AxisTick
     const count = Math.floor(maxPerHour / step + 1e-9);
     if (count < 1) return [];
     if (count > maxTicks || (step / maxPerHour) * height < minGap) continue;
-    return Array.from({ length: count }, (_, i) => {
-      const value = step * (i + 1);
+    // CIV-1343: the axis starts at 0, on the chart's bottom edge.
+    return Array.from({ length: count + 1 }, (_, i) => {
+      const value = step * i;
       return { label: String(value), fraction: Math.min(1, value / maxPerHour) };
     }).reverse();
   }
@@ -183,7 +185,7 @@ export function branchHourStack(
 ): HourStackSegment[] {
   return branches
     .map((branch, i) => ({
-      label: branch.headsign ?? `Branch ${i + 1}`,
+      label: branch.headsign?.trim() ? feedPlaceName(branch.headsign) : `Branch ${i + 1}`,
       headway: branchDisplayHourHeadway(branch, hour),
       color: colorOf?.(branch, i) ?? branchStackColor(i),
       ...(isSelected ? { faded: !isSelected(branch) } : {}),

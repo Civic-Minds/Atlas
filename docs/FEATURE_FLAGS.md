@@ -6,11 +6,13 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 
 | Flag | Controls | Production | Beta deployment | Why gated |
 |---|---|---|---|---|
-| `LIVE_ENABLED` | Live pill, `/apps/live`, `LiveVehicles.tsx` | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. The TTC positions archive is verified running (every minute, cron set in Cloudflare; Cloudflare dashboard check 2026-10-21, CIV-317). Only the ttc-trips and other shards (Hamilton, STM, Burlington/Halifax) stopped on 2026-10-14. The 30-day lifecycle keeps only the last 30 days of `atlas-live`. Resuming Live needs the archive restored first, not only this flag. |
-| `HISTORY_ENABLED` | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of the current public catalog. |
-| `CARD_CLICK_TO_FLAG_ENABLED` | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
-| `UNEVEN_BANNER_ENABLED` | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
-| `WHATS_NEW_ENABLED` | "What's new" link in the map's bottom bar and its panel (`MapAttribution.tsx`, `WhatsNewPanel.tsx`, list in `src/data/whatsNew.ts`) | off | on (follows `beta`/`dev` mode) | New; wording and placement are tried on beta first (CIV-83). |
+| `LIVE_ENABLED` (`VITE_LIVE_ENABLED`) | The Live map: Live pill, `/apps/live`, `LiveVehicles.tsx`, vehicles on the map, stop-card arrivals and the route-card delay. Setting it also turns the Live report pages on (`FEATURES.liveReports`). | off | off | Live vehicle coverage is paused everywhere until the data pipeline and scope are ready. The TTC positions archive is verified running (every minute, cron set in Cloudflare; Cloudflare dashboard check 2026-10-21, CIV-317). Only the ttc-trips and other shards (Hamilton, STM, Burlington/Halifax) stopped on 2026-10-14. The 30-day lifecycle keeps only the last 30 days of `atlas-live`. Resuming Live needs the archive restored first, not only this flag. |
+| `LIVE_REPORTS_ENABLED` (`VITE_LIVE_REPORTS_ENABLED`, read as `FEATURES.liveReports`) | The Live report pages only: `/apps/live/:agency`, `/apps/live/:agency/:route` and `/apps/live/:agency/tool` (`main.tsx`), and their prerendered link previews (`scripts/prerender-routes.ts`). Nothing realtime: the pages read published analysis JSON from R2. | off | on | Static pages with no realtime endpoints, so they can be on at beta while the Live map stays off (added 2026-10-16, 857da2d). |
+| `HISTORY_ENABLED` (`VITE_HISTORY_ENABLED`) | History control, Agency-list History filter and coverage pills, `/apps/history`, `History.tsx` | off | on | Covers a handful of cities out of the current public catalog. |
+| `HISTORY_DAY_PICKER_ENABLED` (`VITE_HISTORY_DAY_PICKER_ENABLED`, read as `FEATURES.historyDayPicker`) | History's Day chip (Weekday, Saturday, Sunday) and the `hday` link param (`FilterChips.tsx`, `History.tsx`, `historyViewUrl.ts`); needs `HISTORY_ENABLED` too | off | off until set | CIV-1425: weekend values by time of day exist only for pilot agencies so far, and the new wording is waiting on Ryan's OK. |
+| `CARD_CLICK_TO_FLAG_ENABLED` (`VITE_CARD_CLICK_TO_FLAG_ENABLED`) | Click-to-flag affordance on card values (`FlaggableValue` in `cardUi.tsx`) | off | on | New, unproven interaction — no route/component split like the others, just a UI behavior to validate before it's in front of everyone. |
+| `UNEVEN_BANNER_ENABLED` (`VITE_UNEVEN_BANNER_ENABLED`) | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
+| `WHATS_NEW_ENABLED` | "What's new" link in the map's bottom bar and its panel (`MapAttribution.tsx`, `WhatsNewPanel.tsx`, list in `src/data/whatsNew.ts`) | on | on | Switched on for the public site in 3.4 (CIV-1359); entries tagged beta stay beta-only through `FEATURES.whatsNewBetaItems`. |
 | `SEGMENT_COLOURS_ENABLED` | Route lines drawn in segments coloured by the pooled per-stop tier (`route-segments` layers in `MapCanvas.tsx`, `src/utils/frequencySegments.ts`) | off | on (follows `beta`/`dev` mode) | New map reading ([#690](https://github.com/Civic-Minds/Atlas/issues/690)): the public map keeps one colour per route line from the route-level tier until the segment colours have been reviewed on real routes. |
 | `SHARE_UTM_ENABLED` | Shared links and shared map images carry `utm` tags so analytics can count shared visits (`shared/config.ts`) | off | on (follows `beta`/`dev` mode) | Not env-driven; tried on beta until it is seen working end to end. |
 | `COLLAPSE_MODE_TABS_ENABLED` | While Live, History or Compare is on, the other top-bar mode tabs shrink to icons (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Not env-driven; layout is tried on beta first. |
@@ -25,6 +27,14 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `FEATURES.connectionsBar` | Connections top bar on the Bustang connections view (`FilterChips.tsx`, `Interval.tsx`, CIV-1353): Day, wait, walk, arriving/leaving and a departure dropdown; the map shows the picked trip's connecting routes | off | off | Local only (Vite dev server), as Live's pages are; on beta and public the CIV-101 view is unchanged. |
 | `ON_DEMAND_ENABLED` (read as `FEATURES.onDemand`) | On-demand zones on the map, the On-demand filter chip and the standalone on-demand agencies (`MapCanvas.tsx`, `FilterChips.tsx`, `AgencyCard.tsx`, `useOnDemandData.tsx`) | off | on (any non-`public` mode: `beta`, `preview`, `dev`) | Not env-driven; `ON_DEMAND_PUBLIC` is `false` until Ryan signs off on the public launch (CIV-23), and launch flips that one value. |
 | `ATLAS_MODE=preview` | Preview title and research-app visibility | off | not configured for the stable domains | Stable Preview uses the Beta project's production deployment; there is no separate Preview project or verified `preview` mode. |
+
+## What is on right now: `npm run flags`
+
+The table above is the intended state. To see what each site actually has switched on, run `npm run flags` before stating it anywhere (CIV-1402). It prints one row per `FEATURES` entry for the public site, beta, and the local `dev:public` / `dev:beta` scripts.
+
+- Every build writes `/flags.json` (the `atlas-flags-json` plugin in `vite.config.ts`): the mode, every `FEATURES` value computed by `shared/config.ts` from that build's env, the switch values it was given (never URLs or keys), and the deployed commit. The command reads it from each site, so it reports what Vercel really built, not what the docs say.
+- The local columns run `shared/config.ts` with the env the `package.json` script sets.
+- A site deployed before this existed shows `?` with "no flags.json yet".
 
 ## How it works
 
@@ -41,11 +51,13 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 `SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
 
-Live is unset/false in every deployment. Do not add a beta override until the Live feature is intentionally re-enabled.
+There are two Live switches. `VITE_LIVE_ENABLED` (the Live map, vehicles and arrivals) is unset in every deployment; do not add a beta override until the Live feature is intentionally re-enabled. `VITE_LIVE_REPORTS_ENABLED` (the Live report pages) is set on Beta and unset on Public, so `/apps/live/ttc` and `/apps/live/ttc/505` load on Beta and are 404 on Public (checked 2026-11-11).
+
+Every `VITE_*` switch read by `envFlag` needs a row in a table in this doc, and `VITE_*_ENABLED` switches are read only in `shared/config.ts`; `src/__tests__/featureFlagDocs.test.ts` fails otherwise.
 
 ## Graduated features
 
-- Compare mode (`COMPARE_MODE_ENABLED`) is on in every deployment on desktop and tablet; it stays hidden on phones (Ryan, 2026-10-20, CIV-75).
+- Compare mode (`COMPARE_MODE_ENABLED`) is on in every deployment on desktop and tablet; it stays hidden on phones (Ryan, 2026-10-20, CIV-75). It has its own address, `/apps/compare`, which falls back to the map where Compare is off.
 - The phone bottom sheet for route and stop cards (`MOBILE_ROUTE_SHEET_ENABLED`) is on in every deployment (Ryan, 2026-10-20, [#647](https://github.com/Civic-Minds/Atlas/issues/647)).
 - Map image export is on in every deployment; its `VITE_MAP_EXPORT_ENABLED` flag was removed ([#642](https://github.com/Civic-Minds/Atlas/pull/642)).
 - Research is no longer in the map's top bar in any mode; in `beta` and `dev` it is reached from the About page ([#652](https://github.com/Civic-Minds/Atlas/pull/652)).
@@ -70,7 +82,7 @@ When running locally, open `/dev/diagnostics/performance` to see browser navigat
 2. The `routedApp`/`gated` check — direct URL navigation (e.g. typing `/apps/live`) redirects to the frequency map and corrects the URL, rather than silently rendering the full app anyway. Without this, hiding the pill alone doesn't actually restrict access.
 3. The component import itself where bundle isolation matters. A boolean check alone can still ship a component's JS in the bundle, so sensitive/internal tools should remain unreachable from production as well as hidden from its navigation.
 
-Local dev runs in `dev` mode, so mode-based features are on; env flags follow `.env.local` or the `dev:*` script. `dev:public`, `dev:beta`, and `dev:all` keep Live off; only `npm run dev:live` (or `npm run live`, which starts the API server too) turns it on.
+Local dev runs in `dev` mode, so mode-based features are on; env flags follow `.env.local` or the `dev:*` script. `dev:public`, `dev:beta`, and `dev:all` keep the Live map off; `dev:beta` sets the Live reports switch like deployed Beta, and the Vite dev server serves the report pages in every mode. Only `npm run dev:live` (or `npm run live`, which starts the API server too) turns it on.
 
 ## Iterating on a gated feature
 
@@ -93,3 +105,8 @@ Both projects use the Vite framework preset. The documented Vercel output settin
 ## Legacy mode flags
 
 `VITE_BETA_BUILD` and `VITE_PREVIEW_BUILD` are compatibility fallbacks for older deployments. New deployments must set `VITE_ATLAS_MODE` explicitly so the tab title, agency catalog, data artifacts, and feature gates cannot disagree.
+
+| Flag | Read only when `VITE_ATLAS_MODE` is unset | Production | Beta deployment |
+|---|---|---|---|
+| `VITE_BETA_BUILD` | A deployed build becomes `beta` | unset | set, but unused because `VITE_ATLAS_MODE` is set |
+| `VITE_PREVIEW_BUILD` | A deployed build becomes `preview` | unset | unset |

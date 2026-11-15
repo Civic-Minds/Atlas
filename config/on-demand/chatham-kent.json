@@ -1,0 +1,4446 @@
+{
+  "slug": "chatham-kent",
+  "area": {
+    "serviceName": "OnRequest Transit",
+    "sourceUrl": "https://www.chatham-kent.ca/transit/routes/urban/Pages/OnRequest-Evenings.aspx",
+    "sourceLabel": "Ride CK OnRequest Transit page and its stop maps",
+    "sourceRetrievedAt": "2026-11-14",
+    "serviceHours": "Chatham: Monday to Friday 7:15 p.m. to 12:45 a.m.; Sunday 9 a.m. to 5 p.m. Wallaceburg: Monday to Saturday 7 a.m. to 7:15 p.m.; Sunday 9 a.m. to 5 p.m.",
+    "hoursNote": "No service on holidays. A ride is accepted only if it can be finished by the end of service hours.",
+    "bookingInfo": "Book in the Ride CK OnRequest Transit app, on the online web portal or call 519-436-3233, up to two days ahead.",
+    "bookingUrl": "https://spare-rider-rideck-production.vercel.app/Login",
+    "pickup": {
+      "method": "fixed-stops"
+    },
+    "zoneMetadata": {
+      "Chatham": {
+        "serviceName": "OnRequest Transit",
+        "serviceHours": "Monday to Friday 7:15 p.m. to 12:45 a.m.; Sunday 9 a.m. to 5 p.m.",
+        "hoursNote": "No service on holidays. A ride is accepted only if it can be finished by the end of service hours.",
+        "tripRules": "Trips can start and end anywhere in Chatham.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 19.25,
+              "endHour": 24.75
+            }
+          ],
+          "Saturday": [],
+          "Sunday": [
+            {
+              "startHour": 9,
+              "endHour": 17
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.chatham-kent.ca/transit/routes/urban/Pages/OnRequest-Evenings.aspx",
+          "retrievedAt": "2026-11-14"
+        }
+      },
+      "Wallaceburg": {
+        "serviceName": "OnRequest Transit",
+        "serviceHours": "Monday to Saturday 7 a.m. to 7:15 p.m.; Sunday 9 a.m. to 5 p.m.",
+        "hoursNote": "No service on holidays. A ride is accepted only if it can be finished by the end of service hours.",
+        "tripRules": "Trips can start and end anywhere in Wallaceburg.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7,
+              "endHour": 19.25
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 7,
+              "endHour": 19.25
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 9,
+              "endHour": 17
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.chatham-kent.ca/transit/routes/urban/Pages/OnRequest-Evenings.aspx",
+          "retrievedAt": "2026-11-14"
+        }
+      }
+    }
+  },
+  "features": [],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Downtown Transfer Terminal",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.184205,
+          42.403911
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McKeough Park",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.192586,
+          42.406995
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at The Pines",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194375,
+          42.405778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Woods St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.19729,
+          42.403829
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at St Agnes Church",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.198178,
+          42.403199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Churchill St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.201185,
+          42.402231
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Skatepark",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.20392,
+          42.401626
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Shoppers",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.205777,
+          42.400913
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Giant Tiger",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.209678,
+          42.398386
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Sportchek",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.210896,
+          42.397283
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Keil Dr N",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.211657,
+          42.396587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "805 Grand Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.213929,
+          42.394715
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Campus Pkwy",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.215894,
+          42.394172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "975 Grand Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.218233,
+          42.394035
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fergie Jenkins P at College",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.220261,
+          42.395275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fergie Jenkins P at HealthPlex",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.222746,
+          42.39623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at Keil Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.22211,
+          42.39974
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at Crane Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.21868,
+          42.402082
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at Doverdoon",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.215513,
+          42.404232
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at Baldoon Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.21417,
+          42.405147
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Baldoon Rd at McNaughton Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214175,
+          42.406038
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Baldoon Rd at Parry Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.216348,
+          42.407789
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Baldoon Rd at Oxley Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.217858,
+          42.408981
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Oxley Dr at Midwood-Oxley Park",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214847,
+          42.411858
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Oxley Dr at Sandys St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.209793,
+          42.413939
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Timmins Cr at Oxley Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.208013,
+          42.414658
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "100 McFarlane Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.205993,
+          42.415107
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McFarlene Ave at St Clair St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.203728,
+          42.416653
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Nortown Centre",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.201183,
+          42.415857
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at St Clair St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.200836,
+          42.414501
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "99 McNaughton Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.202198,
+          42.41358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Emmanuel Church",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.202104,
+          42.412689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sheldon Ave at Brock St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.200908,
+          42.411741
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sheldon Ave at De Graeve Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.200263,
+          42.411228
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sheldon Ave at Cornhill St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.199313,
+          42.410473
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sandys St at Evangel Church",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.19859,
+          42.405654
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave W at Ursuline Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.192615,
+          42.406746
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Grand Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.19077,
+          42.407529
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "3rd St at King St W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.189676,
+          42.40455
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wellington St W at St Joseph",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.187175,
+          42.404067
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fielder Ave at Hazel St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.199183,
+          42.408923
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fielder Ave at Sandys St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.200623,
+          42.407861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at 4th St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.187697,
+          42.405462
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at 3rd St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.189473,
+          42.405239
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Grand Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.190821,
+          42.407808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Forest St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.192466,
+          42.409137
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Lowe St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.193773,
+          42.410178
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Poplar St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194745,
+          42.410953
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Cornhill St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.196566,
+          42.412408
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Maple St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.198157,
+          42.413696
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at McNaughton Ave E",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.20027,
+          42.415424
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Wiltshire Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.201961,
+          42.416806
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at McFarlane Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.203113,
+          42.417725
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Jackson Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.205015,
+          42.419251
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Paxton Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.207698,
+          42.421422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Gregory Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.211202,
+          42.424254
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "625 St Clair St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.212773,
+          42.425544
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at St Clair Estates",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214308,
+          42.426752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "735 St Clair St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.216778,
+          42.42877
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "747 St Clair St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.217359,
+          42.429236
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "SmartCentres Chatham",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.217833,
+          42.431649
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Cineplex",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.21858,
+          42.429835
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Maryknoll Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214098,
+          42.426259
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Gregory Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.210981,
+          42.423753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Clair St at Paxton Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.207956,
+          42.42132
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Jackson Dr at Victoria Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.202488,
+          42.421446
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Victoria Ave at Henry O'Way",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.199893,
+          42.419458
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Victoria Ave at McNaughton Ave E",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.197433,
+          42.417487
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave at Cedarwoods Cr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194365,
+          42.418721
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave E at Taylor",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.189591,
+          42.422004
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave at Carolinian Pl",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.188322,
+          42.422865
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave E at Monarch Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185533,
+          42.424794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave E at Michener Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.183924,
+          42.425893
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Michener Rd at Viscount Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.181206,
+          42.424007
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Michener Rd at Valley Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.179688,
+          42.423135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Michener Rd at Vanier Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.177354,
+          42.421599
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Michener Rd at Aberdeen St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.17598,
+          42.420271
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Michener Rd at Meadowbrook Plaza",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.174517,
+          42.419084
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave E at Vanier Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175419,
+          42.418085
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave E at Grandview Apts",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.178788,
+          42.416249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Taylor Ave at Forest St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.182589,
+          42.416274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Forest St at Coverdale St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.183986,
+          42.415481
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Forest St at Van Allen Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185913,
+          42.414173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Van Allen Ave at Grand Ave E",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.184862,
+          42.413181
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Thames St at Salter St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185186,
+          42.411349
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Thames St at Chatham St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185383,
+          42.410169
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "5th St at King St W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185423,
+          42.405365
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Judy LaMarsh Building",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.18072,
+          42.403734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "William St N at Granite Club",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.181903,
+          42.40642
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Cultural Centre",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.181905,
+          42.407229
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Darul Uloom",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.177312,
+          42.408334
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Princess St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175408,
+          42.408794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Princess St N at Colborne St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.174739,
+          42.408112
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Colbourne St at Duke St N",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.172092,
+          42.40817
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "275 Colborne St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.169612,
+          42.409179
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sass Rd at Colborne St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.165952,
+          42.412404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sass Rd at Polly Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.164474,
+          42.411199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sass Rd at OPP Station",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.161041,
+          42.4081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "525 Park Ave E",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.16383,
+          42.406085
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave E at Park St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.16574,
+          42.404805
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave E at Wilkenson St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.167562,
+          42.403526
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ln at St Anthony St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.16695,
+          42.401316
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ln at Southend Cres",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.164835,
+          42.399794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave E at Park Ln",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.163673,
+          42.398943
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave E at Burton Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.165262,
+          42.39774
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave E at John St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.167079,
+          42.39647
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "John St at Jasper Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.165552,
+          42.394957
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "John St at Freeland Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.164113,
+          42.393798
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tissiman Ave at Allen St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.164358,
+          42.390808
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tissiman Ave at Queen St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.167217,
+          42.388792
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Cecil Ave at Souriquois St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.170221,
+          42.387702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Cecile Ave at Wyandott St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.172005,
+          42.386342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Indian Creek Rd W at Faubert Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.172437,
+          42.38303
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Indian Creek Rd at John McGregor",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.173409,
+          42.382358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Michael Ave at Indian Creek",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.178338,
+          42.379428
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St Michael Ave at Sylvester Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.181236,
+          42.381735
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sylvester Dr at Daleview Cr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.178735,
+          42.384346
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Sylvester Dr at Tweedsmuir Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.180307,
+          42.387275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave W at Lacroix St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.178287,
+          42.388825
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave W at Rotary Park",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.174078,
+          42.391646
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave W at Queen St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.172127,
+          42.393115
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Foreman Dr at McGeorge Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.171733,
+          42.394181
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Pine St at Maple Court Apts",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.174091,
+          42.395295
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Pine St at Elm St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175559,
+          42.396481
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave E at St George St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175052,
+          42.398156
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St George St at St Patrick St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.174663,
+          42.399826
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "60 St George St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175406,
+          42.401424
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "St George St at Park St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.176069,
+          42.402934
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park St at Adelaide St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.178681,
+          42.40252
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "William St at Church St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.180446,
+          42.403075
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave W at Doverdoon Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214844,
+          42.404872
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wellington St W at Forsyth St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.188096,
+          42.404092
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "2nd St at Police Station",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.190004,
+          42.404059
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at 1st St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.191292,
+          42.403454
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at Lacroix St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.192061,
+          42.401462
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at Riverview Gardens",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194306,
+          42.399422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at Winston Churchill",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.198593,
+          42.396481
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at Merritt Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.200243,
+          42.39535
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Merritt Ave at Riverview Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.203137,
+          42.397406
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Merritt Ave at Active Centre",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.205172,
+          42.398642
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Merritt Ave at Turquoise Ct",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.204613,
+          42.39835
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Riverbend Towers",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.205094,
+          42.396753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Riverway Court",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.206563,
+          42.396224
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Orchard Heights Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.207749,
+          42.395409
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr S at Heritage Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.208482,
+          42.392669
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr S at Warwick Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.206503,
+          42.391085
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr S at Richmond St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.204309,
+          42.389302
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "715 Richmond St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.206941,
+          42.386214
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Provincial Bldng",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.214817,
+          42.381076
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "1100 Richmond St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.215834,
+          42.378645
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Bloomfield Rd at Oriole P",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.21212,
+          42.375649
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave W at Bloomfield Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.209246,
+          42.374626
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave W at Howard Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.204411,
+          42.378057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "745 Park Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.201167,
+          42.380276
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton Ave at Fergie Jenkins",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.224444,
+          42.398333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wedgewood Ave at Park Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.190674,
+          42.387473
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave W at Bakers Dr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.186626,
+          42.39019
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave W at Berry St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185157,
+          42.391214
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave W at Houston St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.18373,
+          42.392201
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Lacroix St at Edgar St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.183232,
+          42.39353
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Lacroix St at Spencer Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.184897,
+          42.394776
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Lacroix St at Gray St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.186677,
+          42.396104
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Lacroix St at Lorne Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.187413,
+          42.396699
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at West St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.187379,
+          42.398535
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Raleigh St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.184854,
+          42.400294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr S at Park Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1967,
+          42.3831
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr S at Molengraff Way",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1925,
+          42.3802
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave W at Braemar Blvd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1901,
+          42.3806
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Tweedsmuir Ave W at Blythe Park",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1861,
+          42.3837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wedgewood Ave at Copperfield Cr",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1874,
+          42.3854
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave at Thames Towers",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.210366,
+          42.397371
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave At Court House",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.20501,
+          42.401036
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Chatham Kent Health Alliance",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194383,
+          42.404527
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "5th St and King St W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.185279,
+          42.405478
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Victoria Ave and Grant St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.186201,
+          42.408648
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Victoria Ave at James St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.187382,
+          42.409644
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Courthouse",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.207978,
+          42.402955
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand at Campus Parkway EB",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.215917,
+          42.394054
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Keil Dr N at Grand Ave W",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.211686,
+          42.394867
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Keil Dr N",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.210107,
+          42.392916
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Irwin St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.216297,
+          42.391527
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Bingo",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.220606,
+          42.391387
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Riverview Dr at Community Living",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.225002,
+          42.38976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "20 Bloomfield Rd",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.226997,
+          42.387619
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Bloomfield Rd at Armoury",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.224277,
+          42.385509
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Bloomfield Rd at Richmond St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.217494,
+          42.38002
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Borrowman St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.213261,
+          42.381752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Land Registry",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.210199,
+          42.383809
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "800 Richmond St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.206928,
+          42.385851
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Casino",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.202645,
+          42.389694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Merritt Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.196879,
+          42.392134
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Byng Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.194392,
+          42.393724
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Richmond St at Inshes Ave",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.190609,
+          42.396307
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Queen St at Entegrus",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.179871,
+          42.398627
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "William St S at Witherspoon St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.179451,
+          42.400635
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park St at Princess St S",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.173142,
+          42.403738
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Princess St S at Wellington St E",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.173319,
+          42.405309
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St E at WISH Centre",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.175044,
+          42.406161
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St E at Adelaide St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.180188,
+          42.404975
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "King St W at 6th St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.183776,
+          42.405528
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Grand Ave E at Hillyard St",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.189707,
+          42.408907
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fergie Jenkins P at HealthPlex",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.222921,
+          42.396188
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Park Ave E at Maple Leaf Drive",
+        "areaName": "Chatham",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=1tVGHwLdN11EBTjzrNAC3909Afj2_sWmV&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.1654297,
+          42.4047825
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "County Fair Mall",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.383622,
+          42.585382
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Agnes St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.394975,
+          42.593033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Elgin St at Lorne Ave",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.391116,
+          42.595294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "James St at William St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.384944,
+          42.593684
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "James St at Library",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.382686,
+          42.594636
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "208 Margaret Ave",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.374085,
+          42.595247
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "CKHA Wallaceburg Site",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.366742,
+          42.5982108
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Margaret Ave at Dundas St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.374578,
+          42.595323
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wellington St at Post Office",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.385999,
+          42.594203
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Base Line at Lowe Ave",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.38337,
+          42.580112
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Mason St at Arnold St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.399996,
+          42.582326
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Warick Dr",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.400852,
+          42.593006
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Fairfield Park Nursing Home",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.413158,
+          42.593972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Johnson St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.390845,
+          42.592797
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at CK Health Centre",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.389303,
+          42.592932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Service Ontario",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.397103,
+          42.592933
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Oaks Retirement Village",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.381897,
+          42.582588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at King St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.380126,
+          42.592521
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Holy Family Church",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.380142,
+          42.585294
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallaceburg Municipal Centre",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.387616,
+          42.592721
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Water St at Main St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.383772,
+          42.60156
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Big Chief Drive-In",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.450532,
+          42.593978
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Bruinsma Ave",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.403401,
+          42.593205
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallace St E at Riverview Towers",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.372579,
+          42.593587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Earl St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.380002,
+          42.589734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "30 McNaughton Ave Plaza",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.385047,
+          42.588355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Murray St at Wallace St E",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.379904,
+          42.593631
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Walnut Dr",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.40974,
+          42.593189
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Mason St at Old Glass Road",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.397093,
+          42.582251
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Mason St at Old Glass Road",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.397066,
+          42.582132
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallaceburg Arena (Wall St)",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.389371,
+          42.596943
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallaceburg Arena (University)",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.389103,
+          42.597081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "236 Margaret Ave",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.37186,
+          42.595738
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wellington St at Trinity United",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.387444,
+          42.59358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "McNaughton at Bethel Pentecostal",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.384718,
+          42.588181
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallace St at Harbour Court",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.383569,
+          42.592673
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Wallace St at Harbour Court EB",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.383665,
+          42.592516
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Old Glass Rd at Base Ln",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.396317,
+          42.580623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Old Glass Rd at Base Ln",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.396501,
+          42.58064
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Albert St at Southcourt Villa",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.376893,
+          42.589199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Albert St at Edwy St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.37675,
+          42.589193
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Reaume Ave at Kinsmen Court",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.381346,
+          42.587016
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Reaume Ave at Bridle Path Rd",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.381372,
+          42.587139
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Main St at Park St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.380028,
+          42.596909
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Main St at Park St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.380278,
+          42.597058
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Nelson St at Sydenham Gardens",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.389202,
+          42.603114
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Nelson St at Crothers Trail",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.389297,
+          42.602969
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Nelson St at Funeral Home",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.384856,
+          42.597172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Nelson St at Elgin Street",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.384609,
+          42.597104
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Arnold St at Garnet St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.400013,
+          42.586275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "333 Arnold Street",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.400199,
+          42.586029
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Garnet St at Elm Dr S",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.40366,
+          42.586948
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Elm Dr S at Garnet St",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.403884,
+          42.587153
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chatham-kent",
+        "serviceType": "on-demand",
+        "stopName": "Dufferin Ave at Running Creek Rd",
+        "areaName": "Wallaceburg",
+        "sourceUrl": "https://www.google.com/maps/d/kml?mid=117n2ZiOTr9zu17YOc1XPaSxfwRdiWjgz&forcekml=1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -82.4240896,
+          42.5936295
+        ]
+      }
+    }
+  ],
+  "notes": "Stop-to-stop service with no published zone outline, so only stops are drawn (like Cobourg, LT-Go and Spruce Grove). All points of the two official Google My Maps linked from the Ride CK OnRequest page ('bus stop locations'), retrieved 2026-11-14, used as published: Chatham 203 (202 signed stops + 1 virtual), Wallaceburg 54 (9 signed + 45 virtual). The page says trips run between any two designated stops within an urban area, so each town has its own trip rule. Hours per town from the page; Chatham lists no Saturday hours, so none are set. The page's 'Leave At may move 15 minutes later' and 45-minute ride-time notes are not shown. Open to everyone; separate from Ride CK specialized transit."
+}

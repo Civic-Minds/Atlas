@@ -23,8 +23,8 @@
     "Greenburgh, New York",
     "Paterson, New Jersey"
   ],
-  "lastFeedCheckAt": "20261102",
-  "expiredFeedCheckCount": 1,
+  "lastFeedCheckAt": "20261109",
+  "expiredFeedCheckCount": 2,
   "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261031",
   "timezone": "America/New_York",
@@ -52,10 +52,10 @@
       "resumesOn": null
     },
     "checkedAt": "2026-10-31",
-    "scoredAt": "2026-11-02"
+    "scoredAt": "2026-11-09"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20261031)",
-  "feedRefreshErrorAt": "20261102",
-  "feedRefreshRetryCount": 1
+  "feedRefreshErrorAt": "20261109",
+  "feedRefreshRetryCount": 2
 }

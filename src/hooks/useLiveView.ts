@@ -1,33 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../utils/urlSchema';
-
-type Bounds = [number, number, number, number];
-type LineClick = (lonLat: [number, number], toleranceM: number) => void;
+import { buildRouteKey, splitRouteKey } from '../utils/routeKey';
 
 /**
- * The link between the Live route card and the map: the card asks for a stretch zoom and a
- * highlight; map clicks on the line are routed back to whichever handler the card registered.
+ * Live's view state in the URL so a shared link reopens it: the route, the vehicle whose card is
+ * open (not the vehicle the map is centred on) and the vehicle-list direction (the route card
+ * keeps its own p, dir, stretch and view).
+ * The vehicle card and direction are restored once the linked route is open.
  */
-export function useLiveCardMapLink() {
-  const [fitArea, setFitArea] = useState<{ bounds: Bounds; ts: number } | null>(null);
-  const [highlight, setHighlight] = useState<[number, number][] | null>(null);
-  const mapLineClickRef = useRef<LineClick | null>(null);
-  const registerMapClick = useCallback((fn: LineClick | null) => { mapLineClickRef.current = fn; }, []);
-  const zoomToStretch = useCallback((bounds: Bounds) => setFitArea({ bounds, ts: Date.now() }), []);
-  return { fitArea, highlight, setHighlight, zoomToStretch, registerMapClick, mapLineClickRef };
-}
-
-/**
- * Live's view state in the URL so a shared link reopens it: the route, the followed vehicle
- * and the vehicle-list direction (the route card keeps its own p, dir, stretch and view).
- * The followed vehicle and direction are restored once the linked route is open.
- */
-export function useLiveViewUrl({ active, selectedRoute, focusedVehicle, selectedDirection, selectedGroup, pendingRouteRef, onRestore }: {
+export function useLiveViewUrl({ active, selectedRoute, cardVehicleId, selectedDirection, selectedGroup, pendingRouteRef, onRestore }: {
   active: boolean;
   selectedRoute: string | null;
-  focusedVehicle: { id: string } | null;
+  cardVehicleId: string | null;
   selectedDirection: string | null;
   selectedGroup: { vehicles: LiveVehicle[] } | null;
   pendingRouteRef: React.RefObject<string | null>;
@@ -39,8 +25,8 @@ export function useLiveViewUrl({ active, selectedRoute, focusedVehicle, selected
   })() : null);
   useEffect(() => {
     if (!active || pendingRouteRef.current) return;
-    syncUrlParams(linkUpdate(LIVE_MAP_URL, { route: selectedRoute, vehicle: focusedVehicle?.id ?? null, group: selectedDirection }));
-  }, [active, selectedRoute, focusedVehicle?.id, selectedDirection, pendingRouteRef]);
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, { route: selectedRoute, vehicle: cardVehicleId, group: selectedDirection }));
+  }, [active, selectedRoute, cardVehicleId, selectedDirection, pendingRouteRef]);
   useEffect(() => {
     const r = restoreRef.current;
     if (!r || !selectedGroup) return;
@@ -64,7 +50,7 @@ export function useLiveRouteRequest({ active, routeRequest, visibleSlugs, pendin
 }) {
   useEffect(() => {
     if (!active || !routeRequest) return;
-    const key = `${routeRequest.slug}::${routeRequest.routeShortName}`;
+    const key = buildRouteKey(routeRequest.slug, routeRequest.routeShortName);
     if (visibleSlugs.includes(routeRequest.slug)) {
       pendingRouteRef.current = null;
       open(key);
@@ -76,7 +62,7 @@ export function useLiveRouteRequest({ active, routeRequest, visibleSlugs, pendin
   }, [active, routeRequest]);
   useEffect(() => {
     const pending = pendingRouteRef.current;
-    if (pending && visibleSlugs.includes(pending.split('::')[0])) {
+    if (pending && visibleSlugs.includes(splitRouteKey(pending).agencySlug)) {
       pendingRouteRef.current = null;
       open(pending);
     }

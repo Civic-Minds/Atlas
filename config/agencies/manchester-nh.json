@@ -1,0 +1,25 @@
+{
+  "slug": "manchester-nh",
+  "officialName": "Manchester Transit Authority",
+  "websiteUrl": "https://mtabus.org/",
+  "center": [
+    42.99,
+    -71.46
+  ],
+  "feedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+  "region": "New Hampshire",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+  "bbox": [
+    42.7484,
+    -71.5444,
+    43.2225,
+    -71.1978
+  ],
+  "cities": [
+    "Concord, New Hampshire",
+    "Nashua, New Hampshire",
+    "Salem, New Hampshire"
+  ],
+  "timezone": "America/New_York",
+  "hiddenInProduction": true
+}

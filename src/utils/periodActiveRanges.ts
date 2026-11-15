@@ -174,3 +174,20 @@ export function partPeriodNoticeHeadway(
   if (rows.length === 0) return null;
   return rows.every(h => shown > headwayAboutMinutes(h)) ? null : filterValue;
 }
+
+/**
+ * #1343: each direction's hours at the stop the period decision reads (its main stretch's reference stop, published as
+ * stretchMeta.main.departuresByHour), for naming when a route runs in part of a period ("runs only from 7–9 PM"). The
+ * row's own counts are at the end of the line, so a long route's last bus mid-route at 8:45 PM read as running until
+ * 11 PM there (Bustang South). Null when any direction lacks them (data from before #1343): the caller keeps the row's.
+ */
+export function refStopHourDirections(directions: readonly ShapeProperties[]): Partial<HourFields>[] | null {
+  if (directions.length === 0) return null;
+  const out: Partial<HourFields>[] = [];
+  for (const direction of directions) {
+    const hours = direction.stretchMeta?.main?.departuresByHour;
+    if (!hours) return null;
+    out.push({ departuresByHour: hours });
+  }
+  return out;
+}

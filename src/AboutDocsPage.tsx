@@ -66,27 +66,27 @@ function Subsection({ title, children }: { title: string; children: ReactNode })
 const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand?: true }[] = [
   {
     title: 'Old and new schedules',
-    text: "The agency's schedule has ended, is new and still being checked, or had an error we corrected.",
+    text: "The agency’s schedule has ended, is new and still being checked, or had an error we corrected.",
     examples: [expiredFeedNotice('[Agency]', '[date]'), NEW_SCHEDULE_DATA_NOTICE.route],
   },
   {
-    title: "Errors in the agency's data",
-    text: "A route's line is missing or wrong in the agency's data. Its frequency still comes from the schedule.",
+    title: "Errors in the agency’s data",
+    text: "A route’s line is missing or wrong in the agency’s data. Its frequency still comes from the schedule.",
     examples: [NO_ROUTE_SHAPE_NOTICE, ROUTE_DATA_QUALITY_WARNING_MESSAGE],
   },
   {
     title: 'When a route runs',
-    text: "The route doesn't run, or runs for only part of the time, on the day or at the time of day you picked.",
+    text: "The route doesn’t run, or runs for only part of the time, on the day or at the time of day you picked.",
     examples: [periodServiceNotice('6–9 AM', false), periodServiceNotice('6–9 AM', true, '7–9 AM')],
   },
   {
     title: 'Uneven schedules',
-    text: "The wait between trips isn't the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
+    text: "The wait between trips isn’t the same everywhere: it changes by weekday, through the day, or at the first or last trip.",
     examples: [WEEKDAY_VARIATION_NOTICE, unevenServiceNotice(999).replace('999', '[N]')],
   },
   {
     title: 'Filters',
-    text: "The route, or part of it, doesn't meet the frequency filter you picked, or is hidden by your filters.",
+    text: "The route, or part of it, doesn’t meet the frequency filter you picked, or is hidden by your filters.",
     examples: [selectedRouteOutsideFilterNotice(15, '6–9 AM'), selectedRoutePartMeetsFilterNotice(15, '3–7 PM')],
   },
   {
@@ -97,7 +97,7 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
   },
   {
     title: 'Loading, errors and empty lists',
-    text: "Something didn't load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
+    text: "Something didn’t load, a search found nothing, or your browser blocked location or copying. Most clear up when you try again.",
     examples: [loadErrorText('this route'), LOCATION_DENIED],
   },
 ];
@@ -244,7 +244,7 @@ export default function AboutDocsPage() {
             <Subsection title="Directions, branches, and route qualification">
               <p>Atlas calculates each scheduled direction separately before deciding whether a route qualifies. It uses the feed’s <code className="text-xs text-[var(--text-primary)]">direction_id</code> when present. If that field is missing, trips fall into the default direction group, Atlas records a warning, and the resulting headway may be understated because opposite directions may have been merged.</p>
               <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. One exception: when two patterns take turns running trips to the same end of the line, and neither runs consistently on its own but together they do, Atlas reads them as one service on the stops they share. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
-              <p>The frequency filter and the map colours are direction-aware. For a period or all-day threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. The all-day value is each direction’s midday cadence, or its whole-day cadence when it has no midday service. A route with a direction that has no midday service at all, such as a rush-hour-only or few-trips direction, does not pass any all-day threshold; it still appears for the time periods in which every direction runs. A rush-hour-only route with consistent trips is rated by its own spacing, so it can pass the filter during its rush hour. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked occasional as a whole and hidden by the default occasional-service filter.</p>
+              <p>The frequency filter and the map colours are direction-aware. For a period threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. A rush-hour-only route with consistent trips is rated by its own spacing, so it can pass the filter during its rush hour. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked occasional as a whole and hidden by the default occasional-service filter.</p>
             </Subsection>
             <h3 className="font-black text-[var(--text-primary)]">Band qualification and tolerance</h3>
             <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or occasional service. Atlas tests the tightest band first and requires enough departures to cover the analyzed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>

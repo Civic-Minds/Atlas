@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { displayNameFor, getReleaseAgency, primaryCity, pruneReleaseCache, summarize } from './build-agency-page-summaries';
 import { bandCounts, FREQUENCY_BANDS } from '../shared/agencyPages';
+import oc6json from '../src/utils/__tests__/fixtures/octranspo-6-weekday.json';
 
 function line(name: string, directionId: number, midday: number | null, extra: Record<string, unknown> = {}) {
   return {
@@ -281,4 +282,15 @@ describe('release cache (CIV-315)', () => {
     expect(readdirSync(join(root, 'release-test'))).toEqual(['ttc.json']);
   });
 
+});
+
+// CIV-1300 (#1311): the agency page reads the route card's words where they differ from the filter's number.
+describe('agency page cells read the route card', () => {
+  const oc6Features = (oc6json as unknown as GeoJSON.FeatureCollection).features;
+  it('the agency page stores the same words for that period, and keeps the filter\'s 32 for its bands', () => {
+    const lines = oc6Features.map(f => ({ ...f, geometry: { type: 'LineString' } }));
+    const r = summarize(lines as never, 'octranspo', null).routes.find(x => x.midday != null)!;
+    expect(r.midday).toBe(32);
+    expect(r.text?.midday).toBe('every 15 min, with one 32 min gap');
+  });
 });

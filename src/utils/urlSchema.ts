@@ -5,6 +5,7 @@ import type { DashboardBand } from '../../shared/liveDashboard';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { parseFrequentServiceDays, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { MapMeasure } from '../components/Live/routeMapModel';
+import { currentAgencyKey } from './formerSlugs';
 
 /**
  * Every view's link parameters, declared once (CIV-1011 #11, CIV-1139): each one's key, the older names a shared
@@ -54,8 +55,8 @@ const direction: UrlParam<number> = {
   serialize: value => String(value),
 };
 
-/** Live's time bands: all day and the four daytime periods (late night and overnight have too few trips). */
-export const LIVE_BAND_IDS: readonly DashboardBand[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+/** Live's time bands in links: the four daytime periods (late night and overnight have too few trips). No All day (CIV-1097, CIV-1451). */
+export const LIVE_BAND_IDS: readonly DashboardBand[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
 export const LIVE_MEASURE_IDS: readonly MapMeasure[] = ['late', 'runTime', 'extraWait', 'bunching'];
 export const LIVE_SORT_IDS = ['late', 'runTime', 'bunching', 'delivered'] as const;
 export type LiveSort = typeof LIVE_SORT_IDS[number];
@@ -94,12 +95,12 @@ export const MAP_URL = {
     parse: raw => raw !== '0',
     serialize: value => (value ? '1' : '0'),
   } satisfies UrlParam<boolean>,
-  /** The open route card: agency::route[::branch:x]. */
-  route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  /** The open route card: agency::route[::branch:x]. A renamed or merged agency's old key opens its route (formerSlugs). */
+  route: { key: 'route', presence: 'any', parse: raw => currentAgencyKey(raw, true), serialize: value => value || null } satisfies UrlParam<string>,
   /** The open stop card: agency::stopId. */
-  stop: { key: 'stop', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  stop: { key: 'stop', presence: 'any', parse: raw => currentAgencyKey(raw, false), serialize: value => value || null } satisfies UrlParam<string>,
   /** The open on-demand card: agency, or agency::zoneId. */
-  onDemand: { key: 'ondemand', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
+  onDemand: { key: 'ondemand', presence: 'any', parse: raw => currentAgencyKey(raw, false), serialize: value => value || null } satisfies UrlParam<string>,
   /** Debug only: extra routes drawn in distinct colours. Read on load, never written. */
   highlight: {
     key: 'highlight', presence: 'nonEmpty',
@@ -119,6 +120,12 @@ export const MAP_URL = {
 export const HISTORY_VIEW_URL = {
   headway: MAP_URL.headway,
   period: MAP_URL.period,
+  /**
+   * CIV-1425: History's own day (Weekday, Saturday, Sunday), read and written only while the day picker flag is on.
+   * Its own key, not the map's `day`, so a History link never changes the map's day. Always written, like the map's
+   * `day` (CIV-1433): without it a link opens on the viewer's own day.
+   */
+  day: oneOf<DayType>('hday', DAY_TYPES, null),
 } as const;
 
 /** App-wide settings a link can carry. */
@@ -174,7 +181,9 @@ export const LIVE_ROUTE_URL = {
   view: oneOf<'lite' | 'dashboard' | 'analysis' | 'explore'>('view', ['dashboard', 'analysis', 'explore'], 'lite'),
   /** Explore's day and band, cleared when the route page opens without them. */
   day: oneOf<'all' | 'weekday' | 'weekend'>('day', ['weekday', 'weekend'], 'all'),
-  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS, 'all'),
+  /** CIV-1451: a time period only, never All day (the map has none, CIV-1097). Always written; an old band=all link, or none,
+   * opens on the agency's current period, as the map does. The Live map shares it. */
+  band: oneOf<DashboardBand>('band', LIVE_BAND_IDS, null),
 } as const;
 
 /** The Live tool page: its route, direction, band, measure and the picked stop or stretch. */
@@ -182,7 +191,8 @@ export const LIVE_TOOL_URL = {
   route: { key: 'route', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
   dir: direction,
   band: LIVE_ROUTE_URL.band,
-  measure: oneOf<MapMeasure>('measure', LIVE_MEASURE_IDS, 'late'),
+  // Live's beta heatmap of where delay starts (CIV-942) is linkable too, though it isn't one of the measure pills.
+  measure: oneOf<MapMeasure>('measure', [...LIVE_MEASURE_IDS, 'delayStarts'], 'late'),
   stop: { key: 'stop', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,
   /** A stretch: fromStopId>toStopId. */
   segment: { key: 'seg', presence: 'any', parse: identity, serialize: value => value || null } satisfies UrlParam<string>,

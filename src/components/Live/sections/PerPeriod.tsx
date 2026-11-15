@@ -1,7 +1,7 @@
-import { BANDS } from './figures';
+import { PERIOD_BANDS_ONLY } from './figures';
 
 /** The four time-of-day periods (everything but "All day"). */
-export const PERIOD_BANDS_ONLY = BANDS.filter(([k]) => k !== 'all');
+export { PERIOD_BANDS_ONLY };
 
 /** Rows with the same answer become one: "AM peak, Midday, PM peak, Evening: stays about level". Only merges, never rewrites. */
 export function mergePeriodRows(rows: Array<{ key: string; label: string; text: string }>): Array<{ key: string; label: string; text: string }> {
@@ -13,7 +13,7 @@ export function mergePeriodRows(rows: Array<{ key: string; label: string; text: 
   return out;
 }
 
-/** A section's answer for each time of day, as a compact list (no toggle): "AM peak: builds up by King St West". Identical answers are one row. */
+/** A section's answer for each time of day, as a compact list (no toggle): "AM peak: starts at King St West". Identical answers are one row. */
 export default function PerPeriod({ title, rows }: { title: string; rows: Array<{ key: string; label: string; text: string }> }) {
   if (!rows.length) return null;
   const merged = mergePeriodRows(rows);

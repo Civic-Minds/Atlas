@@ -247,7 +247,7 @@
       "status": "qualitative_definition_on_map",
       "mapCandidates": [
         {
-          "url": "https://wwww.septa.org/maps/",
+          "url": "https://www.septa.org/maps/",
           "sourceType": "system_map",
           "localFile": null
         }
@@ -269,7 +269,7 @@
       "evidenceSourceType": "system_map",
       "reviewSources": [
         {
-          "url": "https://wwww.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
+          "url": "https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
           "sourceType": "system_map",
           "localFile": "septa-system-map.pdf"
         }
@@ -282,7 +282,7 @@
           "thresholdText": null,
           "representative": true,
           "sourceType": "system_map",
-          "sourceUrl": "https://wwww.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
+          "sourceUrl": "https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
           "localFile": "septa-system-map.pdf",
           "mapPageOrSection": "map legend",
           "exactWording": "Frequent Bus Routes",

@@ -37,7 +37,7 @@ export async function resolveArchiveZip(slug: string, cacheRoot: string, todayYm
 
   // Same steps as selectArchiveKey in reprocess-derived-artifacts.ts.
   const objects = await r2ListArchiveObjects(`gtfs/archive/${slug}/`);
-  const selection = selectArchiveForAgency(objects, agency);
+  const selection = selectArchiveForAgency(objects, agency, todayYmd);
   let key: string;
   let reason: string;
   if (selection.ok) {
@@ -50,7 +50,7 @@ export async function resolveArchiveZip(slug: string, cacheRoot: string, todayYm
       const buf = await r2GetArchiveBuffer(obj.key);
       return { obj, dates: buf ? await peekFeedDates(buf) : { feedStart: null, feedExpiry: null, feedVersion: null, feedInfoEnd: null } };
     }));
-    const byDates = selectByFeedDates(peeked, todayYmd, prior);
+    const byDates = selectByFeedDates(peeked, todayYmd, prior, agency.lastFeedExpiry);
     if (!byDates.ok) throw new Error(`the reprocess would refuse ${slug}: ${byDates.reason}`);
     ({ key, reason } = byDates);
   }

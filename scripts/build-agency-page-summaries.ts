@@ -32,7 +32,7 @@ import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
-import { routeListDisplay } from '../src/utils/effectiveHeadway';
+import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../src/hooks/useAgencyData';
 import type { AgencyPageIdentity, AgencyPageRoute, AgencyPageSummary, AgencyPageSummaries } from '../shared/agencyPages';
 import { agencyShortLabel, trimRedundantCity } from '../shared/agencyPages';
@@ -172,18 +172,24 @@ export function summarize(
     const noRegular: NonNullable<AgencyPageRoute['noRegular']> = [];
     const shared: NonNullable<AgencyPageRoute['shared']> = {};
     const edge: NonNullable<AgencyPageRoute['edge']> = {};
+    const text: NonNullable<AgencyPageRoute['text']> = {};
     for (const [col, period] of cols) {
-      const d = routeListDisplay(ps, period);
+      // The agency pages' bands and summaries read the filter's number (CIV-1447 left them on it; the lists read the card).
+      const d = routeListFilterDisplay(ps, period);
       r[col] = d.headway;
       if (d.limited) limited.push(col);
       if (d.noRegular) noRegular.push(col);
       if (d.sharedHeadway != null) shared[col] = d.sharedHeadway;
       if (d.edge) edge[col] = d.edge;
+      // CIV-1300: the page reads what the map's lists read (the route card), where that differs from the filter's number.
+      const shown = routeListCellText(routeListDisplay(ps, period), true);
+      if (shown != null && shown !== routeListCellText(d, true)) text[col] = shown;
     }
     if (limited.length) r.limited = limited;
     if (noRegular.length) r.noRegular = noRegular;
     if (Object.keys(shared).length) r.shared = shared;
     if (Object.keys(edge).length) r.edge = edge;
+    if (Object.keys(text).length) r.text = text;
   }
   if (boundaries || regionBoundaries) {
     // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.

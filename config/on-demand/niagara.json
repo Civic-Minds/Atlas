@@ -1,15 +1,14 @@
 {
   "slug": "niagara",
   "area": {
-    "serviceName": "NRT OnDemand",
+    "serviceName": "Microtransit",
     "sourceUrl": "https://nrtransit.ca/microtransit/",
     "sourceLabel": "Niagara Region Transit microtransit page and its embedded interactive zone map",
     "sourceRetrievedAt": "2026-10-11",
     "bookingUrl": "https://nrtransit.ca/microtransit/",
-    "tripRules": "Travel within West Lincoln is not available. Travel within Wainfleet is not available.",
     "zoneMetadata": {
       "Lincoln": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -33,12 +32,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Niagara-on-the-Lake": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -62,12 +61,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Pelham": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -91,12 +90,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "West Lincoln": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -120,12 +119,13 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
-        }
+        },
+        "tripRules": "Trips must start or end at a stop outside West Lincoln."
       },
       "Wainfleet": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -149,12 +149,13 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
-        }
+        },
+        "tripRules": "Trips must start or end at a stop outside Wainfleet."
       },
       "Port Colborne": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -178,12 +179,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Fort Erie": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -207,12 +208,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Welland": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -236,12 +237,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Grimsby": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -265,12 +266,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Niagara Falls": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -294,12 +295,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Riverview South": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -323,12 +324,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Riverview North": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -352,12 +353,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Port Weller": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -381,12 +382,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "Lakeshore": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -410,12 +411,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "STC North": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -439,12 +440,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "STC West 1": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -468,12 +469,12 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       },
       "STC West 2": {
-        "serviceName": "NRT OnDemand",
+        "serviceName": "Microtransit",
         "serviceHours": "Monday-Saturday 7 a.m. - 11 p.m. / Sunday/Holidays 10 a.m. - 6 p.m.",
         "hoursNote": "Holidays run the Sunday schedule.",
         "availability": {
@@ -497,7 +498,7 @@
           ]
         },
         "hoursSource": {
-          "url": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+          "url": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
           "retrievedAt": "2026-10-11"
         }
       }
@@ -509,7 +510,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Lincoln"
@@ -1407,7 +1408,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Niagara-on-the-Lake"
@@ -2301,7 +2302,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Pelham"
@@ -2991,7 +2992,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "West Lincoln"
@@ -3901,7 +3902,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Wainfleet"
@@ -5043,7 +5044,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Port Colborne"
@@ -5929,7 +5930,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Fort Erie"
@@ -7437,7 +7438,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Welland"
@@ -8255,7 +8256,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Grimsby"
@@ -9049,7 +9050,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Niagara Falls"
@@ -20495,7 +20496,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Riverview South"
@@ -20665,7 +20666,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Riverview North"
@@ -21091,7 +21092,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Port Weller"
@@ -21797,7 +21798,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "Lakeshore"
@@ -22483,7 +22484,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "STC North"
@@ -23117,7 +23118,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "STC West 1"
@@ -23863,7 +23864,7 @@
       "properties": {
         "agencySlug": "niagara",
         "serviceType": "on-demand",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2",
         "sourceLabel": "NRT interactive microtransit zone map",
         "sourceRetrievedAt": "2026-10-11",
         "areaName": "STC West 2"
@@ -24562,7 +24563,7 @@
         "serviceType": "on-demand",
         "stopName": "St. Catharines Bus Terminal",
         "areaName": "Lincoln, Pelham, West Lincoln, Grimsby",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24579,7 +24580,7 @@
         "serviceType": "on-demand",
         "stopName": "Welland Bus Terminal",
         "areaName": "Pelham, West Lincoln, Wainfleet, Welland",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24596,7 +24597,7 @@
         "serviceType": "on-demand",
         "stopName": "Port Colborne City Hall",
         "areaName": "West Lincoln, Wainfleet, Port Colborne, Fort Erie",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24613,7 +24614,7 @@
         "serviceType": "on-demand",
         "stopName": "Town & Country Plaza",
         "areaName": "Niagara-on-the-Lake, Niagara Falls",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24630,7 +24631,7 @@
         "serviceType": "on-demand",
         "stopName": "Fort Erie Town Hall",
         "areaName": "Port Colborne, Fort Erie",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24647,7 +24648,7 @@
         "serviceType": "on-demand",
         "stopName": "Outlet Collection at Niagara",
         "areaName": "Niagara-on-the-Lake",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24664,7 +24665,7 @@
         "serviceType": "on-demand",
         "stopName": "Niagara College Glendale Campus",
         "areaName": "Niagara-on-the-Lake",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24681,7 +24682,7 @@
         "serviceType": "on-demand",
         "stopName": "Canadian Drive Hub",
         "areaName": "Niagara Falls",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24698,7 +24699,7 @@
         "serviceType": "on-demand",
         "stopName": "Main and Ferry Hub",
         "areaName": "Niagara Falls",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24715,7 +24716,7 @@
         "serviceType": "on-demand",
         "stopName": "Morrison-Dorchester Hub",
         "areaName": "Niagara Falls",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24732,7 +24733,7 @@
         "serviceType": "on-demand",
         "stopName": "Fort Erie Smart Centre",
         "areaName": "Fort Erie",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",
@@ -24749,7 +24750,7 @@
         "serviceType": "on-demand",
         "stopName": "Fort Erie Centennial Library",
         "areaName": "Fort Erie",
-        "sourceUrl": "https://niagaratransit.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
+        "sourceUrl": "https://niagaratransitca.tempurl.host/l/wp-content/uploads/umbraco-transit-schedules/microtransit-zones.html?v=2"
       },
       "geometry": {
         "type": "Point",

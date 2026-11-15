@@ -9,9 +9,10 @@ export interface LiveGaps { dates: string[]; directions: Record<string, Record<s
 export function useLiveGaps(agency: string | null | undefined, route: string | null | undefined): LiveGaps | null {
   const [data, setData] = useState<LiveGaps | null>(null);
   useEffect(() => {
-    if (!agency || !route) return;
+    const url = agency && route ? liveGapsDataUrl(agency, route) : null;
+    if (!url) return;
     let live = true;
-    fetch(liveGapsDataUrl(agency, route))
+    fetch(url)
       .then(r => (r.ok ? r.json() : null))
       .then(d => { if (live) setData(d && d.status !== 'no_analysis' && d.directions ? d as LiveGaps : null); })
       .catch(() => { if (live) setData(null); });

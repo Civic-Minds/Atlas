@@ -7,9 +7,12 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { joinList, plural } from '../../shared/overflowText';
+import { METHOD_TITLE } from '../../shared/liveWording';
 import { formatStoredDate } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
+import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 
@@ -17,7 +20,7 @@ import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, ty
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
-  const ended = `${primary}'s schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
+  const ended = `${agencyPossessiveSentenceStart(primary)} schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
@@ -76,7 +79,7 @@ export function unevenServiceNotice(longestGap: number): string {
 }
 
 // N7 no-route-line
-export const NO_ROUTE_SHAPE_NOTICE = "This route's line can't be shown on the map because it's missing from the agency's data.";
+export const NO_ROUTE_SHAPE_NOTICE = "This route’s line can’t be shown on the map because it’s missing from the agency’s data.";
 
 // N16 booked-ahead
 /** CIV-1006: a route riders must book ahead (Ryan's wording). */
@@ -90,7 +93,7 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
   return maxHeadway === Infinity
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
     // CIV-1251: a threshold in a sentence reads "every 15 min or better" (STYLE.md).
-    : `This route doesn't run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
+    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
 // N123 part-of-route-meets-filter (CIV-514; CIV-1251, Ryan 2026-11-01): the selected route misses the filter, but its shared
@@ -108,7 +111,7 @@ export const EXPIRED_FEED_EXPLANATION =
 // N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
 export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
   if (options.count != null && options.since && formatStoredDate(options.since)) {
-    return `We've checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
+    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
   }
   return '';
 }
@@ -121,8 +124,10 @@ export const loadingText = (noun: string) => `Loading ${noun}…`;
 
 // N51 night-failed, N54 history-failed, N66 agencies-failed, N67 selection-failed
 /** "This route couldn't load.": the thing first. */
-export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn't load.`;
+export const loadErrorText = (subject: string) => `${subject.charAt(0).toUpperCase()}${subject.slice(1)} couldn’t load.`;
 
+/** The zoomed-out note, shared by the map export and the Night list (CIV-1337, Ryan: reuse this exact string). */
+export const ZOOMED_OUT_NOTICE = 'Zoomed out. Some less frequent routes are hidden.';
 // N54 history-failed (hint)
 /** Added after a load error that the person can retry. */
 export const RETRY_HINT = 'Check your connection and try again.';
@@ -162,7 +167,7 @@ export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable r
 // N117 settings-no-degraded-feeds
 export const NO_DEGRADED_FEEDS = 'No degraded or unusable feeds are currently recorded.';
 // N119 story-map-loading: loadingText with the agency's network, "Loading MiWay’s network…".
-export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyName}’s network`);
+export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyPossessive(agencyName)} network`);
 // N120 story-map-failed
 export const storyMapFailedText = (agencyName: string) => `The ${agencyName} network preview is unavailable.`;
 // N118 settings-no-feed-matches
@@ -192,14 +197,24 @@ export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', descript
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
 // ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
-// The back link from an agency or stop card to the map.
-export const BACK_TO_MAP_LABEL = 'Map';
+// The back link from an agency or stop card to the map (CIV-1462: the words live in backLinks.ts).
+export const BACK_TO_MAP_LABEL = BACK_PLACES.map;
 // The region pill and group for an agency with no region.
 export const OTHER_REGION_LABEL = 'Other';
 // The row for the shared main stretch above a direction's branch rows (route card, stop card).
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
+export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
+export const NEAR_YOU_TITLE = 'Near you';
+/** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
+export const REPORT_A_PROBLEM = 'Report a problem';
+/** The day, time and mode pickers' names, the same on every filter surface (Ryan, CIV-1160 question 6, 2026-11-13). */
+export const DAY_LABEL = 'Day';
+export const TIME_LABEL = 'Time';
+export const MODE_LABEL = 'Mode';
 /** The full-day frequency chart's axis unit (CIV-1311, Ryan's wording 2026-11-03). */
 export const TRIPS_PER_HOUR_LABEL = 'Trips per hour';
 // The default title of an exported map image.
@@ -229,19 +244,19 @@ export const MAP_KEY_NIGHT = 'Overnight service';
 
 // ---- Route card ----
 // N1 weekday-variation
-export const WEEKDAY_VARIATION_NOTICE = "This route's weekday schedules vary by day.";
+export const WEEKDAY_VARIATION_NOTICE = "This route’s weekday schedules vary by day.";
 // N15 variants
 /** "Includes variants 51A, 51B" (beta route variants). */
 export const variantsIncludedNotice = (shortNames: string) => `Includes variants ${shortNames}`;
 // N14 first-last-allowance
 /** The info icon's hover text on a row whose frequency allows a longer first or last trip. */
-export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route's frequency allows a slightly longer wait for the first or last trip of the day.";
+export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route’s frequency allows a slightly longer wait for the first or last trip of the day.";
 
 // ---- Route and agency cards ----
 // N6 route-shape-problem
 /** A route whose line had a confirmed shape problem in the source feed (shared/routeDataQuality.ts has the code). */
 export const ROUTE_DATA_QUALITY_WARNING_MESSAGE =
-  "This route's line on the map may be incomplete because of an error in the agency's data.";
+  "This route’s line on the map may be incomplete because of an error in the agency’s data.";
 /** N108, N20 and E4's lead (CIV-1077: one sentence): "This agency is only available on Atlas beta." */
 const onlyOnBetaText = (subject: string) => `${subject} is only available on Atlas beta.`;
 // N108 beta-agency (replaces N19's wording; Ryan)
@@ -257,19 +272,19 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 }
 // N4 new-schedule (route), N21 new-schedule (agency)
 /** The route card and the agency card word these for what they show (CIV-941). */
-export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route's new schedule is still being verified.", agency: "This agency's new schedule is still being verified." } as const;
+export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route’s new schedule is still being verified.", agency: "This agency’s new schedule is still being verified." } as const;
 // N5 corrected (route), N22 corrected (agency)
-export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route's schedule.", agency: "We corrected an error in this agency's schedule." } as const;
+export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route’s schedule.", agency: "We corrected an error in this agency’s schedule." } as const;
 // N23 routes-outside-show
 export const routesOutsideFiltersNotice = (count: number) => `${count} ${plural(count, 'route')} outside your filters.`;
 // N24 routes-outside-hide
 export const ROUTES_OUTSIDE_FILTERS_NOTICE = 'These routes are outside your filters.';
 // N31 on-demand-not-mapped
 /** An on-demand agency whose zone isn't drawn (the card's on-demand pill). */
-export const ON_DEMAND_NOT_MAPPED_NOTE = "This agency's on-demand service runs by request in a zone that isn't on the map yet.";
+export const ON_DEMAND_NOT_MAPPED_NOTE = "This agency’s on-demand service runs by request in a zone that isn’t on the map yet.";
 // N32 zone-part-not-mapped
 /** "This service's north zone isn't on the map yet." */
-export const notOnMapYetNotice = (missing: string) => `This service's ${missing.replace(/^the /, '')} isn't on the map yet.`;
+export const notOnMapYetNotice = (missing: string) => `This service’s ${missing.replace(/^the /, '')} isn’t on the map yet.`;
 // N70 report-form-hint
 export const REPORT_FORM_HINT = 'Choose a category, or click a card value to preselect its reason.';
 // N69 report-needs-detail
@@ -279,16 +294,43 @@ export const REPORT_NEEDS_REASON = 'Select a reason or describe what is wrong.';
 
 // ---- History ----
 // N53 history-trip-time
-export const HISTORY_TRIP_TIME_NOTE = "This is the scheduled time for one typical weekday trip end to end, shown only when the route's stops and path stayed the same across these years.";
+/** Ryan's wording, 2026-11-12 (CIV-1127): about the length of the frequency box's sentence. */
+export const HISTORY_TRIP_TIME_NOTE = 'This compares one typical weekday trip, end to end, over the same stops and path.';
 // N56 history-order
 export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
+// History's own labels, moved here with the same words (CIV-451, approved by Ryan 2026-11-13).
+/** The History panel's title. */
+export const HISTORY_TITLE = 'Historical service';
+/** The History button's screen-reader name, off and on. */
+export const HISTORY_BUTTON_LABEL = 'History';
+export const HISTORY_BUTTON_ACTIVE_LABEL = backLinkLabel(BACK_PLACES.frequencyMap);
+/** The agency card's back link in History: the map's word for the agency list (CIV-1462). */
+export const HISTORY_BACK_TO_AGENCIES = BACK_PLACES.agencies;
+/** The year slider's hover hint and screen-reader name. */
+export const HISTORY_YEAR_HINT = 'Older to newer';
+export const HISTORY_YEAR_LABEL = 'History year';
+/** The route chart's expand button and its window's screen-reader name. */
+export const HISTORY_EXPAND_CHART = 'Expand chart';
+export const HISTORY_CHART_LABEL = 'Route history chart';
+/** The search box in History before an agency is open. */
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+/** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
+export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
+/** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
+export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
+  `This compares the oldest and newest ${day} schedules available for this route.`;
+/** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
+export const HISTORY_NO_TRIPS_LABEL = 'no trips';
+/** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
+export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
+  `${day} values by time of day aren’t available for this agency yet.`;
 
 // ---- Map ----
 // N46 networks-failed
-export const networksFailedText = (count: number) => (count === 1 ? "1 agency couldn't load" : `${count} agencies couldn't load`);
+export const networksFailedText = (count: number) => (count === 1 ? "1 agency couldn’t load" : `${count} agencies couldn’t load`);
 // N46 networks-failed (hover)
 /** The agencies' names: "TTC and YRT couldn't load." */
-export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn't load.`;
+export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn’t load.`;
 // N45 networks-loading
 export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
 // N34 on-demand-failed
@@ -301,17 +343,17 @@ export const MAP_ERRORS_TITLE = 'Map errors';
 // N47 link-copied
 export const LOCATION_URL_COPIED = 'Location link copied.';
 // N47 copy-denied
-export const CLIPBOARD_DENIED = "The link couldn't be copied. Clipboard access was denied.";
+export const CLIPBOARD_DENIED = "The link couldn’t be copied. Clipboard access was denied.";
 // N48 location-denied
-export const LOCATION_DENIED = "Location access was denied. Check your browser's site permissions.";
+export const LOCATION_DENIED = "Location access was denied. Check your browser’s site permissions.";
 // N49 approximate-location
 export const approximateLocationHint = (city?: string | null) => (city
-  ? `The map shows the approximate area of ${city}. Your precise location wasn't available.`
-  : "The map shows an approximate location. Your precise location wasn't available.");
+  ? `The map shows the approximate area of ${city}. Your precise location wasn’t available.`
+  : "The map shows an approximate location. Your precise location wasn’t available.");
 // N50 location-timeout
 export const LOCATION_TIMED_OUT = 'Finding your location took too long. Try again.';
 // N50 location-unavailable
-export const LOCATION_UNAVAILABLE = "Your location couldn't be found. Check your device's location services.";
+export const LOCATION_UNAVAILABLE = "Your location couldn’t be found. Check your device’s location services.";
 
 // ---- Map image export ----
 /** N57 and N58 open with the same sentence (CIV-1077). */
@@ -321,11 +363,11 @@ const MAP_STILL_LOADING = 'The map is still loading.';
 export const MAP_EXPORT_BLOCKED_MESSAGES = {
   timeout: `${MAP_STILL_LOADING} Try again in a moment to get every route in the image.`,
   // Only when the view has no route data; routes hidden by filters still save.
-  'no-routes': "There's no transit data in this view to save. Move the map to an area with service and try again.",
-  'failed-networks': "Some agencies' routes didn't load. Reload the page and try again to get every route in the image.",
+  'no-routes': "There’s no transit data in this view to save. Move the map to an area with service and try again.",
+  'failed-networks': "Some agencies’ routes didn’t load. Reload the page and try again to get every route in the image.",
 } as const;
 // N61 export-not-ready
-export const MAP_EXPORT_NOT_READY = "The map wasn't ready. Try again in a moment.";
+export const MAP_EXPORT_NOT_READY = "The map wasn’t ready. Try again in a moment.";
 // N57 export-waiting
 export const MAP_EXPORT_WAITING = `${MAP_STILL_LOADING} The image will save once every route is drawn.`;
 
@@ -337,13 +379,13 @@ export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.'
 // N64 analytics-setting
 export const ANALYTICS_SETTING_NOTE = 'Optional analytics help us understand which parts of Atlas people use.';
 // N68 view-error
-export const VIEW_ERROR_TEXT = "This view couldn't load because of an error.";
+export const VIEW_ERROR_TEXT = "This view couldn’t load because of an error.";
 // N68 map-error
-export const MAP_ERROR_TEXT = "The map couldn't be shown because of an error.";
+export const MAP_ERROR_TEXT = "The map couldn’t be shown because of an error.";
 // N71 not-found
 export const NOT_FOUND_TITLE = 'This page took the wrong route';
 // N71 not-found
-export const NOT_FOUND_BODY = "We couldn't find that page.";
+export const NOT_FOUND_BODY = "We couldn’t find that page.";
 // N72 page-not-found
 export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 // N72 page-not-found
@@ -357,7 +399,7 @@ export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) =
 // N35 stop-no-routes-in-period (Ryan)
 export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
 // N36 stop-not-found (Ryan)
-export const STOP_NOT_FOUND = "This stop couldn't be found. It may have been moved or removed.";
+export const STOP_NOT_FOUND = "This stop couldn’t be found. It may have been moved or removed.";
 // N51 night-failed (Ryan)
 export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
@@ -367,11 +409,80 @@ export const HISTORY_LOAD_FAILED = loadErrorText('history');
 // N55 history-route-not-covered (Ryan)
 export const HISTORY_ROUTE_NOT_COVERED = 'This route has no past schedules in History yet.';
 // N18 route-not-found (Ryan)
-export const ROUTE_NOT_FOUND = "This route couldn't be found. It may have been renumbered or removed.";
+export const ROUTE_NOT_FOUND = "This route couldn’t be found. It may have been renumbered or removed.";
 // N27 agency-routes-failed (Ryan)
-export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency's routes")} ${RETRY_HINT}`;
+export const AGENCY_ROUTES_FAILED = `${loadErrorText("this agency’s routes")} ${RETRY_HINT}`;
 // N30 agency-not-found (Ryan)
-export const AGENCY_NOT_FOUND = "This agency couldn't be found.";
+export const AGENCY_NOT_FOUND = "This agency couldn’t be found.";
+// On-demand service from a link that Atlas doesn't have (#1191). Proposed wording, waiting on Ryan's word-for-word OK.
+export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn’t be found.";
+
+// ---- Live ----
+// Live's notice, empty-state and error texts (CIV-1045), word for word as they were in the Live components.
+// Live's own figure wording stays in shared/liveWording.ts.
+
+/** A Live section that failed to draw (its error boundary). */
+export const liveDrawError = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+export const LIVE_METHOD_DRAW_ERROR = `${METHOD_TITLE} could not be drawn.`;
+/** `agency`: the agency's short name (useLiveAgencyName), never the address in capitals (CIV-1160 question 7). */
+export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
+export const liveNoRoute = (route: string, agency: string) => `Live has no route ${route} for ${agency}.`;
+export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
+export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
+/** The switched-off page's line, in parts around its two code snippets. */
+export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: '/apps/live', end: 'on the address it prints.' } as const;
+
+/** Why a picked route has no vehicles on the Live map. */
+export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
+  if (!polled) {
+    return followed.length > 0
+      ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
+      : `Live does not follow any ${agencyName} routes.`;
+  }
+  return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+}
+export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
+export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
+export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
+export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+/** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
+export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren’t available yet.';
+/** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
+export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can’t be shown right now.";
+export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
+/** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
+export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
+export const LIVE_GAP_NOT_SEEN = "The car ahead’s passing wasn’t seen";
+
+export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';
+export const LIVE_WEEK_NOT_IN_FILE = 'This week against last week is not in this analysis file.';
+export const LIVE_WEEK_NOT_IN_FILES = 'This week against last week is not in the analysis files yet.';
+export const LIVE_NO_STOPS_MEASURED = 'No stops were measured.';
+export const LIVE_NO_STOP_TO_RANK = 'No stop has enough departures to rank.';
+export const LIVE_NO_STOP_TO_RANK_YET = 'No stop has enough departures to rank yet.';
+export const LIVE_NO_STRETCH_STANDS_OUT = 'No stretch stands out on the analysed routes.';
+/** Extra wait's empty message: the measure's definition, kept with its 15 min (Ryan, CIV-1160 question 3, 2026-11-13). */
+export const LIVE_NO_FREQUENT_STOP = `No stop on this route has a vehicle ${headwayOrBetter(15)} at this time of day.`;
+/** The Extra wait section's intro: what the measure is and where it applies. */
+export const LIVE_EXTRA_WAIT_INTRO = `How much longer riders wait than scheduled, where a vehicle is due ${headwayOrBetter(15)}.`;
+export const LIVE_NOTHING_LINKED = 'Nothing measured here is linked to it';
+export const LIVE_LESS_EXACT_HERE = 'Less exact here: vehicles report their location less often';
+export const LIVE_FEW_MEASUREMENTS = 'Few measurements: treat with care.';
+export const LIVE_NO_DEPARTURES_IN_PERIOD = 'No departures in this part of the day.';
+/** A kind of day with no good recordings this week ("No weekends with good recordings this week."). */
+export const liveNoGoodDays = (dayKindLabel: string) => `No ${dayKindLabel.toLowerCase()} with good recordings this week.`;
+export const LIVE_TOO_FEW_SCHEDULED_DEPARTURES = 'Not enough departures at stops with a scheduled time.';
+export const LIVE_TOO_FEW_DEPARTURES = 'too few departures';
+/** Run time with too few trips for a time of day ("in the AM peak"). */
+export const liveTooFewTrips = (bandWords: string) => `Too few trips were measured ${bandWords} to draw this.`;
+
+/** Live: one agency's feed failed ("<message> It will retry automatically."). */
+export const liveFeedErrorText = (message: string, stuck: boolean) => `${message}${stuck ? ' — still trying, but this has been down for a while.' : ' It will retry automatically.'}`;
+/** Live: every feed in view failed, and has been for a while (the first line is LIVE_FEEDS_UNAVAILABLE). */
+export const LIVE_FEEDS_DOWN_STUCK = 'Still trying, but these have been down for a while.';
+/** Live: nothing running on any followed route in view. */
+export const LIVE_NOTHING_ACTIVE = 'Nothing active on tracked routes';
+export const LIVE_NOTHING_ACTIVE_HINT = 'Buses appear here when they are running on a monitored route.';
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
 export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
 
@@ -400,15 +511,15 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 // E1, N25 version (CIV-1051): "ends" before the listing-end date, "ended" from it on. Paragraphs 2 and 3 are N2's.
 export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
   const { primary } = agencyNames(agencyName).card;
-  return `${primary}'s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
+  return `${agencyPossessiveSentenceStart(primary)} scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
 }
 // E2: the date is the day the schedule went on the map.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
-  `${agencyNames(agencyName).card.primary}'s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven't found yet.`;
+  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven’t found yet.`;
 // E4
-export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyNames(agencyName).card.primary);
+export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencySentenceStart(agencyNames(agencyName).card.primary));
 // E5
-export const ROUTE_DATA_QUALITY_LEAD = "Part of this route's line on the map may be missing or drawn in the wrong place.";
+export const ROUTE_DATA_QUALITY_LEAD = "Part of this route’s line on the map may be missing or drawn in the wrong place.";
 // E7: N14 itself, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
 export const EDGE_GAP_ALLOWANCE_LEAD = `${FIRST_LAST_TRIP_ALLOWANCE_HINT} That trip can come up to 10 minutes later than usual.`;
 // E8: N1 itself, then one more sentence.
@@ -430,18 +541,18 @@ export const EXPLAINER_PIECES = {
   // Paragraph 2: what we're doing about it.
   WEEKLY_CHECK: { code: 'X1', text: "We check for new schedules every week." },
   /** N76: the kept-by-hand version of WEEKLY_CHECK. */
-  MANUAL_FEED: { code: 'X2', text: "This agency doesn't publish a feed we can check automatically. We update it when a newer file is provided and verified." },
-  VERIFYING_NEW_SCHEDULE: { code: 'X3', text: "We're verifying it for missing service and other errors, and we'll correct anything we find." },
+  MANUAL_FEED: { code: 'X2', text: "This agency doesn’t publish a feed we can check automatically. We update it when a newer file is provided and verified." },
+  VERIFYING_NEW_SCHEDULE: { code: 'X3', text: "We’re verifying it for missing service and other errors, and we’ll correct anything we find." },
   CORRECTED_BEFORE_MAP: { code: 'X4', text: "We correct errors like this before a schedule goes on the map." },
-  VERIFYING_BETA: { code: 'X5', text: "We're still verifying its schedule, and some routes or times may change." },
+  VERIFYING_BETA: { code: 'X5', text: "We’re still verifying its schedule, and some routes or times may change." },
   FREQUENCY_FROM_TIMETABLE_LINE_WRONG: { code: 'X6', text: "We still show the route. Its frequency on this card comes from the schedule and is still accurate." },
   FREQUENCY_FROM_TIMETABLE_NO_LINE: { code: 'X7', text: "We still show the route on this card. Its frequency comes from the schedule and is still accurate." },
-  MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don't get this allowance." },
-  WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can't make the route look more frequent than it usually is." },
+  MIDDAY_GAPS: { code: 'X8', text: "Many routes start or end their day with one longer gap. Gaps in the middle of the day don’t get this allowance." },
+  WEEKDAYS_SEPARATE: { code: 'X9', text: "We check each weekday separately, which means one busier day can’t make the route look more frequent than it usually is." },
   // Paragraph 3: what the reader can do.
-  AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency's website.", links: ['agency-website', 'report-schedule'] },
-  AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency's website has its current schedule.", links: ['agency-website'], needsWebsite: true },
-  AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency's website has each day's schedule.", links: ['agency-website'], needsWebsite: true },
+  AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency’s website.", links: ['agency-website', 'report-schedule'] },
+  AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency’s website has its current schedule.", links: ['agency-website'], needsWebsite: true },
+  AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency’s website has each day’s schedule.", links: ['agency-website'], needsWebsite: true },
   REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
 } as const satisfies Record<string, ExplainerPieceDef>;
@@ -488,6 +599,10 @@ export const explainerFor = (code: LearnMoreCode): HelpTopic => NOTICE_EXPLAINER
 // N124 on-demand-shaded-area: the on-demand card's line when the map shades this service's area (CIV-941).
 export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-demand service operates.';
 
+// N126 on-demand-partial: on-demand coverage is partial, so a place with no shading isn't read as having no service. Shown as
+// the map key's last line and under On-demand in the Mode menu (CIV-23; Ryan's word-for-word OK, 2026-11-11).
+export const ON_DEMAND_PARTIAL_COVERAGE = 'Some on-demand zones aren\u2019t on the map yet.';
+
 // N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
 /**
  * One sentence on how riders board, specific to the selected zone (or the
@@ -527,7 +642,7 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'transfer-point-trips':
       sentence = count > 0
-        ? `Every trip starts or ends at this zone's ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        ? `Every trip starts or ends at this zone’s ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
         : 'Every trip starts or ends at a transfer point.';
       break;
     default:

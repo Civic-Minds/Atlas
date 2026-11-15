@@ -21,7 +21,8 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH } from '../content/noticeCopy';
+import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
+import { shouldLoadAgencyDetails } from '../hooks/useAgencyData';
 import { nightRouteKey, nightRoutesInView, type NightServiceFeatureProperties } from '../utils/nightRoutesInView';
 
 interface NightServiceRoute {
@@ -89,7 +90,9 @@ interface Props {
 export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const { bounds } = useViewport();
+  const { bounds, zoom } = useViewport();
+  // Below the detail zoom the route data isn't loaded, so an empty list means zoomed out, not no service (CIV-1337).
+  const zoomedOut = !shouldLoadAgencyDetails(zoom ?? undefined, query);
   const colorMode = useColorMode();
   const visibleRoutes = useMemo(
     () => (Object.keys(layers).length === 0 ? [] : nightRoutesInView(layers, frequency, bounds)),
@@ -211,7 +214,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
           {loadState === 'loading' && <PanelEmpty kind="loading">{loadingText('overnight service')}</PanelEmpty>}
           {loadState === 'error' && <PanelEmpty kind="error">{NIGHT_LOAD_FAILED}</PanelEmpty>}
           {loadState === 'ready' && agencies.length === 0 && (
-            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : nightNoRoutesNotice(frequency)}</PanelEmpty>
+            <PanelEmpty>{query.trim() ? NO_AGENCIES_MATCH_SEARCH : zoomedOut ? ZOOMED_OUT_NOTICE : nightNoRoutesNotice(frequency)}</PanelEmpty>
           )}
           {loadState === 'ready' && agencies.map((agency, agencyIndex) => (
             <div key={agency.slug}>

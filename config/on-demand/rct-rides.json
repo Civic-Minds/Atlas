@@ -1,0 +1,306 @@
+{
+  "slug": "rct-rides",
+  "agency": {
+    "slug": "rct-rides",
+    "name": "RCT Rides",
+    "region": "Vermont",
+    "center": [
+      44.761577,
+      -72.394797
+    ],
+    "url": "",
+    "bbox": [
+      44.51665,
+      -72.708196,
+      45.006504,
+      -72.081398
+    ],
+    "cities": [
+      "Morrisville, Vermont",
+      "Hyde Park, Vermont",
+      "Johnson, Vermont",
+      "Elmore, Vermont",
+      "Newport, Vermont",
+      "Derby, Vermont",
+      "Derby Line, Vermont"
+    ],
+    "displayArea": "Lamoille and Newport-Derby",
+    "onDemandOnly": true,
+    "websiteUrl": "https://www.riderct.org/rctrides/",
+    "timezone": "America/New_York"
+  },
+  "area": {
+    "serviceName": "RCT Rides",
+    "sourceUrl": "https://www.riderct.org/rctrides/",
+    "sourceLabel": "RCT Rides page and Rural Community Transportation GTFS-Flex feed",
+    "sourceRetrievedAt": "2026-11-14",
+    "bookingInfo": "Book in the RCT Rides app or call 866-961-8723 or 802-888-1004.",
+    "bookingUrl": "https://www.riderct.org/rctrides/",
+    "tripRules": "Trips can start and end anywhere in your zone.",
+    "zoneMetadata": {
+      "Lamoille": {
+        "serviceName": "RCT Rides",
+        "serviceHours": "Monday to Friday 7:30 a.m. to 5 p.m.; Saturday 8 a.m. to 2 p.m.",
+        "hoursNote": "No service on federal holidays (listed on the RCT Rides page).",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7.5,
+              "endHour": 17
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 8,
+              "endHour": 14
+            }
+          ],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.riderct.org/rctrides/",
+          "retrievedAt": "2026-11-14"
+        }
+      },
+      "Newport-Derby": {
+        "serviceName": "RCT Rides",
+        "serviceHours": "Monday to Saturday 7:30 a.m. to 5 p.m.",
+        "hoursNote": "No service on federal holidays (listed on the RCT Rides page).",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 7.5,
+              "endHour": 17
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 7.5,
+              "endHour": 17
+            }
+          ],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.riderct.org/rctrides/",
+          "retrievedAt": "2026-11-14"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "rct-rides",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us--flex-v2.zip",
+        "sourceLabel": "Rural Community Transportation GTFS-Flex feed (published by Trillium for the agency)",
+        "sourceRetrievedAt": "2026-11-14",
+        "areaName": "Lamoille"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.6108088,
+              44.5468116
+            ],
+            [
+              -72.5885036,
+              44.5487417
+            ],
+            [
+              -72.51823,
+              44.5202838
+            ],
+            [
+              -72.5169676,
+              44.5289085
+            ],
+            [
+              -72.5211633,
+              44.5442357
+            ],
+            [
+              -72.5295998,
+              44.5693053
+            ],
+            [
+              -72.5513746,
+              44.5757068
+            ],
+            [
+              -72.6396992,
+              44.6240332
+            ],
+            [
+              -72.6726815,
+              44.6493904
+            ],
+            [
+              -72.6853865,
+              44.6446692
+            ],
+            [
+              -72.7077314,
+              44.644871
+            ],
+            [
+              -72.7081962,
+              44.6418947
+            ],
+            [
+              -72.6970611,
+              44.6189053
+            ],
+            [
+              -72.6887859,
+              44.607127
+            ],
+            [
+              -72.6802985,
+              44.5983672
+            ],
+            [
+              -72.641892,
+              44.5589228
+            ],
+            [
+              -72.6380396,
+              44.5265389
+            ],
+            [
+              -72.6303683,
+              44.5202801
+            ],
+            [
+              -72.6201834,
+              44.5166502
+            ],
+            [
+              -72.6104902,
+              44.5289837
+            ],
+            [
+              -72.6108088,
+              44.5468116
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "rct-rides",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us--flex-v2.zip",
+        "sourceLabel": "Rural Community Transportation GTFS-Flex feed (published by Trillium for the agency)",
+        "sourceRetrievedAt": "2026-11-14",
+        "areaName": "Newport-Derby"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.2204818,
+              44.9568527
+            ],
+            [
+              -72.2282524,
+              44.9489476
+            ],
+            [
+              -72.2336346,
+              44.9355022
+            ],
+            [
+              -72.2313999,
+              44.9320061
+            ],
+            [
+              -72.2262614,
+              44.9262993
+            ],
+            [
+              -72.2119658,
+              44.9167948
+            ],
+            [
+              -72.1358053,
+              44.9431603
+            ],
+            [
+              -72.1271546,
+              44.9516044
+            ],
+            [
+              -72.1199048,
+              44.9607823
+            ],
+            [
+              -72.1116497,
+              44.9752756
+            ],
+            [
+              -72.1023279,
+              44.9891608
+            ],
+            [
+              -72.0813978,
+              45.0058679
+            ],
+            [
+              -72.0834504,
+              45.0058359
+            ],
+            [
+              -72.0856086,
+              45.0058145
+            ],
+            [
+              -72.0901013,
+              45.0057875
+            ],
+            [
+              -72.0987937,
+              45.0060947
+            ],
+            [
+              -72.11505,
+              45.006446
+            ],
+            [
+              -72.1326481,
+              45.0063809
+            ],
+            [
+              -72.1407905,
+              45.0065042
+            ],
+            [
+              -72.1467804,
+              45.0042067
+            ],
+            [
+              -72.2014582,
+              44.9633659
+            ],
+            [
+              -72.2099497,
+              44.9597609
+            ],
+            [
+              -72.2204818,
+              44.9568527
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Zones from the agency's GTFS-Flex feed (https://data.trilliumtransit.com/gtfs/ruralcommunity-vt-us/ruralcommunity-vt-us--flex-v2.zip), used exactly as published: 'RCT Rides-Lamoille' (area_1396) and 'RCT Rides-Newport Derby' (area_1397), the two areas on the RCT Rides page (Lamoille: Hyde Park, Morrisville, Johnson, Elmore; Orleans County: Derby Line, Derby, Newport). The feed's booking rules call it 'a free demand responsive transportation service to the general public'; the page calls it fare-free taxi-style service. Hours from the page. The feed has no Saturday window for Newport-Derby, but the page says Monday to Saturday, so the page's hours are used. Re-check: the feed's calendar ends 2026-12-30. Rural Community Transportation's fixed routes are not an Atlas agency, so this is an on-demand-only agency."
+}

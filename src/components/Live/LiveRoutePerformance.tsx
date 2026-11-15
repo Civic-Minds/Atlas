@@ -1,500 +1,210 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
-import Pill from '../ui/Pill';
-import { useLiveDashboard, liveDashboardPath } from '../../hooks/useLiveDashboard';
-import { cardSummary } from '../../../shared/liveDashboard';
-import { useSegmentDelay } from '../../hooks/useSegmentDelay';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import PillGroup from '../ui/PillGroup';
+import { CardHelpNotice, SidebarCardSection } from '../Interval/cardUi';
+import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
 import { syncUrlParams } from '../../utils/syncUrlParams';
 import { LIVE_MAP_URL, currentSearch, linkUpdate, readLink } from '../../utils/urlSchema';
 import { periodKeyForHour } from '../../../shared/config';
+import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { clockTime } from '../../../shared/timeText';
-import {
-  MIN_DAYS, MIN_SEGMENT_TRIPS, SEGMENT_BAND_OPTIONS, halfMinutes, halfMinutesDown, stopNameParts, usableStandingStill,
-  type SegmentBand, type SegmentDelayData,
-} from '../../utils/segmentDelayView';
-import {
-  extraWaitRun, lineModel, liveGaps, type RecentSnapshot, placeOnLine, runningTimeTally, sharedSummary, stretchBetween, stretchForRow, stripStops, withStats,
-  type LineModel, type LineStop, type Stretch,
-} from '../../utils/livePerformance';
+import { type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
+import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
+import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
+import { getVehicleStatus } from '../../utils/colors';
+import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE } from '../../content/noticeCopy';
 
-function halfText(m: number): string {
-  const whole = Math.floor(Math.abs(m));
-  const half = Math.abs(m) - whole >= 0.5;
-  return `${m < 0 ? '−' : ''}${whole === 0 && half ? '' : whole}${half ? '½' : ''}`;
+/** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
+const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
+
+/**
+ * The schedule's gap as the map writes a frequency: "every 8 min", or "every 8–14 min" when the period mixes headways
+ * (shared/headwayText.ts; Ryan, CIV-1160 question 5, 2026-11-13).
+ */
+export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?: number; scheduledP90Sec?: number }): string {
+  const lo = st.scheduledP10Sec, hi = st.scheduledP90Sec;
+  if (lo == null || hi == null || tenthMin(lo) === tenthMin(hi)) return headwayEvery(tenthMin(st.scheduledMedianGapSec));
+  return headwayEveryRange(tenthMin(lo), tenthMin(hi));
 }
 
-/** "3½", "10", "½" — minutes to the nearest ½. */
-export function mins(sec: number): string {
-  return halfText(halfMinutes(sec));
+const AMBER = 'var(--status-caution-text)';
+
+/** The agency's hour (LIVE_AGENCY_TIMEZONES); the browser's clock when the agency has no zone listed. */
+export function agencyHour(slug: string, d = new Date()): number {
+  return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).format(d));
+}
+
+/** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
+export const RIGHT_NOW_STALE_SEC = 2 * 60;
+
+/** "11:42 PM" on the agency's clock (shared/timeText.ts). */
+export function agencyTime(slug: string, d = new Date()): string {
+  const parts = new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: 'numeric', hourCycle: 'h23', timeZone: LIVE_AGENCY_TIMEZONES[slug] }).formatToParts(d);
+  const n = (t: string) => Number(parts.find(x => x.type === t)?.value ?? 0);
+  return clockTime(n('hour') * 60 + n('minute'));
 }
 
 /**
- * A range of gaps in ½ min steps, widened outward (low end down, high end up) so the
- * shown range never looks tighter than the data: 1.3–9.1 min reads "1–9½".
+ * The period at `hour` when the archive has figures for it; null when no period covers it (late night, overnight). Then
+ * "Right now" shows no scheduled comparison: the whole day's timetable is never shown as the hour's (CIV-1459 rule).
  */
-export function minsRange(lowSec: number, highSec: number): string {
-  return `${halfText(Math.floor(lowSec / 30) / 2)}–${halfText(Math.ceil(highSec / 30) / 2)}`;
+export function livePeriodAt(data: Pick<SegmentDelayData, 'headways'>, hour: number): SegmentBand | null {
+  const key = periodKeyForHour(hour);
+  return key && (data.headways ?? []).some(h => h.bands[key as SegmentBand]) ? (key as SegmentBand) : null;
 }
 
-/** The timetable's gap: one value, or a range when the period mixes headways ("8–14"). */
-export function schedText(st: { scheduledMedianGapSec: number; scheduledP10Sec?: number; scheduledP90Sec?: number }): string {
-  const lo = st.scheduledP10Sec, hi = st.scheduledP90Sec;
-  if (lo == null || hi == null || mins(lo) === mins(hi)) return mins(st.scheduledMedianGapSec);
-  return `${mins(lo)}–${mins(hi)}`;
-}
-
-const HEAD = 'text-xs font-black text-[var(--text-dim)]';
-const ROW_LABEL = 'text-xs font-bold text-[var(--text-primary)] truncate';
-const DETAIL = 'text-xs font-bold text-[var(--text-muted)] tabular-nums leading-snug';
-const NUM = 'text-xs font-bold text-[var(--text-muted)] tabular-nums whitespace-nowrap';
-const AMBER = 'var(--status-caution-text)';
-
-function torontoHour(d = new Date()): number {
-  return Number(new Intl.DateTimeFormat('en-CA', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Toronto' }).format(d));
-}
-
-function torontoTime(d = new Date()): string {
-  const minute = Number(new Intl.DateTimeFormat('en-CA', { minute: 'numeric', timeZone: 'America/Toronto' }).format(d));
-  return clockTime(torontoHour(d) * 60 + minute);
-}
-
-function currentBand(): SegmentBand {
-  const key = periodKeyForHour(torontoHour());
-  return SEGMENT_BAND_OPTIONS.some(o => o.id === key) ? (key as SegmentBand) : 'all';
-}
-
-/** The period now, when the archive has it (late night included), else all day. */
-function livePeriod(data: SegmentDelayData): SegmentBand {
-  const key = periodKeyForHour(torontoHour());
-  return key && (data.headways ?? []).some(h => h.bands[key]) ? (key as SegmentBand) : 'all';
-}
-
-function shortDate(d: string): string {
-  return new Date(`${d}T12:00:00Z`).toLocaleDateString('en-CA', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-}
-
-function Chips<T extends string | number>({ options, value, onChange }: { options: { id: T; label: string }[]; value: T; onChange: (v: T) => void }) {
-  return (
-    <div className="flex flex-wrap gap-1">
-      {options.map(o => <Pill key={String(o.id)} selected={value === o.id} onClick={() => onChange(o.id)}>{o.label}</Pill>)}
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5 pt-3 border-t border-[var(--border-primary)]">
-      <div className={HEAD}>{title}</div>
-      {children}
-    </div>
-  );
-}
-
-/** One strip row: scheduled tick, the 8-in-10 range bar, and the typical dot, on a shared minute scale. */
-function GapBar({ stop, scaleSec }: { stop: LineStop; scaleSec: number }) {
-  const s = stop.stat!;
-  const pct = (sec: number) => `${Math.min(100, (sec / scaleSec) * 100)}%`;
-  return (
-    <div className="relative h-3 flex-1 min-w-0" aria-hidden>
-      <div className="absolute top-1/2 left-0 right-0 h-px bg-[var(--border-primary)]" />
-      <div
-        className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-[var(--accent)] opacity-35"
-        style={{ left: pct(s.gapP10Sec), width: `calc(${pct(s.gapP90Sec)} - ${pct(s.gapP10Sec)})` }}
-      />
-      <div className="absolute top-0 bottom-0 w-0.5 -ml-px bg-[var(--text-primary)]" style={{ left: pct(s.scheduledMedianGapSec) }} />
-      <div className="absolute top-1/2 w-2 h-2 -ml-1 -translate-y-1/2 rounded-full bg-[var(--accent)]" style={{ left: pct(s.actualMedianGapSec) }} />
-    </div>
-  );
-}
-
-function scaleFor(stops: LineStop[]): number {
-  const max = Math.max(...stops.map(s => s.stat!.gapP90Sec), ...stops.map(s => s.stat!.scheduledMedianGapSec));
-  return Math.ceil(max / 120) * 120;
-}
-
-function GapStrip({ stops, onRow, activeIndex }: { stops: LineStop[]; onRow?: (i: number) => void; activeIndex?: number | null }) {
-  if (stops.length === 0) return <div className="text-xs text-[var(--text-muted)]">Not enough gaps measured in this period.</div>;
-  const scale = scaleFor(stops);
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center gap-2 pb-0.5">
-        <span className="w-[33%] shrink-0" />
-        <div className="relative flex-1 h-3 text-2xs font-bold text-[var(--text-dim)] tabular-nums">
-          <span className="absolute left-0">0</span>
-          <span className="absolute right-0">{Math.round(scale / 60)} min</span>
-        </div>
-        <span className="w-[3.75rem] shrink-0" />
-      </div>
-      {stops.map((s, i) => (
-        <button
-          key={s.stopId}
-          type="button"
-          onClick={onRow ? () => onRow(i) : undefined}
-          disabled={!onRow}
-          className={`flex items-center gap-2 py-1 -mx-1 px-1 rounded text-left ${onRow ? 'hover:bg-[var(--bg-secondary)]' : 'cursor-default'} ${activeIndex === i ? 'bg-[var(--bg-secondary)]' : ''}`}
-        >
-          <span className={`${ROW_LABEL} w-[33%] shrink-0`} title={stopLabel(s.name)}>{s.label}</span>
-          <GapBar stop={s} scaleSec={scale} />
-          <span className={`${NUM} w-[3.75rem] shrink-0 text-right`}>{minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)}</span>
-        </button>
-      ))}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 pt-1 text-2xs font-bold text-[var(--text-dim)]">
-        <span className="inline-flex items-center gap-1"><span className="w-0.5 h-2.5 bg-[var(--text-primary)]" />scheduled</span>
-        <span className="inline-flex items-center gap-1"><span className="w-3 h-1.5 rounded-full bg-[var(--accent)] opacity-35" />8 in 10 gaps</span>
-        <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--accent)]" />typical</span>
-      </div>
-    </div>
-  );
-}
-
-
-/** A row of small labelled figures. */
+/**
+ * A row of small labelled figures. Labels wrap rather than cut off on a narrow card; labels
+ * share the first grid row and figures the second, so the figures stay level when one label takes two lines.
+ */
 function Stats({ items }: { items: [string, string][] }) {
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 grid-rows-[auto_auto] grid-flow-col gap-x-2">
       {items.map(([label, value]) => (
-        <div key={label} className="min-w-0">
-          <div className="text-xs font-bold text-[var(--text-dim)] truncate">{label}</div>
-          <div className="text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
-        </div>
+        <Fragment key={label}>
+          <div className="min-w-0 self-end text-xs font-bold text-[var(--text-dim)] leading-snug break-words">{label}</div>
+          <div className="min-w-0 text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
+        </Fragment>
       ))}
     </div>
   );
 }
-
-function Plain({ text }: { text: string }) {
-  return <div className="text-xs font-bold text-[var(--text-primary)] leading-snug">{text}</div>;
-}
-
-function StillRows({ rows, totalDays }: { rows: ReturnType<typeof usableStandingStill>; totalDays: number }) {
-  if (rows.length === 0) return <div className="text-xs text-[var(--text-muted)]">None regularly in this period.</div>;
-  return (
-    <div className="flex flex-col gap-0.5">
-      {rows.map(r => (
-        <div key={`${r.stop.stopId}|${r.stop.directionId}`} className="flex items-center gap-2">
-          <span className={`${ROW_LABEL} flex-1 min-w-0`}>{stopLabel(r.stop.stopName)}</span>
-          <span className={`${NUM} w-10 text-right`}>{r.events}×</span>
-          <span className={`${NUM} w-[5.5rem] text-right`}>{r.days} of {totalDays} days</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const stopLabel = (name: string) => stopNameParts(name).short;
 
 interface Props {
   slug: string;
   routeShortName: string;
+  /** The route's vehicles as the map shows them (every poll); "Right now" is built from these. */
+  vehicles: readonly LiveVehicle[];
   /** Live feed is down, stale or incomplete: "Right now" is hidden. */
   feedDegraded: boolean;
-  onZoom: (bounds: [number, number, number, number]) => void;
-  onHighlight: (coordinates: [number, number][] | null) => void;
-  /** Register a handler for clicks on the map (lon, lat); the card turns a click on the line into a stretch. */
-  registerMapClick: (fn: ((lonLat: [number, number], toleranceM: number) => void) | null) => void;
-  /** Full-panel Details screen open/closed, so the parent can hide its other content. */
-  onDetailsChange?: (open: boolean) => void;
+  /**
+   * The picked direction and the vehicles "Right now" counts in it, so the vehicle list shows those same cars (#1163);
+   * null while "Right now" has no count (no analysis, feed down or incomplete). Must be stable (a state setter).
+   */
+  onCounted?: (counted: { directionId: number; label: string; ids: string[] } | null) => void;
 }
 
-type Screen = { kind: 'card' } | { kind: 'stretch'; from: number; to: number; row: number | null } | { kind: 'details' };
-
-/** The Live route card: how the route's spacing holds up, now and over the archive. */
-export default function LiveRoutePerformance({ slug, routeShortName, feedDegraded, onZoom, onHighlight, registerMapClick, onDetailsChange }: Props) {
-  const dash = useLiveDashboard(slug, routeShortName);
-  const dashData = dash.kind === 'done' && dash.data.status === 'ready' ? dash.data : null;
-  const data = useSegmentDelay(slug, routeShortName) as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
-  // View state lives in the URL (p, dir, stretch, view) so a shared link reopens it.
-  const [initial] = useState(() => readLink(currentSearch(), LIVE_MAP_URL));
-  const [band, setBand] = useState<SegmentBand>(() => initial.band ?? currentBand());
-  const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => ({ id: Number(id), label })), [data]);
-  const [dir, setDir] = useState<number | null>(() => initial.dir ?? null);
-  const directionId = directions.some(d => d.id === dir) ? dir! : directions[0]?.id ?? 0;
-  const [screen, setScreen] = useState<Screen>(() => (initial.details ? { kind: 'details' } : { kind: 'card' }));
-  const pendingStretch = React.useRef<string | null>(initial.stretch ?? null);
-  const [now, setNow] = useState(() => Date.now());
-  // The last 30 min of archived positions for this route, refreshed every 30 s (archive is written each minute).
-  const [recent, setRecent] = useState<RecentSnapshot[] | null>(null);
-  const [serverNow, setServerNow] = useState<number | null>(null);
+/**
+ * The map's polls of the route's vehicles since the card opened (up to the last 30 min). A gap needs
+ * the car ahead's recent track: how long ago it passed the spot where the car behind is now.
+ */
+function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] {
+  const [buffer, setBuffer] = useState<RecentSnapshot[]>([]);
   useEffect(() => {
-    let cancelled = false;
-    const load = () => fetch(`/api/live-recent?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(routeShortName)}`)
-      .then(r => (r.ok ? r.json() : null))
-      .then(j => { if (!cancelled) { setRecent(Array.isArray(j?.snapshots) ? j.snapshots : null); setServerNow(typeof j?.now === 'number' ? j.now : null); setNow(Date.now()); } })
-      .catch(() => { if (!cancelled) setRecent(null); });
-    load();
-    const t = setInterval(load, 30_000);
-    return () => { cancelled = true; clearInterval(t); };
-  }, [slug, routeShortName]);
+    setBuffer(b => addSnapshot(b, positionsSnapshot(vehicles, Math.floor(Date.now() / 1000))));
+  }, [vehicles]);
+  return buffer;
+}
+
+/** The Live route card: only what is live now ("Right now"), per direction. */
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
+  const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
+  const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
+  // The direction lives in the URL (dir) so a shared link reopens it.
+  const directions = useMemo(() => Object.entries(data?.directionLabels ?? {}).map(([id, label]) => [Number(id), label] as const), [data]);
+  const [dir, setDir] = useState<number | null>(() => readLink(currentSearch(), LIVE_MAP_URL).dir ?? null);
+  const directionId = directions.some(([id]) => id === dir) ? dir! : directions[0]?.[0] ?? 0;
+  const recent = useRecentPositions(vehicles);
+  // Re-checked every 30 s, so a feed that stops updating shows as incomplete instead of frozen.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, [recent]);
 
   const line: LineModel | null = useMemo(() => (data ? lineModel(data, directionId) : null), [data, directionId]);
-  const stops = useMemo(() => (line ? withStats(line, band) : []), [line, band]);
-  const rows = useMemo(() => stripStops(stops), [stops]);
-  const stretch: Stretch | null = useMemo(
-    () => (line && screen.kind === 'stretch' ? stretchBetween(line, stops, screen.from, screen.to) : null),
-    [line, stops, screen],
-  );
 
-  useEffect(() => { onDetailsChange?.(screen.kind === 'details'); }, [screen.kind, onDetailsChange]);
-  // Reopen a linked stretch once the line is known.
-  useEffect(() => {
-    const want = pendingStretch.current;
-    if (!want || !line) return;
-    pendingStretch.current = null;
-    const [a, b] = want.split('~');
-    const ia = stops.findIndex(s => s.stopId === a), ib = stops.findIndex(s => s.stopId === b);
-    const st = ia >= 0 && ib > ia ? stretchBetween(line, stops, ia, ib) : null;
-    if (st) { setScreen({ kind: 'stretch', from: ia, to: ib, row: null }); onZoom(st.bounds); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [line, stops]);
   useEffect(() => {
     if (!data) return;
-    syncUrlParams(linkUpdate(LIVE_MAP_URL, {
-      band,
-      dir: dir == null ? null : directionId,
-      stretch: stretch ? `${stretch.from.stopId}~${stretch.to.stopId}` : pendingStretch.current,
-      details: screen.kind === 'details',
-    }));
-  }, [data, band, dir, directionId, stretch, screen.kind]);
-  // Closing the route clears its view, the band (p) included, so the map underneath doesn't read it as its period (CIV-1139).
-  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { band: null, dir: null, stretch: null, details: null })), []);
-  useEffect(() => { onHighlight(stretch ? stretch.coordinates : null); }, [stretch, onHighlight]);
-  useEffect(() => () => onHighlight(null), [onHighlight]);
+    syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: dir == null ? null : directionId }));
+  }, [data, dir, directionId]);
+  useEffect(() => () => syncUrlParams(linkUpdate(LIVE_MAP_URL, { dir: null })), []);
 
-
-  const openStretch = (s: Stretch | null, row: number | null) => {
-    if (!s) return;
-    setScreen({ kind: 'stretch', from: s.from.index, to: s.to.index, row });
-    onZoom(s.bounds);
-  };
-
-  // A click on the line opens the stretch between the strip rows either side of it.
+  // From the map's own polls, not the archive, over the whole route (CIV-899). A trip the timetable
+  // doesn't list is placed by its own movement since the card opened; until it has been seen twice it
+  // is skipped (skipUnseenAdded). With 0 or 1 car the count still shows (no gaps line), so the
+  // direction pills never vanish.
+  // Trips today's timetable runs that the analysis's doesn't list get their direction from the map's.
+  const directionLabel = directions.find(([id]) => id === directionId)?.[1] ?? '';
+  const period = data ? livePeriodAt(data, agencyHour(slug)) : null;
+  // The cars and their gaps need a band's stops either way; only the scheduled comparison waits for a period.
+  const liveBand: SegmentBand = period ?? 'all';
+  const extraTrips = data ? liveTripDirections(vehicles, data.tripDirections).get(directionId) : undefined;
+  const live = data && line && !feedDegraded ? liveGaps(data, line, withStats(line, liveBand), liveBand, recent, Math.floor(now / 1000), { skipUnseenAdded: true, countFewCars: true, wholeLine: true, extraTrips }) : null;
+  const countedKey = live && !live.incomplete ? (live.carIds ?? []).join('\n') : null;
   useEffect(() => {
-    if (!line) { registerMapClick(null); return; }
-    registerMapClick((lonLat, toleranceM) => {
-      const p = placeOnLine(line, lonLat, Math.max(40, toleranceM));
-      if (!p || rows.length < 2) return;
-      let i = rows.findIndex(r => r.index > p.segIndex) - 1;
-      if (i < 0) i = p.segIndex < rows[0].index ? 0 : rows.length - 2;
-      openStretch(stretchForRow(line, stops, rows, i), i);
-    });
-    return () => registerMapClick(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [line, rows, stops, registerMapClick]);
+    onCounted?.(countedKey == null ? null : { directionId, label: directionLabel, ids: countedKey ? countedKey.split('\n') : [] });
+  }, [onCounted, countedKey, directionId, directionLabel]);
+  useEffect(() => () => onCounted?.(null), [onCounted]);
 
-  if (!data || !line) return null;
-  const totalDays = data.dates.length;
-  const range = `${shortDate(data.dates[0])}–${shortDate(data.dates[data.dates.length - 1])}`;
-  const bandLabel = SEGMENT_BAND_OPTIONS.find(o => o.id === band)?.label ?? band;
-  const still = usableStandingStill(data, band).filter(s => s.stop.directionId === directionId);
 
-  if (screen.kind === 'details') {
-    return <Details data={data} line={line} stops={stops} band={band} bandLabel={bandLabel} directionLabel={directions.find(d => d.id === directionId)?.label ?? ''} still={still} range={range} onBack={() => setScreen({ kind: 'card' })} />;
-  }
+  // Loaded and still missing: Live has no analysis for this route, so "Right now" can't show; one grey line says so (CIV-1413 B).
+  // While it loads, nothing.
+  if (!data) return settled ? <CardHelpNotice message={LIVE_ROUTE_FIGURES_UNAVAILABLE} /> : null;
+  if (!line) return null;
 
   const replacement = (data as { replacementBuses?: boolean }).replacementBuses
-    ? <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses: all figures describe the buses running this route</div>
+    ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
     : null;
-  const pickers = (
-    <div className="flex flex-col gap-1.5">
+
+  const range = live?.scheduledRangeSec;
+  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? schedText({ scheduledMedianGapSec: live.scheduledSec }) : '–';
+  // A gap is late at twice the timetable gap where the car behind is.
+  const late = (g: number, i: number) => {
+    if (!period) return false;
+    const s = live?.gapsSchedSec?.[i] ?? live?.scheduledSec;
+    return !!s && g * 60 >= 2 * s;
+  };
+
+  // On time by the same standard as each vehicle's own label (getVehicleStatus), over the cars counted above.
+  // Left out where none of them reports how late it is (TTC streetcars today): the count would only say 0.
+  const counted = new Set(live?.carIds ?? []);
+  const reporting = vehicles.filter(v => counted.has(v.id) && v.delayMin != null);
+  const onTime = reporting.length ? reporting.filter(v => getVehicleStatus(v.delayMin) === 'on_time').length : null;
+
+  // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
+  const newest = Math.max(0, ...vehicles.map(v => v.tsEpoch ?? 0));
+  const rightNowLabel = newest > 0 && now / 1000 - newest > RIGHT_NOW_STALE_SEC
+    ? `Right now · last updated ${agencyTime(slug, new Date(newest * 1000))}`
+    : 'Right now';
+
+  return (
+    <div className="flex flex-col gap-3">
       {replacement}
-      <Chips options={SEGMENT_BAND_OPTIONS} value={band} onChange={setBand} />
-      {directions.length > 1 && <Chips options={directions} value={directionId} onChange={d => { setDir(d); setScreen({ kind: 'card' }); }} />}
-    </div>
-  );
 
-  if (screen.kind === 'stretch' && stretch) {
-    const measured = stretch.stops.filter(s => s.stat);
-    const tally = runningTimeTally(stretch.segments, band);
-    const ids = new Set(stretch.stops.map(s => s.stopId));
-    return (
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start gap-2">
-          <button type="button" onClick={() => { setScreen({ kind: 'card' }); }} className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0" aria-label="Back to the whole route">
-            <ArrowLeft className="w-3.5 h-3.5" />
-          </button>
-          <div className="min-w-0">
-            <div className="text-sm font-black text-[var(--text-primary)] leading-tight truncate">{stretch.from.label} to {stretch.to.label}</div>
-            <div className="text-xs font-bold text-[var(--text-muted)]">{directions.find(d => d.id === directionId)?.label} · {bandLabel}</div>
-          </div>
-        </div>
-        {pickers}
-        <Section title="Gaps at each stop">
-          <GapStrip stops={measured} />
-        </Section>
-        <Section title="Time between stops">
-          <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of schedule or faster` : 'Not enough trips measured'} />
-        </Section>
-        <Section title="Stood still 2+ min">
-          <StillRows rows={still.filter(s => ids.has(s.stop.stopId))} totalDays={totalDays} />
-        </Section>
-      </div>
-    );
-  }
+      {/* The direction pills only steer "Right now", so they show only with it. */}
+      {live && directions.length > 1 && <PillGroup label="Direction" options={directions} value={directionId} onChange={setDir} />}
 
-  const summary = sharedSummary(data, line, band);
-  const ewt = extraWaitRun(stops);
-  const tally = runningTimeTally(line.segments, band);
-  const liveBand = livePeriod(data);
-  const liveSched = sharedSummary(data, line, liveBand);
-  const live = feedDegraded || !recent || serverNow == null ? null : liveGaps(data, line, liveBand === band ? stops : withStats(line, liveBand), liveBand, recent, serverNow);
-
-  return (
-    <div className="flex flex-col gap-3">
-      {pickers}
-
-      <Section title={`Right now · ${torontoTime(new Date(now))}`}>
-        {live && !live.incomplete ? (
-          <>
-            <Stats items={[
-              [`Cars${line.sharedStreet ? ` (${line.sharedStreet.replace(/\s+(St|Ave|Rd|Blvd)$/i, '')})` : ''}`, String(live.cars)],
-              ['Scheduled', `every ${liveSched ? schedText(liveSched) : live.scheduledSec ? mins(live.scheduledSec) : '–'}`],
-            ]} />
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 text-xs font-bold tabular-nums">
-              <span className="text-[var(--text-dim)]">Gaps, front to back (min)</span>
-              {live.gapsMin.map((g, i) => (
-                g == null
-                  ? <span key={i} className="text-[var(--text-dim)]" title="The car ahead's passing wasn't seen">–</span>
-                  : <span key={i} style={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? { color: AMBER } : undefined} className={live.scheduledSec && g * 60 >= 2 * live.scheduledSec ? 'font-black' : 'text-[var(--text-primary)]'}>{g}</span>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="text-xs font-bold text-[var(--text-muted)]">{feedDegraded || !recent || live?.incomplete ? 'Live feed incomplete right now' : 'Fewer than 2 cars on the shared section'}</div>
-        )}
-      </Section>
-
-      {dashData ? (
-        <Section title={`Last ${dashData.v3.window.days} days · ${directions.find(d => d.id === directionId)?.label ?? ''}`}>
-          {(() => {
-            const f = cardSummary(dashData.v3, directionId, dashData.uncertainStart ?? []);
-            return (
-              <>
-                {([
-                  ['Late', f.late ? `${Math.round(f.late.share * 100)}% of ${f.late.n.toLocaleString()} departures` : '–'],
-                  ['Worst stop', f.worstStop ? `${stopLabel(f.worstStop.name)}, ${Math.round(f.worstStop.lateShare * 100)}% late` : '–'],
-                  ['Delays start', f.startsText ?? 'No single stretch'],
-                ] as [string, string][]).map(([label, value]) => (
-                  <div key={label} className="flex flex-col">
-                    <span className="text-xs font-bold text-[var(--text-dim)]">{label}</span>
-                    <span className="text-xs font-black text-[var(--text-primary)] leading-snug">{value}</span>
+      {live && (
+        <SidebarCardSection label={rightNowLabel}>
+          {live.incomplete ? (
+            <div className="text-xs font-bold text-[var(--text-muted)]">{LIVE_FEED_INCOMPLETE}</div>
+          ) : (
+            <>
+              <Stats items={[
+                ['Vehicles', String(live.cars)],
+                ...(onTime != null ? [['On time', String(onTime)] as [string, string]] : []),
+                ...(period ? [['Scheduled', schedLabel] as [string, string]] : []),
+              ]} />
+              {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
+              {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
+              {live.gapsMin.some(g => g != null) && (
+                <div className="flex flex-col">
+                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">Gaps, front to back (min)</div>
+                  <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black tabular-nums">
+                    {live.gapsMin.map((g, i) => (
+                      g == null
+                        ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>–</span>
+                        : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? undefined : 'text-[var(--text-primary)]'}>{g}</span>
+                    ))}
                   </div>
-                ))}
-                <a href={liveDashboardPath(slug, routeShortName)} className="inline-flex items-center gap-0.5 text-xs font-bold text-[var(--accent)] hover:underline">
-                  Full analysis<ChevronRight className="w-3 h-3" aria-hidden="true" />
-                </a>
-              </>
-            );
-          })()}
-        </Section>
-      ) : (
-        <>
-      <Section title={`${bandLabel} · ${directions.find(d => d.id === directionId)?.label ?? ''}${summary ? ` · ${line.sharedStreet}` : ''}`}>
-        {summary && (
-          <Stats items={[
-            ['Scheduled', `every ${schedText(summary)}`],
-            ['Typical gap', `${mins(summary.actualMedianGapSec)} min`],
-            ['8 in 10 gaps', `${minsRange(summary.gapP10Sec, summary.gapP90Sec)} min`],
-          ]} />
-        )}
-        {ewt && ewt.peak.stat!.excessWaitSec! >= 30 && (
-          <div className="text-xs font-bold text-[var(--text-muted)] tabular-nums">
-            Extra wait vs schedule: {ewt.first === ewt.peak || ewt.first.stat!.excessWaitSec! < 30
-              ? <>up to {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.peak.name)})</>
-              : ewt.first.label === ewt.peak.label
-                ? <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({stopLabel(ewt.first.name)} → {stopLabel(ewt.peak.name)})</>
-                : <>{mins(ewt.first.stat!.excessWaitSec!)} → {mins(ewt.peak.stat!.excessWaitSec!)} min ({ewt.first.label} → {ewt.peak.label})</>}
-          </div>
-        )}
-      </Section>
-
-      <Section title="Gaps at each stop">
-        <GapStrip stops={rows} onRow={i => openStretch(stretchForRow(line, stops, rows, i), i)} />
-      </Section>
-
-      <Section title="Stood still 2+ min">
-        <StillRows rows={still.slice(0, 3)} totalDays={totalDays} />
-      </Section>
-
-      <Section title="Time between stops">
-        <Plain text={tally.total ? `${tally.within} of ${tally.total} stop pairs within ½ min of schedule or faster` : 'Not enough trips measured'} />
-      </Section>
-        </>
+                </div>
+              )}
+            </>
+          )}
+        </SidebarCardSection>
       )}
-
-      <button type="button" onClick={() => setScreen({ kind: 'details' })} className="flex items-center justify-between pt-3 border-t border-[var(--border-primary)] text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-        <span>{totalDays} days, {range}</span>
-        <span className="inline-flex items-center gap-0.5 text-[var(--accent)]">Details<ChevronRight className="w-3 h-3" /></span>
-      </button>
-    </div>
-  );
-}
-
-function Details({ data, line, stops, band, bandLabel, directionLabel, still, range, onBack }: {
-  data: SegmentDelayData; line: LineModel; stops: LineStop[]; band: SegmentBand; bandLabel: string; directionLabel: string;
-  still: ReturnType<typeof usableStandingStill>; range: string; onBack: () => void;
-}) {
-  const totalDays = data.dates.length;
-  const measured = stops.filter(s => s.stat);
-  const pairs = line.segments.filter(s => {
-    const b = s.bands[band];
-    return !s.terminal && b && b.trips >= MIN_SEGMENT_TRIPS && b.days >= MIN_DAYS;
-  });
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-start gap-2">
-        <button type="button" onClick={onBack} className="p-0.5 -ml-0.5 mt-0.5 text-[var(--text-dim)] hover:text-[var(--text-primary)] shrink-0" aria-label="Back to the card">
-          <ArrowLeft className="w-3.5 h-3.5" />
-        </button>
-        <div className="min-w-0">
-          <div className="text-sm font-black text-[var(--text-primary)] leading-tight">Details</div>
-          <div className="text-xs font-bold text-[var(--text-muted)]">{directionLabel} · {bandLabel} · {totalDays} days, {range}</div>
-          {(data as { replacementBuses?: boolean }).replacementBuses && <div className="text-xs font-black text-[var(--status-caution-text)]">Replacement buses</div>}
-        </div>
-      </div>
-
-      <Section title="Gaps at every stop">
-        {measured.length === 0 ? <div className="text-xs text-[var(--text-muted)]">Not enough gaps measured.</div> : measured.map(s => (
-          <div key={s.stopId} className="flex flex-col">
-            <span className={ROW_LABEL}>{s.label}</span>
-            <span className={DETAIL}>
-              Scheduled every {schedText(s.stat!)} · typical {mins(s.stat!.actualMedianGapSec)} · 8 in 10: {minsRange(s.stat!.gapP10Sec, s.stat!.gapP90Sec)} min
-              {s.stat!.excessWaitSec != null && <> · extra wait {mins(s.stat!.excessWaitSec)} min</>} · {s.stat!.gaps} gaps, {s.stat!.days} days
-            </span>
-          </div>
-        ))}
-      </Section>
-
-      <Section title="Time between stops vs schedule">
-        {pairs.map(s => {
-          const b = s.bands[band]!;
-          const p90 = halfMinutesDown(b.gainedP90Sec);
-          return (
-            <div key={`${s.fromStopId}>${s.toStopId}`} className="flex flex-col">
-              <span className={ROW_LABEL}>{stopLabel(s.fromName)} to {stopLabel(s.toName)}</span>
-              <span className={DETAIL}>
-                Typical {b.gainedMedianSec >= 0 ? '+' : ''}{mins(b.gainedMedianSec)} min vs schedule
-                {p90 > halfMinutes(b.gainedMedianSec) && p90 > 0 && <> · 1 in 10 take {p90}+ min longer</>} · {b.trips} trips, {b.days} days
-              </span>
-            </div>
-          );
-        })}
-      </Section>
-
-      <Section title="Stood still 2+ min near a stop">
-        <StillRows rows={still} totalDays={totalDays} />
-      </Section>
-
-      <Section title="How this is measured">
-        <ul className="list-disc pl-4 text-xs text-[var(--text-muted)] leading-snug flex flex-col gap-1">
-          <li>Vehicle positions recorded about once a minute, {totalDays} days ({range}; last day partial). Each stop's passing time is interpolated between positions.</li>
-          <li>Gaps are measured only where every scheduled trip in a row was seen at the stop, so a missing car never shows as one long gap. Trips not seen are left out, so real waits can be longer.</li>
-          <li>"8 in 10 gaps" is the 10th to 90th percentile of actual gaps, widened to the next ½ min at each end; for the shared section, every gap at its stops is pooled. Typical is the median. A scheduled range means the schedule mixes headways in that period. Extra wait is the average wait for a rider arriving at random, minus the same for the schedule.</li>
-          <li>Time between stops compares every car's time for each stop pair with the schedule for that time of day. Line ends and the stop next to them are left out (layover and loop time).</li>
-          <li>Stood still: moved 25 m or less for 2+ min within 60 m of a stop. Could be holding for time, a signal or a blockage; the data can't tell which. Terminals, turn-back points and carhouses are left out; a stop needs 10 times on 5 days.</li>
-          <li>Right now: from the last 30 min of recorded positions, a gap is how long ago the car ahead passed the spot where the car behind is now. "–" means that passing wasn't seen. Cars on trips the schedule doesn't list (e.g. added buses) count once their own track shows which way they're going; ones that haven't moved 200 m in 10 min are treated as parked. Hidden when the feed is behind, a moving car's direction can't be told, or fewer than half the scheduled cars are reporting.</li>
-          <li>Values are rounded to the nearest ½ min; stops with fewer than 30 gaps or 5 days are left out.</li>
-        </ul>
-      </Section>
     </div>
   );
 }

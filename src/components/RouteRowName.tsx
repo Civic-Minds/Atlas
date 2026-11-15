@@ -1,3 +1,5 @@
+import { keepLastWord } from '../utils/keepLastWord';
+
 /** The name part's look: light weight, muted colour. Exported for a list that lays the two parts out itself (Near You). */
 export const ROUTE_ROW_NAME = 'font-normal text-[var(--text-muted)]';
 
@@ -15,7 +17,7 @@ export default function RouteRowName({ shortName, name, nameClassName = '' }: {
   return (
     <>
       <span className="font-black">{shortName}</span>
-      {name && name !== shortName && <span className={`${ROUTE_ROW_NAME} ml-1.5 ${nameClassName}`.trim()}>{name}</span>}
+      {name && name !== shortName && <span className={`${ROUTE_ROW_NAME} ml-1.5 ${nameClassName}`.trim()}>{keepLastWord(name)}</span>}
     </>
   );
 }

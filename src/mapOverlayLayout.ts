@@ -67,6 +67,10 @@ export const MAP_FOOTER_NOTICE_SLOT = 'flex shrink-0 pointer-events-none';
 /** Compare: the same row over the left map only, so its pills and the analytics prompt wrap upward instead of running
  *  across the divider (CIV-1137). */
 export const MAP_FOOTER_ROW_COMPARE_SLOT = `max-sm:contents absolute ${R.edge} ${E.left} ${E.compareFooterRight} flex items-end justify-between gap-2 pointer-events-none`;
+/** Compare (sm and up): the loading and "couldn't load" pills report both maps, so they leave the left-map footer row for
+ *  the screen's bottom-right corner, beside the map controls, where they sit outside Compare (fixed: the row is a
+ *  positioned box of its own). Phones have no Compare. */
+export const MAP_COUNTS_COMPARE_SLOT = `sm:fixed sm:${R.edge} sm:${E.footerRight}`;
 /** Compare (sm and up): the search box stops the same 1.5rem short of the divider, so it never runs onto map B
  *  (CIV-844, 768 wide). `left` is the box's measured left edge in px. */
 export function compareSearchMaxWidth(left: number): string {

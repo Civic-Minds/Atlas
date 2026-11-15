@@ -1,7 +1,7 @@
 {
   "builtAt": "2026-10-11",
   "registry": "public/data/index.json",
-  "registryAgencyCount": 705,
+  "registryAgencyCount": 704,
   "method": "Exact registry slug, then exact official name (one registry match only), then official URL host (one registry match only), then the hand-checked MANUAL table in scripts/build-frequent-service-agency-map.mjs. Anything else is unmatched; nothing is guessed.",
   "summary": {
     "catalog": {
@@ -27,10 +27,10 @@
         "official-url": 32,
         "manual": 6
       },
-      "oneToMany": 2,
+      "oneToMany": 1,
       "notInRegistry": 19,
       "outsideAtlasCoverage": 119,
-      "uniqueAtlasSlugs": 185
+      "uniqueAtlasSlugs": 184
     },
     "auditDuplicateSlugs": 0
   },
@@ -4383,7 +4383,7 @@
       "relation": "one-to-one",
       "method": "slug-exact",
       "atlasNames": [
-        "DART First State (Wilmington, DE)"
+        "DART First State"
       ]
     },
     {
@@ -4833,7 +4833,7 @@
       "relation": "one-to-one",
       "method": "slug-exact",
       "atlasNames": [
-        "Fredericksburg Regional Transit"
+        "FXBGO! (Fredericksburg)"
       ]
     },
     {
@@ -8548,15 +8548,13 @@
       "country": "United States",
       "region": "New Jersey",
       "slugs": [
-        "njt-bus",
-        "njt-rail"
+        "njt"
       ],
-      "relation": "one-to-many",
-      "note": "One NJ Transit system map covers both registry feeds.",
+      "relation": "one-to-one",
+      "note": "One NJ Transit system map covers the agency (bus and rail feeds, one registry agency).",
       "method": "manual",
       "atlasNames": [
-        "NJ Transit Bus",
-        "NJ Transit Rail"
+        "NJ Transit"
       ]
     },
     {
@@ -9254,7 +9252,7 @@
       "relation": "one-to-one",
       "method": "official-name",
       "atlasNames": [
-        "DART First State (Wilmington, DE)"
+        "DART First State"
       ]
     },
     {

@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { existsSync, statSync, createReadStream } from 'fs';
 import { resolve } from 'path';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
+import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
 const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanvas)|components[\\/]Live[\\/]RouteMap|lib[\\/](mapStyle|pmtilesRetrySource)|apps[\\/]Interval)/;
@@ -52,6 +53,19 @@ export default defineConfig(({ mode, command, isPreview }) => {
   // the same data URL the app resolves (VITE_R2_PUBLIC_URL, else the default); dev builds leave the
   // placeholder alone and the script does nothing.
   const clientR2Url = (process.env.VITE_R2_PUBLIC_URL || env.VITE_R2_PUBLIC_URL || DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
+  // CIV-1402: every build writes /flags.json, what this build has switched on, computed by shared/config.ts
+  // from the same env values the app was built with. `npm run flags` reads it from each site.
+  const flagsJson: Plugin = {
+    name: 'atlas-flags-json',
+    apply: 'build',
+    async generateBundle() {
+      const viteEnv = loadEnv(mode, process.cwd(), 'VITE_');
+      const { mode: atlasMode, features } = await featuresForEnv({ ...viteEnv, MODE: mode, DEV: false, PROD: true });
+      const commit = process.env.VERCEL_GIT_COMMIT_SHA || undefined;
+      const file: FlagsFile = { mode: atlasMode, features, switches: pickSwitches(viteEnv), ...(commit ? { commit } : {}) };
+      this.emitFile({ type: 'asset', fileName: 'flags.json', source: `${JSON.stringify(file, null, 2)}\n` });
+    },
+  };
   const earlyDataUrl: Plugin = {
     name: 'early-data-url',
     apply: 'build',
@@ -204,6 +218,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       react(),
       tailwindcss(),
       earlyDataUrl,
+      flagsJson,
       historyV2Fixtures,
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],

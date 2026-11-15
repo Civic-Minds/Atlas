@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   AGENCY_URL_MAX_SLUGS,
+  compareAddress,
   encodeAgencySelection,
   encodeCompareSideParams,
   encodeModesParam,
@@ -249,6 +250,29 @@ describe('compare side B in the URL', () => {
     expect(parseHeadwayValue('20')).toBe(20);
     expect(parseHeadwayValue('0')).toBeNull();
     expect(parseHeadwayValue(null)).toBeNull();
+  });
+});
+
+describe('Compare\'s own address (/apps/compare)', () => {
+  it('entering Compare moves the map\'s address to /apps/compare, keeping the map position and settings', () => {
+    expect(compareAddress('/', '?lat=43.65&lon=-79.38&z=12&h=15', true)).toBe('/apps/compare?lat=43.65&lon=-79.38&z=12&h=15');
+    expect(compareAddress('/apps/frequency', '', true)).toBe('/apps/compare');
+  });
+
+  it('leaving Compare returns to the map\'s path without side B\'s settings', () => {
+    expect(compareAddress('/apps/compare', '?lat=43.65&h=15&cday=Saturday&cp=evening&ch=30', false)).toBe('/?lat=43.65&h=15');
+    expect(compareAddress('/apps/compare', '?cday=Saturday', false)).toBe('/');
+  });
+
+  it('turns an old map link carrying side B\'s settings into the /apps/compare link', () => {
+    expect(compareAddress('/', '?h=15&cday=Saturday&ch=30', true)).toBe('/apps/compare?h=15&cday=Saturday&ch=30');
+  });
+
+  it('leaves the address alone when it already fits, or on another app\'s page', () => {
+    expect(compareAddress('/apps/compare', '?cday=Saturday', true)).toBeNull();
+    expect(compareAddress('/', '?h=15', false)).toBeNull();
+    expect(compareAddress('/apps/history', '?agency=ttc', true)).toBeNull();
+    expect(compareAddress('/apps/history', '?agency=ttc', false)).toBeNull();
   });
 });
 

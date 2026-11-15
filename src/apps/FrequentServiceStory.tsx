@@ -2,12 +2,12 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
-import { type DataTableColumn } from '../components/ui/DataTable';
+import DataTable, { type DataTableColumn } from '../components/ui/DataTable';
 import ChartTableDetails from '../components/charts/ChartTableDetails';
 import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
-import { frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
+import { frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats } from '../data/frequentServiceStory';
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
@@ -20,6 +20,14 @@ interface Props {
   onExploreMap: () => void;
   agencies: Agency[];
 }
+
+type CoverageRow = (typeof frequentServiceCoverageStats)[number];
+const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
+  { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-black text-[var(--text-primary)]' },
+  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute, className: 'tabular-nums text-[var(--text-muted)]' },
+  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute, className: 'tabular-nums text-[var(--text-muted)]' },
+  { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min`, className: 'text-[var(--text-muted)]' },
+];
 
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
@@ -61,11 +69,11 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
     <ResearchMethod parts={{
       dateConducted: <>October 11, 2026.</>,
       dateUpdated: <>November 3, 2026.</>,
-      sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn't check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
+      sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
       sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
-      rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage's and VIA's maps are gone, DART's site returned an error, Foothill's and Sun Tran's sites block automated visits, and STM's page doesn't show the times to one.</>,
+      rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage’s and VIA’s maps are gone, DART’s site returned an error, Foothill’s and Sun Tran’s sites block automated visits, and STM’s page doesn’t show the times to one.</>,
       limitations: <>This is a source-backed sample, not an exhaustive census of every transit agency or a universal definition of frequent service. It describes the research sample and does not change Atlas’s production frequency definitions.</>,
     }} />
   );
@@ -97,13 +105,13 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
               maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto's Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade's map doesn't use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto’s Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
           </p>
           <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-            The maps also differ in what they draw. Vancouver's and Portland's show only the frequent network, so a slower route isn't on the map. Toronto's, Ottawa's and Seattle's draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
+            The maps also differ in what they draw. Vancouver’s and Portland’s show only the frequent network, so a slower route isn’t on the map. Toronto’s, Ottawa’s and Seattle’s draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
           </p>
           <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
-            Atlas starts from the schedules instead. Here is Toronto's network, built from the TTC's own schedule data, one step at a time.
+            Atlas starts from the schedules instead. Here is Toronto’s network, built from the TTC’s own schedule data, one step at a time.
           </p>
         </section>
 
@@ -151,7 +159,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 defaultKey={commonBar.minutes}
                 details={tableId}
               />
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again between October 30 and November 3. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn't be checked again.</p>
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each agency appears once, at the slowest wait its source gives for weekday daytime service: “every 15–20 minutes” counts as 20. Other times of day and secondary tiers remain in the research. Checked again between October 30 and November 3. {frequentServiceStoryStats.recheckLeftOut} agencies are left out because their page is gone or couldn’t be checked again.</p>
               <ChartTableDetails id={tableId} caption="There is no single “frequent.”" columns={HEADWAY_COLUMNS} rows={frequentServiceStoryStats.headwayBars} rowKey={bar => bar.minutes} />
             </div>
           </section>
@@ -161,6 +169,27 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               <h2 id="more-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The number is only the beginning.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
             </div>
+          </section>
+
+          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+            <div className="max-w-2xl">
+              <h2 id="population-heading" className="text-3xl sm:text-4xl font-black tracking-tight">The threshold changes who can rely on the network.</h2>
+              <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">
+                We applied the same test to Atlas route data and population geography: a 10-minute walk to weekday service running 7 AM–7 PM. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
+              </p>
+            </div>
+            <div className="mt-8 overflow-x-auto">
+              <DataTable
+                variant="ruled"
+                caption="Population within a ten-minute walk of frequent transit by headway threshold"
+                columns={COVERAGE_COLUMNS}
+                rows={frequentServiceCoverageStats}
+                rowKey={row => row.country}
+              />
+            </div>
+            <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
+            <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {frequentServiceCoverageUpdated}.</p>
+            <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
