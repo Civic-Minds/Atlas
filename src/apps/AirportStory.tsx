@@ -8,6 +8,7 @@ import PageShell from '../components/ui/PageShell';
 import AirportStoryMap from '../components/AirportStoryMap';
 import { AIRPORTS, landableCount } from '../data/airportHourly';
 import { useColorVision } from '../context/ColorVisionContext';
+import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
 
 /**
  * CIV-1550: the airport story, local dev only (main.tsx registers it under import.meta.env.DEV, so it is in no built
@@ -141,11 +142,8 @@ export default function AirportStory() {
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"
-          title="[Ryan’s wording: title]"
-          intro={<>
-            <p>You land, walk out of the terminal and look for the bus. Whether one is coming depends on which airport you landed at, and when.</p>
-            <p>We checked the 157 passenger airports in the cities Atlas covers in Canada and the United States. For each one, we counted the hours of the week when a bus or train leaves for downtown within an hour of landing.</p>
-          </>}
+          title={AIRPORT_STORY_DRAFT.heading}
+          intro={<>{AIRPORT_STORY_DRAFT.intro!({}).map(text => <p key={text}>{text}</p>)}</>}
         />
 
         {/* Day to night, hour by hour with scroll: the section's tokens blend from light to dark between 7 PM and 11 PM
