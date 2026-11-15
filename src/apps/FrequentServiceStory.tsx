@@ -17,7 +17,7 @@ import PageShell from '../components/ui/PageShell';
 import { UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
 import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared/headwayText';
-import { countOf } from '../../shared/overflowText';
+import { countOf, joinList } from '../../shared/overflowText';
 import { countText, percentText } from '../../shared/numberText';
 import Pill from '../components/ui/Pill';
 import { CHART_TEXT } from '../components/charts/useActivePart';
@@ -283,30 +283,33 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
             <div className="mt-10">
               <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} />
-              {/* Ryan (CIV-1577): "should [it] be two columns or smth instead of a very long graphic": Canada and the US side by side
-                  from lg, stacked below; each name sits above its strip so the strips keep their width. */}
+              {/* Ryan (CIV-1577): "should [it] be two columns or smth instead of a very long graphic", then "still feels too tall":
+                  Canada and the US side by side from lg, stacked below, rows at the agency chart's spacing. The cities with nobody near
+                  15-minute service are one line of names under their country (their numbers stay in the screen-reader table). */}
               <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-2">
-                {frequentCoverageCountries.map(country => (
-                  <DotPairs
-                    key={country.country}
-                    label={`[Ryan’s wording: cities chart name for screen readers], ${country.label}`}
-                    details={coverageDetails}
-                    firstHeader={headwayAmount(15)}
-                    secondHeader={headwayAmount(30)}
-                    nameAbove
-                    groups={[
-                      {
-                        key: country.country,
-                        pairs: [
-                          { key: 'national', label: country.label, first: country.fifteenMinute, second: country.thirtyMinute, reference: true, sentence: coverageSentence(country.label, country.fifteenMinute, country.thirtyMinute) },
-                          ...country.metros.filter(metro => metro.fifteenMinute > 0).map(coveragePair),
-                        ],
-                      },
-                      // Ryan's pick (CIV-1577): the cities with nobody near 15-minute service, last, under their own label.
-                      { key: 'none-at-15', title: '[Ryan’s wording: cities with none at 15 min]', pairs: country.metros.filter(metro => metro.fifteenMinute === 0).map(coveragePair) },
-                    ]}
-                  />
-                ))}
+                {frequentCoverageCountries.map(country => {
+                  const noneAtFifteen = country.metros.filter(metro => metro.fifteenMinute === 0);
+                  return (
+                    <div key={country.country}>
+                      <DotPairs
+                        label={`[Ryan’s wording: cities chart name for screen readers], ${country.label}`}
+                        details={coverageDetails}
+                        firstHeader={headwayAmount(15)}
+                        secondHeader={headwayAmount(30)}
+                        groups={[{
+                          key: country.country,
+                          pairs: [
+                            { key: 'national', label: country.label, first: country.fifteenMinute, second: country.thirtyMinute, reference: true, sentence: coverageSentence(country.label, country.fifteenMinute, country.thirtyMinute) },
+                            ...country.metros.filter(metro => metro.fifteenMinute > 0).map(coveragePair),
+                          ],
+                        }]}
+                      />
+                      {noneAtFifteen.length > 0 && (
+                        <p className={`mt-4 ${CHART_TEXT}`}><span className="font-bold">[Ryan’s wording: none at 15 min]</span>: {joinList(noneAtFifteen.map(metro => metro.name))}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: cities caption]</p>
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>

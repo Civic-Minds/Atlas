@@ -36,8 +36,8 @@ const ROW_GRID_ABOVE = 'grid grid-cols-[1fr_2.75rem_2.75rem] items-center gap-x-
 const ROW_GRID_BESIDE = `${ROW_GRID_ABOVE} sm:grid-cols-[9rem_1fr_2.75rem_2.75rem]`;
 const NAME_CELL_ABOVE = 'col-span-3 min-w-0';
 const NAME_CELL_BESIDE = `${NAME_CELL_ABOVE} sm:col-span-1`;
-/** Phones label only 0, 50 and 100% (the other gridlines stay), so the axis labels don't run together. */
-const tickLabelClass = (tick: number) => (tick === 0.25 || tick === 0.75 ? 'hidden sm:inline' : '');
+/** Phones and the side-by-side desktop columns label only 0, 50 and 100% (the other gridlines stay), so the axis labels don't run together. */
+const tickLabelClass = (tick: number) => (tick === 0.25 || tick === 0.75 ? 'hidden sm:inline lg:hidden' : '');
 
 /** The solid dot and the ring, for the chart's key. */
 export function DotPairKey({ first, second }: { first: ReactNode; second: ReactNode }) {
@@ -85,7 +85,8 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
       {groups.filter(group => group.pairs.length > 0).map(group => (
         <div key={group.key} className="mt-6 first-of-type:mt-3">
           {group.title && <h3 className={`mb-2 font-bold ${CHART_TEXT}`}>{group.title}</h3>}
-          <div className="space-y-1">
+          {/* The agency chart's row spacing (RankedBars). */}
+          <div className="space-y-3">
             {group.pairs.map(pair => {
               const low = Math.min(pair.first, pair.second);
               const high = Math.max(pair.first, pair.second);
@@ -96,7 +97,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                   type="button"
                   aria-label={pair.sentence}
                   {...partEvents(pair.key)}
-                  className={`${ROW_GRID} w-full cursor-pointer rounded-sm border-0 bg-transparent py-1 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT} ${pair.reference ? 'border-b border-solid border-[var(--border-primary)] pb-2' : ''}`}
+                  className={`${ROW_GRID} w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT} ${pair.reference ? 'border-b border-solid border-[var(--border-primary)] pb-2' : ''}`}
                 >
                   <span className={NAME_CELL}>
                     <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors ${pair.reference ? GROUP_HEADING : ''}`}
