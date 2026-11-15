@@ -1,6 +1,7 @@
 import './pipelineTimeZone.js';
 import { GtfsCalendar, GtfsCalendarDate, DayName } from '../types/gtfs';
 import { DAY_FIELD_MAP } from './transit-utils';
+import { runNow } from '../shared/runClock';
 
 /**
  * Auto-detect a reference date from the feed's calendar data.
@@ -37,7 +38,7 @@ export function detectReferenceDate(
                 return `${mid.getFullYear()}${String(mid.getMonth() + 1).padStart(2, '0')}${String(mid.getDate()).padStart(2, '0')}`;
             }
         }
-        const now = new Date();
+        const now = runNow(); // #1523
         return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     }
 
@@ -105,7 +106,7 @@ export function detectReferenceDate(
     // period ended Oct 12; a run that day published a timetable that was wrong from Oct 13),
     // and one that starts the next day is already in force (#743).
     const todayStr = (() => {
-        const d = new Date();
+        const d = runNow(); // #1523
         const runDate = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
         const nextDay = addDaysYmd(runDate, 1);
         let today = nextDay;

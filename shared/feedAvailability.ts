@@ -1,4 +1,5 @@
 import { localDateIn } from './onDemandAvailability.js';
+import { runNow } from './runClock.js';
 
 /**
  * Today's date (YYYYMMDD) where the agency is: every check of whether its feed has ended reads this
@@ -6,12 +7,12 @@ import { localDateIn } from './onDemandAvailability.js';
  * time zone on file it is the last place on Earth to reach midnight (localDateIn), so a feed never
  * reads as ended before its last day is over anywhere.
  */
-export function agencyTodayYmd(agency: { timezone?: string | null }, now: Date = new Date()): string {
+export function agencyTodayYmd(agency: { timezone?: string | null }, now: Date = runNow()): string {
   return localDateIn(agency.timezone, now).replace(/-/g, '');
 }
 
 /** Whether the agency's published service (every feed, effectiveFeedExpiry) has ended, in its own local date. */
-export function isAgencyFeedExpired(agency: SupplementalFeedExpiryEntry & { timezone?: string | null }, now: Date = new Date()): boolean {
+export function isAgencyFeedExpired(agency: SupplementalFeedExpiryEntry & { timezone?: string | null }, now: Date = runNow()): boolean {
   return isExpiredFeedExpiry(effectiveFeedExpiry(agency), agencyTodayYmd(agency, now));
 }
 
@@ -34,7 +35,7 @@ export function isExpiredFeedExpiry(expiry: string | null | undefined, today = t
 }
 
 /** UTC calendar date in the same YYYYMMDD form used by GTFS metadata. */
-export function todayUtcYmd(now = new Date()): string {
+export function todayUtcYmd(now = runNow()): string {
   return now.toISOString().slice(0, 10).replace(/-/g, '');
 }
 
