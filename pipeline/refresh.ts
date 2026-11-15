@@ -59,7 +59,7 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile, t
 import { rescoreFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
 import { historyHeadlineWins } from './historyHeadlinePick.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { baselineFingerprint, buildV2Routes, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, routeTrunkHeadway, routeTrunkHeadwayByPeriod, type LatestRouteEntry } from './historyV2.js';
+import { baselineFingerprint, buildV2Routes, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, historyListLowEnd, historyListLowEndByPeriod, type LatestRouteEntry } from './historyV2.js';
 import { historyV2InputFor, writeRefreshSidecar, type HistoryV2Input } from './historyRefreshSidecar.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
 import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
@@ -128,7 +128,7 @@ interface RouteSummary {
   tier: string | null;
   routeLongName?: string;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value (routeTrunkHeadway), when better than the headway, and per period. */
+  /** CIV-555: the route's shared-stretch value (historyListLowEnd), when better than the headway, and per period. */
   trunkHeadway?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
 }
@@ -178,9 +178,9 @@ async function writeHistorySnapshot(slug: string, geojson: string, feedExpiry: s
     if (sn && current[sn]) (weekdayByRoute.get(sn) ?? weekdayByRoute.set(sn, []).get(sn)!).push(f.properties);
   }
   for (const [sn, route] of Object.entries(current)) {
-    const t = routeTrunkHeadway(weekdayByRoute.get(sn) ?? []);
+    const t = historyListLowEnd(weekdayByRoute.get(sn) ?? []);
     if (t != null && t < route.headway) route.trunkHeadway = t;
-    const tp = routeTrunkHeadwayByPeriod(weekdayByRoute.get(sn) ?? [], route.headwayByPeriod);
+    const tp = historyListLowEndByPeriod(weekdayByRoute.get(sn) ?? [], route.headwayByPeriod);
     if (tp) route.trunkHeadwayByPeriod = tp;
   }
 

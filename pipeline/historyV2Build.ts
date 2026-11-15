@@ -17,7 +17,7 @@ export interface ArchiveChange {
   routeLongName?: string;
   label?: string;
   headwayByPeriod?: HeadwayByPeriod;
-  /** CIV-555: the route's shared-stretch value when better than the headline (routeTrunkHeadway), and per period. */
+  /** CIV-555: the route's shared-stretch value when better than the headline (historyListLowEnd), and per period. */
   trunkHeadway?: number;
   trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: unknown;

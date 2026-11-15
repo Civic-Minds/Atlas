@@ -21,7 +21,7 @@ import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
 import { resolveCurrentHistoryRoute, mergeAliasedRoutes, aliasedLineKey, foldDirectionTripDurations, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
-import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
+import { representativeRep, historyListLowEnd, historyListLowEndByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
@@ -135,9 +135,9 @@ async function loadCurrentHeadwaysLegacy(slug: string): Promise<Record<string, {
       if (key && current[key]) (weekdayByRoute[key] ??= []).push(p!);
     }
     for (const [routeShortName, route] of Object.entries(current)) {
-      const t = routeTrunkHeadway(weekdayByRoute[routeShortName] ?? []);
+      const t = historyListLowEnd(weekdayByRoute[routeShortName] ?? []);
       if (t != null && t < route.headway) route.trunkHeadway = t;
-      const tp = routeTrunkHeadwayByPeriod(weekdayByRoute[routeShortName] ?? [], route.headwayByPeriod);
+      const tp = historyListLowEndByPeriod(weekdayByRoute[routeShortName] ?? [], route.headwayByPeriod);
       if (tp) route.trunkHeadwayByPeriod = tp;
     }
     // The most frequent pattern may be a route with no map shape (a Point). Its bare [lon, lat]

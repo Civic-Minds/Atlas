@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { computeFeedEvidence, positivelyNoService, weekendDay } from '../historyWeekend.js';
 import {
   baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, localDirSink,
-  periodKeyForZip, representativeRep, routeTrunkHeadway, weekendTrunk, writeSidecar,
+  periodKeyForZip, representativeRep, historyListLowEnd, weekendTrunk, writeSidecar,
 } from '../historyV2.js';
 import { buildRouteSnapshots, joinCandidates, newBuildReport, visibilityCheck } from '../historyV2Build.js';
 import { mergeAliasedRoutes, currentRouteShortNamesFor } from '../historyIdentity.js';
@@ -141,7 +141,7 @@ describe('representative value', () => {
   });
   it('no range for plain routes or without features', () => {
     expect(representativeRep([{ routeAllDayHeadway: 20, minStopHeadway: 8 }]).rep).toEqual({ h: 20 });
-    expect(routeTrunkHeadway([])).toBeNull();
+    expect(historyListLowEnd([])).toBeNull();
   });
   it('no stamp is blank, never a minimum', () => {
     expect(representativeRep([{ headway: 10 }, { headway: 5 }]).rep).toEqual({});

@@ -42,15 +42,18 @@ function listLowEnd(features: Props[], period: TimePeriod): number | null {
   return low != null && Number.isFinite(low) ? low : null;
 }
 
-/** The route's all-day low end (the list's "All day" range, before the range rule). Null when the list has no lower number. */
-export function routeTrunkHeadway(features: Props[]): number | null {
+/**
+ * The route's all-day low end (the list's "All day" range, before the range rule). Null when the list has no lower number.
+ * Not the map's trunk value (routeTrunkHeadwayByPeriod / tv_, CIV-1579): this is History's own range low end.
+ */
+export function historyListLowEnd(features: Props[]): number | null {
   return listLowEnd(features, 'all');
 }
 
 /**
  * The same per period, kept only where better than the route's own period value in `periods`. Undefined when none is.
  */
-export function routeTrunkHeadwayByPeriod(features: Props[], periods: HeadwayByPeriod | undefined): HeadwayByPeriod | undefined {
+export function historyListLowEndByPeriod(features: Props[], periods: HeadwayByPeriod | undefined): HeadwayByPeriod | undefined {
   if (!periods) return undefined;
   const out: Partial<Record<PeriodKey, number | null>> = {};
   for (const [k, value] of Object.entries(periods) as Array<[PeriodKey, number | null | undefined]>) {
@@ -75,8 +78,8 @@ export function representativeRep(features: Props[]): RepResult {
   const p = periodsOf(stamped);
   const allSpan = stamped.every(f => f.tier === 'span');
   if (worst >= NO_PERIOD_SERVICE_TILE_VALUE || allSpan) return { rep: { lim: true, ...(p ? { p } : {}) }, conflict };
-  const t = routeTrunkHeadway(features);
-  const tp = routeTrunkHeadwayByPeriod(features, p);
+  const t = historyListLowEnd(features);
+  const tp = historyListLowEndByPeriod(features, p);
   return { rep: { h: worst, ...(p ? { p } : {}), ...(t != null && t < worst ? { t } : {}), ...(tp ? { tp } : {}) }, conflict };
 }
 
@@ -87,8 +90,8 @@ export function representativeRep(features: Props[]): RepResult {
  */
 export function weekendTrunk(day: HistoryDayValue, features: Props[]): HistoryDayValue {
   if (!('h' in day)) return day;
-  const t = routeTrunkHeadway(features);
-  const tp = routeTrunkHeadwayByPeriod(features, day.p);
+  const t = historyListLowEnd(features);
+  const tp = historyListLowEndByPeriod(features, day.p);
   return { ...day, ...(t != null && t < day.h ? { t } : {}), ...(tp ? { tp } : {}) };
 }
 
