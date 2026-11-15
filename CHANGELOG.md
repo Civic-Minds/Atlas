@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route card rows keep the route's own number when a short end runs slower (beta)**: the card matches the route list again, and the map's section colours show the slow end
 - **The [Frequent Service story](https://github.com/Civic-Minds/Atlas/issues/1517) map keeps up with a fast scroll**: it jumps straight to the stage you land on instead of fading through each one
 - **Numbers use the font's normal digits everywhere**: charts and tables no longer switch to fixed-width digits
 - **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
