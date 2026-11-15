@@ -97,17 +97,19 @@ export const frequentWeekendCities = weekendCounts.cities.map(({ city, counts })
 }));
 
 /**
- * CIV-1179 / CIV-1182: the coverage cloud run of 2026-11-07 (run 42337977138, the map's own frequency rule, approved
- * 2026-11-06): a 10-minute walk to weekday 7:00–19:00 service, the 15-minute share on the 30-minute population base.
+ * CIV-1179 / CIV-1182: the coverage cloud runs of 2026-11-14 (43665829588, with 43671044866 redoing the refused
+ * downloads; code 0f7c33a47): the map's own frequency filter (a route counts at 15 or 30 when the map draws it at that
+ * setting on weekdays in AM peak, midday and PM peak), public-map agencies only, a 10-minute walk, the 15-minute share
+ * on the 30-minute population base. Checked in editorial/research/civ1179-coverage-summary-rerun-2026-11-14/sanity-check.md.
  */
 export const frequentServiceCoverageStats = [
-  { country: 'Canada', populationBase: '25.96M', fifteenMinute: '17.16%', thirtyMinute: '45.13%', metros: '38 CMAs', fifteenMinuteMetros: '17' },
-  { country: 'United States', populationBase: '225.83M', fifteenMinute: '7.28%', thirtyMinute: '16.79%', metros: '148 metros', fifteenMinuteMetros: '77' },
+  { country: 'Canada', populationBase: '27.15M', fifteenMinute: '26.27%', thirtyMinute: '60.53%', metros: '48 CMAs', fifteenMinuteMetros: '16' },
+  { country: 'United States', populationBase: '232.79M', fifteenMinute: '11.87%', thirtyMinute: '25.62%', metros: '166 metros', fifteenMinuteMetros: '74' },
 ] as const;
 
-export const frequentServiceCoverageUpdated = '2026-11-07';
+export const frequentServiceCoverageUpdated = '2026-11-14';
 
 export const frequentServiceCoverageInterpretation = {
-  canadaThirtyToFifteenRatio: '2.6',
-  unitedStatesThirtyToFifteenRatio: '2.3',
+  canadaThirtyToFifteenRatio: '2.3',
+  unitedStatesThirtyToFifteenRatio: '2.2',
 };
