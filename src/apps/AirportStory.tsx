@@ -7,6 +7,7 @@ import ResearchHeader from '../components/research/ResearchHeader';
 import PageShell from '../components/ui/PageShell';
 import AirportStoryMap from '../components/AirportStoryMap';
 import { AIRPORTS, landableCount } from '../data/airportHourly';
+import { useColorVision } from '../context/ColorVisionContext';
 
 /**
  * CIV-1550: the airport story, local dev only (main.tsx registers it under import.meta.env.DEV, so it is in no built
@@ -119,6 +120,7 @@ export default function AirportStory() {
     };
   }, []);
 
+  const { colorVisionFriendly } = useColorVision();
   const hourIndex = Math.floor(position);
   const hour = HOURS[hourIndex];
   const current = [...STEPS].reverse().find(s => HOURS.indexOf(s.hour) <= hourIndex) ?? STEPS[0];
@@ -155,7 +157,7 @@ export default function AirportStory() {
         >
           <div ref={trackRef} className="relative min-w-0">
             <div ref={stickyRef} className="sticky top-16 min-w-0 lg:top-24">
-              <AirportStoryMap day="wk" hour={hour} night={night}>
+              <AirportStoryMap day="wk" hour={hour} night={night} pearson={current.hour === 23} colorMode={colorVisionFriendly ? 'friendly' : 'default'}>
                 <p className={STEP_TEXT} aria-live="polite">{current.text}</p>
               </AirportStoryMap>
             </div>
