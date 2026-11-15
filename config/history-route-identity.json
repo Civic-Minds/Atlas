@@ -7,5 +7,6 @@
   "translink": ["103"],
   "nyct-bus-manhattan": ["M9"],
   "nyct-bus-bronx": ["Bx24"],
-  "nyct-bus-queens": ["Q48"]
+  "nyct-bus-queens": ["Q48"],
+  "mta-bus-company": ["Q101", "Q110", "Q112", "Q7"]
 }
