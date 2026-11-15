@@ -1,5 +1,5 @@
 /**
- * The app's one time format (CIV-1095; Ryan, 2026-10-28; docs/STYLE.md "Words"): "2–5 AM", "11 AM–3 PM",
+ * The app's one time format (CIV-1095; Ryan, 2026-10-28; docs/style/TEXT.md "Words"): "2–5 AM", "11 AM–3 PM",
  * "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times, no ":00" on the hour, and AM/PM
  * once when both times share it. Every time and time range the UI shows comes from here.
  */

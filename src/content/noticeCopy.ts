@@ -93,7 +93,7 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
-    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (STYLE.md).
+    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
     : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
@@ -361,7 +361,7 @@ export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newes
 /** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
   `This compares the oldest and newest ${dayInSentence(day)} schedules available for this route.`;
-/** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
+/** A History row whose weekend day has no trips at all: docs/style/TEXT.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
