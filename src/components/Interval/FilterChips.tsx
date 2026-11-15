@@ -30,6 +30,7 @@ import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
 import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { metresText } from '../../../shared/unitText';
 
 export { getNowDay };
 
@@ -342,7 +343,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <PillGroup outlined label="Wait" value={String(c.wait)} onChange={v => c.setWait(Number(v))}
           options={CONNECTION_WINDOWS.map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label="Walk" value={String(c.distance)} onChange={v => c.setDistance(Number(v))}
-          options={c.distances.map(m => [String(m), `${m} m`] as const)} />
+          options={c.distances.map(m => [String(m), metresText(m)] as const)} />
         <PillGroup outlined label="Side" value={c.side} onChange={v => c.setSide(v as 'after' | 'before')} options={CONNECTION_SIDE_LABELS} />
         {pickedLabel && (
           <div className="relative">

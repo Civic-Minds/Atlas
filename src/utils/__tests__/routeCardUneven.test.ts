@@ -105,3 +105,19 @@ describe('isRiderMeaningfulGap', () => {
     expect(isRiderMeaningfulGap(60, 0)).toBe(false);
   });
 });
+
+describe('variant rows read the main stretch\'s steadiness (CIV-1588, #728 follow-up)', () => {
+  // A short turn every 12 whose far terminal sees a 40-minute hole: unsteady by its own flag.
+  const variant = (extra: Partial<ShapeProperties>): ShapeProperties => ({
+    ...branch(12, 40), stretchRole: 'variant', ...extra,
+  } as ShapeProperties);
+
+  it('no uneven-gap warning when all its trips run a main stretch that is steady in the period (CTA 146 short turns)', () => {
+    expect(unevenPeriodMaxGap([{ realTier: [variant({ stretchMainConsistent: { midday: true } })] }], 'midday')).toBe(0);
+  });
+
+  it('keeps the warning when the main stretch is unsteady too, or when its trips do not all run it (no main verdict)', () => {
+    expect(unevenPeriodMaxGap([{ realTier: [variant({ stretchMainConsistent: { midday: false } })] }], 'midday')).toBe(40);
+    expect(unevenPeriodMaxGap([{ realTier: [variant({})] }], 'midday')).toBe(40);
+  });
+});

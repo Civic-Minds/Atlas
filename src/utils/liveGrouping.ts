@@ -1,5 +1,6 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
+import { projectOntoSegment } from '../../shared/geoDistance';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -146,22 +147,15 @@ export function orderDirectionGroups(groups: ReadonlyMap<string, LiveVehicle[]>,
 }
 
 const ALONG_MAX_OFF_LINE_M = 1_200;
-const METRES_PER_DEGREE = Math.PI / 180 * 6_371_000;
 
 /** Metres from the line's start to the point on it nearest (lat, lon); null when the line is more than 1.2 km away. */
 export function metresAlongLine(parts: readonly (readonly number[])[][], lat: number, lon: number): number | null {
   let walked = 0, best = Infinity, bestAlong: number | null = null;
   for (const part of parts) {
     for (let i = 0; i < part.length - 1; i++) {
-      const [ax, ay] = part[i], [bx, by] = part[i + 1];
-      const cos = Math.cos(((ay + by) / 2) * Math.PI / 180);
-      const sx = (bx - ax) * METRES_PER_DEGREE * cos, sy = (by - ay) * METRES_PER_DEGREE;
-      const px = (lon - ax) * METRES_PER_DEGREE * cos, py = (lat - ay) * METRES_PER_DEGREE;
-      const len = Math.hypot(sx, sy);
-      const t = len > 0 ? Math.max(0, Math.min(1, (px * sx + py * sy) / (len * len))) : 0;
-      const off = Math.hypot(px - t * sx, py - t * sy);
-      if (off < best) { best = off; bestAlong = walked + t * len; }
-      walked += len;
+      const { t, offM, lenM } = projectOntoSegment({ lat, lon }, part[i], part[i + 1]);
+      if (offM < best) { best = offM; bestAlong = walked + t * lenM; }
+      walked += lenM;
     }
   }
   return best <= ALONG_MAX_OFF_LINE_M ? bestAlong : null;

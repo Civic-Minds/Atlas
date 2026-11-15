@@ -8,6 +8,7 @@
  */
 import { SHARE_CITIES, type ShareCity } from './shareCities.js';
 import { SITE_URL, imageMimeType, resolveSeo, type SeoMode } from './seo.js';
+import { metresBetween } from './geoDistance';
 
 export type { ShareCity };
 
@@ -25,14 +26,6 @@ export function shareCityBySlug(slug: string | null | undefined): ShareCity | nu
 
 export function shareImageForCity(city: ShareCity): { path: string; alt: string } {
   return { path: `/assets/share/${city.slug}.jpg`, alt: `Atlas frequency map of the ${city.name} area` };
-}
-
-function distanceKm(a: [number, number], b: [number, number]): number {
-  const rad = Math.PI / 180;
-  const dLat = (b[0] - a[0]) * rad;
-  const dLon = (b[1] - a[1]) * rad;
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * rad) * Math.cos(b[0] * rad) * Math.sin(dLon / 2) ** 2;
-  return 2 * 6371 * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
 /** Even-odd test of a [lon, lat] point against an area's boundary rings (holes and islands both work). */
@@ -55,12 +48,11 @@ function insideRings(lon: number, lat: number, rings: ShareCity['rings']): boole
  */
 export function shareCityForPoint(lat: number, lon: number, cities: readonly ShareCity[] = SHARE_CITIES): ShareCity | null {
   if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
-  const p: [number, number] = [lat, lon];
   let best: { city: ShareCity; km: number; inside: boolean } | null = null;
   for (const city of cities) {
     const [s, w, n, e] = city.bbox;
     const inside = lat >= s && lat <= n && lon >= w && lon <= e && insideRings(lon, lat, city.rings);
-    const km = distanceKm(p, city.center);
+    const km = metresBetween({ lat, lon }, { lat: city.center[0], lon: city.center[1] }) / 1000;
     if (!inside && km > NEAREST_CITY_MAX_KM) continue;
     if (!best || (inside && !best.inside) || (inside === best.inside && km < best.km)) best = { city, km, inside };
   }

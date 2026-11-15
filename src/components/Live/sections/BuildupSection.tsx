@@ -10,7 +10,8 @@ import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, ON_TIME_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
-import { mins, pct } from './figures';
+import { mins } from './figures';
+import { countText, percentText } from '../../../../shared/numberText';
 
 /** The one derivation of where delay builds up, so every surface draws the same numbers. */
 export function buildupModel(data: DashboardBandData, dir: number | null, uncertain: UncertainStart[]) {
@@ -99,11 +100,11 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   columns={full ? [
                     { key: 'stretch', header: ADDS_MOST_TITLE, rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: TYPICAL_ADDED, width: 7, className: 'max-sm:!pr-1', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: GROWS_LABEL, width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'grows', header: GROWS_LABEL, width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
                   ] : [
                     { key: 'stretch', header: ADDS_MOST_TITLE, rowHeader: true, className: 'font-normal', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: TYPICAL_ADDED, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: GROWS_LABEL, worst: s => s.growShare, cell: s => `${pct(s.growShare)} of ${s.n.toLocaleString()}` },
+                    { key: 'grows', header: GROWS_LABEL, worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
                   ]}
                 />
               </PageTable>

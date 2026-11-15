@@ -8,6 +8,7 @@ import { bestWindow, CONNECTION_WINDOWS, windowOf, type NearbyChoice, type Route
 import type { DayType } from '../../../shared/dayTypes';
 import { EXPLAINERS } from '../../content/noticeCopy';
 import { compareRouteNumber } from '../../utils/sortCompare';
+import { metresText } from '../../../shared/unitText';
 import {
   scheduleEnded, tripDirections, tripsForRoute, waitWithin,
   type BustangAgency, type BustangData, type BustangStop, type TripRouteWaits,
@@ -121,7 +122,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
                         {ts.after && ts.before && ts.departure !== ts.arrival ? `, leaves ${clockTime(ts.departure)}` : ''}
                       </p>
                       {!hasLocal
-                        ? <p className={CARD_SUMMARY}>No local stop within {within} m.</p>
+                        ? <p className={CARD_SUMMARY}>No local stop within {metresText(within)}.</p>
                         : <>
                           {ts.after && <TripSide data={data} rows={ts.after} within={within} side="after" nameAgency={nameAgency} />}
                           {ts.before && <TripSide data={data} rows={ts.before} within={within} side="before" nameAgency={nameAgency} />}
@@ -192,7 +193,7 @@ export function BustangStopConnections({ data, day, within, stop }: { data: Bust
     <SidebarCardSection label={`Bustang connections (${day})`}>
       <div>
         {slugs.length === 0
-          ? <p className={CARD_SUMMARY}>No local stop within {within} m.</p>
+          ? <p className={CARD_SUMMARY}>No local stop within {metresText(within)}.</p>
           : <>
             <OutdatedLines data={data} slugs={slugs} />
             <StopSide data={data} routes={routes.after} trips={stopDay.arrivals} side="after" nameAgency={nameAgency} />

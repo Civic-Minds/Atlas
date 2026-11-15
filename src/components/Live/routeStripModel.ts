@@ -5,10 +5,11 @@
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { minutesText, pct, tenth } from '../../../shared/liveFormat';
-import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { minutesText, tenth } from '../../../shared/liveFormat';
+import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
 import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
+import { percentText } from '../../../shared/numberText';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -122,7 +123,6 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
-export { pct };
 /** "3.1 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5). */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
@@ -258,7 +258,7 @@ export function stopDetail(stop: RouteStripStop): { name: string; lines: string[
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
     const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
-    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(pct(stop.lateShare))}` : usual);
+    lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(percentText(stop.lateShare))}` : usual);
   } else lines.push(DELAY_NOT_MEASURED);
   const parts = bunchParts(stop);
   if (parts && stop.bunchedShare != null && stop.gappedShare != null) lines.push(bunchedAndLong(`${parts.bunched}%`, `${parts.tooLong}%`));

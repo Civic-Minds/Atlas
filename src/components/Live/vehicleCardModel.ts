@@ -5,6 +5,7 @@ import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { RouteAnalysisPatterns } from '../../hooks/useRouteAnalysisPatterns';
 import { destinationKind } from '../../utils/liveGrouping';
 import { DIRECTION_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL } from '../../../shared/liveWording';
+import { speedText } from '../../../shared/unitText';
 
 /** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
 export function delayLabel(v: Pick<LiveVehicle, 'statusLabel' | 'delayMin'>): string {
@@ -46,7 +47,7 @@ export function vehicleCardRows(
   if (branch) rows.push({ label: DIRECTION_LABEL, value: `to ${destination}` });
   else if (direction) rows.push({ label: DIRECTION_LABEL, value: `to ${direction}` });
   if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: SHORT_TURN_LABEL } : {}) });
-  if (v.speedKmh != null) rows.push({ label: 'Speed', value: `${v.speedKmh} km/h` });
+  if (v.speedKmh != null) rows.push({ label: 'Speed', value: speedText(v.speedKmh) });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: 'Schedule', value: schedule, status: v.status });
   return rows;

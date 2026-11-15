@@ -41,6 +41,7 @@ import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
 import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
+import { countText } from '../shared/numberText';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -82,7 +83,7 @@ export function routeSubtitle(v3: LiveV3, /** The agency's short name (useLiveAg
   // figures still names its whole window.
   const thisWeek = w?.thisWeek.dates.length ? w.thisWeek.dates : v3.window.dates;
   const trips = w?.thisWeek.late ? w.thisWeek.late.n : goodDayCounts(v3).runs;
-  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${countText(trips)} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**

@@ -3,6 +3,7 @@
  * to shared/data/area-boundaries.json. A route counts on an area page when two of its stops
  * inside the area's boundary are more than AREA_SAME_PLACE_METERS apart, whichever agency runs it.
  */
+import { lonLatPoint, metresBetween } from './geoDistance';
 
 /** [lon, lat] rings: the first ring of a polygon is its outline, the rest are holes. */
 export type AreaPolygon = Array<Array<[number, number]>>;
@@ -24,13 +25,6 @@ export type AreaBoundaries = Record<string, AreaBoundary>;
  * order the stops are listed in.
  */
 export const AREA_SAME_PLACE_METERS = 250;
-
-function metersApart([lon1, lat1]: [number, number], [lon2, lat2]: [number, number]): number {
-  const k = Math.PI / 180;
-  const x = (lon2 - lon1) * k * Math.cos(((lat1 + lat2) / 2) * k);
-  const y = (lat2 - lat1) * k;
-  return Math.hypot(x, y) * 6371000;
-}
 
 function inRing(lon: number, lat: number, ring: Array<[number, number]>): boolean {
   let inside = false;
@@ -56,7 +50,7 @@ export function areasForStops(stops: ReadonlyArray<[number, number]>, boundaries
     let twoPlaces = false;
     for (const stop of stops) {
       if (!inAreaBoundary(stop[0], stop[1], area)) continue;
-      if (inside.some(other => metersApart(other, stop) > AREA_SAME_PLACE_METERS)) { twoPlaces = true; break; }
+      if (inside.some(other => metresBetween(lonLatPoint(other), lonLatPoint(stop)) > AREA_SAME_PLACE_METERS)) { twoPlaces = true; break; }
       inside.push(stop);
     }
     if (twoPlaces) out.push(slug);

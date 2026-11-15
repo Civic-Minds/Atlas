@@ -1,6 +1,6 @@
 import type { Agency } from '../App';
 import { shortDate } from '../../shared/dateText';
-import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE, MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
 import type { PeriodKey, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
@@ -48,7 +48,7 @@ export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'other'
 
 export interface MapExportState {
   view: MapExportView;
-  /** View name as the app shows it, e.g. "Transit Frequency". */
+  /** View name as the app shows it, from MAP_EXPORT_TITLES, e.g. "Transit frequency". */
   viewTitle: string;
   colorMode: ColorVisionMode;
   maxHeadway: number;
@@ -76,16 +76,6 @@ export interface RenderedRouteSample {
   routeKey: string;
   /** Line colour as drawn, in any CSS hex form. */
   color: string | null;
-}
-
-/** "Transit Frequency" -> "Transit frequency". Keeps text sentence case, never all caps. */
-export function sentenceCase(text: string): string {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  return words.map((word, index) => {
-    if (index === 0) return word;
-    // Keep acronyms (e.g. "GO") and mixed-case brands as written.
-    return /[A-Z].*[A-Z]/.test(word) ? word : word.toLowerCase();
-  }).join(' ');
 }
 
 /** Same wording as the frequency chip's options. */
@@ -133,7 +123,7 @@ function filterLine(state: MapExportState): string | null {
       ].filter(Boolean).join(' · ') || null;
     }
     case 'night':
-      return state.nightServiceFrequency ? `Overnight service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
+      return state.nightServiceFrequency ? `${MAP_KEY_NIGHT} ${headwayOrBetter(state.nightServiceFrequency)}` : null;
     default:
       return null;
   }
@@ -310,7 +300,7 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const drawnColors = samples.map(sample => sample.color).filter((color): color is string => !!color);
   const key = buildExportKey(keyCandidates(state), drawnColors);
 
-  const viewName = sentenceCase(state.viewTitle || DEFAULT_EXPORT_TITLE);
+  const viewName = state.viewTitle || DEFAULT_EXPORT_TITLE;
   // With no clear place, the view name becomes the heading instead of a guessed place.
   const lines: string[] = [];
   const route = state.view === 'frequency' && state.routeLabel

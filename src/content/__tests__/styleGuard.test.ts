@@ -74,6 +74,17 @@ const RULES: Rule[] = [
   // #938: a column never mixes units.
   { name: 'a frequency in hours (write "every 90 min")', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+|\d+[–-]\d+)(\\u00A0| | )?(hours?|hrs?)\b/, slip: '`every ${h} hours`' },
 
+  // Numbers (shared/numberText.ts, CIV-1587). Coordinates in links and reports are machine values, not UI numbers.
+  { name: 'a number formatted outside shared/numberText.ts (toLocaleString or Intl.NumberFormat)', doc: 'TEXT.md', pattern: /\.toLocaleString\(|Intl\.NumberFormat/, slip: '`${n.toLocaleString()} trips`',
+    skipLine: /timeZone/, allowed: ['shared/numberText.ts'] }, // liveVehicleDelay reads a clock in a time zone, not a number
+  { name: 'a decimal formatted outside shared/numberText.ts (toFixed)', doc: 'TEXT.md', pattern: /\.toFixed\(/, slip: '`${density.toFixed(1)} per km²`',
+    skipLine: /\b(lat|lon|bounds|zoom)\b|\.[nsew]\.toFixed|key: 'z'/, allowed: ['shared/numberText.ts'] },
+  // CIV-1590: distances, speeds and densities from shared/unitText.ts.
+  { name: 'a distance or speed unit written by hand (use metresText / speedText)', doc: 'TEXT.md', pattern: /\}\s?(m|km|km\/h|mph|mi|ft|km²|m²)(?=[\s'"`<,.)]|$)/, slip: '`${Math.round(d)} m away`',
+    allowed: ['shared/unitText.ts'] },
+  { name: 'a percent built by hand (use percentText)', doc: 'TEXT.md', pattern: /Math\.round\([^`]*\*\s*100\)\}?\s*%/, slip: '{Math.round((a / b) * 100)}%',
+    allowed: ['shared/numberText.ts'] },
+
   // One source per text (CIV-1569)
   { name: 'a close or clear name typed by hand (use closeLabel / CLEAR_SEARCH_LABEL)', doc: 'TEXT.md', pattern: /(aria-label|closeLabel|label)=["'{`]*['"`]?(Close|Clear search)\b/, slip: '<button aria-label="Close filters">' },
   // The report form's text box is not a search box; the top bar's input shows its hint in a span and has an empty placeholder.
@@ -92,6 +103,26 @@ const RULES: Rule[] = [
     allowed: ['src/utils/format.ts'] },
   { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
+
+  // CIV-1591: cards hide and pre-check report reasons by REPORT_REASON (src/components/Interval/cardUi.tsx), never a typed string.
+  { name: 'a report reason typed as a string (use REPORT_REASON)', doc: 'TEXT.md', pattern: /excludeReasons=\{\[[^\]]*['"]|\breason=["']/, slip: '<FlaggableValue reason="Frequency is wrong" />' },
+  // CIV-1592: one distance between two points (shared/geoDistance.ts). Not a style rule, but the same kind of one-source
+  // check: the haversine sum, a metres-per-degree constant or the earth's radius anywhere else is a second distance function or
+  // projection (CIV-1597).
+  { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
+    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000|6_?371_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
+    allowed: ['shared/geoDistance.ts'] },
+  // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
+  { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
+    allowed: ['shared/overflowText.ts'] },
+
+  // CIV-1594: the map link on empty pages is OPEN_MAP_LINK in noticeCopy.ts.
+  { name: '"Open the Atlas map" typed in place (use OPEN_MAP_LINK)', doc: 'TEXT.md', pattern: /Open the Atlas map/, slip: '<ArrowLink href="/">Open the Atlas map</ArrowLink>',
+    allowed: ['src/content/noticeCopy.ts'] },
+  // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
+  { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
+    pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit Frequency|Frequent Service|Service History|Live Transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
+    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts'] },
 
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
@@ -169,7 +200,7 @@ describe('UI code follows the style guide (docs/style/TEXT.md, docs/style/VISUAL
       "'Mon–Fri 5:30 AM–8 PM'", "'Irregular'", "'Hide occasional routes'", 'isOneOffTrip', "'Part-time routes'",
       "serviceClass === 'time-limited'", "'Shared stretch'", "'90 min'", "'tracking-normal'", '<DataTable rows={r} />',
       "'All days'", 'closeLabel(CLOSE_PLACES.filters)', 'placeholder={SEARCH_ROUTES_PLACEHOLDER}', 'shortDate(iso)',
-      'dayPlural(day)', "label.split('–')", 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
+      'dayPlural(day)', "label.split('–')", 'countText(n)', 'percentText(share)', '`${metresText(d)} away`', '`${n} min`', '`${n} mins`', "params.set('lat', lat.toFixed(4))", '`${band.left * 100}%`', 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
     ];
     for (const rule of RULES) for (const text of fine) expect([rule.name, text, breaks(rule, text)]).toEqual([rule.name, text, false]);
     const csv = RULES.find(r => r.name === 'a CSV download in Live code')!.only!;

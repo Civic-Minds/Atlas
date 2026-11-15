@@ -6,8 +6,9 @@
  */
 import { useEffect, useState } from 'react';
 import type { DayType } from '../../shared/dayTypes';
-import { BAR_DISTANCE_CHOICES, distanceMeters, type ConnectionSide, type NearbyChoice, type RouteConnection } from '../../shared/connections';
+import { BAR_DISTANCE_CHOICES, type ConnectionSide, type NearbyChoice, type RouteConnection } from '../../shared/connections';
 import { agencyTodayYmd, isExpiredFeedExpiry } from '../../shared/feedAvailability';
+import { metresBetween } from '../../shared/geoDistance';
 
 /** Keyed by distance; a file built before a distance was added has no entry for it. */
 type ByChoice<T> = Partial<Record<`${NearbyChoice}`, T>>;
@@ -126,7 +127,7 @@ export function bustangStopFor(
   if (stop.lat == null || stop.lon == null) return null;
   const here = { lat: stop.lat, lon: stop.lon };
   const nearest = data.stops
-    .map(s => ({ s, d: distanceMeters(s, here) }))
+    .map(s => ({ s, d: metresBetween(s, here) }))
     .sort((a, b) => a.d - b.d)[0];
   return nearest && nearest.d <= 150 ? nearest.s : null;
 }

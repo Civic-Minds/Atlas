@@ -9,9 +9,9 @@ import { branchNamesWrap } from '../BranchStrip';
 import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
-import { pct } from './figures';
 import Tag from '../../ui/Tag';
 import { LIVE_NOTHING_LINKED } from '../../../content/noticeCopy';
+import { percentText } from '../../../../shared/numberText';
 
 import { BUNCHING_FORMS_TITLE, BY_TIME_OF_DAY_TITLE, GAPS_OFF_SCHEDULE_LABEL, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../../shared/liveWording';
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
@@ -98,7 +98,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                 <ProfileBars
                   ariaLabel={`${label}: share of gaps that are too close together or too far apart, stop by stop.`}
                   points={points}
-                  formatY={y => pct(y)}
+                  formatY={y => percentText(y)}
                   unit="gaps"
                   valueHeader={GAPS_OFF_SCHEDULE_LABEL}
                   caption="How often vehicles arrive too close together or too far apart, at each stop."

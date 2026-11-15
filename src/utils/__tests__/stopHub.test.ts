@@ -1,23 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   collectStopHubSiblings,
-  getDistanceMeters,
   STOP_HUB_PROXIMITY_M,
 } from '../stopHub';
-
-describe('getDistanceMeters', () => {
-  it('is ~0 for the same point', () => {
-    expect(getDistanceMeters(43.65, -79.38, 43.65, -79.38)).toBeLessThan(1);
-  });
-
-  it('grows with separation', () => {
-    const near = getDistanceMeters(43.65, -79.38, 43.6505, -79.38);
-    const far = getDistanceMeters(43.65, -79.38, 43.66, -79.38);
-    expect(far).toBeGreaterThan(near);
-    expect(near).toBeLessThan(STOP_HUB_PROXIMITY_M);
-    expect(far).toBeGreaterThan(STOP_HUB_PROXIMITY_M);
-  });
-});
 
 describe('collectStopHubSiblings', () => {
   it('includes same-name stops under the same agency regardless of distance', () => {

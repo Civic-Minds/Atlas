@@ -37,12 +37,13 @@ import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import BunchingSection from './components/Live/sections/BunchingSection';
 import BuildupSection from './components/Live/sections/BuildupSection';
-import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
+import { percentText, countText } from '../shared/numberText';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -87,7 +88,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
-            <Fact label={GROWS_LABEL} value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
+            <Fact label={GROWS_LABEL} value={percentText(f.growShare)} sub={`of ${countText(f.n)}`} />
             <Fact label={DELAY_LEGEND_TITLE} value={mins(f.medianDelayMin)} />
             <Fact label={P90_LATER_LABEL} value={mins(f.p90DelayMin)} />
           </Block>
@@ -100,7 +101,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     return (
       <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
-          <Fact label={GAPS_OFF_SCHEDULE_LABEL} value={`${pct(b.fromBadShare)} to ${pct(b.toBadShare)}`} />
+          <Fact label={GAPS_OFF_SCHEDULE_LABEL} value={`${percentText(b.fromBadShare)} to ${percentText(b.toBadShare)}`} />
         </Block>
         <Block title={linked.length ? LINKED_TO_TITLE : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
@@ -124,15 +125,15 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
           <>
             <Fact label={DELAY_LEGEND_TITLE} value={delayText(s.delayMin)} />
             {full && <Fact label={P90_LATER_LABEL} value={mins(full.p90Min)} />}
-            {s.lateShare != null && <Fact label={LATE_LABEL} value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
+            {s.lateShare != null && <Fact label={LATE_LABEL} value={percentText(s.lateShare)} sub={`of ${countText(s.n)} departures`} />}
           </>
         ) : <Fact label={DELAY_LEGEND_TITLE} value={NOT_MEASURED_VALUE} />}
         {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
-          <Fact label={TOO_CLOSE_LABEL} value={pct(bunch.bunchedShare)} />
-          <Fact label={TOO_FAR_LABEL} value={pct(bunch.gappedShare)} sub={`${bunch.n.toLocaleString()} gaps`} />
+          <Fact label={TOO_CLOSE_LABEL} value={percentText(bunch.bunchedShare)} />
+          <Fact label={TOO_FAR_LABEL} value={percentText(bunch.gappedShare)} sub={`${countText(bunch.n)} gaps`} />
         </Block>
       )}
       {extra && (
@@ -143,7 +144,7 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       {into && into.n > 0 && (
         <Block title={stretchLabel(into.fromName, into.toName)}>
           <Fact label={TYPICAL_ADDED} value={mins(into.medianAddedMin)} />
-          <Fact label={GROWS_LABEL} value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
+          <Fact label={GROWS_LABEL} value={percentText(into.growShare)} sub={`of ${countText(into.n)}`} />
         </Block>
       )}
     </Panel>

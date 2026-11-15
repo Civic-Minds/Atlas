@@ -15,6 +15,7 @@ import { LIST_DISTANCE_CHOICES, parseNearbyChoice, type NearbyChoice } from '../
 import { FEATURES } from '../../shared/config';
 import { compareRouteNumber } from '../utils/sortCompare';
 import { BUSTANG_INFO_HEADING, BUSTANG_LIST_TITLE, scheduleEnded, type BustangData } from '../utils/bustangConnections';
+import { metresText } from '../../shared/unitText';
 
 /**
  * Bustang connections (CIV-101, beta only): the regular map, limited to Bustang and the local agencies at its stops,
@@ -68,7 +69,7 @@ export default function BustangConnections({ active, data, day, setDay, within, 
             <div>
               <CardSectionLabel>Local stop within</CardSectionLabel>
               <PillGroup label="Local stop within" value={String(within)} onChange={v => setWithin(parseNearbyChoice(v))}
-                options={LIST_DISTANCE_CHOICES.map(m => [String(m), `${m} m`] as const)} />
+                options={LIST_DISTANCE_CHOICES.map(m => [String(m), metresText(m)] as const)} />
             </div>
             </>}
             {data && <p className={CARD_SUMMARY}>Schedules for {shortDate(data.dates[day])}.</p>}

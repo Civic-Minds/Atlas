@@ -25,6 +25,7 @@ import {
   CardReportButton,
   FlaggableValue,
   type CardReportButtonHandle,
+  REPORT_REASON,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
@@ -33,8 +34,8 @@ import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovere
 import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
-import { reportDetails } from '../../../utils/reportIssue';
-import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT } from '../../../content/noticeCopy';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../../../utils/reportIssue';
+import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT, OVERNIGHT_PART_OF_ROUTE } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -319,8 +320,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
     ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
-    ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
-    ['Feed expiry', (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.dataRefreshed, routeAgency?.lastRefreshedAt ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.feedExpiry, (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
@@ -352,7 +353,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
             details={details}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -491,7 +492,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     if (row.night) {
                       const { grade } = row.night;
                       return (
-                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
@@ -500,7 +501,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={grade ?? undefined}
                             limited={grade == null}
                             limitedLabel={grade == null ? model.noRegularLabel : undefined}
-                            subLabel={grade != null && row.night.partOfRoute ? 'Overnight service on part of the route' : undefined}
+                            subLabel={grade != null && row.night.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined}
                             {...hoverProps(group.dirId, d, row.hover)}
                           />
                         </FlaggableValue>
@@ -509,7 +510,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
                     return (
-                      <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}

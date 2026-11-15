@@ -2,7 +2,7 @@ import { FEATURES } from '../../shared/config';
 import { BASEMAP_ATTRIBUTION } from '../lib/basemap';
 import { withShareTags, SHARE_UTM_MEDIUM_IMAGE } from '../lib/analytics';
 import { slugifyForFilename } from './mapExportDetails';
-import { DEFAULT_EXPORT_TITLE, MAP_EXPORT_BLOCKED_MESSAGES } from '../content/noticeCopy';
+import { DEFAULT_EXPORT_TITLE, MAP_EXPORT_BLOCKED_MESSAGES, ATLAS_BYLINE } from '../content/noticeCopy';
 
 export const MAP_EXPORT_SIZES = [
   { id: 'social', label: 'Social', width: 1200, height: 630 },
@@ -636,7 +636,7 @@ export async function shareMapExport(blob: Blob, title: string, filename: string
   const file = new File([blob], mapExportFilename(filename), { type: 'image/png' });
   await navigator.share({
     title: `${title.trim() || DEFAULT_EXPORT_TITLE} · Atlas`,
-    text: 'Map exported from Atlas by Civic Minds',
+    text: `Map exported from ${ATLAS_BYLINE}`,
     files: [file],
     ...(FEATURES.shareUtm && typeof window !== 'undefined'
       ? { url: withShareTags(window.location.href, SHARE_UTM_MEDIUM_IMAGE) }

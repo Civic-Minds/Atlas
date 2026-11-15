@@ -72,18 +72,25 @@ export function CardCallout({ tone = 'neutral', className = '', ...rest }: React
   return <div className={`${CARD_CALLOUT_TONE[tone]} ${className}`.trim()} {...rest} />;
 }
 
-const REPORT_REASONS = [
-  'Route or agency is missing',
-  'Route or branch is incorrectly combined',
-  'Route name, number, destination, or direction is wrong',
-  'Frequency is wrong',
-  'Schedule, day, or time-period service is wrong',
-  'Route line is missing or follows the wrong path',
-  'Stop is missing, misplaced, or assigned incorrectly',
-  'Filter, search, or route selection is wrong',
-  'Live vehicle information is missing or wrong',
-  'Route data is stale',
-] as const;
+/**
+ * The report form's reasons, one name each. Cards hide reasons (excludeReasons) and pre-check one (FlaggableValue) by
+ * these names, so a typo is a type error instead of a reason that silently never matches.
+ */
+export const REPORT_REASON = {
+  missing: 'Route or agency is missing',
+  combined: 'Route or branch is incorrectly combined',
+  name: 'Route name, number, destination, or direction is wrong',
+  frequency: 'Frequency is wrong',
+  schedule: 'Schedule, day, or time-period service is wrong',
+  line: 'Route line is missing or follows the wrong path',
+  stop: 'Stop is missing, misplaced, or assigned incorrectly',
+  filter: 'Filter, search, or route selection is wrong',
+  live: 'Live vehicle information is missing or wrong',
+  stale: 'Route data is stale',
+} as const;
+export type ReportReason = (typeof REPORT_REASON)[keyof typeof REPORT_REASON];
+
+const REPORT_REASONS: readonly ReportReason[] = Object.values(REPORT_REASON);
 
 const FREQUENCY_REASONS = [
   'Too frequent',
@@ -93,17 +100,17 @@ const FREQUENCY_REASONS = [
   'Does not match the current schedule',
 ] as const;
 
-const REPORT_REASON_LABELS: Record<string, string> = {
-  'Route or agency is missing': 'The route or agency is missing',
-  'Route or branch is incorrectly combined': 'The route or branch is combined incorrectly',
-  'Route name, number, destination, or direction is wrong': 'The route name, number, destination, or direction is wrong',
-  'Frequency is wrong': 'The frequency is wrong',
-  'Schedule, day, or time-period service is wrong': 'The schedule, day, or time-period service is wrong',
-  'Route line is missing or follows the wrong path': 'The route line is missing or follows the wrong path',
-  'Stop is missing, misplaced, or assigned incorrectly': 'The stop is missing, misplaced, or assigned incorrectly',
-  'Filter, search, or route selection is wrong': 'The map, filter, search, or route selection is wrong',
-  'Live vehicle information is missing or wrong': 'The live vehicle information is missing or wrong',
-  'Route data is stale': 'The route data is stale',
+const REPORT_REASON_LABELS: Record<ReportReason, string> = {
+  [REPORT_REASON.missing]: 'The route or agency is missing',
+  [REPORT_REASON.combined]: 'The route or branch is combined incorrectly',
+  [REPORT_REASON.name]: 'The route name, number, destination, or direction is wrong',
+  [REPORT_REASON.frequency]: 'The frequency is wrong',
+  [REPORT_REASON.schedule]: 'The schedule, day, or time-period service is wrong',
+  [REPORT_REASON.line]: 'The route line is missing or follows the wrong path',
+  [REPORT_REASON.stop]: 'The stop is missing, misplaced, or assigned incorrectly',
+  [REPORT_REASON.filter]: 'The map, filter, search, or route selection is wrong',
+  [REPORT_REASON.live]: 'The live vehicle information is missing or wrong',
+  [REPORT_REASON.stale]: 'The route data is stale',
 };
 
 const FREQUENCY_REASON_LABELS: Record<string, string> = {
@@ -120,32 +127,32 @@ const REPORT_CATEGORIES = [
     label: 'Route',
     description: 'Name, branch, line, frequency, or schedule',
     reasons: [
-      'Route or agency is missing',
-      'Route or branch is incorrectly combined',
-      'Route name, number, destination, or direction is wrong',
-      'Frequency is wrong',
-      'Schedule, day, or time-period service is wrong',
-      'Route line is missing or follows the wrong path',
-      'Route data is stale',
+      REPORT_REASON.missing,
+      REPORT_REASON.combined,
+      REPORT_REASON.name,
+      REPORT_REASON.frequency,
+      REPORT_REASON.schedule,
+      REPORT_REASON.line,
+      REPORT_REASON.stale,
     ],
   },
   {
     key: 'stop',
     label: 'Stop',
     description: 'Missing, misplaced, or assigned incorrectly',
-    reasons: ['Stop is missing, misplaced, or assigned incorrectly'],
+    reasons: [REPORT_REASON.stop],
   },
   {
     key: 'filter',
     label: 'Map, filter, or search',
     description: 'Search, filter, or route selection',
-    reasons: ['Filter, search, or route selection is wrong'],
+    reasons: [REPORT_REASON.filter],
   },
   {
     key: 'live',
     label: 'Live vehicle',
     description: 'Missing or incorrect live information',
-    reasons: ['Live vehicle information is missing or wrong'],
+    reasons: [REPORT_REASON.live],
   },
 ] as const;
 
@@ -153,15 +160,15 @@ type ReportCategoryKey = (typeof REPORT_CATEGORIES)[number]['key'];
 
 export interface CardReportButtonHandle {
   /** Opens the report dialog with the given reason pre-checked after report mode is active. */
-  openWithReason: (reason: string) => void;
+  openWithReason: (reason: ReportReason) => void;
 }
 
 const REPORT_MODE_EVENT = 'atlas-report-mode';
 
-export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: string[] }>(
+export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title: string; details: string; showLiveReason?: boolean; excludeReasons?: readonly ReportReason[] }>(
   function CardReportButton({ title, details, showLiveReason = false, excludeReasons = [] }, ref) {
   const reportReasons = REPORT_REASONS.filter(reason => {
-    if (reason === 'Live vehicle information is missing or wrong') return showLiveReason;
+    if (reason === REPORT_REASON.live) return showLiveReason;
     return !excludeReasons.includes(reason);
   });
   const [isOpen, setIsOpen] = React.useState(false);
@@ -229,10 +236,10 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
   }, [isOpen, updateReportCardPosition]);
 
   React.useImperativeHandle(ref, () => ({
-    openWithReason: (reason: string) => {
+    openWithReason: (reason: ReportReason) => {
       const category = REPORT_CATEGORIES.find(item => item.reasons.includes(reason as never));
       setSelectedCategory(category?.key ?? null);
-      if (reportReasons.includes(reason as (typeof REPORT_REASONS)[number])) {
+      if (reportReasons.includes(reason)) {
         setSelectedReasons(current => current.includes(reason) ? current : [...current, reason]);
       }
       openReport('card_value_flag');
@@ -254,15 +261,15 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     setter(current => current.includes(reason) ? current.filter(item => item !== reason) : [...current, reason]);
   };
 
-  const hasFrequencyReason = selectedReasons.includes('Frequency is wrong');
+  const hasFrequencyReason = selectedReasons.includes(REPORT_REASON.frequency);
   const availableCategories = REPORT_CATEGORIES.filter(category =>
-    category.reasons.some(reason => reportReasons.includes(reason as (typeof REPORT_REASONS)[number])),
+    category.reasons.some(reason => reportReasons.includes(reason)),
   );
   const selectedCategoryDetails = selectedCategory
     ? REPORT_CATEGORIES.find(category => category.key === selectedCategory)
     : undefined;
   const selectedCategoryReasons = selectedCategoryDetails?.reasons.filter(reason =>
-    reportReasons.includes(reason as (typeof REPORT_REASONS)[number]),
+    reportReasons.includes(reason),
   ) ?? [];
   const selectedCategoryQuestion = selectedCategory === 'route'
     ? 'What is wrong with this route?'
@@ -370,7 +377,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                           checked={selectedReasons.includes(reason)}
                           onChange={() => {
                             setValidationError('');
-                            if (reason === 'Frequency is wrong' && hasFrequencyReason) setFrequencyReasons([]);
+                            if (reason === REPORT_REASON.frequency && hasFrequencyReason) setFrequencyReasons([]);
                             toggleReason(reason, setSelectedReasons);
                           }}
                           className="mt-0.5 accent-[var(--accent)]"
@@ -434,7 +441,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
  * activated report mode. The reason is pre-checked. Beta-gated (CARD_CLICK_TO_FLAG_ENABLED).
  */
 export function FlaggableValue({ reason, reportRef, children, className = 'inline-flex items-center gap-1' }: {
-  reason: string;
+  reason: ReportReason;
   reportRef: React.RefObject<CardReportButtonHandle | null>;
   children: React.ReactNode;
   /** Full control over layout — replaces the default `inline-flex items-center gap-1`, doesn't merge with it. */

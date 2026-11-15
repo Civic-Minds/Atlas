@@ -1,6 +1,7 @@
 import { branchFigures, runningTimeFigures, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
 import { countOf } from '../../../../shared/overflowText';
 import { SHORT_TURN_LABEL } from '../../../../shared/liveWording';
+import { countText } from '../../../../shared/numberText';
 
 /** A pattern with fewer trips than this is too thin to draw (the main stretch) or drawn dim with a care note (a longer pattern). */
 export const MIN_PATTERN_TRIPS = 30;
@@ -32,7 +33,7 @@ export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly numb
   const make = (key: string, direction: number, main: boolean, label: string | null, f: { n: number; scheduledMin?: number; typicalMin?: number; p90Min?: number } | null | undefined): RunTimeRow => {
     const thin = !f || f.n < MIN_PATTERN_TRIPS;
     const dirName = v3.directionLabels?.[String(direction)];
-    const figures = f ? `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)` : '';
+    const figures = f ? `${dirName ? `${dirName}: ` : ''}${runningTimeFigures(f)} (${countText(f.n)} trips)` : '';
     return { key, direction, main, label, trips: f?.n ?? 0, thin, typical: f && finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: f && finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: f && finite(f.p90Min) ? f.p90Min : undefined, figures };
   };
   for (const d of dirs) {
@@ -73,7 +74,7 @@ export function patternRunTimeRows(v3: LiveV3, band: DashboardBand, d: number, n
       label: `${PATTERN_KIND_WORDS[p.kind]}: ${nice(p.fromName)} → ${nice(p.toName)}`,
       trips: f.n, thin: f.n < MIN_PATTERN_TRIPS,
       typical: finite(f.typicalMin) ? f.typicalMin : undefined, scheduled: finite(f.scheduledMin) ? f.scheduledMin : undefined, p90: finite(f.p90Min) ? f.p90Min : undefined,
-      figures: `${dirName ? `${dirName}: ` : ''}${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops, ${runningTimeFigures(f)} (${f.n.toLocaleString()} trips)`,
+      figures: `${dirName ? `${dirName}: ` : ''}${p.stops < p.patternStops ? `${p.stops} of ${p.patternStops}` : p.stops} stops, ${runningTimeFigures(f)} (${countText(f.n)} trips)`,
     }];
   });
 }

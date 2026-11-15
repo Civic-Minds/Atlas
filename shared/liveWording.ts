@@ -1,7 +1,8 @@
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
-import { countOf } from './overflowText';
+import { countOf, plural } from './overflowText';
+import { countText } from './numberText';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -112,7 +113,7 @@ export const LATE_TILE_CAPTION = `of trips left the end of the line ${LATE_THRES
 export const weekOfText = (from: string, to: string): string => `Week of ${dateRange(from, to)}`;
 
 /** The hover line of a late-by-hour chart (approved by Ryan), by the hour trips start: "2 PM: 8 of 167 trips left the end of the line late". */
-export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${late.toLocaleString()} of ${total.toLocaleString()} trips left the end of the line late`;
+export const lateHourLine = (clock: string, late: number, total: number): string => `${clock}: ${countText(late)} of ${countText(total)} trips left the end of the line late`;
 
 /** Late departures in an hour, from its late share and its count (the share is that count over the total). */
 export const lateCount = (share: number, total: number): number => Math.round(share * total);
@@ -157,7 +158,7 @@ export function liveSubtitle(o: { thisWeek: readonly string[]; lastWeek?: readon
  * (503, 507), which the agency figures can't tell apart (Ryan, CIV-1075).
  */
 export function coveredRoutesText(/** The agency's short name (useLiveAgencyName). */ agency: string, routes: ReadonlyArray<unknown>): string {
-  return `${routes.length} ${agency} route${routes.length === 1 ? '' : 's'}`;
+  return `${routes.length} ${agency} ${plural(routes.length, 'route')}`;
 }
 
 /** "Built Oct 16, 6:12 PM", in Toronto time (the agencies Live covers), from an ISO timestamp (shared/timeText.ts). */
@@ -231,7 +232,7 @@ const leftOutList = (dates: readonly string[]): string => (excludingText(dates) 
 /** The hover reason, naming the days: "Oct 11 left out: gaps in our recordings that day" ("…those days" for several). Null when none. */
 export function leftOutReason(dates: readonly string[]): string | null {
   const days = [...new Set(dates)];
-  return days.length ? `${leftOutList(days)} left out: gaps in our recordings ${days.length > 1 ? 'those days' : 'that day'}` : null;
+  return days.length ? `${leftOutList(days)} left out: gaps in our recordings ${plural(days.length, 'that day', 'those days')}` : null;
 }
 
 /**

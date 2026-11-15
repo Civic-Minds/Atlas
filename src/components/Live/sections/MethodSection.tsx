@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { dateRange } from '../../../../shared/dateText';
 import { goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
-import { pct } from '../../../../shared/liveFormat';
 import { joinList } from '../../../../shared/overflowText';
 import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, builtText, coveredRoutesText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
@@ -10,6 +9,7 @@ import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
+import { percentText, countText } from '../../../../shared/numberText';
 
 /**
  * The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). `namedAbove`
@@ -55,7 +55,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         <Term t={LINKED_TO_TITLE}>shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
-        `Last ${good.days} service days, ${dateRange(first, last)}: ${good.runs.toLocaleString()} trips and ${good.stopPassages.toLocaleString()} stop departures.`,
+        `Last ${good.days} service days, ${dateRange(first, last)}: ${countText(good.runs)} trips and ${countText(good.stopPassages)} stop departures.`,
         ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),
@@ -65,13 +65,13 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
         recordingGapsLine,
-        <Term t="Near a limit" colon>{pct(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
+        <Term t="Near a limit" colon>{percentText(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
-        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn’t on the schedule, such as extra buses. We left out {glo.noTimetableTrip.toLocaleString()} of them ({pct(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {good.runs.toLocaleString()} scheduled trips.</Term>,
+        glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn’t on the schedule, such as extra buses. We left out {countText(glo.noTimetableTrip)} of them ({percentText(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {countText(good.runs)} scheduled trips.</Term>,
         // Counted over the good days, like every other figure (Ryan, CIV-910 Q4).
-        glo && glo.excluded > 0 && <Term t="Other services">are runs by {lo?.excludedLabel ?? 'another service'} that shares this route number. We left out {glo.excluded.toLocaleString()} of them.</Term>,
-        <Term t="Mismatched trip numbers">are trips that ran far from the time their trip number is scheduled for ({pct(lim.swaps.rate)} of trips). We matched {lim.swaps.reassigned} to the trip they fit and left out {lim.swaps.dropped}.</Term>,
-        unknown > 0 && <Term t="Unjudged trips">are trips we couldn’t judge as run or not run. We left out {unknown.toLocaleString()} of them from Delivered.</Term>,
+        glo && glo.excluded > 0 && <Term t="Other services">are runs by {lo?.excludedLabel ?? 'another service'} that shares this route number. We left out {countText(glo.excluded)} of them.</Term>,
+        <Term t="Mismatched trip numbers">are trips that ran far from the time their trip number is scheduled for ({percentText(lim.swaps.rate)} of trips). We matched {lim.swaps.reassigned} to the trip they fit and left out {lim.swaps.dropped}.</Term>,
+        unknown > 0 && <Term t="Unjudged trips">are trips we couldn’t judge as run or not run. We left out {countText(unknown)} of them from Delivered.</Term>,
       ] },
     
       ]} />
