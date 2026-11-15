@@ -1,4 +1,9 @@
 import React from 'react';
+import { FEATURES } from '../../shared/config';
+import { FOLD_OPEN, FOLD_SHUT } from './ModeTransition';
+
+/** A folded tab opening on hover or focus unfolds before it fades in, as `FOLD_OPEN` (written out: Tailwind reads whole class names). */
+const FOLD_PEEK = 'group-hover/tab:[transition:grid-template-columns_200ms_ease-out,opacity_150ms_ease-out_150ms] group-focus-visible/tab:[transition:grid-template-columns_200ms_ease-out,opacity_150ms_ease-out_150ms]';
 
 /**
  * The text part of a top-bar mode tab (Live, History, Compare). While another mode is active the
@@ -9,9 +14,13 @@ export function ModeTabLabel({ collapsed, children }: { collapsed: boolean; chil
   // The width animates as a grid column going between 0fr and 1fr, so it runs over the text's real
   // width both ways. A max-width transition to a guessed ceiling (the old 10rem) spends most of its
   // time above the text's width when opening, so opening looked like a jump while closing looked smooth.
+  // CIV-1567 (beta): the text fades before it folds (and unfolds before it fades in), so it is never seen cut off.
+  const timing = FEATURES.modeTransitions
+    ? (collapsed ? `${FOLD_SHUT} ${FOLD_PEEK}` : FOLD_OPEN)
+    : 'transition-[grid-template-columns,opacity] duration-200 ease-out motion-reduce:transition-none';
   return (
     <span
-      className={`grid transition-[grid-template-columns,opacity] duration-200 ease-out motion-reduce:transition-none ${
+      className={`grid ${timing} ${
         collapsed
           ? 'grid-cols-[0fr] opacity-0 group-hover/tab:grid-cols-[1fr] group-hover/tab:opacity-100 group-focus-visible/tab:grid-cols-[1fr] group-focus-visible/tab:opacity-100'
           : 'grid-cols-[1fr] opacity-100'

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
+import { flushSync } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
@@ -600,10 +601,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map) return;
     updateMapContext();
-    map.on('idle', updateMapContext);
+    // CIV-1567 (beta): the count reported when the map goes idle is committed inside that event, so it is painted in
+    // the same frame and Compare's label, which waits for it, changes with it.
+    const onIdle = FEATURES.modeTransitions ? () => flushSync(updateMapContext) : updateMapContext;
+    map.on('idle', onIdle);
     map.on('moveend', updateMapContext);
     return () => {
-      map.off('idle', updateMapContext);
+      map.off('idle', onIdle);
       map.off('moveend', updateMapContext);
     };
   }, [mapLoaded, showMapContext, updateMapContext]);
@@ -1061,9 +1065,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const container = mapContainerRef.current;
     if (!map || !container || !mapLoaded || typeof ResizeObserver === 'undefined') return;
     const resize = () => {
-      if (container.clientWidth > 0 && container.clientHeight > 0) map.resize();
+      if (container.clientWidth > 0 && container.clientHeight > 0) {
+        map.resize();
+        // CIV-1567 (beta): draw at the new size in this frame; a resize alone leaves the canvas blank until the next one.
+        if (FEATURES.modeTransitions) map.redraw();
+      }
     };
-    const observer = new ResizeObserver(() => requestAnimationFrame(resize));
+    // CIV-1567 (beta): resize inside the observer, which runs after layout and before paint, so a pane that changes
+    // size (Compare's split settling) is drawn at its new size in that same frame instead of one frame late.
+    const observer = new ResizeObserver(() => { if (FEATURES.modeTransitions) resize(); else requestAnimationFrame(resize); });
     observer.observe(container);
     resize();
     return () => observer.disconnect();
