@@ -1,10 +1,10 @@
 # Atlas Fare Inventory (2026-09-30)
 
-This dated ledger combines GTFS supporting evidence, official-site discovery, and individually verified official fares for all 693 agencies in the Atlas registry.
+This dated ledger combines GTFS supporting evidence, official-site discovery, and individually verified official fares for all 709 agencies in the Atlas registry.
 
 ## Current status
 
-- Individually verified official fares: 504
+- Individually verified official fares: 520
 - Official pages found but still requiring manual fare verification: 0
 - GTFS-only or not yet matched to an official fare source: 0
 - Official-site inaccessible: 44
