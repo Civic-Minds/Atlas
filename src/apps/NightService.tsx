@@ -9,7 +9,7 @@ import type { NightServiceFrequency } from '../../shared/nightService';
 import { routeNightGrade, rowPassesNightGrade } from '../../shared/nightService';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { CardReportButton } from '../components/Interval/cardUi';
+import { CardReportButton, REPORT_REASON } from '../components/Interval/cardUi';
 import { reportDetails } from '../utils/reportIssue';
 import { routeLabels } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
@@ -205,7 +205,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   return `${secondary ? `${primary} ${secondary}` : primary} (${headwayEvery(nightGrade(route, agency.slug))}${route.partOfRoute ? ', part of the route' : ''})`;
                 }),
               })), bounds)}
-              excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+              excludeReasons={[REPORT_REASON.stop]}
             />
           }
         />

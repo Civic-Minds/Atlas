@@ -23,7 +23,7 @@ import { agencyCardTitle } from '../../utils/agencyName';
 import type { DayType, TimePeriod, ShapeProperties } from '../../hooks/useIntervalStats';
 import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
-import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton, CorrectedDataNotice, NewScheduleDataNotice } from './cardUi';
+import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton, CorrectedDataNotice, NewScheduleDataNotice, REPORT_REASON } from './cardUi';
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
@@ -527,7 +527,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
         ['Feed expiry', effectiveFeedExpiry(agency) ?? 'unknown'],
       ])}
-      excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+      excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
     />
   );
 
@@ -570,7 +570,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           ['Period', period],
           ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
         ])}
-        excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Frequency is wrong', 'Route or branch is incorrectly combined']}
+        excludeReasons={[REPORT_REASON.stop, REPORT_REASON.frequency, REPORT_REASON.combined]}
       />
     );
     return (

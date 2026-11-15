@@ -25,6 +25,7 @@ import {
   CardReportButton,
   FlaggableValue,
   type CardReportButtonHandle,
+  REPORT_REASON,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
@@ -352,7 +353,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
             details={details}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -491,7 +492,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     if (row.night) {
                       const { grade } = row.night;
                       return (
-                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
@@ -509,7 +510,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
                     return (
-                      <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}
