@@ -160,6 +160,10 @@ export const DATA_SOURCE_LINK_ENABLED = false;
 // Plain import.meta.env, as getAtlasMode reads it, so Vite and Vitest both resolve it; the guard covers tsx scripts.
 export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
+// The hours-of-service bar on agency pages (CIV-1605, prototype): a bar per route for the weekday hours it runs, carrying
+// its first and last times so the table's cells drop "from"/"until". Beta-only.
+export const AGENCY_HOURS_BAR_ENABLED = BETA_BUILD;
+
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
  * routes, data, and controls instead of checking environment flags independently.
@@ -198,6 +202,7 @@ export const FEATURES = {
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
   connectionsBar: CONNECTIONS_BAR_ENABLED,
+  agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */

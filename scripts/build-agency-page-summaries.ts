@@ -27,7 +27,7 @@
  */
 import { readFileSync, writeFileSync, existsSync, renameSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_R2_PUBLIC_URL } from '../shared/config';
+import { DEFAULT_R2_PUBLIC_URL, TIME_PERIODS } from '../shared/config';
 import { effectiveFeedExpiry, type SupplementalFeedExpiryEntry } from '../shared/feedAvailability';
 import { effectiveMode } from '../shared/modes';
 import { routeGroupKey } from '../shared/routeGroupKey';
@@ -190,6 +190,8 @@ export function summarize(
     if (Object.keys(shared).length) r.shared = shared;
     if (Object.keys(edge).length) r.edge = edge;
     if (Object.keys(text).length) r.text = text;
+    const runs = routeRuns(ps, r.edge);
+    if (runs) r.runs = runs;
   }
   if (boundaries || regionBoundaries) {
     // A route's stops: the stop points that list it, over every direction and branch it runs on weekdays.
@@ -216,6 +218,35 @@ export function summarize(
     lastRefreshedAt,
     sat: hasDay('Saturday'),
     sun: hasDay('Sunday'),
+  };
+}
+
+/** The agency page's period columns, by the map's period key. */
+const COLUMN_OF_PERIOD: Partial<Record<string, 'am' | 'midday' | 'pm' | 'evening' | 'overnight'>> = { amPeak: 'am', midday: 'midday', pmPeak: 'pm', evening: 'evening', overnight: 'overnight' };
+
+/**
+ * CIV-1605: the weekday hours a route runs (every hour with a departure at any of its directions' or branches' reference
+ * stops, from the published departuresByHour), and its exact first and last times where a period edge gives them: an
+ * edge's "from" counts as the first time only when it falls in the first hour, and "until" as the last only in the last
+ * hour, so a time is never moved to an end it doesn't belong to. Null when the data has no per-hour departures.
+ */
+export function routeRuns(rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null }>, edge: AgencyPageRoute['edge']): AgencyPageRoute['runs'] | null {
+  const hours = new Set<number>();
+  for (const p of rows) for (const [h, n] of Object.entries(p.departuresByHour ?? {})) if (n > 0) hours.add(Number(h));
+  if (hours.size === 0) return null;
+  const sorted = [...hours].sort((a, b) => a - b);
+  const columnAt = (hour: number) => {
+    const period = TIME_PERIODS.find(t => hour >= t.startHour && hour < t.endHour);
+    return period ? COLUMN_OF_PERIOD[period.key] : undefined;
+  };
+  const firstHour = sorted[0];
+  const lastHour = sorted[sorted.length - 1];
+  const from = edge?.[columnAt(firstHour) ?? 'am']?.from;
+  const until = edge?.[columnAt(lastHour) ?? 'am']?.until;
+  return {
+    hours: sorted,
+    ...(columnAt(firstHour) && from != null && Math.floor(from / 60) === firstHour ? { first: from } : {}),
+    ...(columnAt(lastHour) && until != null && Math.floor(until / 60) === lastHour ? { last: until } : {}),
   };
 }
 

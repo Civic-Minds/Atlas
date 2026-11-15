@@ -294,3 +294,27 @@ describe('agency page cells read the route card', () => {
     expect(r.text?.midday).toBe('every 15 min, with one 32 min gap');
   });
 });
+
+describe('routeRuns (CIV-1605, hours bar prototype)', () => {
+  it('lists every hour with a departure in any direction, in order', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    expect(routeRuns([{ departuresByHour: { '8': 2, '7': 1 } }, { departuresByHour: { '6': 1, '9': 0 } }], undefined)).toEqual({ hours: [6, 7, 8] });
+  });
+
+  it('takes exact first and last times only from an edge in the first or last hour (Whitehorse 101)', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    const hours = Object.fromEntries([7, 8, 9, 19, 20, 21].map(h => [String(h), 1]));
+    expect(routeRuns([{ departuresByHour: hours }], { am: { from: 436, every: 30 }, evening: { until: 1276, every: 60 } }))
+      .toEqual({ hours: [7, 8, 9, 19, 20, 21], first: 436, last: 1276 });
+  });
+
+  it('never moves an edge to an end it does not belong to (Whitehorse 201: until 9:01 PM, last departure hour 8 PM)', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    expect(routeRuns([{ departuresByHour: { '6': 1, '20': 1 } }], { evening: { until: 1261, every: 60 } })).toEqual({ hours: [6, 20] });
+  });
+
+  it('is null without per-hour departures', async () => {
+    const { routeRuns } = await import('./build-agency-page-summaries');
+    expect(routeRuns([{}], undefined)).toBeNull();
+  });
+});
