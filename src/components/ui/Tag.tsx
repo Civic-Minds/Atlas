@@ -1,5 +1,8 @@
 import type { HTMLAttributes } from 'react';
 
+/** The accent tag is the same at every size: tight around the word, text size from the caller. */
+const ACCENT = 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle';
+
 const TONES = {
   /** Grey label next to a name ("Live", "History", "Vehicles"). */
   quiet: {
@@ -11,11 +14,11 @@ const TONES = {
   },
   /** Accent outline that sits in running text ("New", "Beta"). The text size comes from the caller. */
   accent: {
-    sm: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
-    md: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
+    sm: ACCENT,
+    md: ACCENT,
 
     /** The accent tags are already tight. */
-    inline: 'inline-block rounded-full border border-[var(--accent-border)] px-1.5 py-px font-bold leading-tight text-[var(--accent)] align-middle',
+    inline: ACCENT,
   },
 } as const;
 
