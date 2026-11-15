@@ -733,7 +733,7 @@ export interface Crumb {
 
 /** Transit Atlas > Country > State or province > primary city > Agency. The city is the config's displayArea, else its first listed city. */
 export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; name: string; page?: boolean }, regionPage?: string): Crumb[] {
-  const crumbs: Crumb[] = [{ name: 'Transit Atlas', href: '/' }];
+  const crumbs: Crumb[] = [{ name: SITE_NAME, href: '/' }];
   // #1521: there are no country pages, so the country (and a state or province with no page) links to its heading in
   // the /agencies list; every step but the last needs a link for the breadcrumb markup to pass.
   if (a.country) crumbs.push({ name: a.country, href: agencyIndexHeadingHref(a.country) });

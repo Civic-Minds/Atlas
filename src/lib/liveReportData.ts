@@ -29,15 +29,6 @@ export const ANALYZE_DEV_HINT = 'npm run live:analyze';
 /** Page titles (approved): "504 King · Live · Atlas" and "TTC · Live · Atlas". */
 export const liveReportTitle = (name: string) => `${name} · Live · Atlas`;
 
-/** Dev only: ?date=YYYY-MM-DD picks the day the local Yesterday view shows, for review against older archive days. */
-const devDate = () => { const d = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('date'); return d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? `&date=${d}` : ''; };
-
-export function liveYesterdayDataUrl(agency: string, route: string | null): string {
-  return fromR2
-    ? `${R2_PUBLIC_URL}/atlas/live/${encodeURIComponent(agency)}/yesterday/${route ? encodeURIComponent(route) : 'agency'}.json`
-    : `/api/live-yesterday?agency=${encodeURIComponent(agency)}${route ? `&route=${encodeURIComponent(route)}` : ''}${devDate()}`;
-}
-
 /**
  * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because
  * scripts/live-publish.ts publishes no gaps file, so asking R2 only logged a 404 on every route page (#1475). When the

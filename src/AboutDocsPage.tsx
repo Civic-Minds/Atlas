@@ -1,11 +1,11 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES, PERIOD_LABELS, SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_MAXES, RAIL_TIER_WINDOW, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
 import { countText, percentText } from '../shared/numberText';
 import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
 import { metresText } from '../shared/unitText';
-import { hourRange } from '../shared/timeText';
+import { hourRange, timeRange } from '../shared/timeText';
 import { joinList, plural } from '../shared/overflowText';
 import { RESEARCH } from './data/research';
 import ScrollX from './components/ui/ScrollX';
@@ -18,6 +18,7 @@ import {
   BOOKING_REQUIRED_NOTICE,
   CORRECTED_DATA_NOTICE,
   DOCS_PAGE_TITLE,
+  EXPLAINERS,
   HIDE_ONE_OFF_SETTING,
   HIDE_PART_TIME_SETTING,
   IRREGULAR_PERIOD_LABEL,
@@ -291,7 +292,7 @@ export default function AboutDocsPage() {
               />
             </ScrollX>
             <p>Atlas rounds the percentage down, but allows at least one near miss once there are {GRACE_FLOOR_MIN_GAPS} or more gaps, and never more than three. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + {headwayAmount(EDGE_GAP_ALLOWANCE_MINUTES)}</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with {joinList(RAIL_TIER_MAXES.map(String))} min bands, and is tested on midday service from 9:30 AM–2:30 PM; the 5 and 8 min bands are not separate options in the main map filter.</p>
+            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with {joinList(RAIL_TIER_MAXES.map(String))} min bands, and is tested on midday service from {timeRange(RAIL_TIER_WINDOW.start, RAIL_TIER_WINDOW.end)}; the 5 and 8 min bands are not separate options in the main map filter.</p>
             <Subsection title="Frequency Bands">
               <p>The main Frequency control currently exposes service at {TIER_LIST}. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Occasional service is hidden by default.</p>
             </Subsection>
@@ -385,9 +386,9 @@ export default function AboutDocsPage() {
             <SubsectionTitle>How Atlas Communicates Data Quality</SubsectionTitle>
             <p>Quality decisions are not meant to disappear behind a clean-looking map. Atlas surfaces user-relevant changes in the interface:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-[var(--text-primary)]">Corrected data:</strong> agency and route cards can say “{CORRECTED_DATA_NOTICE.route}” with an explanation of the known feed problem and technical issue links when available.</li>
+              <li><strong className="text-[var(--text-primary)]">{EXPLAINERS['corrected-data'].title}:</strong> agency and route cards can say “{CORRECTED_DATA_NOTICE.route}” with an explanation of the known feed problem and technical issue links when available.</li>
               <li><strong className="text-[var(--text-primary)]">Outdated schedules:</strong> route cards say “{expiredFeedNotice('[Agency]', '[date]')}”</li>
-              <li><strong className="text-[var(--text-primary)]">New schedule data:</strong> for agencies whose past feeds have repeatedly had problems, a newly published feed is marked “{NEW_SCHEDULE_DATA_NOTICE.route}” until Atlas checks it for missing service and quality problems.</li>
+              <li><strong className="text-[var(--text-primary)]">{EXPLAINERS['new-schedule-data'].title}:</strong> for agencies whose past feeds have repeatedly had problems, a newly published feed is marked “{NEW_SCHEDULE_DATA_NOTICE.route}” until Atlas checks it for missing service and quality problems.</li>
               {FEATURES.feedQuality && <li><strong className="text-[var(--text-primary)]">Feed quality:</strong> beta quality controls distinguish Healthy, Review, Degraded, and Unusable feeds. The reasons can include errors reading the feed, validation warnings, adjusted shapes, route-versus-stop frequency differences, expired schedules or no usable route output.</li>}
               <li><strong className="text-[var(--text-primary)]">Route-level warnings:</strong> a route can carry a separate warning when its displayed geometry needed adjustment or its service data needs interpretation.</li>
             </ul>

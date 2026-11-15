@@ -1,5 +1,6 @@
 import { isAgencyFeedExpired, isExpiredFeedExpiry, type SupplementalFeedExpiryEntry } from './feedAvailability';
-import { plural } from './overflowText';
+import { countOf, plural } from './overflowText';
+import { countText } from './numberText';
 
 export type FeedQualityStatus = 'healthy' | 'review' | 'degraded' | 'unusable' | 'paused';
 
@@ -45,19 +46,19 @@ export interface FeedQualityInput extends FeedQualityMetrics {
 }
 
 export function feedQualityReasonForValidationWarnings(count: number): string {
-  return `${count} minor schedule ${plural(count, 'issue')} found while reading the feed.`;
+  return `${countText(count)} minor schedule ${plural(count, 'issue')} found while reading the feed.`;
 }
 
 export function isValidationWarningReason(reason: string): boolean {
-  return /^\d+ minor schedule issues? found while reading the feed\.$/.test(reason);
+  return /^[\d,]+ minor schedule issues? found while reading the feed\.$/.test(reason);
 }
 
 export function feedQualityReasonForShapeAnomalies(count: number): string {
-  return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
+  return `${countText(count)} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
 }
 
 export function feedQualityReasonForHeadwayMismatches(count: number): string {
-  return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
+  return `${countText(count)} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
 }
 
 export const FEED_QUALITY_EXPIRED_REASON = 'The schedule dates in this feed have passed.';
@@ -249,17 +250,10 @@ export function qualityStatusLabel(status: FeedQualityStatus): string {
  */
 export function presentFeedQualityReason(reason: string): string {
   const shapeMatch = reason.match(/^(\d+) map lines? (?:was|were) repaired — Atlas fixed unusual route geometry before displaying it\.$/);
-  if (shapeMatch) {
-    const count = Number(shapeMatch[1]);
-    return `${count} route ${plural(count, 'shape needed', 'shapes needed')} adjustment before display.`;
-  }
+  if (shapeMatch) return feedQualityReasonForShapeAnomalies(Number(shapeMatch[1]));
 
   const frequencyMatch = reason.match(/^\d+ route (?:frequency needs|frequencies need) checking — some stops appear to have more frequent service than the route's overall schedule suggests\.$/);
-  if (frequencyMatch) {
-    const countMatch = reason.match(/^(\d+)/);
-    const count = Number(countMatch?.[1] ?? 0);
-    return `${count} route ${plural(count, 'has', 'have')} stops whose frequency differs from the overall route schedule.`;
-  }
+  if (frequencyMatch) return feedQualityReasonForHeadwayMismatches(Number(reason.match(/^(\d+)/)?.[1] ?? 0));
 
   if (reason === 'No route features were produced.' || reason === 'Atlas could not find any usable routes in this feed.') return FEED_QUALITY_NO_ROUTES_REASON;
   if (reason === 'The feed has validation errors.' || reason === 'Atlas found errors while reading this feed.') return FEED_QUALITY_VALIDATION_ERROR_REASON;
@@ -285,13 +279,13 @@ export function feedQualityListItems(reasons: readonly string[]): string[] {
     const presented = presentFeedQualityReason(reason);
     // N81: validation warnings don't change the map, so riders never see them (internal diagnostics keep the count).
     if (isValidationWarningReason(presented)) continue;
-    const count = Number(presented.match(/^(\d+)/)?.[1] ?? 0);
+    const count = Number(presented.match(/^([\d,]+)/)?.[1].replace(/,/g, '') ?? 0);
     if (count > 0 && /\bshapes?\b|map lines?/.test(presented)) shapes += count;
     else if (count > 0 && /frequenc/.test(presented)) frequencies += count;
     else others.push(presented.replace(/\.$/, ''));
   }
   const items: string[] = [];
-  if (shapes > 0) items.push(`${shapes} ${plural(shapes, 'shape')} adjusted`);
-  if (frequencies > 0) items.push(`${frequencies} ${plural(frequencies, 'route')} with frequency mismatches`);
+  if (shapes > 0) items.push(`${countOf(shapes, 'shape')} adjusted`);
+  if (frequencies > 0) items.push(`${countOf(frequencies, 'route')} with frequency mismatches`);
   return [...items, ...others];
 }

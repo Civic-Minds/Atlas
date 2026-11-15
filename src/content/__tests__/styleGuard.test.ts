@@ -142,6 +142,10 @@ const RULES: Rule[] = [
   { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',
     pattern: /['"`](\/about|\/about\/docs|\/agencies|\/changelog|\/terms|\/privacy|\/apps\/live|\/research)['"`]/, slip: '<a href="/about/docs">',
     allowed: ['shared/pagePaths.ts'] },
+  // A research page's own path is one constant too: FEATURE_ROUTES in shared/config.ts (a draft story's in shared/researchStories.ts).
+  { name: 'a research page path typed by hand (use FEATURE_ROUTES in shared/config.ts)', doc: 'TEXT.md',
+    pattern: /['"`]\/research(\/[a-z][a-z-]*)+['"`]/, slip: '<Route path="/research/free-child-fares" />',
+    allowed: ['shared/config.ts', 'shared/researchStories.ts'] },
 
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },

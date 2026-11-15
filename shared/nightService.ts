@@ -1,14 +1,8 @@
 /** The Night Service grades (CIV-1329): every 30, 60 or 90 minutes or better, 2 to 5 AM. 90 is offered on the Night Service page only. */
 export type NightServiceFrequency = 30 | 60 | 90;
 
-export const NIGHT_SERVICE_FREQUENCIES: readonly NightServiceFrequency[] = [30, 60, 90];
-
 /** CIV-1329: the loosest grade the Overnight view counts; 90 is the Night Service page's alone. */
 export const OVERNIGHT_NIGHT_GRADE: NightServiceFrequency = 60;
-
-export function nightServiceKey(frequency: NightServiceFrequency): 'nightService30' | 'nightService60' | 'nightService90' {
-  return `nightService${frequency}` as 'nightService30' | 'nightService60' | 'nightService90';
-}
 
 type NightFlags = { nightService30?: unknown; nightService60?: unknown; nightService90?: unknown; nightService?: unknown };
 

@@ -31,7 +31,7 @@ const PAGES: Record<string, () => ReactElement> = {
   [PRIVACY_PATH]: () => <LegalPage document="privacy" />,
   [TERMS_PATH]: () => <LegalPage document="terms" />,
   [FEATURE_ROUTES.research]: () => <ResearchPage />,
-  '/research/free-child-fares': () => <FreeChildFaresPage />,
+  [FEATURE_ROUTES.freeChildFares]: () => <FreeChildFaresPage />,
 };
 
 export const BUILD_MODE = ATLAS_MODE;
