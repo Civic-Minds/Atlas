@@ -15,8 +15,8 @@ import { AIRPORTS, landableAt, landableCount, type AirportDay } from '../data/ai
 interface Props {
   day: AirportDay;
   hour: number;
-  /** The scroll section has switched to the dark tokens (night steps), or the reader's whole page is dark. */
-  dark: boolean;
+  /** How far the scroll section has blended to the dark tokens, 0 (day) to 1 (night); 1 for a reader already in dark mode. */
+  night: number;
   children: ReactNode;
 }
 
@@ -56,9 +56,7 @@ export function viewPadding(width: number, height: number): maplibregl.PaddingOp
   return { top: narrow ? Math.round(height * 0.38) : 24, bottom: 24, left: 24, right: 24 };
 }
 
-const pageIsLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
-
-export default function AirportStoryMap({ day, hour, dark, children }: Props) {
+export default function AirportStoryMap({ day, hour, night, children }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -72,7 +70,13 @@ export default function AirportStoryMap({ day, hour, dark, children }: Props) {
     if (!map || !box.current) return;
     const css = getComputedStyle(box.current);
     const token = (name: string) => css.getPropertyValue(name).trim();
-    showBasemapTheme(map, !dark && pageIsLight());
+    // The basemap crossfades with the section: the light layer stays under the dark one, whose opacity follows `night`.
+    showBasemapTheme(map, true);
+    if (map.getLayer('basemap-dark')) {
+      map.setLayoutProperty('basemap-dark', 'visibility', night > 0 ? 'visible' : 'none');
+      map.setPaintProperty('basemap-dark', 'raster-opacity', night);
+      map.setPaintProperty('basemap-dark', 'raster-fade-duration', 0);
+    }
     if (!map.getLayer('airports')) return;
     map.setPaintProperty('airports', 'circle-color', ['case', ['get', 'on'], token('--accent'), token('--text-dim')]);
     map.setPaintProperty('airports', 'circle-stroke-color', token('--bg-app'));
@@ -81,7 +85,7 @@ export default function AirportStoryMap({ day, hour, dark, children }: Props) {
 
   useEffect(() => {
     if (!box.current) return;
-    const map = new maplibregl.Map({ container: box.current, style: basemapStyle(!dark && pageIsLight(), { labels: false }), bounds: VIEW, fitBoundsOptions: { padding: viewPadding(box.current.clientWidth, box.current.clientHeight) }, interactive: false, attributionControl: false, fadeDuration: 0 });
+    const map = new maplibregl.Map({ container: box.current, style: basemapStyle(night < 1, { labels: false }), bounds: VIEW, fitBoundsOptions: { padding: viewPadding(box.current.clientWidth, box.current.clientHeight) }, interactive: false, attributionControl: false, fadeDuration: 0 });
     mapRef.current = map;
     map.on('load', () => {
       map.addSource('airports', { type: 'geojson', data: collection });
@@ -99,18 +103,16 @@ export default function AirportStoryMap({ day, hour, dark, children }: Props) {
       });
       setMapReady(true);
     });
-    const theme = new MutationObserver(() => paint());
-    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     const resize = new ResizeObserver(() => { map.resize(); map.fitBounds(VIEW, { padding: viewPadding(map.getContainer().clientWidth, map.getContainer().clientHeight), animate: false }); });
     resize.observe(box.current);
-    return () => { theme.disconnect(); resize.disconnect(); setMapReady(false); map.remove(); mapRef.current = null; };
+    return () => { resize.disconnect(); setMapReady(false); map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     (mapRef.current?.getSource('airports') as maplibregl.GeoJSONSource | undefined)?.setData(collection);
   }, [collection, mapReady]);
 
-  useEffect(paint, [dark, mapReady]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(paint, [night, mapReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     // The Frequent service story's sizes (#1310): pinned at top-16 below lg, top-24 from lg.
