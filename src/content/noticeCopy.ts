@@ -193,7 +193,7 @@ export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 // D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
 // D5 setting-hide-part-time
-export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' } as const;
+export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' } as const;
 // D6 setting-hide-degraded-feeds
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
@@ -306,6 +306,9 @@ export const SEE_ALL_AGENCIES = 'See all agencies';
 export const WHATS_NEW_TITLE = 'What’s new';
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
+/** The Docs page: "Docs" on every link to it, "Documentation" as its title (Ryan, CIV-1610). */
+export const DOCS_LINK_LABEL = 'Docs';
+export const DOCS_PAGE_TITLE = 'Documentation';
 export const EXPORT_MAP_TITLE = 'Export map image';
 /** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
 export const LOCATE_ME_LABEL = 'Go to my location';

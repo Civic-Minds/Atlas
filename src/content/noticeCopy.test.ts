@@ -108,7 +108,7 @@ describe('route labels and setting definitions (CIV-957)', () => {
     expect(IRREGULAR_PERIOD_LABEL).toBe('Runs irregularly in this period');
     expect(IRREGULAR_PERIOD_SHORT_LABEL).toBe('Irregular');
     expect(HIDE_ONE_OFF_SETTING).toEqual({ label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' });
-    expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' });
+    expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' });
     expect(HIDE_DEGRADED_FEEDS_SETTING.label).toBe('Hide degraded feeds');
   });
 });

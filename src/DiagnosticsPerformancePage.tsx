@@ -32,7 +32,7 @@ function readMetrics(): PerformanceMetric[] {
     { label: 'Page load event', value: formatMs(navigation?.loadEventEnd), detail: 'The browser finished loading the document.' },
     { label: 'Largest contentful paint', value: 'Refresh to capture', detail: 'LCP is observed while this page is open.' },
     { label: 'App ready', value: formatMs(getAtlasMark('app-ready')) },
-    { label: 'Agency catalog ready', value: formatMs(getAtlasMark('agency-catalog-ready')) },
+    { label: 'Agency catalogue ready', value: formatMs(getAtlasMark('agency-catalog-ready')) },
     { label: 'Network data ready', value: formatMs(getAtlasMark('network-data-ready')) },
     { label: 'Document transfer', value: navigation?.transferSize ? `${Math.round(navigation.transferSize / 1024)} KB` : 'Not available' },
   ];

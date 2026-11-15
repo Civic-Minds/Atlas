@@ -57,6 +57,9 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 ## Words
 
 - Plain words a non-expert understands at once.
+- Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
+- No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
+- The Docs page is "Docs" on every link to it and "Documentation" as its title (`DOCS_LINK_LABEL`, `DOCS_PAGE_TITLE`). Ryan, CIV-1610. (checked)
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.

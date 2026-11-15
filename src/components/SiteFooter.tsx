@@ -1,6 +1,6 @@
 import { FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
-import { ABOUT_ATLAS, ATLAS_BYLINE } from '../content/noticeCopy';
+import { ABOUT_ATLAS, ATLAS_BYLINE, DOCS_LINK_LABEL } from '../content/noticeCopy';
 import { ABOUT_HOME_PATH } from './SiteHeader';
 
 type FooterLink = { href: string; label: string };
@@ -20,7 +20,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
     {
       title: 'Learn',
       links: [
-        { href: '/about/docs', label: 'Docs' },
+        { href: '/about/docs', label: DOCS_LINK_LABEL },
         ...(FEATURES.researchApps ? [{ href: '/research', label: 'Research' }] : []),
       ],
     },

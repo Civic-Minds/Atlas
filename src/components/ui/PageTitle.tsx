@@ -23,6 +23,11 @@ export function PageTitle({ level = 'page', id, className = '', children }: { le
   return <h1 id={id} className={`${PAGE[level]} ${className}`.trim()}>{children}</h1>;
 }
 
+/** An h3 heading: a titled part inside a section (the Docs page's sub-headings, CIV-1610). One step below the section heading. */
+export function SubsectionTitle({ id, className = '', children }: { id?: string; className?: string; children: ReactNode }) {
+  return <h3 id={id} className={`${SECTION.item} ${className}`.trim()}>{children}</h3>;
+}
+
 /** An h2 heading: a section of a page, or (level "item") a titled block inside one. */
 export function SectionTitle({ level = 'section', id, className = '', children }: { level?: keyof typeof SECTION; id?: string; className?: string; children: ReactNode }) {
   return <h2 id={id} className={`${SECTION[level]} ${className}`.trim()}>{children}</h2>;

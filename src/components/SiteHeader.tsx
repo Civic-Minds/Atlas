@@ -1,7 +1,7 @@
 import ArrowLink from './ui/ArrowLink';
 import { FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
-import { ATLAS_BYLINE } from '../content/noticeCopy';
+import { ATLAS_BYLINE, DOCS_LINK_LABEL } from '../content/noticeCopy';
 
 /** Where the shared header's and footer's logo goes: the About home page (#1509). */
 export const ABOUT_HOME_PATH = '/about';
@@ -20,7 +20,7 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
         {FEATURES.agencyPages && <a href="/agencies" className="hover:text-[var(--text-primary)]">Agencies</a>}
         {FEATURES.researchApps && <a href="/research" className="hover:text-[var(--text-primary)]">Research</a>}
         {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
-        <a href="/about/docs" className="hidden hover:text-[var(--text-primary)] sm:inline">Docs</a>
+        <a href="/about/docs" className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_LINK_LABEL}</a>
         <ArrowLink tone="quiet" href="/">Go to Atlas</ArrowLink>
       </nav>
     </header>

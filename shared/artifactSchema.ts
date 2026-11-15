@@ -15,7 +15,7 @@ export function routeArtifactSchemaError(
   source: string,
 ): string | null {
   if (artifact.atlasSchemaVersion !== ROUTE_ARTIFACT_SCHEMA_VERSION) {
-    return `${source} has route artifact schema ${artifact.atlasSchemaVersion ?? 'missing'}; expected ${ROUTE_ARTIFACT_SCHEMA_VERSION}. Reprocess the full catalog before rebuilding PMTiles.`;
+    return `${source} has route artifact schema ${artifact.atlasSchemaVersion ?? 'missing'}; expected ${ROUTE_ARTIFACT_SCHEMA_VERSION}. Reprocess the full catalogue before rebuilding PMTiles.`;
   }
   return null;
 }

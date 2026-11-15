@@ -36,6 +36,6 @@ describe('Docs page Notices section (CIV-1236)', () => {
     const { container } = render(<AboutDocsPage />);
     const glossary = container.querySelector('#glossary')!.textContent!;
     expect(glossary).toContain('Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.');
-    expect(glossary).toContain('Occasional: A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap. “Hide occasional routes” hides them.');
+    expect(glossary).toContain('Occasional: School runs, a few trips a day, on-demand. “Hide occasional routes” hides them.');
   });
 });

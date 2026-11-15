@@ -79,12 +79,12 @@ export function CardCallout({ tone = 'neutral', className = '', ...rest }: React
 export const REPORT_REASON = {
   missing: 'Route or agency is missing',
   combined: 'Route or branch is incorrectly combined',
-  name: 'Route name, number, destination, or direction is wrong',
+  name: 'Route name, number, destination or direction is wrong',
   frequency: 'Frequency is wrong',
-  schedule: 'Schedule, day, or time-period service is wrong',
+  schedule: 'Schedule, day or time-period service is wrong',
   line: 'Route line is missing or follows the wrong path',
-  stop: 'Stop is missing, misplaced, or assigned incorrectly',
-  filter: 'Filter, search, or route selection is wrong',
+  stop: 'Stop is missing, misplaced or assigned incorrectly',
+  filter: 'Filter, search or route selection is wrong',
   live: 'Live vehicle information is missing or wrong',
   stale: 'Route data is stale',
 } as const;
@@ -103,12 +103,12 @@ const FREQUENCY_REASONS = [
 const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   [REPORT_REASON.missing]: 'The route or agency is missing',
   [REPORT_REASON.combined]: 'The route or branch is combined incorrectly',
-  [REPORT_REASON.name]: 'The route name, number, destination, or direction is wrong',
+  [REPORT_REASON.name]: 'The route name, number, destination or direction is wrong',
   [REPORT_REASON.frequency]: 'The frequency is wrong',
-  [REPORT_REASON.schedule]: 'The schedule, day, or time-period service is wrong',
+  [REPORT_REASON.schedule]: 'The schedule, day or time-period service is wrong',
   [REPORT_REASON.line]: 'The route line is missing or follows the wrong path',
-  [REPORT_REASON.stop]: 'The stop is missing, misplaced, or assigned incorrectly',
-  [REPORT_REASON.filter]: 'The map, filter, search, or route selection is wrong',
+  [REPORT_REASON.stop]: 'The stop is missing, misplaced or assigned incorrectly',
+  [REPORT_REASON.filter]: 'The map, filter, search or route selection is wrong',
   [REPORT_REASON.live]: 'The live vehicle information is missing or wrong',
   [REPORT_REASON.stale]: 'The route data is stale',
 };
@@ -125,7 +125,7 @@ const REPORT_CATEGORIES = [
   {
     key: 'route',
     label: 'Route',
-    description: 'Name, branch, line, frequency, or schedule',
+    description: 'Name, branch, line, frequency or schedule',
     reasons: [
       REPORT_REASON.missing,
       REPORT_REASON.combined,
@@ -139,13 +139,13 @@ const REPORT_CATEGORIES = [
   {
     key: 'stop',
     label: 'Stop',
-    description: 'Missing, misplaced, or assigned incorrectly',
+    description: 'Missing, misplaced or assigned incorrectly',
     reasons: [REPORT_REASON.stop],
   },
   {
     key: 'filter',
-    label: 'Map, filter, or search',
-    description: 'Search, filter, or route selection',
+    label: 'Map, filter or search',
+    description: 'Search, filter or route selection',
     reasons: [REPORT_REASON.filter],
   },
   {
@@ -276,7 +276,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     : selectedCategory === 'stop'
       ? 'What is wrong with this stop?'
       : selectedCategory === 'filter'
-        ? 'What is wrong with the map, filter, or search?'
+        ? 'What is wrong with the map, filter or search?'
         : 'What is wrong with the live vehicle information?';
   const copiesDiagnostics = details.includes('Generated route metrics from the loaded artifact:')
     || details.includes('Generated route metrics (loaded artifact):');

@@ -57,6 +57,12 @@ const RULES: Rule[] = [
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
   { name: '"the shared section" or "shared-section" (say "Shared stretch")', doc: 'TEXT.md', pattern: /\b(the shared section|shared-section)\b/i, slip: "'Buses run on the shared section'" },
+  // CIV-1610 (Ryan): Canadian spelling. Only words that are never code names are checked ("color" is a CSS word).
+  { name: 'US spelling (write analysed, coloured, labelled, cancelled, neighbour, favourite, catalogue)', doc: 'TEXT.md', pattern: /\b(analyz(ed|es|ing)|[Cc]olored|[Cc]oloring|[Ll]abeled|[Ll]abeling|[Cc]anceled|[Nn]eighbors?|[Nn]eighborhoods?|[Ff]avorites?)\b|(?<=[a-z] )catalogs?(?= [a-z]|[.,])/, slip: "'Routes are analyzed by period'" },
+  // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list.
+  { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and/ },
+  // CIV-1610 (Ryan): "Docs" on links, "Documentation" as the title, each from one constant.
+  { name: 'the Docs page named by hand (use DOCS_LINK_LABEL or DOCS_PAGE_TITLE)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Documentation</a>' },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing.
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\bAll day\b(?!s)/, slip: "const PERIOD = 'All day';" },
 

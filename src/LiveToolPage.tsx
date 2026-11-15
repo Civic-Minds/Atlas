@@ -73,7 +73,7 @@ function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: Dashb
 }
 
 /** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
-function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows, and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
+function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {

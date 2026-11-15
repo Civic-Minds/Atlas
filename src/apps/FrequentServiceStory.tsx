@@ -72,7 +72,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
       dateConducted: <>{longDate(FREQUENT_SERVICE_CONDUCTED)}.</>,
       dateUpdated: <>{longDate(FREQUENT_SERVICE_DEFINITIONS_UPDATED)}.</>,
       sample: <>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies Atlas covers in Canada ({frequentServiceDefinitionSample.canada}) and the United States ({frequentServiceDefinitionSample.unitedStates}). We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. The chart shows {frequentServiceStoryStats.chartedAgencies} of those {frequentServiceDefinitionSample.withWait} agencies, checked again between October 30 and November 3.</>,
-      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards, or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
+      sources: <>The agency’s own current system map, rider guide, frequent network page, service standards or a plan for the network running today. Shelter photo: <a className={UNDERLINED_LINK} href="https://commons.wikimedia.org/wiki/File:TTC_Bus_Stop_on_Port_Union_Road,_April_30_2026.jpg" rel="noopener noreferrer">Dillan Payne</a>, <a className={UNDERLINED_LINK} href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener noreferrer">CC BY-SA 4.0</a>, cut out and adapted.</>,
       whatCounted: <>Each quote was checked by script against the saved page. When an agency’s pages disagreed, we used the narrower definition. Not finding a definition does not mean an agency has no frequent service.</>,
       numbers: <>When an agency has more than one frequent tier, we used the fastest one that covers more than one route. When it gives a range, such as {headwayEveryRange(15, 20)}, we used the slower number, for weekday daytime.</>,
       rechecked: <>Between October 30 and November 3, we opened the source again for each of the {frequentServiceStoryStats.recheckedAgencies} agencies the chart counted. {frequentServiceStoryStats.namedNumericAgencies} still matched and stay in the chart. {frequentServiceStoryStats.recheckLeftOut} are left out: Anchorage’s and VIA’s maps are gone, DART’s site returned an error, Foothill’s and Sun Tran’s sites block automated visits, and STM’s page doesn’t show the times to one.</>,
@@ -141,7 +141,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Planners often run more service where many people travel, while keeping less-frequent routes so more places stay connected. Good networks need both—but they serve different purposes.
               </p>
               <p className={STORY_PARAGRAPH}>
-                We reviewed current official system maps and approved rider guides. If the source was unavailable, we recorded that result rather than substituting a schedule, planning document, or service-definition page.
+                We reviewed current official system maps and approved rider guides. If the source was unavailable, we recorded that result rather than substituting a schedule, planning document or service-definition page.
               </p>
             </div>
           </section>
@@ -169,7 +169,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">
             <div>
               <h2 id="more-heading" className={STORY_HEADING}>The number is only the beginning.</h2>
-              <p className={STORY_PARAGRAPH}>A frequency threshold is attached to a span, a set of days, and a geography. It may describe a route, a corridor, a network, or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span, and geography.</p>
+              <p className={STORY_PARAGRAPH}>A frequency threshold is attached to a span, a set of days and a geography. It may describe a route, a corridor, a network or a product that combines modes. A 15-minute route that stops at 6 PM is a different promise from a 15-minute corridor that runs into the evening. That is why we track three things together: headway, service span and geography.</p>
             </div>
           </section>
 
