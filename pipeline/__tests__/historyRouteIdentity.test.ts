@@ -66,6 +66,19 @@ describe('route identity by the share of today\'s line that ran before (CIV-422)
     expect(splitRouteHistory([pl(2017, '21', line(DOWNTOWN, EAST)), pl(2018, 'Ashmont - Forest Hills', line(DOWNTOWN, MID_NORTH))], '21').splits).toEqual([]);
   });
 
+  it('keeps a rename already on the last archived period across the boundary to today (Votran 15, CIV-1581)', () => {
+    // Orange Ave, then number-only names, then Midtown Circulator on the same streets in the last archived feed. Today's
+    // map carries the same new name; its stored line is the other direction, only about half on the archived line.
+    const archived = line(DOWNTOWN, MID_NORTH);
+    const periods = [
+      pl(2015, '15 Orange Ave', archived), pl(2021, '15', archived), pl(2025, '15', archived), pl(2026, '15 MIDTOWN CIRCULATOR', archived),
+      { ...pl(2026, '15 MIDTOWN CIRCULATOR', line(DOWNTOWN, MID_NORTH, BROAD_RIPPLE)), periodKey: 'today', sortKey: '20261114' },
+    ];
+    const { segments, splits } = splitRouteHistory(periods, '15');
+    expect(splits).toEqual([]);
+    expect(segments).toHaveLength(1);
+  });
+
   it('keeps a moved line under the same name, and compares with every earlier line of the route', () => {
     expect(splitRouteHistory([pl(2018, 'East 16th St', line(DOWNTOWN, EAST)), pl(2019, 'East 16th St', line(DOWNTOWN, MID_NORTH))], '11').splits).toEqual([]);
     // 2019's stored line is another pattern; 2020 runs on 2018's streets: one route.
