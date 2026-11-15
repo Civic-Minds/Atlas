@@ -287,6 +287,28 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
 export const MAP_KEY_NIGHT = 'Overnight service';
+/** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
+export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
+/** The title an exported map image carries, by view (sentence case, docs/style/VISUAL.md; CIV-1599). The export reads
+ * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
+export const MAP_EXPORT_TITLES = {
+  frequency: 'Transit frequency',
+  frequentService: 'Frequent service',
+  night: MAP_KEY_NIGHT,
+  bustang: 'Bustang connections',
+  history: 'Service history',
+  live: 'Live transit',
+} as const;
+/** Shared labels used in more than one place (CIV-1599). */
+export const ABOUT_ATLAS = BACK_PLACES.aboutAtlas;
+export const VIEW_ON_MAP = 'View on map';
+export const SEE_ALL_AGENCIES = 'See all agencies';
+export const WHATS_NEW_TITLE = 'What’s new';
+export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
+export const ATLAS_BYLINE = 'Atlas by Civic Minds';
+export const EXPORT_MAP_TITLE = 'Export map image';
+/** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
+export const LOCATE_ME_LABEL = 'Go to my location';
 
 // ---- Neighbourhood shading (beta, CIV-482/CIV-524) ----
 // Every text of the population density / median household income layer, approved word for word by Ryan

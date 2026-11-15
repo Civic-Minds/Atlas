@@ -27,8 +27,8 @@ import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLO
 import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
-import { reportDetails } from '../../utils/reportIssue';
-import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA } from '../../content/noticeCopy';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
+import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL } from '../../content/noticeCopy';
 import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -521,11 +521,11 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
       details={reportDetails([
         ['Agency', agency.name],
-        ['Agency slug', agency.slug],
+        [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
         ['Day', day],
         ['Period', period],
-        ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
-        ['Feed expiry', effectiveFeedExpiry(agency) ?? 'unknown'],
+        [REPORT_DETAIL_LABELS.dataRefreshed, agency.lastRefreshedAt ?? 'unknown'],
+        [REPORT_DETAIL_LABELS.feedExpiry, effectiveFeedExpiry(agency) ?? 'unknown'],
       ])}
       excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
     />
@@ -561,14 +561,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
           ['Agency', agency.name],
-          ['Agency slug', agency.slug],
-          ['On-demand service', zone.serviceName ?? service.serviceName ?? 'unknown'],
+          [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
+          [ON_DEMAND_SERVICE_LABEL, zone.serviceName ?? service.serviceName ?? 'unknown'],
           ['Zone', zoneName ?? 'whole service'],
           ['Hours', zone.serviceHours ?? 'not published'],
           ['Availability', zone.availability ? JSON.stringify(zone.availability) : 'none'],
           ['Day', day],
           ['Period', period],
-          ['Agency data refreshed', agency.lastRefreshedAt ?? 'unknown'],
+          [REPORT_DETAIL_LABELS.dataRefreshed, agency.lastRefreshedAt ?? 'unknown'],
         ])}
         excludeReasons={[REPORT_REASON.stop, REPORT_REASON.frequency, REPORT_REASON.combined]}
       />
@@ -608,7 +608,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         {/* Every section sits at the body padding, the same left edge as the header. */}
         <PanelBody className="px-4 py-4 space-y-4">
           <div>
-            <CardSectionLabel>On-demand service</CardSectionLabel>
+            <CardSectionLabel>{ON_DEMAND_SERVICE_LABEL}</CardSectionLabel>
             {showsShadedArea && (
               <CardBodyText>
                 {ON_DEMAND_SHADED_AREA}
@@ -697,7 +697,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           name={agencyCardName}
           place={agency.onDemandOnly ? null : agencyNameSecondary}
           back={{ to: BACK_TO_MAP_LABEL, onClick: onClose }}
-          facts={agency.onDemandOnly ? 'On-demand service' : buildHeaderSummary(filteredRoutes, maxHeadway)}
+          facts={agency.onDemandOnly ? ON_DEMAND_SERVICE_LABEL : buildHeaderSummary(filteredRoutes, maxHeadway)}
           report={reportButton}
           links={agencyLinks}
         >
@@ -712,7 +712,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
             ];
             return (
               <div className={`mt-2 border-t border-[var(--border-primary)] pt-2 ${routeFilters.length > 0 || hasOnDemandPill ? 'border-b pb-2' : ''}`}>
-                <CardSectionLabel>On-demand service</CardSectionLabel>
+                <CardSectionLabel>{ON_DEMAND_SERVICE_LABEL}</CardSectionLabel>
                 {services.map((item, index) => (
                   <div key={item.serviceName} className={index > 0 ? 'mt-1.5' : ''}>
                     <p className="text-xs text-[var(--text-primary)] leading-snug"><RouteRowName shortName={item.serviceName} /></p>

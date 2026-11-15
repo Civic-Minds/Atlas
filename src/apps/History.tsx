@@ -45,7 +45,7 @@ import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
-import { reportDetails } from '../utils/reportIssue';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../utils/reportIssue';
 import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
@@ -344,7 +344,7 @@ function RouteHistoryCard({
             title={`History: ${agencyName} ${route.routeShortName}`}
             details={reportDetails([
               ['Agency', agencyName],
-              ['Agency slug', agencySlug],
+              [REPORT_DETAIL_LABELS.agencySlug, agencySlug],
               ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
               ['Snapshots', snaps.map(s => s.label).join(', ')],
               ...(day !== 'Weekday' ? [['Day', day] as [string, string]] : []),
@@ -731,7 +731,7 @@ function HistoryAgencyPanel({
           report={(
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
-              details={reportDetails([['Agency', agencyHistory.name], ['Agency slug', agencyHistory.slug]])}
+              details={reportDetails([['Agency', agencyHistory.name], [REPORT_DETAIL_LABELS.agencySlug, agencyHistory.slug]])}
               excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
             />
           )}

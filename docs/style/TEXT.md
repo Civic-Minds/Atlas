@@ -72,6 +72,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
 - Empty and not-found pages link back with "Open the Atlas map" (`OPEN_MAP_LINK`). CIV-1594. (checked)
+- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s new", "About Atlas", map export titles). CIV-1599. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
