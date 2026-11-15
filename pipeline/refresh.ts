@@ -34,7 +34,7 @@ import { serviceWeekKey } from './serviceWeekKey.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
-import { R2_PUBLIC_URL } from '../shared/config.js';
+import { loadFareOverrides } from './fareOverrides.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
 import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
@@ -716,14 +716,9 @@ async function main() {
     process.exit(1);
   }
 
-  // Load fare overrides from R2 — takes precedence over legacy fare field in index.json
-  let fareOverrides: Record<string, { adult?: number }> = {};
-  try {
-    const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
-    if (res.ok) fareOverrides = await res.json() as Record<string, { adult?: number }>;
-  } catch {
-    // not yet uploaded; fall back to legacy fare field
-  }
+  // Fare overrides take precedence over the legacy fare field in index.json. Read through R2;
+  // a failed read stops the run instead of silently publishing legacy fares (#1367).
+  const fareOverrides = await loadFareOverrides();
 
   const targets = onlySlugs.length > 0
     ? index.agencies.filter(a => onlySlugs.includes(a.slug))

@@ -25,8 +25,8 @@ import { resolve, dirname } from 'path';
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
+import { loadFareOverrides } from './fareOverrides.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
-import { R2_PUBLIC_URL } from '../shared/config.js';
 import {
   formatOverrideResolvedLog,
   formatOverrideUserFacingClearedLog,
@@ -196,16 +196,10 @@ async function main() {
       console.log(`  ${formatOverrideResolvedLog(slug, resolved, issueUrl)}`);
     }
   }
-  // fare-overrides.json on R2 takes precedence over legacy index.json fare field
-  try {
-    const res = await fetch(`${R2_PUBLIC_URL}/atlas/fare-overrides.json`);
-    if (res.ok) {
-      const overrides = await res.json() as Record<string, { adult?: number }>;
-      if (overrides[slug]?.adult != null) manualBaseFare = overrides[slug].adult;
-    }
-  } catch {
-    // fare-overrides.json not yet uploaded — continue with legacy value or undefined
-  }
+  // fare-overrides.json takes precedence over legacy index.json fare field; a failed read
+  // throws instead of silently publishing the legacy fare (#1367).
+  const fareOverrides = await loadFareOverrides();
+  if (fareOverrides[slug]?.adult != null) manualBaseFare = fareOverrides[slug].adult;
 
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.
