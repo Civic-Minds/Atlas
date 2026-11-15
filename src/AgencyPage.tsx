@@ -12,20 +12,21 @@ import {
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   CONNECTS_WITH,
-  NO_MIDDAY_PHRASE,
+  noMiddayIntroSentence,
   connectionNames,
   PART_OF,
   PLACE_OTHERS,
   type AgencyPageData,
   type AgencyPageRoute,
 } from '../shared/agencyPages';
-import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
+import { areaRegionName, areaSubtitleName } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
-import { andOthers, plural } from '../shared/overflowText';
+import { andOthers } from '../shared/overflowText';
 import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
-import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
+import { ATLAS_MODE, FEATURES, PERIOD_LABELS } from '../shared/config';
+import HoursBar from './components/charts/HoursBar';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { AgencyModeTable } from './AgencyGroupSection';
 import { parentAgencyPagePath } from '../shared/pagePaths';
@@ -75,7 +76,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
-    ? ` ${plural(data.agency.routes.length, 'Its route has', 'Its routes have')} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
+    ? ` ${noMiddayIntroSentence(data.agency.routes.length)}`
     : '';
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
@@ -103,17 +104,33 @@ function Intro({ data }: { data: AgencyPageData }) {
 }
 
 /**
+ * CIV-1605 (Ryan, pick 1): with the hours bar, a "from" equal to the bar's first time or an "until" equal to its last
+ * leaves the cell, since the bar's end says it; a time that differs (one direction's later start) keeps its words.
+ */
+function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number } {
+  if (!runs) return edge;
+  return {
+    every: edge.every,
+    ...(edge.from != null && edge.from !== runs.first ? { from: edge.from } : {}),
+    ...(edge.until != null && edge.until !== runs.last ? { until: edge.until } : {}),
+  };
+}
+
+/**
  * A period cell: the card's cadence (a range where alternating branches combine on a shared
  * stretch), "Limited" when the route runs but has no trustworthy cadence, "Irregular" where the
  * map list says so (#1249, CIV-1238), else a dash.
  */
-function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute): string {
+function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute, hoursBar = false): string {
   const v = r[col];
   // CIV-1300 (#1311): the route card's own reading, as the map's lists show it.
   const shown = r.text?.[col];
   if (shown) return shown;
   const edge = r.edge?.[col];
-  if (v != null && edge) return periodEdgeText(edge);
+  if (v != null && edge) {
+    const kept = hoursBar ? edgeWithoutBarEnds(edge, r.runs) : edge;
+    return kept.from != null || kept.until != null ? periodEdgeText(kept) : routeListHeadwayText(edge.every);
+  }
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
@@ -158,6 +175,9 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
   }
 
   const stats = agencyStats(agency);
+  // CIV-1605 (beta): one hour axis for every route's hours bar, from the agency's earliest to latest hour of service.
+  const runHours = FEATURES.agencyHoursBar ? agency.routes.flatMap(r => r.runs?.hours ?? []) : [];
+  const hoursAxis = runHours.length ? { first: Math.min(...runHours), last: Math.max(...runHours) } : null;
   const nearby = data!.nearby;
 
   return (
@@ -165,11 +185,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <PageTitle>{data!.title ?? agencyPageH1(agency)}</PageTitle>
-              {data!.area?.page !== false && data!.area
-                ? <ArrowLink tone="inline" className="mt-1" href={areaPagePath(data!.area.slug)}>{areaRegionTitle(data!.area)}</ArrowLink>
-                // An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
-                : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
-                : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
+              {data!.area ? (
+                // CIV-1614: "Calgary, Alberta", "Greater Toronto and Hamilton Area, Ontario". An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
+                <p className="mt-1 text-sm text-[var(--text-muted)]">
+                  {data!.area.page !== false ? <a className={UNDERLINED_LINK} href={areaPagePath(data!.area.slug)}>{areaSubtitleName(data!.area)}</a> : areaSubtitleName(data!.area)}
+                  {agency.region && !areaSubtitleName(data!.area).includes(agency.region) && <>, {data!.regionPage ? <a className={UNDERLINED_LINK} href={data!.regionPage}>{agency.region}</a> : agency.region}</>}
+                </p>
+              ) : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
             <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>{VIEW_ON_MAP}</ArrowLink>
           </div>
@@ -191,11 +213,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r) },
-                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r) },
-                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r) },
-                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r) },
-                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r) },
+                      // CIV-1605 (beta prototype): the weekday hours bar. Header words are a placeholder until Ryan OKs them.
+                      ...(hoursAxis ? [{ key: 'hours', header: '[Placeholder: Hours]', align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r, !!hoursAxis) },
+                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r, !!hoursAxis) },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r, !!hoursAxis) },
+                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r, !!hoursAxis) },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r, !!hoursAxis) },
                     ]}
                   />
                 </ScrollX>

@@ -46,4 +46,13 @@ describe('explainer text is pinned (CIV-1061)', () => {
   it('E8', () => {
     expect(panel({ topic: 'weekday-variation', websiteUrl: site })).toMatchSnapshot();
   });
+  // CIV-1199 (Ryan, 2026-11-14): approved word for word.
+  it('E9', () => {
+    const p = panel({ topic: 'route-rating', filterNotice: 'This route doesn’t run every 15 min or better for all of 3–7 PM.' });
+    expect(p.paragraphs).toEqual(expect.arrayContaining([
+      'This route doesn’t run every 15 min or better for all of 3–7 PM. A part of the route runs less often than the rest.',
+      'We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is.',
+      'If something looks wrong, report it with the flag on this card.',
+    ]));
+  });
 });

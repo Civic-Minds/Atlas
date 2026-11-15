@@ -384,3 +384,145 @@ export function useShownWithCount<L, C>(label: L, count: C, enabled: boolean): [
   }, [enabled, waiting]);
   return enabled ? [next.label, next.count] : [label, count];
 }
+
+type HoldMap = IdleMap & Pick<maplibregl.Map, 'getCanvas' | 'redraw' | 'loaded'>;
+/** How long the map must stay idle with nothing new loading before a held picture lets go. */
+const MAP_HOLD_QUIET_MS = 250;
+/** How long a held picture of the map takes to fade into the redrawn map. */
+const MAP_HOLD_FADE_MS = 300;
+
+/**
+ * Holds a still picture of the map over it while the map redraws for a new `key` (History's agency filter), then fades
+ * the picture into the finished map (CIV-1567). MapLibre re-lays out every route tile for a new filter and draws the
+ * half-done tiles meanwhile, which reads as the map thinning out and snapping back. Call it after the hook that
+ * applies the change, so its wait starts once the change is on the map; put `ref` on a canvas over the map.
+ * The picture goes at once if the map is moved, and after `MODE_ENTER_MAX_WAIT_MS` at most. Off: nothing.
+ */
+export function useMapHold(mapRef: RefObject<HoldMap | null>, mapLoaded: boolean, key: string, enabled: boolean): RefObject<HTMLCanvasElement | null> {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const seenKey = useRef(key);
+  const held = useRef(false);
+  // Before any effect applies the change: the map still shows the old drawing, so copy it.
+  useLayoutEffect(() => {
+    if (seenKey.current === key) return;
+    seenKey.current = key;
+    const map = mapRef.current;
+    const hold = canvasRef.current;
+    if (!enabled || !mapLoaded || !map || !hold || !map.loaded()) return;
+    const source = map.getCanvas();
+    // A WebGL canvas can be copied only right after it draws, before the frame is shown.
+    map.redraw();
+    hold.width = source.width;
+    hold.height = source.height;
+    const ctx = hold.getContext('2d');
+    if (ctx) {
+      // The map's canvas is not fully opaque (line edges are see-through over the page). The picture is laid on the
+      // same colour first, so it is opaque and matches the screen exactly; a see-through picture let the live map show
+      // through, which doubled the line edges.
+      ctx.fillStyle = getComputedStyle(hold.parentElement ?? hold).backgroundColor || '#fff';
+      ctx.fillRect(0, 0, hold.width, hold.height);
+      ctx.drawImage(source, 0, 0);
+    }
+    hold.style.transition = 'none';
+    hold.style.opacity = '1';
+    hold.style.visibility = 'visible';
+    held.current = true;
+  }, [key, enabled, mapLoaded, mapRef]);
+  // After the change is on the map: wait until it has fully redrawn, then fade the picture out. "Fully" means the
+  // map is idle, no source is still processing new data (a GeoJSON source's setData reports idle before its worker
+  // has the data), and nothing new has started loading for MAP_HOLD_QUIET_MS (the route layers' data follows the
+  // filter a moment later).
+  useEffect(() => {
+    const map = mapRef.current;
+    const hold = canvasRef.current;
+    if (!held.current || !map || !hold) return;
+    held.current = false;
+    const pending = new Set<string>();
+    let quietTimer = 0;
+    let hideTimer = 0;
+    let released = false;
+    const cleanup = () => {
+      window.clearTimeout(quietTimer);
+      window.clearTimeout(maxTimer);
+      map.off('dataloading', onLoading);
+      map.off('sourcedata', onData);
+      map.off('idle', onIdle);
+      map.off('movestart', release);
+    };
+    function release() {
+      if (released) return;
+      released = true;
+      cleanup();
+      hold!.style.transition = `opacity ${MAP_HOLD_FADE_MS}ms ease-out`;
+      hold!.style.opacity = '0';
+      hideTimer = window.setTimeout(() => { hold!.style.visibility = 'hidden'; }, MAP_HOLD_FADE_MS + 20);
+    }
+    function onLoading(e: { dataType?: string; sourceId?: string }) {
+      window.clearTimeout(quietTimer);
+      if (e.dataType === 'source' && e.sourceId) pending.add(e.sourceId);
+    }
+    function onData(e: { dataType?: string; sourceId?: string; sourceDataType?: string }) {
+      if (e.dataType === 'source' && e.sourceId && e.sourceDataType === 'content') pending.delete(e.sourceId);
+    }
+    function onIdle() {
+      if (pending.size > 0) return;
+      window.clearTimeout(quietTimer);
+      quietTimer = window.setTimeout(() => { if (pending.size === 0 && map!.areTilesLoaded()) release(); }, MAP_HOLD_QUIET_MS);
+    }
+    const maxTimer = window.setTimeout(release, MODE_ENTER_MAX_WAIT_MS);
+    map.on('dataloading', onLoading);
+    map.on('sourcedata', onData);
+    map.on('idle', onIdle);
+    map.on('movestart', release);
+    map.triggerRepaint();
+    return () => { cleanup(); window.clearTimeout(hideTimer); };
+  }, [key, mapRef]);
+  return canvasRef;
+}
+
+/**
+ * Words that cross-fade when they change (a mode's search hint): the old words fade out where they were while the new
+ * ones fade in over them (CIV-1567). Off: just the words.
+ */
+export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: boolean }) {
+  const [shown, setShown] = useState(text);
+  const [old, setOld] = useState<string | null>(null);
+  const [fading, setFading] = useState(false);
+  if (enabled && text !== shown) {
+    setOld(shown);
+    setShown(text);
+    setFading(false);
+  }
+  useEffect(() => {
+    if (old == null) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setFading(true)); });
+    const timer = window.setTimeout(() => { setOld(null); setFading(false); }, 350);
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); window.clearTimeout(timer); };
+  }, [old]);
+  if (!enabled) return <>{text}</>;
+  const fade = 'transition-opacity duration-300 ease-out motion-reduce:transition-none';
+  return (
+    <span className="inline-grid">
+      {old != null && <span aria-hidden="true" className={`[grid-area:1/1] ${fade} ${fading ? 'opacity-0' : 'opacity-100'}`}>{old}</span>}
+      <span className={`[grid-area:1/1] ${old != null ? `${fade} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
+    </span>
+  );
+}
+
+/**
+ * Fades something in from its first painted frame (a loading panel), rather than from the moment it mounts: when the
+ * page is busy as it mounts, a fade timed from the mount would finish before anything is painted. Render-prop: gets the
+ * classes to put on the element. Off: no classes.
+ */
+export function ModeFadeInOnMount({ enabled, children }: { enabled: boolean; children: (className: string) => ReactNode }) {
+  const [shown, setShown] = useState(!enabled);
+  useEffect(() => {
+    if (shown) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setShown(true)); });
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
+  }, [shown]);
+  if (!enabled) return <>{children('')}</>;
+  return <>{children(shown ? 'opacity-100 transition-opacity duration-200 ease-out motion-reduce:transition-none' : 'opacity-0')}</>;
+}

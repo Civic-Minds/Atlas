@@ -21,7 +21,7 @@ const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
-  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, className: 'tabular-nums', width: 6 },
+  { key: 'agencies', header: 'Agencies', cell: bar => bar.agencies, width: 6 },
 ];
 
 // "Not found" is drawn hatched: no current official rule, not a policy.
@@ -87,8 +87,8 @@ const regionTiles: MapTile[] = regionRows.map(r => {
 const REGION_COLUMNS: DataTableColumn<(typeof regionRows)[number]>[] = [
   { key: 'region', header: 'State or province', cell: r => r.region, rowHeader: true, className: 'font-normal', width: 12 },
   { key: 'age', header: 'Most common free age', cell: r => (r.age != null ? r.age : r.tie ? `Tie: ${r.tie.join(', ')}` : 'None'), width: 8 },
-  { key: 'withAge', header: 'With an age limit', cell: r => r.withAge, className: 'tabular-nums', width: 6 },
-  { key: 'total', header: 'Agencies', cell: r => r.total, className: 'tabular-nums', width: 6 },
+  { key: 'withAge', header: 'With an age limit', cell: r => r.withAge, width: 6 },
+  { key: 'total', header: 'Agencies', cell: r => r.total, width: 6 },
 ];
 const MAP_TITLE = 'Most common free age, by state and province';
 
@@ -139,7 +139,7 @@ export default function FreeChildFaresPage() {
               {keyFigures.map(figure => (
                 <div key={figure.label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-4">
                   <dt className="text-xs font-bold leading-5 text-[var(--text-muted)]">{figure.label}</dt>
-                  <dd className="mt-1 text-3xl font-black tabular-nums tracking-tight sm:text-4xl">{figure.value}</dd>
+                  <dd className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{figure.value}</dd>
                 </div>
               ))}
             </dl>

@@ -46,6 +46,8 @@ export interface AgencyFeedConfig {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   mergeIdenticalShapeIds?: boolean;
+  /** CIV-1551: see GtfsTransformOptions.routeNumberFromLongName. */
+  routeNumberFromLongName?: boolean;
   referenceDateFromRunDate?: boolean;
   /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
   skipBlockTripHeadways?: boolean;
@@ -110,6 +112,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     routeTypes: agency.routeTypes,
     preprocess: agency.preprocess,
     excludeRouteShortNames: agency.excludeRouteShortNames,
+    routeNumberFromLongName: agency.routeNumberFromLongName,
     bookingRequiredRoutes: agency.bookingRequiredRoutes,
     excludeTripHeadsigns: agency.excludeTripHeadsigns,
     skipLetterSuffixMerge: agency.skipLetterSuffixMerge,

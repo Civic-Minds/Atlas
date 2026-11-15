@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { longDate } from '../../shared/dateText';
-import { ArrowDown, ArrowRight, MapPinned } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
+import ArrowLink from '../components/ui/ArrowLink';
 import { trackEvent } from '../lib/analytics';
 import { headwayEveryRange } from '../utils/headwayText';
 import { type DataTableColumn } from '../components/ui/DataTable';
@@ -23,6 +24,8 @@ import { hourTime } from '../../shared/timeText';
 /** The story's section headings and body paragraphs, one look each. */
 const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
 const STORY_PARAGRAPH = 'mt-5 text-base leading-8 text-[var(--text-muted)]';
+/** The hero's in-page jump buttons (Explore the research, See the method): one pill, so the two match. */
+const STORY_JUMP_BUTTON = 'inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]';
 
 interface Props {
   onExploreMap: () => void;
@@ -37,27 +40,27 @@ const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
-  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
-  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, width: 6.5 },
 ];
 
 /**
  * CIV-1603 section 1: the drop from every agency we could check, to those with a named frequent network, to those that give
  * a number, to those the agency chart shows. The same counts as the method box (frequentServiceDefinitionSample,
  * frequentServiceStoryStats.chartedAgencies); nothing is recounted.
- * The bar names are placeholders until Ryan approves wording.
+ * Bar names, heading, intro, note and chart name approved word for word by Ryan (2026-11-15).
  */
 const DEFINITION_FUNNEL = [
-  { key: 'checked', label: '[Label 1]', agencies: frequentServiceDefinitionSample.agencies },
-  { key: 'named', label: '[Label 2]', agencies: frequentServiceDefinitionSample.namedNetwork },
-  { key: 'number', label: '[Label 3]', agencies: frequentServiceDefinitionSample.withWait },
+  { key: 'checked', label: 'Checked', agencies: frequentServiceDefinitionSample.agencies },
+  { key: 'named', label: 'Named frequent network', agencies: frequentServiceDefinitionSample.namedNetwork },
+  { key: 'number', label: 'Say how often', agencies: frequentServiceDefinitionSample.withWait },
   // The agency chart's own count: still confirmed on the October 30 recheck, after the tier rule (CIV-1178).
-  { key: 'charted', label: '[Label 4]', agencies: frequentServiceStoryStats.chartedAgencies },
+  { key: 'charted', label: 'In the chart above', agencies: frequentServiceStoryStats.chartedAgencies },
 ] as const;
 type DefinitionStep = (typeof DEFINITION_FUNNEL)[number];
 const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
-  { key: 'step', header: '[Ryan’s wording: table column]', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
-  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, className: 'tabular-nums', width: 6 },
+  { key: 'step', header: 'Step', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
+  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, width: 6 },
 ];
 
 /** CIV-1603 section 3: weekday and Sunday routes at a threshold (frequent-weekend-counts.json). */
@@ -70,8 +73,8 @@ const weekendCounts = (city: WeekendCity, minutes: WeekendThreshold) => (minutes
 const WEEKEND_COLUMNS: DataTableColumn<WeekendCity>[] = [
   { key: 'city', header: 'City', cell: city => city.city, rowHeader: true, className: 'font-normal', width: 8 },
   ...WEEKEND_THRESHOLDS.flatMap(minutes => [
-    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, className: 'tabular-nums', width: 6 },
-    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, className: 'tabular-nums', width: 6 },
+    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, width: 6 },
+    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, width: 6 },
   ]),
 ];
 
@@ -135,9 +138,15 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
           </div>
-          <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
-            Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
+          {/* Ryan, 2026-11-14: a second button jumps to the story's own Method section at the bottom. */}
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <a href="#story" className={STORY_JUMP_BUTTON}>
+              Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+            <a href="#research-method-heading" className={STORY_JUMP_BUTTON}>
+              See the method <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </div>
         </ResearchHeader>
 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
@@ -190,7 +199,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className={STORY_HEADING}>There is no single “frequent.”</h2>
               <p className={STORY_PARAGRAPH}>
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes. Fifteen minutes is the most common choice. Transit planner <a className={UNDERLINED_LINK} href="https://humantransit.org/2011/12/how-frequent-is-freedom.html" rel="noopener noreferrer">Jarrett Walker</a> puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.” The industry’s <a className={UNDERLINED_LINK} href="https://onlinepubs.trb.org/onlinepubs/tcrp/tcrp_rpt_165ch-05.pdf" rel="noopener noreferrer">planning manual</a> says that at 10 minutes or better there is “no need for passengers to consult schedules.”
               </p>
             </div>
             <div className="mt-10">
@@ -206,22 +215,22 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption
+          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15);
               are placeholders until Ryan approves wording. */}
           <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="definitions-heading" className={STORY_HEADING}>[Ryan’s wording: section 1 heading]</h2>
-              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 1 intro]</p>
+              <h2 id="definitions-heading" className={STORY_HEADING}>Most agencies don’t publish a number.</h2>
+              <p className={STORY_PARAGRAPH}>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. Not finding a definition does not mean an agency has no frequent service.</p>
             </div>
             <div className="mt-10">
               <RankedBars
-                label="[Ryan’s wording: section 1 chart name for screen readers]"
+                label="Chart showing how many agencies define frequent service, from every agency checked to the ones in the chart above"
                 bars={DEFINITION_FUNNEL.map(step => ({ key: step.key, label: step.label, value: step.agencies, fill: 'var(--text-muted)', sentence: `${step.label}: ${countOf(step.agencies, 'agency', 'agencies')}` }))}
                 max={frequentServiceDefinitionSample.agencies}
                 details={definitionTableId}
               />
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 1 caption]</p>
-              <ChartTableDetails id={definitionTableId} caption="[Ryan’s wording: section 1 heading]" columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. The last bar counts the agencies still confirmed when we checked again between October 30 and November 3.</p>
+              <ChartTableDetails id={definitionTableId} caption="Most agencies don’t publish a number." columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
             </div>
           </section>
 
@@ -276,16 +285,14 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </section>
 
           <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
-            <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
-              <div>
                 <h2 id="atlas-heading" className={STORY_HEADING}>Now find your own network.</h2>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">The research explains the categories. Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
-              </div>
-              <button type="button" onClick={exploreMap} className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-black text-[var(--bg-app)] hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">
-                <MapPinned className="h-4 w-4" aria-hidden="true" />
-                Find your city
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
+            {/* Ryan, 2026-11-14: no dark buttons. The About page's pattern: the main action as ArrowLink, then an outline pill. */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <ArrowLink as="button" type="button" onClick={exploreMap}>Find your city</ArrowLink>
+              <a href="#research-method-heading" className={STORY_JUMP_BUTTON}>
+                See the method <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
             </div>
           </section>
         </div>

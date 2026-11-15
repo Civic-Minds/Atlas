@@ -67,6 +67,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - "Irregular" in table cells and list values.
   - Never "no regular service", which reads as if nothing runs. (checked)
 - "Report a problem" reasons are named once, in `REPORT_REASON` (`src/components/Interval/cardUi.tsx`); cards hide or pre-check them by that name. CIV-1591. (checked)
+- "Area" is a metro area (the Calgary area, the Greater Toronto and Hamilton Area), in text and in /area/ links. "Region" is only a state or province (/region/ pages). An agency page reads "Calgary, Alberta" (the area's name without a trailing lowercase "area"; "Greater Toronto and Hamilton Area, Ontario" keeps its name). Ryan, CIV-1614. (checked)
 - "Occasional", not "one-off" or "irregular", for the route class hidden by default (school runs, a few trips a day, on-demand). CIV-1238. (checked: "one-off")
 - "Schedule", not "timetable", in all rider-facing text, on the map and in Live, including approved texts (Ryan, CIV-1079, CIV-1160). (checked)
   - Code names (`noTimetableTrip` and the like) stay.

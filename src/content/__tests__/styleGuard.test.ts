@@ -66,6 +66,8 @@ const RULES: Rule[] = [
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
   // CIV-1613: lowercase and "all-day" too ("or else all day" slipped through); the Docs page says "across the day" (Ryan, CIV-1610).
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\b[Aa]ll[-  ][Dd]ay\b(?![s-])/, slip: "'borrow an all-day average'" },
+  // CIV-1614 (Ryan): a metro area is an "area"; "region" is only a state or province.
+  { name: '"region" for a metro area (say "area")', doc: 'TEXT.md', pattern: /\b(city|metro) regions?\b|\b(agencies|transit agencies) and regions\b|\bRegions include\b/, slip: "'every agency in a city region'" },
 
   // Times (shared/timeText.ts)
   { name: 'a lowercase am/pm or a.m./p.m. (write "7 AM")', doc: 'TEXT.md', pattern: /\d ?(am|pm)\b|\b[ap]\.m\./, slip: "'Daily 6 a.m.–9 pm'" },
@@ -146,6 +148,8 @@ const RULES: Rule[] = [
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },
   { name: 'a <table> outside DataTable', doc: 'VISUAL.md', pattern: /<table\b/, slip: '<table className="w-full">',
     allowed: ['src/components/ui/DataTable.tsx'] },
+  // Ryan, 2026-11-15: normal (proportional) digits everywhere, charts included.
+  { name: 'fixed-width digits (tabular-nums or font-variant-numeric)', doc: 'VISUAL.md', pattern: /\btabular-nums\b|font-variant-numeric|fontVariantNumeric|['"]tnum['"]/, slip: '<span className="tabular-nums">' },
   { name: 'a shadow (keep the flat look)', doc: 'VISUAL.md', pattern: /\bshadow-(sm|md|lg|xl|2xl|inner)\b|\bshadow\b(?=[\s"'`])|boxShadow|box-shadow/, slip: '<div className="rounded-lg shadow-md">' },
   // CIV-1607: every pill search box is SearchBox, so each has the clear X; the top bar's box (App.tsx) is the one exception.
   { name: 'a search box built by hand (use SearchBox)', doc: 'VISUAL.md', pattern: /className=\{SEARCH_(FIELD|PILL)\}|<Search className=\{SEARCH_ICON\}/, slip: '<input className={SEARCH_FIELD} />',
@@ -167,10 +171,7 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-// CIV-1613: NO_MIDDAY_PHRASE ("with no regular midday service") waits for Ryan's wording.
-const PENDING: Record<string, string[]> = {
-  '"no regular service" (say "Irregular" or "Runs irregularly in this period")': ['shared/agencyPages.ts'],
-};
+const PENDING: Record<string, string[]> = {};
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
 // removed from its file before the rules run, so only that exact text passes.
@@ -179,6 +180,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/apps/FrequentServiceStory.tsx': [
     '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
     'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+    // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
+    '“around every 15 minutes all day.”',
   ],
   'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
   'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],

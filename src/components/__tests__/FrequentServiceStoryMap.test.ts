@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForStage, routeCountForStage, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
+import { featuresForStage, routeCountForStage, stageChangeFade, stageCollection, STORY_LAYERS, storyFade, storyLayerOpacity, storyRows } from '../FrequentServiceStoryMap';
 
 // `midday` is the route's wait in AM peak, midday and PM peak alike, as the main map's filter reads it; `daytime` sets the three apart.
 const feature = (serviceClass: string, midday: number | null, daytime30: boolean, daytime15: boolean, rowMidday: number | null = midday, daytime: { amPeak?: number | null; pmPeak?: number | null } = {}) => ({
@@ -161,5 +161,15 @@ describe('Frequent Service story stages', () => {
       withRoute(rushOnly, '900', 0),
     ];
     expect([0, 1, 2, 3].map(stage => routeCountForStage(rows, stage, 15))).toEqual([3, 2, 2, 1]);
+  });
+});
+
+// #1517: a fast scroll jumps straight to the stage it lands on instead of fading through each one.
+describe('stage change fade', () => {
+  it('fades one step at a reading pace, and jumps when a stage is skipped or the last fade is still running', () => {
+    expect(stageChangeFade(0, 1, 5000, false).duration).toBeGreaterThan(0);
+    expect(stageChangeFade(0, 3, 5000, false).duration).toBe(0);
+    expect(stageChangeFade(1, 2, 100, false).duration).toBe(0);
+    expect(stageChangeFade(0, 1, 5000, true).duration).toBe(0);
   });
 });

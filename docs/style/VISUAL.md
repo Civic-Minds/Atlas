@@ -24,6 +24,7 @@ The shared components live in `src/components/ui/`.
 
 ## Tables, controls and labels
 
+- Digits are the font's normal (proportional) digits everywhere, charts and tables included. No fixed-width digits (`tabular-nums`, `font-variant-numeric`). Ryan, 2026-11-15: "1". (checked)
 - Tables use `DataTable` (`src/components/ui/DataTable.tsx`) with one of its variants (compact, ruled, card). (checked: no `<table>` outside `DataTable`)
 - Page tables (area and agency pages) keep their columns in place. CIV-958, CIV-973.
   - Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry), with a dash where a mode is missing.
@@ -107,7 +108,10 @@ On the site:
 - The graphics desk builds charts and pages from the shared chart collection (CIV-1173). (Editorial strategy, 2026-10-30)
 - Hand-drawn art doesn't fit Atlas's look. Our graphics come from the chart collection (CIV-1173). (Editorial strategy, 2026-10-30)
 - A data story answers one question for every agency, as a chart with a table (Free child fares). (Editorial strategy, 2026-10-30)
-- Our charts have "Show as a table". (Editorial strategy, 2026-10-30)
+- A chart's legend picks its series: hovering, focusing or tapping a legend item (or the part itself) highlights that series and fades the rest; tapping it again, leaving the chart or moving focus away clears it. Every chart with a legend uses `useActivePart` (`src/components/charts/useActivePart.ts`), the split bar's and the sparklines' way (`SplitBar`, `CategorySpark`). Ryan, 2026-11-15: "Like this should be part of the visual style guide right". (checked)
+  - Keyboard: each legend item is focusable, and focus or Enter picks it.
+  - Screen readers: each item names its series and its count, and the chart's numbers are also a table (below).
+- A chart's numbers are also a table for screen readers only, with no visible "Show as a table" toggle (`ChartTableDetails`). CIV-1281 (Ryan), replacing the editorial strategy's visible toggle (2026-10-30).
 - Adding one source line under each chart would fit standard 3. (Editorial strategy, 2026-10-30; written as a proposal there)
 - A caveat sits next to the chart it affects, such as "Not found yet", not only at the end. (Editorial strategy, 2026-10-30)
 

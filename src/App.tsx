@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
@@ -286,6 +286,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       issueUrl: opts.issueUrl,
       issueUrls: opts.issueUrls,
       rolloutNotice: opts.rolloutNotice,
+      filterNotice: opts.filterNotice,
     } : null);
     setInfoOpen(true);
   }, []);
@@ -461,6 +462,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
+  // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
+  const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
+  const historyEasing = useModeEasing(inHistory, FEATURES.modeTransitions, historyEntering);
+  const historyMapFilterOn = inHistory && !historyEasing;
   // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
   useEffect(() => {
     if (inHistory) syncUrlParams(encodeHistoryView(historyView));
@@ -757,7 +763,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
               <span className="sm:hidden">{SEARCH_SHORT_PLACEHOLDER}</span>
-              <span className="hidden sm:inline">{searchPlaceholder}</span>
+              {/* CIV-1567 (beta): a mode's new hint cross-fades with the old one. */}
+              <span className="hidden sm:inline"><ModeCrossFadeText text={searchPlaceholder} enabled={FEATURES.modeTransitions} /></span>
             </span>
           )}
           {query !== '' && <SearchClearButton variant="bar" onClear={handleSearchClear} />}
@@ -788,7 +795,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
         {/* Live and History have no compare view: keep the tab (as an icon); it opens Compare's own address on the map. */}
-        {compareOn && (inLive || inHistory) && (
+        {/* CIV-1567 (beta): Interval keeps its own tab mounted there instead, so it folds rather than being swapped. */}
+        {compareOn && (inLive || inHistory) && !FEATURES.modeTransitions && (
           <CompareTab
             active={false}
             onStart={() => setActiveApp('frequency', COMPARE_PATH)}
@@ -901,8 +909,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setFrequentServiceWindow={setFrequentServiceWindow}
               showMapContext={FEATURES.mapContext}
               showMatchPercentage={FEATURES.matchPercentage}
-              filterToAgencies={inHistory || inBustang}
-              agencyFilterSlugs={inHistory ? historyFilterSlugs : inBustang ? bustangSlugs : null}
+              filterToAgencies={historyMapFilterOn || inBustang}
+              agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
               hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService}
               onInfoOpen={openInfo}
@@ -935,6 +943,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
+              compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
               moreMenuPortalContainer={moreMenuPortalEl}
@@ -954,9 +963,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
-                <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
-                  <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
-                </Panel>
+                // CIV-1567 (beta): it fades in from its first painted frame rather than appearing in one frame.
+                <ModeFadeInOnMount enabled={FEATURES.modeTransitions}>
+                  {fade => (
+                    <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)} className={fade || undefined}>
+                      <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
+                    </Panel>
+                  )}
+                </ModeFadeInOnMount>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>

@@ -107,13 +107,13 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
         columns={[
           { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
+          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}

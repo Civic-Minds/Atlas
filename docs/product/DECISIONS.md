@@ -66,6 +66,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a section needs at least 3 departures in a period for a value, then the same filter and "Hide limited service" behaviour as a whole route, with no new thresholds.
   - Why: one rule for routes and sections, so nothing special-cases a mode.
   - Source: Linear CIV-321, comment of 2026-10-18 (question 1)
+- **A short slow end keeps the route's own number on the card**
+  - What: with section colours, a row whose line has a slower end under the tail minimum (FREQUENCY_RULES rule 3, D1: 5 stops and 1 km) reads the route's own number, as the route list and chooser do; the map's section colours show the slow end. It replaces CIV-1595's range ("every 10–20 min") and single slow number (TTC 927 midday "every 306").
+  - Why: one calculation per fact, so card, list and chooser agree, and one big slow number doesn't read as the whole route.
+  - Source: Ryan, CIV-1579 (2026-11-15, option 1)
 - **A selected route obeys the map's filters**
   - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
   - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
@@ -244,6 +248,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-15 — "Area" for metro areas, "region" for states and provinces
+Ryan (Linear CIV-1614): page text and links call a metro area an "area" (/area/ pages); /region/ stays for states, provinces and territories, with no /province path and no redirects; an area still needs at least 2 agencies for its own page. The agency page names both, "Calgary, Alberta" (Ryan, follow-up: "Calgary area, Alberta" read oddly; a name with "Area" in it keeps it, "Greater Toronto and Hamilton Area, Ontario"), each linked when it has a page, and an area page links the states or provinces in its subtitle.
 
 ### 2026-11-13 — A period that starts slowly says when steady service starts
 Ryan, 2026-11-13 (Linear CIV-1411), on TTC Line 5 westbound's AM peak (two 20-minute gaps at Laird before 7:27, then every 3.6): "dont we have a 'x mins from x time' fix for this laready". A slow start doesn't set the card's figure on its own. The card says "every N from <time>", where N is the longest wait from that time to the period's end, so it never reads better than the service runs. Without a steady run from that time, the period keeps its longest wait.

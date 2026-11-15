@@ -283,8 +283,11 @@ describe('CIV-1199: each fact once (Ryan, 2026-11-14), on the audit\'s cards', (
     expect(n.dropped).toEqual([{ code: 'N12', why: 'every row meets the filter; the part-period line says when it runs' }]);
     // Rows every 15 that run all period, nothing else on the card saying why: the filter line stays.
     expect(outOf(withRows([{ headway: 15 }]), { maxHeadway: 15 }).filter?.code).toBe('N12');
+    // CIV-1199 case 1: that line opens the Route rating explainer (E9); a row slower than the filter doesn't.
+    expect(outOf(withRows([{ headway: 15 }]), { maxHeadway: 15 }).filter?.learnMore).toBe(true);
     // A row slower than the filter: no swap.
     expect(outOf(withRows([{ headway: 12 }, { headway: 20 }], { activeRangeDirections: dir, rowHeadways: [12, 20], contract: { filterValue: 30 } }), { directions: dir, period: 'late', maxHeadway: 15 }).filter?.code).toBe('N12');
+    expect(outOf(withRows([{ headway: 12 }, { headway: 20 }], { activeRangeDirections: dir, rowHeadways: [12, 20], contract: { filterValue: 30 } }), { directions: dir, period: 'late', maxHeadway: 15 }).filter?.learnMore).toBeUndefined();
   });
 
   it('N12: rows every 15 beside a row naming its gap read no filter line (OC Transpo 6 midday, AC Transit 1T late at ≤15)', () => {

@@ -5,11 +5,11 @@
 import { agencyMention, agencyPagePath, agencyPlaces, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
 import { countryForRegion } from './regionCountry';
 import { areaRegionTitle, areaShortName } from './areaRegions';
-import { areaPagePath, areaSlug, type AreaConfig } from './areas';
+import { areaPagePath, type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
-import { AGENCY_INDEX_PATH, parentAgencyPagePath } from './pagePaths';
+import { AGENCY_INDEX_PATH, agencyIndexHeadingHref, agencyIndexHeadingId, parentAgencyPagePath } from './pagePaths';
 import { parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
 import { countText } from './numberText';
 
@@ -19,12 +19,12 @@ export const AGENCY_INDEX_DATA_SCRIPT_ID = 'agency-index-data';
 
 /** The id of a state or province heading in the list; a country listed with no regions keeps its own heading's id. */
 export function agencyIndexRegionId(country: string, region: string): string {
-  return region === country ? `index-${country}` : `index-${areaSlug(country)}-${areaSlug(region)}`;
+  return agencyIndexHeadingId(country, region);
 }
 
 /** Link to an agency's state or province in the list (CIV-966), or null when the agency has no country and region. */
 export function agencyIndexRegionHref(a: { country?: string; region?: string }): string | null {
-  return a.country && a.region ? `${AGENCY_INDEX_PATH}#${encodeURIComponent(agencyIndexRegionId(a.country, a.region))}` : null;
+  return a.country && a.region ? agencyIndexHeadingHref(a.country, a.region) : null;
 }
 
 export interface AgencyIndexAgency {
@@ -100,11 +100,11 @@ export function buildAgencyIndexData(
 }
 
 export function agencyIndexTitle(): string {
-  return 'All transit agencies and regions | Transit Atlas';
+  return 'All transit agencies and areas | Transit Atlas';
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {
-  return `${countText(d.agencyCount)} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'region')}. Each agency’s page shows how often every route runs.`;
+  return `${countText(d.agencyCount)} transit ${plural(d.agencyCount, 'agency', 'agencies')} and ${d.areas.length} ${plural(d.areas.length, 'area')}. Each agency’s page shows how often every route runs.`;
 }
 
 export function resolveAgencyIndexSeo(

@@ -7,6 +7,14 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
+- **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
+- **No more Google Fonts**: Atlas serves its Inter font itself, so loading a page no longer sends your address to Google ([#1520](https://github.com/Civic-Minds/Atlas/issues/1520))
+- **Agency and area pages say "area" for a metro area**: an agency page reads "Calgary, Alberta" with both linked, an area page links its states or provinces, and "region" now means only a state or province
+- **Route card rows keep the route's own number when a short end runs slower (beta)**: the card matches the route list again, and the map's section colours show the slow end
+- **The [Frequent Service story](https://github.com/Civic-Minds/Atlas/issues/1517) map keeps up with a fast scroll**: it jumps straight to the stage you land on instead of fading through each one
+- **Numbers use the font's normal digits everywhere**: charts and tables no longer switch to fixed-width digits
+- **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
+- **A selected line's ends stay clear of the [route card](https://github.com/Civic-Minds/Atlas/issues/1516) on wide screens**: CTA Green's Harlem end sat under the card
 - **The frequency bar's last group reads "Irregular or no trips"**: "Irregular or none" read oddly
 - **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"

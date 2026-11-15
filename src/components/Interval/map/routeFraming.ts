@@ -110,13 +110,23 @@ export function cardFramePadding(map: maplibregl.Map, card: Element | null | und
   return routeFramePadding(map, 'left', { phoneSheet: true, card: card?.getBoundingClientRect() ?? null });
 }
 
+/** Marks the main map's route card frame (SidebarControls), so the route fit can measure where the card really is. */
+export const ROUTE_CARD_FRAME_ATTR = 'data-route-card-frame';
+
 /**
  * Padding for the main map's route selection. Where the route card is a phone bottom sheet
  * (FEATURES.mobileRouteSheet), frame above the sheet: the side-card padding (400px of left+right)
- * leaves a phone map almost no width, so the fit zooms out to a continent.
+ * leaves a phone map almost no width, so the fit zooms out to a continent. On wide screens, the card's measured
+ * box sets the left padding: the fixed 320px sat inside a card that ends further right, and a long line's end
+ * landed under it (#1516).
  */
-export function selectionFramePadding(map: maplibregl.Map, phoneSheet: boolean = FEATURES.mobileRouteSheet): maplibregl.PaddingOptions {
-  return routeFramePadding(map, 'left', { phoneSheet });
+export function selectionFramePadding(
+  map: maplibregl.Map,
+  phoneSheet: boolean = FEATURES.mobileRouteSheet,
+  card?: Element | null,
+): maplibregl.PaddingOptions {
+  const cardRect = card && cardBesideMap(map) ? card.getBoundingClientRect() : null;
+  return routeFramePadding(map, 'left', { phoneSheet, card: cardRect });
 }
 
 /** Fit the camera to a route's (or stretch's) coordinates, or fly to it when it's a single point. */

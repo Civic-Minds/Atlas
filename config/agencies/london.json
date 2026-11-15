@@ -22,10 +22,10 @@
   "cities": [
     "London, Ontario"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261128",
+  "expiredFeedCheckExpiry": "20270206",
   "feedQuality": {
     "status": "review",
     "score": 97,
@@ -45,7 +45,8 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-14",
+    "scoredAt": "2026-11-15"
   },
   "timezone": "America/Toronto",
   "feedRefreshStatus": "current",
@@ -57,5 +58,6 @@
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "12d581fc8a6d1f8b",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261019"
+  "lastFeedStart": "20261019",
+  "heldFeedStart": "20261129"
 }

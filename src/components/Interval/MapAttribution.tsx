@@ -4,7 +4,7 @@ import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
-import { trackEvent } from '../../lib/analytics';
+import { trackEvent, withoutMapPosition } from '../../lib/analytics';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
@@ -39,7 +39,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
       document.removeEventListener('keydown', onKey);
     };
   }, [aboutOpen]);
-  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${window.location.href}\n`)}`;
+  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${withoutMapPosition(window.location.href)}\n`)}`;
 
   return (
     <>

@@ -23,7 +23,7 @@ import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { countText } from '../shared/numberText';
 
-/** Shared multi-column layout for the Regions list and every country's agency list. */
+/** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
 
 /** Beta only: agencies with 10+ years of schedule history, from the small list build-history writes. */
@@ -73,12 +73,12 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
   return (
     <DocsPageLayout width="wide">
-          <PageTitle>All agencies and regions</PageTitle>
+          <PageTitle>All agencies and areas</PageTitle>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{agencyIndexDescription(data)}</p>
 
           {areas.length > 0 && (
             <section className="mt-12" aria-labelledby="index-regions">
-              <SectionTitle id="index-regions">Regions</SectionTitle>
+              <SectionTitle id="index-regions">Areas</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
                 {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>

@@ -10,6 +10,8 @@ import {
   normalizePath,
   prerenderRoutes,
   researchPreviewRoutes,
+  routeExistsInBuild,
+  shellRoutes,
   resolveSeo,
   type SeoContext,
 } from './seo';
@@ -161,14 +163,25 @@ describe('head tag rewriting', () => {
     expect(applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))).toContain('<title>Transit Atlas: scheduled frequency map</title>');
   });
 
-  it('writes a link-preview file for every research page the prerender does not cover, in every build', () => {
+  it('writes a link-preview file for every research page the prerender does not cover, where the build has it', () => {
     const research = SEO_ROUTES.map(r => r.path).filter(p => p === '/research' || p.startsWith('/research/'));
-    for (const flags of [BETA.flags, PUBLIC.flags]) {
-      const covered = [...prerenderRoutes(flags), ...researchPreviewRoutes(flags)].map(r => r.path);
-      for (const path of research) expect(covered, path).toContain(path);
-      expect(researchPreviewRoutes(flags).every(r => !prerenderRoutes(flags).includes(r))).toBe(true);
-    }
+    const covered = [...prerenderRoutes(BETA.flags), ...researchPreviewRoutes(BETA.flags)].map(r => r.path);
+    for (const path of research) expect(covered, path).toContain(path);
+    expect(researchPreviewRoutes(BETA.flags).every(r => !prerenderRoutes(BETA.flags).includes(r))).toBe(true);
     expect(researchPreviewRoutes(BETA.flags).map(r => r.path)).toEqual(['/research/night', '/research/bustang-connections', '/research/frequent-service', '/research/frequent-service/story']);
+  });
+
+  it('#1521: a page that is off in a build gets no file, so its address is a real 404, never the map with a 200', () => {
+    for (const flags of [BETA.flags, PUBLIC.flags]) {
+      for (const r of SEO_ROUTES.filter(x => x.gate && !routeExistsInBuild(x, flags))) {
+        expect([...prerenderRoutes(flags), ...shellRoutes(flags)].map(x => x.path), r.path).not.toContain(r.path);
+      }
+    }
+    // The public site has none of the research pages, History or Live.
+    expect(shellRoutes(PUBLIC.flags).map(r => r.path).filter(p => p.startsWith('/research') || p === '/apps/history' || p === '/apps/live')).toEqual([]);
+    // Each page that is on gets its own file with its own tags; the map's aliases stay on app.html.
+    expect(shellRoutes(BETA.flags).map(r => r.path)).toContain('/apps/history');
+    expect(shellRoutes(BETA.flags).map(r => r.path)).not.toContain('/apps/compare');
   });
 
   it('every share image is a file under public/', () => {

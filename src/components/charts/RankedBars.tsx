@@ -51,7 +51,7 @@ export default function RankedBars({ bars: allBars, max, label, details, default
             <span className="block h-full rounded-full opacity-90 transition-opacity"
               style={{ width: `${(bar.value / max) * 100}%`, background: bar.fill, opacity: faded(bar.key) ? FADED_OPACITY : undefined }} />
           </span>
-          <span className={`text-right tabular-nums ${CHART_COUNT}`}>{bar.value}</span>
+          <span className={`text-right ${CHART_COUNT}`}>{bar.value}</span>
         </button>
       ))}
     </div>

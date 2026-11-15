@@ -824,6 +824,14 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   }, [active]);
   // Fades in and out with the map's sidebar card (200ms).
   const { mounted: shouldRender, visible } = useFadePresence(active);
+  // CIV-1567 (beta): History opens in place of App's loading panel (its lazy-load fallback). That panel is redrawn here
+  // and fades out as History's own panel fades in, so there is no frame with neither.
+  const [loadingCover, setLoadingCover] = useState(() => FEATURES.modeTransitions && active);
+  useEffect(() => {
+    if (!loadingCover || !visible) return;
+    const timer = window.setTimeout(() => setLoadingCover(false), 400);
+    return () => window.clearTimeout(timer);
+  }, [loadingCover, visible]);
   // Agency name and place from the catalog, by the same rule as the agency card and About list (#1028 items 16-17).
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
   const agencyCardParts = useCallback((slug: string, fallbackName: string) => {
@@ -1100,6 +1108,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
 
   return (
     <>
+        {loadingCover && (
+          <Panel sidebar style={frameStyle} className={`transition-opacity ${TRANSITION_BASE} pointer-events-none ${visible ? 'opacity-0' : 'opacity-100'}`}>
+            <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
+          </Panel>
+        )}
         {selectedSlug ? (
         (() => {
           if (openAgencyFailed) {
@@ -1233,7 +1246,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[0]}</span>
+            <span className={CARD_NOTE}>{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -1246,9 +1259,9 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             />
             {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}
             {selectedYear !== availableYears[availableYears.length - 1] && (
-              <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[availableYears.length - 1]}</span>
+              <span className={CARD_NOTE}>{availableYears[availableYears.length - 1]}</span>
             )}
-            <Pill as="span" selected className="tabular-nums">{selectedYear}</Pill>
+            <Pill as="span" selected>{selectedYear}</Pill>
         </div>
       )}
     </>
