@@ -161,7 +161,7 @@ export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
 // CIV-1251: the list "See all part-time routes" opens, as the setting names them.
 export const PART_TIME_ROUTES_TITLE = 'Part-time routes';
-export const PART_TIME_ROUTES_SEARCH = 'Search part-time routes…';
+export const PART_TIME_ROUTES_SEARCH = searchPlaceholder('part-time routes');
 export const PART_TIME_ROUTES_NOUN = 'part-time routes';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
@@ -206,8 +206,31 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
-/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
-export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/**
+ * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
+ * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160
+ * question 8. With nothing named it reads "Find…". `things` is in lower case unless it holds a name ("a MARTA route"). The top bar's one-word phone hint
+ * is SEARCH_SHORT_PLACEHOLDER.
+ */
+export function searchPlaceholder(things?: string): string {
+  return things ? `Find ${things}…` : 'Find…';
+}
+/** The top bar's hint on a phone, where the box has room for one word. */
+export const SEARCH_SHORT_PLACEHOLDER = 'Find';
+/** The map's search box hint. */
+export const SEARCH_ROUTES_PLACEHOLDER = searchPlaceholder('routes');
+/** The Night service view's search box. */
+export const SEARCH_NIGHT_PLACEHOLDER = searchPlaceholder('agencies or routes');
+/** Live's search box. */
+export const SEARCH_VEHICLES_PLACEHOLDER = searchPlaceholder('vehicles');
+/** About's agency list. */
+export const SEARCH_AGENCIES_PLACEHOLDER = searchPlaceholder('agencies');
+/** Settings: the hidden-routes list. */
+export const SEARCH_HIDDEN_ROUTES_PLACEHOLDER = searchPlaceholder('hidden routes');
+/** Settings: the hidden feeds list. */
+export const SEARCH_FEEDS_PLACEHOLDER = searchPlaceholder('feeds');
+/** The agency filter chip's list, where the box is narrow. */
+export const SEARCH_ANY_PLACEHOLDER = searchPlaceholder();
 /** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
 export const NEAR_YOU_TITLE = 'Near you';
 /** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
@@ -332,7 +355,7 @@ export const HISTORY_YEAR_LABEL = 'History year';
 export const HISTORY_EXPAND_CHART = 'Expand chart';
 export const HISTORY_CHART_LABEL = 'Route history chart';
 /** The search box in History before an agency is open. */
-export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = searchPlaceholder('an agency');
 /** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
 export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 /** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */

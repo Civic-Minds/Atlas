@@ -57,7 +57,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
+import { SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 
@@ -529,8 +529,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const searchPlaceholder = inFrequency
     ? SEARCH_ROUTES_PLACEHOLDER
     : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
-    : inNight ? 'Search agencies or routes…'
-    : 'Search vehicles…';
+    : inNight ? SEARCH_NIGHT_PLACEHOLDER
+    : SEARCH_VEHICLES_PLACEHOLDER;
 
   function handleSearchClear() {
     setQuery('');
@@ -714,7 +714,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               className={`absolute left-8 right-2 top-1/2 -translate-y-1/2 ${CARD_NOTE} pointer-events-none select-none whitespace-nowrap overflow-hidden text-ellipsis`}
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
-              <span className="sm:hidden">Search</span>
+              <span className="sm:hidden">{SEARCH_SHORT_PLACEHOLDER}</span>
               <span className="hidden sm:inline">{searchPlaceholder}</span>
             </span>
           )}

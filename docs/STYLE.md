@@ -83,7 +83,8 @@ Words
 - "Consistent", not "steady" (Ryan, 2026-10-27: "\"steady\" should not be used - consistent is better"). CIV-1059.
 - Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160.
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
-- Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Search routes…". CIV-1160.
+- Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
+- Search box hints start with "Find" (Ryan, 2026-11-14): "Find " + what the box finds + "…" ("Find routes…", "Find an agency…", "Find a MARTA route…"), from `searchPlaceholder` in `src/content/noticeCopy.ts`. No search hint is typed in place. CIV-1569.
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.
 - Days in a sentence: "on weekdays", "on Saturdays", "on Sundays"; one day before a noun reads "weekday midday", "Saturday schedules" ("weekday" lower case, Saturday and Sunday capitalised). From `dayPlural` / `dayInSentence` in `shared/dayTypes.ts`. CIV-1569.
 - A missing value (a table cell, tile or figure with nothing to show) reads an em dash, "—", from `MISSING_VALUE` in `shared/missingValue.ts`, the mark a missing frequency has always printed. Never type a dash by hand for an empty cell. CIV-1569.

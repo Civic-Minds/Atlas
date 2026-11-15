@@ -1,4 +1,5 @@
 import { splitRouteKey } from './routeKey';
+import { searchPlaceholder } from '../content/noticeCopy';
 
 /**
  * Which agency the History tab opens on (#1012). History opens on the agency chooser unless the
@@ -70,11 +71,10 @@ export function indefiniteArticle(name: string): 'a' | 'an' {
 
 /**
  * The top search bar's hint while a History agency is open: it searches that agency's routes, so it
- * names the agency ("Find a MARTA route…", "Find an NFTA route…"). Proposed wording, pending Ryan's OK;
- * the alternatives are "Search MARTA routes…" and "Find a route in MARTA…".
+ * names the agency ("Find a MARTA route…", "Find an NFTA route…"), through noticeCopy's searchPlaceholder.
  */
 export function historyRouteSearchPlaceholder(agencyName: string): string {
-  return `Find ${indefiniteArticle(agencyName)} ${agencyName} route…`;
+  return searchPlaceholder(`${indefiniteArticle(agencyName)} ${agencyName} route`);
 }
 
 /**
