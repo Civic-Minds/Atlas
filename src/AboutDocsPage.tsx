@@ -475,8 +475,11 @@ export default function AboutDocsPage() {
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
-            {/* The Live report pages link here ("What these terms mean"), so the terms follow their flag. */}
-            {FEATURES.liveReports && <Suspense fallback={null}><LiveGlossaryTerms /></Suspense>}
+            {/* The Live report pages link here ("What these terms mean"), so the terms follow their flag. They load in the
+                browser only: the prerender's renderToString can't wait for a lazy chunk, and wrote React's error text with the
+                build machine's path into the page instead (#1524). The page mounts fresh in the browser (createRoot), so there
+                is nothing to hydrate against. */}
+            {FEATURES.liveReports && typeof window !== 'undefined' && <Suspense fallback={null}><LiveGlossaryTerms /></Suspense>}
           </Section>
 
           <SiteContact title="Technical Questions and Feedback" subject="Atlas Feedback" linkLabel="Contact us with a question or correction">

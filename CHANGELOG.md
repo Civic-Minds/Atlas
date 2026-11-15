@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The beta Documentation page no longer ships a render error in its page source**: the Live terms load in the browser instead of breaking the prerender ([#1524](https://github.com/Civic-Minds/Atlas/issues/1524))
 - **Counts read cleanly everywhere**: large counts get commas ("1,234 routes"), a range whose ends match reads as one value instead of "every 60–60 min", and the map's loading notice says "Loading 1 of 1 agency"
 - **Shared Free child fares links show their own picture**: the page's age chart instead of the site's map
 - **The Frequent Service story reads more plainly**: the method paragraph lists every kind of official source used, the Toronto line gives the TTC's Sunday start and says the map uses a broader test, the chart says most agencies pick 15 minutes and names each bar by its count, the opening maps change about once a second, the map steps say "part-time", and the step text no longer covers the map on narrow screens
