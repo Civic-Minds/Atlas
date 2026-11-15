@@ -45,7 +45,7 @@ const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
 export default function ResearchMethod({ parts }: { parts: ResearchMethodParts }) {
   return (
     <section aria-labelledby="research-method-heading">
-      <SectionTitle id="research-method-heading" className="text-[var(--text-primary)]">Method</SectionTitle>
+      <SectionTitle id="research-method-heading" className="scroll-mt-16 text-[var(--text-primary)]">Method</SectionTitle>
       <div className="mt-5 space-y-5 text-sm leading-7 text-[var(--text-muted)]">
         {PARTS.filter(([key]) => parts[key] != null).map(([key, label]) => (
           <p key={key}><strong className="text-[var(--text-primary)]">{label}</strong> {parts[key]}</p>

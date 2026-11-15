@@ -23,6 +23,8 @@ import { hourTime } from '../../shared/timeText';
 /** The story's section headings and body paragraphs, one look each. */
 const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
 const STORY_PARAGRAPH = 'mt-5 text-base leading-8 text-[var(--text-muted)]';
+/** The hero's in-page jump buttons (Explore the research, See the method): one pill, so the two match. */
+const STORY_JUMP_BUTTON = 'inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]';
 
 interface Props {
   onExploreMap: () => void;
@@ -135,9 +137,15 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           <div className="w-full max-w-5xl text-left">
             <FrequentServicePublishedMapMontage />
           </div>
-          <a href="#story" className="mt-9 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">
-            Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
+          {/* Ryan, 2026-11-14: a second button jumps to the story's own Method section at the bottom. */}
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
+            <a href="#story" className={STORY_JUMP_BUTTON}>
+              Explore the research <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+            <a href="#research-method-heading" className={STORY_JUMP_BUTTON}>
+              See the method <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </div>
         </ResearchHeader>
 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
