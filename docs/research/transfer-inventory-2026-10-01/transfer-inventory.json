@@ -4,12 +4,13 @@
   "sourceResearchDate": "2026-10-01",
   "baseline": "adult standard single ride",
   "stats": {
-    "registryCount": 693,
-    "manuallyVerified": 304,
+    "registryCount": 709,
+    "manuallyVerified": 322,
     "statuses": {
-      "confirmed": 275,
-      "no_transfer_policy_published": 402,
-      "no_transfers": 16
+      "confirmed": 279,
+      "partially-confirmed": 2,
+      "no_transfer_policy_published": 406,
+      "no_transfers": 22
     }
   },
   "records": [
@@ -201,6 +202,55 @@
         "status": "confirmed",
         "evidence": "The official 2026 fare page states that transfers are valid for one transfer within 90 minutes of issue."
       }
+    },
+    {
+      "slug": "brantford",
+      "agencyName": "Brantford Transit",
+      "region": "Ontario",
+      "websiteUrl": "https://www.brantford.ca/en/transportation/brantford-transit.aspx",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": "free transfer included with each BT Connect ride; no limit or validity period published",
+      "transferCost": "included in adult fare (BT Connect app/card only); cash fares include no transfer",
+      "paymentMethod": "BT Connect app or BT Connect Card (cash excluded)",
+      "exceptions": [],
+      "sourceUrl": "https://www.brantford.ca/en/transportation/brantford-transit-rates.aspx",
+      "evidence": "City rates page: \"Each ride includes a free transfer.\" Oct 2025 city notice: \"Cash fares will no longer include transfers.\" Transfer validity period not stated on either page (also checked April 6, 2026 fare-change notice).",
+      "researchDate": "2026-10-01",
+      "status": "partially-confirmed",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.brantford.ca/en/transportation/brantford-transit.aspx",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.brantford.ca/en/transportation/brantford-transit.aspx"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "brantford",
+        "agencyName": "Brantford Transit",
+        "transferPeriod": null,
+        "transferLimit": "free transfer included with each BT Connect ride; no limit or validity period published",
+        "transferCost": "included in adult fare (BT Connect app/card only); cash fares include no transfer",
+        "paymentMethod": "BT Connect app or BT Connect Card (cash excluded)",
+        "sourceUrl": "https://www.brantford.ca/en/transportation/brantford-transit-rates.aspx",
+        "confidence": "medium",
+        "status": "partially-confirmed",
+        "evidence": "City rates page: \"Each ride includes a free transfer.\" Oct 2025 city notice: \"Cash fares will no longer include transfers.\" Transfer validity period not stated on either page (also checked April 6, 2026 fare-change notice).",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
     },
     {
       "slug": "brampton",
@@ -665,6 +715,55 @@
         "status": "confirmed",
         "evidence": "The official transfer policy states that an urban fare includes free transfers for 70 minutes and an inter-urban fare includes free transfers for 140 minutes; urban-to-inter-urban travel may require the applicable top-up."
       }
+    },
+    {
+      "slug": "cobourg",
+      "agencyName": "Cobourg Transit",
+      "region": "Ontario",
+      "websiteUrl": "https://www.cobourg.ca/home-property/public-transit/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.cobourg.ca/home-property/public-transit/",
+      "evidence": "Town transit page lists $2.50 cash fare, ride passes, monthly passes, Smart Card and On Demand app, but states no transfer rule. Also checked cobourg.ca/Transit search results; only third-party wikis mention a legacy $1 Port Hope shuttle transfer.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.cobourg.ca/home-property/public-transit/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.cobourg.ca/home-property/public-transit/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "cobourg",
+        "agencyName": "Cobourg Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.cobourg.ca/home-property/public-transit/",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "Town transit page lists $2.50 cash fare, ride passes, monthly passes, Smart Card and On Demand app, but states no transfer rule. Also checked cobourg.ca/Transit search results; only third-party wikis mention a legacy $1 Port Hope shuttle transfer.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
     },
     {
       "slug": "cornwall",
@@ -27434,6 +27533,55 @@
       "verifiedPolicy": null
     },
     {
+      "slug": "mta-bus-company",
+      "agencyName": "MTA Bus Company",
+      "region": "New York",
+      "websiteUrl": "https://new.mta.info",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": "2 hours",
+      "transferLimit": "one free transfer (local bus to local bus or subway)",
+      "transferCost": "included in adult fare; express bus transfer costs fare difference",
+      "paymentMethod": "OMNY (same contactless card/device for both legs)",
+      "exceptions": [],
+      "sourceUrl": "https://www.mta.info/guides/riding-the-bus",
+      "evidence": "MTA bus guide: \"Transfers are good within two hours of when you paid the fare.\" Free transfer from local bus to local bus or any subway; same card/device required.",
+      "researchDate": "2026-10-01",
+      "status": "confirmed",
+      "confidence": "high",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://new.mta.info",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://new.mta.info"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "mta-bus-company",
+        "agencyName": "MTA Bus Company",
+        "transferPeriod": "2 hours",
+        "transferLimit": "one free transfer (local bus to local bus or subway)",
+        "transferCost": "included in adult fare; express bus transfer costs fare difference",
+        "paymentMethod": "OMNY (same contactless card/device for both legs)",
+        "sourceUrl": "https://www.mta.info/guides/riding-the-bus",
+        "confidence": "high",
+        "status": "confirmed",
+        "evidence": "MTA bus guide: \"Transfers are good within two hours of when you paid the fare.\" Free transfer from local bus to local bus or any subway; same card/device required.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
       "slug": "lirr",
       "agencyName": "MTA Long Island Rail Road",
       "region": "New York",
@@ -27506,300 +27654,57 @@
       "verifiedPolicy": null
     },
     {
-      "slug": "njt-rail",
-      "agencyName": "NJ Transit Rail",
+      "slug": "njt",
+      "agencyName": "NJ Transit",
       "region": "New Jersey",
       "websiteUrl": "http://www.njtransit.com/",
       "fareUrl": null,
       "baseline": "adult standard single ride",
-      "transferPeriod": null,
-      "transferLimit": "not published on the official site reviewed",
-      "transferCost": null,
-      "paymentMethod": null,
+      "transferPeriod": "2 hours after purchase (bus/light rail)",
+      "transferLimit": "one transfer; valid for one zone on second leg; a transfer cannot buy another transfer",
+      "transferCost": "$0.85 North Jersey / $0.80 South Jersey (bus); override fee for extra zones",
+      "paymentMethod": "cash on bus (light rail TVM 'One Way with Transfer'); rail has no separate transfer rule, monthly rail passes honored on bus/light rail within zones",
       "exceptions": [],
-      "sourceUrl": "https://www.njtransit.com/webtickets",
-      "evidence": "The official agency website and its linked fare/transfer pages were reviewed; no transfer period, limit, or transfer cost was published in the reviewed material.",
+      "sourceUrl": "https://njtransit.com/fares",
+      "evidence": "Fare guide: \"Transfer tickets are valid on bus or light rail for two hours after purchase.\" and \"Transfers must be purchased in cash\". Rail-to-rail transfer rule not separately stated; interstate trips get no transfers.",
       "researchDate": "2026-10-01",
-      "confidence": "medium",
-      "status": "no_transfer_policy_published",
-      "notes": "Official site reviewed; no transfer policy was published in the reviewed material.",
+      "confidence": "high",
+      "status": "confirmed",
+      "notes": "Manually verified against the official source on 2026-11-15.",
+      "formerRecords": [
+        "njt-bus",
+        "njt-rail"
+      ],
+      "auditDate": "2026-11-15",
       "officialSiteReview": {
         "websiteUrl": "http://www.njtransit.com/",
-        "checkedAt": "2026-10-01",
-        "status": "official-source-found",
-        "candidateSources": [
-          {
-            "url": "http://www.njtransit.com/",
-            "title": "Home | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact NJ TRANSIT Plan Your Trip DepartureVision MyBus From To Depart At Arrive By Accessible Plan Your Trip System Status Check All Alerts Train & Light Rail Bus North Jersey Coast Alert Northeast Corridor Alert Main-Bergen County On Time Montclair-Boonton On Time Morris & Essex On Time Pascack Valley On Time Raritan Valley On Time Hudson-Bergen Light Rail On Time River Line On Time Atlantic City On Time Princeton Dinky On Time Newark Light Rail On Time MetLife Stadium Events NJ TRANSIT will offer train services to/from Secaucus Junction and MetLife Stadium for the following event: AC/DC & Foo Fighters Concert on October 2nd. Click here for details. Card",
-              "g event: AC/DC & Foo Fighters Concert on October 2nd. Click here for details. Cardinals v Giants on October 4th. Click here for details. Read More Jersey Journeys Discover a world of New Jersey’s history—no car required! NJ TRANSIT is your ticket to exploring the Garden State’s past, one ride at a time, all accessible by train, light rail, or bus. Read More Accessibility Lost and Found Form Observe and Report What’s Happening at NJ TRANSIT Alternate, Backup or Contingency Plans Now would be a great time to consider your alternate, backup or contingency plans in the event your travel plans get disrupted. Know your ABC’s and click here for more information & tools. Read More Franck Beaumin, Customer Advocate I am committed to carrying out your voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger",
-              "tingency plans in the event your travel plans get disrupted. Know your ABC’s and click here for more information & tools. Read More Franck Beaumin, Customer Advocate I am committed to carrying out your voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger journey. If you want to make a difference, submit your feedback to here If you simply need travel assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious ac",
-              " voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger journey. If you want to make a difference, submit your feedback to here If you simply need travel assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the f",
-              "el assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the fare card from NJ TRANSIT. A reloadable card you can tap to pay your bus or light rail fare. No more paper tickets or fumbling for change. Read More Press Releases At NJ TRANSIT, we work every day to improve our experiences, safety, and services. Explore our press releases to keep up with our latest updates, initiatives, and campaigns. See More",
-              "seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the fare card from NJ TRANSIT. A reloadable card you can tap to pay your bus or light rail fare. No more paper tickets or fumbling for change. Read More Press Releases At NJ TRANSIT, we work every day to improve our experiences, safety, and services. Explore our press releases to keep up with our latest updates, initiatives, and campaigns. See More Press Releases NJ TRANSIT SUPPORTS NATIONAL “SEE TRACKS? THINK TRAIN” WEEK Annual Observance Highlights Safety Precautions Near Tracks and Grade Crossings September 21, 2026 Read More PORTAL NORTH BRIDGE ENTERS FINAL PHASE OF CONSTRUCTION AS WORK BEGINS TO PUT FINAL TRACK INTO SERVICE Amtrak and NJ TRANSIT Begin Final “Cutover” Work to Transfer Service to New Portal North Bridge and Anno"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/webtickets",
-            "title": "WebTicketing | NJ TRANSIT | New Jersey Transit Corporation | New Jersey | Tickets",
-            "evidenceExcerpts": [
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through th",
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Tr",
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions",
-              "FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ",
-              "ts, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ TRANSIT on LinkedIn SIGN UP FOR UPDATES PrivacyTerms Of UseSitemap © NJ TRANSIT 2026. All Rights Reserved.",
-              " \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ TRANSIT on LinkedIn SIGN UP FOR UPDATES PrivacyTerms Of UseSitemap © NJ TRANSIT 2026. All Rights Reserved."
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/app-and-mobile-tickets",
-            "title": "NJ TRANSIT Mobile App | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact NJ TRANSIT Mobile App Built for Your Everyday Commute—and the Region’s Biggest Events Whether you’re commuting, exploring the region, or heading to a special event, the NJ TRANSIT app makes getting there easier. Providing a consistent experience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, ",
-              "ANSIT app makes getting there easier. Providing a consistent experience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the ",
-              "ience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across",
-              "purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to ",
-              "ether in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to use the app? You can plan trips and view schedules without signing in. However, you must create and sign in to an account to purchase, store, and manage tickets as well as take advantage of favorite bus stops, train stations or lines. What happens when I favorite a bus stop, ",
-              " seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to use the app? You can plan trips and view schedules without signing in. However, you must create and sign in to an account to purchase, store, and manage tickets as well as take advantage of favorite bus stops, train stations or lines. What happens when I favorite a bus stop, train statio"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/bus-tickets",
-            "title": "Bus Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE US",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. H",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS ",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY, WEEHAWKEN, HOB",
-              "ontent Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY, WEEHAWKEN, HOBOKEN, OR NEWARK. SOME PRIVATE BUS COMPANIES, MANY SUBSIDIZED BY NJ TRANSIT"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/train-tickets",
-            "title": "Train Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturd",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light ra",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bu",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bus. Ten-Trip Tickets Ten",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bus. Ten-Trip Tickets Ten one-way trips that are valid for 30 days before expirin",
-              "tent Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bus. Ten-Trip Tickets Ten one-way trips that are valid for 30 days before expiring. FLEXPASS FLEXPASS provides 20 o"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/light-rail-tickets",
-            "title": "Light Rail Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leav",
-              "arch Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected",
-              "s daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected. Passengers should be prepared to show a time-stamped ticket or a monthly pass to a Fare Enforcement ",
-              "ickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected. Passengers should be prepared to show a time-stamped ticket or a monthly pass to a Fare Enforcement Officer if requested"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/deals-and-discounts",
-            "title": "Deals and Discounts | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Deals and Discounts | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Deals and Discounts Atlantic City Convention Center Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st,",
-              "tation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Deals and Discounts Atlantic City Convention Center Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6",
-              "current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Militar",
-              ".com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Ar",
-              "er at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Army, Navy, Air Force, Marines or Coast Guard. Veterans with service-connected disabilities may present",
-              "the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Army, Navy, Air Force, Marines or Coast Guard. Veterans with service-connected disabilities may present a val"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/student-savings",
-            "title": "Student Savings | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office b",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application ",
-              "o Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a ",
-              "About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Acc",
-              "ave. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Accredited School must be an elementary, secondary, or post-seconda",
-              "n NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Accredited School must be an elementary, secondary, or post-secondary education provider. If you are interested in being placed on our Accredited School List, please contact us via the website and enter your comments/requests. NJ TRANSIT reserves the right to a"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          }
-        ]
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
       },
       "researchTrail": {
         "officialUrlsChecked": [
-          "http://www.njtransit.com/",
-          "https://www.njtransit.com/webtickets",
-          "https://www.njtransit.com/tickets/app-and-mobile-tickets",
-          "https://www.njtransit.com/tickets/bus-tickets",
-          "https://www.njtransit.com/tickets/train-tickets",
-          "https://www.njtransit.com/tickets/light-rail-tickets",
-          "https://www.njtransit.com/tickets/deals-and-discounts",
-          "https://www.njtransit.com/tickets/student-savings"
+          "http://www.njtransit.com/"
         ],
-        "candidateSourceCount": 8,
-        "transferReview": "official-source-found",
-        "fareReview": "official-source-found",
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
         "accessError": null,
         "nextAction": null
       },
-      "verifiedPolicy": null
-    },
-    {
-      "slug": "njt-bus",
-      "agencyName": "NJ Transit Bus",
-      "region": "New Jersey",
-      "websiteUrl": "http://www.njtransit.com/",
-      "fareUrl": null,
-      "baseline": "adult standard single ride",
-      "transferPeriod": null,
-      "transferLimit": "not published on the official site reviewed",
-      "transferCost": null,
-      "paymentMethod": null,
-      "exceptions": [],
-      "sourceUrl": "https://www.njtransit.com/webtickets",
-      "evidence": "The official agency website and its linked fare/transfer pages were reviewed; no transfer period, limit, or transfer cost was published in the reviewed material.",
-      "researchDate": "2026-10-01",
-      "confidence": "medium",
-      "status": "no_transfer_policy_published",
-      "notes": "Official site reviewed; no transfer policy was published in the reviewed material.",
-      "officialSiteReview": {
-        "websiteUrl": "http://www.njtransit.com/",
-        "checkedAt": "2026-10-01",
-        "status": "official-source-found",
-        "candidateSources": [
-          {
-            "url": "http://www.njtransit.com/",
-            "title": "Home | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact NJ TRANSIT Plan Your Trip DepartureVision MyBus From To Depart At Arrive By Accessible Plan Your Trip System Status Check All Alerts Train & Light Rail Bus North Jersey Coast Alert Northeast Corridor Alert Main-Bergen County On Time Montclair-Boonton On Time Morris & Essex On Time Pascack Valley On Time Raritan Valley On Time Hudson-Bergen Light Rail On Time River Line On Time Atlantic City On Time Princeton Dinky On Time Newark Light Rail On Time MetLife Stadium Events NJ TRANSIT will offer train services to/from Secaucus Junction and MetLife Stadium for the following event: AC/DC & Foo Fighters Concert on October 2nd. Click here for details. Card",
-              "g event: AC/DC & Foo Fighters Concert on October 2nd. Click here for details. Cardinals v Giants on October 4th. Click here for details. Read More Jersey Journeys Discover a world of New Jersey’s history—no car required! NJ TRANSIT is your ticket to exploring the Garden State’s past, one ride at a time, all accessible by train, light rail, or bus. Read More Accessibility Lost and Found Form Observe and Report What’s Happening at NJ TRANSIT Alternate, Backup or Contingency Plans Now would be a great time to consider your alternate, backup or contingency plans in the event your travel plans get disrupted. Know your ABC’s and click here for more information & tools. Read More Franck Beaumin, Customer Advocate I am committed to carrying out your voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger",
-              "tingency plans in the event your travel plans get disrupted. Know your ABC’s and click here for more information & tools. Read More Franck Beaumin, Customer Advocate I am committed to carrying out your voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger journey. If you want to make a difference, submit your feedback to here If you simply need travel assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious ac",
-              " voice and defending your interests as passengers of NJ TRANSIT bus, train, light rail or Access Link. Your comments and ideas will feed my recommendations to the board of NJ TRANSIT and ultimately help improve service at every step of the passenger journey. If you want to make a difference, submit your feedback to here If you simply need travel assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the f",
-              "el assistance or want to submit a complaint, click here. Read More Portal Cutover Click below for the latest service and schedule information during the Portal Bridge Cutover work. Read More NJ TRANSIT Mobile App Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Download it now Read More Observe and Report If something seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the fare card from NJ TRANSIT. A reloadable card you can tap to pay your bus or light rail fare. No more paper tickets or fumbling for change. Read More Press Releases At NJ TRANSIT, we work every day to improve our experiences, safety, and services. Explore our press releases to keep up with our latest updates, initiatives, and campaigns. See More",
-              "seems out of place, trust your gut. Please report suspicious activity, packages, or vehicles around NJ TRANSIT facilities or onboard the system. Text your messages directly to NJTPD(65873) or CALL 1-888-TIPS-NJT (1-888-847-7658). Read More FARE-PAY FARE-PAY, the fare card from NJ TRANSIT. A reloadable card you can tap to pay your bus or light rail fare. No more paper tickets or fumbling for change. Read More Press Releases At NJ TRANSIT, we work every day to improve our experiences, safety, and services. Explore our press releases to keep up with our latest updates, initiatives, and campaigns. See More Press Releases NJ TRANSIT SUPPORTS NATIONAL “SEE TRACKS? THINK TRAIN” WEEK Annual Observance Highlights Safety Precautions Near Tracks and Grade Crossings September 21, 2026 Read More PORTAL NORTH BRIDGE ENTERS FINAL PHASE OF CONSTRUCTION AS WORK BEGINS TO PUT FINAL TRACK INTO SERVICE Amtrak and NJ TRANSIT Begin Final “Cutover” Work to Transfer Service to New Portal North Bridge and Anno"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/webtickets",
-            "title": "WebTicketing | NJ TRANSIT | New Jersey Transit Corporation | New Jersey | Tickets",
-            "evidenceExcerpts": [
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through th",
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Tr",
-              "Skip to Main Content HOME CURRENT TICKETS RECENT TRIPS FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions",
-              "FAQS CREATE ACCOUNT SIGN IN CONTACT US Special Events Book tickets for special events Browse Events 4 Easy Steps to Buy Tickets 1. Select your Origin and Destination It’s Fast and Easy! Simply select your origin, destination, and number of tickets, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ",
-              "ts, then click \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ TRANSIT on LinkedIn SIGN UP FOR UPDATES PrivacyTerms Of UseSitemap © NJ TRANSIT 2026. All Rights Reserved.",
-              " \"Next\" to review the quantity and price before clicking \"Checkout\". 2. Login or Guest Checkout Login/Create your account OR proceed using Guest Checkout. 3. Payment Information Enter your payment information and click \"Pay\". Ticket(s) are valid for 30 days from the date of purchase. 4. Print or Show Generated Ticket(s) Bar Code Your ticket purchase is complete! Please print or show the generated barcode on your device at your travel. Web Tickets cannot be accessed through the NJT Mobile App. NJ TRANSIT Logo TICKETS Book Tickets Current Tickets Recent Trips Create Account Sign In CONTACT Frequently Asked Questions Feedback Customer Service NJ TRANSIT on Facebook NJ TRANSIT on Twitter NJ TRANSIT on YouTube NJ TRANSIT on Instagram NJ TRANSIT on LinkedIn SIGN UP FOR UPDATES PrivacyTerms Of UseSitemap © NJ TRANSIT 2026. All Rights Reserved."
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/app-and-mobile-tickets",
-            "title": "NJ TRANSIT Mobile App | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact NJ TRANSIT Mobile App Built for Your Everyday Commute—and the Region’s Biggest Events Whether you’re commuting, exploring the region, or heading to a special event, the NJ TRANSIT app makes getting there easier. Providing a consistent experience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, ",
-              "ANSIT app makes getting there easier. Providing a consistent experience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the ",
-              "ience across train, bus, and light rail, everything you need to move through the region is in one place. New to NJ TRANSIT? The app makes it easy to plan your trip, purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across",
-              "purchase tickets, and navigate with confidence. Quickly plan trips, access tickets, and find nearby service from a streamlined home screen designed to keep you moving. Built for everyday customers and visitors the app brings trip planning, ticketing, and real-time updates together in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to ",
-              "ether in one seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to use the app? You can plan trips and view schedules without signing in. However, you must create and sign in to an account to purchase, store, and manage tickets as well as take advantage of favorite bus stops, train stations or lines. What happens when I favorite a bus stop, ",
-              " seamless experience. And, when you update, your favorites and settings come with you. Why You’ll Love It Plan your trips faster, no matter how you travel Find everything you need in one place—no need to switch apps Access your tickets and pass easily Stay on track with real-time updates Enjoy a solution built for your everyday travel and major events Download or update the NJ TRANSIT app today to ride smarter. Frequently Asked Questions Getting Started What can I do with the NJ TRANSIT app? The NJ TRANSIT app allows you to plan trips across bus, rail, and light rail, purchase and activate tickets, check real-time arrivals and departures, and manage your travel all in one place. Do I need an account to use the app? You can plan trips and view schedules without signing in. However, you must create and sign in to an account to purchase, store, and manage tickets as well as take advantage of favorite bus stops, train stations or lines. What happens when I favorite a bus stop, train statio"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/bus-tickets",
-            "title": "Bus Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE US",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. H",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS ",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY, WEEHAWKEN, HOB",
-              "ontent Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Bus Tickets Ticket Options ONE-WAY TICKETS ONE-WAY TICKETS CAN BE USED FOR ONE TRIP FOR THE NUMBER OF ZONES INDICATED ON THE TICKET. FROM JULY 1ST 2024, THESE TICKETS WILL HAVE A 30-DAY EXPIRATION, AND ARE NON-REFUNDABLE. BUS MONTHLY PASS SAVE UP TO 30 PERCENT OFF YOUR DAILY COMMUTE BY PURCHASING A NJ TRANSIT BUS PASS. YOU CAN USE IT TO MAKE UNLIMITED TRIPS ON NJ TRANSIT BUS ROUTES FOR AN ENTIRE CALENDAR MONTH FOR THE NUMBER OF ZONES INDICATED ON THE PASS. THE INTRASTATE PASS IS VALID FOR RIDES BETWEEN LOCAL ROUTES WITHIN NEW JERSEY ONLY. THE INTERSTATE PASS IS VALID FOR RIDES BETWEEN NEW JERSEY AND NEW YORK CITY OR PHILADELPHIA . IT MAY ALSO BE USED FOR LOCAL RIDES WITHIN NEW JERSEY. THE INTRACOMMUTER PASS IS VALID FOR RIDES ON BUS ROUTES BETWEEN U.S. HIGHWAYS 9 & 18 FROM JERSEY CITY, WEEHAWKEN, HOBOKEN, OR NEWARK. SOME PRIVATE BUS COMPANIES, MANY SUBSIDIZED BY NJ TRANSIT"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/train-tickets",
-            "title": "Train Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Train Tickets | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes",
-              "Train Tickets | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00",
-              "Train Tickets | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light ra",
-              "Train Tickets | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bu",
-              "New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bus. Ten-Trip Tickets Ten",
-              "n content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Train Tickets Ticket Options One-Way Tickets One continuous trip between the stations on the ticket. From July 1st 2024, these tickets will have a 30-day expiration, and are non-refundable. Monthly Passes Unlimited trips between two rail stations during a calendar month (valid until noon of the first business day of the following month). Can be purchased beginning at 5 p.m. on the 19th of the previous month, through the 10th day of the month for which the pass is valid. Rail monthly passes can also be used on light rail or bus. Weekly Passes Unlimited trips between two rail stations from 12:01 a.m. Saturday through 6:00 a.m. on the following Saturday. On sale beginning Thursday and continuing through Tuesday. Rail weekly passes can also be used on light rail or bus. Ten-Trip Tickets Ten one-way trips that are valid for 30 days before expirin"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/light-rail-tickets",
-            "title": "Light Rail Tickets | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leav",
-              "arch Services Status How to Ride Destinations About Us Contact Light Rail Tickets NJ TRANSIT introduces daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected",
-              "s daily light rail tickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected. Passengers should be prepared to show a time-stamped ticket or a monthly pass to a Fare Enforcement ",
-              "ickets for purchase in the NJ TRANSIT Mobile App. Light rail operates on a proof-of-payment system. Digital and paper tickets must be purchased and activated prior to boarding any light rail vehicle. On the app, digital tickets will become valid for travel three minutes after activation. Tickets will then be valid for: 60 minutes on Hudson-Bergen Light Rail and Newark Light Rail 75 minutes on River LINE Details on tickets, fares, and service for each light rail line are listed below. Hudson-Bergen Light Rail Proof-of-Payment (POP) The Hudson-Bergen light rail system operates as a \"proof-of-payment\" fare collection system. This policy requires that you have a time-stamped ticket prior to boarding a light rail car and retain your ticket until you leave the station area at your final destination. Under the proof-of-payment fare collection, tickets will not be collected. Passengers should be prepared to show a time-stamped ticket or a monthly pass to a Fare Enforcement Officer if requested"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/deals-and-discounts",
-            "title": "Deals and Discounts | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Deals and Discounts | New Jersey Public Transportation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Deals and Discounts Atlantic City Convention Center Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st,",
-              "tation Corporation Skip to main content Web Ticketing Police Accessibility Auto EN Language options unavailable Search Services Status How to Ride Destinations About Us Contact Deals and Discounts Atlantic City Convention Center Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6",
-              "current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. One Convention Boulevard Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Boardwalk Hall Save $3 on tickets for select shows. Visit boardwalkhall.com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Militar",
-              ".com for the most current listings of select shows, and enter code NJTRAN or by presenting this voucher at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Ar",
-              "er at the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Army, Navy, Air Force, Marines or Coast Guard. Veterans with service-connected disabilities may present",
-              "the Boardwalk Hall box office. 2301 Boardwalk Atlantic City, NJ boardwalkhall.com Offer expires October 31st, 2026 Family SuperSaver Fares On weekends and holidays, up to two kids ages 5 to 11 can ride free with a customer paying any valid fare between 7:00 p.m. Friday or the day before a holiday until 6:00 a.m. Monday or the day after a holiday. Up to three kids 4 and under always ride free with a customer paying any valid fare. njtransit.com/family Group Sales Save up to 25% on trains and up to 13% on light rail when you book a group trip. Visit njtransit.com/groupsales for complete details. Military Discounts Military personnel and their dependents may use the one-way reduced ticket upon presenting their valid military or military-dependent ID cards. Eligible military personnel include Active Duty, Reserve and National Guard, and those with official \"Retired\" status from the Army, Navy, Air Force, Marines or Coast Guard. Veterans with service-connected disabilities may present a val"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          },
-          {
-            "url": "https://www.njtransit.com/tickets/student-savings",
-            "title": "Student Savings | New Jersey Public Transportation Corporation",
-            "evidenceExcerpts": [
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office b",
-              "Skip to main content Web Ticketing Police Accessibility Auto EN Search Services Status How to Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application ",
-              "o Ride Destinations About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a ",
-              "About Us Contact Student Savings Take NJ TRANSIT to school and save. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Acc",
-              "ave. There are several fare options offering students discounts on travel to college classes, parochial or public schools. University Partnership - Student Pass MyTix® Student Pass Save 25% on an NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Accredited School must be an elementary, secondary, or post-seconda",
-              "n NJ TRANSIT monthly rail, bus, or light rail pass for the commute to class. Full-time college students attending participating University Partnership colleges or universities register through their college website. Application for Student Tickets Any full-time student attending a school on the NJ TRANSIT Accredited School list may purchase a 25% discounted rail pass at an NJ TRANSIT rail station ticket office by completing the Official Application for Student Tickets. This discount is only available for monthly rail passes, not bus or light rail. Students must have the application stamped or signed by their school to verify enrollment, then return the completed form to any NJ TRANSIT ticket office to purchase a monthly pass. An Accredited School must be an elementary, secondary, or post-secondary education provider. If you are interested in being placed on our Accredited School List, please contact us via the website and enter your comments/requests. NJ TRANSIT reserves the right to a"
-            ],
-            "reviewStatus": "needs-manual-verification"
-          }
-        ]
-      },
-      "researchTrail": {
-        "officialUrlsChecked": [
-          "http://www.njtransit.com/",
-          "https://www.njtransit.com/webtickets",
-          "https://www.njtransit.com/tickets/app-and-mobile-tickets",
-          "https://www.njtransit.com/tickets/bus-tickets",
-          "https://www.njtransit.com/tickets/train-tickets",
-          "https://www.njtransit.com/tickets/light-rail-tickets",
-          "https://www.njtransit.com/tickets/deals-and-discounts",
-          "https://www.njtransit.com/tickets/student-savings"
-        ],
-        "candidateSourceCount": 8,
-        "transferReview": "official-source-found",
-        "fareReview": "official-source-found",
-        "accessError": null,
-        "nextAction": null
-      },
-      "verifiedPolicy": null
+      "verifiedPolicy": {
+        "slug": "njt",
+        "agencyName": "NJ Transit",
+        "transferPeriod": "2 hours after purchase (bus/light rail)",
+        "transferLimit": "one transfer; valid for one zone on second leg; a transfer cannot buy another transfer",
+        "transferCost": "$0.85 North Jersey / $0.80 South Jersey (bus); override fee for extra zones",
+        "paymentMethod": "cash on bus (light rail TVM 'One Way with Transfer'); rail has no separate transfer rule, monthly rail passes honored on bus/light rail within zones",
+        "sourceUrl": "https://njtransit.com/fares",
+        "confidence": "high",
+        "status": "confirmed",
+        "evidence": "Fare guide: \"Transfer tickets are valid on bus or light rail for two hours after purchase.\" and \"Transfers must be purchased in cash\". Rail-to-rail transfer rule not separately stated; interstate trips get no transfers.",
+        "auditDate": "2026-11-15"
+      }
     },
     {
       "slug": "path",
@@ -34328,6 +34233,55 @@
         "status": "confirmed",
         "evidence": "CARTA’s official fare page states that a transfer is free when requested while boarding and paying the initial fare. It says transfers must be used within the allotted time and are not valid for DASH shuttles or different bus types, but the reviewed page does not state the duration or a numeric limit."
       }
+    },
+    {
+      "slug": "tricounty-link",
+      "agencyName": "TriCounty Link",
+      "region": "South Carolina",
+      "websiteUrl": "https://ridetricountylink.com/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": "60 minutes from activation (mobile pass)",
+      "transferLimit": "one free transfer",
+      "transferCost": "included in adult fare ($2.25)",
+      "paymentMethod": "single-ride pass (mobile app/Token Transit, on-board, or mail); paper pass required for CARTA transfers",
+      "exceptions": [],
+      "sourceUrl": "https://ridetricountylink.com/fares-passes/",
+      "evidence": "Fares page: \"TriCounty Link offers one-way trips with one free transfer for all TriCounty routes.\" Mobile ticketing page (ridetricountylink.com/?p=1985): \"The time allotted to use your pass includes your (1) free transfer.\" 60-minute window stated there for mobile passes.",
+      "researchDate": "2026-10-01",
+      "status": "confirmed",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://ridetricountylink.com/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://ridetricountylink.com/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "tricounty-link",
+        "agencyName": "TriCounty Link",
+        "transferPeriod": "60 minutes from activation (mobile pass)",
+        "transferLimit": "one free transfer",
+        "transferCost": "included in adult fare ($2.25)",
+        "paymentMethod": "single-ride pass (mobile app/Token Transit, on-board, or mail); paper pass required for CARTA transfers",
+        "sourceUrl": "https://ridetricountylink.com/fares-passes/",
+        "confidence": "medium",
+        "status": "confirmed",
+        "evidence": "Fares page: \"TriCounty Link offers one-way trips with one free transfer for all TriCounty routes.\" Mobile ticketing page (ridetricountylink.com/?p=1985): \"The time allotted to use your pass includes your (1) free transfer.\" 60-minute window stated there for mobile passes.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
     },
     {
       "slug": "cat-savannah",
@@ -43972,6 +43926,55 @@
       "verifiedPolicy": null
     },
     {
+      "slug": "manchester-nh",
+      "agencyName": "Manchester Transit Authority",
+      "region": "New Hampshire",
+      "websiteUrl": "https://mtabus.org/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": "none; MTA does not offer transfers",
+      "transferCost": "full fare each boarding ($2.00); day pass recommended",
+      "paymentMethod": "cash farebox or MTA mobile ticketing app",
+      "exceptions": [],
+      "sourceUrl": "https://mtabus.org/manchester-transit-fares/",
+      "evidence": "Fares page: \"The MTA does not have transfers. Purchase a day pass if you need to ride more than three buses in a day.\"",
+      "researchDate": "2026-10-01",
+      "status": "confirmed",
+      "confidence": "high",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://mtabus.org/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://mtabus.org/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "manchester-nh",
+        "agencyName": "Manchester Transit Authority",
+        "transferPeriod": null,
+        "transferLimit": "none; MTA does not offer transfers",
+        "transferCost": "full fare each boarding ($2.00); day pass recommended",
+        "paymentMethod": "cash farebox or MTA mobile ticketing app",
+        "sourceUrl": "https://mtabus.org/manchester-transit-fares/",
+        "confidence": "high",
+        "status": "confirmed",
+        "evidence": "Fares page: \"The MTA does not have transfers. Purchase a day pass if you need to ride more than three buses in a day.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
       "slug": "advance-transit",
       "agencyName": "Advance Transit (Lebanon, NH)",
       "region": "New Hampshire",
@@ -46965,6 +46968,55 @@
         "status": "confirmed",
         "evidence": "The official Guadalajara tourism information states that the Mi Movilidad card permits transfers to other systems without additional cost within 60 minutes. The official SITEUR fare page separately documents the metropolitan transfer scheme."
       }
+    },
+    {
+      "slug": "mexico-city-metro",
+      "agencyName": "Sistema de Transporte Colectivo Metro",
+      "region": "Ciudad de México",
+      "websiteUrl": "https://www.metro.cdmx.gob.mx/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": "unlimited while inside the paid system (no time limit stated)",
+      "transferLimit": "unlimited internal transfers between Metro lines within one paid entry",
+      "transferCost": "included in MXN $5.00 fare",
+      "paymentMethod": "Tarjeta de Movilidad Integrada (MI) or contactless bank card at turnstile",
+      "exceptions": [],
+      "sourceUrl": "https://mexicocity.cdmx.gob.mx/e/getting-around/using-the-metro/?lang=en",
+      "evidence": "CDMX official portal: \"The universal cost per trip is $5.00 MXN, regardless of distance or internal transfers.\" metro.cdmx.gob.mx unreachable; Line A transfer exception (reported by media) not verified on an official page.",
+      "researchDate": "2026-10-01",
+      "status": "partially-confirmed",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.metro.cdmx.gob.mx/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.metro.cdmx.gob.mx/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "mexico-city-metro",
+        "agencyName": "Sistema de Transporte Colectivo Metro",
+        "transferPeriod": "unlimited while inside the paid system (no time limit stated)",
+        "transferLimit": "unlimited internal transfers between Metro lines within one paid entry",
+        "transferCost": "included in MXN $5.00 fare",
+        "paymentMethod": "Tarjeta de Movilidad Integrada (MI) or contactless bank card at turnstile",
+        "sourceUrl": "https://mexicocity.cdmx.gob.mx/e/getting-around/using-the-metro/?lang=en",
+        "confidence": "medium",
+        "status": "partially-confirmed",
+        "evidence": "CDMX official portal: \"The universal cost per trip is $5.00 MXN, regardless of distance or internal transfers.\" metro.cdmx.gob.mx unreachable; Line A transfer exception (reported by media) not verified on an official page.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
     },
     {
       "slug": "cheyenne",
@@ -63039,6 +63091,153 @@
       "verifiedPolicy": null
     },
     {
+      "slug": "steamboat-springs",
+      "agencyName": "Steamboat Springs Transit",
+      "region": "Colorado",
+      "websiteUrl": "https://steamboatsprings.net/166/Transit",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://steamboatsprings.net/DocumentCenter/View/42041/SST-Service-Shifts-To-Summer-On-Monday-April-13",
+      "evidence": "Local fixed-route service is fare-free, so transfers aren't needed; only the Regional Bus to Craig charges a fare ($6 one-way). City site refused connections, so this rests on search summaries of the city's April 2026 service release; no verbatim quote captured.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "low",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://steamboatsprings.net/166/Transit",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://steamboatsprings.net/166/Transit"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "steamboat-springs",
+        "agencyName": "Steamboat Springs Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://steamboatsprings.net/DocumentCenter/View/42041/SST-Service-Shifts-To-Summer-On-Monday-April-13",
+        "confidence": "low",
+        "status": "no_transfers",
+        "evidence": "Local fixed-route service is fare-free, so transfers aren't needed; only the Regional Bus to Craig charges a fare ($6 one-way). City site refused connections, so this rests on search summaries of the city's April 2026 service release; no verbatim quote captured.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "gunnison-valley-rta",
+      "agencyName": "Gunnison Valley RTA",
+      "region": "Colorado",
+      "websiteUrl": "https://www.gunnisonvalleyrta.com/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.gunnisonvalleyrta.com/gunnison---crested-butte-bus-information",
+      "evidence": "Fare-free service, so transfers aren't needed. RTA page: \"The RTA Free Bus runs a loop through the City of Gunnison.\"",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "high",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.gunnisonvalleyrta.com/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.gunnisonvalleyrta.com/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "gunnison-valley-rta",
+        "agencyName": "Gunnison Valley RTA",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.gunnisonvalleyrta.com/gunnison---crested-butte-bus-information",
+        "confidence": "high",
+        "status": "no_transfers",
+        "evidence": "Fare-free service, so transfers aren't needed. RTA page: \"The RTA Free Bus runs a loop through the City of Gunnison.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "prairie-express",
+      "agencyName": "Prairie Express (NECALG)",
+      "region": "Colorado",
+      "websiteUrl": "https://www.necalg.org/transportation-1",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://necalg.org/prairie-express",
+      "evidence": "NECALG page lists $1.00 general fare, $20 monthly pass, punch cards; only says buses meet \"at Courthouse Square at :06 and :36 after the hour\" for transfers. No transfer fee, period or limit stated.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.necalg.org/transportation-1",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.necalg.org/transportation-1"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "prairie-express",
+        "agencyName": "Prairie Express (NECALG)",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://necalg.org/prairie-express",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "NECALG page lists $1.00 general fare, $20 monthly pass, punch cards; only says buses meet \"at Courthouse Square at :06 and :36 after the hour\" for transfers. No transfer fee, period or limit stated.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
       "slug": "timmins",
       "agencyName": "Timmins Transit",
       "region": "Ontario",
@@ -63276,6 +63475,394 @@
         "nextAction": null
       },
       "verifiedPolicy": null
+    },
+    {
+      "slug": "ottumwa",
+      "agencyName": "10-15 Transit",
+      "region": "Iowa",
+      "websiteUrl": "https://www.1015transit.com/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.1015transit.com/pay",
+      "evidence": "Pay page lists \"In City One Way: $2.75\" and other trip fares; no transfer rule. Also checked 1015transit.com home and /riderinfo, and Iowa DOT agency listing.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.1015transit.com/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.1015transit.com/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "ottumwa",
+        "agencyName": "10-15 Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.1015transit.com/pay",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "Pay page lists \"In City One Way: $2.75\" and other trip fares; no transfer rule. Also checked 1015transit.com home and /riderinfo, and Iowa DOT agency listing.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "mckinley-county",
+      "agencyName": "A:Shiwi Transit",
+      "region": "New Mexico",
+      "websiteUrl": "https://www.ashiwi.org/Transit.html",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://ashiwi.org/Transit.html",
+      "evidence": "Pueblo of Zuni transit page lists \"$3.00 one way / $5.00 round trip / $20.00 10 Trip Pass\" (Gallup Route); no transfer rule. Also checked route PDF and brochure search results.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.ashiwi.org/Transit.html",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.ashiwi.org/Transit.html"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "mckinley-county",
+        "agencyName": "A:Shiwi Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://ashiwi.org/Transit.html",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "Pueblo of Zuni transit page lists \"$3.00 one way / $5.00 round trip / $20.00 10 Trip Pass\" (Gallup Route); no transfer rule. Also checked route PDF and brochure search results.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "bowling-green",
+      "agencyName": "GO bg Transit",
+      "region": "Kentucky",
+      "websiteUrl": null,
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.letsgobg.com/",
+      "evidence": "Home page lists $2.00 adult fare, $5 all-day pass; Fast Facts says \"Fares are exact change or passes only.\" No transfer rule on home or /fast-facts; Rider Guide PDF not checked.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": null,
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "bowling-green",
+        "agencyName": "GO bg Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.letsgobg.com/",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "Home page lists $2.00 adult fare, $5 all-day pass; Fast Facts says \"Fares are exact change or passes only.\" No transfer rule on home or /fast-facts; Rider Guide PDF not checked.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "knox-county",
+      "agencyName": "Galesburg Public Transportation",
+      "region": "Illinois",
+      "websiteUrl": null,
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.galesburg.city/government/departments/community_development/public_transportation/fixed_route_bus_service.php",
+      "evidence": "Fixed-route page lists $0.60 adult fare, Citipass, punch tickets; only names transfer points (Prairie and Main, Target, Walmart). No transfer fee, period or limit stated.",
+      "researchDate": "2026-10-01",
+      "status": "no_transfer_policy_published",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": null,
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "knox-county",
+        "agencyName": "Galesburg Public Transportation",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.galesburg.city/government/departments/community_development/public_transportation/fixed_route_bus_service.php",
+        "confidence": "medium",
+        "status": "no_transfer_policy_published",
+        "evidence": "Fixed-route page lists $0.60 adult fare, Citipass, punch tickets; only names transfer points (Prairie and Main, Target, Walmart). No transfer fee, period or limit stated.",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "sevier-county",
+      "agencyName": "Gatlinburg Trolley",
+      "region": "Tennessee",
+      "websiteUrl": "https://www.gatlinburg.com/trolley/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.gatlinburg.com/trolley/",
+      "evidence": "Fare-free, so transfers aren't needed. Page: \"There are no fares or fees to ride the Gatlinburg Trolleys.\"",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "high",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.gatlinburg.com/trolley/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.gatlinburg.com/trolley/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "sevier-county",
+        "agencyName": "Gatlinburg Trolley",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.gatlinburg.com/trolley/",
+        "confidence": "high",
+        "status": "no_transfers",
+        "evidence": "Fare-free, so transfers aren't needed. Page: \"There are no fares or fees to ride the Gatlinburg Trolleys.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "howard-county",
+      "agencyName": "City Line Trolley (Kokomo)",
+      "region": "Indiana",
+      "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://www.kokomompo.com/?p=1058",
+      "evidence": "Fare-free, so transfers aren't needed. Kokomo MPO/KHCGCC page: \"The City of Kokomo offers residents and visitors free public transportation through the City-Line Trolley.\"",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://www.kokomompo.com/cityline-trolley/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://www.kokomompo.com/cityline-trolley/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "howard-county",
+        "agencyName": "City Line Trolley (Kokomo)",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://www.kokomompo.com/?p=1058",
+        "confidence": "medium",
+        "status": "no_transfers",
+        "evidence": "Fare-free, so transfers aren't needed. Kokomo MPO/KHCGCC page: \"The City of Kokomo offers residents and visitors free public transportation through the City-Line Trolley.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "sierra-vista",
+      "agencyName": "Vista Transit",
+      "region": "Arizona",
+      "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://sierravistaaz.gov/our-city/bus-service/fares-and-passes",
+      "evidence": "Fare-free, so transfers aren't needed. City fares page (via search snippet; direct fetch blocked): \"Vista Transit is running a fare free program until further notice.\"",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "medium",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://sierravistaaz.gov/our-city/bus-service/route-information",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://sierravistaaz.gov/our-city/bus-service/route-information"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "sierra-vista",
+        "agencyName": "Vista Transit",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://sierravistaaz.gov/our-city/bus-service/fares-and-passes",
+        "confidence": "medium",
+        "status": "no_transfers",
+        "evidence": "Fare-free, so transfers aren't needed. City fares page (via search snippet; direct fetch blocked): \"Vista Transit is running a fare free program until further notice.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
+    },
+    {
+      "slug": "kittitas-county",
+      "agencyName": "Central Transit (Ellensburg)",
+      "region": "Washington",
+      "websiteUrl": "https://centraltransit.org/",
+      "fareUrl": null,
+      "baseline": "adult standard single ride",
+      "transferPeriod": null,
+      "transferLimit": null,
+      "transferCost": null,
+      "paymentMethod": null,
+      "exceptions": [],
+      "sourceUrl": "https://centraltransit.org/rider-guide/",
+      "evidence": "Fare-free, so transfers aren't needed. Rider guide: \"Ellensburg Central Transit is zero fare for all riders.\"",
+      "researchDate": "2026-10-01",
+      "status": "no_transfers",
+      "confidence": "high",
+      "auditDate": "2026-11-15",
+      "officialSiteReview": {
+        "websiteUrl": "https://centraltransit.org/",
+        "checkedAt": null,
+        "status": "not-reviewed",
+        "candidateSources": []
+      },
+      "researchTrail": {
+        "officialUrlsChecked": [
+          "https://centraltransit.org/"
+        ],
+        "candidateSourceCount": 0,
+        "transferReview": "not-reviewed",
+        "fareReview": "not-reviewed",
+        "accessError": null,
+        "nextAction": null
+      },
+      "verifiedPolicy": {
+        "slug": "kittitas-county",
+        "agencyName": "Central Transit (Ellensburg)",
+        "transferPeriod": null,
+        "transferLimit": null,
+        "transferCost": null,
+        "paymentMethod": null,
+        "sourceUrl": "https://centraltransit.org/rider-guide/",
+        "confidence": "high",
+        "status": "no_transfers",
+        "evidence": "Fare-free, so transfers aren't needed. Rider guide: \"Ellensburg Central Transit is zero fare for all riders.\"",
+        "auditDate": "2026-11-15"
+      },
+      "notes": "Manually verified against the official source on 2026-11-15."
     }
   ]
 }
