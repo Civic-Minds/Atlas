@@ -27,7 +27,7 @@ import SortableDataTable from './components/ui/SortableDataTable';
 import LiveOffNotice from './components/LiveOffNotice';
 import { KpiTiles } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle } from './components/ui/PageTitle';
+import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
@@ -111,7 +111,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
     <>
       {routesByMode(rows.map(r => ({ ...r, mode: r.mode ?? 3 }))).map(group => (
         <div key={group.mode} className="mt-4">
-          <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+          <SubsectionTitle className="pb-2" ariaHidden>{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></SubsectionTitle>
           {/* The agency page's routes table (ScrollX + the page layout), with each row opening its route's report. */}
           <ScrollX className="-mx-2">
           <DataTable

@@ -24,8 +24,8 @@ export function PageTitle({ level = 'page', id, className = '', children }: { le
 }
 
 /** An h3 heading: a titled part inside a section (the Docs page's sub-headings, CIV-1610). One step below the section heading. */
-export function SubsectionTitle({ id, className = '', children }: { id?: string; className?: string; children: ReactNode }) {
-  return <h3 id={id} className={`${SECTION.item} ${className}`.trim()}>{children}</h3>;
+export function SubsectionTitle({ id, className = '', ariaHidden = false, children }: { id?: string; className?: string; /** Hidden from screen readers when a table caption already names the group. */ ariaHidden?: boolean; children: ReactNode }) {
+  return <h3 id={id} aria-hidden={ariaHidden || undefined} className={`${SECTION.item} ${className}`.trim()}>{children}</h3>;
 }
 
 /** An h2 heading: a section of a page, or (level "item") a titled block inside one. */

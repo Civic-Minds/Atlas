@@ -10,6 +10,7 @@ import { headwayExactAmount } from '../../../utils/headwayText';
 import { dirsOf, mins } from './figures';
 import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
 import { countText } from '../../../../shared/numberText';
+import { SubsectionTitle } from '../../ui/PageTitle';
 
 /** The one derivation of the extra-wait figures, so every surface draws the same numbers. */
 export function extraWaitModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -53,7 +54,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
         const points = pointsOf(d);
         return (
           <div key={d} className="min-w-0">
-            <h3 className="text-base font-black">{label}</h3>
+            <SubsectionTitle>{label}</SubsectionTitle>
             {points.length > 1 && (
               <ProfileBars
                 ariaLabel={`${label}: extra wait at each stop along the route.`}

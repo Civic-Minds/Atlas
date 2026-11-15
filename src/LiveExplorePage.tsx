@@ -23,7 +23,7 @@ import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { PageTitle } from './components/ui/PageTitle';
+import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
@@ -173,7 +173,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
       <div className="min-w-0 space-y-8">
         {dirs.map(d => (
           <div key={d} className="min-w-0">
-            <h3 className="mb-1 text-base font-black">{v3.directionLabels[String(d)]}</h3>
+            <SubsectionTitle className="mb-1">{v3.directionLabels[String(d)]}</SubsectionTitle>
             <DirectionStrip
               v3={v3} directionId={d} band={band} uncertain={uncertain}
               selectedId={sel.dir === d && sel.kind === 'stop' ? sel.stopId : null}

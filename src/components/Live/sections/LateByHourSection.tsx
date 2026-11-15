@@ -16,6 +16,7 @@ import LeftOutDays from '../LeftOutDays';
 import { DAYS } from './figures';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays } from '../../../content/noticeCopy';
 import { percentText, countText } from '../../../../shared/numberText';
+import { SubsectionTitle } from '../../ui/PageTitle';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = 30;
@@ -105,7 +106,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
               {withLabels && (
                 <>
                   <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="text-base font-black">{c.label}</h3>
+                    <SubsectionTitle>{c.label}</SubsectionTitle>
                     <LeftOutDays className="text-sm text-[var(--text-dim)]" dates={c.leftOut ?? []} />
                   </div>
                   {c.late && c.late.n > 0 && <div className="mt-1 text-2xl font-black tracking-tight" title={`${countText(c.late.n)} departures`}>{percentText(c.late.share)} <span className="text-sm font-bold text-[var(--text-muted)]">late</span></div>}
@@ -178,7 +179,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
             : <Tile key={k} label={label} value={MISSING_VALUE} sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
-      <h3 className="mt-6 text-base font-black">By hour of the day</h3>
+      <SubsectionTitle className="mt-6">By hour of the day</SubsectionTitle>
       <ChartRow cols={cols} withLabels={false} showNote />
     </>
   );

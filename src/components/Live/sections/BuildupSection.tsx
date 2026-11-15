@@ -12,6 +12,7 @@ import Section from './Section';
 import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, ON_TIME_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
 import { mins } from './figures';
 import { countText, percentText } from '../../../../shared/numberText';
+import { SubsectionTitle } from '../../ui/PageTitle';
 
 /** The one derivation of where delay builds up, so every surface draws the same numbers. */
 export function buildupModel(data: DashboardBandData, dir: number | null, uncertain: UncertainStart[]) {
@@ -56,7 +57,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
           const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
           return (
             <div key={b.directionId} className="min-w-0">
-              <h3 className="text-base font-black">{label}</h3>
+              <SubsectionTitle>{label}</SubsectionTitle>
               {full ? (
                 // The route strip carries the delay at every stop and the marked stretch; the figures the old takeaway line gave are its hover text.
                 <div className="mt-2" title={buildupTakeaway(b, lessExactStops(b.directionId))}>
