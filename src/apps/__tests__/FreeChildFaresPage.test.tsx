@@ -126,7 +126,7 @@ describe('Free child fares (CIV-1149)', () => {
     expect(card(/Free child fares/)).toHaveTextContent(/^Data/);
     expect(screen.queryByRole('heading', { name: 'Stories' })).toBeNull();
     expect(card(/Free child fares/)).toHaveAttribute('href', '/research/free-child-fares');
-    expect(card(/Free child fares/)).toHaveTextContent('Up to what age children ride free on transit in Canada and the US, and which systems are free for everyone.');
+    expect(card(/Free child fares/)).toHaveTextContent('The age kids stop riding free.');
   });
 
   it('lists draft stories after the published ones with a Draft tag, on the dev server only (CIV-1550)', () => {

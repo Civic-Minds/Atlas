@@ -115,6 +115,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 ## Research pages
 
 - Every research page ends with the "Method" section (`ResearchMethod`, `src/components/research/ResearchMethod.tsx`), in its fixed parts and order. CIV-1167.
+- Don't say "in Canada and the US" in titles, cards or subtitles: Atlas only covers those two countries. State the countries only where a method box gives the sample. Ryan, 2026-11-15.
 - New data is an update, not a correction: it only changes the page's "Date updated". CIV-1171.
 - A "Corrections:" part is added to the method section only when we fix a mistake we published, saying what was wrong and when it was fixed (Ryan, 2026-11-13, asked "Is it a correction or just updated data though").
 
