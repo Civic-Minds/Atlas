@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { calculateReport, json, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
+import { calculateReport, json, publicMapAgencies, ATLAS_FETCH_HEADERS, loadMapCode, pointInGeometry, populationAreas, qualifies, qualifyingRoutes } from '../src/coverage.mjs';
 import { bufferedBounds, deriveServiceBundles, mergeCoverageReports } from '../src/bundles.mjs';
 
 const { routeGroupKey } = await loadMapCode();
@@ -130,4 +130,9 @@ test('routes with no short name are keyed by route_id, not merged (CIV-1179)', (
   assert.deepEqual(qualifyingRoutes(rows, 15, 'no-sustained').map(f => f.properties.routeId), ['MAX', 'MAX']);
   // TriMet: MAX Blue (route_id 100) and the Aerial Tram (208), both unnamed, stay separate routes.
   assert.deepEqual([...routesAt('trimet', 30, 'map-filter')].sort(), ['id:100', 'id:208']);
+});
+
+test('only agencies on the public map are counted (CIV-1179)', () => {
+  const kept = publicMapAgencies([{ slug: 'a' }, { slug: 'b', hiddenInProduction: true }, { slug: 'c', betaOnly: true }, { slug: 'd', staged: true }]);
+  assert.deepEqual(kept.map(agency => agency.slug), ['a']);
 });

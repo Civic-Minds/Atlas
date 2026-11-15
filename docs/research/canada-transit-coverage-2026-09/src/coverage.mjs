@@ -209,7 +209,14 @@ export async function json(url, { tries = 3, delayMs = 2000 } = {}) {
   throw lastError;
 }
 
-export async function coverageForAgencies(agencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
+// CIV-1179: count only agencies the public map shows. Hidden, beta-only and staged agencies aren't on the
+// public map (some have no published files at all, and their 404s drew Cloudflare challenges on runners).
+export function publicMapAgencies(agencies) {
+  return agencies.filter(agency => !agency.hiddenInProduction && !agency.betaOnly && !agency.staged);
+}
+
+export async function coverageForAgencies(allAgencies, baseUrl = 'https://data.transitatlas.fyi', maxHeadwayMinutes = 15) {
+  const agencies = publicMapAgencies(allAgencies);
   await loadMapCode();
   const result = [];
   for (let start = 0; start < agencies.length; start += 6) {
