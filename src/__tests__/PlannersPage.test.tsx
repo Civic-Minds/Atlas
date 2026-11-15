@@ -12,7 +12,7 @@ describe('For Transit Planners page (CIV-1320)', () => {
       'Every Agency in a Region, on One Map',
       'A Map Instead of a Long Report',
       'Where the Data Comes From',
-      "What Atlas Doesn't Do",
+      "What Atlas Doesn’t Do",
       'Get in Touch',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });

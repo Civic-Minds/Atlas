@@ -100,7 +100,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     // CIV-1320: title and description are the page's own words.
     path: PLANNERS_PATH,
-    title: 'For Transit Planners: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.planners),
     description: 'Atlas shows how often transit really runs, across every agency in a region, on one map.',
     indexable: true,
     prerender: true,

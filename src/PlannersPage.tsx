@@ -4,6 +4,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { headwayEvery } from '../shared/headwayText';
+import { PAGE_NAMES } from '../shared/pageNames';
 
 /**
  * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft, word for word ("wording is ok until i see the actual
@@ -66,9 +67,9 @@ export default function PlannersPage() {
 
       <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14">
         <div>
-          <PageTitle level="hero">For Transit Planners</PageTitle>
+          <PageTitle level="hero">{PAGE_NAMES.planners}</PageTitle>
           <p className={`mt-8 max-w-2xl text-lg leading-8 ${STRONG}`}>Atlas shows how often transit really runs, across every agency in a region, on one map.</p>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Most transit maps show where routes go. Atlas shows headways and span of service: how often routes run, and when. It's built for agency planners, consultants and city and regional staff who need to see service across a whole region, not one agency at a time.</p>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Most transit maps show where routes go. Atlas shows headways and span of service: how often routes run, and when. It’s built for agency planners, consultants and city and regional staff who need to see service across a whole region, not one agency at a time.</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <ArrowLink href="/">Open the map</ArrowLink>
           </div>
@@ -101,7 +102,7 @@ export default function PlannersPage() {
         <Feature title="Every Agency in a Region, on One Map" color={color(2)} pictures={
           <ThemedPicture base={pic('bayarea')} ext="webp" className={`${PICTURE} aspect-[740/700]`} />
         }>
-          <p>Riders don't care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don't. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
+          <p>Riders don’t care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don’t. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
           <p>This helps you spot weak connections between agencies: a hub where one agency runs {headwayEvery(10)} and the other once an hour, or a town where an intercity route stops but no local bus runs in the evening.</p>
           <p>Each agency also has its own page with a summary of its routes and the agencies nearby.</p>
         </Feature>
@@ -118,20 +119,20 @@ export default function PlannersPage() {
       </div>
 
       <TextSection title="Where the Data Comes From">
-        <p>Atlas covers about 700 transit agencies in Canada and the US. It reads each agency's published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency's schedule has run out, Atlas says so on the map.</p>
+        <p>Atlas covers about 700 transit agencies in Canada and the US. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
       </TextSection>
 
-      <TextSection title="What Atlas Doesn't Do">
+      <TextSection title="What Atlas Doesn’t Do">
         <ul className="list-disc space-y-3 pl-5">
-          <li><strong className={STRONG}>It shows the published schedule, not what actually ran.</strong> Delays, detours and cancellations aren't included.</li>
-          <li><strong className={STRONG}>It only covers agencies that publish GTFS.</strong> Some smaller agencies don't.</li>
+          <li><strong className={STRONG}>It shows the published schedule, not what actually ran.</strong> Delays, detours and cancellations aren’t included.</li>
+          <li><strong className={STRONG}>It only covers agencies that publish GTFS.</strong> Some smaller agencies don’t.</li>
           <li><strong className={STRONG}>It can be wrong.</strong> Schedule data has errors, and so can Atlas. If something looks off for an agency you know, use the report button or email <Email />.</li>
-          <li><strong className={STRONG}>It isn't a trip planner.</strong> It shows the network, not how to get from A to B.</li>
+          <li><strong className={STRONG}>It isn’t a trip planner.</strong> It shows the network, not how to get from A to B.</li>
         </ul>
       </TextSection>
 
       <TextSection title="Get in Touch">
-        <p>Atlas is free to use. If you're a planner and want to talk about how it could help with a study, or you've found something wrong in your region, email <Email />.</p>
+        <p>Atlas is free to use. If you’re a planner and want to talk about how it could help with a study, or you’ve found something wrong in your region, email <Email />.</p>
         <ArrowLink href="/">Open the map</ArrowLink>
       </TextSection>
 
