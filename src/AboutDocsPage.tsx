@@ -1,6 +1,9 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES, PERIOD_LABELS, SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config';
-import { headwayEvery, headwayEveryRange } from '../shared/headwayText';
+import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
+import { percentText } from '../shared/numberText';
+import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
 import { metresText } from '../shared/unitText';
 import { hourRange } from '../shared/timeText';
 import { joinList } from '../shared/overflowText';
@@ -128,13 +131,12 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
   },
 ];
 
-const NEAR_MISS_ROWS: [string, string, string][] = [
-  ['10 min', '15 min', '10% of gaps'],
-  ['15 min', '20 min', '10% of gaps'],
-  ['20 min', '25 min', '5% of gaps'],
-  ['30 min', '35 min', '5% of gaps'],
-  ['60 min', '69 min', '5% of gaps'],
-];
+/** The near-miss table, from the pipeline's own settings (shared/frequencyRules.ts, CIV-1612). */
+const NEAR_MISS_ROWS: [string, string, string][] = SURFACE_TIER_MAXES.map(tier => [
+  headwayAmount(tier),
+  headwayAmount(tier + nearMissGrace(tier)),
+  `${percentText(VIOLATION_PERCENT_BY_TIER[tier] ?? VIOLATION_PERCENT)} of gaps`,
+]);
 const NEAR_MISS_COLUMNS: DataTableColumn<[string, string, string]>[] = [
   { key: 'band', header: 'Target band', cell: row => row[0] },
   { key: 'limit', header: 'Near-miss limit', cell: row => row[1] },
@@ -215,7 +217,7 @@ export default function AboutDocsPage() {
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, overnight service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
-            {showHistory && <p>The History eligibility rule requires at least 10 distinct snapshot years. Historical route identity is matched by exact route short name by default, with explicit aliases for documented redesigns.</p>}
+            {showHistory && <p>The History eligibility rule requires at least {MIN_HISTORY_DISTINCT_YEARS} distinct snapshot years. Historical route identity is matched by exact route short name by default, with explicit aliases for documented redesigns.</p>}
             {showResearch && <p>Research outputs can become product features only after their definitions, coverage and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>}
           </Section>
 
@@ -274,7 +276,7 @@ export default function AboutDocsPage() {
             </Subsection>
             <SubsectionTitle>Band qualification and tolerance</SubsectionTitle>
             <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or occasional service. Atlas tests the tightest band first and requires enough departures to cover the analysed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
-            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max(5 min, 15% of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
+            <p>A gap at or below <code className="text-xs text-[var(--text-primary)]">T</code> passes directly. A slightly longer internal gap can count as a near miss when it is no more than <code className="text-xs text-[var(--text-primary)]">T + max({headwayAmount(GRACE_MINUTES)}, {percentText(GRACE_PERCENT)} of T)</code>. The number of allowed near misses is tier-specific and capped at three:</p>
             <ScrollX>
               <DataTable
                 variant="compact"
@@ -283,8 +285,8 @@ export default function AboutDocsPage() {
                 rowKey={row => row[0]}
               />
             </ScrollX>
-            <p>Atlas rounds the percentage down, but allows at least one near miss once there are 8 or more gaps, and never more than three. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + 10 min</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with 5, 8, 10, 15, 30 and 60 min bands, and is tested on midday service from 9:30 AM–2:30 PM; the 5 and 8 min bands are not separate options in the main map filter.</p>
+            <p>Atlas rounds the percentage down, but allows at least one near miss once there are {GRACE_FLOOR_MIN_GAPS} or more gaps, and never more than three. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + {headwayAmount(EDGE_GAP_ALLOWANCE_MINUTES)}</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
+            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with {joinList(RAIL_TIER_MAXES.map(String))} min bands, and is tested on midday service from 9:30 AM–2:30 PM; the 5 and 8 min bands are not separate options in the main map filter.</p>
             <Subsection title="Frequency bands">
               <p>The main Frequency control currently exposes service at {TIER_LIST}. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Occasional service is hidden by default.</p>
             </Subsection>

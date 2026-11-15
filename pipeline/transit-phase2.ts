@@ -16,6 +16,7 @@ import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 import { forCrossMidnightWindow } from './headway-utils';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, MAX_NEAR_MISSES, VIOLATION_PERCENT } from '../shared/frequencyRules.js';
 
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
@@ -39,26 +40,8 @@ export type TierDeterminer = (
     preCountedGraceViolations?: number,
 ) => string;
 
-/**
- * The maximum total gap allowed for each true service-edge exception.
- *
- * This is deliberately applied only to the first or last departure in the
- * raw service list. A gap created by the analysis window is not an edge of
- * the service and cannot use this allowance.
- */
-export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
-
-/**
- * A sample with at least this many gaps may always carry one gap inside the grace. The
- * allowance is a share of the gaps (violationPercent, 5% on the 20-60 tiers), floor-rounded, so
- * an hourly line read over a 12-hour weekend window (12 gaps) or a 16-hour weekday (16 gaps)
- * allowed none: one 61-minute gap failed it, at its origin and at every stop downstream where
- * running time drifts a minute (wmata P72 Saturday, ttc 79, 7,088 of 60,628 catalog lines graded
- * stop by stop). Eight gaps is nine departures over at least eight hours at the hourly tier, a
- * whole-day sample, and one gap in eight (12.5%) is in line with the 10% the frequent tiers
- * already allow; under eight a single long gap is a seventh of the day or more and still fails.
- */
-export const GRACE_FLOOR_MIN_GAPS = 8;
+// The near-miss settings live in shared/frequencyRules.ts (CIV-1612), so the Docs page states the same numbers.
+export { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS };
 
 /** Departures packed into this many minutes or fewer are a burst, not a schedule. */
 export const BURST_MAX_SPAN_MINUTES = 90;
@@ -105,10 +88,10 @@ export const determineTier = (
     tripCount: number,
     spanMinutes: number,
     tiers: number[] = SURFACE_TIER_MAXES,
-    graceMinutes: number = 5,
+    graceMinutes: number = GRACE_MINUTES,
     maxGraceViolations: number = 0,
-    gracePercent: number = 0.15,
-    violationPercent: number = 0.05,
+    gracePercent: number = GRACE_PERCENT,
+    violationPercent: number = VIOLATION_PERCENT,
     violationPercentByTier?: Record<number, number>,
     preCountedGraceViolations: number = 0,
 ): string => {
@@ -118,7 +101,7 @@ export const determineTier = (
         const gapCount = headways.length + preCountedGraceViolations;
         const percentageAllowance = Math.floor(gapCount * tierViolationPercent);
         const floorAllowance = gapCount >= GRACE_FLOOR_MIN_GAPS ? 1 : 0;
-        const allowedViolations = Math.min(3, Math.max(maxGraceViolations, percentageAllowance, floorAllowance));
+        const allowedViolations = Math.min(MAX_NEAR_MISSES, Math.max(maxGraceViolations, percentageAllowance, floorAllowance));
         const minTrips = Math.ceil(spanMinutes / T);
         if (tripCount < minTrips) continue;
 
