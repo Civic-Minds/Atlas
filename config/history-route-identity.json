@@ -5,5 +5,6 @@
   "trimet": ["10", "115", "78"],
   "septa": ["53", "T5 Bus"],
   "translink": ["103"],
-  "nyct-bus-manhattan": ["M9"]
+  "nyct-bus-manhattan": ["M9"],
+  "nyct-bus-bronx": ["Bx24"]
 }
