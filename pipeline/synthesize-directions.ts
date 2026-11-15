@@ -132,7 +132,7 @@ export function inferDirectionsFromStopOrder(
     const stops = stopsByTrip.get(t.trip_id);
     if (!stops || stops.length < 2) return null;
     const key = stops.join('\u0000');
-    const p = patterns.get(key) ?? { stops, trips: [], headsigns: new Map(), destination: '' };
+    const p: Pattern = patterns.get(key) ?? { stops, trips: [], headsigns: new Map(), destination: '' };
     p.trips.push(t.trip_id);
     const h = destinationOf(t.trip_headsign);
     p.headsigns.set(h, (p.headsigns.get(h) ?? 0) + 1);
