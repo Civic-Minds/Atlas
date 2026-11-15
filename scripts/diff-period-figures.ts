@@ -23,9 +23,10 @@
  *   npx tsx scripts/diff-period-figures.ts --before=<dir or file.json> --after=<dir or file.json> [--out=<file.md>]
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { HEADWAY_TIERS, PERIOD_KEYS } from '../shared/config.js';
+import { pipelineRunDateYmd } from '../pipeline/pipelineTimeZone.js';
 
 type Figures = Record<string, number | null | undefined>;
 type Flags = Record<string, boolean | null | undefined>;
@@ -166,6 +167,31 @@ export function diffSummaries(before: Summary, after: Summary): { report: string
   return { report, changes };
 }
 
+/**
+ * #1523: the run date a side was processed at, from the build-settings.json the dry run writes
+ * beside its figures (in the side's folder, or beside the summary file), as YYYYMMDD in the
+ * pipeline's zone; null when the side records none (a run from before #1523, or a local folder).
+ */
+export function sideRunDate(path: string): string | null {
+  const dir = existsSync(path) && statSync(path).isDirectory() ? path : dirname(path);
+  const settings = join(dir, 'build-settings.json');
+  if (!existsSync(settings)) return null;
+  const runAt = (JSON.parse(readFileSync(settings, 'utf8')) as { runAt?: string }).runAt;
+  if (!runAt) return null;
+  const at = new Date(runAt);
+  return Number.isNaN(at.getTime()) ? null : pipelineRunDateYmd(at);
+}
+
+/**
+ * #1523: two runs read at different dates do not compare (the pipeline reads "today" for the service
+ * week and feed selection): an error message when both record a run date and they differ, a warning
+ * when either records none, else null.
+ */
+export function runDateCheck(before: string | null, after: string | null): { error?: string; warning?: string } {
+  if (before && after) return before === after ? {} : { error: `The two runs read different dates (before ${before}, after ${after}), so their figures do not compare. Rerun with the same run_at (rebuild-release.yml) or ATLAS_RUN_AT (local).` };
+  return { warning: 'Run dates not recorded on both sides: if the runs straddle midnight (Toronto), their differences may be the date, not the code (#1523).' };
+}
+
 function main(): void {
   const arg = (name: string) => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
   const load = (path: string): Summary => (statSync(path).isDirectory() ? summarize(path) : JSON.parse(readFileSync(path, 'utf8')) as Summary);
@@ -181,7 +207,11 @@ function main(): void {
   const beforeArg = arg('before');
   const afterArg = arg('after');
   if (!beforeArg || !afterArg) throw new Error('Usage: npx tsx scripts/diff-period-figures.ts --before=<dir or file.json> --after=<dir or file.json> [--out=<file.md>]');
-  const { report } = diffSummaries(load(resolve(beforeArg)), load(resolve(afterArg)));
+  const check = runDateCheck(sideRunDate(resolve(beforeArg)), sideRunDate(resolve(afterArg)));
+  if (check.error && !process.argv.includes('--allow-run-date-mismatch')) throw new Error(check.error);
+  const { report: body } = diffSummaries(load(resolve(beforeArg)), load(resolve(afterArg)));
+  const note = check.error ? `**Warning (#1523):** ${check.error}` : check.warning ? `Note (#1523): ${check.warning}` : '';
+  const report = note ? `${note}\n\n${body}` : body;
   if (outPath) writeFileSync(resolve(outPath), `${report}\n`);
   console.log(report);
 }

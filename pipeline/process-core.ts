@@ -60,6 +60,7 @@ import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEA
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { runNow } from '../shared/runClock.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -764,7 +765,7 @@ export function weekdayServiceDaysByRouteDir(
 
 /** Local run date as YYYYMMDD. */
 function runDateYmd(): string {
-  const d = new Date();
+  const d = runNow(); // #1523: ATLAS_RUN_AT pins it
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
 }
 export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
@@ -4221,7 +4222,7 @@ export async function processGtfsBuffer(
     resumesOn: routeFeatures.length === 0 ? resumeDates[0] ?? null : null,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
-    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, new Date().toISOString().slice(0, 10), calendarOnlyEnd),
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, runNow().toISOString().slice(0, 10), calendarOnlyEnd),
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
