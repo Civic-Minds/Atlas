@@ -90,6 +90,14 @@ export interface ConnectionsBarControls {
 /** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353). */
 const CONNECTION_SIDE_LABELS = [['after', '[Placeholder: arriving]'], ['before', '[Placeholder: leaving]']] as const;
 
+/**
+ * A chip's "filter is on" dot. Declared out here, not inside FilterChips, so it is the same component on every render
+ * and (CIV-1567, beta) can fade instead of being remounted.
+ */
+function Dot({ show }: { show: boolean }) {
+  return FEATURES.modeTransitions ? <ActiveDot className={`transition-opacity duration-300 ease-out ${show ? 'opacity-100' : 'opacity-0'}`} /> : show ? <ActiveDot /> : null;
+}
+
 const MODES = filterModeOptions(FEATURES.onDemand);
 
 export function getNowPeriod(): TimePeriod {
@@ -320,8 +328,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
     }`;
 
-  const Dot = ({ show }: { show: boolean }) =>
-    FEATURES.modeTransitions ? <ActiveDot className={`transition-opacity duration-300 ease-out ${show ? 'opacity-100' : 'opacity-0'}`} /> : show ? <ActiveDot /> : null;
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
