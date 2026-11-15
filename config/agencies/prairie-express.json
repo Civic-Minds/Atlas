@@ -1,0 +1,23 @@
+{
+  "slug": "prairie-express",
+  "officialName": "Prairie Express",
+  "websiteUrl": "https://www.necalg.org/transportation-1",
+  "center": [
+    40.6252,
+    -103.2016
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-801/latest.zip",
+  "bbox": [
+    40.6106,
+    -103.2376,
+    40.6432,
+    -103.1607
+  ],
+  "cities": [
+    "Sterling, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "hiddenInProduction": true
+}
