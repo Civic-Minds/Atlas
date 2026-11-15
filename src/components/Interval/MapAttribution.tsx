@@ -12,6 +12,7 @@ import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
+import { ABOUT_PATH } from '../../../shared/pagePaths';
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
@@ -60,7 +61,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
         </button>
         {aboutOpen && (
           <div className={`absolute bottom-full left-0 mb-2 ${FLOATING_CARD} min-w-44 p-1.5 flex flex-col gap-0.5`}>
-            <a href="/about" className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</a>
+            <a href={ABOUT_PATH} className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</a>
             {whatsNewEnabled && (
               <button
                 type="button"
@@ -83,7 +84,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
         )}
       </div>
       <a
-        href="/about"
+        href={ABOUT_PATH}
         className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap no-underline hover:text-[var(--text-primary)]`}
       >
         {ABOUT_ATLAS}

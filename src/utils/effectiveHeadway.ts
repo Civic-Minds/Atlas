@@ -7,7 +7,7 @@ import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor'
 import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape, headwayRangeShown } from './headwayText';
 import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
-import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
 import { routeCardLowestHeadway, routeCardRange } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
@@ -184,15 +184,17 @@ export function rowReadsPeriodEdge(p: ShapeProperties, period: TimePeriod): bool
   });
 }
 
-export type PeriodEdge = { from?: number; until?: number; every: number };
+/** `partOfRoute`: the time was read on a short tail, not the whole route (#1510); the words say so. */
+export type PeriodEdge = { from?: number; until?: number; every: number; partOfRoute?: boolean };
 
 /** "every 30 min until 5:55 PM" / "every 9 min from 7:17 AM" for one edge. */
 export function periodEdgeText(edge: PeriodEdge): string {
-  return headwayPeriodShape({
+  const text = headwayPeriodShape({
     from: edge.from != null ? clockTime(edge.from) : undefined,
     until: edge.until != null ? clockTime(edge.until) : undefined,
     every: edge.every,
   });
+  return edge.partOfRoute ? `${text} ${ON_PART_OF_ROUTE}` : text;
 }
 
 /** CIV-1251: the data carries each stretch's own edge (stretchMeta main.edge, tails[i].edge). */
@@ -451,7 +453,7 @@ export function routeListFilterDisplay(features: readonly ShapeProperties[], per
   if (low != null && headwayRangeShown(low, headway)) display.sharedHeadway = low;
   const edge = headway != null ? routeValueEdge(features, period, headway) : undefined;
   if (edge) {
-    display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every };
+    display.edge = { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(edge.partOfRoute ? { partOfRoute: true } : {}) };
     display.edgeText = periodEdgeText(edge);
   }
   return display;
@@ -480,6 +482,12 @@ export function routeListDisplay(features: readonly ShapeProperties[], period: T
   if (card.words && display.sharedHeadway == null) {
     display.edgeText = card.words;
     if (filter.edge && filter.edgeText === card.words) display.edge = filter.edge;
+    // #1510: the card's row for the tail names its time without "on part of the route" (the row is that part); a list
+    // row stands for the whole route, so it reads the filter's words, which say so.
+    else if (filter.edge?.partOfRoute && card.words === periodEdgeText({ ...filter.edge, partOfRoute: false })) {
+      display.edge = filter.edge;
+      display.edgeText = filter.edgeText;
+    }
   } else if (!card.words && filter.edge && display.sharedHeadway == null && (card.high === filter.headway || card.high === filter.edge.every)) {
     // A card built without the edge's stretch fields still reads the filter's edge words (#1292).
     display.edge = filter.edge;
@@ -518,7 +526,9 @@ function routeValueEdge(features: readonly ShapeProperties[], period: TimePeriod
     if (p.directionFilterHeadwayByPeriod?.[period] !== value) continue;
     const edge = p.stretchPeriodEdge?.[period];
     if (!edge || (edge.from == null && edge.until == null) || edge.every >= value) continue;
-    edges.set(JSON.stringify([edge.from ?? null, edge.until ?? null, edge.every]), edge);
+    // #1510: an edge read on a tail (a numbered stretch) is a time for part of the route only, and says so.
+    const partOfRoute = typeof edge.stretch === 'number';
+    edges.set(JSON.stringify([edge.from ?? null, edge.until ?? null, edge.every, partOfRoute]), { ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}), every: edge.every, ...(partOfRoute ? { partOfRoute: true } : {}) });
   }
   return edges.size === 1 ? [...edges.values()][0] : undefined;
 }

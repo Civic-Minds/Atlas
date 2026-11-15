@@ -9,7 +9,7 @@ import { version } from '../../../package.json';
 const RELEASES: WhatsNewRelease[] = [
   {
     version: '3.3.0',
-    month: 'October 2026',
+   
     date: '2026-10-12',
     items: [
       { text: 'Public change one.' },
@@ -17,7 +17,7 @@ const RELEASES: WhatsNewRelease[] = [
       { text: 'Public change two.' },
     ],
   },
-  { version: '3.2.0', month: 'September 2026', date: '2026-09-22', items: [{ text: 'Only beta here.', beta: true }] },
+  { version: '3.2.0', date: '2026-09-22', items: [{ text: 'Only beta here.', beta: true }] },
 ];
 
 describe('What’s new link', () => {
@@ -74,9 +74,9 @@ describe('WhatsNewPanel', () => {
     expect(screen.queryByText(/data updated/i)).toBeNull();
   });
 
-  it('falls back to the month when the release date is unusable', () => {
+  it('shows only the version when the release date is unusable', () => {
     render(<WhatsNewPanel onClose={() => {}} includeBeta releases={[{ ...RELEASES[0], date: 'soon' }]} />);
-    expect(screen.getByRole('heading', { level: 3 }).textContent).toBe('Version 3.3 · October 2026');
+    expect(screen.getByRole('heading', { level: 3 }).textContent).toBe('Version 3.3');
   });
 });
 

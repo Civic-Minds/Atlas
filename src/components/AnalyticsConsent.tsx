@@ -9,6 +9,7 @@ import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
 import { CLOSE_PLACES, closeLabel, ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE } from '../content/noticeCopy';
+import { PRIVACY_PATH } from '../../shared/pagePaths';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
 
@@ -31,7 +32,7 @@ function Controls({ onClose }: { onClose: () => void }) {
             <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
           </div>
         </div>
-        <ArrowLink tone="inline" href="/privacy">Read the Privacy Policy</ArrowLink>
+        <ArrowLink tone="inline" href={PRIVACY_PATH}>Read the Privacy Policy</ArrowLink>
       </div>
     </div>
   </div>;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  backfillSupplementalPolicy, buildSidecar, buildV2Routes, buildV2RoutesMerged, historyV2Enabled,
+  backfillSupplementalIdPrefixes, backfillSupplementalPolicy, buildSidecar, buildV2Routes, buildV2RoutesMerged, historyV2Enabled,
   splitFeaturesBySource, BUS_ONLY_NOTE,
 } from '../historyV2.js';
 import { historyWeekendPeriodsFor } from '../historyV2Flag.js';
@@ -66,12 +66,49 @@ describe('backfill --bus-only', () => {
     expect(() => backfillSupplementalPolicy('lacmta', [RAIL], false)).toThrow(/--bus-only/);
   });
   it('proceeds and stamps with the flag', () => {
-    expect(backfillSupplementalPolicy('lacmta', [RAIL], true)).toEqual({ busOnly: true, supplementalExcluded: [RAIL], note: BUS_ONLY_NOTE });
+    expect(backfillSupplementalPolicy('lacmta', [RAIL], true)).toEqual({ busOnly: true, supplementalExcluded: [RAIL], note: BUS_ONLY_NOTE, supplementalDirs: {} });
     expect(BUS_ONLY_NOTE).toBe('bus feed only; supplemental routes excluded');
   });
   it('leaves agencies without supplemental feeds untouched, flag or not', () => {
-    expect(backfillSupplementalPolicy('ttc', undefined, false)).toEqual({ busOnly: false, supplementalExcluded: [] });
-    expect(backfillSupplementalPolicy('ttc', [], true)).toEqual({ busOnly: false, supplementalExcluded: [] });
+    expect(backfillSupplementalPolicy('ttc', undefined, false)).toEqual({ busOnly: false, supplementalExcluded: [], supplementalDirs: {} });
+    expect(backfillSupplementalPolicy('ttc', [], true)).toEqual({ busOnly: false, supplementalExcluded: [], supplementalDirs: {} });
+  });
+});
+
+describe('backfill --supplemental-zip-dir (CIV-1484)', () => {
+  const RAIL2 = 'https://example.org/gtfs_ferry.zip';
+  it('a bare dir is the archive of the only supplemental feed', () => {
+    expect(backfillSupplementalPolicy('septa', [RAIL], false, ['zips-rail'])).toEqual({ busOnly: false, supplementalExcluded: [], supplementalDirs: { [RAIL]: 'zips-rail' } });
+  });
+  it('url=dir names the feed; every feed needs one', () => {
+    expect(backfillSupplementalPolicy('x', [RAIL, RAIL2], false, [`${RAIL}=r`, `${RAIL2}=f`]).supplementalDirs).toEqual({ [RAIL]: 'r', [RAIL2]: 'f' });
+    expect(() => backfillSupplementalPolicy('x', [RAIL, RAIL2], false, [`${RAIL}=r`])).toThrow(/no --supplemental-zip-dir for .*ferry/);
+    expect(() => backfillSupplementalPolicy('x', [RAIL, RAIL2], false, ['r'])).toThrow(/<url>=<dir> for each/);
+  });
+  it('refuses an unknown feed, a repeated feed, --bus-only with it, and agencies without supplemental feeds', () => {
+    expect(() => backfillSupplementalPolicy('septa', [RAIL], false, ['https://other.org/a.zip=d'])).toThrow(/not one of its supplemental feeds/);
+    expect(() => backfillSupplementalPolicy('septa', [RAIL], false, ['a', 'b'])).toThrow(/two directories/);
+    expect(() => backfillSupplementalPolicy('septa', [RAIL], true, ['a'])).toThrow(/cannot be combined/);
+    expect(() => backfillSupplementalPolicy('ttc', [], false, ['a'])).toThrow(/no supplemental feeds/);
+  });
+  it('with no dirs, the refusal names both ways in', () => {
+    expect(() => backfillSupplementalPolicy('septa', [RAIL], false, [])).toThrow(/--supplemental-zip-dir .*--bus-only/);
+  });
+});
+
+describe('backfill --supplemental-id-prefix (CIV-1484)', () => {
+  it('no flag keeps the configured prefixes; a bare prefix is the only feed\'s', () => {
+    expect(backfillSupplementalIdPrefixes('septa', [RAIL], undefined, [])).toBeUndefined();
+    expect(backfillSupplementalIdPrefixes('njt', [RAIL], { [RAIL]: 'rail:' }, [])).toEqual({ [RAIL]: 'rail:' });
+    expect(backfillSupplementalIdPrefixes('septa', [RAIL], undefined, ['rail:'])).toEqual({ [RAIL]: 'rail:' });
+    expect(backfillSupplementalIdPrefixes('septa', [RAIL], undefined, [`${RAIL}=r:`])).toEqual({ [RAIL]: 'r:' });
+  });
+  it('refuses a clash with the configured prefix, an unknown feed, an empty prefix and agencies without supplemental feeds', () => {
+    expect(backfillSupplementalIdPrefixes('njt', [RAIL], { [RAIL]: 'rail:' }, ['rail:'])).toEqual({ [RAIL]: 'rail:' });
+    expect(() => backfillSupplementalIdPrefixes('njt', [RAIL], { [RAIL]: 'rail:' }, ['x:'])).toThrow(/already has the configured id prefix/);
+    expect(() => backfillSupplementalIdPrefixes('septa', [RAIL], undefined, ['https://other.org/a.zip=x:'])).toThrow(/not one of its supplemental feeds/);
+    expect(() => backfillSupplementalIdPrefixes('septa', [RAIL], undefined, [`${RAIL}=`])).toThrow(/empty id prefix/);
+    expect(() => backfillSupplementalIdPrefixes('ttc', [], undefined, ['x:'])).toThrow(/no supplemental feeds/);
   });
 });
 

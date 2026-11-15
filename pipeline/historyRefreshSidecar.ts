@@ -49,16 +49,18 @@ export interface RefreshSidecarResult {
   note: string;
 }
 
-export async function writeRefreshSidecar(
+/**
+ * The routes of one period from the main feed plus its supplemental feeds (refresh, and the two-feed
+ * backfill, CIV-1484). The merged features already hold the supplemental feeds' routes; they are split
+ * back by feed so each is built with its own calendar evidence, and a clash with the main feed is
+ * reported (the main feed's route is kept).
+ */
+export async function buildMergedV2Routes(
   slug: string,
-  periodKey: string,
   features: Array<{ properties: Record<string, unknown> }>,
   v2Input: HistoryV2Input,
-  store: { sink: HistoryV2Sink; peek: (key: string) => Promise<string | null> },
-): Promise<RefreshSidecarResult> {
+): Promise<{ evidence: Awaited<ReturnType<typeof readFeedEvidence>>; built: ReturnType<typeof buildV2RoutesMerged> }> {
   const evidence = await readFeedEvidence(v2Input.buf, { referenceDate: v2Input.referenceDate });
-  // The merged features already hold the supplemental feeds' routes; split them back by feed so
-  // each is built with its own calendar evidence, and a clash with the main feed is reported.
   const supplementalBufs = new Map((v2Input.supplemental ?? []).map(f => [f.url, f.buf]));
   const parts: V2FeedPart[] = [];
   for (const part of splitFeaturesBySource(features, v2Input.featureSources)) {
@@ -71,6 +73,17 @@ export async function writeRefreshSidecar(
     parts.push({ url: part.url, features: part.features, evidence: await readFeedEvidence(partBuf, { referenceDate }) });
   }
   const built = buildV2RoutesMerged(parts, { weekendPeriods: historyWeekendPeriodsFor(slug) });
+  return { evidence, built };
+}
+
+export async function writeRefreshSidecar(
+  slug: string,
+  periodKey: string,
+  features: Array<{ properties: Record<string, unknown> }>,
+  v2Input: HistoryV2Input,
+  store: { sink: HistoryV2Sink; peek: (key: string) => Promise<string | null> },
+): Promise<RefreshSidecarResult> {
+  const { evidence, built } = await buildMergedV2Routes(slug, features, v2Input);
   let note = built.collisions.length > 0
     ? `; ${built.collisions.length} route-key collision(s) between feeds, earlier feed's route kept: ${built.collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`
     : '';

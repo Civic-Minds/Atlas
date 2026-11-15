@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Clock, MapPin, Repeat } from 'lucide-react';
-import { FEATURES } from '../shared/config';
+import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
 import Tag from './components/ui/Tag';
@@ -8,6 +8,7 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { SURFACE } from './styles';
 import { newestResearch, type ResearchEntry } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
+import { DOCS_PATH } from '../shared/pagePaths';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -83,7 +84,7 @@ export default function AboutPage() {
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ArrowLink href="/">Try Atlas</ArrowLink>
-              {FEATURES.researchApps && <a href="/research" className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
+              {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
             </div>
           </div>
           <ThemedPicture base="/assets/about/atlas-routes-toronto" ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
@@ -130,7 +131,7 @@ export default function AboutPage() {
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>Atlas brings published agency schedules into one place so riders, planners, researchers and advocates can compare routes across cities, time periods and modes.</p>
             <p>It does not replace official trip planning or live alerts. It makes the patterns in scheduled service easier to see.</p>
-            <ArrowLink href="/about/docs">Read how Atlas works</ArrowLink>
+            <ArrowLink href={DOCS_PATH}>Read how Atlas works</ArrowLink>
           </div>
         </section>
 

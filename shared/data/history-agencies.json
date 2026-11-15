@@ -13,6 +13,7 @@
     "hart",
     "indygo",
     "lacmta",
+    "lynx",
     "marta",
     "mbta",
     "metro-transit",
@@ -20,9 +21,11 @@
     "miami-dade-transit",
     "port-authority-pa",
     "rtd-denver",
+    "septa",
     "spokane",
     "stm",
     "trimet",
+    "votran",
     "winnipeg"
   ]
 }

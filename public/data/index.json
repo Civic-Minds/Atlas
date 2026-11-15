@@ -900,10 +900,10 @@
       "cities": [
         "London, Ontario"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261128",
+      "expiredFeedCheckExpiry": "20270206",
       "feedQuality": {
         "status": "review",
         "score": 97,
@@ -923,7 +923,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-14",
+        "scoredAt": "2026-11-15"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -935,7 +936,8 @@
       "lastPeekedExpiry": "20261128",
       "lastServiceWeek": "12d581fc8a6d1f8b",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261019"
+      "lastFeedStart": "20261019",
+      "heldFeedStart": "20261129"
     },
     {
       "slug": "miway",
@@ -1163,9 +1165,9 @@
       ],
       "feedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
       "mdbFeedUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-      "lastFeedExpiry": "20261206",
-      "lastFeedVersion": "S1000526",
-      "lastRefreshedAt": "2026-11-09",
+      "lastFeedExpiry": "20261213",
+      "lastFeedVersion": "S1000527",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Nepean, Ontario",
         "Orléans, Ontario",
@@ -1177,10 +1179,10 @@
         "Hull, Quebec",
         "Gatineau, Quebec"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261206",
+      "expiredFeedCheckExpiry": "20261213",
       "timezone": "Canada/Eastern",
       "feedQuality": {
         "status": "review",
@@ -1194,14 +1196,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 5,
           "featureCount": 736,
-          "feedExpiry": "20261206",
+          "feedExpiry": "20261213",
           "routeCount": 174,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -1209,10 +1211,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://oct-gtfs-emasagcnfmcgeham.z01.azurefd.net/public-access/GTFSExport.zip",
-      "lastPeekedExpiry": "20261206",
-      "lastServiceWeek": "a53aacdf5a3ecbdd",
-      "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261106"
+      "lastPeekedExpiry": "20261213",
+      "lastServiceWeek": "b9518d6f3beb168b",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261113",
+      "lastRawArchiveKey": "20261213-e75c4ce49907471a",
+      "lastFeedContentKey": "b5a8340ec9febfa8"
     },
     {
       "slug": "oakville",
@@ -6683,9 +6687,9 @@
         -121.7
       ],
       "feedUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-      "lastFeedExpiry": "20261211",
-      "lastFeedVersion": "20261002-20261211",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20270326",
+      "lastFeedVersion": "20261110-20270326",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Shoreline, Washington",
         "Marysville, Washington",
@@ -6696,10 +6700,10 @@
         "Bellevue, Washington",
         "Sammamish, Washington"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261211",
+      "expiredFeedCheckExpiry": "20270326",
       "timezone": "America/Los_Angeles",
       "feedQuality": {
         "status": "review",
@@ -6713,14 +6717,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 2,
           "featureCount": 188,
-          "feedExpiry": "20261211",
+          "feedExpiry": "20270326",
           "routeCount": 39,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -6728,10 +6732,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
-      "lastPeekedExpiry": "20261211",
-      "lastServiceWeek": "6df1504ea7f4a7ed",
-      "feedObtainedAt": "20261002",
-      "lastFeedStart": "20261002"
+      "lastPeekedExpiry": "20270326",
+      "lastServiceWeek": "3c3e551ec36b2e91",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261110",
+      "lastRawArchiveKey": "20270326-7262cd1eb0fcabea",
+      "lastFeedContentKey": "4df12b66f597de8c"
     },
     {
       "slug": "everetttransit",
@@ -7240,16 +7246,16 @@
       ],
       "feedUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedExpiry": "20261209",
+      "lastFeedExpiry": "20261214",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-11-09",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Portland, Maine"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261209",
+      "expiredFeedCheckExpiry": "20261214",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -7260,14 +7266,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 111,
-          "feedExpiry": "20261209",
+          "feedExpiry": "20261214",
           "routeCount": 15,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7276,10 +7282,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "lastPeekedExpiry": "20261209",
-      "lastServiceWeek": "085aabcd5911f424",
-      "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261109"
+      "lastPeekedExpiry": "20261214",
+      "lastServiceWeek": "f66e13f0ea80ee55",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261114",
+      "lastRawArchiveKey": "20261214-aba12404d5f2fd68",
+      "lastFeedContentKey": "4c29be3dde14af21"
     },
     {
       "slug": "southportlandme",
@@ -7547,13 +7555,13 @@
         -122.3
       ],
       "feedUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-      "lastFeedExpiry": "20261129",
-      "lastFeedVersion": "PDT: 16-Oct-2026 11:51",
-      "lastRefreshedAt": "2026-11-09",
-      "lastFeedCheckAt": "20261109",
+      "lastFeedExpiry": "20261227",
+      "lastFeedVersion": "PST: 10-Nov-2026 12:11",
+      "lastRefreshedAt": "2026-11-15",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261129",
+      "expiredFeedCheckExpiry": "20261227",
       "timezone": "America/Los_Angeles",
       "feedQuality": {
         "status": "review",
@@ -7567,14 +7575,14 @@
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 0,
           "featureCount": 114,
-          "feedExpiry": "20261129",
+          "feedExpiry": "20261227",
           "routeCount": 38,
           "problemShapes": 1,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7582,10 +7590,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.sound.obaweb.org/prod/95_gtfs.zip",
-      "lastPeekedExpiry": "20261129",
-      "lastServiceWeek": "8616cd945905e9d1",
-      "feedObtainedAt": "20261016",
-      "lastFeedStart": "20261009"
+      "lastPeekedExpiry": "20261227",
+      "lastServiceWeek": "90e7eb807183b3ce",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261104",
+      "lastRawArchiveKey": "20261227-a83f94a0ea9c3cb4",
+      "lastFeedContentKey": "09617202c4ef2c74"
     },
     {
       "slug": "bc-ferries",
@@ -8253,9 +8263,9 @@
       "feedUrl": "https://files.mobilitydatabase.org/mdb-259/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-259/latest.zip",
       "timezone": "America/Los_Angeles",
-      "lastFeedExpiry": "20261130",
-      "lastFeedVersion": "UTC: 01-Oct-2026 04:57",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20270530",
+      "lastFeedVersion": "UTC: 11-Nov-2026 19:17",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Longview, Washington",
         "Kelso, Washington",
@@ -8271,29 +8281,31 @@
           "shapeAnomalies": 2,
           "routeHeadwayMismatches": 0,
           "featureCount": 17,
-          "feedExpiry": "20261130",
+          "feedExpiry": "20270530",
           "routeCount": 10,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261130",
+      "expiredFeedCheckExpiry": "20270530",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-259/latest.zip",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20261130",
-      "lastServiceWeek": "eb910d48835cb5f1",
-      "feedObtainedAt": "20261001",
-      "lastFeedStart": "20260930"
+      "lastPeekedExpiry": "20270530",
+      "lastServiceWeek": "49366316d4899ba0",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261111",
+      "lastRawArchiveKey": "20270530-538d2ef7c8293253",
+      "lastFeedContentKey": "b29b7fa6abcd816b"
     },
     {
       "slug": "tillamook",
@@ -8966,12 +8978,13 @@
         37.79,
         -122.13
       ],
-      "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+      "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SM",
+      "feedApiKeyEnvVar": "MUNI_511_API_KEY",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2708/latest.zip",
-      "lastFeedExpiry": "20261114",
-      "lastFeedVersion": "Revision2",
+      "lastFeedExpiry": "20270109",
+      "lastFeedVersion": "20261102",
       "mergeEquivalentShapeVariantsAllModes": true,
-      "lastRefreshedAt": "2026-11-02",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "South San Francisco, California",
         "San Mateo, California",
@@ -8981,10 +8994,10 @@
         "San Francisco, California",
         "Chinatown, California"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261114",
+      "expiredFeedCheckExpiry": "20270109",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -8992,17 +9005,17 @@
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
-          "shapeAnomalies": 0,
+          "shapeAnomalies": 1,
           "routeHeadwayMismatches": 0,
-          "featureCount": 256,
-          "feedExpiry": "20261114",
+          "featureCount": 254,
+          "feedExpiry": "20270109",
           "routeCount": 75,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -9010,11 +9023,13 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
-      "lastPeekedExpiry": "20261114",
-      "lastServiceWeek": "109fce2a80cc17b5",
-      "feedObtainedAt": "20260902",
-      "lastFeedStart": "20260920"
+      "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=SM",
+      "lastPeekedExpiry": "20270109",
+      "lastServiceWeek": "f1dfbbabcc545273",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20260920",
+      "lastRawArchiveKey": "20270109-72689edf9904cb26",
+      "lastFeedContentKey": "8740f23cbf0f3bab"
     },
     {
       "slug": "goldengate",
@@ -9434,25 +9449,26 @@
         38.55,
         -122.51
       ],
-      "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+      "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
+      "feedApiKeyEnvVar": "MUNI_511_API_KEY",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3222/latest.zip",
-      "lastFeedExpiry": "20270110",
-      "lastFeedVersion": "UTC: 14-Apr-2026 15:07",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20270430",
+      "lastFeedVersion": "20261005",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Santa Rosa, California",
         "Petaluma, California",
         "San Rafael, California",
         "Novato, California"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270110",
+      "expiredFeedCheckExpiry": "20270430",
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
-      "lastPeekedExpiry": "20270110",
+      "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
+      "lastPeekedExpiry": "20270430",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -9463,22 +9479,24 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 6,
-          "feedExpiry": "20270110",
+          "feedExpiry": "20270430",
           "routeCount": 1,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastServiceWeek": "43d5ac5e6d40b67c",
-      "feedObtainedAt": "20260414",
-      "lastFeedStart": "20260414"
+      "lastServiceWeek": "57a1ccc824a2d418",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20260412",
+      "lastRawArchiveKey": "20270430-10be01cb99c2388a",
+      "lastFeedContentKey": "b980de7c3b2de0e3"
     },
     {
       "slug": "sonoma-county",
@@ -15266,10 +15284,10 @@
       ],
       "feedUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-389/latest.zip",
-      "lastFeedExpiry": "20261130",
+      "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "region": "Illinois",
-      "lastRefreshedAt": "2026-11-02",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "South Shore, Illinois",
         "Chicago Lawn, Illinois",
@@ -15282,10 +15300,10 @@
         "Near North Side, Illinois",
         "Oak Park, Illinois"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261130",
+      "expiredFeedCheckExpiry": "20261231",
       "timezone": "America/Chicago",
       "feedQuality": {
         "status": "review",
@@ -15298,15 +15316,15 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 3,
-          "featureCount": 973,
-          "feedExpiry": "20261130",
+          "featureCount": 984,
+          "feedExpiry": "20261231",
           "routeCount": 132,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 3,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15314,10 +15332,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
-      "lastPeekedExpiry": "20261130",
-      "lastServiceWeek": "e1178613ae51961c",
-      "feedObtainedAt": "20260914",
-      "lastFeedStart": "20260911"
+      "lastPeekedExpiry": "20261231",
+      "lastServiceWeek": "cd2225a3e6978141",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261029",
+      "lastRawArchiveKey": "20261231-ddbf306e6a57e419",
+      "lastFeedContentKey": "4bacb8969185de5c"
     },
     {
       "slug": "metra",
@@ -20382,11 +20402,11 @@
         27.8704,
         -82.7219
       ],
-      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
-      "lastFeedExpiry": "20270206",
-      "lastFeedVersion": "S1000246",
+      "feedUrl": "https://www.ftis.org/PostFileDownload.aspx?id=2063A0",
+      "lastFeedExpiry": "20270605",
+      "lastFeedVersion": null,
       "region": "Florida",
-      "lastRefreshedAt": "2026-11-02",
+      "lastRefreshedAt": "2026-11-15",
       "websiteUrl": "http://www.psta.net",
       "cities": [
         "St. Petersburg, Florida",
@@ -20398,42 +20418,41 @@
         "Tampa, Florida"
       ],
       "timezone": "America/New_York",
-      "lastRawArchiveKey": "20260606-face4e6e47319b36",
-      "lastFeedCheckAt": "20261109",
+      "lastRawArchiveKey": "20270605-95e354fa400ebb92",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270206",
+      "expiredFeedCheckExpiry": "20270605",
       "feedQuality": {
-        "status": "review",
-        "score": 97,
-        "reasons": [
-          "1 route has stops whose frequency differs from the overall route schedule."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
-          "routeHeadwayMismatches": 1,
-          "featureCount": 264,
-          "feedExpiry": "20270206",
-          "routeCount": 39,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 262,
+          "feedExpiry": "20270605",
+          "routeCount": 38,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
-          "mismatchRoutes": 1,
+          "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "fetch failed",
-      "feedRefreshErrorAt": "20261109",
-      "feedRefreshRetryCount": 1,
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=1036A0",
-      "lastPeekedExpiry": "20270206",
-      "lastServiceWeek": "ab4bfdf8b126158a",
-      "feedObtainedAt": "20260707",
-      "lastFeedStart": "20260607"
+      "lastFeedSourceUrl": "https://www.ftis.org/PostFileDownload.aspx?id=2063A0",
+      "lastPeekedExpiry": "20270605",
+      "lastServiceWeek": "67d062c312783546",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20260607",
+      "lastFeedContentKey": "9767f848ed2a6ad2"
     },
     {
       "slug": "palm-tran",
@@ -20564,11 +20583,11 @@
         29.1432,
         -81.0746
       ],
-      "feedUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
-      "lastFeedExpiry": "20270605",
-      "lastFeedVersion": "20260610",
+      "feedUrl": "https://www.votran.org/file/6120/google_transit_October-2026.zip",
+      "lastFeedExpiry": "20271002",
+      "lastFeedVersion": "20260916",
       "region": "Florida",
-      "lastRefreshedAt": "2026-11-02",
+      "lastRefreshedAt": "2026-11-15",
       "websiteUrl": "http://www.votran.org",
       "cities": [
         "Daytona Beach, Florida",
@@ -20576,42 +20595,41 @@
         "Deltona, Florida"
       ],
       "timezone": "America/New_York",
-      "lastRawArchiveKey": "20220223-e5fca0a56e84cfdb",
-      "lastFeedCheckAt": "20261109",
+      "lastRawArchiveKey": "20271002-c0837203089d5890",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20270605",
+      "expiredFeedCheckExpiry": "20271002",
       "feedQuality": {
-        "status": "review",
-        "score": 96,
-        "reasons": [
-          "1 route has stops whose frequency differs from the overall route schedule."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
-          "shapeAnomalies": 42,
-          "routeHeadwayMismatches": 1,
-          "featureCount": 88,
-          "feedExpiry": "20270605",
-          "routeCount": 26,
+          "shapeAnomalies": 9,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 79,
+          "feedExpiry": "20271002",
+          "routeCount": 23,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
-          "mismatchRoutes": 1,
+          "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_June-2026.zip",
-      "lastPeekedExpiry": "20270605",
-      "lastServiceWeek": "8668d761e562bf07",
-      "feedObtainedAt": "20260610",
-      "lastFeedStart": "20260610"
+      "lastFeedSourceUrl": "https://www.votran.org/file/6120/google_transit_October-2026.zip",
+      "lastPeekedExpiry": "20271002",
+      "lastServiceWeek": "4da92b86e2902dcc",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261004",
+      "lastFeedContentKey": "e43865deb20ccfac"
     },
     {
       "slug": "chapel-hill-transit",
@@ -21228,17 +21246,17 @@
       ],
       "feedUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
       "region": "Virginia",
-      "lastFeedExpiry": "20261210",
+      "lastFeedExpiry": "20261215",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-11-09",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Newport News, Virginia",
         "Hampton, Virginia"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261210",
+      "expiredFeedCheckExpiry": "20261215",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -21249,14 +21267,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 69,
-          "feedExpiry": "20261210",
+          "feedExpiry": "20261215",
           "routeCount": 12,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -21265,10 +21283,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.wata.cadavl.com/WATA/GTFS/GTFS_WATA.zip",
-      "lastPeekedExpiry": "20261210",
+      "lastPeekedExpiry": "20261215",
       "lastServiceWeek": "cce787d34a7e8628",
-      "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261109"
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261114",
+      "lastRawArchiveKey": "20261215-159b79900677fc69",
+      "lastFeedContentKey": "5db7579632a69fda"
     },
     {
       "slug": "dart-first-state",
@@ -22415,7 +22435,7 @@
       "cities": [
         "Duluth, Minnesota"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270327",
@@ -22442,12 +22462,13 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-14",
+        "scoredAt": "2026-11-15"
       },
       "feedRefreshStatus": "stale",
       "feedRefreshError": "GTFS validation failed (1 error(s))",
-      "feedRefreshErrorAt": "20261109",
-      "feedRefreshRetryCount": 1,
+      "feedRefreshErrorAt": "20261115",
+      "feedRefreshRetryCount": 2,
       "lastServiceWeek": "d4970b0b6d8e0112",
       "feedObtainedAt": "20260805",
       "lastFeedStart": "20260607"
@@ -22714,10 +22735,10 @@
         "Youngstown, Ohio"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-1717/latest.zip",
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261128",
+      "expiredFeedCheckExpiry": "20270301",
       "feedQuality": {
         "status": "review",
         "score": 92,
@@ -22738,7 +22759,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-14",
+        "scoredAt": "2026-11-15"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -22750,7 +22772,8 @@
       "lastPeekedExpiry": "20261128",
       "lastServiceWeek": "fb14b2e1d4c5e904",
       "feedObtainedAt": "20260908",
-      "lastFeedStart": "20260909"
+      "lastFeedStart": "20260909",
+      "heldFeedStart": "20261123"
     },
     {
       "slug": "sun-metro",
@@ -25025,16 +25048,16 @@
       "feedUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
       "region": "Ontario",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-737/latest.zip",
-      "lastFeedExpiry": "20261127",
-      "lastFeedVersion": "1/20261029 15:30:16/20261030 04:00:00",
-      "lastRefreshedAt": "2026-11-02",
+      "lastFeedExpiry": "20270416",
+      "lastFeedVersion": "1/20261109 17:13:06/20261128 04:00:00",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Greater Sudbury, Ontario"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261127",
+      "expiredFeedCheckExpiry": "20270416",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -25045,14 +25068,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 142,
-          "feedExpiry": "20261127",
+          "feedExpiry": "20270416",
           "routeCount": 25,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -25060,11 +25083,13 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
-      "lastPeekedExpiry": "20261127",
-      "lastServiceWeek": "a7a14e88333bd51e",
-      "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261028"
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-737/latest.zip",
+      "lastPeekedExpiry": "20270416",
+      "lastServiceWeek": "9f02cde3cc7bc895",
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261108",
+      "lastRawArchiveKey": "20270416-fbefd0890ded9977",
+      "lastFeedContentKey": "60c9b4240986835d"
     },
     {
       "slug": "anchorage",
@@ -26924,17 +26949,17 @@
       ],
       "feedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
-      "lastFeedExpiry": "20261123",
+      "lastFeedExpiry": "20261129",
       "lastFeedVersion": null,
-      "lastRefreshedAt": "2026-11-09",
+      "lastRefreshedAt": "2026-11-15",
       "cities": [
         "Bonita Springs, Florida",
         "Lehigh Acres, Florida"
       ],
-      "lastFeedCheckAt": "20261109",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261123",
+      "expiredFeedCheckExpiry": "20261129",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -26945,14 +26970,14 @@
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
           "featureCount": 92,
-          "feedExpiry": "20261123",
+          "feedExpiry": "20261129",
           "routeCount": 16,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-14"
+        "checkedAt": "2026-11-15"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -26961,10 +26986,12 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2259/latest.zip",
-      "lastPeekedExpiry": "20261123",
+      "lastPeekedExpiry": "20261129",
       "lastServiceWeek": "c95d2f9a107ca466",
-      "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261108"
+      "feedObtainedAt": "20261114",
+      "lastFeedStart": "20261114",
+      "lastRawArchiveKey": "20261129-a1c0ecc8dfb06559",
+      "lastFeedContentKey": "815c31fb5757ac41"
     },
     {
       "slug": "springfield-mo",
@@ -28120,7 +28147,46 @@
         "Salem, New Hampshire"
       ],
       "timezone": "America/New_York",
-      "hiddenInProduction": true
+      "lastFeedSourceKind": "configured",
+      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+      "lastFeedCheckAt": "20261115",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20280115",
+      "feedQuality": {
+        "status": "review",
+        "score": 90,
+        "reasons": [
+          "1 minor schedule issue found while reading the feed."
+        ],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 1,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 57,
+          "feedExpiry": "20280115",
+          "routeCount": 18,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-15"
+      },
+      "lastRawArchiveKey": "20280115-c8d565a4e3fb20e9",
+      "lastFeedContentKey": "7fac8279d849a761",
+      "lastFeedExpiry": "20280115",
+      "lastPeekedExpiry": "20280115",
+      "lastFeedStart": "20250601",
+      "lastFeedVersion": "1",
+      "lastRefreshedAt": "2026-11-15",
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
+      "lastServiceWeek": "9c001f07275f1a4f",
+      "feedObtainedAt": "20261114"
     },
     {
       "slug": "advance-transit",

@@ -53,7 +53,8 @@ export interface AgencyPageRoute {
   /** Lower end of a shared-stretch range per period, where alternating branches combine (display only). */
   shared?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', number>>;
   /** #1292: a period whose value is a late start or early end: the card's reading of it ("every 9 min from 7:12 AM"). */
-  edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number }>>;
+  /** #1510: `partOfRoute` when the time was read on a short tail (the cell says "on part of the route"). */
+  edge?: Partial<Record<'am' | 'midday' | 'pm' | 'evening' | 'overnight', { from?: number; until?: number; every: number; partOfRoute?: boolean }>>;
   /**
    * CIV-1300 (#1311): a period whose route card reads differently from the filter's number: the card's own words, range or
    * "Irregular", as the map's lists show them ("every 15 min, with one 32 min gap"). The number above stays the filter's.

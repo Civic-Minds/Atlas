@@ -28,6 +28,7 @@ import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList'
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
 import SearchBox from './ui/SearchBox';
+import { DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -422,11 +423,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {/* Pinned to the panel's bottom edge, below the scrolling content. */}
               <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                  <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">{DOCS_LINK_LABEL}</a>
+                  <a href={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_LINK_LABEL}</a>
                   <span aria-hidden="true">·</span>
-                  <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
+                  <a href={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">Terms</a>
                   <span aria-hidden="true">·</span>
-                  <a href="/privacy" className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
+                  <a href={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">Privacy Policy</a>
                 </div>
                 <p>© 2026 Civic Minds.</p>
               </div>

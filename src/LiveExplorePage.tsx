@@ -23,7 +23,7 @@ import EmptyPage from './components/ui/EmptyPage';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { PageTitle } from './components/ui/PageTitle';
+import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
 import LiveOffNotice from './components/LiveOffNotice';
 import type { RouteStripMode } from './components/Live/RouteStrip';
 import DirectionStrip, { directionStopsById } from './components/Live/DirectionStrip';
@@ -44,6 +44,7 @@ import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRout
 import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
+import { LIVE_PATH } from '../shared/pagePaths';
 
 type Day = 'all' | 'weekday' | 'weekend';
 
@@ -172,7 +173,7 @@ function Main({ v3, band, dir, uncertain, sel, setSel }: {
       <div className="min-w-0 space-y-8">
         {dirs.map(d => (
           <div key={d} className="min-w-0">
-            <h3 className="mb-1 text-base font-black">{v3.directionLabels[String(d)]}</h3>
+            <SubsectionTitle className="mb-1">{v3.directionLabels[String(d)]}</SubsectionTitle>
             <DirectionStrip
               v3={v3} directionId={d} band={band} uncertain={uncertain}
               selectedId={sel.dir === d && sel.kind === 'stop' ? sel.stopId : null}
@@ -206,7 +207,7 @@ export default function LiveExplorePage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;

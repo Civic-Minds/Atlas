@@ -477,6 +477,6 @@ describe('shared-stretch-only routes (#850)', () => {
     expect(computeFrequencySegmentOverlay(layers, 'midday', 5).sharedStretchRoutes).toEqual([]);
     expect(routePartMeetsFilter(features, directions, 'midday', 5)).toEqual([]);
     expect(selectedRoutePartMeetsFilterNotice(15, '3–7 PM').replace(/\u2060/g, '').replace(/[\u00a0\u202f]/g, ' ')).toBe('Only the shared stretch runs every 15 min or better from 3–7 PM.');
-    expect(selectedRoutePartMeetsFilterNotice(15, null, 'Northbound').replace(/[\u00a0\u202f]/g, ' ')).toBe('Northbound, only the shared stretch runs every 15 min or better all day.');
+    expect(selectedRoutePartMeetsFilterNotice(15, null, 'Northbound').replace(/[\u00a0\u202f]/g, ' ')).toBe('Northbound, only the shared stretch runs every 15 min or better across the day.');
   });
 });

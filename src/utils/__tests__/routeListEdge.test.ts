@@ -15,9 +15,10 @@ describe('route lists read the edge that sets the value (#1292)', () => {
     const d = routeListDisplay([dir(0, 72, { from: 432, every: 9, stretch: 0 }), dir(1, 10)], 'amPeak');
     expect(d.headway).toBe(9);
     expect(d.colorHeadway).toBe(72);
-    expect(d.edgeText).toBe(periodEdgeText({ from: 432, every: 9 }));
-    expect(d.edgeText).toMatch(/9 min from 7:12/);
-    expect(d.edge).toEqual({ from: 432, every: 9 });
+    // #1510: the time was read on the Bronx end (stretch 0, a tail), so the list says it is for part of the route.
+    expect(d.edgeText).toBe(periodEdgeText({ from: 432, every: 9, partOfRoute: true }));
+    expect(d.edgeText).toBe('every 9 min from 7:12 AM on part of the route');
+    expect(d.edge).toEqual({ from: 432, every: 9, partOfRoute: true });
   });
   it('legitimate: no edge on the direction that sets the value, no edge text', () => {
     expect(routeListDisplay([dir(0, 72), dir(1, 10, { from: 400, every: 8 })], 'amPeak').edgeText).toBeUndefined();
@@ -26,5 +27,25 @@ describe('route lists read the edge that sets the value (#1292)', () => {
     const ds = [dir(0, 72, { from: 432, every: 9 }), dir(1, 72, { until: 500, every: 10 })];
     expect(routeCardRange(ds, 'amPeak')?.words).toBe('every 9 min from 7:12 AM');
     expect(routeListDisplay(ds, 'amPeak').edgeText).toBe('every 9 min from 7:12 AM');
+  });
+});
+
+describe('a time read on a tail says it is for part of the route (#1510, CIV-1609)', () => {
+  const row = (edge: object, role = 'main') => ({
+    routeShortName: '169', routeId: '169', directionId: 0, day: 'Weekday', stretchRole: role,
+    directionFilterHeadwayByPeriod: { midday: 69 }, routeFilterHeadwayByPeriod: { midday: 69 },
+    headwayByPeriod: { midday: 30 }, stretchPeriodEdge: { midday: edge },
+  }) as any;
+  it('TTC 169 midday: "until 1:51 PM" read on its 3.9 km tail', async () => {
+    const { routeListFilterDisplay } = await import('../effectiveHeadway');
+    const d = routeListFilterDisplay([row({ until: 831, every: 30, stretch: 1 })], 'midday');
+    expect(d.edgeText).toBe('every 30 min until 1:51 PM on part of the route');
+    expect(d.edge).toEqual({ until: 831, every: 30, partOfRoute: true });
+  });
+  it("legitimate: a time read on the main stretch keeps its plain words (Whitehorse 101's 7:16 AM start)", async () => {
+    const { routeListFilterDisplay } = await import('../effectiveHeadway');
+    const d = routeListFilterDisplay([row({ from: 436, every: 30, stretch: 'main' })], 'midday');
+    expect(d.edgeText).toBe('every 30 min from 7:16 AM');
+    expect(d.edge).toEqual({ from: 436, every: 30 });
   });
 });

@@ -1,5 +1,6 @@
 import { Moon, Ticket, Zap, type LucideIcon } from 'lucide-react';
 import { FEATURE_ROUTES } from '../../shared/config';
+import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 
 /** One piece of Atlas research: the /research index lists them all, and the About page's "Explore our research" the newest (CIV-1205). */
 export interface ResearchEntry {
@@ -39,7 +40,7 @@ export const RESEARCH: readonly ResearchEntry[] = [
     href: FEATURE_ROUTES.frequentService.story,
     Icon: Zap,
     kind: 'Story',
-    title: 'Frequent service',
+    title: FREQUENT_SERVICE_TITLE,
     body: 'What agencies in Canada and the US mean when they call a bus frequent.',
     linkText: 'Compare agency definitions',
     published: '2026-09-17',

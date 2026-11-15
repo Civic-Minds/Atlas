@@ -15,9 +15,16 @@
  *
  * R2 is never read or written by this script; uploading the output is a separate,
  * explicitly approved step. Each zip is processed with the agency's own settings, like
- * reprocess-derived-artifacts does. Agencies with supplemental feeds are refused unless
+ * reprocess-derived-artifacts does. Agencies with supplemental feeds are refused unless one of:
+ *   --supplemental-zip-dir <url>=<dir>   (CIV-1484) the archive of a supplemental feed (e.g. rail), once per feed
+ *                (a bare <dir> when the agency has one). Each main zip {stem}.zip needs {stem}.zip in every such
+ *                dir (the same period's supplemental zip); one missing fails that period. Both feeds go through
+ *                processAgencyFeeds like refresh, each route built with its own feed's calendar evidence, and the
+ *                sidecar lists supplementalRoutes as refresh writes it. A key in both feeds keeps the main route.
+ *   --supplemental-id-prefix <prefix>    (CIV-1484, with --supplemental-zip-dir) prefix a supplemental feed's route, trip
+ *                and shape ids for this run only (or <url>=<prefix>), when an archived period reuses a main-feed id
+ *                (SEPTA 2017: two shape ids). The agency config, and so its live artifacts, is not changed.
  *   --bus-only   run on the main feed only; the report is stamped busOnly + supplementalExcluded
- * (supplemental feeds such as rail have no archive, so they never enter a backfill).
  *
  * CIV-1101 Part B: each zip is read with the one service-day model (pickRiderWeek), anchored at the
  * zip's own first full week in force, so a holiday is a day that loses the vote (no holiday list,
@@ -41,7 +48,7 @@ import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { processAgencyFeeds } from './agencyFeeds.js';
 import { peekFeedDates } from './archiveSelection.js';
-import { backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
+import { backfillSupplementalIdPrefixes, backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { buildPeriodShapes, shapeTripStats, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
@@ -51,10 +58,18 @@ import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits
 import { historyWeekendPeriodsFor } from './historyV2Flag.js';
 import { pinnedReadFor, readPinnedBodies, readPinnedSidecars } from './historyV2Pin.js';
 import { countAdded, mergeWeekendFields, type MergeSkip } from './historyV2Replace.js';
+import { buildMergedV2Routes, historyV2InputFor } from './historyRefreshSidecar.js';
+import type { HistoryV2SidecarRoute } from '../shared/historyV2.js';
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(name);
   return i >= 0 ? process.argv[i + 1] : undefined;
+}
+
+function args(name: string): string[] {
+  const out: string[] = [];
+  process.argv.forEach((a, i) => { if (a === name && process.argv[i + 1] !== undefined) out.push(process.argv[i + 1]); });
+  return out;
 }
 
 async function main(): Promise<void> {
@@ -65,8 +80,14 @@ async function main(): Promise<void> {
   const index = JSON.parse(readFileSync(resolve('public/data/index.json'), 'utf8')) as { agencies: Array<Record<string, any>> };
   const agency = index.agencies.find(a => a.slug === slug);
   if (!agency) throw new Error(`unknown slug ${slug}`);
-  const policy = backfillSupplementalPolicy(slug, agency.supplementalFeedUrls, process.argv.includes('--bus-only'));
+  const policy = backfillSupplementalPolicy(slug, agency.supplementalFeedUrls, process.argv.includes('--bus-only'), args('--supplemental-zip-dir'));
   if (policy.busOnly) console.log(`${slug}: ${policy.note} (${policy.supplementalExcluded.join(', ')})`);
+  const supplementalDirs = Object.entries(policy.supplementalDirs);
+  const prefixArgs = args('--supplemental-id-prefix');
+  if (prefixArgs.length && !supplementalDirs.length) throw new Error('--supplemental-id-prefix needs --supplemental-zip-dir');
+  const supplementalIdPrefixes = backfillSupplementalIdPrefixes(slug, agency.supplementalFeedUrls, agency.supplementalIdPrefixes, prefixArgs);
+  if (prefixArgs.length) console.log(`${slug}: supplemental id prefixes for this run ${JSON.stringify(supplementalIdPrefixes)}`);
+  for (const [url, dir] of supplementalDirs) console.log(`${slug}: supplemental feed ${url} from ${resolve(dir)}`);
 
   const zips = readdirSync(resolve(zipDir)).filter(f => f.endsWith('.zip')).sort();
   if (zips.length === 0 && !arg('--pin-from')) throw new Error(`no .zip files in ${zipDir}`);
@@ -82,7 +103,7 @@ async function main(): Promise<void> {
   const mergeNotes: Array<{ periodKey: string; added: Record<string, number>; skipped: MergeSkip[] }> = [];
   if (pinned) console.log(`${slug}: pinning to ${pinned.size} published sidecar(s) from ${resolve(pinFrom!)}`);
 
-  const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
+  const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; supplemental?: Array<{ url: string; refDate: string; routes: number }>; collisions?: Array<{ key: string; droppedFrom: string }>; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
   for (const zip of zips) {
     const stem = basename(zip, '.zip');
     try {
@@ -102,15 +123,33 @@ async function main(): Promise<void> {
       const anchor = published ? null : firstFullWeekAnchor(await readQualityRows(buf));
       const pin = published ? pinnedReadFor(published) : null;
       const overrides = pin ? pin.overrides : anchor ? { serviceAnchor: anchor } : {};
-      const processed = await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, overrides, m => process.stdout.write(`  ${m}`));
+      // CIV-1484: the same period's supplemental zips (same stem); a missing one fails this period.
+      const supplemental = supplementalDirs.map(([url, dir]) => ({ url, buf: readFileSync(resolve(dir, zip)) }));
+      const processed = supplemental.length > 0
+        ? await processAgencyFeeds(buf, supplemental, { ...agency, supplementalIdPrefixes } as any, overrides, m => process.stdout.write(`  ${m}`))
+        : await processAgencyFeeds(buf, [], { ...agency, supplementalFeedUrls: [] } as any, overrides, m => process.stdout.write(`  ${m}`));
       if (pin && processed.referenceDate !== pin.refDate) {
         rows.push({ zip, periodKey, refDate: processed.referenceDate, pin: { refDate: pin.refDate, how: pin.how }, notPinnable: `the processor read ${processed.referenceDate}, not the published ${pin.refDate} (${pin.how})` });
         console.log(`\n${zip}: NOT PINNABLE (read ${processed.referenceDate}, published ${pin.refDate}); nothing written`);
         continue;
       }
-      const evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
-      const built = buildV2Routes((JSON.parse(processed.geojson) as { features: Array<{ properties?: Record<string, unknown> }> }).features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
-      let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes);
+      const features = (JSON.parse(processed.geojson) as { features: Array<{ properties: Record<string, unknown> }> }).features;
+      let evidence: Awaited<ReturnType<typeof readFeedEvidence>>;
+      let built: { routes: Record<string, HistoryV2SidecarRoute>; report: BuildV2Report };
+      let supplementalRoutes: Record<string, string[]> | undefined;
+      let collisions: Array<{ key: string; droppedFrom: string }> = [];
+      if (supplemental.length > 0) {
+        const merged = await buildMergedV2Routes(slug, features, historyV2InputFor(processed, buf, supplemental));
+        evidence = merged.evidence;
+        built = merged.built;
+        supplementalRoutes = merged.built.supplementalRoutes;
+        collisions = merged.built.collisions;
+        if (collisions.length) console.log(`\n${zip}: ${collisions.length} route-key collision(s) between feeds, main route kept: ${collisions.map(c => `${c.key} (${c.droppedFrom} dropped)`).join(', ')}`);
+      } else {
+        evidence = await readFeedEvidence(buf, { referenceDate: processed.referenceDate });
+        built = buildV2Routes(features, evidence, { weekendPeriods: historyWeekendPeriodsFor(slug) });
+      }
+      let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, supplementalRoutes);
       let result: Awaited<ReturnType<typeof writeSidecar>>;
       let mergeNote = '';
       if (published) {
@@ -130,12 +169,21 @@ async function main(): Promise<void> {
       let shapesNote = '';
       if (withShapes) {
         const gtfs = await parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer);
-        const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extractRouteShapes(gtfs as never), { trips: shapeTripStats(gtfs as never) });
+        const extracted = extractRouteShapes(gtfs as never);
+        const trips = shapeTripStats(gtfs as never);
+        // CIV-1484: a supplemental feed's lines are added for keys the main feed does not have (the main route wins, as in the sidecar).
+        for (const { buf: sbuf } of supplemental) {
+          const sg = await parseGtfsZip(sbuf.buffer.slice(sbuf.byteOffset, sbuf.byteOffset + sbuf.byteLength) as ArrayBuffer);
+          for (const [key, shape] of extractRouteShapes(sg as never)) if (!extracted.has(key)) extracted.set(key, shape);
+          const st = shapeTripStats(sg as never);
+          trips.total += st.total; trips.emptyShapeId += st.emptyShapeId; trips.unknownShapeId += st.unknownShapeId;
+        }
+        const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extracted, { trips });
         const shapesResult = await sink.put(periodShapesKey(slug, periodKey), JSON.stringify(period));
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }
-      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report, ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
+      rows.push({ zip, periodKey, anchor: anchor ?? undefined, refDate: evidence.refDate, weekStart: processed.serviceWeekStart ?? undefined, result, report: built.report, ...(supplemental.length ? { supplemental: processed.supplementalFeatureCounts.map(f => ({ url: f.url, refDate: f.referenceDate, routes: supplementalRoutes?.[f.url]?.length ?? 0 })), collisions } : {}), ...(pin ? { pin: { refDate: pin.refDate, how: pin.how } } : {}) });
       console.log(`\n${zip} -> ${periodKey} refDate ${evidence.refDate}: ${result}, ${built.report.routes} routes (${built.report.blankWeekday} blank, ${built.report.limited} limited, ${built.report.weekendNone} weekend-none)${shapesNote}, ${pin ? `PINNED to the published ${pin.refDate} (${pin.how})${mergeNote}` : `${sidecar.refDateQuality?.reason} (anchor ${anchor ?? 'none'})`}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -146,7 +194,7 @@ async function main(): Promise<void> {
   // CIV-1430: published periods with no zip in this run cannot be pinned either.
   const missingZips = pinned ? [...pinned.keys()].filter(pk => !zips.includes(`${pk}.zip`)) : [];
   for (const pk of missingZips) console.log(`${pk}: NOT PINNABLE (published sidecar, no zip ${pk}.zip in ${zipDir})`);
-  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips, weekendMerge: mergeNotes } : {}), rows }, null, 2));
+  writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(supplementalDirs.length ? { supplementalDirs: Object.fromEntries(supplementalDirs.map(([u, d]) => [u, resolve(d)])), ...(prefixArgs.length ? { supplementalIdPrefixes } : {}) } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips, weekendMerge: mergeNotes } : {}), rows }, null, 2));
   console.log(`\nReport: ${resolve(outDir, `${slug}-report.json`)}`);
   if (rows.some(r => r.error || r.result === 'conflict')) process.exitCode = 1;
   if (pinned) console.log(`Pinned: ${rows.filter(r => r.pin && !r.notPinnable && !r.error).length} rebuilt, ${rows.filter(r => r.notPinnable).length + missingZips.length} not pinnable, ${rows.filter(r => r.error).length} failed`);

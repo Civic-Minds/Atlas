@@ -8,7 +8,9 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
+import { metresText } from '../../shared/unitText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
@@ -16,6 +18,7 @@ import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } 
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
+import { LIVE_PATH } from '../../shared/pagePaths';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -88,20 +91,20 @@ export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead
 
 
 // N11 not-in-period, N12 misses-filter
-/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
+/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for no chosen time ("across the day"). */
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange: string | null): string {
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
-    ? routeNoTripsText(when ? `from ${when}` : 'all day')
+    ? routeNoTripsText(when ? `from ${when}` : 'across the day')
     // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
-    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
+    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'across the day'}.`;
 }
 
 // N123 part-of-route-meets-filter (CIV-514; CIV-1251, Ryan 2026-11-01): the selected route misses the filter, but its shared
 // stretch qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Names the times, and the direction when
 // only one is like this: "Northbound, only the shared stretch runs every 15 min or better from 3–7 PM."
 export function selectedRoutePartMeetsFilterNotice(maxHeadway: number, periodRange: string | null, direction?: string): string {
-  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'all day';
+  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'across the day';
   return `${direction ? `${direction}, only` : 'Only'} the shared stretch runs ${headwayOrBetter(maxHeadway)} ${when}.`;
 }
 
@@ -148,7 +151,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = 'No routes within 500 m.';
+export const NO_ROUTES_NEARBY = `No routes within ${metresText(500)}.`;
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -289,11 +292,16 @@ export const MAP_KEY_OTHER = 'Other routes';
 export const MAP_KEY_NIGHT = 'Overnight service';
 /** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
 export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
+/**
+ * #1510, CIV-1609 (Ryan: "1"): a list row's or agency-page cell's start or end time read on only part of the route (a short
+ * tail), as in "every 30 min until 1:51 PM on part of the route". The same words as OVERNIGHT_PART_OF_ROUTE.
+ */
+export const ON_PART_OF_ROUTE = 'on part of the route';
 /** The title an exported map image carries, by view (sentence case, docs/style/VISUAL.md; CIV-1599). The export reads
  * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
 export const MAP_EXPORT_TITLES = {
   frequency: 'Transit frequency',
-  frequentService: 'Frequent service',
+  frequentService: FREQUENT_SERVICE_TITLE,
   night: MAP_KEY_NIGHT,
   bustang: 'Bustang connections',
   history: 'Service history',
@@ -529,7 +537,7 @@ export const liveNoRoute = (route: string, agency: string) => `Live has no route
 export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
 export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
-export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: '/apps/live', end: 'on the address it prints.' } as const;
+export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Start it with', command: 'npm run live', middle: 'and open', path: LIVE_PATH, end: 'on the address it prints.' } as const;
 
 /** Why a picked route has no vehicles on the Live map. */
 export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {

@@ -31,7 +31,7 @@ import { AgencyModeTable } from './AgencyGroupSection';
 import { parentAgencyPagePath } from '../shared/pagePaths';
 import type { ParentAgencyPageData } from '../shared/parentAgencies';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
+import { SubsectionTitle, PageTitle, SectionTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
 import DataTable from './components/ui/DataTable';
 import ScrollX from './components/ui/ScrollX';
@@ -182,7 +182,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
             {stats.byMode.map(group => (
               <div key={group.mode} className="mt-4">
-                <h3 className="pb-2 text-base font-black" aria-hidden="true">{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></h3>
+                <SubsectionTitle className="pb-2" ariaHidden>{group.label} <span className="ml-1 font-normal text-[var(--text-muted)]">{group.routes.length}</span></SubsectionTitle>
                 <ScrollX>
                   <DataTable
                     caption={`${group.label} ${group.routes.length}`}

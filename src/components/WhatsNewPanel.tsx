@@ -6,11 +6,12 @@ import PanelHeader from './ui/PanelHeader';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE } from '../content/noticeCopy';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
+import { CHANGELOG_PATH } from '../../shared/pagePaths';
 
-/** "Released Nov 9, 2026" from the release's own date; the month when the date is unusable. */
-function releasedLabel(release: WhatsNewRelease): string {
+/** "Released Nov 9, 2026" from the release's own date; nothing when the date is unusable. */
+function releasedLabel(release: WhatsNewRelease): string | null {
   const date = shortDate(release.date);
-  return date ? `Released ${date}` : release.month;
+  return date ? `Released ${date}` : null;
 }
 
 interface Props {
@@ -45,7 +46,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
             <section key={release.version} aria-label={`Version ${shortVersion(release.version)}`}>
               <h3 className="text-xs font-black text-[var(--text-primary)]">
                 Version {shortVersion(release.version)}
-                <span className="font-semibold text-[var(--text-dim)]"> · {releasedLabel(release)}</span>
+                {releasedLabel(release) && <span className="font-semibold text-[var(--text-dim)]"> · {releasedLabel(release)}</span>}
               </h3>
               <ul className="mt-2 space-y-2">
                 {release.items.map(item => (
@@ -57,7 +58,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
               </ul>
             </section>
           ))}
-          <a href="/changelog" className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
+          <a href={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
         </div>
       </Panel>
     </div>

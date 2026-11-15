@@ -14,25 +14,26 @@
     38.55,
     -122.51
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3222/latest.zip",
-  "lastFeedExpiry": "20270110",
-  "lastFeedVersion": "UTC: 14-Apr-2026 15:07",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270430",
+  "lastFeedVersion": "20261005",
+  "lastRefreshedAt": "2026-11-15",
   "cities": [
     "Santa Rosa, California",
     "Petaluma, California",
     "San Rafael, California",
     "Novato, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261115",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270110",
+  "expiredFeedCheckExpiry": "20270430",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
-  "lastPeekedExpiry": "20270110",
+  "lastFeedSourceUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
+  "lastPeekedExpiry": "20270430",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -43,20 +44,22 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 6,
-      "feedExpiry": "20270110",
+      "feedExpiry": "20270430",
       "routeCount": 1,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-15"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "43d5ac5e6d40b67c",
-  "feedObtainedAt": "20260414",
-  "lastFeedStart": "20260414"
+  "lastServiceWeek": "57a1ccc824a2d418",
+  "feedObtainedAt": "20261114",
+  "lastFeedStart": "20260412",
+  "lastRawArchiveKey": "20270430-10be01cb99c2388a",
+  "lastFeedContentKey": "b980de7c3b2de0e3"
 }

@@ -23,6 +23,7 @@ import type { LiveYesterday } from '../shared/liveYesterday';
 import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
 import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
+import { SubsectionTitle } from './components/ui/PageTitle';
 
 const MIN_N = 30;
 
@@ -187,7 +188,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
             const notes = (['delaysStart', 'bunchingForms'] as const).map(k => periodNote(v3, d.directionId, uncertain, k)).filter((x): x is string => !!x);
             return (
               <div key={d.directionId} className="min-w-0">
-                {!pickable && <h3 className="text-base font-black">{d.label}</h3>}
+                {!pickable && <SubsectionTitle>{d.label}</SubsectionTitle>}
                 <DirectionStrip className="mt-2" v3={v3} directionId={d.directionId} band="all" uncertain={uncertain} legend={false} />
                 {notes.map(n => <p key={n} className="mt-2 max-w-3xl text-sm text-[var(--text-secondary)]">{d.label}: {n}</p>)}
               </div>
