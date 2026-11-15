@@ -3825,7 +3825,8 @@ export async function processGtfsBuffer(
   const headlineBeforeRiderWait = new Map<GeoJsonFeature, number>();
   // Frequency focus step 3, shadow only: the stretch selector's values beside today's, for the
   // report. Nothing reads them, and tiles leave them out. Routes with no direction_id in the feed
-  // get no stretch data, as the midday cap does.
+  // get no stretch data, as the midday cap does, unless their directions were read from stop order
+  // (CIV-1500: those are not marked synthesized).
   {
     const synthesizedGroups = new Set<string>();
     for (const [feature, { shortName }] of featureStopHeadwaySlots) {
