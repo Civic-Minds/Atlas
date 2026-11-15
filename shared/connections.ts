@@ -167,6 +167,14 @@ function byRoute(local: readonly LocalDeparture[]): LocalDeparture[][] {
 }
 
 const LONGEST_WINDOW = 60;
+
+/**
+ * The hub's own routes count as connections too (CIV-1353, Ryan 2026-11-13: same-agency routes count), but a hub bus
+ * never connects to its own route (the same bus, or the same route the other way). `hubSlug` names the hub agency.
+ */
+export function isOwnRoute(hubSlug: string | undefined, hubRouteName: string, local: { agencySlug: string; routeName: string }): boolean {
+  return hubSlug !== undefined && local.agencySlug === hubSlug && local.routeName === hubRouteName;
+}
 const compareRouteName = (a: { routeName: string; agencySlug: string }, b: { routeName: string; agencySlug: string }) =>
   a.routeName.localeCompare(b.routeName, undefined, { numeric: true }) || a.agencySlug.localeCompare(b.agencySlug);
 
@@ -175,9 +183,12 @@ const compareRouteName = (a: { routeName: string; agencySlug: string }, b: { rou
  * each route's waits are read on that route's buses alone, at any of its nearby stops and in either
  * direction. Routes come back best first (most trips within 15, then 30, then 60 min), then by name.
  */
-export function routeConnections(hub: readonly HubArrival[], local: readonly LocalDeparture[], side: ConnectionSide): RouteConnection[] {
+export function routeConnections(allHub: readonly HubArrival[], local: readonly LocalDeparture[], side: ConnectionSide, hubSlug?: string): RouteConnection[] {
   const out: RouteConnection[] = [];
   for (const list of byRoute(local)) {
+    // A hub route is read against the hub's other routes' buses only, and counted out of those.
+    const hub = allHub.filter(a => !isOwnRoute(hubSlug, a.routeName, list[0]));
+    if (hub.length === 0) continue;
     const waits = connectionWaits(hub, list, side);
     const within = CONNECTION_WINDOWS.map(w => waits.filter(x => x.waitMin !== null && x.waitMin <= w).length) as RouteConnection['within'];
     const stops = new Map<string, { n: number; distanceM: number }>();
@@ -204,9 +215,10 @@ export interface TripRouteWait {
  * 60 min on the side, with its wait, from the same connectionWaits as the per-route counts. Shortest
  * wait first, then by name.
  */
-export function tripStopConnections(hubTime: number, local: readonly LocalDeparture[], side: ConnectionSide): TripRouteWait[] {
+export function tripStopConnections(hubTime: number, local: readonly LocalDeparture[], side: ConnectionSide, hubSlug?: string, hubRouteName = ''): TripRouteWait[] {
   const out: TripRouteWait[] = [];
   for (const list of byRoute(local)) {
+    if (isOwnRoute(hubSlug, hubRouteName, list[0])) continue;
     const [w] = connectionWaits([{ time: hubTime, routeName: '' }], list, side);
     if (w.waitMin !== null && w.waitMin <= LONGEST_WINDOW) out.push({ agencySlug: list[0].agencySlug, routeName: list[0].routeName, waitMin: w.waitMin });
   }

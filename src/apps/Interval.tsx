@@ -64,7 +64,7 @@ import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
 import { NIGHT_LIST_TITLE } from '../content/researchRules';
-import { BUSTANG_LIST_TITLE, barDistancesFor, routeKeysForNames, tripConnectingRoutes, tripDirections, tripsForRoute, useConnectionData } from '../utils/bustangConnections';
+import { BUSTANG_LIST_TITLE, barDistancesFor, routeKeysForNames, tripConnectingRoutes, tripDirections, tripListTime, tripsForRoute, useConnectionData } from '../utils/bustangConnections';
 import { clockTime } from '../../shared/timeText';
 
 /** The connections bar's choices, kept by the view so they survive a route change (CIV-1353). */
@@ -704,7 +704,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const connectionsBarControls = useMemo(() => connectionsBar ? {
     ...connectionsBar,
     distances: connectionDistances,
-    trips: connectionData ? tripDirections(connectionData, connectionTrips).map(([title, list]) => [title, list.map(t => ({ id: t.id, label: clockTime(t.stops[0].departure) }))] as [string, Array<{ id: string; label: string }>]) : [],
+    // Arriving lists each trip's arrival time at its last stop, leaving its departure from its first (CIV-1353, Ryan 2026-11-13, 11c).
+    trips: connectionData ? tripDirections(connectionData, connectionTrips).map(([title, list]) => [title, list.map(t => ({ id: t.id, label: clockTime(tripListTime(t, connectionsBar.side)) }))] as [string, Array<{ id: string; label: string }>]) : [],
     tripId: connectionTrip?.id ?? null,
     setTripId: setConnectionTripId,
   } : null, [connectionsBar, connectionDistances, connectionData, connectionTrips, connectionTrip]);

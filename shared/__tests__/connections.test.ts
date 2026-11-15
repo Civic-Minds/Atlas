@@ -194,6 +194,23 @@ describe("one Bustang bus's connections at one stop (the route card's departure 
     for (const r of one) expect(counts.find(c => c.routeName === r.routeName)!.within[[15, 30, 60].indexOf(windowOf(r.waitMin)!)]).toBe(1);
   });
 
+  it("counts the hub's other routes but never the bus's own route (CIV-1353, 11a)", () => {
+    const hubBus = (time: number, routeName: string) => ({ ...departure(time, routeName, 0), agencySlug: 'bustang' });
+    const local = [hubBus(600, 'West'), hubBus(605, 'North'), departure(620, '1')];
+    expect(tripStopConnections(600, local, 'after', 'bustang', 'West').map(r => r.routeName)).toEqual(['North', '1']);
+    // The same names at another agency are not the hub's own route.
+    expect(tripStopConnections(600, local.map(d => ({ ...d, agencySlug: 'other' })), 'after', 'bustang', 'West').map(r => r.routeName)).toEqual(['West', 'North', '1']);
+  });
+
+  it("reads a hub route's counts against the hub's other routes only (CIV-1353, 11a)", () => {
+    const hubArrivals = [arrival(600, 'West'), arrival(700, 'West'), arrival(800, 'North')];
+    const local = [{ ...departure(605, 'West', 0), agencySlug: 'bustang' }, { ...departure(805, 'West', 0), agencySlug: 'bustang' }];
+    const [west] = routeConnections(hubArrivals, local, 'after', 'bustang');
+    expect([west.routeName, west.trips, west.within]).toEqual(['West', 1, [1, 1, 1]]);
+    // A hub with only one route has nothing to connect to on its own.
+    expect(routeConnections([arrival(600, 'West')], local, 'after', 'bustang')).toEqual([]);
+  });
+
   it('puts a wait in its window', () => {
     expect([0, 15, 16, 30, 31, 60, 61].map(windowOf)).toEqual([15, 15, 30, 30, 60, 60, null]);
   });

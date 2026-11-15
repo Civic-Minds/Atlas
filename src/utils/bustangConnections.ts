@@ -105,7 +105,7 @@ export function useBustangData(active: boolean): BustangData | null {
 
 /** The agencies the view draws: Bustang and every local agency at its stops. */
 export function bustangMapSlugs(data: BustangData | null): string[] {
-  return data ? [data.hub.slug, ...Object.keys(data.agencies)] : ['bustang'];
+  return data ? [...new Set([data.hub.slug, ...Object.keys(data.agencies)])] : ['bustang'];
 }
 
 /** A schedule has ended, judged in the hub's local date (Colorado for a file built before the hub's zone was kept), as on the map. */
@@ -145,6 +145,11 @@ export function waitWithin(data: Pick<BustangData, 'nearbyChoices'>, row: TripRo
 /** Whether the file was built for a distance (a 600 m choice needs a rebuild of files built before it). */
 export function hasDistance(data: Pick<BustangData, 'nearbyChoices'>, meters: number): boolean {
   return data.nearbyChoices.includes(meters);
+}
+
+/** The time the bar's trip list shows for a trip: its arrival at its last stop when arriving, else its departure from its first. */
+export function tripListTime(trip: BustangTrip, side: ConnectionSide): number {
+  return side === 'after' ? trip.stops[trip.stops.length - 1].arrival : trip.stops[0].departure;
 }
 
 /** A route's trips grouped by where each starts and where it goes ("Grand Junction Regional Airport to Denver"). */

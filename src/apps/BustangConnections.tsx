@@ -81,7 +81,8 @@ export default function BustangConnections({ active, data, day, setDay, within, 
           </div>
           {!data && <PanelEmpty kind="loading">{loadingText('Bustang connections')}</PanelEmpty>}
           {data && routes.length === 0 && <PanelEmpty>No Bustang trips this day.</PanelEmpty>}
-          {data && routes.length > 0 && (
+          {/* With the connections top bar (local only, CIV-1353, Ryan 2026-11-13, 11b), the route is picked on the map, not from this list. */}
+          {data && routes.length > 0 && !FEATURES.connectionsBar && (
             <CardRouteList
               rows={routes.map(r => ({ key: r.routeId, route: { primary: r.routeName, secondary: undefined }, subLabel: countOf(r.trips, 'trip') }))}
               onSelect={routeId => onRouteSelect(data.hub.slug, routeId)}

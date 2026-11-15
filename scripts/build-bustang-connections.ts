@@ -55,9 +55,10 @@ const configs: AgencyConfig[] = readdirSync('config/agencies')
   .map(f => JSON.parse(readFileSync(join('config/agencies', f), 'utf8')) as AgencyConfig);
 const hub = configs.find(c => c.slug === HUB);
 if (!hub) throw new Error(`no agency ${HUB}`);
-// Every other agency in the hub's region, leaving out the hub's own family (Bustang Outrider is CDOT too).
-const locals = configs.filter(c => c.slug !== hub.slug && c.region === hub.region && !c.staged && !c.hiddenInProduction
-  && (c.parentAgency ?? c.slug) !== (hub.parentAgency ?? hub.slug) && !(c.lastSupplementalFeeds?.length));
+// Every agency in the hub's region, the hub and its family included (CIV-1353, Ryan 2026-11-13: same-agency routes
+// count; Bustang Outrider is CDOT too). A hub bus never connects to its own route (isOwnRoute).
+const locals = configs.filter(c => c.region === hub.region && !c.staged && !c.hiddenInProduction
+  && (c.slug === hub.slug || !(c.lastSupplementalFeeds?.length)));
 
 async function zipFor(c: AgencyConfig): Promise<Buffer> {
   const path = join(ZIPS, `${c.slug}.zip`);
@@ -161,7 +162,7 @@ for (const [groupId, hubStops] of groups) {
     perDay[key] = { departures, dropOffs };
     localByGroup.set(groupId, perDay);
     // The longest wait after an arrival, logged for checking against the raw schedules (Rifle weekday at 400 m).
-    const longest = Math.max(-1, ...connectionWaits(arrivals, departuresWithin(departures, 400)).map(w => w.waitMin ?? -1));
+    const longest = Math.max(-1, ...connectionWaits(arrivals, departuresWithin(departures.filter(d => d.agencySlug !== hub.slug), 400)).map(w => w.waitMin ?? -1));
     rifleCheck.push(`${key} ${hubStops[0].name}: longest wait at 400 m ${longest < 0 ? 'none' : `${longest} min`}`);
     days[key] = {
       hubDate,
@@ -169,8 +170,8 @@ for (const [groupId, hubStops] of groups) {
       arrivals: arrivals.length,
       // Each local route once per side, with its counts within 15, 30 and 60 min.
       routes: Object.fromEntries(NEARBY_CHOICES.map(m => [m, {
-        after: routeConnections(arrivals, departuresWithin(departures, m), 'after'),
-        before: routeConnections(hubDepartures, departuresWithin(dropOffs, m), 'before'),
+        after: routeConnections(arrivals, departuresWithin(departures, m), 'after', hub.slug),
+        before: routeConnections(hubDepartures, departuresWithin(dropOffs, m), 'before', hub.slug),
       }])),
       departures: hubDepartures.length,
     };
@@ -212,12 +213,12 @@ const routeRef = (agencySlug: string, routeName: string) => {
   if (!routeIndex.has(k)) { routeIndex.set(k, routeTable.length); routeTable.push([agencySlug, routeName]); }
   return routeIndex.get(k)!;
 };
-function sideWaits(time: number, local: LocalDeparture[], side: 'after' | 'before'): Array<[number, number | null, number | null, number | null]> {
-  const at = NEARBY_CHOICES.map(m => new Map(tripStopConnections(time, departuresWithin(local, m), side).map(r => [`${r.agencySlug}\u0000${r.routeName}`, r])));
+function sideWaits(time: number, local: LocalDeparture[], side: 'after' | 'before', hubRouteName: string): Array<[number, ...(number | null)[]]> {
+  const at = NEARBY_CHOICES.map(m => new Map(tripStopConnections(time, departuresWithin(local, m), side, hub!.slug, hubRouteName).map(r => [`${r.agencySlug}\u0000${r.routeName}`, r])));
   const widest = at[at.length - 1];
   return [...widest.values()].map(r => {
     const k = `${r.agencySlug}\u0000${r.routeName}`;
-    return [routeRef(r.agencySlug, r.routeName), ...at.map(m => m.get(k)?.waitMin ?? null)] as [number, number | null, number | null, number | null];
+    return [routeRef(r.agencySlug, r.routeName), ...at.map(m => m.get(k)?.waitMin ?? null)] as [number, ...(number | null)[]];
   });
 }
 const tripsOut: Record<string, unknown[]> = {};
@@ -242,8 +243,8 @@ for (const { key } of DAY_TYPES) {
           arrival: Math.round(e.arrival),
           departure: Math.round(e.departure),
           // Getting off Bustang here (after it arrives) and catching it here (before it leaves).
-          after: e.canAlight && local ? sideWaits(Math.round(e.arrival), local.departures, 'after') : null,
-          before: e.canBoard && local ? sideWaits(Math.round(e.departure), local.dropOffs, 'before') : null,
+          after: e.canAlight && local ? sideWaits(Math.round(e.arrival), local.departures, 'after', e.routeName) : null,
+          before: e.canBoard && local ? sideWaits(Math.round(e.departure), local.dropOffs, 'before', e.routeName) : null,
         };
       }),
     });
@@ -258,7 +259,7 @@ const out = {
   nearbyChoices: NEARBY_CHOICES,
   hub: { slug: hub.slug, name: shortName(hub), feedVersion: hub.lastFeedVersion ?? null, feedExpiry: hubExpiry, timezone: hub.timezone ?? null },
   dates,
-  agencies: Object.fromEntries(loaded.filter(a => usedAgencies.has(a.config.slug)).map(a => [a.config.slug, {
+  agencies: Object.fromEntries(loaded.filter(a => a.config.slug !== hub.slug && usedAgencies.has(a.config.slug)).map(a => [a.config.slug, {
     name: shortName(a.config), feedVersion: a.config.lastFeedVersion ?? null, feedExpiry: a.expiry,
   }])),
   stops: stopsOut,

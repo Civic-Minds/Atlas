@@ -38,7 +38,7 @@ function OutdatedLines({ data, slugs }: { data: BustangData; slugs: string[] }) 
 function LocalRoute({ data, agencySlug, routeName, nameAgency }: { data: BustangData; agencySlug: string; routeName: string; nameAgency: boolean }) {
   return (
     <span className="whitespace-nowrap">
-      {nameAgency && <span className="mr-1 text-[var(--text-muted)]">{data.agencies[agencySlug]?.name ?? agencySlug}</span>}
+      {nameAgency && <span className="mr-1 text-[var(--text-muted)]">{data.agencies[agencySlug]?.name ?? (agencySlug === data.hub.slug ? data.hub.name : agencySlug)}</span>}
       <RouteRowName shortName={routeName} />
     </span>
   );

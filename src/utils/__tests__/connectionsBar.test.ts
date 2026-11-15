@@ -47,6 +47,18 @@ describe('connections bar (CIV-1353)', () => {
   });
 });
 
+describe("the bar's trip list times (CIV-1353, 11c)", () => {
+  it('lists the arrival at the last stop when arriving, the departure from the first when leaving', async () => {
+    const { tripListTime } = await import('../bustangConnections');
+    const trip = { id: 't', routeId: 'r', routeName: 'West', headsign: null, stops: [
+      { stop: 0, arrival: 600, departure: 605, after: null, before: [] },
+      { stop: 1, arrival: 700, departure: 702, after: [], before: null },
+    ] };
+    expect(tripListTime(trip, 'after')).toBe(700);
+    expect(tripListTime(trip, 'before')).toBe(605);
+  });
+});
+
 describe('connections bar flag (CIV-1353: local only)', () => {
   it('is on only on the Vite dev server, never on a beta or public build', async () => {
     const { vi } = await import('vitest');
