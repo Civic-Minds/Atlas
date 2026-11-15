@@ -86,6 +86,21 @@ export function aliasesFor(aliases: HistoryRouteAliases, slug: string, canonical
   return (aliases[slug]?.[canonicalKey] ?? []).map(entryKey);
 }
 
+/**
+ * The key a period stored a route's line under: the canonical key, else the first of its alias sources that period has.
+ * Lines (history-v2-shapes) keep the key the feed used, while mergeAliasedRoutes re-keys the route's entries, so the
+ * identity test must look the line up under the old key too (SEPTA T5 Bus: 2021-2024 drawn under 36B, so with the
+ * canonical key alone the test saw no line and split "13th-Market to 80th-Eastwick" from "Route 36 Bus" by name).
+ */
+export function aliasedLineKey(present: (key: string) => boolean, canonical: string, slugAliases: Record<string, HistoryAliasEntry[]> | undefined): string | undefined {
+  if (present(canonical)) return canonical;
+  for (const e of slugAliases?.[canonical] ?? []) {
+    const k = typeof e === 'string' ? e : e.key;
+    if (k !== canonical && present(k)) return k;
+  }
+  return undefined;
+}
+
 /** Canonical keys in this agency that take only the weekend part of an old route (they may hold weekend-only snapshots). */
 export function weekendOnlyKeysFor(slugAliases: Record<string, HistoryAliasEntry[]> | undefined): Set<string> {
   return new Set(Object.entries(slugAliases ?? {})

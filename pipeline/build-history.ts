@@ -20,7 +20,7 @@ import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
 import { runWithConcurrency } from './utils.js';
-import { resolveCurrentHistoryRoute, mergeAliasedRoutes, foldDirectionTripDurations, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
+import { resolveCurrentHistoryRoute, mergeAliasedRoutes, aliasedLineKey, foldDirectionTripDurations, currentRouteShortNamesFor, aliasesFor, aliasesFromDirectionSplits, weekendOnlyKeysFor, withGeneratedAliases, projectArchiveByDay, projectSidecarByDay, worseArchiveChange, worseSidecarEntry, type HistoryRouteAliases } from './historyIdentity.js';
 import { representativeRep, routeTrunkHeadway, routeTrunkHeadwayByPeriod } from './historyV2.js';
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
@@ -564,13 +564,19 @@ async function main() {
         const todayPeriod = today && (today.geometry || today.routeLongName)
           ? [{ periodKey: TODAY_PERIOD_KEY, sortKey: buildDate, year: buildYear, name: today.routeLongName, termini: terminiOf(today.geometry), line: today.geometry ?? null }]
           : [];
+        // The line is stored under the key the feed used, which for an aliased route can be an old key (SEPTA T5 Bus ← 36B).
+        const lineOf = (periodKey: string) => {
+          const lines = shapePeriods[slug]?.get(periodKey)?.routes;
+          const k = lines ? aliasedLineKey(x => !!lines[x]?.c, key, routeAliases[slug]) : undefined;
+          return k ? lines![k].c : undefined;
+        };
         const { segments, splits } = splitRouteHistory([...entries.map(e => ({
           periodKey: e.periodKey,
           sortKey: e.v2.refDate,
           year: Number(e.v2.refDate.slice(0, 4)),
           name: e.v2.name,
-          termini: terminiOf(shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c),
-          line: shapePeriods[slug]?.get(e.periodKey)?.routes[key]?.c ?? null,
+          termini: terminiOf(lineOf(e.periodKey)),
+          line: lineOf(e.periodKey) ?? null,
         })), ...todayPeriod], key);
         if (segments.length < 2) continue;
         splitCount++;
