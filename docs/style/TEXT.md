@@ -31,7 +31,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Route lists and agency pages use the same words and range as the route card, from the same function. CIV-1300, CIV-1447.
   - They show the "Irregular" badge where the card shows no number.
   - A range's dot takes the slower number's colour.
-- There is no "All day" option. Never describe one in any text. CIV-1097, CIV-1451. (checked; `PERIOD_LABELS.all` is listed in the test until it goes)
+- There is no "All day" option. Never describe one in any text. CIV-1097, CIV-1451. (checked)
   - The 07:00-22:00 all-day grade is internal; it reaches the screen only as "Infrequent" or "limited" ([FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md)).
 - Don't summarise agencies or areas by a fixed cutoff such as "every 15 min or better" (or 10, 30 or any other).
   - Many agencies have no routes that frequent.

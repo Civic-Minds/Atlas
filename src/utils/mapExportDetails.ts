@@ -2,7 +2,7 @@ import type { Agency } from '../App';
 import { shortDate } from '../../shared/dateText';
 import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
-import type { TimePeriod } from '../hooks/useIntervalStats';
+import type { PeriodKey, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
@@ -93,8 +93,8 @@ export function describeHeadwayFilter(maxHeadway: number): string {
   return headwayFilterLabel(maxHeadway);
 }
 
-function periodPhrase(period: TimePeriod): string {
-  // "AM peak" stays, "Midday" -> "midday", "All day" -> "all day".
+function periodPhrase(period: PeriodKey): string {
+  // "AM peak" stays, "Midday" -> "midday".
   return PERIOD_LABELS[period]
     .split(' ')
     .map(word => (/^[AP]M$/.test(word) ? word : word.toLowerCase()))

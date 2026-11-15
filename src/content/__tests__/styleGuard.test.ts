@@ -119,7 +119,6 @@ const PENDING: Record<string, string[]> = {
     'src/components/charts/TileMap.tsx',
     'src/lib/mapHtml.ts',
   ],
-  '"All day" (the map has no All day option)': ['src/hooks/useIntervalStats.ts'], // PERIOD_LABELS.all
 };
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed

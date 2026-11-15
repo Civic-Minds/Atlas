@@ -69,10 +69,8 @@ export interface HoveredBranch {
 export type { PeriodKey };
 export type TimePeriod = 'all' | PeriodKey;
 
-export const PERIOD_LABELS: Record<TimePeriod, string> = {
-  all: 'All day',
-  ...PERIOD_LABELS_BY_KEY,
-};
+// No label for 'all': the map has no All day option (CIV-1097, CIV-1451); 'all' is only the internal default.
+export const PERIOD_LABELS: Record<PeriodKey, string> = PERIOD_LABELS_BY_KEY;
 
 export { PERIOD_KEYS, TIME_PERIODS };
 
