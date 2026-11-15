@@ -19,6 +19,8 @@ import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
+/** CIV-1642: the ledger was brought up to the current agency list and its fare-free rows rechecked on this day. */
+const FREE_CHILD_FARES_UPDATED = '2026-11-15';
 
 const TABLE_COLUMNS: DataTableColumn<FreeChildFareBar>[] = [
   { key: 'group', header: 'Group', cell: bar => bar.label, rowHeader: true, className: 'font-normal', width: 12 },
@@ -106,7 +108,7 @@ export default function FreeChildFaresPage() {
   const mapTableId = useId();
   const method = (
     <ResearchMethod parts={{
-      dateConducted: <>{longDate(FREE_CHILD_FARES_SNAPSHOT)}.</>,
+      dateConducted: <>{longDate(FREE_CHILD_FARES_SNAPSHOT)}; updated {longDate(FREE_CHILD_FARES_UPDATED)}.</>,
       sample: <>Canada and the United States only. All {freeChildFareStats.agencies} agencies Atlas covered on that date: {FREE_CHILD_AGENCIES_BY_COUNTRY['United States']} in the United States and {FREE_CHILD_AGENCIES_BY_COUNTRY.Canada} in Canada.</>,
       sources: <>Only an agency’s own fare page, or its city or county fare bylaw, counted.</>,
       whatCounted: <>Each bar uses the oldest age that rides free: "under 6 ride free" counts as 5. When two official pages disagreed, we used the narrower rule. "Fare-free" means the whole system is free for every rider. Free fares that apply only in some seasons, with a pass or for residents are counted under "Program only", not as a free child fare. Free fares up to 17 or 18 are usually youth programs.</>,
