@@ -13,7 +13,6 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Agency names read naturally in sentences**: notices and agency pages say "The TTC’s schedule ended…" and "BC Ferries’ schedule", and renamed agencies use their current names (Green Mountain Transit, Santa Maria Regional Transit)
 - **Every back link reads "Back to" and the place it goes**: "← Back to map", "← Back to TTC", and History's agency card "← Back to agencies" (it read "All agencies"), so the way back reads the same on every screen
 - **Live's "Where delays start" rows say where delay starts** ("starts at Broadview Ave (+0.5 min)"), and the bunching table's column reads "Increase": it measures a rise in bunching, not minutes
-- **The Frequent service story shows population coverage again, with new numbers**: a rerun on current Atlas data with the map's own frequency rule finds 17.16% of Canadians and 7.28% of Americans in the studied metros within a 10-minute walk of 15-minute service (45.13% and 16.79% at 30 minutes), dated November 7, 2026
 - **History's Saturday and Sunday rows show the shared-stretch range, as weekday rows do**: an MBTA route whose shared stretch runs more often on a Saturday read only the slower branch's number
 - **Screen readers call the History button "History"**, matching its visible label (it read "Historical service")
 - **The About page no longer describes an all-day value or threshold**: the map has no All day option, so the filter note now speaks only of periods
