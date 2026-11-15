@@ -19564,15 +19564,15 @@
       "verifiedFare": {
         "slug": "kaua-i-county",
         "agencyName": "The Kauai Bus",
-        "amount": 0,
+        "amount": 2,
         "amountMax": 550,
         "currency": "USD",
-        "fareType": "current fare waiver with published fixed-route fare products",
-        "payment": "no fare during current waiver; cash, mobile ticket, smart card, or contactless payment otherwise",
+        "fareType": "general mainline single trip",
+        "payment": "cash, mobile ticket, smart card, or contactless payment",
         "sourceUrl": "https://www.kauai.gov/Government/Departments-Agencies/Transportation/Bus-Fares",
         "confidence": "high",
-        "effectiveDate": "2026-09-10",
-        "evidence": "Official Kauai County fare page states all bus fares are waived until further notice while publishing general mainline fare $2, shuttle fare $0.50, day pass $5, monthly pass $50, and annual pass $550; the County’s September 2026 notice confirms the current fare-free emergency service."
+        "effectiveDate": "2026-10-01",
+        "evidence": "Official Kauai County fare page (checked 2026-11-15) lists General Public $2.00/trip mainline and $0.50/trip shuttle, Discounted Rate $1.00/trip mainline, One Day Pass $5.00, Monthly Pass $50.00 and Annual Pass $550.00; the temporary fare waiver ended and regular fares resumed October 1, 2026 (free child fare ledger, 2026-10-11). Corrected 2026-11-15 (CIV-1559): the September 2026 record captured the waiver."
       }
     },
     {
