@@ -450,7 +450,8 @@ export const FREQUENCY_BANDS = [
   { key: 'b60', phrase: headwayEveryRange(31, 60), short: '31–60', test: (m: number) => m <= 60 },
   { key: 'b60plus', phrase: `less often than ${headwayEvery(60)}`, short: '60+', test: () => true },
 ] as const;
-export const NO_MIDDAY_PHRASE = 'with no regular midday service';
+/** The agency intro's sentence when no route has a regular midday cadence (CIV-965; Ryan's words, CIV-1613). */
+export const noMiddayIntroSentence = (routes: number) => (routes === 1 ? 'Its route runs irregularly at midday.' : 'Its routes run irregularly at midday.');
 /** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
 export const noMiddayBarSentence = (n: number) => `${countOf(n, 'route runs', 'routes run')} irregularly or not at all at midday`;
 /** Ryan, 2026-11-14 (was "Irregular or none"). */

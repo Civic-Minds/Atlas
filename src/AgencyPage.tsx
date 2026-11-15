@@ -12,7 +12,7 @@ import {
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   CONNECTS_WITH,
-  NO_MIDDAY_PHRASE,
+  noMiddayIntroSentence,
   connectionNames,
   PART_OF,
   PLACE_OTHERS,
@@ -22,7 +22,7 @@ import {
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
-import { andOthers, plural } from '../shared/overflowText';
+import { andOthers } from '../shared/overflowText';
 import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
@@ -75,7 +75,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
-    ? ` ${plural(data.agency.routes.length, 'Its route has', 'Its routes have')} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
+    ? ` ${noMiddayIntroSentence(data.agency.routes.length)}`
     : '';
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);

@@ -131,7 +131,13 @@ describe('AgencyPage intro', () => {
   it('says after the intro when an agency has no regular midday service (CIV-965)', () => {
     const none = { ...HSR, routes: [r('A', 3, null), r('B', 3, null)] };
     view(<AgencyPage data={agencyPageData(none, [none, TTC], null)} />);
-    expect(screen.getByText(/Its routes have no regular midday service\./)).toBeTruthy();
+    expect(screen.getByText(/Its routes run irregularly at midday\./)).toBeTruthy();
+  });
+
+  it('says it of one route in the singular (CIV-1613)', () => {
+    const one = { ...HSR, routes: [r('A', 3, null)] };
+    view(<AgencyPage data={agencyPageData(one, [one, TTC], null)} />);
+    expect(screen.getByText(/Its route runs irregularly at midday\./)).toBeTruthy();
   });
 
   it('says "Irregular" where the map list does, and a dash where the route does not run (#1249)', () => {

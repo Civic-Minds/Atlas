@@ -169,10 +169,7 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-// CIV-1613: NO_MIDDAY_PHRASE ("with no regular midday service") waits for Ryan's wording.
-const PENDING: Record<string, string[]> = {
-  '"no regular service" (say "Irregular" or "Runs irregularly in this period")': ['shared/agencyPages.ts'],
-};
+const PENDING: Record<string, string[]> = {};
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
 // removed from its file before the rules run, so only that exact text passes.
