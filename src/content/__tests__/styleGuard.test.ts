@@ -99,6 +99,9 @@ const RULES: Rule[] = [
   { name: 'a <table> outside DataTable', doc: 'VISUAL.md', pattern: /<table\b/, slip: '<table className="w-full">',
     allowed: ['src/components/ui/DataTable.tsx'] },
   { name: 'a shadow (keep the flat look)', doc: 'VISUAL.md', pattern: /\bshadow-(sm|md|lg|xl|2xl|inner)\b|\bshadow\b(?=[\s"'`])|boxShadow|box-shadow/, slip: '<div className="rounded-lg shadow-md">' },
+  // CIV-1607: every pill search box is SearchBox, so each has the clear X; the top bar's box (App.tsx) is the one exception.
+  { name: 'a search box built by hand (use SearchBox)', doc: 'VISUAL.md', pattern: /className=\{SEARCH_(FIELD|PILL)\}|<Search className=\{SEARCH_ICON\}/, slip: '<input className={SEARCH_FIELD} />',
+    allowed: ['src/components/ui/SearchBox.tsx'] },
   // CIV-1569 part 3: every close X is PanelCloseButton, every search box's clear X is SearchClearButton.
   { name: 'an X icon outside PanelCloseButton and SearchClearButton', doc: 'VISUAL.md', pattern: /<X\b|\bX as \w+|import \{[^}]*\bX\b[^}]*\} from 'lucide-react'/, slip: "import { Search, X } from 'lucide-react';",
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Every search box has a clear X**: the filter's agency search and the settings searches for hidden routes, part-time routes and feeds now clear in one tap, like the top bar
 - **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
 - **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
 - **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text
