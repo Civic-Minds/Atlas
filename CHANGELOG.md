@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A train that skips a stop or two no longer hides a branch**: [SEPTA Lansdale/Doylestown](https://github.com/Civic-Minds/Atlas/issues/1513) read every 33 instead of the hourly Doylestown branch's 60 because one rush-hour short turn skipped two stops; GO Kitchener and other commuter lines now count their branches the same way
 - **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"
 - **The Docs page matches the app and the site it's on**: it uses the filters' own definitions and the expired-schedule notice's real words, says correctly that a route with 8 or more gaps always gets one near miss, and leaves out on public what only beta has

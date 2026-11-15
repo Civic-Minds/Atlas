@@ -254,7 +254,7 @@ export function directionStretches(
     if (entry) entry.trips.push(trip);
     else patterns.set(id, { stops, trips: [trip] });
   }
-  const all = [...patterns.values()];
+  let all = [...patterns.values()];
   if (all.length === 0) return { key, main: null, tails: [], regularPatternCount: 0, variantTripCount: 0 };
   // Regular: the pattern runs steadily through at least one period at its own middle stop (the
   // steady test plus the D8 midpoint test). Stray, part-day and garage trips fail it, whatever
@@ -270,13 +270,14 @@ export function directionStretches(
   // MIN_PEAK_BLOCK_DEPARTURES there (TransLink 044's Dundarave Express: 15:06, 16:03, 17:07). Three
   // trips spread over the day are a schedule (GO 88C, Saturday 10:00-14:30).
   const peakWindows = PERIOD_WINDOWS.filter(w => w.key === 'amPeak' || w.key === 'pmPeak');
-  const eligible = all.filter(p => {
+  const isEligible = (p: { trips: readonly DirectionTrip[] }) => {
     if (p.trips.length < MIN_SCHEDULE_DEPARTURES) return false;
     const starts = p.trips.map(t => t.visits[0].minutes);
     if (Math.max(...starts) - Math.min(...starts) <= BURST_MAX_SPAN_MINUTES) return false;
     const onePeak = peakWindows.some(w => starts.every(t => t >= w.start && t < w.end));
     return !onePeak || p.trips.length >= MIN_PEAK_BLOCK_DEPARTURES;
-  });
+  };
+  let eligible = all.filter(isEligible);
   // Two stops are one terminal when they are the same stop or within SAME_TERMINAL_METERS.
   const sameTerminal = (a: string, b: string) => {
     if (a === b) return true;
@@ -285,7 +286,41 @@ export function directionStretches(
   };
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
+  const steadyByDay = regular.length > 0;
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
+  // #1513: a trip that skips some stops of a pattern, between the same two end stops, is that
+  // pattern's trip for the steady test. Each stop sequence is its own pattern, so one such trip took a
+  // rush-hour departure from its pattern: SEPTA LAN's Lansdale short turns run 16:16, 17:12, 18:12 in
+  // Sept 2026 and are steady, but Nov 2026's 16:18 skips two stops, the pattern kept two PM trips and
+  // the hourly Doylestown branch stopped being read (60 became 33). Only a pattern that is not regular
+  // takes in such trips, and only when that makes it run steadily by day beside a pattern that already
+  // does; a regular pattern's stop-skipping trips stay variants, counted where they serve. A route-day
+  // with no steady daytime pattern keeps its fallback shape (TransLink 749 on Saturdays, two-hourly).
+  if (steadyByDay) {
+    const regularNow = new Set(regular);
+    const skipsStopsOf = (v: (typeof all)[number], p: (typeof all)[number]) => {
+      if (v.stops.length >= p.stops.length || v.stops[0] !== p.stops[0] || v.stops[v.stops.length - 1] !== p.stops[p.stops.length - 1]) return false;
+      let i = 0;
+      for (const stop of p.stops) if (stop === v.stops[i]) i++;
+      return i === v.stops.length;
+    };
+    const absorbed = new Set<(typeof all)[number]>();
+    for (const p of [...all].sort((x, y) => y.trips.length - x.trips.length || y.stops.length - x.stops.length)) {
+      if (regularNow.has(p) || absorbed.has(p)) continue;
+      const skippers = all.filter(v => v !== p && !regularNow.has(v) && !absorbed.has(v) && skipsStopsOf(v, p));
+      if (skippers.length === 0) continue;
+      const pooled = { stops: p.stops, trips: [...p.trips, ...skippers.flatMap(v => v.trips)] };
+      if (!isEligible(pooled) || !runsSteadily(pooled.trips, p.stops[Math.floor(p.stops.length / 2)], DAYTIME_PERIODS)) continue;
+      p.trips = pooled.trips;
+      for (const v of skippers) absorbed.add(v);
+      regular.push(p);
+      regularNow.add(p);
+    }
+    if (absorbed.size > 0) {
+      all = all.filter(v => !absorbed.has(v));
+      eligible = all.filter(isEligible);
+    }
+  }
   // CIV-786: a pattern that takes the same trip in turn with a regular sibling is regular too. HSR 16 on
   // weekends runs via Wilson every 30 from 7:19 to 11:49, then via Fiddler's Green every 30 from 12:19:
   // the morning pattern starts inside the AM peak and stops before midday ends, so it runs steadily
