@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route that runs twice in a time of day lists the times with "and"**: "only from 9–10 AM and 2–3 PM" read like a list of the whole day's hours with a comma
 - **Free child fares counts are current again (beta)**: fare-free systems rechecked against official pages (partly free and unconfirmed ones no longer count, Athens and newer free systems added), NJ Transit counted once, newer agencies included, and the link preview's agency count matches the page
 - **A route card's branch row names the pattern that actually runs then**: [TTC 110](https://github.com/Civic-Minds/Atlas/issues/1526)'s Long Branch row named a 30th Street pattern with no midday trips next to another pattern's every 30
 - **History reads an old feed from its real timetable (beta)**: a one- or two-trip shuttle in force months earlier had left CTA's 2021–23 periods out

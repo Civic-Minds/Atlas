@@ -167,6 +167,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - The card has no All day row (CIV-1279: the map has no All day).
   - A route that doesn't run reads "no trips".
   - Part of a period reads "This route runs only from 7–9 AM." with the rest as a second sentence.
+    - Several runs join with "and": "This route runs only from 9–10 AM and 2–3 PM." CIV-1251.
 
 ## New wording needs a yes
 

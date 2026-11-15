@@ -1,6 +1,7 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { formatPeriodHourLong, formatPeriodRangeLong, TIME_PERIODS } from '../../shared/config';
 import { ROUTE_DATA_QUALITY_WARNING } from '../../shared/routeDataQuality';
+import { joinList } from '../../shared/overflowText';
 import {
   BOOKING_REQUIRED_NOTICE, expiredFeedNotice, noServiceInPeriodText, listingEndedNotice, NO_ROUTE_SHAPE_NOTICE, periodServiceNotice,
   ROUTE_DATA_QUALITY_WARNING_MESSAGE, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopRunsOnlyText,
@@ -113,7 +114,7 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
     // #1186: the hours named are the chart's, inside the period (TTC 31 overnight read "runs from 1–2 AM, but not
     // throughout 2–6 AM" beside "runs only from 2–3 AM"). Never another direction's hours: with none of its own the notice
     // doesn't show (MiWay 49 weekday midday read "runs every 45 min from 9 AM–3 PM, but not throughout … 9 AM–3 PM").
-    const activePeriodRangeText = chartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ');
+    const activePeriodRangeText = joinList(chartRanges.map(([start, end]) => formatPeriodRangeLong(start, end)));
     // #995: "but not throughout the selected period" only when service really stops short of it;
     // a route running the whole period that misses the frequency filter gets the filter notice.
     const showPartPeriodNotice = selectedPeriod != null
@@ -168,7 +169,8 @@ export function routeCardNotices(input: RouteCardNoticeInput): RouteCardNotices 
   let periodNotice: CardNotice | null = null;
   // #1277: a route with no rows (doesNotRun) but trips in the period gets the period line, even when a direction has a period value.
   if (!input.hideFilterNotices && selectedPeriod && (!model.hasPeriodService || (model.doesNotRun && runsInPeriod)) && !noTripsLineShown) {
-    const activeRange = periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)).join(', ');
+    // CIV-1251 (Ryan, 2026-11-15): several runs join with "and": "only from 9–10 AM and 2–3 PM".
+    const activeRange = joinList(periodRanges.map(([start, end]) => formatPeriodRangeLong(start, end)));
     periodNotice = {
       code: runsInPeriod ? 'N9' : 'N8',
       place: 3,
