@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"
 - **The Docs page matches the app and the site it's on**: it uses the filters' own definitions and the expired-schedule notice's real words, says correctly that a route with 8 or more gaps always gets one near miss, and leaves out on public what only beta has
 - **The Docs page quotes the app's real notices and labels**: two notices were quoted in old wording, and the Live report pages' "What these terms mean" link landed on a glossary without the Live terms on beta
 - **A route card row's dot is never better than its number (beta)**: GO Kitchener's "[every 120 min](https://github.com/Civic-Minds/Atlas/issues/1506)" row had the route's every-30 dot beside a grey line
