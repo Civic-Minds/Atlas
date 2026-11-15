@@ -96,5 +96,8 @@
     "WAR": ["Warminster Line"],
     "WIL": ["Wilmington/Newark Line"],
     "WTR": ["West Trenton Line"]
+  },
+  "cta": {
+    "N5": ["5"]
   }
 }
