@@ -103,12 +103,17 @@ function Intro({ data }: { data: AgencyPageData }) {
   );
 }
 
-/** Whether the hours bar writes this edge's time: its "from" is the route's first time, or its "until" the last. */
-function edgeCarriedByBar(edge: { from?: number; until?: number }, runs: AgencyPageRoute['runs']): boolean {
-  if (!runs) return false;
-  if (edge.from != null && edge.from !== runs.first) return false;
-  if (edge.until != null && edge.until !== runs.last) return false;
-  return edge.from != null || edge.until != null;
+/**
+ * CIV-1605 (Ryan, pick 1): with the hours bar, a "from" equal to the bar's first time or an "until" equal to its last
+ * leaves the cell, since the bar's end says it; a time that differs (one direction's later start) keeps its words.
+ */
+function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number }, runs: AgencyPageRoute['runs']): { from?: number; until?: number; every: number } {
+  if (!runs) return edge;
+  return {
+    every: edge.every,
+    ...(edge.from != null && edge.from !== runs.first ? { from: edge.from } : {}),
+    ...(edge.until != null && edge.until !== runs.last ? { until: edge.until } : {}),
+  };
 }
 
 /**
@@ -122,10 +127,10 @@ function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPa
   const shown = r.text?.[col];
   if (shown) return shown;
   const edge = r.edge?.[col];
-  // CIV-1605 (beta): with the hours bar, an edge time the bar writes (the route's exact first or last time) leaves the
-  // cell, which reads just its cadence. Any other edge (a peak-only route's mid-day stop and restart) keeps its words.
-  if (v != null && edge && hoursBar && edgeCarriedByBar(edge, r.runs)) return routeListHeadwayText(edge.every);
-  if (v != null && edge) return periodEdgeText(edge);
+  if (v != null && edge) {
+    const kept = hoursBar ? edgeWithoutBarEnds(edge, r.runs) : edge;
+    return kept.from != null || kept.until != null ? periodEdgeText(kept) : routeListHeadwayText(edge.every);
+  }
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
@@ -207,7 +212,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     columns={[
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       // CIV-1605 (beta prototype): the weekday hours bar. Header words are a placeholder until Ryan OKs them.
-                      ...(hoursAxis ? [{ key: 'hours', header: '[Placeholder: Hours]', align: 'left' as const, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      ...(hoursAxis ? [{ key: 'hours', header: '[Placeholder: Hours]', align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
                       { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r, !!hoursAxis) },
                       { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r, !!hoursAxis) },
                       { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r, !!hoursAxis) },

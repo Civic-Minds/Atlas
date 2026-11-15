@@ -1498,9 +1498,9 @@ describe('a stretch publishes its reference stop\'s departures per clock hour (#
 describe('stretchSpan (CIV-1611)', () => {
   it('gives the first and last departure in whole minutes, across midnight too', async () => {
     const { stretchSpan } = await import('../tripSets');
-    expect(stretchSpan([436.4, 500, 1505.6])).toEqual({ span: { first: 436, last: 1506 } });
-    // 4:51 AM is before the counted hours (5 AM on), so the span starts at the first counted departure.
-    expect(stretchSpan([291, 330, 600])).toEqual({ span: { first: 330, last: 600 } });
+    expect(stretchSpan([436.4, 500, 1505.6])).toEqual({ span: { first: 436, last: 1506, gaps: [[500, 1506]] } });
+    // 4:51 AM is before the counted hours (5 AM on), so no first time is claimed (CIV-1605).
+    expect(stretchSpan([291, 330, 600])).toEqual({ span: { last: 600, gaps: [[330, 600]] } });
     expect(stretchSpan([])).toEqual({});
   });
 });

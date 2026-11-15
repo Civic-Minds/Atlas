@@ -65,7 +65,7 @@ export interface AgencyPageRoute {
    * times (minutes after midnight), only where the data has them (a period edge in the first or last hour); else the bar
    * ends on the hour.
    */
-  runs?: { hours: number[]; first?: number; last?: number };
+  runs?: { hours: number[]; first?: number; last?: number; /** Each break inside the day: [last departure before, first after], exact or widened to the hour, never narrowed. */ gaps?: Array<[number, number]> };
   /** CIV-274: paged areas (config/areas slugs) where this route stops at two places inside (shared/areaBoundaries.ts). */
   areas?: string[];
   /** #1283: states and provinces (their config region names) where this route stops at two places inside, by the same rule. */

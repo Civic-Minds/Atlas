@@ -22,6 +22,7 @@ import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
   computeHourDepartureCounts,
   computeDepartureSpan,
+  type DepartureSpan,
   computeHourHeadways,
   computePeriodInnerMaxGaps,
   innerMaxGapInWindow,
@@ -749,7 +750,7 @@ export function stretchRowValues(s: Stretch): StretchRowValues {
   return { cadence, longestGap, consistent, hourly };
 }
 
-export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number>; span?: { first: number; last: number } } {
+export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, number | null>; noRegular: PeriodKey[]; maxGap: Record<PeriodKey, number | null>; edge?: Partial<Record<PeriodKey, StretchPeriodEdge>>; departuresByHour: Record<number, number>; span?: DepartureSpan } {
   const own = stretchPeriods(s);
   // CIV-1069: the longest gap between the same departures the value reads, so a card row never pairs
   // the stretch's value with a gap measured over one headsign's trips.
@@ -790,7 +791,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
  * CIV-1611: a stretch's first and last departure at its reference stop, in whole minutes after midnight, among the same
  * hours its departuresByHour counts (computeDepartureSpan), so the span never ends in an hour the counts leave out.
  */
-export function stretchSpan(times: readonly number[]): { span?: { first: number; last: number } } {
+export function stretchSpan(times: readonly number[]): { span?: DepartureSpan } {
   const span = computeDepartureSpan([...times], SPARKLINE_HOURS);
   return span ? { span } : {};
 }

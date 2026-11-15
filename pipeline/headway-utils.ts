@@ -1,5 +1,5 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
-import type { HeadwayByHour } from '../shared/routeProperties.js';
+import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 
 
@@ -795,15 +795,32 @@ export function departureBoundsInHour(departureTimes: readonly number[], hour: n
   return Number.isFinite(first) ? { first: Math.round(first), last: Math.round(last) } : null;
 }
 
+/** CIV-1611, CIV-1605: the published shape (shared/routeProperties.ts). */
+export type DepartureSpan = RouteDepartureSpan;
+
 /**
  * CIV-1611: the first and last departure among the hours computeHourDepartureCounts counts (its first hour's earliest
- * time, its last hour's latest), so the span and the hour counts always come from one list. Undefined with none.
+ * time, its last hour's latest), so the span and the hour counts always come from one list. CIV-1605: an end is left
+ * out when the list departs earlier or later than the counted hours, and each empty hour inside the day is a gap
+ * between exact times, so a bar drawn from it never shows service that isn't there. Undefined with none.
  */
-export function computeDepartureSpan(departureTimes: readonly number[], hours: readonly number[]): { first: number; last: number } | undefined {
+export function computeDepartureSpan(departureTimes: readonly number[], hours: readonly number[]): DepartureSpan | undefined {
   // In clock order (SPARKLINE_HOURS lists 5 AM last, as the sparkline's overnight tail).
-  const withDepartures = [...hours].sort((a, b) => a - b).map(h => departureBoundsInHour(departureTimes, h)).filter((b): b is { first: number; last: number } => b != null);
-  if (withDepartures.length === 0) return undefined;
-  return { first: withDepartures[0].first, last: withDepartures[withDepartures.length - 1].last };
+  const counted = [...hours].sort((a, b) => a - b)
+    .map(h => ({ h, b: departureBoundsInHour(departureTimes, h) }))
+    .filter((x): x is { h: number; b: { first: number; last: number } } => x.b != null);
+  if (counted.length === 0) return undefined;
+  const firstHour = counted[0].h;
+  const lastHour = counted[counted.length - 1].h;
+  const gaps: Array<[number, number]> = [];
+  for (let i = 1; i < counted.length; i++) {
+    if (counted[i].h > counted[i - 1].h + 1) gaps.push([counted[i - 1].b.last, counted[i].b.first]);
+  }
+  return {
+    ...(departureTimes.every(t => t >= firstHour * 60) ? { first: counted[0].b.first } : {}),
+    ...(departureTimes.every(t => t < lastHour * 60 + 60) ? { last: counted[counted.length - 1].b.last } : {}),
+    ...(gaps.length ? { gaps } : {}),
+  };
 }
 
 /** Return the typical scheduled gap range for each period, excluding one exceptional hole. */

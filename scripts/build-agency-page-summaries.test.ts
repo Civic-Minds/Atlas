@@ -303,14 +303,18 @@ describe('routeRuns (CIV-1605, hours bar prototype)', () => {
 
   it('takes exact first and last times only from an edge in the first or last hour (Whitehorse 101)', async () => {
     const { routeRuns } = await import('./build-agency-page-summaries');
-    const hours = Object.fromEntries([7, 8, 9, 19, 20, 21].map(h => [String(h), 1]));
+    const span = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+    const hours = Object.fromEntries(span.map(h => [String(h), 1]));
     expect(routeRuns([{ departuresByHour: hours }], { am: { from: 436, every: 30 }, evening: { until: 1276, every: 60 } }))
-      .toEqual({ hours: [7, 8, 9, 19, 20, 21], first: 436, last: 1276 });
+      .toEqual({ hours: span, first: 436, last: 1276 });
+    // CIV-1605: without spans a break's ends aren't known, so no bar rather than one drawn to the hour.
+    expect(routeRuns([{ departuresByHour: Object.fromEntries([7, 8, 19].map(h => [String(h), 1])) }], undefined)).toBeNull();
   });
 
   it('never moves an edge to an end it does not belong to (Whitehorse 201: until 9:01 PM, last departure hour 8 PM)', async () => {
     const { routeRuns } = await import('./build-agency-page-summaries');
-    expect(routeRuns([{ departuresByHour: { '6': 1, '20': 1 } }], { evening: { until: 1261, every: 60 } })).toEqual({ hours: [6, 20] });
+    const hours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+    expect(routeRuns([{ departuresByHour: Object.fromEntries(hours.map(h => [String(h), 1])) }], { evening: { until: 1261, every: 60 } })).toEqual({ hours });
   });
 
   it('is null without per-hour departures', async () => {
@@ -323,10 +327,13 @@ describe('routeRuns from the stretches (CIV-1611)', () => {
   it("reads the exact first and last departure from every stretch's span, and the hours from their counts", async () => {
     const { routeRuns } = await import('./build-agency-page-summaries');
     const rows = [
-      { stretchMeta: { main: { departuresByHour: { '7': 2, '21': 1 }, span: { first: 436, last: 1276 } }, tails: [{ departuresByHour: { '6': 1 }, span: { first: 410, last: 415 } }] } },
-      { stretchMeta: { main: { departuresByHour: { '8': 1, '22': 1 }, span: { first: 480, last: 1330 } }, tails: [] } },
+      { stretchMeta: { main: { departuresByHour: { '7': 2, '21': 1 }, span: { first: 436, last: 1276, gaps: [[470, 1276]] as Array<[number, number]> } }, tails: [{ departuresByHour: { '6': 1 }, span: { first: 410, last: 415 } }] } },
+      { stretchMeta: { main: { departuresByHour: { '8': 1, '22': 1 }, span: { first: 480, last: 1330, gaps: [[480, 1330]] as Array<[number, number]> } }, tails: [] } },
     ];
-    expect(routeRuns(rows, undefined)).toEqual({ hours: [6, 7, 8, 21, 22], first: 410, last: 1330 });
+    // CIV-1605: the break runs from the latest departure before it (480) to the earliest after it (1276), over every list.
+    expect(routeRuns(rows, undefined)).toEqual({ hours: [6, 7, 8, 21, 22], first: 410, last: 1330, gaps: [[480, 1276]] });
+    // A list that runs before the counted hours has no first, so the route claims none.
+    expect(routeRuns([{ stretchMeta: { main: { departuresByHour: { '7': 1 }, span: { last: 430 } }, tails: [] } }], undefined)).toEqual({ hours: [7], last: 430 });
   });
 
   it('falls back to the rows when any stretch lacks a span (a release built before CIV-1611)', async () => {

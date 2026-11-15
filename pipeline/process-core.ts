@@ -31,7 +31,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, resolveTerminalHeadline, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -3804,7 +3804,7 @@ export async function processGtfsBuffer(
       feature.properties.headwayByHour = mergedHourHw;
       feature.properties.maxGapByHour = mergedHourGaps;
       feature.properties.departuresByHour = mergedHourDepartures;
-      feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as { first: number; last: number } | undefined);
+      feature.properties.departureSpan = mergedDepartureSpan(mergedHourDepartures, hourFromTerminal, terminalDepartureList, feature.properties.departureSpan as DepartureSpan | undefined);
     } else if (terminalHourHw) {
       feature.properties.headwayByHour = terminalHourHw;
       feature.properties.maxGapByHour = headsignTerminalHourGaps ?? terminalHourGaps;
@@ -4300,22 +4300,41 @@ export async function processGtfsBuffer(
 /**
  * CIV-1611: a row's first and last departure after its hours were merged from the terminal list and its own list: each end
  * reads the list its hour's count came from. An end whose hour came from the row's own list is exact only when the row's
- * own span ends in that hour; otherwise the span is left out rather than guessed.
+ * own span ends in that hour; otherwise that end is left out rather than guessed. CIV-1605: each empty hour inside the day
+ * is a gap; a gap end the lists can't give exactly is put at the hour's edge on the gap's side (the gap drawn wider), so
+ * the hours bar never shows service that isn't there.
  */
 export function mergedDepartureSpan(
   byHour: Record<number, number>,
   fromTerminal: Record<number, boolean>,
   terminalList: readonly number[] | undefined,
-  ownSpan: { first: number; last: number } | undefined,
-): { first: number; last: number } | undefined {
+  ownSpan: DepartureSpan | undefined,
+): DepartureSpan | undefined {
   const hours = Object.keys(byHour).map(Number).sort((a, b) => a - b);
   if (hours.length === 0) return undefined;
-  const end = (h: number, which: 'first' | 'last'): number | undefined => {
+  const inHour = (t: number | undefined, h: number) => t != null && Math.floor(t / 60) === h ? t : undefined;
+  const bound = (h: number, which: 'first' | 'last'): number | undefined => {
     if (fromTerminal[h]) return terminalList ? departureBoundsInHour(terminalList, h)?.[which] : undefined;
-    const own = ownSpan?.[which];
-    return own != null && Math.floor(own / 60) === h ? own : undefined;
+    const own = [ownSpan?.[which], ...(ownSpan?.gaps ?? []).map(g => which === 'first' ? g[1] : g[0])];
+    return own.map(t => inHour(t, h)).find(t => t != null);
   };
-  const first = end(hours[0], 'first');
-  const last = end(hours[hours.length - 1], 'last');
-  return first != null && last != null ? { first, last } : undefined;
+  // A departure the row's own span names in an hour bounds that hour's break end on the safe side (the break drawn wider).
+  const ownKnown = (h: number) => [ownSpan?.first, ownSpan?.last, ...(ownSpan?.gaps ?? []).flat()].filter((t): t is number => inHour(t, h) != null);
+  const latestKnown = (h: number) => fromTerminal[h] ? undefined : ownKnown(h).sort((a, b) => b - a)[0];
+  const earliestKnown = (h: number) => fromTerminal[h] ? undefined : ownKnown(h).sort((a, b) => a - b)[0];
+  const firstHour = hours[0];
+  const lastHour = hours[hours.length - 1];
+  const first = fromTerminal[firstHour]
+    ? (terminalList?.every(t => t >= firstHour * 60) ? bound(firstHour, 'first') : undefined)
+    : inHour(ownSpan?.first, firstHour);
+  const last = fromTerminal[lastHour]
+    ? (terminalList?.every(t => t < lastHour * 60 + 60) ? bound(lastHour, 'last') : undefined)
+    : inHour(ownSpan?.last, lastHour);
+  const gaps: Array<[number, number]> = [];
+  for (let i = 1; i < hours.length; i++) {
+    const [before, after] = [hours[i - 1], hours[i]];
+    if (after > before + 1) gaps.push([bound(before, 'last') ?? latestKnown(before) ?? before * 60, bound(after, 'first') ?? earliestKnown(after) ?? after * 60 + 60]);
+  }
+  if (first == null && last == null && gaps.length === 0) return undefined;
+  return { ...(first != null ? { first } : {}), ...(last != null ? { last } : {}), ...(gaps.length ? { gaps } : {}) };
 }
