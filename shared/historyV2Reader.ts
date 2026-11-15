@@ -200,11 +200,6 @@ export function snapshotFlag(snapshot: HistorySnapshotLike): HistoryFlag | undef
   return snapshot.v2?.flag;
 }
 
-/** The real service day (YYYYMMDD) of a v2 snapshot; undefined for v1. */
-export function snapshotRefDate(snapshot: HistorySnapshotLike): string | undefined {
-  return snapshot.v2?.refDate;
-}
-
 export interface YearRoute<S extends HistorySnapshotLike, R extends HistoryRouteLike<S>> {
   route: R;
   snapshot: S;

@@ -12,7 +12,6 @@ import { countText, percentText } from '../../shared/numberText';
 import { densityText } from '../../shared/unitText';
 
 export type ContextMetric = 'density' | 'income';
-export const CONTEXT_METRICS: readonly ContextMetric[] = ['density', 'income'];
 
 /**
  * THE single "too uncertain" threshold: an income whose margin of error is more than this fraction of

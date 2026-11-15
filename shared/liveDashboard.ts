@@ -8,6 +8,7 @@ import { dateRange } from './dateText.js';
 import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min } from './liveFormat.js';
 import { hourTime } from './timeText.js';
+import { runTimeAmount } from './headwayText.js';
 import { NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
@@ -337,9 +338,9 @@ export function runningTimeSentence(label: string, r: RunTimeFigures | null | un
 export function runningTimeFigures(r: { scheduledMin?: number | null; typicalMin?: number | null; p90Min?: number | null }): string {
   const ok = (x: number | null | undefined): x is number => typeof x === 'number' && Number.isFinite(x);
   const parts: string[] = [];
-  if (ok(r.scheduledMin)) parts.push(`scheduled ${Math.round(r.scheduledMin)} min`);
-  if (ok(r.typicalMin)) parts.push(`usually ${Math.round(r.typicalMin)}${parts.length ? '' : ' min'}`);
-  if (ok(r.p90Min)) parts.push(`1 in 10 over ${Math.round(r.p90Min)} min`);
+  if (ok(r.scheduledMin)) parts.push(`scheduled ${runTimeAmount(r.scheduledMin)}`);
+  if (ok(r.typicalMin)) parts.push(`usually ${parts.length ? Math.round(r.typicalMin) : runTimeAmount(r.typicalMin)}`);
+  if (ok(r.p90Min)) parts.push(`1 in 10 over ${runTimeAmount(r.p90Min)}`);
   return parts.join(' · ');
 }
 

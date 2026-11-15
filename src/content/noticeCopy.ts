@@ -13,6 +13,7 @@ import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
+import { countText } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
@@ -20,6 +21,7 @@ import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
 import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
+import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
@@ -290,7 +292,7 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 // K3 frequency-key other
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
-export const MAP_KEY_NIGHT = 'Overnight service';
+export const MAP_KEY_NIGHT = OVERNIGHT_STORY.cardTitle;
 /** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
 export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
 /**
@@ -442,7 +444,7 @@ export const networksFailedText = (count: number) => `${countOf(count, 'agency',
 /** The agencies' names: "TTC and YRT couldn't load." */
 export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn’t load.`;
 // N45 networks-loading
-export const networksLoadingText = (loaded: number, requested: number) => `Loading ${loaded} of ${requested} agencies…`;
+export const networksLoadingText = (loaded: number, requested: number) => `Loading ${countText(loaded)} of ${countOf(requested, 'agency', 'agencies')}…`;
 // N34 on-demand-failed
 export const ON_DEMAND_AREAS_FAILED = loadErrorText('on-demand areas');
 // N121 map-errors (phones): one pill in place of the map's error notices; tapping it lists them (CIV-1057, Ryan's pick).

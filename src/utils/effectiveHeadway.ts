@@ -4,7 +4,7 @@ import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { buildRouteServiceSummary, metricValueForPeriod } from './routeFacts';
 import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
-import { delayAmount, headwayAboutRange, headwayEvery, headwayEveryRange, headwayPeriodShape, headwayRangeShown } from './headwayText';
+import { headwayEvery, headwayEveryRange, headwayPeriodShape, headwayRangeShown } from './headwayText';
 import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
 import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
@@ -224,18 +224,6 @@ export function partPeriodText(p: ShapeProperties, period: TimePeriod): string |
   if (period === 'all' || !rowReadsPeriodEdge(p, period)) return undefined;
   if (typeof p.directionFilterHeadwayByPeriod?.[period] === 'number') return undefined;
   return routeCardPeriodShapeText(p, period);
-}
-
-/** Rider-facing range for an irregular period, scoped to this destination/branch. */
-export function routeCardDisplayHeadwayRange(p: ShapeProperties, period: TimePeriod): string | null {
-  if (p.tier === 'span' || period === 'all' || p.headwayByPeriodSustained?.[period] !== false) return null;
-  const range = p.headwayRangeByPeriod?.[period];
-  if (!range) return null;
-  const rangeText = headwayAboutRange(range.min, range.max);
-  const longestGap = p.maxGapByPeriod?.[period];
-  return longestGap != null && longestGap > range.max + 5
-    ? `${rangeText} · longest gap ${delayAmount(longestGap)}`
-    : rangeText;
 }
 
 /**

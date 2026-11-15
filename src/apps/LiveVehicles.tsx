@@ -10,7 +10,6 @@ import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
-import { FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
@@ -667,7 +666,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   // A route or vehicle card opens in the map card's body; on phones, in its bottom sheet (as SidebarControls).
   const cardOpen = !!selectedGroup && pickVehicles.length <= 1;
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
-  const sheetMode = FEATURES.mobileRouteSheet && isPhone && cardOpen;
+  const sheetMode = isPhone && cardOpen;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(cardOpen ? `${selectedRoute}|${cardVehicle?.id ?? ''}|${selectedDirection ?? ''}` : null);
 
   // CIV-1125 option D: how many vehicle rows fit in the card without it scrolling.

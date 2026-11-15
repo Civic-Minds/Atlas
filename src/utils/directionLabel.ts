@@ -66,11 +66,6 @@ export function directionGroupBearing(features: GeoJSON.Feature[], dirId: number
   return bearingDegrees(start[1], start[0], end[1], end[0]);
 }
 
-/** Mean longitude of shape ends (for west-to-east group sort). */
-export function directionGroupTerminalLon(features: GeoJSON.Feature[], dirId: number): number | null {
-  return directionGroupMeanEnd(features, dirId)?.[0] ?? null;
-}
-
 /**
  * Bound labels for direction groups. Two groups use relative mean-end position
  * (dominant axis); single or 3+ groups fall back to start→end bearing.

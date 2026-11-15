@@ -3,7 +3,7 @@ import { isLiveEligibleSlug } from '../../../../shared/livePollingConfig';
 import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
-import { headwayAbout } from '../../../utils/headwayText';
+import { delayAmount, headwayAbout } from '../../../utils/headwayText';
 
 const POLL_MS = 20_000;
 
@@ -59,7 +59,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
                 key={i}
                 className="text-xs font-bold text-[var(--text-primary)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
               >
-                {a.route} · {a.min === 0 ? 'now' : `${a.min} min`}
+                {a.route} · {a.min === 0 ? 'now' : delayAmount(a.min)}
               </span>
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
                   key={i}
                   className="text-xs font-bold text-[var(--text-muted)] bg-[var(--bg-app)] border border-[var(--border-primary)] rounded-full px-2.5 py-1"
                 >
-                  {a.route} · {a.minAgo === 0 ? 'just now' : `${a.minAgo} min ago`}
+                  {a.route} · {a.minAgo === 0 ? 'just now' : `${delayAmount(a.minAgo)} ago`}
                 </span>
               ))}
             </div>

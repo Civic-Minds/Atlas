@@ -7,7 +7,8 @@
  */
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
-import { PAGE_NAMES, tabTitle } from './pageNames';
+import { PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
+import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
 import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
 import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
@@ -19,10 +20,9 @@ export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
 export const PREVIEW_SITE_URL = 'https://preview.transitatlas.fyi';
 export { SITE_NAME } from './pageNames';
 /** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
-export const HOME_TITLE = 'Transit Atlas: Scheduled Frequency Map';
-export const ORG_NAME = 'Civic Minds';
+export const HOME_TITLE = `${SITE_NAME}: Scheduled Frequency Map`;
 
-export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
+export type SeoGate = 'researchApps' | 'live' | 'history';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 
 /**
@@ -153,7 +153,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     prerender: true,
   },
   {
-    path: '/research/bustang-connections',
+    path: FEATURE_ROUTES.bustangConnections,
     title: tabTitle('Bustang Connections'),
     description: 'How long riders wait for a local bus after each Bustang arrival.',
     indexable: false,
@@ -170,7 +170,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     prerender: true,
   },
   {
-    path: '/research/frequent-service',
+    path: FEATURE_ROUTES.frequentService.map,
     title: tabTitle('Frequent Service Map'),
     description: 'Routes that meet Atlas sustained-frequency thresholds, mapped across agencies.',
     indexable: false,
@@ -190,7 +190,6 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     title: tabTitle(PAGE_NAMES.whatsNew),
     description: 'Every Atlas version and map data update, newest first.',
     indexable: false,
-    gate: 'whatsNew',
   },
 ];
 

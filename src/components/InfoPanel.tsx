@@ -340,7 +340,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
   // Current page title (not the back destination — back is the arrow alone)
   const headerTitle =
-    view === 'agencies' ? 'Agencies'
+    view === 'agencies' ? PAGE_NAMES.agencies
     : view === 'agency-detail' ? selectedAgency?.name ?? ''
     : view in EXPLAINERS ? EXPLAINERS[view as HelpTopic].title
     : view === 'sources' ? 'Sources'

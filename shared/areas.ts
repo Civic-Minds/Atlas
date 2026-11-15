@@ -2,6 +2,7 @@
 
 import largeMetros from './data/large-metros.json';
 import { metroKey, type LargeMetro } from './largeMetros';
+import { regionSlug } from './pagePaths';
 
 export type AreaType = 'MSA' | 'MicroSA' | 'CMA' | 'CA';
 
@@ -45,8 +46,9 @@ export function mainCities(officialName: string): string[] {
   return [...kept, ...rest].slice(0, 4);
 }
 
+/** An area's slug: the one slug rule (shared/pagePaths regionSlug), accents dropped, lower case, dashes. */
 export function areaSlug(name: string): string {
-  return name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return regionSlug(name);
 }
 
 export { AREA_PATH_PREFIX, areaPagePath } from './pagePaths';

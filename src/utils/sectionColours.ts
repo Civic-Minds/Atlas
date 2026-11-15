@@ -301,10 +301,3 @@ export function buildSectionColourFeatures(
   }
   return out;
 }
-
-/** True when a selected-route key (`slug::routeId` or `slug::routeId::branch`) names this route. */
-export function selectedRouteMatches(selectedRoute: string | null | undefined, agencySlug: string, routeId: string): boolean {
-  if (!selectedRoute) return false;
-  const [slug, id] = selectedRoute.split('::');
-  return slug === agencySlug && id === routeId;
-}

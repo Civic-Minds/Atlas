@@ -30,7 +30,7 @@ vi.mock('../components/InfoPanel', () => ({ default: () => null }));
 vi.mock('../../shared/data/history-agencies.json', () => ({ default: { minYears: 10, slugs: ['ttc'] } }));
 vi.mock('../../shared/config', async importOriginal => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
-  return { ...actual, FEATURES: { ...actual.FEATURES, live: true, history: true, compareMode: true, collapseModeTabs: true } };
+  return { ...actual, FEATURES: { ...actual.FEATURES, live: true, history: true, collapseModeTabs: true } };
 });
 
 import App from '../App';

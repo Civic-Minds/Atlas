@@ -1,7 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { RAIL_TIER_MAXES } from '../shared/frequencyRules.js';
+import { RAIL_TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
 
 
 /**
@@ -158,8 +158,8 @@ export function headlineDeparturesInWindow(times: readonly number[], start: numb
   return t.length >= HEADLINE_MIN_DEPARTURES ? t : null;
 }
 
-/** Rail's own midday window (09:30 to 14:30), used by its tier scale and the rail roll-up. */
-export const RAIL_TIER_WINDOW = { start: 570, end: 870 } as const;
+/** Rail's own midday window (09:30 to 14:30); the constant lives in shared/frequencyRules.ts so the Docs page reads it too. */
+export { RAIL_TIER_WINDOW };
 
 export function medianHeadwayInWindow(
   departureTimes: number[],

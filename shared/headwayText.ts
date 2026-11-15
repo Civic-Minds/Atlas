@@ -52,8 +52,7 @@ export function headwayExactAmount(minutes: number | null | undefined): string {
 
 /** "10 min", "120 min": a bare spacing with no "every", rounded to the whole minute. */
 export function headwayAmount(minutes: number | null | undefined): string {
-  if (!isUsable(minutes)) return MISSING;
-  return `${Math.round(minutes)} min`;
+  return isUsable(minutes) ? `${Math.round(minutes)} min` : MISSING;
 }
 
 /** "Scheduled every 10 min": Live's scheduled spacing under a measured figure, rounded to the whole minute as headwayAmount. */
@@ -88,15 +87,15 @@ export function headwayAboutMinutes(minutes: number): number {
 
 /** "every 16 min", "every 63 min": a measured or typical spacing. */
 export function headwayAbout(minutes: number | null | undefined): string {
-  if (!isUsable(minutes)) return MISSING;
-  return `every ${num(headwayAboutMinutes(minutes))} min`;
+  return headwayEvery(minutes);
 }
 
 /** "every 30–60 min": a list cadence, combined on a shared stretch up to each branch's own. */
 export function headwayEveryRange(low: number | null | undefined, high: number | null | undefined, compact = false): string {
   if (!isUsable(low) || !isUsable(high)) return MISSING;
   const prefix = compact ? '' : 'every ';
-  if (low === high) return `${prefix}${amount(low)}`;
+  // Ends that print the same read as one value, never "every 60–60 min" (CIV-1155, as headwayAboutRange).
+  if (num(low) === num(high)) return `${prefix}${amount(low)}`;
   return `${prefix}${num(low)}–${num(high)} min`;
 }
 
@@ -135,12 +134,12 @@ export function headwayBandLabel(lowMinutes: number, highMinutes: number): strin
 
 /** "3 min": a delay, gap or other length of time that is not a headway. */
 export function delayAmount(minutes: number | null | undefined): string {
-  return isUsable(minutes) ? `${num(minutes)} min` : MISSING;
+  return headwayExactAmount(minutes);
 }
 
 /** "42 min": how long a trip takes end to end (trip time, run time), rounded to the whole minute. */
 export function runTimeAmount(minutes: number | null | undefined): string {
-  return isUsable(minutes) ? `${Math.round(minutes)} min` : MISSING;
+  return headwayAmount(minutes);
 }
 
 /**

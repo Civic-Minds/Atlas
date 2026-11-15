@@ -27,7 +27,7 @@ export const REGION_PATH_PREFIX = '/region/';
 export function regionPagePath(region: string): string {
   return `${REGION_PATH_PREFIX}${regionSlug(region)}`;
 }
-/** The same slug rule as area slugs (shared/areas areaSlug): accents dropped, lower case, dashes. */
+/** The one slug rule, for regions, areas (shared/areas areaSlug) and export file names: accents dropped, lower case, dashes. */
 export function regionSlug(region: string): string {
   return region.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }

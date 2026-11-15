@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import type { LiveDashboardResponse } from '../../shared/liveDashboard';
 import { devOnly } from '../lib/liveReportData';
 import { fetchLiveDashboard } from '../lib/liveDashboardFetch';
+import { LIVE_PATH } from '../../shared/pagePaths';
+import { LIVE_API_NO_ANSWER } from '../content/noticeCopy';
 
 export type LiveDashboardState =
   | { kind: 'loading' }
@@ -17,18 +19,18 @@ export function useLiveDashboard(agency: string | null | undefined, route: strin
     setState({ kind: 'loading' });
     fetchLiveDashboard(agency, route)
       .then(data => { if (live) setState({ kind: 'done', data }); })
-      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly('The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.') }); });
+      .catch(() => { if (live) setState({ kind: 'error', reason: devOnly(LIVE_API_NO_ANSWER) }); });
     return () => { live = false; };
   }, [agency, route]);
   return state;
 }
 
 /** The agency's Live page: where a route page's "← TTC" goes (CIV-1446). */
-export const liveAgencyPath = (agency: string) => `/apps/live/${encodeURIComponent(agency)}`;
+export const liveAgencyPath = (agency: string) => `${LIVE_PATH}/${encodeURIComponent(agency)}`;
 
 /** The page's URL for a route's full analysis. */
-export const liveDashboardPath = (agency: string, route: string) => `/apps/live/${encodeURIComponent(agency)}/${encodeURIComponent(route)}`;
+export const liveDashboardPath = (agency: string, route: string) => `${LIVE_PATH}/${encodeURIComponent(agency)}/${encodeURIComponent(route)}`;
 
 /** The Live planner's URL, with a route picked when given (#1153): where "View on Live map" goes. */
 export const liveToolPath = (agency: string, route?: string | null) =>
-  `/apps/live/${encodeURIComponent(agency)}/tool${route ? `?route=${encodeURIComponent(route)}` : ''}`;
+  `${LIVE_PATH}/${encodeURIComponent(agency)}/tool${route ? `?route=${encodeURIComponent(route)}` : ''}`;

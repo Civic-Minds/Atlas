@@ -21,7 +21,6 @@ import { buildDirectionGroups } from './routeCardDirectionGroups';
  * rows don't.
  */
 export type NoticePlace = 1 | 2 | 3;
-export const NOTICE_PLACE_NAMES: Record<NoticePlace, string> = { 1: 'under the title', 2: 'on the rows', 3: 'below the rows' };
 export interface RouteCardNoticeInput {
   directions: ShapeProperties[];
   /** The card's rows, built once (buildRouteCardModel). */

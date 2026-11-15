@@ -6,7 +6,7 @@ import { clockTime } from '../../../shared/timeText';
 import { shortDate } from '../../../shared/dateText';
 import { bestWindow, CONNECTION_WINDOWS, windowOf, type NearbyChoice, type RouteConnection } from '../../../shared/connections';
 import type { DayType } from '../../../shared/dayTypes';
-import { EXPLAINERS } from '../../content/noticeCopy';
+import { EXPLAINERS, NO_BUSTANG_TRIPS } from '../../content/noticeCopy';
 import { compareRouteNumber } from '../../utils/sortCompare';
 import { metresText } from '../../../shared/unitText';
 import {
@@ -94,7 +94,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
 
   return (
     <SidebarCardSection label={`Departures (${day})`}>
-      {trips.length === 0 && <p className={CARD_SUMMARY}>No Bustang trips this day.</p>}
+      {trips.length === 0 && <p className={CARD_SUMMARY}>{NO_BUSTANG_TRIPS}</p>}
       {directions.map(([title, list]) => (
         <div key={title} className="mb-2">
           <p className="text-xs font-bold text-[var(--text-muted)] mb-1">{title}</p>

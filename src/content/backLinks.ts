@@ -11,6 +11,7 @@
  * stopBack.ts) and goes through the same functions.
  */
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
 export const BACK_ARROW = '←';
 
@@ -29,7 +30,7 @@ export const BACK_PLACES = {
 } as const;
 
 /** The Night service list, from a route opened on it: noticeCopy's MAP_KEY_NIGHT (a test keeps them equal; no import, as noticeCopy imports this file). */
-export const NIGHT_LIST_PLACE = 'Overnight service';
+export const NIGHT_LIST_PLACE = OVERNIGHT_STORY.cardTitle;
 
 /** Common places: lower case after "Back to". Everything else is a name and keeps its case. */
 const COMMON = new Set<string>([BACK_PLACES.map, BACK_PLACES.frequencyMap, BACK_PLACES.agencies, BACK_PLACES.settings, NIGHT_LIST_PLACE]);

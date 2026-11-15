@@ -278,9 +278,6 @@ export function encodeHistoryUrlState(state: HistoryUrlState, latestYear: number
   };
 }
 
-/** Every History param cleared. */
-export const EMPTY_HISTORY_URL_PARAMS: HistoryUrlParams = { agency: null, hroute: null, year: null, region: null, rq: null, rmode: null };
-
 /**
  * The route card's full-day chart (beta). `fullday=1` opens it; `fdir` is the direction pill,
  * written only when it differs from the default (the slower direction).

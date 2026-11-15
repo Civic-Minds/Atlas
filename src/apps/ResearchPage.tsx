@@ -5,6 +5,7 @@ import { SURFACE } from '../styles';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import { RESEARCH } from '../data/research';
 import { RESEARCH_DRAFTS } from './researchDrafts';
+import { PAGE_NAMES } from '../../shared/pageNames';
 
 /** Published research, then stories still being built where they will go once published (dev server only; CIV-1550). */
 const CARDS: ReadonlyArray<{ href: string; Icon: (typeof RESEARCH)[number]['Icon']; kind: string; title: string; body?: string; linkText?: string; draft?: boolean }> = [
@@ -16,7 +17,7 @@ export default function ResearchPage() {
   return (
     <DocsPageLayout articleClassName="text-sm leading-relaxed text-[var(--text-dim)]">
             <header>
-              <PageTitle className="text-[var(--text-primary)]">Research</PageTitle>
+              <PageTitle className="text-[var(--text-primary)]">{PAGE_NAMES.research}</PageTitle>
               <p className="mt-3">Maps, stories and data that look closer at transit service.</p>
             </header>
             <div className="grid gap-4 sm:grid-cols-2">

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
-import { CONTEXT_LAYER_ENABLED, CONTEXT_LAYER_URL } from '../../../../shared/config';
+import { CONTEXT_LAYER_URL, FEATURES } from '../../../../shared/config';
 import {
   CONTEXT_FILL_OPACITY, CONTEXT_NO_DATA_COLOUR, contextFillColorExpr, contextNoDataFilter, contextValidFilter,
   type ContextMetric, type ContextProps,
 } from '../../../utils/contextLayer';
 
 /** The layer needs the flag AND a data URL; with either missing nothing is ever added or fetched. */
-export const contextLayerAvailable = (): boolean => CONTEXT_LAYER_ENABLED && Boolean(CONTEXT_LAYER_URL);
+export const contextLayerAvailable = (): boolean => FEATURES.contextLayer && Boolean(CONTEXT_LAYER_URL);
 
 export const CONTEXT_SOURCE_ID = 'context-pmtiles';
 export const CONTEXT_FILL_LAYER = 'context-fill';

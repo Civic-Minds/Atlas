@@ -16,10 +16,10 @@ import {
   type SeoContext,
 } from './seo';
 
-const PUBLIC: SeoContext = { mode: 'public', flags: { whatsNew: true } };
+const PUBLIC: SeoContext = { mode: 'public', flags: {} };
 const BETA: SeoContext = {
   mode: 'beta',
-  flags: { researchApps: true, whatsNew: true, live: false, history: true },
+  flags: { researchApps: true, live: false, history: true },
 };
 
 describe('route metadata table', () => {
