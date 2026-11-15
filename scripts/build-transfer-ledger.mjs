@@ -33,7 +33,32 @@ if (sourceDate !== today) {
 const officialBySlug = new Map(official.records.map((record) => [record.slug, record]));
 const fareOfficialBySlug = new Map((fareOfficial.records ?? []).map((record) => [record.slug, record]));
 const manualBySlug = new Map(manual.records.map((record) => [record.slug, record]));
-const records = base.records.map((record) => {
+// The ledger follows today's registry (CIV-1643, as CIV-1640 did for fares): a renamed or merged agency takes over its
+// former slugs' base records (NJ Transit's bus and rail became "njt"), and one added after the base snapshot gets an empty
+// base record, so its policy comes only from manual review.
+const registry = JSON.parse(await fs.readFile(path.join(ROOT, 'public/data/index.json'), 'utf8')).agencies;
+const baseBySlug = new Map(base.records.map((record) => [record.slug, record]));
+const formerSlugsOf = (agency) => (agency.formerSlugs ?? []).map((former) => (typeof former === 'string' ? former : former.slug));
+const baseRecords = registry.map((agency) => {
+  const own = baseBySlug.get(agency.slug);
+  if (own) return own;
+  const former = formerSlugsOf(agency).map((slug) => baseBySlug.get(slug)).filter(Boolean);
+  if (former.length) return { ...former[0], slug: agency.slug, agencyName: agency.name ?? former[0].agencyName, websiteUrl: agency.websiteUrl ?? former[0].websiteUrl, formerRecords: former.map((record) => record.slug) };
+  return {
+    slug: agency.slug,
+    agencyName: agency.name ?? agency.slug,
+    region: agency.region ?? null,
+    websiteUrl: agency.websiteUrl ?? null,
+    fareUrl: null,
+    baseline: 'adult standard single ride',
+    transferPeriod: null, transferLimit: null, transferCost: null, paymentMethod: null,
+    exceptions: [], sourceUrl: null, evidence: null,
+    researchDate: today,
+    status: 'research-incomplete',
+  };
+});
+
+const records = baseRecords.map((record) => {
   const site = officialBySlug.get(record.slug);
   const fareSite = fareOfficialBySlug.get(record.slug);
   const verified = manualBySlug.get(record.slug);
