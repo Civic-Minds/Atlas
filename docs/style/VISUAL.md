@@ -107,7 +107,7 @@ On the site:
 - The graphics desk builds charts and pages from the shared chart collection (CIV-1173). (Editorial strategy, 2026-10-30)
 - Hand-drawn art doesn't fit Atlas's look. Our graphics come from the chart collection (CIV-1173). (Editorial strategy, 2026-10-30)
 - A data story answers one question for every agency, as a chart with a table (Free child fares). (Editorial strategy, 2026-10-30)
-- Our charts have "Show as a table". (Editorial strategy, 2026-10-30)
+- A chart's numbers are also a table for screen readers only, with no visible "Show as a table" toggle (`ChartTableDetails`). CIV-1281 (Ryan), replacing the editorial strategy's visible toggle (2026-10-30).
 - Adding one source line under each chart would fit standard 3. (Editorial strategy, 2026-10-30; written as a proposal there)
 - A caveat sits next to the chart it affects, such as "Not found yet", not only at the end. (Editorial strategy, 2026-10-30)
 
