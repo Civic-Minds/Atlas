@@ -7333,10 +7333,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261114",
+      "lastFeedCheckAt": "20261115",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261214",
+      "expiredFeedCheckExpiry": "20261215",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7352,7 +7352,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-14"
+        "scoredAt": "2026-11-15"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7361,7 +7361,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "7a4da92c702712012e10c06baccd4040cb73d8dc8295e071df2e9c3a9ec99233"
+      "refusedFeedSha256": "db94eac81109bbfad78b85e2d741fd881ceb9bc2ab014fe2dd5ec8e8bae40985"
     },
     {
       "slug": "hocts",
