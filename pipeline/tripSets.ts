@@ -12,7 +12,7 @@
  * I/O and no feature access. The scripts/handcheck/stretch-departures.py oracle (`--at mid`)
  * computes the same stretches from the feed zip.
  */
-import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, type PeriodKey } from '../shared/config.js';
+import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -72,6 +72,13 @@ export interface TripVisit {
 }
 
 /** One trip of a route direction day: its first visit of each stop, in stop_sequence order. */
+/** #1507: one trip running through a stop (throughTimesAlong): its id and the minute it passes (interpolated where it skips the stop). */
+export interface TripPass {
+  tripId: string;
+  minutes: number;
+  overnightOnly?: boolean;
+}
+
 export interface DirectionTrip {
   tripId: string;
   visits: readonly TripVisit[];
@@ -162,7 +169,7 @@ export interface DirectionStretches {
    * 2026-10-18: the line is the track, coloured by the trains running along it, including those that
    * skip a stop). A trip that skips a stop between two it serves passes it at a time interpolated between them.
    */
-  throughTimesAlong?: (stops: readonly string[]) => Array<{ times: readonly number[]; nightTimes: readonly number[]; tripCount: number }>;
+  throughTimesAlong?: (stops: readonly string[]) => Array<{ times: readonly number[]; nightTimes: readonly number[]; tripCount: number; passes?: ReadonlyArray<TripPass> }>;
   /**
    * #1072: for tail `i`, departures at the main stretch's reference stop of the trips that serve the
    * tail (`on`) and of the sibling trips (`off`: they serve none of the tail's stops but leave the
@@ -496,6 +503,7 @@ export function directionStretches(
     const times = stops.map(() => new Set<number>());
     const overnight = stops.map(() => [] as number[]);
     const counts = stops.map(() => 0);
+    const passes = stops.map(() => [] as TripPass[]);
     for (const trip of measureTrips) {
       const at = new Map<number, TripVisit>();
       for (const visit of trip.visits) {
@@ -514,13 +522,14 @@ export function directionStretches(
           const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
           counts[i]++;
           times[i].add(minutes);
+          passes[i].push(a.overnightOnly ? { tripId: trip.tripId, minutes, overnightOnly: true } : { tripId: trip.tripId, minutes });
           if (a.overnightOnly) overnight[i].push(minutes + 1440);
         }
       }
     }
     return stops.map((_, i) => {
       const sorted = [...times[i]].sort((a, b) => a - b);
-      return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight[i]), tripCount: counts[i] };
+      return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight[i]), tripCount: counts[i], passes: passes[i] };
     });
   };
   const regularIds = new Set(regular.map(p => p.stops.join('>')));
@@ -691,11 +700,18 @@ export function encodeStopRuns(values: ReadonlyArray<number | null>): string {
  * a better one: CIV-1349, that wait is the night's own longest wait as the verdict reads it (stopNightWait),
  * never the plain period reading, which can be smaller (NJT 143 on Sundays: the verdict fails on Saturday's
  * 64-minute gap while the plain reading says 40).
+ *
+ * #1507: a stretch (the main stretch or a tail, `stretches`) is read at its middle stop, as a whole route reads it (rules
+ * 2 and 3; CIV-321 decision 1: a section follows the route's rules). Every drawn stop of a stretch whose reference stop
+ * is drawn takes the value read there, over every trip through it, so the same trains do not flip a stop's colour on
+ * timetable jitter (DRT Pulse 900 midday: the two branches' trips leave 7 and 17 minutes apart at some stops and 8
+ * and 16 at others, so single stops read 18 inside a main stretch every 12). Stops off every stretch (a short end
+ * that is no tail, a variant) keep their own reading.
  */
-export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, nextDaysAt?: (stopId: string) => ReadonlyArray<NextMorning>): Record<PeriodKey, string> {
+export function stopPeriodValues(stops: readonly string[], throughTimesAlong: NonNullable<DirectionStretches['throughTimesAlong']>, handoverAt?: (stopId: string) => NightHandover | undefined, nextDaysAt?: (stopId: string) => ReadonlyArray<NextMorning>, stretches: ReadonlyArray<Pick<Stretch, 'stops' | 'refStop'>> = []): Record<PeriodKey, string> {
   const reads = throughTimesAlong(stops);
   const perStop = stops.map((stop, i) => {
-    const read = reads[i];
+    const { passes: _passes, ...read } = reads[i];
     if (read.times.length === 0) return null;
     const stretch: Stretch = { kind: 'main', stops: [stop], refStop: stop, lengthKm: 0, ...read, handover: handoverAt?.(stop), nextDays: nextDaysAt?.(stop) };
     const alone: DirectionStretches = { key: stop, main: stretch, tails: [], regularPatternCount: 1, variantTripCount: 0 };
@@ -708,7 +724,54 @@ export function stopPeriodValues(stops: readonly string[], throughTimesAlong: No
     if (p.night != null) return p.night;
     return p.wait === undefined ? stretchFilterValue(p.periods[key]) : p.wait;
   };
-  return Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, encodeStopRuns(perStop.map(p => value(p, key)))])) as Record<PeriodKey, string>;
+  // #1507: a drawn stop of a stretch may read at that stretch's reference stop, where it is drawn.
+  const index = new Map(stops.map((stop, i) => [stop, i] as const));
+  const readAt = stops.map((_, i) => i);
+  for (const s of stretches) {
+    const ref = index.get(s.refStop);
+    if (ref == null || perStop[ref] == null) continue;
+    for (const stop of s.stops) {
+      const i = index.get(stop);
+      if (i != null && perStop[i] != null) readAt[i] = ref;
+    }
+  }
+  // Per period, the trips passing a stop inside the window (a cross-midnight window also reads the day's
+  // early times as the next night's, as forCrossMidnightWindow does) and its own departures there.
+  const inWindow = (m: number, start: number, end: number) =>
+    (m >= start && m < end) || (end > MINUTES_PER_DAY && m < MINUTES_PER_DAY && m + MINUTES_PER_DAY >= start && m + MINUTES_PER_DAY < end);
+  const windowCache = new Map<string, { trips: Set<string>; departures: number }>();
+  const windowAt = (i: number, key: PeriodKey, start: number, end: number) => {
+    const k = `${i}:${key}`;
+    let hit = windowCache.get(k);
+    if (!hit) {
+      const trips = new Set<string>();
+      const minutes = new Set<number>();
+      for (const pass of reads[i].passes ?? []) {
+        if (!inWindow(pass.minutes, start, end)) continue;
+        trips.add(pass.tripId);
+        minutes.add(pass.minutes);
+      }
+      hit = { trips, departures: minutes.size };
+      windowCache.set(k, hit);
+    }
+    return hit;
+  };
+  // The reference value only where the stop has the 3 departures a value needs (CIV-321 decision 1) and the
+  // very same trips pass it in the period as pass the reference stop; otherwise its own reading (Ryan, option 1:
+  // a stop past a branch's end, a sparse first stop or a stop the travel-time offset moves trips across a period
+  // edge at keeps what it sees).
+  const sameTrips = (i: number, ref: number, key: PeriodKey, start: number, end: number) => {
+    const own = windowAt(i, key, start, end);
+    if (own.departures < HEADLINE_MIN_DEPARTURES) return false;
+    const at = windowAt(ref, key, start, end);
+    if (own.trips.size !== at.trips.size) return false;
+    for (const trip of own.trips) if (!at.trips.has(trip)) return false;
+    return true;
+  };
+  return Object.fromEntries(PERIOD_WINDOWS.map(({ key, start, end }) => [key, encodeStopRuns(perStop.map((_, i) => {
+    const ref = readAt[i];
+    return value(perStop[ref !== i && sameTrips(i, ref, key, start, end) ? ref : i], key);
+  }))])) as Record<PeriodKey, string>;
 }
 
 /**
@@ -1787,7 +1850,7 @@ export function stampStretchShadow(
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
-    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.nextDaysAt);
+    if (stretches.throughTimesAlong && Array.isArray(stopOrder) && stopOrder.length > 0) p.stretchStopPeriodValues = stopPeriodValues(stopOrder, stretches.throughTimesAlong, stretches.handoverAt, stretches.nextDaysAt, [stretches.main, ...stretches.tails].filter((s): s is Stretch => s != null));
     else delete p.stretchStopPeriodValues;
     // #1322: Overnight runs where the night verdict passes at 60 (the 90 grade is the Night Service page's only,
     // CIV-1329), not by the 2-6 AM midpoint test, which a first trip at 3 AM passes (RTD A Line).

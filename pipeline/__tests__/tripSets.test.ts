@@ -1164,6 +1164,64 @@ describe('per-stop period values read like a reference stop (CIV-321 S1)', () =>
   });
 });
 
+describe('a stretch reads its section colour at its middle stop where the same trips pass (#1507)', () => {
+  // Two patterns, each every 30, whose spacing drifts along the trunk: 8/22 at the first stop, 12/18 at the middle,
+  // 16/14 at the last (DRT Pulse 900's two branches: 7/17 at some stops, 8/16 at others). The same trains pass every
+  // stop in each period (no trip crosses a period edge between stops), so single stops' readings are timetable jitter.
+  const coords = new Map<string, [number, number]>();
+  const stops = Array.from({ length: 9 }, (_, i) => `s${i}`);
+  stops.forEach((id, i) => coords.set(id, [43.6 + i * 0.01, -79.4]));
+  const jitter: DirectionTrip[] = [];
+  for (let m = 360; m < 1380; m += 30) {
+    jitter.push({ tripId: `a${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + i })) });
+    jitter.push({ tripId: `b${m}`, visits: stops.map((stopId, i) => ({ stopId, minutes: m + 8 + 2 * i })) });
+  }
+  const d = directionStretches('k', jitter, id => coords.get(id));
+  const whole = [{ stops, refStop: 's4' }];
+  const read = (trips: DirectionTrip[], key: 'amPeak' | 'midday' | 'pmPeak' | 'evening', stretches = whole) =>
+    decodeStopRuns(stopPeriodValues(stops, directionStretches('k', trips, id => coords.get(id)).throughTimesAlong!, undefined, undefined, stretches)[key]);
+
+  it('stop by stop the readings differ along one stretch', () => {
+    expect(new Set(decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).midday)).size).toBeGreaterThan(1);
+  });
+
+  it('where the same trips pass every stop, every stop reads the reference stop value, period by period', () => {
+    const own = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).midday);
+    for (const key of ['amPeak', 'midday', 'pmPeak', 'evening'] as const) {
+      const ref = decodeStopRuns(stopPeriodValues(['s4'], d.throughTimesAlong!)[key])[0];
+      expect(ref).not.toBeNull();
+      expect(read(jitter, key)).toEqual(stops.map(() => ref));
+    }
+    expect(own.some(v => v !== own[4])).toBe(true);
+  });
+
+  it('a stop off every stretch, or a stretch whose reference stop is not drawn, keeps its own reading', () => {
+    const own = decodeStopRuns(stopPeriodValues(stops, d.throughTimesAlong!).midday);
+    expect(read(jitter, 'midday', [{ stops: stops.slice(0, 3), refStop: 'elsewhere' }])).toEqual(own);
+    expect(read(jitter, 'midday', [])).toEqual(own);
+  });
+
+  it('a stop passed by other trips than the reference stop keeps its own reading (CTA Purple Line at the Loop)', () => {
+    // Short turns at the reference stop's end: the first three stops see only the a trips at midday, the rest both.
+    const trips = jitter.map(t => t.tripId.startsWith('b') && Number(t.tripId.slice(1)) >= 540 && Number(t.tripId.slice(1)) < 900
+      ? { ...t, visits: t.visits.slice(3) } : t);
+    const own = decodeStopRuns(stopPeriodValues(stops, directionStretches('k', trips, id => coords.get(id)).throughTimesAlong!).midday);
+    const values = read(trips, 'midday');
+    expect(values.slice(0, 3)).toEqual(own.slice(0, 3));
+    expect(own[0]).toBe(30);
+    expect(values[4]).toBeLessThan(30);
+  });
+
+  it('a stop with fewer than 3 departures in the period keeps its own reading, even passed by the same trips', () => {
+    // Two midday trips only, each every 30 elsewhere in the day: the reference stop and its neighbours read the
+    // window's wait at their own times, and no stop takes another's.
+    const trips = jitter.filter(t => { const m = Number(t.tripId.slice(1)); return m < 540 || m >= 900 || (t.tripId.startsWith('a') && m < 600); });
+    const own = decodeStopRuns(stopPeriodValues(stops, directionStretches('k', trips, id => coords.get(id)).throughTimesAlong!).midday);
+    expect(new Set(own).size).toBeGreaterThan(1);
+    expect(read(trips, 'midday')).toEqual(own);
+  });
+});
+
 describe('stop runs encode compactly and round-trip (CIV-321 S3)', () => {
   it('encodes runs and decodes them back', () => {
     const values = [30, 30, 30, 30, null, 60, 60, 15];
