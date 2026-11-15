@@ -1,9 +1,32 @@
 import { readFileSync } from 'node:fs';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+// The story map's MapLibre worker URL is a Vite build import (?worker&url) the test runner can't load; no map is drawn here.
+vi.mock('../../lib/maplibreWorker', () => ({}));
+// Unlike the Frequent Service map, the airport map is built on first render, and jsdom has no WebGL2: a stand-in map that never loads.
+vi.mock('maplibre-gl', () => ({
+  Map: class {
+    private container: HTMLElement;
+    constructor(options: { container: HTMLElement }) { this.container = options.container; }
+    on() { return this; }
+    getContainer() { return this.container; }
+    getSource() { return undefined; }
+    getLayer() { return undefined; }
+    resize() {}
+    fitBounds() {}
+    remove() {}
+  },
+}));
+// The map's route files (TTC's is about 24 MB) are never fetched in tests.
+vi.mock('../../lib/agencyGeo', () => ({ fetchAgencyGeo: () => new Promise(() => {}) }));
 import AirportStory from '../AirportStory';
 
 describe('AirportStory (CIV-1550, dev only)', () => {
+  beforeEach(() => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
+  });
+
   it('is registered only through the dev-only draft list, so no public or beta build has it', () => {
     const drafts = readFileSync('src/apps/researchDrafts.ts', 'utf8');
     // The list is empty unless import.meta.env.DEV: with DEV false, Vite drops the route, the /research card and the chunk.
@@ -20,12 +43,11 @@ describe('AirportStory (CIV-1550, dev only)', () => {
     for (const f of ['shared/config.ts', 'shared/seo.ts', 'src/data/research.ts']) expect(readFileSync(f, 'utf8')).not.toContain('/research/airports');
   });
 
-  it('shows the draft with its title placeholder, chart placeholders and editor’s notes', () => {
+  it('shows the scroll story draft: title placeholder, the weekday map section, the follow-up sections and the method', () => {
     render(<AirportStory />);
     expect(screen.getByRole('heading', { level: 1, name: "[Ryan's wording: title]" })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'The midday hole' })).toBeInTheDocument();
-    expect(screen.getByText(/\[Chart later: week grid per airport/)).toBeInTheDocument();
-    expect(screen.getAllByText('Editor’s note:')).toHaveLength(2);
+    expect(screen.getByRole('region', { name: 'One weekday at the airports' })).toBeInTheDocument();
+    for (const name of ['The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     expect(screen.queryByText(/Before publishing/)).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
   });
