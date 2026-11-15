@@ -289,6 +289,11 @@ export const MAP_KEY_OTHER = 'Other routes';
 export const MAP_KEY_NIGHT = 'Overnight service';
 /** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
 export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
+/**
+ * #1510, CIV-1609 (Ryan: "1"): a list row's or agency-page cell's start or end time read on only part of the route (a short
+ * tail), as in "every 30 min until 1:51 PM on part of the route". The same words as OVERNIGHT_PART_OF_ROUTE.
+ */
+export const ON_PART_OF_ROUTE = 'on part of the route';
 /** The title an exported map image carries, by view (sentence case, docs/style/VISUAL.md; CIV-1599). The export reads
  * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
 export const MAP_EXPORT_TITLES = {
