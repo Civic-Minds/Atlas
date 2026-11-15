@@ -14,7 +14,8 @@
     37.79,
     -122.13
   ],
-  "feedUrl": "http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SM",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2708/latest.zip",
   "lastFeedExpiry": "20261114",
   "lastFeedVersion": "Revision2",
