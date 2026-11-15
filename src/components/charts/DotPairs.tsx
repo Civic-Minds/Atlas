@@ -12,7 +12,7 @@ export interface DotPair {
   second: number;
   /** What the row is, as one sentence (its accessible name). */
   sentence: string;
-  /** A reference row (such as a national figure): its name in bold, above a rule. */
+  /** A reference row (such as a national figure): set apart by a rule below it. */
   reference?: boolean;
 }
 
@@ -23,6 +23,8 @@ export interface DotPairGroup {
   pairs: readonly DotPair[];
 }
 
+/** Axis labels and column headers: the chart collection's axis text (HourSpark, ProfileBars, GapsChart). */
+const AXIS_TEXT = 'text-xs text-[var(--text-dim)]';
 const AXIS_TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
 const DOT = 'absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full';
 // Phones: the name sits on its own line above its strip, so the strip gets the width; from sm up it takes a 9rem column.
@@ -45,7 +47,7 @@ export function DotPairKey({ first, second }: { first: ReactNode; second: ReactN
  * CIV-1577: two shares per row on one 0–100% scale, a solid dot and a ring joined by a line, so the gap between them is
  * what reads (the Frequent service story's coverage at 15 and 30 min, per city). Rows are picked the split bar's way
  * (useActivePart): hovering, focusing or tapping a row fades the others and highlights its name. Names, counts and axis use
- * the chart collection's text (CHART_TEXT, CHART_COUNT); the numbers sit in two columns at the right, first then second.
+ * the chart collection's text (CHART_TEXT, CHART_COUNT, and the dim axis text); the numbers sit in two columns at the right, first then second.
  */
 export default function DotPairs({ groups, label, details, firstHeader, secondHeader }: {
   groups: readonly DotPairGroup[];
@@ -60,7 +62,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
   const { active, clear, faded, partEvents } = useActivePart();
   return (
     <div role="group" aria-label={label} aria-details={details} className="select-none" onMouseLeave={clear}>
-      <div className={`${ROW_GRID} ${CHART_TEXT} text-[var(--text-muted)]`} aria-hidden="true">
+      <div className={`${ROW_GRID} ${AXIS_TEXT}`} aria-hidden="true">
         <span className="hidden sm:block" />
         <span className="relative h-4">
           {AXIS_TICKS.map(tick => (
@@ -87,7 +89,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                   className={`${ROW_GRID} w-full cursor-pointer rounded-sm border-0 bg-transparent py-1 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT} ${pair.reference ? 'border-b border-solid border-[var(--border-primary)] pb-2' : ''}`}
                 >
                   <span className={NAME_CELL}>
-                    <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors ${pair.reference ? 'font-bold' : ''}`}
+                    <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors`}
                       style={active === pair.key ? { background: ACTIVE_BG } : undefined}>{pair.label}</span>
                   </span>
                   <span className="relative block h-4 transition-opacity" style={{ opacity: isFaded ? FADED_OPACITY : undefined }} aria-hidden="true">
