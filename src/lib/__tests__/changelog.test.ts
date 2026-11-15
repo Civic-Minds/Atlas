@@ -4,8 +4,8 @@ import { WHATS_NEW } from '../../data/whatsNew';
 import type { WhatsNewRelease } from '../../data/whatsNew';
 
 const RELEASES: WhatsNewRelease[] = [
-  { version: '3.2.0', month: 'September 2026', date: '2026-09-22', items: [{ text: 'Older thing.' }] },
-  { version: '3.3.0', month: 'October 2026', date: '2026-10-12', items: [{ text: 'New thing.' }] },
+  { version: '3.2.0', date: '2026-09-22', items: [{ text: 'Older thing.' }] },
+  { version: '3.3.0', date: '2026-10-12', items: [{ text: 'New thing.' }] },
 ];
 
 describe('buildChangelog', () => {

@@ -1,6 +1,9 @@
 import { DAY_TYPES, type DayType } from './dayTypes';
 import { hourRange } from './timeText';
 
+/** The frequent-service view's name: its map export title, research card and share image (CIV-1613). */
+export const FREQUENT_SERVICE_TITLE = 'Frequent service';
+
 export type FrequentServiceWindow = 'daytime' | 'extended';
 export type FrequentServiceFrequency = 15 | 30;
 

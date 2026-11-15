@@ -46,3 +46,12 @@ export function projectOntoSegment(p: LatLon, a: readonly number[], b: readonly 
   const t = lenSq > 0 ? Math.max(0, Math.min(1, (px * eastM + py * northM) / lenSq)) : 0;
   return { t, offM: Math.hypot(px - t * eastM, py - t * northM), lenM: Math.sqrt(lenSq), eastM, northM };
 }
+
+/** Degrees of latitude that span `metres` on the same sphere as metresBetween (a box test before the exact distance, CIV-1613). */
+export const latDegreesFor = (metres: number): number => metres / (EARTH_RADIUS_M * RAD);
+
+/** Ground metres per screen pixel at a latitude on a web-mercator map (512 px tiles), at the WGS84 equator's size. */
+const WEB_MERCATOR_EQUATOR_M = 2 * Math.PI * 6_378_137;
+export function metresPerPixel(lat: number, zoom: number, tileSize = 512): number {
+  return (WEB_MERCATOR_EQUATOR_M * Math.cos(lat * RAD)) / (tileSize * 2 ** zoom);
+}

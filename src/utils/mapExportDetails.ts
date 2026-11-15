@@ -91,9 +91,9 @@ function periodPhrase(period: PeriodKey): string {
     .join(' ');
 }
 
-/** "Saturday midday", "Weekday AM peak", "Sunday, all day". */
+/** "Saturday midday", "Weekday AM peak", "Sunday, across the day". */
 export function describeDayAndPeriod(day: DayType, period: TimePeriod): string {
-  return period === 'all' ? `${day}, all day` : `${day} ${periodPhrase(period)}`;
+  return period === 'all' ? `${day}, across the day` : `${day} ${periodPhrase(period)}`;
 }
 
 /** The highest headway tier the map draws at this zoom (the app hides less frequent routes when zoomed out). */
@@ -228,7 +228,7 @@ function filenameParts(state: MapExportState, place: string | null): string[] {
     case 'frequency':
       if (state.routeShortName) parts.push(`route ${state.routeShortName}`);
       parts.push(Number.isFinite(state.maxHeadway) ? `${state.maxHeadway}min` : 'all routes');
-      parts.push(state.day, state.period === 'all' ? 'all day' : PERIOD_LABELS[state.period]);
+      parts.push(state.day, state.period === 'all' ? 'across the day' : PERIOD_LABELS[state.period]);
       break;
     case 'frequent-service':
       parts.push('frequent service');

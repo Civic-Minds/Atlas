@@ -8,7 +8,9 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
+import { metresText } from '../../shared/unitText';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
@@ -88,20 +90,20 @@ export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead
 
 
 // N11 not-in-period, N12 misses-filter
-/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
+/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for no chosen time ("across the day"). */
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange: string | null): string {
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
-    ? routeNoTripsText(when ? `from ${when}` : 'all day')
+    ? routeNoTripsText(when ? `from ${when}` : 'across the day')
     // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
-    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
+    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'across the day'}.`;
 }
 
 // N123 part-of-route-meets-filter (CIV-514; CIV-1251, Ryan 2026-11-01): the selected route misses the filter, but its shared
 // stretch qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Names the times, and the direction when
 // only one is like this: "Northbound, only the shared stretch runs every 15 min or better from 3–7 PM."
 export function selectedRoutePartMeetsFilterNotice(maxHeadway: number, periodRange: string | null, direction?: string): string {
-  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'all day';
+  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'across the day';
   return `${direction ? `${direction}, only` : 'Only'} the shared stretch runs ${headwayOrBetter(maxHeadway)} ${when}.`;
 }
 
@@ -148,7 +150,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = 'No routes within 500 m.';
+export const NO_ROUTES_NEARBY = `No routes within ${metresText(500)}.`;
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -298,7 +300,7 @@ export const ON_PART_OF_ROUTE = 'on part of the route';
  * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
 export const MAP_EXPORT_TITLES = {
   frequency: 'Transit frequency',
-  frequentService: 'Frequent service',
+  frequentService: FREQUENT_SERVICE_TITLE,
   night: MAP_KEY_NIGHT,
   bustang: 'Bustang connections',
   history: 'Service history',

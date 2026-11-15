@@ -503,6 +503,6 @@ export function runTimeTakeaway(label: string, hours: ReadonlyArray<{ hour: numb
   const o = Math.round(over.typicalMin - over.scheduledMin);
   const u = Math.round(under.scheduledMin - under.typicalMin);
   if (o >= 1) return `${label} runs about ${o} min over schedule at ${hourTime(over.hour)}.`;
-  if (u >= 1) return `${label} runs at or under schedule all day, about ${u} min under at ${hourTime(under.hour)}.`;
-  return `${label} runs close to schedule all day.`;
+  if (u >= 1) return `${label} runs at or under schedule across the day, about ${u} min under at ${hourTime(under.hour)}.`;
+  return `${label} runs close to schedule across the day.`;
 }

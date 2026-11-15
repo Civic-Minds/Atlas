@@ -46,7 +46,7 @@ describe('filter wording', () => {
     expect(describeHeadwayFilter(Infinity)).toBe('All');
     expect(describeDayAndPeriod('Saturday', 'midday')).toBe('Saturday midday');
     expect(describeDayAndPeriod('Weekday', 'amPeak')).toBe('Weekday AM peak');
-    expect(describeDayAndPeriod('Sunday', 'all')).toBe('Sunday, all day');
+    expect(describeDayAndPeriod('Sunday', 'all')).toBe('Sunday, across the day');
   });
 });
 
@@ -125,7 +125,7 @@ describe('describeMapExport', () => {
   it('says when zooming out hides routes the filter would allow', () => {
     const details = describeMapExport({ ...BASE, maxHeadway: Infinity, period: 'all', day: 'Weekday', zoom: 6 }, samples({ ttc: 3 }), AGENCIES);
     expect(details.lines).toContain('Zoomed out. Some less frequent routes are hidden.');
-    expect(details.filename).toBe('atlas-toronto-all-routes-weekday-all-day.png');
+    expect(details.filename).toBe('atlas-toronto-all-routes-weekday-across-the-day.png');
   });
 
   it('uses the view name as the heading and leaves the place out of a multi-city view', () => {

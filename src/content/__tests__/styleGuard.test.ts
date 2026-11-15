@@ -52,7 +52,7 @@ const RULES: Rule[] = [
   // CIV-211, #933. The data value 'time-limited' is a code name.
   { name: '"Time-limited" (say "Part-time")', doc: 'TEXT.md', pattern: /\bTime-limited\b|\btime-limited (routes?|service)\b/, slip: "label: 'Time-limited routes'" },
   // CIV-1238 (Ryan): it read as if nothing runs.
-  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', doc: 'TEXT.md', pattern: /\b[Nn]o regular service\b/, slip: "const label = 'no regular service';" },
+  { name: '"no regular service" (say "Irregular" or "Runs irregularly in this period")', doc: 'TEXT.md', pattern: /\b[Nn]o regular\b/, slip: "const label = 'no regular service';" },
   // CIV-1238 (Ryan): "one-off sounds like it only runs once per day".
   { name: '"one-off" for the hidden route class (say "occasional")', doc: 'TEXT.md', pattern: /\b[Oo]ne-off (routes?|service)\b/, slip: "'Hide one-off routes'" },
   // CIV-1251: "Shared stretch" is the only name for the shared part.
@@ -63,8 +63,9 @@ const RULES: Rule[] = [
   { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and/ },
   // CIV-1610 (Ryan): "Docs" on links, "Documentation" as the title, each from one constant.
   { name: 'the Docs page named by hand (use DOCS_LINK_LABEL or DOCS_PAGE_TITLE)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Documentation</a>' },
-  // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing.
-  { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\bAll day\b(?!s)/, slip: "const PERIOD = 'All day';" },
+  // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
+  // CIV-1613: lowercase and "all-day" too ("or else all day" slipped through); the Docs page says "across the day" (Ryan, CIV-1610).
+  { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\b[Aa]ll[-  ][Dd]ay\b(?![s-])/, slip: "'borrow an all-day average'" },
 
   // Times (shared/timeText.ts)
   { name: 'a lowercase am/pm or a.m./p.m. (write "7 AM")', doc: 'TEXT.md', pattern: /\d ?(am|pm)\b|\b[ap]\.m\./, slip: "'Daily 6 a.m.–9 pm'" },
@@ -73,10 +74,11 @@ const RULES: Rule[] = [
   { name: 'a hyphen in a range of times or minutes (use an en dash)', doc: 'TEXT.md', pattern: /\d-\d+ ?(AM|PM|min)\b/, slip: "'6-9 AM'" },
 
   // Frequencies (shared/headwayText.ts)
-  { name: '"every N min" written by hand (use shared/headwayText.ts)', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+) ?min\b/, slip: '`every ${headway} min`',
+  { name: '"every N min" written by hand (use shared/headwayText.ts)', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+)([–-](\$\{[^}]*\}|\d+))? ?min\b/, slip: '“every 8–25 min”',
     allowed: ['shared/headwayText.ts'] },
   // "minutes" only in the exact approved texts in APPROVED_TEXT.
-  { name: '"every N minutes" as a frequency (write "every N min")', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+|\d+[–-]\d+)(\\u00A0| | )?minutes\b/, slip: "'Buses come every 15 minutes or better.'" },
+  // CIV-1613: also "Every", "every 10 or 15 minutes" and "15-minute"; the TTC's own "5-minute standard" is its name for a rule.
+  { name: '"every N minutes" as a frequency (write "every N min")', doc: 'TEXT.md', pattern: /(\d|\})(-| | )minute\b(?! standard)|[Ee]very (\$\{[^}]*\}|\d+|\d+[–-]\d+|\d+ or \d+)(\\u00A0| | )?minutes\b/, slip: "'Buses come every 15 minutes or better.'" },
   // #938: a column never mixes units.
   { name: 'a frequency in hours (write "every 90 min")', doc: 'TEXT.md', pattern: /every (\$\{[^}]*\}|\d+|\d+[–-]\d+)(\\u00A0| | )?(hours?|hrs?)\b/, slip: '`every ${h} hours`' },
 
@@ -86,7 +88,7 @@ const RULES: Rule[] = [
   { name: 'a decimal formatted outside shared/numberText.ts (toFixed)', doc: 'TEXT.md', pattern: /\.toFixed\(/, slip: '`${density.toFixed(1)} per km²`',
     skipLine: /\b(lat|lon|bounds|zoom)\b|\.[nsew]\.toFixed|key: 'z'/, allowed: ['shared/numberText.ts'] },
   // CIV-1590: distances, speeds and densities from shared/unitText.ts.
-  { name: 'a distance or speed unit written by hand (use metresText / speedText)', doc: 'TEXT.md', pattern: /\}\s?(m|km|km\/h|mph|mi|ft|km²|m²)(?=[\s'"`<,.)]|$)/, slip: '`${Math.round(d)} m away`',
+  { name: 'a distance or speed unit written by hand (use metresText / speedText)', doc: 'TEXT.md', pattern: /(\}|(?<![\w.])\d+)(\s|\\u00A0)?(m|km|km\/h|mph|mi|ft|km²|m²|miles?)(?=[\s'"`<,.)]|$)/, slip: "'No routes within 500 m.'",
     allowed: ['shared/unitText.ts'] },
   { name: 'a percent built by hand (use percentText)', doc: 'TEXT.md', pattern: /Math\.round\([^`]*\*\s*100\)\}?\s*%/, slip: '{Math.round((a / b) * 100)}%',
     allowed: ['shared/numberText.ts'] },
@@ -97,7 +99,8 @@ const RULES: Rule[] = [
   { name: 'a search hint typed in place (use searchPlaceholder in noticeCopy.ts)', doc: 'TEXT.md',
     pattern: /placeholder=["'](?!Describe what you saw and what you expected\.["']|["'])[^"']*["']|['"`>](Search|Find)( [^'"`<]*)?…/,
     slip: '<input placeholder="Search stops" />', allowed: ['src/content/noticeCopy.ts'] },
-  { name: 'a "Month D, YYYY" date typed into the code (use shared/dateText.ts)', doc: 'TEXT.md', pattern: new RegExp(`\\b${MONTH} \\d{1,2}, 20\\d\\d\\b`), slip: "'Updated October 12, 2026'" },
+  // CIV-1613: also "November 2026" and "October 30" with no year.
+  { name: 'a "Month D, YYYY" date typed into the code (use shared/dateText.ts)', doc: 'TEXT.md', pattern: new RegExp(`\\b${MONTH} \\d{1,2}, 20\\d\\d\\b|\\b${MONTH} 20\\d\\d\\b|\\b${MONTH} \\d{1,2}\\b(?=,? |\\.| and)`), slip: "month: 'November 2026'" },
   { name: 'a date formatted outside shared/dateText.ts (toLocaleDateString or a month list)', doc: 'TEXT.md', pattern: /toLocaleDateString|\['Jan', 'Feb'/, slip: 'd.toLocaleDateString()',
     allowed: ['shared/dateText.ts'] },
   { name: 'a day plural built by hand (use dayPlural / dayInSentence)', doc: 'TEXT.md', pattern: /\$\{(day|d|dayType)\}s\b|Saturday: ['"]Saturdays['"]|['"]Weekday['"] \? ['"]weekdays['"]/, slip: '`on ${day}s`',
@@ -105,8 +108,9 @@ const RULES: Rule[] = [
   { name: 'a lone dash typed for an empty value (use MISSING_VALUE)', doc: 'TEXT.md', pattern: /['"`][—–]['"`]|>[—–]<|=["'][—–]["']/, slip: "value ?? '—'",
     skipLine: /\.(split|join|replace)\(/, allowed: ['shared/missingValue.ts'] },
   // format.ts holds the builders; cleanRouteDisplayName rewrites "Route 01" inside a feed's own name.
-  { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /Routes? \$\{|['"]Routes? ['"] *\+|>Routes? \$\{/, slip: '`Route ${r.shortName}`',
-    allowed: ['src/utils/format.ts'] },
+  { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /[Rr]outes? \$\{(?!(ended|count|plural|headway))|['"][Rr]outes? ['"] *\+|>[Rr]outes? \$\{/, slip: '`Live has no route ${route}`',
+    // CIV-1613: lowercase "route ${…}" too. A long-name comparison and a file-name slug aren't text.
+    skipLine: /lowerLong ===|parts\.push\(`route/, allowed: ['src/utils/format.ts'] },
   // "One way" / "Other way" / "Pattern N" were the schedule pills' own unnamed-direction names (fixed with Live's made-up
   // "Outbound"/"Inbound"); an agency's real "Outbound" label is a name, so only the made-up pill words are flagged.
   { name: 'a "Direction N" or other unnamed-direction name built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+|['"](One way|Other way)['"]|`Pattern \$\{/, slip: '`Direction ${id + 1}`',
@@ -118,7 +122,7 @@ const RULES: Rule[] = [
   // check: the haversine sum, a metres-per-degree constant or the earth's radius anywhere else is a second distance function or
   // projection (CIV-1597).
   { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
-    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000|6_?371_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
+    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?(000|111|195|320)|110_?540|40_?07[05]_?0\d\d|6_?371_?000|6_?378_?137)(?![\d])/, slip: 'const maxDLat = OPPOSITE_STOP_MAX_M / 111000;',
     allowed: ['shared/geoDistance.ts'] },
   // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
   { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
@@ -129,8 +133,8 @@ const RULES: Rule[] = [
     allowed: ['src/content/noticeCopy.ts'] },
   // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
   { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
-    pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit Frequency|Frequent Service|Service History|Live Transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
-    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts'] },
+    pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
+    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts'] },
 
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
@@ -158,14 +162,26 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-// Empty since CIV-1584 and CIV-1585.
-const PENDING: Record<string, string[]> = {};
+// CIV-1613: NO_MIDDAY_PHRASE ("with no regular midday service") waits for Ryan's wording.
+const PENDING: Record<string, string[]> = {
+  '"no regular service" (say "Irregular" or "Runs irregularly in this period")': ['shared/agencyPages.ts'],
+};
 
-// Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed
-// from its file before the rules run, so only that exact text passes.
+// Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
+// removed from its file before the rules run, so only that exact text passes.
 const APPROVED_TEXT: Record<string, string[]> = {
-  // The frequent-service story quoting agencies' definitions.
-  'src/apps/FrequentServiceStory.tsx': ['“every 15 minutes or better”', '“every 15–20 minutes”'],
+  // The frequent-service story: its approved prose, and agencies' own definitions (CIV-1613, manager 2026-11-14).
+  'src/apps/FrequentServiceStory.tsx': [
+    '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
+    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+  ],
+  'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
+  'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],
+  // A round figure reads better as "about 1 km"; TriMet's own rule for its Sandy zone.
+  'src/components/Live/sections/MethodSection.tsx': ['(about 1 km)'],
+  'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
+  // Live's notices, word for word (CIV-1045); Ryan's CIV-1160 answer 7 keeps "Live has no route 109 for MiWay."
+  'src/content/noticeCopy.ts': ['`Live has no route ${route} for ${agency}.`', "It follows ${agencyName} routes ${followed.join(', ')}."],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.

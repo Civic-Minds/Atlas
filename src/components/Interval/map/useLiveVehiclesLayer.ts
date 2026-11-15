@@ -14,6 +14,7 @@ import { LIVE_CONTEXT_LAYER_IDS } from './mapLayers';
 import { focusOpacity } from '../../../utils/routeFocus';
 import { buildRouteKey, splitRouteKey } from '../../../utils/routeKey';
 import { getNowDay } from '../../../../shared/dayTypes';
+import { metresPerPixel } from '../../../../shared/geoDistance';
 
 // Kept exported from here for the escape test that imports it.
 export { vehicleTooltipHtml };
@@ -279,7 +280,7 @@ export function useLiveVehiclesLayer(
       const handler = onMapClickRef.current;
       if (!handler) return;
       const vehicles = pickLiveVehicles(deckOverlayRef.current, e.point);
-      const mPerPx = (40_075_016 * Math.cos((e.lngLat.lat * Math.PI) / 180)) / (512 * 2 ** map.getZoom());
+      const mPerPx = metresPerPixel(e.lngLat.lat, map.getZoom());
       handler([e.lngLat.lng, e.lngLat.lat], vehicles, LIVE_VEHICLE_PICK_RADIUS_PX * mPerPx);
     };
     map.on('click', onClick);
