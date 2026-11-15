@@ -8,7 +8,7 @@ import type { MapboxOverlay } from '@deck.gl/mapbox';
 import { LocateFixed, Link2, Flag, Download } from 'lucide-react';
 import MapZoomButtons from '../MapZoomButtons';
 import { routeKey } from '../../hooks/useIntervalStats';
-import { getRegionalView, getSavedView } from '../../utils/regionView';
+import { getRegionalView, getSavedView, urlView } from '../../utils/regionView';
 import { mergeUrlSearchParams } from '../../utils/syncUrlParams';
 import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
@@ -1142,7 +1142,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
   const buildLocationUrl = (lat: number, lon: number, medium?: ShareMedium): string => {
     const map = mapRef.current;
-    const qs = mergeUrlSearchParams(window.location.search, linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, { lat, lon, zoom: map?.getZoom() ?? zoom }));
+    const qs = mergeUrlSearchParams(window.location.search, linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, urlView(lat, lon, map?.getZoom() ?? zoom)));
     const url = `${window.location.origin}${window.location.pathname}?${qs}`;
     return withShareTags(url, medium);
   };

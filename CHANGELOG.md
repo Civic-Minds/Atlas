@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
 - **Agency and area pages say "area" for a metro area**: an agency page reads "Calgary, Alberta" with both linked, an area page links its states or provinces, and "region" now means only a state or province
 - **Route card rows keep the route's own number when a short end runs slower (beta)**: the card matches the route list again, and the map's section colours show the slow end
 - **The [Frequent Service story](https://github.com/Civic-Minds/Atlas/issues/1517) map keeps up with a fast scroll**: it jumps straight to the stage you land on instead of fading through each one

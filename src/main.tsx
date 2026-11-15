@@ -18,6 +18,7 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
+import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { findSeoRoute } from '../shared/seo';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../shared/pagePaths';
@@ -58,8 +59,9 @@ function DocsRedirect() {
 // Collect page views only from deployed builds; local development should not
 // pollute the production and beta analytics data.
 if (import.meta.env.PROD && !isInternalTestSession()) {
-  inject();
-  injectSpeedInsights();
+  // #1519: Vercel gets the address without the map's lat and lon.
+  inject({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
+  injectSpeedInsights({ beforeSend: event => ({ ...event, url: withoutMapPosition(event.url) }) });
 }
 
 trackKeyboardFocus();

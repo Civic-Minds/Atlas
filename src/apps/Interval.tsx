@@ -50,7 +50,7 @@ import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
 import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
-import { getRegionalView, getSavedView, parseUrlView } from '../utils/regionView';
+import { getRegionalView, getSavedView, parseUrlView, urlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { countNightRoutesInView } from '../utils/nightRoutesInView';
@@ -1271,7 +1271,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     if (linkPathRef.current === pathname) return;
     linkPathRef.current = pathname;
     const saved = getSavedView();
-    if (showUi || showSelectionUi) syncUrlParams(saved ? linkUpdate(MAP_URL, { lat: saved.lat, lon: saved.lon, zoom: saved.zoom }) : {});
+    if (showUi || showSelectionUi) syncUrlParams(saved ? linkUpdate(MAP_URL, urlView(saved.lat, saved.lon, saved.zoom)) : {});
     if (!showUi) return;
     syncUrlParams({
       ...linkUpdate(MAP_URL, { headway: maxHeadway, period, hideSpan, hideLimited: hideLimitedService, route: selectedRoute, stop: selectedStop, onDemand: selectedOnDemandSelection }),

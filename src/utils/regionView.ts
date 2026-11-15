@@ -17,6 +17,25 @@ export function parseUrlView(params: URLSearchParams): { lat: number; lon: numbe
   return undefined;
 }
 
+/**
+ * #1519: the decimal places a shared map view's lat and lon keep at a zoom, enough to put the same
+ * place in the middle of the screen and no more. After "locate me" the view is the visitor's own
+ * position, and the address bar goes out in shared links, the feedback email and page analytics:
+ * five places (about 1 m) pinned a home. Two places (about 1 km) below zoom 11, three (about 110 m)
+ * below zoom 15, four (about 11 m) from 15, where a screen pixel is a few metres and three places
+ * would move the view by dozens of pixels.
+ */
+export function urlViewDecimals(zoom: number): number {
+  return zoom < 11 ? 2 : zoom < 15 ? 3 : 4;
+}
+
+/** The view as written to the address bar: lat and lon rounded to urlViewDecimals, zoom to 2 places. */
+export function urlView(lat: number, lon: number, zoom: number): SavedView {
+  const round = (value: number, places: number) => Number(value.toFixed(places));
+  const places = urlViewDecimals(zoom);
+  return { lat: round(lat, places), lon: round(lon, places), zoom: round(zoom, 2) };
+}
+
 export function getSavedView(): SavedView | null {
   try {
     const raw = localStorage.getItem(VIEW_KEY);

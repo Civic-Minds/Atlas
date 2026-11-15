@@ -35,7 +35,8 @@ function loadAnalytics() {
     window.dataLayer.push(arguments);
   };
   window.gtag('js', new Date());
-  window.gtag('config', measurementId, { send_page_view: false });
+  // page_location: Google reads the address bar by default, lat and lon included (#1519).
+  window.gtag('config', measurementId, { send_page_view: false, page_location: pageLocation() });
 
   const script = document.createElement('script');
   script.async = true;
@@ -72,13 +73,31 @@ export function initAnalytics() {
   loadAnalytics();
 }
 
+/**
+ * #1519: an address with the map view's lat and lon left out. After "locate me" the view is the
+ * visitor's own position, so page analytics (Google's page_location, Vercel's url) and the feedback
+ * email get the address without them. The zoom and everything else stay.
+ */
+export function withoutMapPosition(href: string): string {
+  try {
+    const u = new URL(href);
+    u.searchParams.delete('lat');
+    u.searchParams.delete('lon');
+    return u.toString();
+  } catch {
+    return href;
+  }
+}
+
+const pageLocation = () => (typeof window === 'undefined' ? undefined : withoutMapPosition(window.location.href));
+
 export function trackPageView(path: string) {
   trackEvent('page_view', { page_path: path });
 }
 
 export function trackEvent(name: string, parameters: Record<string, string | number | boolean | undefined> = {}) {
   if (analyticsDisabled || typeof window === 'undefined') return;
-  const contextualParameters = { atlas_mode: atlasMode, ...parameters };
+  const contextualParameters = { atlas_mode: atlasMode, page_location: pageLocation(), ...parameters };
   if (!initialized) {
     pendingEvents.push({ name, parameters: contextualParameters });
     return;
@@ -126,7 +145,7 @@ export function hasUtmParams(url: string): boolean {
  */
 export function trackLandingPageView(path: string) {
   const landing = window.location.href;
-  trackEvent('page_view', { page_path: path, page_location: landing });
+  trackEvent('page_view', { page_path: path, page_location: withoutMapPosition(landing) });
   if (!hasUtmParams(landing)) return;
   const u = new URL(landing);
   for (const key of Array.from(u.searchParams.keys())) {

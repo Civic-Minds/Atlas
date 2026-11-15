@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { ViewportBounds } from '../../../hooks/useIntervalStats';
-import { saveView } from '../../../utils/regionView';
+import { saveView, urlView } from '../../../utils/regionView';
 import { syncUrlParams } from '../../../utils/syncUrlParams';
 import { MAP_URL, linkUpdate } from '../../../utils/urlSchema';
 
@@ -31,7 +31,7 @@ export function useViewSync(
         saveView(c.lat, c.lng, z);
         // Shared merge reads window.location at call time so concurrent writers
         // (day/route/filters) and React Router path switches don't clobber params.
-        syncUrlParams(linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, { lat: c.lat, lon: c.lng, zoom: z }));
+        syncUrlParams(linkUpdate({ lat: MAP_URL.lat, lon: MAP_URL.lon, zoom: MAP_URL.zoom }, urlView(c.lat, c.lng, z)));
       }
       const b = map.getBounds();
       const bounds = { s: b.getSouth(), w: b.getWest(), n: b.getNorth(), e: b.getEast() };

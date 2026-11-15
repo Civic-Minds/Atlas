@@ -34,7 +34,7 @@ describe('analytics startup queue', () => {
     initAnalytics();
 
     expect(window.dataLayer.some((entry) => Array.from(entry as ArrayLike<unknown>).every((value, index) =>
-      JSON.stringify(value) === JSON.stringify(['event', 'page_view', { atlas_mode: 'public', page_path: '/' }][index]),
+      JSON.stringify(value) === JSON.stringify(['event', 'page_view', { atlas_mode: 'public', page_location: window.location.href, page_path: '/' }][index]),
     ))).toBe(true);
   });
 
@@ -155,5 +155,17 @@ describe('link cleaning and landing strip', () => {
     const sent = JSON.stringify(window.dataLayer.map((e) => Array.from(e as ArrayLike<unknown>)));
     expect(sent).toContain('utm_source=atlas_share');
     expect(sent).toContain('page_location');
+  });
+
+  it('never sends the map position to Google (#1519)', async () => {
+    const { trackEvent, initAnalytics } = await import('../analytics');
+    window.dataLayer = [];
+    window.history.replaceState(null, '', '/?lat=43.65432&lon=-79.38765&z=16.00&route=ttc::504');
+    initAnalytics();
+    trackEvent('route_open');
+    const sent = JSON.stringify(window.dataLayer);
+    expect(sent).not.toMatch(/43\.65|79\.38|lat=|lon=/);
+    expect(sent).toContain('z=16.00');
+    window.history.replaceState(null, '', '/');
   });
 });
