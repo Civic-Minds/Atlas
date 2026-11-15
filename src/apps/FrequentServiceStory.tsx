@@ -62,6 +62,9 @@ const CITY_COLUMNS: DataTableColumn<CoverageCityRow>[] = [
 const coverageSentence = (name: string, fifteen: number, thirty: number) =>
   `${name}: ${headwayAmount(15)} ${percentText(fifteen)}, ${headwayAmount(30)} ${percentText(thirty)}`;
 
+/** A city's pair in the city chart. */
+const coveragePair = (metro: Pick<CoverageCityRow, 'id' | 'name' | 'fifteenMinute' | 'thirtyMinute'>) => ({ key: metro.id, label: metro.name, first: metro.fifteenMinute, second: metro.thirtyMinute, sentence: coverageSentence(metro.name, metro.fifteenMinute, metro.thirtyMinute) });
+
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
@@ -109,6 +112,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
   const weekendTableId = useId();
   const coverageTableId = useId();
   const citiesTableId = useId();
+  // The city chart points screen readers to both its tables (aria-details takes a list of ids).
+  const coverageDetails = [coverageTableId, citiesTableId].join(' ');
   const [weekendMinutes, setWeekendMinutes] = useState<WeekendThreshold>(15);
   const [storyStage, setStoryStage] = useState(0);
   const frequencyMinutes = 15 as const;
@@ -265,7 +270,9 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               national figures and the cities are one section. Ryan picked "chart in place of the table, with the warning as a small
               note" (CIV-1577): the national table is now the chart's screen-reader table, the national figures are each country's
               first pair, and the country caveat sits under the chart. Heading, intro and the approved sentences are unchanged. */}
-          <section aria-labelledby="population-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          {/* Ryan (CIV-1577): wider, not just two columns. The card breaks out of the story column the Toronto map's way
+              (left-1/2, -translate-x-1/2), up to max-w-6xl with a 1rem gutter; its paragraphs keep their max-w-2xl. */}
+          <section aria-labelledby="population-heading" className="relative left-1/2 w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
               <h2 id="population-heading" className={STORY_HEADING}>The threshold changes who can rely on the network.</h2>
               <p className={STORY_PARAGRAPH}>
@@ -276,21 +283,28 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
             <div className="mt-10">
               <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} />
-              <div className="mt-6 space-y-10">
+              {/* Ryan (CIV-1577): "should [it] be two columns or smth instead of a very long graphic": Canada and the US side by side
+                  from lg, stacked below; each name sits above its strip so the strips keep their width. */}
+              <div className="mt-6 grid gap-x-12 gap-y-10 lg:grid-cols-2">
                 {frequentCoverageCountries.map(country => (
                   <DotPairs
                     key={country.country}
                     label={`[Ryan’s wording: cities chart name for screen readers], ${country.label}`}
-                    details={`${coverageTableId} ${citiesTableId}`}
+                    details={coverageDetails}
                     firstHeader={headwayAmount(15)}
                     secondHeader={headwayAmount(30)}
-                    groups={[{
-                      key: country.country,
-                      pairs: [
-                        { key: 'national', label: country.label, first: country.fifteenMinute, second: country.thirtyMinute, reference: true, sentence: coverageSentence(country.label, country.fifteenMinute, country.thirtyMinute) },
-                        ...country.metros.map(metro => ({ key: metro.id, label: metro.name, first: metro.fifteenMinute, second: metro.thirtyMinute, sentence: coverageSentence(metro.name, metro.fifteenMinute, metro.thirtyMinute) })),
-                      ],
-                    }]}
+                    nameAbove
+                    groups={[
+                      {
+                        key: country.country,
+                        pairs: [
+                          { key: 'national', label: country.label, first: country.fifteenMinute, second: country.thirtyMinute, reference: true, sentence: coverageSentence(country.label, country.fifteenMinute, country.thirtyMinute) },
+                          ...country.metros.filter(metro => metro.fifteenMinute > 0).map(coveragePair),
+                        ],
+                      },
+                      // Ryan's pick (CIV-1577): the cities with nobody near 15-minute service, last, under their own label.
+                      { key: 'none-at-15', title: '[Ryan’s wording: cities with none at 15 min]', pairs: country.metros.filter(metro => metro.fifteenMinute === 0).map(coveragePair) },
+                    ]}
                   />
                 ))}
               </div>

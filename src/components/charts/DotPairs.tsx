@@ -18,7 +18,7 @@ export interface DotPair {
 
 export interface DotPairGroup {
   key: Key;
-  /** The group's name, above its rows. */
+  /** The group’s name, above its rows (the story’s chart heading: h3, font-bold with CHART_TEXT). A group with no rows isn’t drawn. */
   title?: ReactNode;
   pairs: readonly DotPair[];
 }
@@ -30,9 +30,12 @@ const GROUP_HEADING = 'font-bold';
 const AXIS_TEXT = 'text-xs text-[var(--text-dim)]';
 const AXIS_TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
 const DOT = 'absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full';
-// Phones: the name sits on its own line above its strip, so the strip gets the width; from sm up it takes a 9rem column.
-const ROW_GRID = 'grid grid-cols-[1fr_2.75rem_2.75rem] items-center gap-x-3 sm:grid-cols-[9rem_1fr_2.75rem_2.75rem]';
-const NAME_CELL = 'col-span-3 min-w-0 sm:col-span-1';
+// Phones: the name sits on its own line above its strip, so the strip gets the width; from sm up it takes a 9rem column,
+// unless the chart sits in a narrow column (nameAbove), where the name stays above its strip at every width.
+const ROW_GRID_ABOVE = 'grid grid-cols-[1fr_2.75rem_2.75rem] items-center gap-x-3';
+const ROW_GRID_BESIDE = `${ROW_GRID_ABOVE} sm:grid-cols-[9rem_1fr_2.75rem_2.75rem]`;
+const NAME_CELL_ABOVE = 'col-span-3 min-w-0';
+const NAME_CELL_BESIDE = `${NAME_CELL_ABOVE} sm:col-span-1`;
 /** Phones label only 0, 50 and 100% (the other gridlines stay), so the axis labels don't run together. */
 const tickLabelClass = (tick: number) => (tick === 0.25 || tick === 0.75 ? 'hidden sm:inline' : '');
 
@@ -52,7 +55,7 @@ export function DotPairKey({ first, second }: { first: ReactNode; second: ReactN
  * (useActivePart): hovering, focusing or tapping a row fades the others and highlights its name. Names, counts and axis use
  * the chart collection's text (CHART_TEXT, CHART_COUNT, and the dim axis text); the numbers sit in two columns at the right, first then second.
  */
-export default function DotPairs({ groups, label, details, firstHeader, secondHeader }: {
+export default function DotPairs({ groups, label, details, firstHeader, secondHeader, nameAbove = false }: {
   groups: readonly DotPairGroup[];
   /** The chart's accessible name. */
   label: string;
@@ -61,12 +64,16 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
   /** The headers over the two number columns (shown once, above the first group). */
   firstHeader: ReactNode;
   secondHeader: ReactNode;
+  /** Keep each name on its own line above its strip at every width (for a chart in a narrow column, such as side by side). */
+  nameAbove?: boolean;
 }) {
+  const ROW_GRID = nameAbove ? ROW_GRID_ABOVE : ROW_GRID_BESIDE;
+  const NAME_CELL = nameAbove ? NAME_CELL_ABOVE : NAME_CELL_BESIDE;
   const { active, clear, faded, partEvents } = useActivePart();
   return (
     <div role="group" aria-label={label} aria-details={details} className="select-none" onMouseLeave={clear}>
       <div className={`${ROW_GRID} ${AXIS_TEXT}`} aria-hidden="true">
-        <span className="hidden sm:block" />
+        {!nameAbove && <span className="hidden sm:block" />}
         <span className="relative h-4">
           {AXIS_TICKS.map(tick => (
             <span key={tick} className={`absolute top-0 tabular-nums ${tickLabelClass(tick)} ${tick === 0 ? '' : tick === 1 ? '-translate-x-full' : '-translate-x-1/2'}`} style={{ left: `${tick * 100}%` }}>{percentText(tick)}</span>
@@ -75,7 +82,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
         <span className="whitespace-nowrap text-right">{firstHeader}</span>
         <span className="whitespace-nowrap text-right">{secondHeader}</span>
       </div>
-      {groups.map(group => (
+      {groups.filter(group => group.pairs.length > 0).map(group => (
         <div key={group.key} className="mt-6 first-of-type:mt-3">
           {group.title && <h3 className={`mb-2 font-bold ${CHART_TEXT}`}>{group.title}</h3>}
           <div className="space-y-1">

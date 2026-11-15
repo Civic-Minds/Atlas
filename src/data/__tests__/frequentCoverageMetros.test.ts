@@ -46,3 +46,15 @@ describe('the coverage city chart (CIV-1577)', () => {
     expect(picked).toEqual([...Array.from({ length: 10 }, (_, i) => `big${i}`), 'wiped']);
   });
 });
+
+describe('the city chart order (CIV-1577, Ryan picked grouping)', () => {
+  it('puts each country’s cities at 0% at 15 min last, each part by 30-minute share', () => {
+    for (const country of frequentCoverageCountries) {
+      const zeroAt = country.metros.findIndex(m => m.fifteenMinute === 0);
+      const rest = zeroAt === -1 ? country.metros : country.metros.slice(0, zeroAt);
+      const none = zeroAt === -1 ? [] : country.metros.slice(zeroAt);
+      expect(none.every(m => m.fifteenMinute === 0)).toBe(true);
+      for (const part of [rest, none]) expect(part.map(m => m.thirtyMinute)).toEqual([...part.map(m => m.thirtyMinute)].sort((a, b) => b - a));
+    }
+  });
+});

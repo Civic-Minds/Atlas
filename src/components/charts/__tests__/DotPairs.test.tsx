@@ -25,3 +25,17 @@ describe('DotPairs (CIV-1577)', () => {
     expect(screen.getByText('Canada')).not.toHaveAttribute('data-active');
   });
 });
+
+describe('DotPairs groups (CIV-1577)', () => {
+  it('draws a titled group under the first, in order, and skips an empty one', () => {
+    const pair = (key: string, first: number) => ({ key, label: key, first, second: 0.5, sentence: key });
+    render(<DotPairs label="Coverage" firstHeader="15 min" secondHeader="30 min" groups={[
+      { key: 'rest', pairs: [pair('Toronto', 0.4)] },
+      { key: 'none', title: 'None at 15', pairs: [pair('Oshawa', 0)] },
+      { key: 'empty', title: 'Empty', pairs: [] },
+    ]} />);
+    expect(screen.getByRole('heading', { name: 'None at 15' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Empty' })).toBeNull();
+    expect(screen.getAllByRole('button').map(b => b.getAttribute('aria-label'))).toEqual(['Toronto', 'Oshawa']);
+  });
+});

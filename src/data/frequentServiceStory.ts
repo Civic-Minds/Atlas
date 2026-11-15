@@ -120,11 +120,12 @@ export const frequentServiceCoverageInterpretation = {
  * metro rule are in the file's `source`; regenerate with scripts/build-frequent-coverage-metros.ts <artifact folder>). Per
  * country: the 10 largest metros, plus every other metro over 250,000 people with at least 20% covered at 30 min and none
  * at 15 min (src/data/frequentCoverageMetrosRule.ts). Shares are 0–1; each country's cities run from the highest 30-minute
- * share down.
+ * share down, with the cities at 0% at 15 min after the rest.
  */
 export const frequentCoverageMetrosSource = coverageMetros.source;
 export const frequentCoverageCountries = coverageMetros.countries.map(country => ({
   ...country,
   label: country.country === 'canada' ? 'Canada' : 'United States',
-  metros: [...country.metros].sort((a, b) => b.thirtyMinute - a.thirtyMinute),
+  // Ryan's pick (CIV-1577): the cities with nobody at 15 min go last, under their own label; each part by 30-minute share.
+  metros: [...country.metros].sort((a, b) => Number(a.fifteenMinute === 0) - Number(b.fifteenMinute === 0) || b.thirtyMinute - a.thirtyMinute),
 }));
