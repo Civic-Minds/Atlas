@@ -139,6 +139,16 @@ export function storyLayerOpacity(stage: number): Record<string, number> {
 export function storyFade(reducedMotion: boolean) {
   return { duration: reducedMotion ? 0 : FADE_MS, delay: 0 };
 }
+
+/**
+ * #1517: the fade for one stage change. A fast scroll passes several steps in a row; fading through each one queued
+ * the map behind the reader (Ryan: "it takes like 5 seconds to have the routes disappear"). A change that skips a
+ * stage, or comes before the last fade has finished, jumps straight to the new stage instead.
+ */
+export function stageChangeFade(from: number, to: number, msSinceLastChange: number, reducedMotion: boolean) {
+  const jump = Math.abs(to - from) > 1 || msSinceLastChange < FADE_MS;
+  return jump ? { duration: 0, delay: 0 } : storyFade(reducedMotion);
+}
 const prefersReducedMotion = () => typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
 const cssColor = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -211,10 +221,20 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
     source?.setData(collection);
   }, [collection, mapReady]);
 
+  const shown = useRef<{ stage: number; at: number }>({ stage: 0, at: -Infinity });
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    for (const [id, opacity] of Object.entries(storyLayerOpacity(stage))) map.setPaintProperty(id, 'line-opacity', opacity);
+    const now = performance.now();
+    const fade = stageChangeFade(shown.current.stage, stage, now - shown.current.at, prefersReducedMotion());
+    const before = storyLayerOpacity(shown.current.stage);
+    shown.current = { stage, at: now };
+    for (const [id, opacity] of Object.entries(storyLayerOpacity(stage))) {
+      map.setPaintProperty(id, 'line-opacity-transition', fade);
+      // A layer whose target didn't change may still be mid-fade from the last change; MapLibre ignores an unchanged
+      // value, so a jump sets an invisibly different one to end that fade now.
+      map.setPaintProperty(id, 'line-opacity', fade.duration === 0 && before[id] === opacity ? opacity + 1e-6 : opacity);
+    }
   }, [stage, mapReady]);
 
   return (
