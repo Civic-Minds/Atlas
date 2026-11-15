@@ -30,9 +30,9 @@ describe('groupVehiclesByDirection (every vehicle placed)', () => {
     expect(groups.get(DIRECTION_UNCLEAR)?.map(x => x.id)).toEqual(['d', 'e']);
   });
 
-  it('falls back to Outbound / Inbound when a direction has no named shape', () => {
+  it('falls back to the shared unnamed-direction name when a direction has no named shape (CIV-1569)', () => {
     const groups = groupVehiclesByDirection([v('a', { directionId: 0 }), v('b', { directionId: 1 })], new Map());
-    expect([...groups.keys()]).toEqual(['Outbound', 'Inbound']);
+    expect([...groups.keys()]).toEqual(['Direction 1', 'Direction 2']);
   });
 });
 
@@ -90,9 +90,9 @@ describe('orderDirectionGroups (fixed row order, CIV-899)', () => {
     expect(expected[expected.length - 1]).toBe(DIRECTION_UNCLEAR);
   });
 
-  it('puts Outbound before Inbound when no shape names the directions', () => {
+  it('puts Direction 1 before Direction 2 when no shape names the directions', () => {
     const groups = groupVehiclesByDirection([v('b', { directionId: 1 }), v('a', { directionId: 0 })], new Map());
-    expect(orderDirectionGroups(groups, new Map()).map(([k]) => k)).toEqual(['Outbound', 'Inbound']);
+    expect(orderDirectionGroups(groups, new Map()).map(([k]) => k)).toEqual(['Direction 1', 'Direction 2']);
   });
 });
 

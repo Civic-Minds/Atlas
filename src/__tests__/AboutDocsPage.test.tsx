@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest';
 import AboutDocsPage from '../AboutDocsPage';
 
 describe('Docs page Notices section (CIV-1236)', () => {
-  it('keeps its logos going to the map, as before (CIV-1312 changes only /about)', () => {
+  it('sends its logos to the About home page; "Go to Atlas" is the way to the map (#1509)', () => {
     render(<AboutDocsPage />);
-    for (const logo of screen.getAllByRole('link', { name: 'Atlas by Civic Minds' })) expect(logo).toHaveAttribute('href', '/');
+    for (const logo of screen.getAllByRole('link', { name: 'Atlas by Civic Minds' })) expect(logo).toHaveAttribute('href', '/about');
+    expect(screen.getByRole('link', { name: /Go to Atlas/ })).toHaveAttribute('href', '/');
   });
 
   it('lists the seven notice groups, each with two of the app’s own notices', () => {

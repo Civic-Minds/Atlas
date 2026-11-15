@@ -101,7 +101,9 @@ const RULES: Rule[] = [
   // format.ts holds the builders; cleanRouteDisplayName rewrites "Route 01" inside a feed's own name.
   { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /Routes? \$\{|['"]Routes? ['"] *\+|>Routes? \$\{/, slip: '`Route ${r.shortName}`',
     allowed: ['src/utils/format.ts'] },
-  { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
+  // "One way" / "Other way" / "Pattern N" were the schedule pills' own unnamed-direction names (fixed with Live's made-up
+  // "Outbound"/"Inbound"); an agency's real "Outbound" label is a name, so only the made-up pill words are flagged.
+  { name: 'a "Direction N" or other unnamed-direction name built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+|['"](One way|Other way)['"]|`Pattern \$\{/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
   // CIV-1591: cards hide and pre-check report reasons by REPORT_REASON (src/components/Interval/cardUi.tsx), never a typed string.
@@ -130,6 +132,9 @@ const RULES: Rule[] = [
   { name: 'a <table> outside DataTable', doc: 'VISUAL.md', pattern: /<table\b/, slip: '<table className="w-full">',
     allowed: ['src/components/ui/DataTable.tsx'] },
   { name: 'a shadow (keep the flat look)', doc: 'VISUAL.md', pattern: /\bshadow-(sm|md|lg|xl|2xl|inner)\b|\bshadow\b(?=[\s"'`])|boxShadow|box-shadow/, slip: '<div className="rounded-lg shadow-md">' },
+  // CIV-1607: every pill search box is SearchBox, so each has the clear X; the top bar's box (App.tsx) is the one exception.
+  { name: 'a search box built by hand (use SearchBox)', doc: 'VISUAL.md', pattern: /className=\{SEARCH_(FIELD|PILL)\}|<Search className=\{SEARCH_ICON\}/, slip: '<input className={SEARCH_FIELD} />',
+    allowed: ['src/components/ui/SearchBox.tsx'] },
   // CIV-1569 part 3: every close X is PanelCloseButton, every search box's clear X is SearchClearButton.
   { name: 'an X icon outside PanelCloseButton and SearchClearButton', doc: 'VISUAL.md', pattern: /<X\b|\bX as \w+|import \{[^}]*\bX\b[^}]*\} from 'lucide-react'/, slip: "import { Search, X } from 'lucide-react';",
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },
