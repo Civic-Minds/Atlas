@@ -16,7 +16,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
   const shown = rows;
   const bars = useMemo(() => routeBars(rows, measure), [rows, measure]);
   return (
-    <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 shadow-lg backdrop-blur">
+    <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur">
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
         <span>Routes</span>
         <span>{measureLabel(measure)}</span>

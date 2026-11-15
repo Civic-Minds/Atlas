@@ -109,17 +109,8 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-const PENDING: Record<string, string[]> = {
-  'a shadow (keep the flat look)': [
-    'src/LiveToolPage.tsx',
-    'src/components/Interval/map/useLiveVehiclesLayer.ts',
-    'src/components/Live/MapCard.tsx',
-    'src/components/Live/RouteStrip.tsx',
-    'src/components/Live/tool/OverviewList.tsx',
-    'src/components/charts/TileMap.tsx',
-    'src/lib/mapHtml.ts',
-  ],
-};
+// Empty since CIV-1584 and CIV-1585.
+const PENDING: Record<string, string[]> = {};
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed
 // from its file before the rules run, so only that exact text passes.

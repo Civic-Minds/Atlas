@@ -88,7 +88,7 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
         {options.find(([k]) => k === value)?.[1]}<span aria-hidden="true" className="ml-1">▾</span>
       </Pill>
       {open && (
-        <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1 shadow-lg`}>
+        <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1`}>
           {options.map(([k, text, plain]) => (
             <button key={k} type="button" role="menuitemradio" aria-checked={k === value} aria-label={plain} onClick={() => { onPick(k); setOpen(false); }}
               // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
@@ -256,7 +256,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
   const note = (
     <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2 max-sm:right-0">
-      {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
+      {showNote && <p className="m-0 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)]">{ready!.note}</p>}
       <LiveMapKey measure={measure} />
       {/* The basemap's credit, in the regular map's footer pill. */}
       <div className={`${MAP_BADGE} pointer-events-auto h-8`}><BasemapCredit /></div>

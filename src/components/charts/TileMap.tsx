@@ -50,7 +50,8 @@ export default function TileMap({ tiles, label, details }: {
             style={{
               gridColumn: t.col + 1, gridRow: t.row + 1,
               background: t.fill === 'none' ? 'var(--bg-panel)' : t.fill,
-              boxShadow: on ? 'inset 0 0 0 2px var(--accent)' : 'inset 0 0 0 1px var(--border-primary)',
+              // An inside edge drawn as an outline, not a shadow (docs/style/VISUAL.md: nothing has a shadow).
+              outline: on ? '2px solid var(--accent)' : '1px solid var(--border-primary)', outlineOffset: on ? -2 : -1,
               opacity: faded(t.key) ? FADED_OPACITY : undefined,
             }}>
             {/* Thin: a dashed edge in the words' colour, so it shows on light and dark fills alike. */}

@@ -181,7 +181,7 @@ export function useLiveVehiclesLayer(
     tip.style.cssText = [
       'position:absolute', 'z-index:30', 'pointer-events:none', 'display:none',
       'background:var(--bg-panel)', 'backdrop-filter:blur(12px)', '-webkit-backdrop-filter:blur(12px)',
-      'border-radius:1rem', 'box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)',
+      'border-radius:1rem',
       'border:1px solid var(--border-primary)', 'color:var(--text-primary)',
     ].join(';');
     container.appendChild(tip);

@@ -45,7 +45,7 @@ The shared components live in `src/components/ui/`.
 - No dark fills.
   - Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`).
   - No solid near-black pills with white text.
-- Nothing has a shadow. Keep the flat look. (checked; the files that still have one are listed in the test until they are fixed)
+- Nothing has a shadow. Keep the flat look. (checked)
 - Sentence case for headings and labels ("Near you"). CIV-1160, CIV-1448.
 - No all-caps text anywhere: no `uppercase` class, no `text-transform: uppercase`, no hard-coded capitals in labels, headers, badges or titles. (checked: `uppercase` and `textTransform`)
 - Drop the wide letter spacing that usually comes with it. (checked: `tracking-wide*` and `letterSpacing`)
