@@ -55,6 +55,7 @@ Vercel skips a build when nothing that can change the site changed since the bra
 1. Add the release's entry to `src/data/whatsNew.ts` before the cut: about six plain points, big launches first. Each point is either public or `beta: true`, never mixed.
 2. Get Ryan's word-for-word OK on the wording before it is committed.
 3. Show him the list as it will read on the public site and on the beta site.
+4. Make the entry's version and date match the CHANGELOG release header.
 5. After the tag is pushed, publish the GitHub release in the one format (Ryan, 2026-11-14): title "Atlas X.Y.Z", "- **Lead**: text" bullets, then a changelog link pinned to the tag. `gh release create vX.Y.Z --title "Atlas X.Y.Z" --notes "$(npx tsx scripts/release-notes.ts X.Y.Z)"` prints it from the public What's new entry.
 
 ## Deployment verification
