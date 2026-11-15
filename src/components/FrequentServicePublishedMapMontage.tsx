@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { OutboundLink } from './OutboundLink';
 import { agencyInSentence } from '../../shared/agencyArticle';
 
+/** How long each map shows: about one a second (Ryan, CIV-1495 #2, 2026-11-15; it was 180 ms). */
+export const MONTAGE_FRAME_MS = 1000;
+
 interface MapFrame {
   agency: string;
   image: string;
@@ -39,7 +42,7 @@ export default function FrequentServicePublishedMapMontage() {
 
   useEffect(() => {
     if (reducedMotion || !isPlaying) return;
-    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % publishedMapFrames.length), 180);
+    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % publishedMapFrames.length), MONTAGE_FRAME_MS);
     return () => window.clearInterval(timer);
   }, [isPlaying, reducedMotion]);
 

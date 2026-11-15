@@ -7,10 +7,10 @@
  */
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
-import { FREQUENT_SERVICE_TITLE } from './frequentService';
 import { PAGE_NAMES, tabTitle } from './pageNames';
 import { titleCase } from './titleCase';
 import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
+import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
@@ -136,13 +136,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'live',
   },
   {
-    path: '/research/night',
-    title: tabTitle('Overnight Service'),
-    description: 'Find routes with sustained scheduled service from 2–5 AM.',
+    path: OVERNIGHT_STORY.path,
+    title: OVERNIGHT_STORY.tabTitle,
+    description: OVERNIGHT_STORY.description,
     indexable: false,
     gate: 'researchApps',
     // Ryan's pick 1 (CIV-1167), rendered from public/assets/research/share/night-light.svg.
-    shareImage: { path: '/assets/research/share/night.png', alt: 'Overnight service' },
+    shareImage: { path: '/assets/research/share/night.png', alt: OVERNIGHT_STORY.shareImageAlt! },
   },
   {
     path: RESEARCH_PATH,
@@ -160,9 +160,9 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'researchApps',
   },
   {
-    path: '/research/free-child-fares',
-    title: tabTitle('Free Child Fares'),
-    description: 'See up to what age children ride free at 697 transit agencies.',
+    path: FREE_CHILD_FARES_STORY.path,
+    title: FREE_CHILD_FARES_STORY.tabTitle,
+    description: FREE_CHILD_FARES_STORY.description,
     indexable: false,
     gate: 'researchApps',
     prerender: true,
@@ -175,13 +175,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     gate: 'researchApps',
   },
   {
-    path: '/research/frequent-service/story',
-    title: 'What happens when you miss the bus? Transit Atlas',
-    description: 'A source-backed look at what frequent service means across transit networks.',
+    path: FREQUENT_SERVICE_STORY.path,
+    title: FREQUENT_SERVICE_STORY.tabTitle,
+    description: FREQUENT_SERVICE_STORY.description,
     indexable: false,
     gate: 'researchApps',
     // Ryan's pick B4 (CIV-1167): bus 1303 at a real TTC shelter. Photo credits: public/assets/research/share/CREDITS.md.
-    shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_TITLE },
+    shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_STORY.shareImageAlt! },
   },
   {
     path: CHANGELOG_PATH,

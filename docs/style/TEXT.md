@@ -63,6 +63,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - "Documentation" on every link to the Docs page and as its title (`DOCS_PAGE_TITLE`); it replaced CIV-1610's "Docs" link label. The URL stays /about/docs.
   - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.
   - The footer's Atlas column links "About" (link names are one word); the page is "About Atlas", as are the map's About panel and its buttons. The legal links read "Terms" and "Privacy"; the pages are "Terms of Service" and "Privacy Policy".
+  - A research story's words (card title, text and link, page heading and intro, tab, preview description, share image alt) are one entry in `shared/researchStories.ts`; nothing else types them. Ryan, CIV-1629. (checked: `researchStories.test.ts`)
   - Browser tabs: "<page name> | Transit Atlas", with an optional detail after the name ("Documentation: Data, Frequency and Methods | Transit Atlas"), at most 60 characters: the detail goes first, then the brand (`tabTitle`). Only the home page leads with the brand ("Transit Atlas: Scheduled Frequency Map"). Link previews name the site "Transit Atlas".
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)

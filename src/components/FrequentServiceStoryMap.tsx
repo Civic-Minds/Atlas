@@ -240,21 +240,22 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
   return (
     // #1310: below lg the map is pinned at top-16 (4rem), so it fills the rest of the screen; from lg it sits at top-24 with 2rem below.
     <figure className="flex h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-8rem)] min-h-0 flex-col overflow-hidden border-y border-[var(--border-primary)] bg-[var(--bg-panel)] sm:rounded-[2rem] sm:border">
-      <div className="relative min-h-0 flex-1 bg-[var(--bg-app)]">
+      {/* CIV-1495 #10: below sm the step text sits above the map in its own band, so it never covers the map (it hid most of it at 555px). */}
+      <div className="relative flex min-h-0 flex-1 flex-col bg-[var(--bg-app)] sm:block">
         {ready ? (
-          <div ref={box} className="h-full w-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'} />
+          <div ref={box} className="min-h-0 w-full flex-1 sm:h-full" role="img" aria-label={stage === 3 ? `Toronto routes with weekday daytime service ${headwayOrBetter(frequencyMinutes)}` : 'Toronto routes remaining in the story'} />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
+          <div className="flex min-h-0 flex-1 items-center justify-center text-sm text-[var(--text-muted)] sm:h-full">
             {loadState === 'error' ? storyMapFailedText(researchRecord.agencyName) : storyMapLoadingText(researchRecord.agencyName)}
           </div>
         )}
-        <div className="absolute left-5 top-5 z-10 w-[calc(100%-2.5rem)] max-w-md rounded-2xl bg-[var(--bg-app)]/90 p-5 backdrop-blur">
+        <div className="order-first border-b border-[var(--border-primary)] p-5 sm:absolute sm:left-5 sm:top-5 sm:z-10 sm:w-[calc(100%-2.5rem)] sm:max-w-md sm:rounded-2xl sm:border-0 sm:bg-[var(--bg-app)]/90 sm:backdrop-blur">
           {stage === 0 && <>
             <h2 id="network-story-heading" className="text-3xl font-black tracking-tight">Start with the whole network.</h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">This is coverage: every weekday route that reaches somewhere, whether it comes often or not.</p>
           </>}
           {stage === 1 && <>
-            <h2 className="text-3xl font-black tracking-tight">Remove limited-service routes.</h2>
+            <h2 className="text-3xl font-black tracking-tight">Remove part-time routes.</h2>
             <p className="mt-4 text-base leading-7 text-[var(--text-muted)]">Some routes are built for the busiest hours and disappear when demand drops, and some run only a few trips a day. Useful for some riders, but not service you can count on all day.</p>
           </>}
           {stage === 2 && <>
@@ -270,7 +271,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
       <figcaption className="flex flex-wrap items-center justify-between gap-2 px-5 pb-6 pt-4 text-xs text-[var(--text-muted)]">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">{researchRecord.agencyName}{ready && <BasemapCredit />}</span>
         <span className="flex flex-col items-start gap-y-1 sm:items-end sm:text-right">
-          <span>{stage === 0 ? 'All weekday routes' : stage === 1 ? 'Limited-service routes removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
+          <span>{stage === 0 ? 'All weekday routes' : stage === 1 ? 'Part-time routes removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
           {ready && <span>{routeCount} routes</span>}
         </span>
       </figcaption>

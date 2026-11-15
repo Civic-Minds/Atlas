@@ -21,6 +21,7 @@ vi.mock('maplibre-gl', () => ({
 vi.mock('../../lib/agencyGeo', () => ({ fetchAgencyGeo: () => new Promise(() => {}) }));
 import AirportStory from '../AirportStory';
 import { AIRPORTS, landableAt } from '../../data/airportHourly';
+import { AIRPORT_STORY_DRAFT } from '../../../shared/researchStories';
 
 describe('AirportStory (CIV-1550, dev only)', () => {
   beforeEach(() => {
@@ -32,7 +33,9 @@ describe('AirportStory (CIV-1550, dev only)', () => {
     const drafts = readFileSync('src/apps/researchDrafts.ts', 'utf8');
     // The list is empty unless import.meta.env.DEV: with DEV false, Vite drops the route, the /research card and the chunk.
     expect(drafts).toMatch(/RESEARCH_DRAFTS: readonly ResearchDraft\[\] = import\.meta\.env\.DEV\s*\?/);
-    expect(drafts).toContain("href: '/research/airports/story'");
+    // Its address and words come from its registry entry (CIV-1629).
+    expect(drafts).toContain('href: AIRPORT_STORY_DRAFT.path');
+    expect(AIRPORT_STORY_DRAFT.path).toBe('/research/airports/story');
     expect(drafts).toContain("React.lazy(() => import('./AirportStory'))");
     const main = readFileSync('src/main.tsx', 'utf8');
     const start = main.indexOf('{import.meta.env.DEV && (');

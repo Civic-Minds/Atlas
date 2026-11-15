@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plane } from 'lucide-react';
 import type { ResearchEntry } from '../data/research';
+import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
 
 /**
  * A research story still being built: main.tsx registers its route and the /research index shows its card with a "Draft" tag,
@@ -14,11 +15,10 @@ export interface ResearchDraft extends Pick<ResearchEntry, 'href' | 'Icon' | 'ki
 export const RESEARCH_DRAFTS: readonly ResearchDraft[] = import.meta.env.DEV
   ? [
       {
-        href: '/research/airports/story',
+        href: AIRPORT_STORY_DRAFT.path,
         Icon: Plane,
         kind: 'Story',
-        // The page's heading is still a placeholder for Ryan's wording, so the card uses the page's working name.
-        title: 'Airport story',
+        title: AIRPORT_STORY_DRAFT.cardTitle,
         Component: React.lazy(() => import('./AirportStory')),
       },
     ]
