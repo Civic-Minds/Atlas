@@ -23,6 +23,7 @@ import AgenciesIndexPage from './AgenciesIndexPage';
 import { agencyNames } from './utils/agencyName';
 import type { AgencyIndexData } from '../shared/agencyIndex';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, DOCS_PATH, PRIVACY_PATH, regionPagePath, TERMS_PATH } from '../shared/pagePaths';
+import HomeStatic from './HomeStatic';
 
 const PAGES: Record<string, () => ReactElement> = {
   [ABOUT_PATH]: () => <AboutPage />,
@@ -52,6 +53,11 @@ export function renderPage(path: string): string {
 }
 
 export const PRERENDER_PATHS = Object.keys(PAGES);
+
+/** #1522: the home page's static text (the map replaces it on mount). */
+export function renderHome(): string {
+  return renderToString(<StaticRouter location="/"><HomeStatic agencyPages={BUILD_FLAGS.agencyPages === true} /></StaticRouter>);
+}
 
 export function renderAgencyPage(data: AgencyPageData): string {
   return renderToString(<StaticRouter location={agencyPagePath(data.agency.slug)}><AgencyPage data={data} /></StaticRouter>);

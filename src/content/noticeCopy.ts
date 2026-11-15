@@ -311,6 +311,8 @@ export const MAP_EXPORT_TITLES = {
 export const ABOUT_ATLAS = BACK_PLACES.aboutAtlas;
 export const VIEW_ON_MAP = 'View on map';
 export const SEE_ALL_AGENCIES = 'See all agencies';
+/** The link to the Docs page (About page, and the home page's static text, #1522). */
+export const READ_HOW_ATLAS_WORKS = 'Read how Atlas works';
 export const WHATS_NEW_TITLE = 'What’s new';
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';

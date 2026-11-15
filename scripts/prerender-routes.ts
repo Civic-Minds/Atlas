@@ -158,3 +158,8 @@ if (mod.BUILD_LIVE_REPORTS) {
   }
   console.log(`Prerendered ${paths.length} Live report link previews`);
 }
+
+// #1522: the home page's text in its own served HTML (written last, so every page above copied the empty shell). On Vercel
+// this file becomes app.html (scripts/vercel-root-shell.mjs), which "/" and the map's other addresses serve.
+writeFileSync(join(dist, 'index.html'), injectRootHtml(applySeoToHtml(shell, resolveSeo('/', { mode: mod.BUILD_MODE, flags: mod.BUILD_FLAGS, origin })), mod.renderHome()));
+console.log('Prerendered / (home page text)');

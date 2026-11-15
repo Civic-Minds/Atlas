@@ -9,6 +9,7 @@ import { SURFACE } from './styles';
 import { newestResearch, type ResearchEntry } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
+import { READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -131,7 +132,7 @@ export default function AboutPage() {
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>Atlas brings published agency schedules into one place so riders, planners, researchers and advocates can compare routes across cities, time periods and modes.</p>
             <p>It does not replace official trip planning or live alerts. It makes the patterns in scheduled service easier to see.</p>
-            <ArrowLink href={DOCS_PATH}>Read how Atlas works</ArrowLink>
+            <ArrowLink href={DOCS_PATH}>{READ_HOW_ATLAS_WORKS}</ArrowLink>
           </div>
         </section>
 

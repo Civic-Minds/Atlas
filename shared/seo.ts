@@ -57,7 +57,7 @@ export interface SeoRoute {
 /** Every research page gets its own static file at build time, so a shared link shows its own preview (CIV-1167). */
 export const RESEARCH_PATH_PREFIX = RESEARCH_PATH;
 
-const HOME_DESCRIPTION =
+export const HOME_DESCRIPTION =
   'See how often transit routes actually run. Atlas maps scheduled frequency by agency, day and time of day, using published agency schedules.';
 
 export const SEO_ROUTES: readonly SeoRoute[] = [
