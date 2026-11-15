@@ -9,6 +9,7 @@ import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
 import { liveTooFewTrips } from '../../../content/noticeCopy';
 import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
+import { SubsectionTitle } from '../../ui/PageTitle';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -161,7 +162,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
         const stretch = compact ? null : runTimeStretchOf(v3, d);
         return (
           <div key={d} className="min-w-0">
-            <h3 className="text-base font-black">{label}</h3>
+            <SubsectionTitle>{label}</SubsectionTitle>
             {stretch && <p className="mt-1 text-sm text-[var(--text-muted)]">{stretch}</p>}
             {full && mainThin && <p className="mt-1 text-sm leading-6">{sentence}</p>}
             <PatternRows rows={rowsByDir[d] ?? []} scale={rowScale} hideMainLabel={!!stretch} />
