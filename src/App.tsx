@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
@@ -961,9 +961,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             {historyOn && (historyOpened || inHistory) && (
               <React.Suspense fallback={inHistory ? (
                 // The shared loading panel, where History's panels open (#1028 item 20).
-                <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)}>
-                  <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
-                </Panel>
+                // CIV-1567 (beta): it fades in from its first painted frame rather than appearing in one frame.
+                <ModeFadeInOnMount enabled={FEATURES.modeTransitions}>
+                  {fade => (
+                    <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)} className={fade || undefined}>
+                      <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
+                    </Panel>
+                  )}
+                </ModeFadeInOnMount>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>

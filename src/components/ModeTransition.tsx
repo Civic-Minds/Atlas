@@ -414,7 +414,15 @@ export function useMapHold(mapRef: RefObject<HoldMap | null>, mapLoaded: boolean
     map.redraw();
     hold.width = source.width;
     hold.height = source.height;
-    hold.getContext('2d')?.drawImage(source, 0, 0);
+    const ctx = hold.getContext('2d');
+    if (ctx) {
+      // The map's canvas is not fully opaque (line edges are see-through over the page). The picture is laid on the
+      // same colour first, so it is opaque and matches the screen exactly; a see-through picture let the live map show
+      // through, which doubled the line edges.
+      ctx.fillStyle = getComputedStyle(hold.parentElement ?? hold).backgroundColor || '#fff';
+      ctx.fillRect(0, 0, hold.width, hold.height);
+      ctx.drawImage(source, 0, 0);
+    }
     hold.style.transition = 'none';
     hold.style.opacity = '1';
     hold.style.visibility = 'visible';
@@ -500,4 +508,21 @@ export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: bo
       <span className={`[grid-area:1/1] ${old != null ? `${fade} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
     </span>
   );
+}
+
+/**
+ * Fades something in from its first painted frame (a loading panel), rather than from the moment it mounts: when the
+ * page is busy as it mounts, a fade timed from the mount would finish before anything is painted. Render-prop: gets the
+ * classes to put on the element. Off: no classes.
+ */
+export function ModeFadeInOnMount({ enabled, children }: { enabled: boolean; children: (className: string) => ReactNode }) {
+  const [shown, setShown] = useState(!enabled);
+  useEffect(() => {
+    if (shown) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setShown(true)); });
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
+  }, [shown]);
+  if (!enabled) return <>{children('')}</>;
+  return <>{children(shown ? 'opacity-100 transition-opacity duration-200 ease-out motion-reduce:transition-none' : 'opacity-0')}</>;
 }
