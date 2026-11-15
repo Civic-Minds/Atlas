@@ -1,5 +1,6 @@
 import { AnalysisCriteria } from '../types/gtfs';
 import { SURFACE_TIER_MAXES } from '../shared/config.js';
+import { GRACE_MINUTES, GRACE_PERCENT, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
 
 const SURFACE_TIERS = SURFACE_TIER_MAXES;
 
@@ -28,21 +29,13 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
             tiers: SURFACE_TIERS,
         },
     },
-    graceMinutes: 5,
-    gracePercent: 0.15,
+    graceMinutes: GRACE_MINUTES,
+    gracePercent: GRACE_PERCENT,
     maxGraceViolations: 0,
-    violationPercent: 0.05,
-    violationPercentByTier: {
-        5: 0.10,
-        8: 0.10,
-        10: 0.10,
-        15: 0.10,
-        20: 0.05,
-        30: 0.05,
-        60: 0.05,
-    },
+    violationPercent: VIOLATION_PERCENT,
+    violationPercentByTier: { ...VIOLATION_PERCENT_BY_TIER },
     modeTierOverrides: {
-        rail: [5, 8, 10, 15, 30, 60],
+        rail: [...RAIL_TIER_MAXES],
         surface: SURFACE_TIERS,
     },
     isDefault: true,
