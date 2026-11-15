@@ -4,7 +4,7 @@
  * "Right now" gaps between the vehicles currently on the line.
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
-import { lonLatPoint, metresBetween } from '../../shared/geoDistance';
+import { lonLatPoint, metresBetween, projectOntoSegment } from '../../shared/geoDistance';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = 30;
@@ -204,13 +204,7 @@ export function placeOnLine(line: LineModel, lonLat: [number, number], maxM = MA
     for (let i = 1; i < c.length; i++) { const d = lonLatDist(c[i - 1], c[i]); lens.push(d); total += d; }
     let run = 0;
     for (let i = 1; i < c.length; i++) {
-      const [ax, ay] = c[i - 1], [bx, by] = c[i];
-      const k = Math.cos((ay * Math.PI) / 180);
-      const vx = (bx - ax) * k, vy = by - ay;
-      const px = (lonLat[0] - ax) * k, py = lonLat[1] - ay;
-      const len2 = vx * vx + vy * vy;
-      const t = len2 > 0 ? Math.max(0, Math.min(1, (px * vx + py * vy) / len2)) : 0;
-      const d = lonLatDist(lonLat, [ax + (bx - ax) * t, ay + (by - ay) * t]);
+      const { t, offM: d } = projectOntoSegment(lonLatPoint(lonLat), c[i - 1], c[i]);
       if (!best || d < best.distM) best = { segIndex, frac: total > 0 ? (run + lens[i - 1] * t) / total : 0, distM: d };
       run += lens[i - 1];
     }

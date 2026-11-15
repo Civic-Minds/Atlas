@@ -6,9 +6,7 @@
  * opposite-direction tracks on the same street — doesn't cause the
  * distance-along-shape value to jump or go non-monotonic between samples.
  */
-import { lonLatPoint, metresBetween } from './geoDistance.js';
-
-const EARTH_RADIUS_M = 6_371_000;
+import { lonLatPoint, metresBetween, projectOntoSegment } from './geoDistance.js';
 
 export interface Shape {
   pts: [number, number][]; // [lon, lat]
@@ -70,18 +68,7 @@ export function projectOntoShape(shape: Shape, lat: number, lon: number): ShapeP
   let bestPerp = Infinity;
   let bestAlong = 0;
   for (let i = 0; i < shape.pts.length - 1; i++) {
-    const [lon1, lat1] = shape.pts[i];
-    const [lon2, lat2] = shape.pts[i + 1];
-    const refLat = (lat1 + lat2) / 2;
-    const cosLat = Math.cos(refLat * Math.PI / 180);
-    const bx = (lon2 - lon1) * Math.PI / 180 * EARTH_RADIUS_M * cosLat;
-    const by = (lat2 - lat1) * Math.PI / 180 * EARTH_RADIUS_M;
-    const px = (lon - lon1) * Math.PI / 180 * EARTH_RADIUS_M * cosLat;
-    const py = (lat - lat1) * Math.PI / 180 * EARTH_RADIUS_M;
-    const segLenSq = bx * bx + by * by;
-    let t = segLenSq > 0 ? (px * bx + py * by) / segLenSq : 0;
-    t = Math.max(0, Math.min(1, t));
-    const perp = Math.hypot(px - t * bx, py - t * by);
+    const { t, offM: perp } = projectOntoSegment({ lat, lon }, shape.pts[i], shape.pts[i + 1]);
     if (perp < bestPerp) {
       bestPerp = perp;
       const segLen = shape.cum[i + 1] - shape.cum[i];

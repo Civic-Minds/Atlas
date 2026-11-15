@@ -94,9 +94,10 @@ const RULES: Rule[] = [
     allowed: ['shared/headsignDisplay.ts'] },
 
   // CIV-1592: one distance between two points (shared/geoDistance.ts). Not a style rule, but the same kind of one-source
-  // check: the haversine sum or a metres-per-degree constant anywhere else is a second distance function.
-  { name: 'a distance function of its own (use metresBetween from shared/geoDistance.ts)', doc: 'TEXT.md',
-    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
+  // check: the haversine sum, a metres-per-degree constant or the earth's radius anywhere else is a second distance function or
+  // projection (CIV-1597).
+  { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
+    pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?320|110_?540|40_?075_?000|6_?371_?000)(?![\d])/, slip: 'const dy = (lat2 - lat1) * 111320;',
     allowed: ['shared/geoDistance.ts'] },
 
   // How Atlas looks
