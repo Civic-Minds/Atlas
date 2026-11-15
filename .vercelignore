@@ -20,6 +20,8 @@ scripts/*
 !scripts/featureFlags.ts
 # Imported by shared/agencyPlaces.test.ts, which the build's `tsc` type-checks.
 !scripts/build-area-page-list.ts
+# Imported by src/data/__tests__/frequentCoverageMetros.test.ts, which the build's `tsc` type-checks (CIV-1577).
+!scripts/build-frequent-coverage-metros.ts
 types/
 # Research data (~100 MB) isn't needed at build time, except one file
 # imported by src/data/frequentServiceStory.ts.
