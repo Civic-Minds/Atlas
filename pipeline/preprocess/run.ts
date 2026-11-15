@@ -8,6 +8,7 @@ import { linkMetrolinkShapes } from '../transforms/metrolink-shapes.js';
 import { linkWvuPrtShapes } from '../transforms/wvu-prt-shapes.js';
 import { mergeWvuPrtLine } from '../transforms/wvu-prt-line.js';
 import { normalizeBrantfordRouteLabels } from '../transforms/brantford-route-labels.js';
+import { splitLeadingRouteNumber } from '../transforms/leading-route-number.js';
 import { normalizeStGeorgeLabels } from '../transforms/st-george-labels.js';
 import { fixMountainLineFrequencyWindow } from '../transforms/mountain-line-frequency-fix.js';
 import { addSantaFePickUpWeekendFrequency } from '../transforms/santafe-pickup-schedule.js';
@@ -30,6 +31,8 @@ export interface GtfsTransformOptions {
   agencyName?: string;
   preprocess?: GtfsPreprocess;
   excludeRouteShortNames?: string[];
+  /** CIV-1551: take a leading route number out of route_long_name when route_short_name is blank (Manchester NH). */
+  routeNumberFromLongName?: boolean;
   excludeTripHeadsigns?: string[];
   skipLetterSuffixMerge?: boolean;
   mergeEquivalentShapeVariants?: boolean;
@@ -81,6 +84,12 @@ export function normalizeGtfs(
   if (options?.agencyId) {
     gtfs = filterGtfsByAgencyId(gtfs, options.agencyId);
     onStatus?.(`Agency filter: kept agency_id=${options.agencyId}`);
+  }
+  if (options?.routeNumberFromLongName) {
+    // Before the short-name exclusions, so a config can exclude a route by the number it now has.
+    const result = splitLeadingRouteNumber(gtfs);
+    gtfs = result.gtfs;
+    onStatus?.(`Route numbers: ${result.split} taken from the start of the long name (CIV-1551)`);
   }
   if (options?.excludeRouteShortNames?.length) {
     gtfs = filterGtfsByExcludedShortNames(gtfs, options.excludeRouteShortNames);

@@ -28146,6 +28146,7 @@
         "Nashua, New Hampshire",
         "Salem, New Hampshire"
       ],
+      "routeNumberFromLongName": true,
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
