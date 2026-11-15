@@ -65,7 +65,7 @@ function Stats({ items }: { items: [string, string][] }) {
       {items.map(([label, value]) => (
         <Fragment key={label}>
           <div className="min-w-0 self-end text-xs font-bold text-[var(--text-dim)] leading-snug break-words">{label}</div>
-          <div className="min-w-0 text-sm font-black text-[var(--text-primary)] tabular-nums whitespace-nowrap">{value}</div>
+          <div className="min-w-0 text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{value}</div>
         </Fragment>
       ))}
     </div>
@@ -194,7 +194,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
               {live.gapsMin.some(g => g != null) && (
                 <div className="flex flex-col">
                   <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">Gaps, front to back (min)</div>
-                  <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black tabular-nums">
+                  <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black">
                     {live.gapsMin.map((g, i) => (
                       g == null
                         ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>{MISSING_VALUE}</span>

@@ -40,8 +40,8 @@ const FREQUENT_SERVICE_DEFINITIONS_UPDATED = '2026-11-03';
 type HeadwayBar = (typeof frequentServiceStoryStats.headwayBars)[number];
 const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
   { key: 'wait', header: 'Wait', cell: bar => headwayAmount(bar.minutes), rowHeader: true, className: 'font-normal', width: 5 },
-  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, className: 'tabular-nums', width: 6.5 },
-  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, className: 'tabular-nums', width: 6.5 },
+  { key: 'oct11', header: 'Agencies, Oct\u00a011', cell: bar => bar.agenciesOct11, width: 6.5 },
+  { key: 'oct30', header: 'Agencies, Oct\u00a030', cell: bar => bar.agencies, width: 6.5 },
 ];
 
 /**
@@ -60,7 +60,7 @@ const DEFINITION_FUNNEL = [
 type DefinitionStep = (typeof DEFINITION_FUNNEL)[number];
 const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
   { key: 'step', header: 'Step', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
-  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, className: 'tabular-nums', width: 6 },
+  { key: 'agencies', header: 'Agencies', cell: step => step.agencies, width: 6 },
 ];
 
 /** CIV-1603 section 3: weekday and Sunday routes at a threshold (frequent-weekend-counts.json). */
@@ -73,8 +73,8 @@ const weekendCounts = (city: WeekendCity, minutes: WeekendThreshold) => (minutes
 const WEEKEND_COLUMNS: DataTableColumn<WeekendCity>[] = [
   { key: 'city', header: 'City', cell: city => city.city, rowHeader: true, className: 'font-normal', width: 8 },
   ...WEEKEND_THRESHOLDS.flatMap(minutes => [
-    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, className: 'tabular-nums', width: 6 },
-    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, className: 'tabular-nums', width: 6 },
+    { key: `weekday${minutes}`, header: `Weekday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).weekday, width: 6 },
+    { key: `sunday${minutes}`, header: `Sunday, ${headwayFilterLabel(minutes)}`, cell: (city: WeekendCity) => weekendCounts(city, minutes).sunday, width: 6 },
   ]),
 ];
 
