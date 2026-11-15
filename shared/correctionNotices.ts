@@ -8,11 +8,13 @@ export interface CorrectionNotice {
   routeIds?: string[];
 }
 
+/**
+ * Atlas's own notes about fixes it made to an agency's data (not the agency's notices). A route they apply to shows the
+ * corrected-data line (N5), and its Learn more (E3) opens with this note. Ryan approved the words, CIV-1639 (2026-11-15).
+ */
 const CORRECTION_NOTICE_COPY: Record<CorrectionNoticeType, string> = {
-  excludedNonRevenueTrips:
-    'We excluded trips marked “Not in Service” from the rider schedule because they are not available to passengers.',
-  removedPlaceholderDestination:
-    'We removed a placeholder destination because it is not a real stop.',
+  excludedNonRevenueTrips: 'We removed trips marked “Not in Service” because they don’t take passengers.',
+  removedPlaceholderDestination: 'We removed a placeholder destination because it isn’t a real stop.',
 };
 
 export function correctionNoticeText(type: CorrectionNoticeType): string {
@@ -31,4 +33,14 @@ export function correctionNoticeApplies(
     (routeShortName && notice.routeShortNames?.includes(routeShortName))
       || (routeId && notice.routeIds?.includes(routeId)),
   );
+}
+
+/** The note for a route, from the first correction that applies to it by short name or by any of its route ids. */
+export function correctionNoteForRoute(
+  notices: readonly CorrectionNotice[] | null | undefined,
+  routeShortName: string | null | undefined,
+  routeIds: readonly (string | null | undefined)[],
+): string | undefined {
+  const notice = (notices ?? []).find(n => correctionNoticeApplies(n, routeShortName, null) || routeIds.some(id => correctionNoticeApplies(n, null, id)));
+  return notice ? correctionNoticeText(notice.type) : undefined;
 }

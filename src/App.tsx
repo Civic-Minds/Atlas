@@ -69,6 +69,7 @@ import { splitRouteKey } from './utils/routeKey';
 import { LIVE_VEHICLES_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
 import { LIVE_PATH } from '../shared/pagePaths';
+import type { CorrectionNotice } from '../shared/correctionNotices';
 
 export interface Agency {
   slug: string;
@@ -114,6 +115,8 @@ export interface Agency {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  /** CIV-1639: Atlas's own notes about fixes to this agency's data (shared/correctionNotices.ts), shown on the routes they name. */
+  correctionNotices?: CorrectionNotice[];
   /** CIV-1060: why a hidden agency shows nothing; the agency card shows hiddenAgencyNoteFor(hiddenReason). */
   hiddenReason?: HiddenAgencyReason;
   feedReviewStatus?: 'review' | 'verified';

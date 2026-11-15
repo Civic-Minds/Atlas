@@ -2,6 +2,7 @@ import { isAgencyVisibleInBrowser, type BrowserAgencyVisibility } from './agency
 import type { AtlasMode } from './config';
 import type { SupplementalFeedMeta } from './feedAvailability';
 import type { HiddenAgencyReason } from './hiddenAgencyNote';
+import type { CorrectionNotice } from './correctionNotices';
 
 /** Fields the browser needs; pipeline feed URLs, source credentials and internal notes never ship here. */
 export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
@@ -32,6 +33,8 @@ export interface AgencyCatalogEntry extends BrowserAgencyVisibility {
   issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
+  /** CIV-1639: Atlas's own notes about fixes to this agency's data (shared/correctionNotices.ts), shown on the routes they name. */
+  correctionNotices?: CorrectionNotice[];
   /** CIV-1060: why a hidden agency shows nothing; the card shows hiddenAgencyNoteFor(hiddenReason). */
   hiddenReason?: HiddenAgencyReason;
   feedReviewStatus?: 'review' | 'verified';
