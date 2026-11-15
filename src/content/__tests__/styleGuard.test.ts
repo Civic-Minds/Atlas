@@ -104,6 +104,9 @@ const RULES: Rule[] = [
   { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
+  // CIV-1591: cards hide and pre-check report reasons by REPORT_REASON (src/components/Interval/cardUi.tsx), never a typed string.
+  { name: 'a report reason typed as a string (use REPORT_REASON)', doc: 'TEXT.md', pattern: /excludeReasons=\{\[[^\]]*['"]|\breason=["']/, slip: '<FlaggableValue reason="Frequency is wrong" />' },
+
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },

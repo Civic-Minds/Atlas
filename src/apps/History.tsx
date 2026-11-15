@@ -12,7 +12,7 @@ import { routeLabels } from '../utils/format';
 import { RouteTitleName } from '../components/RouteRowName';
 import { agencyCardTitle, agencyNames } from '../utils/agencyName';
 import CardRouteList from '../components/Interval/CardRouteList';
-import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell } from '../components/Interval/cardUi';
+import { AgencyCardTop, CardHelpNotice, CARD_CALLOUT_HEADLINE, CARD_CALLOUT_HEADLINE_TONE, CARD_CALLOUT_TEXT, CARD_HEADER_BLOCK, CardCallout, CardDirectionRow, CardReportButton, SIDEBAR_CARD_BODY, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardShell, REPORT_REASON } from '../components/Interval/cardUi';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { SearchSuggestionsPanel, type RecentRoute, type SuggestedRoute } from '../components/Interval/SearchSuggestionsPanel';
 import type { RouteListDisplay } from '../utils/effectiveHeadway';
@@ -349,7 +349,7 @@ function RouteHistoryCard({
               ['Snapshots', snaps.map(s => s.label).join(', ')],
               ...(day !== 'Weekday' ? [['Day', day] as [string, string]] : []),
             ])}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -732,7 +732,7 @@ function HistoryAgencyPanel({
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
               details={reportDetails([['Agency', agencyHistory.name], ['Agency slug', agencyHistory.slug]])}
-              excludeReasons={['Stop is missing, misplaced, or assigned incorrectly', 'Route line is missing or follows the wrong path']}
+              excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
             />
           )}
         >

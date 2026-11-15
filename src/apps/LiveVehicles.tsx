@@ -33,7 +33,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
-import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
+import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
@@ -734,7 +734,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}, vehicle ${cardVehicle.vehicleLabel ?? cardVehicle.id}`}
             details={liveVehicleReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, vehicle: cardVehicle })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -786,7 +786,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}`}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>

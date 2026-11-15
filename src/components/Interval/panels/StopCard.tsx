@@ -16,6 +16,7 @@ import {
   CardReportButton,
   FlaggableValue,
   type CardReportButtonHandle,
+  REPORT_REASON,
 } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup from './StopRouteGroup';
@@ -131,7 +132,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           <div className="flex-1 min-w-0">
             <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? BACK_TO_MAP_LABEL}</CardBackLink>
             {stopAgencies.length === 1 ? (
-              <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+              <FlaggableValue reason={REPORT_REASON.stop} reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
                   title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
@@ -145,7 +146,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                   selected={stopAgencyFilter}
                   onSelect={setStopAgencyFilter}
                 />
-                <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+                <FlaggableValue reason={REPORT_REASON.stop} reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
                     title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
@@ -163,7 +164,7 @@ export const StopCard: React.FC<StopCardProps> = ({
               ['Period', period],
             ])}
             showLiveReason={!!liveStop}
-            excludeReasons={['Route line is missing or follows the wrong path']}
+            excludeReasons={[REPORT_REASON.line]}
           />
         </div>
       </SidebarCardHeaderBlock>

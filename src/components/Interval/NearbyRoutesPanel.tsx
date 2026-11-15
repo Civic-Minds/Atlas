@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { nameCase } from '../../utils/format';
-import { CardReportButton, HeadwayBadge, LimitedBadge } from './cardUi';
+import { CardReportButton, HeadwayBadge, LimitedBadge, REPORT_REASON } from './cardUi';
 import { reportDetails } from '../../utils/reportIssue';
 import { headwayEvery, headwayEveryRange } from '../../utils/headwayText';
 import { IRREGULAR_PERIOD_SHORT_LABEL } from '../../utils/effectiveHeadway';
@@ -64,7 +64,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
         <CardReportButton
           title={NEAR_YOU_TITLE}
           details={nearYouReportDetails(routes, point, day, period)}
-          excludeReasons={['Route line is missing or follows the wrong path']}
+          excludeReasons={[REPORT_REASON.line]}
         />
       )} />
 
