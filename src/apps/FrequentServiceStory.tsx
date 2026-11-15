@@ -149,11 +149,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
         {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
         <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
           <h2 id="story-break-heading" className={STORY_HEADING}>Every map tells it differently.</h2>
-          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge),
+          {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge); its Toronto
+              sentences are Ryan's CIV-1495 #6 wording (2026-11-15), with the TTC's Sunday start and the map's own test.
               with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
               maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className={STORY_PARAGRAPH}>
-            Each agency decides what its map shows, so one map is hard to compare with the next. Toronto’s Ten-Minute Network means a bus or streetcar {headwayOrBetter(10)}, from {hourTime(6)} to {hourTime(25)}. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
+            Each agency decides what its map shows, so one map is hard to compare with the next. The TTC’s own 10-minute network runs {headwayOrBetter(10)} from {hourTime(6)} to {hourTime(25)} (from {hourTime(8)} on Sundays). The map below uses a broader test: {headwayOrBetter(15)} on weekday daytimes. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.
           </p>
           <p className={STORY_PARAGRAPH}>
             The maps also differ in what they draw. Vancouver’s and Portland’s show only the frequent network, so a slower route isn’t on the map. Toronto’s, Ottawa’s and Seattle’s draw every route and mark the frequent ones. Seattle also counts two routes that share a street as frequent together, which none of the other maps here do.
@@ -187,7 +188,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 Planners often run more service where many people travel, while keeping less-frequent routes so more places stay connected. Good networks need both—but they serve different purposes.
               </p>
               <p className={STORY_PARAGRAPH}>
-                We reviewed current official system maps and approved rider guides. If the source was unavailable, we recorded that result rather than substituting a schedule, planning document or service-definition page.
+                We reviewed each agency’s official sources: system maps, rider guides, frequent network pages, service guidelines and planning documents. If we found none, we recorded that.
               </p>
             </div>
           </section>

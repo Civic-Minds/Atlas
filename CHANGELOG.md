@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Frequent Service story says what it checked and how Toronto's map differs**: the method paragraph lists every kind of official source used, and the Toronto line gives the TTC's Sunday start and says the map uses a broader every-15-minute test
 - **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
 - **Every page has one name, and titles are in title case**: "Documentation" and "What’s New" read the same on every link, heading and browser tab; page and section headings and tabs use title case; tabs share one "Page | Transit Atlas" format; link previews say "Transit Atlas"; and the map’s What’s New button shows a dot until the newest release is opened
 - **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
