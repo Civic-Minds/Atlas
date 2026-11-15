@@ -3833,6 +3833,11 @@ export async function processGtfsBuffer(
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
+    // #1514: the groups whose routes are commuter rail (route_type 2).
+    const commuterRailGroups = new Set<string>();
+    for (const [feature, { shortName }] of featureStopHeadwaySlots) {
+      if (Number(feature.properties.routeType) === 2) commuterRailGroups.add(shortName);
+    }
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
       const groupRoute = gKey.slice(0, gKey.indexOf('::'));
@@ -3849,7 +3854,7 @@ export async function processGtfsBuffer(
       // #1292: a configured reference stop (NYC J: the AM skip-stop pattern runs past Chauncey St).
       const [ovRoute, ovDir] = gKey.split('::');
       const mainRefStop = options?.refStopOverrides?.find(o => o.routeShortName === ovRoute && String(o.directionId) === ovDir)?.stopId;
-      const stretches = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop);
+      const stretches = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop, commuterRailGroups.has(gKey.slice(0, gKey.indexOf('::'))));
       // The night version (Ryan, 2026-10-15): the same direction from its 2-5am trips only.
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
