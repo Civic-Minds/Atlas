@@ -1,4 +1,5 @@
 import React from 'react';
+import { FEATURES } from '../../shared/config';
 import { APP_TAB_ACTIVE, APP_TAB_INACTIVE, TOP_BAR_TAB_INACTIVE } from '../styles';
 import { ModeTabLabel, modeTabSpacing, modeTabCollapsed, useModeTabsCollapseOthers, NARROW_TOP_BAR_QUERY, COMPACT_TOP_BAR_QUERY } from './ModeTabLabel';
 import { useMediaQuery } from '../hooks/useMediaQuery';
@@ -39,6 +40,7 @@ export default function ModeTab({
   /** menu-trigger only: shown after the label (the chevron). */
   trailing?: React.ReactNode;
 }) {
+  // CIV-1567 (beta): folding, the gap and padding wait for the label to fade (FOLD_SHUT), so the word fades in place.
   // Shrinks to its icon while a non-map view is on, or on a narrow top bar, and this tab is not the selected one; on a compact top bar the selected one shrinks too.
   const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active, useMediaQuery(NARROW_TOP_BAR_QUERY), useMediaQuery(COMPACT_TOP_BAR_QUERY));
   // On the bar an unselected tab takes the top bar's outline (CIV-1020); the phone menu's items sit in a panel and keep the panel border.
@@ -87,7 +89,7 @@ export default function ModeTab({
       aria-pressed={active}
       aria-label={ariaLabel}
       title={collapsed ? label : undefined}
-      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-[color,background-color,border-color,padding,gap] duration-200 ease-out motion-reduce:transition-none text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
+      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-[color,background-color,border-color,padding,gap] duration-200 ease-out motion-reduce:transition-none ${FEATURES.modeTransitions && collapsed ? 'delay-100' : ''} text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
     >
       {icon}
       <ModeTabLabel collapsed={collapsed}>

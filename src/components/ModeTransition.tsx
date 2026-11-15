@@ -384,3 +384,33 @@ export function useShownWithCount<L, C>(label: L, count: C, enabled: boolean): [
   }, [enabled, waiting]);
   return enabled ? [next.label, next.count] : [label, count];
 }
+
+/**
+ * Words that cross-fade when they change (a mode's search hint): the old words fade out where they were while the new
+ * ones fade in over them (CIV-1567). Off: just the words.
+ */
+export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: boolean }) {
+  const [shown, setShown] = useState(text);
+  const [old, setOld] = useState<string | null>(null);
+  const [fading, setFading] = useState(false);
+  if (enabled && text !== shown) {
+    setOld(shown);
+    setShown(text);
+    setFading(false);
+  }
+  useEffect(() => {
+    if (old == null) return;
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setFading(true)); });
+    const timer = window.setTimeout(() => { setOld(null); setFading(false); }, 350);
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); window.clearTimeout(timer); };
+  }, [old]);
+  if (!enabled) return <>{text}</>;
+  const fade = 'transition-opacity duration-300 ease-out motion-reduce:transition-none';
+  return (
+    <span className="inline-grid">
+      {old != null && <span aria-hidden="true" className={`[grid-area:1/1] ${fade} ${fading ? 'opacity-0' : 'opacity-100'}`}>{old}</span>}
+      <span className={`[grid-area:1/1] ${old != null ? `${fade} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
+    </span>
+  );
+}

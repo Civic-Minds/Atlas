@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, useModeEasing, useModeEntering } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
@@ -761,7 +761,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             >
               {/* The search pill is narrow on phones: a one-word hint stays on one line. */}
               <span className="sm:hidden">{SEARCH_SHORT_PLACEHOLDER}</span>
-              <span className="hidden sm:inline">{searchPlaceholder}</span>
+              {/* CIV-1567 (beta): a mode's new hint cross-fades with the old one. */}
+              <span className="hidden sm:inline"><ModeCrossFadeText text={searchPlaceholder} enabled={FEATURES.modeTransitions} /></span>
             </span>
           )}
           {query !== '' && <SearchClearButton variant="bar" onClear={handleSearchClear} />}

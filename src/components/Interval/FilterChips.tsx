@@ -306,15 +306,22 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     setSelectedAgencies(next);
   };
 
-  const chipClass = (active: boolean) =>
-    `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
+  // CIV-1567 (beta): the selected fill is a layer that fades (a background image cannot ease), and the dot fades too,
+  // so a chip whose value a mode changes cross-fades instead of switching in one frame.
+  const chipClass = (active: boolean) => FEATURES.modeTransitions
+    ? `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors duration-300 ease-out whitespace-nowrap bg-[var(--bg-panel)] before:absolute before:inset-0 before:-z-10 before:rounded-full before:[background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] before:transition-opacity before:duration-300 before:ease-out ${
+      active
+        ? 'border-[var(--control-active-border)] text-[var(--control-active-fg)] before:opacity-100'
+        : `${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)] before:opacity-0`
+    }`
+    : `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
       active
         ? CONTROL_ACTIVE_GLASS
         : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
     }`;
 
   const Dot = ({ show }: { show: boolean }) =>
-    show ? <ActiveDot /> : null;
+    FEATURES.modeTransitions ? <ActiveDot className={`transition-opacity duration-300 ease-out ${show ? 'opacity-100' : 'opacity-0'}`} /> : show ? <ActiveDot /> : null;
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 
