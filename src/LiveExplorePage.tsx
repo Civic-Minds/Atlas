@@ -41,7 +41,7 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/section
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 
@@ -88,9 +88,9 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
-            <Fact label="Trips where it grows" value={percentText(f.growShare)} sub={`of ${countText(f.n)}`} />
-            <Fact label="Typical delay" value={mins(f.medianDelayMin)} />
-            <Fact label="1 in 10 later than" value={mins(f.p90DelayMin)} />
+            <Fact label={GROWS_LABEL} value={percentText(f.growShare)} sub={`of ${countText(f.n)}`} />
+            <Fact label={DELAY_LEGEND_TITLE} value={mins(f.medianDelayMin)} />
+            <Fact label={P90_LATER_LABEL} value={mins(f.p90DelayMin)} />
           </Block>
         </Panel>
       );
@@ -101,11 +101,11 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
     return (
       <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
-          <Fact label="Gaps off the schedule" value={`${percentText(b.fromBadShare)} to ${percentText(b.toBadShare)}`} />
+          <Fact label={GAPS_OFF_SCHEDULE_LABEL} value={`${percentText(b.fromBadShare)} to ${percentText(b.toBadShare)}`} />
         </Block>
-        <Block title={linked.length ? 'Linked to' : LIVE_NOTHING_LINKED}>
+        <Block title={linked.length ? LINKED_TO_TITLE : LIVE_NOTHING_LINKED}>
           {b.links.map(l => (
-            <Fact key={l.kind} label={`${l.value == null ? 'Not measured' : l.linked ? 'Linked' : 'Not linked'}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
+            <Fact key={l.kind} label={`${l.value == null ? NOT_MEASURED_LABEL : l.linked ? LINKED_LABEL : NOT_LINKED_LABEL}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
           ))}
         </Block>
       </Panel>
@@ -123,28 +123,28 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       <Block>
         {s.n > 0 && s.delayMin != null ? (
           <>
-            <Fact label="Typical delay" value={delayText(s.delayMin)} />
-            {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
-            {s.lateShare != null && <Fact label="Late" value={percentText(s.lateShare)} sub={`of ${countText(s.n)} departures`} />}
+            <Fact label={DELAY_LEGEND_TITLE} value={delayText(s.delayMin)} />
+            {full && <Fact label={P90_LATER_LABEL} value={mins(full.p90Min)} />}
+            {s.lateShare != null && <Fact label={LATE_LABEL} value={percentText(s.lateShare)} sub={`of ${countText(s.n)} departures`} />}
           </>
-        ) : <Fact label="Typical delay" value="not measured" />}
+        ) : <Fact label={DELAY_LEGEND_TITLE} value={NOT_MEASURED_VALUE} />}
         {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
         <Block>
-          <Fact label="Too close together" value={percentText(bunch.bunchedShare)} />
-          <Fact label="Too far apart" value={percentText(bunch.gappedShare)} sub={`${countText(bunch.n)} gaps`} />
+          <Fact label={TOO_CLOSE_LABEL} value={percentText(bunch.bunchedShare)} />
+          <Fact label={TOO_FAR_LABEL} value={percentText(bunch.gappedShare)} sub={`${countText(bunch.n)} gaps`} />
         </Block>
       )}
       {extra && (
         <Block>
-          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
+          <Fact label={EXTRA_WAIT_LABEL} value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
         </Block>
       )}
       {into && into.n > 0 && (
         <Block title={stretchLabel(into.fromName, into.toName)}>
           <Fact label={TYPICAL_ADDED} value={mins(into.medianAddedMin)} />
-          <Fact label="Trips where it grows" value={percentText(into.growShare)} sub={`of ${countText(into.n)}`} />
+          <Fact label={GROWS_LABEL} value={percentText(into.growShare)} sub={`of ${countText(into.n)}`} />
         </Block>
       )}
     </Panel>
@@ -206,7 +206,7 @@ export default function LiveExplorePage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   const shell = (body: ReactNode) => <PageShell variant="wide" maxWidth="max-w-[1600px]">{body}</PageShell>;
@@ -255,20 +255,20 @@ export default function LiveExplorePage() {
         <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
           <RouteSubtitle v3={v3} agency={agency} route={route} />
         </p>
-        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+        {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
       </div>
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
 
-      <ErrorBoundary label={BOUNDARY('This week compared with last week')}><KpiRow v3={v3} /></ErrorBoundary>
+      <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
 
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
-        <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
-          options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
-        <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
+        <Group label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
+          options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
+        <Group label={TIME_OF_DAY_LABEL} value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
-      <ErrorBoundary label={BOUNDARY('Along the route')}>
+      <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
 
@@ -276,10 +276,10 @@ export default function LiveExplorePage() {
         before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
       <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
-      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
-      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
-      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
-      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="x-stops" shrink boundary={BOUNDARY('Stops most often late')} onPick={pickStop} canPick={onStrip} />
+      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
+      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
+      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
       <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );

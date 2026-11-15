@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { MISSING_VALUE } from '../../../../shared/missingValue';
 import { periodKeyForHour } from '../../../../shared/config';
 import { healthyCounts, healthyDatesOf, healthyLateByHour, isWeekendDate, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
-import { fadedNoteText, excludingText, lateCount, lateHourLine, LATE_BY_HOUR_TITLE, LATE_THRESHOLD } from '../../../../shared/liveWording';
+import { LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_THRESHOLD, excludingText, fadedNoteText, lateCount, lateHourLine } from '../../../../shared/liveWording';
 import { KPI_TILE } from '../kpiTileStyle';
 import { liveChartHours, type HourHover } from '../../../utils/sparklinePeriods';
 import { lateForDays, type DayKind } from '../../../utils/liveKpi';
@@ -114,7 +114,7 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
               {c.late && c.late.n > 0 ? (
                 <div className="mt-2">
                   {c.hours.length ? (
-                    <HourSpark departures yAxis periodBand idleText={c.thin ? THIN_HINT : undefined} barColor={lateShareColor} hover={hover} onHover={setHover} height={tall ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={axis} scale={scale} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader="Late"
+                    <HourSpark departures yAxis periodBand idleText={c.thin ? THIN_HINT : undefined} barColor={lateShareColor} hover={hover} onHover={setHover} height={tall ? 120 : undefined} hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)} values={c.hours} hours={axis} scale={scale} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
                       ariaLabel={`${c.label}: share of departures late by hour of the day, ${percentText(c.late.share)} late overall.`} />
                   ) : <p className="text-sm text-[var(--text-muted)]">{LIVE_NO_DEPARTURES_IN_PERIOD}</p>}
                 </div>
@@ -213,7 +213,7 @@ function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<
   return (
     <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
       <HourSpark
-        idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader="Late"
+        idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
         hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}
         shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
         hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}

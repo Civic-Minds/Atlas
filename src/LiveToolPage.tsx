@@ -19,7 +19,7 @@ import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlS
 import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { excludingDays, kpiTiles } from './utils/liveKpi';
-import { excludingText } from '../shared/liveWording';
+import { DIRECTION_LABEL, GROWS_LABEL, LATE_STOPS_TITLE, TIME_OF_DAY_LABEL, excludingText } from '../shared/liveWording';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
@@ -69,7 +69,7 @@ function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
 function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
-  return <PillMenu label="Time of day" value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
+  return <PillMenu label={TIME_OF_DAY_LABEL} value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
 }
 
 /** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
@@ -115,7 +115,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
 /** The lines of a segment's card: only the segment, never its start stop. */
 function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string): string[] {
   const x = data.buildup.find(b => b.directionId === dir)?.stretches.find(t => t.fromStopId === fromStopId && t.toStopId === toStopId);
-  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `Trips where it grows ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
+  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `${GROWS_LABEL} ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
 }
 
 /** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
@@ -167,7 +167,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
-    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
+    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
   ];
 }
 
@@ -273,7 +273,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   );
   // The direction switch sits in the top bar with the other pills.
   // One pill showing the current direction; a click switches to the other.
-  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
+  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label={DIRECTION_LABEL} onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   // The route menu at the right end of the top bar: the panel list's routes in its order, plus All routes; a pick sets route= as a list click does.
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).

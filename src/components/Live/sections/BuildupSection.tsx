@@ -9,9 +9,9 @@ import { branchNamesWrap } from '../BranchStrip';
 import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
-import { DELAY_STARTS_TITLE, TYPICAL_ADDED } from '../../../../shared/liveWording';
+import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, ON_TIME_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
 import { mins } from './figures';
-import { percentText, countText } from '../../../../shared/numberText';
+import { countText, percentText } from '../../../../shared/numberText';
 
 /** The one derivation of where delay builds up, so every surface draws the same numbers. */
 export function buildupModel(data: DashboardBandData, dir: number | null, uncertain: UncertainStart[]) {
@@ -69,11 +69,11 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                 points={points}
                 formatY={mins}
                 unit="trips"
-                valueHeader="Typical delay"
+                valueHeader={DELAY_LEGEND_TITLE}
                 caption="How late vehicles usually leave each stop: above the line is late, below is early."
                 whiskers={false}
                 zero
-                zeroLabel="On time"
+                zeroLabel={ON_TIME_LABEL}
                 scale={scale}
                 lessExactNote="the first stops are in the tunnel, where we see the vehicles less often. These are rough."
                 marks={marked >= 0 ? [{ index: marked, label: `Builds up by ${points[marked].short}` }] : []}
@@ -81,7 +81,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
               )}
               {full && (
                 <PerPeriod
-                  title="By time of day"
+                  title={BY_TIME_OF_DAY_TITLE}
                   rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
                     const pb = v3.bands[k]?.buildup.find(x => x.directionId === b.directionId);
                     if (!pb) return [];
@@ -98,13 +98,13 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                   rows={full ? worst.slice(0, 3) : worst}
                   rowKey={s => `${s.fromStopId}-${s.toStopId}`}
                   columns={full ? [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
+                    { key: 'stretch', header: ADDS_MOST_TITLE, rowHeader: true, width: 14, className: 'font-normal break-words', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: TYPICAL_ADDED, width: 7, className: 'max-sm:!pr-1', worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
+                    { key: 'grows', header: GROWS_LABEL, width: 10, className: 'whitespace-nowrap max-sm:!pr-1.5', worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
                   ] : [
-                    { key: 'stretch', header: 'Stretch that adds the most', rowHeader: true, className: 'font-normal', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
+                    { key: 'stretch', header: ADDS_MOST_TITLE, rowHeader: true, className: 'font-normal', cell: s => <span title={`${s.fromName} to ${s.toName}`}>{stretchLabel(s.fromName, s.toName)}</span> },
                     { key: 'added', header: TYPICAL_ADDED, worst: s => s.medianAddedMin, cell: s => mins(s.medianAddedMin) },
-                    { key: 'grows', header: 'Trips where it grows', worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
+                    { key: 'grows', header: GROWS_LABEL, worst: s => s.growShare, cell: s => `${percentText(s.growShare)} of ${countText(s.n)}` },
                   ]}
                 />
               </PageTable>

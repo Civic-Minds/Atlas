@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { LATE_THRESHOLD, lateStopsIntro } from '../../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, LATE_THRESHOLD, P90_LATER_LABEL, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -70,13 +70,13 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
           onPick && canPick
             ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
             : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
-          ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
+          ...(both ? [{ key: 'dir', header: DIRECTION_LABEL, align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
-            ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
-            : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${countText(s.n)} departures`}>{percentText(s.lateShare)}</span> },
+            ? { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
+            : { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${countText(s.n)} departures`}>{percentText(s.lateShare)}</span> },
           ...(full ? [
-            { key: 'median', header: 'Typical delay', width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
+            { key: 'median', header: DELAY_LEGEND_TITLE, width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
+            { key: 'p90', header: P90_LATER_LABEL, narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
             { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
           ] : []),
         ]}

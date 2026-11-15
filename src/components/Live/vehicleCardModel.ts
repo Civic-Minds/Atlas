@@ -4,6 +4,7 @@ import { getVehicleStatus } from '../../utils/colors';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import type { RouteAnalysisPatterns } from '../../hooks/useRouteAnalysisPatterns';
 import { destinationKind } from '../../utils/liveGrouping';
+import { DIRECTION_LABEL, ON_TIME_LABEL, SHORT_TURN_LABEL } from '../../../shared/liveWording';
 import { speedText } from '../../../shared/unitText';
 
 /** Schedule status for a vehicle, or '' when the feed gives none (never a "No data" placeholder). */
@@ -13,7 +14,7 @@ export function delayLabel(v: Pick<LiveVehicle, 'statusLabel' | 'delayMin'>): st
   if (status === 'no_data') return '';
   if (status === 'early') return `${delayAmount(Math.round(Math.abs(v.delayMin!)))} early`;
   if (status === 'late') return `${delayAmount(Math.round(v.delayMin!))} late`;
-  return 'On time';
+  return ON_TIME_LABEL;
 }
 
 export interface VehicleCardRow {
@@ -43,9 +44,9 @@ export function vehicleCardRows(
   // A branch (504B to Broadview) runs to its own end, so it reads "Direction: to Broadview", untagged; the tag is
   // only for a trip whose last stop is on its direction's line, never a guess.
   const branch = tripEnd === 'branch' && !!destination;
-  if (branch) rows.push({ label: 'Direction', value: `to ${destination}` });
-  else if (direction) rows.push({ label: 'Direction', value: `to ${direction}` });
-  if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: 'Short turn' } : {}) });
+  if (branch) rows.push({ label: DIRECTION_LABEL, value: `to ${destination}` });
+  else if (direction) rows.push({ label: DIRECTION_LABEL, value: `to ${direction}` });
+  if (!branch && destination && destination !== direction) rows.push({ label: 'Ends at', value: destination, ...(direction && tripEnd === 'shortTurn' ? { tag: SHORT_TURN_LABEL } : {}) });
   if (v.speedKmh != null) rows.push({ label: 'Speed', value: speedText(v.speedKmh) });
   const schedule = delayLabel(v);
   if (schedule) rows.push({ label: 'Schedule', value: schedule, status: v.status });
@@ -57,7 +58,7 @@ export function vehicleCardRows(
  * opened from a link never shows the nearest-shape guess first (CIV-1068).
  */
 export function placedRows(rows: VehicleCardRow[], ready: boolean): VehicleCardRow[] {
-  return ready ? rows : rows.filter(row => row.label !== 'Direction' && row.label !== 'Ends at');
+  return ready ? rows : rows.filter(row => row.label !== DIRECTION_LABEL && row.label !== 'Ends at');
 }
 
 /** "Bus 8123" (or "4412" on a streetcar route, CIV-926) when the feed names the vehicle; null when it would only be a generic "Vehicle N". */

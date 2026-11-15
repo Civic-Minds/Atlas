@@ -20,7 +20,7 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
 import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 
@@ -98,9 +98,9 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excludingTitle?: string;
 }) {
   return (
-    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
+    <section aria-label={WEEK_COMPARE_TITLE} className={`${TILE} !px-2.5 !py-1.5`}>
       <DataTable
-        caption="This week compared with last week"
+        caption={WEEK_COMPARE_TITLE}
         rows={tiles}
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
@@ -130,7 +130,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
 export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption?: string | null }) {
   return (
-    <section aria-label="This week compared with last week" className="mt-5">
+    <section aria-label={WEEK_COMPARE_TITLE} className="mt-5">
       <ul className={`grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
         {tiles.map(k => <KpiTile key={k.key} k={k} />)}
       </ul>
@@ -173,7 +173,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
-    <Section id="dash-strip" title="Along the route" intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
+    <Section id="dash-strip" title={ALONG_ROUTE_TITLE} intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
@@ -229,7 +229,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
-      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
+      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title={LATE_STOPS_TITLE} boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
     </>
   );

@@ -6,7 +6,7 @@
 import { runTimeDiffMin, dailyNoise, healthyCounts, weekChangeTone, type CompareKey, type DailyValues, type DayKind, type LiveV3, type WeekMetrics } from '../../shared/liveDashboard';
 import { dateRange } from '../../shared/dateText';
 import { MISSING_VALUE } from '../../shared/missingValue';
-import { LATE_TILE_CAPTION, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText, TRIP_TIME_LABEL } from '../../shared/liveWording';
+import { BUNCHING_LABEL, EXTRA_WAIT_LABEL, LATE_LABEL, LATE_TILE_CAPTION, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, bunchPartsText, excludingWeeksText, leftOutReason, runTimeDiffText } from '../../shared/liveWording';
 import { minutesText, tenth as clean } from '../../shared/liveFormat';
 import { runTimeAmount } from '../../shared/headwayText';
 import { percentTenthText, percentText } from '../../shared/numberText';
@@ -86,15 +86,15 @@ export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = 
   const lastBunch = l.bunching ? (t.bunching && bunchSplit(t.bunching) && bunchSplit(l.bunching) ? bunchText(l.bunching) : percentText(l.bunching.share)) : null;
   const lateT = t.late ? percentText(t.late.share) : null, tripT = t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : null, waitT = t.extraWait ? minutesText(t.extraWait.minutes) : null, delT = t.delivered?.share != null ? percentTenthText(t.delivered.share) : null;
   const tiles = [
-    mk('late', 'Late', t.late ? percentText(t.late.share) : MISSING_VALUE, LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
+    mk('late', LATE_LABEL, t.late ? percentText(t.late.share) : MISSING_VALUE, LATE_TILE_CAPTION, t.late?.n ?? 0, 'departures', l.late?.n ?? null,
       compare ? kpiDelta('late', t.late?.share ?? null, l.late?.share ?? null, true, true, noise('late'), l.late ? percentText(l.late.share) : null, lateT) : null, l.late ? percentText(l.late.share) : null),
     mk('tripTime', TRIP_TIME_LABEL, t.tripTime ? runTimeAmount(t.tripTime.typicalMin) : MISSING_VALUE, t.tripTime ? runTimeCaption(t.tripTime.typicalMin, t.tripTime.scheduledMin) : 'too few trips measured', t.tripTime?.n ?? 0, 'trips', l.tripTime?.n ?? null,
       compare ? kpiDelta('tripTime', t.tripTime?.typicalMin ?? null, l.tripTime?.typicalMin ?? null, true, false, noise('tripTime'), l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null, tripT) : null, l.tripTime ? runTimeAmount(l.tripTime.typicalMin) : null),
-    mk('extraWait', 'Extra wait', t.extraWait ? minutesText(t.extraWait.minutes) : MISSING_VALUE, 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
+    mk('extraWait', EXTRA_WAIT_LABEL, t.extraWait ? minutesText(t.extraWait.minutes) : MISSING_VALUE, 'longer wait than scheduled', t.extraWait?.gaps ?? 0, 'gaps', l.extraWait?.gaps ?? null,
       compare ? kpiDelta('extraWait', t.extraWait?.minutes ?? null, l.extraWait?.minutes ?? null, true, false, noise('extraWait'), l.extraWait ? minutesText(l.extraWait.minutes) : null, waitT) : null, l.extraWait ? minutesText(l.extraWait.minutes) : null),
-    mk('bunching', 'Bunching', bunchText(t.bunching) ?? MISSING_VALUE, t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
+    mk('bunching', BUNCHING_LABEL, bunchText(t.bunching) ?? MISSING_VALUE, t.bunching && bunchSplit(t.bunching) ? BUNCHING_SPLIT_CAPTION : 'of gaps between cars bunched or too long', t.bunching?.gaps ?? 0, 'gaps', l.bunching?.gaps ?? null,
       compare ? kpiDelta('bunching', t.bunching?.share ?? null, l.bunching?.share ?? null, true, true, noise('bunching'), lastBunch, bunchText(t.bunching), [t.bunching ? percentText(t.bunching.share) : null, l.bunching ? percentText(l.bunching.share) : null]) : null, lastBunch),
-    mk('delivered', 'Service delivered', t.delivered?.share != null ? percentTenthText(t.delivered.share) : MISSING_VALUE, 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
+    mk('delivered', SERVICE_DELIVERED_TITLE, t.delivered?.share != null ? percentTenthText(t.delivered.share) : MISSING_VALUE, 'of scheduled trips ran', t.delivered ? t.delivered.seen + t.delivered.notSeen : 0, 'trips', l.delivered ? l.delivered.seen + l.delivered.notSeen : null,
       compare ? kpiDelta('delivered', t.delivered?.share ?? null, l.delivered?.share ?? null, false, true, noise('delivered'), l.delivered?.share != null ? percentTenthText(l.delivered.share) : null, delT) : null, l.delivered?.share != null ? percentTenthText(l.delivered.share) : null),
   ];
   return tiles.filter(k => k.value !== MISSING_VALUE).map(k => (k.key === 'tripTime' && runTimeScope ? { ...k, scope: runTimeScope } : k));

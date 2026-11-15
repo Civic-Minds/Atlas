@@ -1,5 +1,6 @@
 import { branchFigures, runningTimeFigures, type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
 import { countOf } from '../../../../shared/overflowText';
+import { SHORT_TURN_LABEL } from '../../../../shared/liveWording';
 import { countText } from '../../../../shared/numberText';
 
 /** A pattern with fewer trips than this is too thin to draw (the main stretch) or drawn dim with a care note (a longer pattern). */
@@ -49,7 +50,7 @@ export function runTimeRows(v3: LiveV3, band: DashboardBand, dirs: readonly numb
 }
 
 /** The kind words on the planner's per-pattern rows (CIV-945, wording to confirm). */
-export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: 'Short turn', branch: 'Branch' } as const;
+export const PATTERN_KIND_WORDS = { main: 'Main', shortTurn: SHORT_TURN_LABEL, branch: 'Branch' } as const;
 
 /**
  * The planner's rows for one direction, one per regular pattern timed on its own trips (CIV-945), the main pattern first,

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import DataTable from '../ui/DataTable';
-import { fadedNoteText } from '../../../shared/liveWording';
+import { LESS_EXACT_LABEL, fadedNoteText } from '../../../shared/liveWording';
 import { pickAxisLabels } from '../../utils/stopLabel';
 import { countText } from '../../../shared/numberText';
 
@@ -173,7 +173,7 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 3
             {axis.ticks.map(t => t !== 0 && <div key={t} className="pointer-events-none absolute inset-x-0 border-t border-[var(--border-primary)] opacity-60" style={{ bottom: pos(t) }} />)}
             {runs.map(r => (
               <div key={r.from} className="pointer-events-none absolute inset-y-0 rounded-sm bg-[var(--control-inactive-bg)]" style={{ left: `${(r.from / count) * 100}%`, width: `${((r.to - r.from + 1) / count) * 100}%` }}>
-                <span className="absolute left-1 top-0.5 whitespace-nowrap text-xs text-[var(--text-dim)]">Less exact</span>
+                <span className="absolute left-1 top-0.5 whitespace-nowrap text-xs text-[var(--text-dim)]">{LESS_EXACT_LABEL}</span>
               </div>
             ))}
             {(zero || zeroInside) && <div className="pointer-events-none absolute inset-x-0 border-t border-[var(--text-muted)]" style={{ bottom: pos(0) }} />}

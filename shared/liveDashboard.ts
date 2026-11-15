@@ -8,7 +8,7 @@ import { dateRange } from './dateText.js';
 import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min } from './liveFormat.js';
 import { hourTime } from './timeText.js';
-import { TRIP_TIME_LABEL } from './liveWording.js';
+import { NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
 
@@ -280,7 +280,7 @@ export const LINK_LABELS: Record<BunchingLinkKind, string> = {
 };
 
 export function linkValueText(kind: BunchingLinkKind, value: number | null): string {
-  if (value == null) return 'not measured';
+  if (value == null) return NOT_MEASURED_VALUE;
   if (kind === 'terminal_departures') return `${percentText(value)} of gaps off`;
   if (kind === 'stood_still') return `${Math.round(value * 10) / 10} a day`;
   if (kind === 'slow_stretch') return `${value >= 0 ? '+' : ''}${Math.round(value)} s vs schedule`;
