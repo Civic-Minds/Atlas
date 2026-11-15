@@ -64,6 +64,15 @@ describe('route identity by the share of today\'s line that ran before (CIV-422)
     expect(splitRouteHistory([pl(2019, 'Newton Corner', line(DOWNTOWN, MID_NORTH)), pl(2020, 'Assembly Row', long)], '85').splits).toHaveLength(1);
   });
 
+  it('does not count a shared "downtown" as a shared name word (KCM 16, CIV-1485)', () => {
+    // "northgate tc downtown seattle" / "broadview carkeek park downtown seattle": only "seattle" counts, 1 of 4.
+    expect(splitRouteHistory([pl(2015, 'Northgate TC to Downtown Seattle', line(DOWNTOWN, EAST, CASTLETON)), pl(2021, 'Broadview/Carkeek Park - Downtown Seattle', line(DOWNTOWN, MID_NORTH, BROAD_RIPPLE))], '16').splits).toHaveLength(1);
+    // A hub-only overlap is no shared name: "Downtown - Nora" and "Downtown - Keystone" read as renamed.
+    expect(splitRouteHistory([p(2019, 'Downtown - Nora', null), p(2021, 'Downtown - Keystone', null)]).splits).toHaveLength(1);
+    // "downtown" still sizes the comparison, and a real shared word still keeps one route.
+    expect(splitRouteHistory([p(2019, 'Kinnear - Downtown', null), p(2021, 'Kinnear - Downtown Seattle', null)]).splits).toEqual([]);
+  });
+
   it('keeps a route whose old name was only its number (MBTA "21" -> "Ashmont - Forest Hills")', () => {
     expect(splitRouteHistory([pl(2017, '21', line(DOWNTOWN, EAST)), pl(2018, 'Ashmont - Forest Hills', line(DOWNTOWN, MID_NORTH))], '21').splits).toEqual([]);
   });
