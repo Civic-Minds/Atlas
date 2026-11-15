@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **History reads an old feed from its real timetable (beta)**: a one- or two-trip shuttle in force months earlier had left CTA's 2021–23 periods out
 - **Route cards say when Atlas fixed a route's data**: Brampton and New Orleans routes with removed “Not in Service” trips, and Brownsville's route with a removed placeholder stop, now show the corrected-data line, and Learn more says what was removed
 - **The beta Documentation page no longer ships a render error in its page source**: the Live terms load in the browser instead of breaking the prerender ([#1524](https://github.com/Civic-Minds/Atlas/issues/1524))
 - **Counts read cleanly everywhere**: large counts get commas ("1,234 routes"), a range whose ends match reads as one value instead of "every 60–60 min", and the map's loading notice says "Loading 1 of 1 agency"

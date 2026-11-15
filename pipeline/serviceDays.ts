@@ -70,14 +70,24 @@ export function serviceAnchor(runDateYmd: string = pipelineRunDateYmd()): string
   return ymdOf(dayNumber(runDateYmd) + 1);
 }
 
+/** A service with fewer than this share of a feed's trips is a token service to firstFullWeekAnchor (CIV-1641). */
+const TOKEN_SERVICE_SHARE = 0.01;
+
 /**
  * CIV-1101 Part B: the anchor for an archived zip (a History backfill), the Monday of its first
  * full Monday-Sunday week in force: the first Monday on or after the first date any service with
  * trips can run. The picker then reads the period in force from there, so a holiday is a day that
  * loses the vote, with no holiday list. null when the calendar holds no service.
+ *
+ * CIV-1641: a token service (under 1% of the feed's trips) doesn't start the period. CTA's 2021-23
+ * zips keep one- and two-trip Blue Line shuttles in force months before the timetable, which put
+ * the anchor on a week where only a shuttle runs. When no service is above the bar, they all count.
  */
 export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar' | 'calendarDates' | 'trips'>): string | null {
-  const { span } = buildServiceDayTable({ ...input, anchor: '20000103', weeksAfter: 1 });
+  const tripsPerService = new Map<string, number>();
+  for (const t of input.trips) tripsPerService.set(t.service_id, (tripsPerService.get(t.service_id) ?? 0) + 1);
+  const trips = input.trips.filter(t => tripsPerService.get(t.service_id)! >= input.trips.length * TOKEN_SERVICE_SHARE);
+  const { span } = buildServiceDayTable({ ...input, trips: trips.length ? trips : input.trips, anchor: '20000103', weeksAfter: 1 });
   if (!span) return null;
   const start = dayNumber(span.start);
   return ymdOf(start + ((7 - dayIndex(start)) % 7));
