@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn } from '../ModeTransition';
+import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
 
 /**
  * A stand-in map. `fireIdle` plays MapLibre's idle event (everything loaded and drawn); `fireRender` plays one
@@ -196,5 +196,51 @@ describe('useShownWhenDrawn (CIV-1567)', () => {
     rerender({ value: 'b' });
     expect(result.current).toBe('b');
     expect(map.once).not.toHaveBeenCalled();
+  });
+});
+
+describe('ModeSplitPane placeholder, ModeCollapse (CIV-1567)', () => {
+  it('shows the loading label on the sliding panel, so the half is never empty', () => {
+    render(<ModeSplitPane enabled anchor="left" easing entering={false} divider="4px" className="relative flex-1" placeholder={<span>Loading map…</span>}><p>map</p></ModeSplitPane>);
+    expect(screen.getByText('Loading map…').closest('[data-mode-enter="sliding"]')).not.toBeNull();
+  });
+
+  it('keeps controls mounted while folding them away, hidden from screen readers', () => {
+    const { rerender } = render(<ModeCollapse open><button>Day</button></ModeCollapse>);
+    const day = screen.getByText('Day');
+    rerender(<ModeCollapse open={false}><button>Day</button></ModeCollapse>);
+    expect(screen.getByText('Day', { selector: 'button' })).toBe(day);
+    expect(day.closest('[data-mode-collapse]')?.getAttribute('aria-hidden')).toBe('true');
+    expect(day.closest('[data-mode-collapse]')?.className).toContain('grid-cols-[0fr]');
+  });
+});
+
+describe('useShownWithCount (CIV-1567)', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('holds a new label until its count arrives, then shows both together', () => {
+    const c1 = { total: 131 }, c2 = { total: 96 }, c3 = { total: 90 };
+    const { result, rerender } = renderHook(({ label, count }) => useShownWithCount(label, count, true), { initialProps: { label: 'midday', count: c1 } });
+    expect(result.current).toEqual(['midday', c1]);
+    rerender({ label: 'late', count: c1 });
+    expect(result.current).toEqual(['midday', c1]);
+    rerender({ label: 'late', count: c2 });
+    expect(result.current).toEqual(['late', c2]);
+    // Panning: same label, the count follows at once.
+    rerender({ label: 'late', count: c3 });
+    expect(result.current).toEqual(['late', c3]);
+  });
+
+  it('never holds a label longer than the count wait, and passes through with the switch off', () => {
+    const c1 = { total: 1 };
+    const { result, rerender } = renderHook(({ label }) => useShownWithCount(label, c1, true), { initialProps: { label: 'a' } });
+    rerender({ label: 'b' });
+    expect(result.current[0]).toBe('a');
+    act(() => { vi.advanceTimersByTime(COUNT_MAX_WAIT_MS); });
+    expect(result.current[0]).toBe('b');
+    const off = renderHook(({ label }) => useShownWithCount(label, c1, false), { initialProps: { label: 'a' } });
+    off.rerender({ label: 'b' });
+    expect(off.result.current[0]).toBe('b');
   });
 });

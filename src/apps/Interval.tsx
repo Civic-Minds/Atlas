@@ -30,7 +30,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { ModeEnter, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn } from '../components/ModeTransition';
+import { ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, useMapDrawn, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -802,10 +802,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // way as the route-count badge.
   const [renderedA, setRenderedA] = useState<Set<string> | null>(null);
   const [renderedB, setRenderedB] = useState<Set<string> | null>(null);
-  const compareCounts = useMemo(() => {
-    if (!compareActive || !renderedA || !renderedB) return null;
-    return { a: { total: renderedA.size }, b: { total: renderedB.size } };
-  }, [compareActive, renderedA, renderedB]);
+  // Each side's route count, once both maps have reported. A count is a new object only when its own map reports, so
+  // (CIV-1567, beta) each label can wait for its own map's count and change in the same frame as it.
+  const bothReported = compareActive && renderedA != null && renderedB != null;
+  const countA = useMemo(() => (bothReported && renderedA ? { total: renderedA.size } : null), [bothReported, renderedA]);
+  const countB = useMemo(() => (bothReported && renderedB ? { total: renderedB.size } : null), [bothReported, renderedB]);
+  const [shownLabelA, shownCountA] = useShownWithCount(compareLabelA, countA, compareTransitions);
+  const [shownLabelB, shownCountB] = useShownWithCount(compareLabelB, countB, compareTransitions);
 
   // Whole routes and agencies for the research views' stat pills, counted from the routes each overlay
   // draws (the night index has no 30 minute data, so it cannot answer for both settings). Night counts the
@@ -1205,9 +1208,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               <CompareSideBar
                 side="A"
                 settings={compareA}
-                labelSettings={compareLabelA}
+                labelSettings={shownLabelA}
                 onChange={next => { setDay(next.day); setPeriod(next.period); setMaxHeadway(next.maxHeadway); }}
-                counts={compareCounts?.a ?? null}
+                counts={shownCountA}
               />
             </CompareSideSlot>
           )}
@@ -1286,8 +1289,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           />
         </ModeSplitPane>
         {compareActive && (
-          // Map B's half: slides in as a plain panel; map B is set up once it has arrived.
-          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0">
+          // Map B's half: slides in as a plain panel already showing "Loading map…"; map B is set up once it has arrived.
+          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
+            placeholder={<ModeLoadingLabel label={loadingText('map')} />}>
             <ModeEnter enabled={compareTransitions} ready={compareBDrawn} label={loadingText('map')}>
               <MapCanvas
                 agencies={agencies}
@@ -1358,9 +1362,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
               <CompareSideBar
                 side="B"
                 settings={compareSide!}
-                labelSettings={compareLabelB}
+                labelSettings={shownLabelB}
                 onChange={setCompareSide}
-                counts={compareCounts?.b ?? null}
+                counts={shownCountB}
               />
             </CompareSideSlot>
             </ModeEnter>
@@ -1623,7 +1627,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       {headerPortalContainer && createPortal(
         <div className={`flex items-center gap-2 ${!showUi && hideFilterPanel && !nightServiceView && !historyView ? 'pointer-events-none' : 'pointer-events-auto'}`}>
-          <div className={`hidden sm:flex items-center gap-2 ${compareTransitions && compareEntering ? compareFadeIn : `transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}`}>
+          {/* CIV-1567 (beta): entering Compare cross-fades the chips inside FilterChips; the row itself stays shown. */}
+          <div className={`hidden sm:flex items-center gap-2 transition-opacity ${TRANSITION_BASE} ${showUi || nightServiceView || historyView ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
             {historyView ? (
               <FilterChips
                 maxHeadway={historyView.view.maxHeadway}

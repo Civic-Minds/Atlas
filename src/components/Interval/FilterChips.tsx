@@ -11,6 +11,7 @@ import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
 import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
+import { MODE_EASE, ModeCollapse } from '../ModeTransition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { agencyNames } from '../../utils/agencyName';
 import { parentAgency } from '../../../shared/parentAgencyList';
@@ -469,6 +470,31 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     </div>
   );
 
+  const compactFiltersPanel = (
+    <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
+      {/* Frequency */}
+      <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
+      {/* Day */}
+      <PickerSection title={DAY_LABEL}><DayPicker value={day} onChange={setDay} /></PickerSection>
+      {/* Time */}
+      <PickerSection title={TIME_LABEL}><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
+      {/* Mode */}
+      <div>
+        <p className={`${CARD_SECTION} mb-1.5`}>{MODE_LABEL}</p>
+        <div className="flex flex-wrap gap-1">
+          {MODES.map(m => (
+            <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
+              {m.label}
+            </Pill>
+          ))}
+        </div>
+        {MODES.some(m => m.id === ON_DEMAND_MODE) && (
+          <p className="mt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
+        )}
+      </div>
+    </div>
+  );
+
   if (variant === 'history') {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
@@ -485,6 +511,49 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         {frequencyChip('')}
         {dayChip('')}
         {periodChip('')}
+      </div>
+    );
+  }
+
+  // CIV-1567 (beta): the full row and Compare's shared group are one row, so entering or leaving Compare cross-fades:
+  // Frequency, Day and Time fade and fold away, "Both maps" and the group outline fade in, and Mode and Agencies stay
+  // put (same elements) instead of blinking out and back.
+  if (FEATURES.modeTransitions && (variant === 'full' || variant === 'shared')) {
+    const shared = variant === 'shared';
+    return (
+      <div ref={rowRef} className="flex items-center">
+        <ModeCollapse open={!shared}>
+          <div className="flex items-center gap-2 pr-2">
+            {/* Compact "More filters" panel — only below lg */}
+            <div className="relative lg:hidden">
+              <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
+                More filters
+                <Dot show={hasActiveCoreFilter} />
+              </button>
+              {openChip === 'compact' && compactFiltersPanel}
+            </div>
+            {frequencyChip('hidden lg:block')}
+            {dayChip('hidden lg:block')}
+            {periodChip('hidden lg:block')}
+          </div>
+        </ModeCollapse>
+        {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row. */}
+        <div
+          className={`flex items-center rounded-full border p-0.5 transition-[border-color,margin] ${MODE_EASE} ${shared ? TOP_BAR_OUTLINE : '-mx-[3px] border-transparent'}`}
+          role={shared ? 'group' : undefined}
+          aria-label={shared ? 'Filters for both maps' : undefined}
+        >
+          <ModeCollapse open={shared}>
+            <span title={compactTopBar ? 'Both maps' : undefined} className="flex items-center gap-1.5 pl-1.5 pr-2.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap cursor-default select-none">
+              <SideBadge side="A+B" />
+              {!compactTopBar && 'Both maps'}
+            </span>
+          </ModeCollapse>
+          <div className="flex items-center gap-2">
+            {modeChip(shared ? '' : 'hidden lg:block')}
+            {agenciesChip}
+          </div>
+        </div>
       </div>
     );
   }
@@ -511,30 +580,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           More filters
           <Dot show={hasActiveCoreFilter} />
         </button>
-        {openChip === 'compact' && (
-          <div className={`absolute top-10 right-0 ${FLOATING_CARD} p-3 w-72 ${PANEL_ENTER_TOP} flex flex-col gap-3`}>
-            {/* Frequency */}
-            <PickerSection title={FREQUENCY_LABEL}><FrequencyPicker value={maxHeadway} onChange={setMaxHeadway} /></PickerSection>
-            {/* Day */}
-            <PickerSection title={DAY_LABEL}><DayPicker value={day} onChange={setDay} /></PickerSection>
-            {/* Time */}
-            <PickerSection title={TIME_LABEL}><PeriodPicker value={period} onChange={setPeriod} /></PickerSection>
-            {/* Mode */}
-            <div>
-              <p className={`${CARD_SECTION} mb-1.5`}>{MODE_LABEL}</p>
-              <div className="flex flex-wrap gap-1">
-                {MODES.map(m => (
-                  <Pill size="segment" key={m.id} onClick={() => toggleMode(m.id)} selected={modeIsActive(m.id)}>
-                    {m.label}
-                  </Pill>
-                ))}
-              </div>
-              {MODES.some(m => m.id === ON_DEMAND_MODE) && (
-                <p className="mt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
-              )}
-            </div>
-          </div>
-        )}
+        {openChip === 'compact' && compactFiltersPanel}
       </div>
 
       {/* Frequency, day and time */}

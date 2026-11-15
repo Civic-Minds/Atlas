@@ -84,7 +84,8 @@ function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: s
  * The split eases in with transforms only (`useSlide`), so the browser moves it on its own every frame even while the
  * page is busy (a new map being set up, a pane being resized), and nothing is laid out again until it has finished:
  * - `anchor="left"`: the new pane. While the split eases (`easing`) it is a plain panel, out of the split's layout,
- *   that slides in from the right edge with the divider on its left edge; it ends exactly where the finished pane sits.
+ *   that slides in from the right edge with the divider on its left edge (and `placeholder`, such as the loading label, on it);
+ *   it ends exactly where the finished pane sits.
  *   Its content mounts only once the ease has finished, so a heavy view such as a map never stalls the slide.
  * - `anchor="center"`: the pane that was the whole screen. While the split eases it keeps its full size and its content
  *   glides left to the centre of its finished half; when the ease ends it takes its half and resizes once, with the same centre.
@@ -92,7 +93,7 @@ function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: s
  * For `anchor="center"` keep `enabled` steady (the beta switch, not "mode is on"): turning it changes the elements
  * around the content and would remount a map inside.
  */
-export function ModeSplitPane({ enabled, anchor, entering, easing, divider, className, overlay, children }: {
+export function ModeSplitPane({ enabled, anchor, entering, easing, divider, className, overlay, placeholder, children }: {
   enabled: boolean;
   anchor: 'left' | 'center';
   entering: boolean;
@@ -102,6 +103,8 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
   className: string;
   /** Laid out against the pane itself rather than its content (a label that must sit in the pane's own corner). */
   overlay?: ReactNode;
+  /** `anchor="left"`: shown centred on the sliding panel, where the content's own loading label will be (`ModeLoadingLabel`). */
+  placeholder?: ReactNode;
   children: ReactNode;
 }) {
   const slideRef = useRef<HTMLDivElement>(null);
@@ -119,7 +122,9 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
           className="absolute inset-y-0 right-0 bg-[var(--bg-app)] will-change-transform"
           style={{ width: `calc(50% + ${divider} / 2)`, borderLeft: `${divider} solid var(--text-primary)`, boxSizing: 'border-box', transform }}
           data-mode-enter="sliding"
-        />
+        >
+          {placeholder != null && <div className="absolute inset-0 flex items-center justify-center pointer-events-none">{placeholder}</div>}
+        </div>
       );
     }
     return <div className={className} data-mode-enter="pane">{children}{overlay}</div>;
@@ -134,6 +139,30 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
           {overlay}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Transitions for something that folds away when a mode starts: shutting fades it out first and then folds its width,
+ * opening unfolds first and then fades in, so the text is never seen being cut off. Pair with a grid that goes between
+ * `grid-cols-[0fr]` and `grid-cols-[1fr]` (`ModeCollapse`, the mode tabs' labels).
+ */
+export const FOLD_SHUT = '[transition:opacity_120ms_ease-out,grid-template-columns_200ms_ease-out_100ms] motion-reduce:[transition:none]';
+export const FOLD_OPEN = '[transition:grid-template-columns_200ms_ease-out,opacity_150ms_ease-out_150ms] motion-reduce:[transition:none]';
+
+/**
+ * Controls that a mode takes away (or brings back) in a row of controls: they fade and fold instead of vanishing, and
+ * the controls beside them slide over. Kept mounted either way, so nothing that stays is redrawn from scratch.
+ */
+export function ModeCollapse({ open, children }: { open: boolean; children: ReactNode }) {
+  return (
+    <div
+      className={`grid ${open ? `grid-cols-[1fr] opacity-100 ${FOLD_OPEN}` : `grid-cols-[0fr] opacity-0 pointer-events-none ${FOLD_SHUT}`}`}
+      aria-hidden={open ? undefined : true}
+      data-mode-collapse={open ? 'open' : 'shut'}
+    >
+      <div className={`flex items-center min-w-0 ${open ? '' : 'overflow-hidden'}`}>{children}</div>
     </div>
   );
 }
@@ -168,6 +197,11 @@ export function useModeEasing(active: boolean, enabled: boolean, entering: boole
   return enabled && easing;
 }
 
+/** The app's loading label, as a view's cover shows it. `ModeSplitPane`'s sliding panel shows the same one in the same place. */
+export function ModeLoadingLabel({ label }: { label: string }) {
+  return <div className="rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)]">{label}</div>;
+}
+
 export function ModeEnter({ enabled, ready, label, children }: {
   enabled: boolean;
   /** The view has drawn and can be shown. */
@@ -198,7 +232,7 @@ export function ModeEnter({ enabled, ready, label, children }: {
       {!coverGone && (
         <div className="absolute inset-0 bg-[var(--bg-app)] flex items-center justify-center pointer-events-none" aria-hidden={shown} data-mode-enter="cover">
           {!shown && (
-            <div className="rounded-full bg-[var(--bg-panel)]/90 px-3 py-1.5 text-xs font-semibold text-[var(--text-dim)]">{label}</div>
+            <ModeLoadingLabel label={label} />
           )}
         </div>
       )}
@@ -264,4 +298,39 @@ export function useShownWhenDrawn<T>(value: T, map: IdleMap | null, enabled: boo
     return onNextFullDraw(map, LABEL_MAX_WAIT_MS, false, () => flushSync(() => setShown(value)));
   }, [value, map, enabled]);
   return enabled && map ? shown : value;
+}
+
+/** Longest a map's new label waits for its route count. */
+export const COUNT_MAX_WAIT_MS = 300;
+
+/**
+ * A map's label and its count, changed in the same frame (CIV-1567). `label` is already held until its map has drawn
+ * (`useShownWhenDrawn`), but the count is reported once the map goes idle, a frame later; so a new label waits for the
+ * next count (or `COUNT_MAX_WAIT_MS`) and the two change together. With the label unchanged, the count changes freely
+ * (panning). Off: both pass through.
+ */
+export function useShownWithCount<L, C>(label: L, count: C, enabled: boolean): [L, C] {
+  const [shown, setShown] = useState({ label, count });
+  const [waiting, setWaiting] = useState<{ label: L; count: C } | null>(null);
+  const latest = useRef({ label, count });
+  latest.current = { label, count };
+  let next = shown;
+  if (enabled) {
+    if (Object.is(label, shown.label)) {
+      if (!Object.is(count, shown.count)) next = { label, count };
+      if (waiting) setWaiting(null);
+    } else if (!waiting || !Object.is(waiting.label, label)) {
+      setWaiting({ label, count });
+    } else if (!Object.is(count, waiting.count)) {
+      next = { label, count };
+      setWaiting(null);
+    }
+    if (next !== shown) setShown(next);
+  }
+  useEffect(() => {
+    if (!enabled || !waiting) return;
+    const timer = window.setTimeout(() => { setShown(latest.current); setWaiting(null); }, COUNT_MAX_WAIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [enabled, waiting]);
+  return enabled ? [next.label, next.count] : [label, count];
 }

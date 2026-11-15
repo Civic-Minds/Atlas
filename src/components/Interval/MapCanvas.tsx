@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, useMemo } from 'react';
 import * as maplibregl from 'maplibre-gl';
+import { flushSync } from 'react-dom';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { cardFramePadding, cardInFramingPlace } from './map/routeFraming';
 import type { MapboxOverlay } from '@deck.gl/mapbox';
@@ -588,10 +589,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map) return;
     updateMapContext();
-    map.on('idle', updateMapContext);
+    // CIV-1567 (beta): the count reported when the map goes idle is committed inside that event, so it is painted in
+    // the same frame and Compare's label, which waits for it, changes with it.
+    const onIdle = FEATURES.modeTransitions ? () => flushSync(updateMapContext) : updateMapContext;
+    map.on('idle', onIdle);
     map.on('moveend', updateMapContext);
     return () => {
-      map.off('idle', updateMapContext);
+      map.off('idle', onIdle);
       map.off('moveend', updateMapContext);
     };
   }, [mapLoaded, showMapContext, updateMapContext]);
