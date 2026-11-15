@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MAP_FOOTER_PILLS_PHONE_SLOT, FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
+import { MAP_FOOTER_PILLS_PHONE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS, FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
 import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
@@ -8,11 +8,14 @@ import { trackEvent } from '../../lib/analytics';
 import { ConsentPill } from '../AnalyticsConsent';
 import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
-import { BasemapCredit } from '../BasemapCredit';
+import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
+import { OutboundLink } from '../OutboundLink';
+import { CONTEXT_CREDIT_SHORT, contextCreditTitle } from '../../content/noticeCopy';
+import { acsWindow } from '../../utils/contextLayer';
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsNewEnabled?: boolean } = {}) {
+export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLayerOn = false, contextYear = null }: { whatsNewEnabled?: boolean; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
   // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
@@ -40,7 +43,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
   return (
     <>
     <div
-      className={`${MAP_FOOTER_PILLS_PHONE_SLOT} ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
+      className={`${contextLayerOn ? MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS : MAP_FOOTER_PILLS_PHONE_SLOT} ${Z_PANEL} sm:min-w-0 pointer-events-none [&>*]:pointer-events-auto flex flex-wrap-reverse items-center gap-1.5`}
       data-map-attribution=""
       data-map-overlay="footer-pills"
       title={BASEMAP_ATTRIBUTION}
@@ -103,8 +106,21 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew }: { whatsN
       >
         Feedback
       </a>
-      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
-        <BasemapCredit />
+      {/* With the shading on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
+      <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>
+        <BasemapCredit
+          className={contextLayerOn ? 'min-w-0 truncate' : ''}
+          extra={contextLayerOn ? (
+            <OutboundLink
+              href="https://www.census.gov/programs-surveys/acs"
+              kind="attribution"
+              className={BASEMAP_CREDIT_LINK}
+              title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
+            >
+              {CONTEXT_CREDIT_SHORT}
+            </OutboundLink>
+          ) : undefined}
+        />
       </div>
       {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>

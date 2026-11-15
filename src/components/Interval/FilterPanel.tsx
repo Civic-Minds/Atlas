@@ -25,6 +25,17 @@ import { COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LAB
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
+import MenuButton from '../ui/MenuButton';
+import { contextLayerAvailable } from './map/useContextLayer';
+import { CONTEXT_CONTROL_TITLE, CONTEXT_OPTION_DENSITY, CONTEXT_OPTION_INCOME, CONTEXT_OPTION_OFF } from '../../content/noticeCopy';
+import type { ContextMetric } from '../../utils/contextLayer';
+import { ContextKey } from './ContextLegend';
+
+const CONTEXT_OPTIONS = [
+  { key: 'off', label: CONTEXT_OPTION_OFF },
+  { key: 'density', label: CONTEXT_OPTION_DENSITY },
+  { key: 'income', label: CONTEXT_OPTION_INCOME },
+] as const;
 
 interface FilterPanelProps {
   lightMode: boolean;
@@ -63,6 +74,9 @@ interface FilterPanelProps {
   setShowMapLegend: (v: boolean | ((prev: boolean) => boolean)) => void;
   dataSaver: boolean;
   setDataSaver: (v: boolean | ((prev: boolean) => boolean)) => void;
+  /** Population / income shading under the routes (beta only; null is off). */
+  contextMetric?: ContextMetric | null;
+  setContextMetric?: (metric: ContextMetric | null) => void;
   /** Compare mode controls (phones reach them here); undefined when compare is unavailable. */
   compare?: {
     side: CompareSide | null;
@@ -134,6 +148,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   showMapLegend,
   setShowMapLegend,
   dataSaver,
+  contextMetric = null,
+  setContextMetric,
   setDataSaver,
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
@@ -562,6 +578,26 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     </div>
                   </div>
                 </>
+              )}
+
+              {contextLayerAvailable() && setContextMetric && (
+                <div className="px-5 pb-3">
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-[var(--text-primary)] leading-tight whitespace-nowrap">{CONTEXT_CONTROL_TITLE}</p>
+                    </div>
+                    <MenuButton
+                      className="text-xs shrink-0 ml-auto"
+                      align="right"
+                      label={CONTEXT_OPTIONS.find(o => o.key === (contextMetric ?? 'off'))!.label}
+                      value={contextMetric ?? 'off'}
+                      options={CONTEXT_OPTIONS}
+                      onChange={key => setContextMetric(key === 'off' ? null : key)}
+                    />
+                  </div>
+                  {/* The scale is always one tap away here, even with the persistent legend off. */}
+                  {contextMetric && <div className="mt-2"><ContextKey metric={contextMetric} /></div>}
+                </div>
               )}
 
               {FEATURES.persistedSettings && (

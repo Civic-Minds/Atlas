@@ -98,6 +98,16 @@ export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE ==
 // stop), with the route-level tier still deciding the filter. Beta and dev only until the
 // segment colours have been looked at on real routes.
 export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// Population density / median household income shading under the route lines (CIV-482). Beta and
+// dev only. There is no production data URL yet, so even where the flag is on the control stays hidden
+// unless a dev-only file URL is set (CONTEXT_LAYER_URL below).
+export const CONTEXT_LAYER_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// Local testing only: a PMTiles URL for the context layer (served by vite from tmp/dev-context, see
+// vite.config.ts). Ignored in every built site, so a deployed build can never be pointed at other data.
+const devContextUrl: unknown =
+  typeof import.meta !== 'undefined' && import.meta.env?.DEV ? import.meta.env.VITE_CONTEXT_LAYER_URL : undefined;
+export const CONTEXT_LAYER_URL: string | undefined =
+  typeof devContextUrl === 'string' && devContextUrl ? devContextUrl : undefined;
 // On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
 // preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
 export const ON_DEMAND_PUBLIC = false;
@@ -168,6 +178,7 @@ export const FEATURES = {
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
   segmentColours: SEGMENT_COLOURS_ENABLED,
+  contextLayer: CONTEXT_LAYER_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,
   agencyPages: AGENCY_PAGES_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,

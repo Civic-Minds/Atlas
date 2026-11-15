@@ -78,6 +78,9 @@ export function compareSearchMaxWidth(left: number): string {
 }
 /** Phones: the About, What's new and Feedback pills along the bottom edge. */
 export const MAP_FOOTER_PILLS_PHONE_SLOT = `max-sm:absolute max-sm:bottom-6 ${E.phoneLeft} max-sm:max-w-[calc(100vw-3rem)]`;
+/** Phones: the same pills while the beta neighbourhood shading's longer credit shows (CIV-524): narrower, so the credit
+ *  shrinks to stay left of the map controls. */
+export const MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS = `max-sm:absolute max-sm:bottom-6 ${E.phoneLeft} max-sm:max-w-[calc(100vw-5.75rem)]`;
 /** Phones: the loading and count pills, one row above the footer pills. */
 export const MAP_COUNTS_PHONE_SLOT = `max-sm:absolute ${R.phoneCounts} ${E.phoneLeft}`;
 /** The map key (Settings, "Show map legend"): bottom-left above the footer row; phones one row higher, above the

@@ -242,6 +242,33 @@ export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
 export const MAP_KEY_NIGHT = 'Overnight service';
 
+// ---- Neighbourhood shading (beta, CIV-482/CIV-524) ----
+// Every text of the population density / median household income layer, approved word for word by Ryan
+// (_review/civ-524). Class labels ("Under 50", "$50,000–$65,000") are built from the breaks in src/utils/contextLayer.ts.
+// The settings row and its options.
+export const CONTEXT_CONTROL_TITLE = 'Neighbourhood shading';
+export const CONTEXT_OPTION_OFF = 'None';
+export const CONTEXT_OPTION_DENSITY = 'Population density';
+export const CONTEXT_OPTION_INCOME = 'Median household income';
+// Legend titles, per metric (the unit is in the density title and in the income labels' $).
+export const CONTEXT_LEGEND_TITLE_DENSITY = 'People per square kilometre';
+export const CONTEXT_LEGEND_TITLE_INCOME = 'Typical household income';
+// The grey hatched swatch.
+export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
+// The short credit after "OpenStreetMap · CARTO" while the shading is on, and its hover text with the survey years.
+export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
+export const contextCreditTitle = (years: readonly [number, number]) =>
+  `Source: U.S. Census Bureau, American Community Survey 5-year estimates (${years[0]}–${years[1]}) and TIGER/Line boundaries`;
+// The tap card's lines: "1,240 people per square kilometre", "$62,000 a year", "Could be off by about 18%".
+export const contextDensityLine = (value: string) => `${value} people per square kilometre`;
+export const contextIncomeLine = (value: string) => `${value} a year`;
+export const contextMarginLine = (pct: string) => `Could be off by about ${pct}`;
+// An area at the survey's top code (the highest figure it reports).
+export const CONTEXT_INCOME_TOP = '$250,000 or more';
+export const CONTEXT_NO_DENSITY = 'No population figure for this area.';
+export const CONTEXT_NO_INCOME = 'No income figure for this area.';
+export const contextUncertainLine = (pct: string) => `Too uncertain to show. It could be off by about ${pct}.`;
+
 // ---- Route card ----
 // N1 weekday-variation
 export const WEEKDAY_VARIATION_NOTICE = "This route’s weekday schedules vary by day.";

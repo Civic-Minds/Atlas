@@ -5,9 +5,11 @@ import { useHeadwayTiers } from '../../hooks/useHeadwayTiers';
 import MapKey from '../ui/MapKey';
 import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED, ON_DEMAND_PARTIAL_COVERAGE } from '../../content/noticeCopy';
 import { FEATURES } from '../../../shared/config';
+import { ContextKey } from './ContextLegend';
+import type { ContextMetric } from '../../utils/contextLayer';
 
 /** The map's colour key. It reads the same palette as the map, so with colour-vision mode on it shows the friendly colours. */
-export function PersistentMapLegend() {
+export function PersistentMapLegend({ contextMetric = null }: { /** The population / income shading that is on, if any: its scale joins this card. */ contextMetric?: ContextMetric | null } = {}) {
   const tiers = useHeadwayTiers();
   // Its height plus a gap, so the notice pill sits above the key, not on it (CIV-1136).
   const ref = useRef<HTMLElement>(null);
@@ -40,6 +42,7 @@ export function PersistentMapLegend() {
             {FEATURES.onDemand && (
               <p className="border-t border-[var(--border-primary)] mt-1.5 pt-1.5 text-xs leading-snug text-[var(--text-muted)]">{ON_DEMAND_PARTIAL_COVERAGE}</p>
             )}
+            {contextMetric && <div className="border-t border-[var(--border-primary)] mt-1.5 pt-1.5"><ContextKey metric={contextMetric} /></div>}
           </div>
         )}
       />

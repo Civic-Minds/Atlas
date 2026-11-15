@@ -19,6 +19,16 @@ describe('MenuButton', () => {
     expect(onChange).toHaveBeenCalledWith('yesterday');
     expect(screen.queryByRole('menu')).toBeNull();
   });
+  it('opens from the left edge by default and from the right edge with align="right"', () => {
+    const { unmount } = render(<MenuButton label="A" value="week" options={options} onChange={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: /A/ }));
+    expect(screen.getByRole('menu').className).toContain('left-0');
+    unmount();
+    render(<MenuButton label="A" value="week" options={options} onChange={() => {}} align="right" />);
+    fireEvent.click(screen.getByRole('button', { name: /A/ }));
+    expect(screen.getByRole('menu').className).toContain('right-0');
+    expect(screen.getByRole('menu').className).not.toContain('left-0');
+  });
   it('closes on Escape without changing', () => {
     const onChange = vi.fn();
     render(<MenuButton label="Week of Oct 8–14" value="week" options={options} onChange={onChange} />);
