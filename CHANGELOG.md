@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The [Frequent Service story](https://github.com/Civic-Minds/Atlas/issues/1517) map keeps up with a fast scroll**: it jumps straight to the stage you land on instead of fading through each one
 - **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
 - **A selected line's ends stay clear of the [route card](https://github.com/Civic-Minds/Atlas/issues/1516) on wide screens**: CTA Green's Harlem end sat under the card
 - **The frequency bar's last group reads "Irregular or no trips"**: "Irregular or none" read oddly
