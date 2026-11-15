@@ -8,7 +8,7 @@ import { nightServiceDepartureTimes } from '../headway-utils';
 import { normalizeRouteFilterFeatures, routePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { isLimitedService } from '../../shared/irregularRoutes';
 import { decodeStopRuns } from '../../shared/stopRuns';
-import { directionNightValue, directionNightVerdict, directionStretches, nightServicePasses, encodeStopRuns, rollupDirection, rollupRoute, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type NextMorning, type NightHandover, type Stretch } from '../tripSets';
+import { directionNightValue, directionNightVerdict, directionStretches, nightServicePasses, encodeStopRuns, rollupDirection, rollupRoute, stampStretchShadow, stopPeriodValues, stretchMetaPeriods, stretchFilterValue, stretchNight, stretchPeriods, tailNotThrough, type DirectionStretches, type DirectionTrip, type NextMorning, type NightHandover, type Stretch } from '../tripSets';
 
 // Frequency focus step 3 (`_reports/step3-tripsets-spec.md`): the direction trip-set selector, in
 // shadow. Expected values are the GTFS oracle's (scripts/handcheck/stretch-departures.py --at mid
@@ -1502,5 +1502,116 @@ describe('stretchSpan (CIV-1611)', () => {
     // 4:51 AM is before the counted hours (5 AM on), so no first time is claimed (CIV-1605).
     expect(stretchSpan([291, 330, 600])).toEqual({ span: { last: 600, gaps: [[330, 600]] } });
     expect(stretchSpan([])).toEqual({});
+  });
+});
+
+describe('CIV-1579 shadow: the trunk value (the main stretch alone, every direction passing)', () => {
+  // A DRT 901-shaped direction: an 18-stop trunk (about 19 km) every 10, three patterns every 30 each: the trunk
+  // alone, the trunk plus branch A (6 stops, about 2 km), the trunk plus branch B. The branches set the route at 30
+  // (D1); the trunk reads 10.
+  const coords = new Map<string, [number, number]>();
+  const stopsOf = (prefix: string, n: number, at: (i: number) => [number, number]) =>
+    Array.from({ length: n }, (_, i) => { const id = `${prefix}${i}`; coords.set(id, at(i)); return id; });
+  const trunk = stopsOf('t', 18, i => [43.6 + i * 0.01, -79.4]);
+  const branchA = stopsOf('a', 6, i => [43.78 + (i + 1) * 0.004, -79.4]);
+  const branchB = stopsOf('b', 6, i => [43.77, -79.4 + (i + 1) * 0.005]);
+  const shortTrunk = stopsOf('s', 4, i => [44 + i * 0.01, -79.4]);
+  const tinyTrunk = stopsOf('m', 6, i => [44.2 + i * 0.001, -79.4]);
+  const trip = (id: string, start: number, stops: readonly string[]): DirectionTrip => ({ tripId: id, visits: stops.map((stopId, i) => ({ stopId, minutes: start + i })) });
+  /** Trips every `every` minutes from `from` to `to`, rotating through `patterns`. */
+  const build = (key: string, every: number, from: number, to: number, patterns: ReadonlyArray<readonly string[]>, extra: number[] = []) => {
+    const out: DirectionTrip[] = [];
+    let n = 0;
+    for (let m = from; m <= to; m += every, n++) out.push(trip(`${key}-${m}`, m, patterns[n % patterns.length]));
+    for (const m of extra) out.push(trip(`${key}-x${m}`, m, patterns[0]));
+    return directionStretches(`${key}::Weekday`, out, id => coords.get(id));
+  };
+  const drt901 = (key: string) => build(key, 10, 360, 1380, [trunk, [...trunk, ...branchA], [...trunk, ...branchB]]);
+  const daytime = ['amPeak', 'midday', 'pmPeak'] as const;
+
+  it('a DRT 901-shaped direction: rv 30 from its branches, tv 10 from its trunk', () => {
+    const d = drt901('901::0');
+    expect(d.tails).toHaveLength(2);
+    const dir = rollupDirection(d)!;
+    for (const k of daytime) {
+      expect(dir.period[k].filterValue).toBe(30);
+      expect(dir.period[k].trunkFilterValue).toBe(10);
+    }
+    const route = rollupRoute([dir, rollupDirection(drt901('901::1'))]);
+    for (const k of daytime) expect([route.period[k].trunkFilterValue, route.period[k].filterValue]).toEqual([10, 30]);
+  });
+  it('every direction must pass: one direction whose trunk reads 20 gives the route 20', () => {
+    const slow = rollupDirection(build('r::1', 20, 360, 1380, [trunk]))!;
+    expect(slow.period.midday.trunkFilterValue).toBe(20);
+    const route = rollupRoute([rollupDirection(drt901('r::0')), slow]);
+    expect(route.period.midday.trunkFilterValue).toBe(20);
+    expect(route.period.midday.filterValue).toBe(30);
+  });
+  it('a direction with no service in the period is skipped (a one-way peak direction)', () => {
+    // The other direction runs every 10 from 6:00 to 8:40 only.
+    const peak = rollupDirection(build('p::1', 10, 360, 520, [trunk]))!;
+    expect(peak.period.midday.hasService).toBe(false);
+    const route = rollupRoute([rollupDirection(drt901('p::0')), peak]);
+    expect(route.period.midday.trunkFilterValue).toBe(10);
+    expect(route.period.amPeak.trunkFilterValue).toBe(10);
+  });
+  it('a main stretch that does not run through the period gives no value, for the direction and the route', () => {
+    // Every 10 until 11:00: departures at midday only before its midpoint (12:00).
+    const early = rollupDirection(build('e::1', 10, 360, 660, [trunk]))!;
+    expect(early.period.midday.hasService).toBe(true);
+    expect(early.period.midday.runs).toBe(false);
+    expect(early.period.midday.trunkFilterValue).toBeNull();
+    expect(rollupRoute([rollupDirection(drt901('e::0')), early]).period.midday.trunkFilterValue).toBeNull();
+  });
+  it('a trunk under 5 stops, or under 1 km, has no trunk value (the branch minimum); the D1 value is untouched', () => {
+    const short = rollupDirection(build('s::0', 10, 360, 1380, [shortTrunk]))!;
+    expect(short.period.midday.filterValue).toBe(10);
+    expect(short.period.midday.trunkFilterValue).toBeNull();
+    const tiny = build('m::0', 10, 360, 1380, [tinyTrunk]);
+    expect(tiny.main!.stops).toHaveLength(6);
+    expect(tiny.main!.lengthKm).toBeLessThan(1);
+    expect(rollupDirection(tiny)!.period.midday.filterValue).toBe(10);
+    expect(rollupDirection(tiny)!.period.midday.trunkFilterValue).toBeNull();
+  });
+  it('a sparse overnight window (three departures around a hole) gives no trunk value; a steady night does', () => {
+    const sparse = rollupDirection(build('n::0', 20, 360, 1380, [trunk], [1570, 1580, 1780]))!;
+    expect(sparse.period.overnight.trunkFilterValue).toBeNull();
+    const steady = rollupDirection(build('n::1', 20, 360, 1800, [trunk]))!;
+    expect(steady.period.overnight.trunkFilterValue).toBe(20);
+  });
+
+  describe('stamped on the route file, all or none per route-day', () => {
+    const feature = (dirId: string, stopOrder: readonly string[]) => ({ properties: { dirId, stopOrder: [...stopOrder] } as Record<string, unknown> });
+    const NEW = ['routeTrunkHeadwayByPeriod', 'trunkStopMask'];
+    const stamp = (features: ReturnType<typeof feature>[], byKey: Map<string, DirectionStretches>) =>
+      stampStretchShadow(features, byKey, f => ({ group: '901', dirId: f.properties.dirId as string, day: 'Weekday' }), f => f.properties.stopOrder as string[]);
+    it('both directions with stretch data: every row carries the fields, rv 30 and tv 10, and the mask marks the trunk stops', () => {
+      const byKey = new Map([['901::0::Weekday', drt901('901::0')], ['901::1::Weekday', drt901('901::1')]]);
+      const rows = [feature('0', [...trunk, ...branchA]), feature('0', [...trunk, ...branchB]), feature('1', trunk)];
+      stamp(rows, byKey);
+      for (const r of rows) for (const k of NEW) expect(r.properties[k]).toBeDefined();
+      expect((rows[0].properties.routeTrunkHeadwayByPeriod as any).midday).toBe(10);
+      expect((rows[0].properties.routeFilterHeadwayByPeriod as any).midday).toBe(30);
+      expect(rows[0].properties.trunkStopMask).toBe('1*18,*6');
+      expect(decodeStopRuns(rows[0].properties.trunkStopMask as string)).toEqual([...Array(18).fill(1), ...Array(6).fill(null)]);
+      expect(rows[2].properties.trunkStopMask).toBe('1*18');
+    });
+    it('one direction without stretch data: no row of the route-day carries them, as for routeFilterHeadwayByPeriod', () => {
+      const byKey = new Map([['901::0::Weekday', drt901('901::0')]]);
+      const rows = [feature('0', [...trunk, ...branchA]), feature('1', trunk)];
+      stamp(rows, byKey);
+      for (const r of rows) for (const k of [...NEW, 'routeFilterHeadwayByPeriod']) expect(r.properties[k]).toBeUndefined();
+    });
+    it('a short trunk (under 5 stops) stamps tv = rv, so the route keeps its D1 reading; a period with no service has neither', () => {
+      // Every 10 from 6:00 to 14:00 on a 4-stop line: no trunk value, rv 10 by day; no service from the PM peak on.
+      const short = build('s4::0', 10, 360, 840, [shortTrunk]);
+      expect(rollupDirection(short)!.period.midday.trunkFilterValue).toBeNull();
+      const rows = [feature('0', shortTrunk)];
+      stamp(rows, new Map([['901::0::Weekday', short]]));
+      const rv = rows[0].properties.routeFilterHeadwayByPeriod as any, tv = rows[0].properties.routeTrunkHeadwayByPeriod as any;
+      expect([rv.amPeak, rv.midday]).toEqual([10, 10]);
+      expect([tv.amPeak, tv.midday]).toEqual([10, 10]);
+      expect([rv.pmPeak, tv.pmPeak, rv.evening, tv.evening]).toEqual([null, null, null, null]);
+    });
   });
 });
