@@ -14,7 +14,8 @@
     38.55,
     -122.51
   ],
-  "feedUrl": "http://data.trilliumtransit.com/gtfs/smart-ca-us/smart-ca-us.zip",
+  "feedUrl": "https://api.511.org/transit/datafeeds?operator_id=SA",
+  "feedApiKeyEnvVar": "MUNI_511_API_KEY",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3222/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "UTC: 14-Apr-2026 15:07",
