@@ -25,7 +25,11 @@ export interface DotPairGroup {
 
 const AXIS_TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
 const DOT = 'absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full';
-const ROW_GRID = 'grid grid-cols-[minmax(5.5rem,9rem)_1fr_2.75rem_2.75rem] items-center gap-x-3';
+// Phones: the name sits on its own line above its strip, so the strip gets the width; from sm up it takes a 9rem column.
+const ROW_GRID = 'grid grid-cols-[1fr_2.75rem_2.75rem] items-center gap-x-3 sm:grid-cols-[9rem_1fr_2.75rem_2.75rem]';
+const NAME_CELL = 'col-span-3 min-w-0 sm:col-span-1';
+/** Phones label only 0, 50 and 100% (the other gridlines stay), so the axis labels don't run together. */
+const tickLabelClass = (tick: number) => (tick === 0.25 || tick === 0.75 ? 'hidden sm:inline' : '');
 
 /** The solid dot and the ring, for the chart's key. */
 export function DotPairKey({ first, second }: { first: ReactNode; second: ReactNode }) {
@@ -57,10 +61,10 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
   return (
     <div role="group" aria-label={label} aria-details={details} className="select-none" onMouseLeave={clear}>
       <div className={`${ROW_GRID} ${CHART_TEXT} text-[var(--text-muted)]`} aria-hidden="true">
-        <span />
+        <span className="hidden sm:block" />
         <span className="relative h-4">
           {AXIS_TICKS.map(tick => (
-            <span key={tick} className={`absolute top-0 tabular-nums ${tick === 0 ? '' : tick === 1 ? '-translate-x-full' : '-translate-x-1/2'}`} style={{ left: `${tick * 100}%` }}>{percentText(tick)}</span>
+            <span key={tick} className={`absolute top-0 tabular-nums ${tickLabelClass(tick)} ${tick === 0 ? '' : tick === 1 ? '-translate-x-full' : '-translate-x-1/2'}`} style={{ left: `${tick * 100}%` }}>{percentText(tick)}</span>
           ))}
         </span>
         <span className="whitespace-nowrap text-right">{firstHeader}</span>
@@ -82,7 +86,7 @@ export default function DotPairs({ groups, label, details, firstHeader, secondHe
                   {...partEvents(pair.key)}
                   className={`${ROW_GRID} w-full cursor-pointer rounded-sm border-0 bg-transparent py-1 text-left outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${CHART_TEXT} ${pair.reference ? 'border-b border-solid border-[var(--border-primary)] pb-2' : ''}`}
                 >
-                  <span>
+                  <span className={NAME_CELL}>
                     <span data-active={active === pair.key ? 'true' : undefined} className={`-mx-1.5 inline-block rounded-md px-1.5 py-0.5 leading-4 transition-colors ${pair.reference ? 'font-bold' : ''}`}
                       style={active === pair.key ? { background: ACTIVE_BG } : undefined}>{pair.label}</span>
                   </span>
