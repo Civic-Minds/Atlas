@@ -4,5 +4,6 @@
   "winnipeg": ["28", "31", "334", "38", "39", "43", "676", "86"],
   "trimet": ["10", "115", "78"],
   "septa": ["53", "T5 Bus"],
-  "translink": ["103"]
+  "translink": ["103"],
+  "nyct-bus-manhattan": ["M9"]
 }
