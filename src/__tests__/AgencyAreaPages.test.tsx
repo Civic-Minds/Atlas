@@ -186,14 +186,14 @@ describe('AgencyPage other agencies list', () => {
     const withArea = agencyPageData(TTC, [TTC, HSR, GO], null, { slug: 'toronto', name: 'Toronto' }, [TTC, HSR]);
     expect(withArea.nearby.map(n => n.slug)).toEqual(['hsr']);
     view(<AgencyPage data={withArea} />);
-    const heading = screen.getByRole('heading', { name: 'Nearby agencies in the Greater Toronto and Hamilton Area' });
+    const heading = screen.getByRole('heading', { name: 'Nearby Agencies in the Greater Toronto and Hamilton Area' });
     expect(heading.querySelector('a')?.getAttribute('href')).toBe('/area/toronto');
     expect(screen.getByRole('link', { name: 'Hamilton Street Railway' }).getAttribute('href')).toBe('/agency/hsr');
   });
 
   it('keeps "Nearby agencies" when there is no area page', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC, HSR], null)} />);
-    expect(screen.getByRole('heading', { name: 'Nearby agencies' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Nearby Agencies' })).toBeTruthy();
   });
 });
 
@@ -282,19 +282,19 @@ describe('not found is never shown while loading', () => {
 
   it('agency page: blank first, the page once its data resolves, not-found only for a missing slug', async () => {
     const { unmount } = at('/agency/ttc', <AgencyPage />, '/agency/:slug');
-    expect(screen.queryByText('No page for this agency')).toBeNull();
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
     await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toBeTruthy(), { timeout: 25000 });
-    expect(screen.queryByText('No page for this agency')).toBeNull();
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
     unmount();
     at('/agency/no-such-agency', <AgencyPage />, '/agency/:slug');
-    expect(screen.queryByText('No page for this agency')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this agency')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No Page for This Agency')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No Page for This Agency')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 
   it('area page: blank first, not-found only for a missing slug', async () => {
     at('/area/no-such-area', <AreaPage />, '/area/:slug');
-    expect(screen.queryByText('No page for this area')).toBeNull();
-    await waitFor(() => expect(screen.getByText('No page for this area')).toBeTruthy(), { timeout: 25000 });
+    expect(screen.queryByText('No Page for This Area')).toBeNull();
+    await waitFor(() => expect(screen.getByText('No Page for This Area')).toBeTruthy(), { timeout: 25000 });
   }, 60000);
 });
 
@@ -304,12 +304,12 @@ describe('AgencyPage "See all agencies"', () => {
     view(<AgencyPage data={data} />);
     const links = screen.getAllByRole('link', { name: 'See all agencies' });
     expect(links).toHaveLength(1);
-    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby agencies/ }).parentElement);
+    expect(links[0].parentElement).toBe(screen.getByRole('heading', { name: /Nearby Agencies/ }).parentElement);
   });
 
   it('still has the link when there are no nearby agencies', () => {
     view(<AgencyPage data={agencyPageData(TTC, [TTC], '2026-10-13T00:00:00Z')} />);
-    expect(screen.queryByRole('heading', { name: /Nearby agencies/ })).toBeNull();
+    expect(screen.queryByRole('heading', { name: /Nearby Agencies/ })).toBeNull();
     expect(screen.getAllByRole('link', { name: 'See all agencies' })).toHaveLength(1);
   });
 });

@@ -54,7 +54,7 @@ function MapOrNotFound() {
 /** /docs is the short address for the Docs page at /about/docs. */
 function DocsRedirect() {
   const { search, hash } = useLocation();
-  return <Navigate to={`/about/docs${search}${hash}`} replace />;
+  return <Navigate to={`${DOCS_PATH}${search}${hash}`} replace />;
 }
 
 // Collect page views only from deployed builds; local development should not

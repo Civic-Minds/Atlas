@@ -69,7 +69,7 @@ describe('resolveSeo', () => {
       expect(seo.noindex).toBe(false);
       expect(seo.canonicalUrl).toBe(path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path}`);
     }
-    expect(resolveSeo('/about', PUBLIC).title).toBe('About Transit Atlas: frequency maps for planners');
+    expect(resolveSeo('/about', PUBLIC).title).toBe('About Atlas: Frequency Maps for Planners | Transit Atlas');
   });
 
   it('ignores a trailing slash', () => {
@@ -120,7 +120,7 @@ describe('head tag rewriting', () => {
 
   it('replaces the page head tags with the route ones and keeps the rest', () => {
     const out = applySeoToHtml(html, resolveSeo('/about', PUBLIC));
-    expect(out).toContain('<title>About Transit Atlas: frequency maps for planners</title>');
+    expect(out).toContain('<title>About Atlas: Frequency Maps for Planners | Transit Atlas</title>');
     expect(out).toContain(`<link rel="canonical" href="${SITE_URL}/about" />`);
     expect(out).toContain(`<meta property="og:url" content="${SITE_URL}/about" />`);
     expect(out.match(/<title>/g)).toHaveLength(1);
@@ -137,8 +137,8 @@ describe('head tag rewriting', () => {
 
   it('gives a research page its own share image, in place of the site one (CIV-1167)', () => {
     const out = applySeoToHtml(html, resolveSeo('/research/night', BETA));
-    expect(out).toContain('<title>[Beta] Overnight service: Transit Atlas</title>');
-    expect(out).toContain('<meta property="og:title" content="[Beta] Overnight service: Transit Atlas" />');
+    expect(out).toContain('<title>[Beta] Overnight Service | Transit Atlas</title>');
+    expect(out).toContain('<meta property="og:title" content="[Beta] Overnight Service | Transit Atlas" />');
     expect(out).toContain('<meta property="og:description" content="Find routes with sustained scheduled service from 2–5 AM." />');
     expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/night.png" />`);
     expect(out).toContain(`<meta name="twitter:image" content="${SITE_URL}/assets/research/share/night.png" />`);
@@ -160,7 +160,7 @@ describe('head tag rewriting', () => {
       expect(out).toContain('share/toronto.jpg');
       expect(out.match(/property="og:image"/g)).toHaveLength(1);
     }
-    expect(applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))).toContain('<title>Transit Atlas: scheduled frequency map</title>');
+    expect(applySeoToHtml(html, resolveSeo('/research/night', PUBLIC))).toContain('<title>Transit Atlas: Scheduled Frequency Map</title>');
   });
 
   it('writes a link-preview file for every research page the prerender does not cover, where the build has it', () => {

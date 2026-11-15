@@ -10,20 +10,22 @@
  * Near you) keeps its own case. An agency's or a route's name comes from its own source (agencyNames().backLink,
  * stopBack.ts) and goes through the same functions.
  */
+import { PAGE_NAMES } from '../../shared/pageNames';
+
 export const BACK_ARROW = '←';
 
 /** The places a back control returns to that have a fixed name. */
 export const BACK_PLACES = {
   /** The frequency map, from a card opened on it (agency, stop, on-demand area, a note in a card's place). */
-  map: 'Map',
+  map: PAGE_NAMES.map,
   /** The frequency map, from a research view (Frequent service, Night service) or the logo while History is open. */
   frequencyMap: 'Frequency map',
   /** The agency list: About's agency pages and History's agency chooser (CIV-1462). */
-  agencies: 'Agencies',
+  agencies: PAGE_NAMES.agencies,
   /** Settings, from the hidden-routes and region filter pages. */
   settings: 'Settings',
   /** About Atlas, from its inner pages and the privacy settings. */
-  aboutAtlas: 'About Atlas',
+  aboutAtlas: PAGE_NAMES.aboutPage,
 } as const;
 
 /** The Night service list, from a route opened on it: noticeCopy's MAP_KEY_NIGHT (a test keeps them equal; no import, as noticeCopy imports this file). */

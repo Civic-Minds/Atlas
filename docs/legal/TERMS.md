@@ -16,7 +16,7 @@ Atlas relies on public GTFS schedules and other data supplied by transit agencie
 
 Atlas is not a substitute for an agency’s official service alerts, schedules, accessibility information, or emergency instructions. Verify time-sensitive travel information with the relevant transit agency.
 
-## Third-party services {#third-party}
+## Third-Party Services {#third-party}
 
 Transit feeds, map data, map tiles, linked agency resources, and other third-party materials remain subject to their own terms, licenses, and availability. Atlas does not control third-party services and is not responsible for their content or outages.
 
@@ -50,7 +50,7 @@ To the extent permitted by law, Civic Minds is not liable for indirect, incident
 
 We may limit or suspend access to Atlas when reasonably necessary to protect the service, investigate misuse, address security or operational risks, comply with law, or enforce these Terms. We are not required to monitor every use of Atlas or preserve access to any particular feature.
 
-## Regional rights {#regional-rights}
+## Regional Rights {#regional-rights}
 
 Depending on where you live, consumer, privacy, and other legal rights may apply in addition to these Terms. Nothing in these Terms is intended to remove rights that cannot legally be waived.
 

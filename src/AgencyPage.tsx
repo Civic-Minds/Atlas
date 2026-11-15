@@ -20,6 +20,10 @@ import {
   type AgencyPageRoute,
 } from '../shared/agencyPages';
 import { areaRegionName, areaSubtitleName } from '../shared/areaRegions';
+import { titleCase } from '../shared/titleCase';
+
+/** The nearby-agencies heading's opening; the area's name after it is cased as part of the same title ("in the Calgary Area"). */
+const NEARBY_IN = 'Nearby Agencies in ';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
 import { andOthers } from '../shared/overflowText';
@@ -40,7 +44,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, OPEN_MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, OPEN_MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -198,7 +202,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
-            <SectionTitle id="routes-heading">Routes and weekday frequency</SectionTitle>
+            <SectionTitle id="routes-heading">Routes and Weekday Frequency</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
@@ -213,8 +217,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      // CIV-1605 (beta prototype): the weekday hours bar. Header words are a placeholder until Ryan OKs them.
-                      ...(hoursAxis ? [{ key: 'hours', header: '[Placeholder: Hours]', align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours".
+                      ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
                       { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r, !!hoursAxis) },
                       { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r, !!hoursAxis) },
                       { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r, !!hoursAxis) },
@@ -239,7 +243,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <section className="mt-12" aria-labelledby="nearby-heading">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
                 <SectionTitle id="nearby-heading">
-                  {data!.area?.page !== false && data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
+                  {data!.area?.page !== false && data!.area ? <>{NEARBY_IN}<a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{titleCase(`${NEARBY_IN}${areaRegionName(data!.area)}`).slice(NEARBY_IN.length)}</a></> : 'Nearby Agencies'}
                 </SectionTitle>
                 <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>
               </div>

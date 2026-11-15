@@ -59,7 +59,11 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Plain words a non-expert understands at once.
 - Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
 - No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
-- The Docs page is "Docs" on every link to it and "Documentation" as its title (`DOCS_LINK_LABEL`, `DOCS_PAGE_TITLE`). Ryan, CIV-1610. (checked)
+- Every page has one name, in `shared/pageNames.ts` (`PAGE_NAMES`): its heading, the header and footer links to it, back and close links, and the start of its browser tab all read it. Ryan, 2026-11-15. (checked)
+  - "Documentation" on every link to the Docs page and as its title (`DOCS_PAGE_TITLE`); it replaced CIV-1610's "Docs" link label. The URL stays /about/docs.
+  - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.
+  - The footer's Atlas column links "About" (link names are one word); the page is "About Atlas", as are the map's About panel and its buttons. The legal links read "Terms" and "Privacy"; the pages are "Terms of Service" and "Privacy Policy".
+  - Browser tabs: "<page name> | Transit Atlas", with an optional detail after the name ("Documentation: Data, Frequency and Methods | Transit Atlas"), at most 60 characters: the detail goes first, then the brand (`tabTitle`). Only the home page leads with the brand ("Transit Atlas: Scheduled Frequency Map"). Link previews name the site "Transit Atlas".
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.
@@ -76,7 +80,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
 - Empty and not-found pages link back with "Open the Atlas map" (`OPEN_MAP_LINK`). CIV-1594. (checked)
-- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s new", "About Atlas", map export titles). CIV-1599. (checked)
+- A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s New", "About Atlas", map export titles). CIV-1599. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.

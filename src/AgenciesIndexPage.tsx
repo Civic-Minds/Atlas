@@ -22,6 +22,7 @@ import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { countText } from '../shared/numberText';
+import { PAGE_NAMES } from '../shared/pageNames';
 
 /** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -73,7 +74,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
   return (
     <DocsPageLayout width="wide">
-          <PageTitle>All agencies and areas</PageTitle>
+          <PageTitle>{PAGE_NAMES.agencyIndex}</PageTitle>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{agencyIndexDescription(data)}</p>
 
           {areas.length > 0 && (

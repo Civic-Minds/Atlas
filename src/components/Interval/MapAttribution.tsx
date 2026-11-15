@@ -13,11 +13,24 @@ import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
+import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
+
+/** A small dot on What's New while this release hasn't been opened here (light, no fill around it; VISUAL.md). */
+function UnseenDot() {
+  return <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-brand)]" aria-hidden="true" />;
+}
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
 export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLayerOn = false, contextYear = null }: { whatsNewEnabled?: boolean; /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  // The dot shows until What's New is opened, and returns with the next release.
+  const [unseen, setUnseen] = useState(() => whatsNewUnseen(appVersion));
+  useEffect(() => {
+    if (!whatsNewOpen) return;
+    markWhatsNewSeen(appVersion);
+    setUnseen(false);
+  }, [whatsNewOpen]);
   // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
   // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
   const consent = useConsentPrompt();
@@ -55,9 +68,10 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
           onClick={() => setAboutOpen(open => !open)}
           aria-expanded={aboutOpen}
           aria-haspopup="true"
-          className={`${MAP_BADGE} h-[32px] ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
+          className={`${MAP_BADGE} h-[32px] ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)] inline-flex items-center gap-1.5`}
         >
           About
+          {whatsNewEnabled && unseen && <UnseenDot />}
         </button>
         {aboutOpen && (
           <div className={`absolute bottom-full left-0 mb-2 ${FLOATING_CARD} min-w-44 p-1.5 flex flex-col gap-0.5`}>
@@ -69,7 +83,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
                 aria-haspopup="dialog"
                 className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl text-left flex items-center justify-between gap-4 hover:text-[var(--text-primary)]`}
               >
-                <span>{WHATS_NEW_TITLE}</span>
+                <span className="flex items-center gap-1.5">{WHATS_NEW_TITLE}{unseen && <UnseenDot />}</span>
                 <span className="text-[var(--text-muted)]">v{shortVersion(appVersion)}</span>
               </button>
             )}
@@ -97,7 +111,7 @@ export function MapAttribution({ whatsNewEnabled = FEATURES.whatsNew, contextLay
           aria-haspopup="dialog"
           className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap hover:text-[var(--text-primary)]`}
         >
-          v{shortVersion(appVersion)} · {WHATS_NEW_TITLE}
+          v{shortVersion(appVersion)} · {WHATS_NEW_TITLE}{unseen && <span className="ml-1.5 inline-flex align-middle"><UnseenDot /></span>}
         </button>
       )}
       <a

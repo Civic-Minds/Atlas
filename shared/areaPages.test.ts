@@ -54,7 +54,7 @@ describe('buildAreaPageData', () => {
   });
 
   it('writes the title, heading, subtitle and lead from the numbers', () => {
-    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area transit frequency');
+    expect(areaPageTitle(d)).toBe('Greater Toronto and Hamilton Area Transit Frequency');
     expect(areaPageH1(d)).toBe('Greater Toronto and Hamilton Area');
     // The cities stay while one adds to the title (Oshawa); this title names both, so the province shows instead.
     expect(areaSubtitle({ ...d, area: { ...d.area, cities: ['Toronto', 'Hamilton', 'Oshawa'] } })).toBe('Toronto, Hamilton, Oshawa');

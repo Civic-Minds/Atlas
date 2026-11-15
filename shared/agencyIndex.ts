@@ -12,6 +12,7 @@ import { compareAgencyName, compareText } from './sortCompare';
 import { AGENCY_INDEX_PATH, agencyIndexHeadingHref, agencyIndexHeadingId, parentAgencyPagePath } from './pagePaths';
 import { parentMembers, parentRoutes, parentsWithMembers } from './parentAgencies';
 import { countText } from './numberText';
+import { PAGE_NAMES, tabTitle } from './pageNames';
 
 export { AGENCY_INDEX_PATH };
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -100,7 +101,7 @@ export function buildAgencyIndexData(
 }
 
 export function agencyIndexTitle(): string {
-  return 'All transit agencies and areas | Transit Atlas';
+  return tabTitle(PAGE_NAMES.agencyIndex);
 }
 
 export function agencyIndexDescription(d: Pick<AgencyIndexData, 'agencyCount' | 'areas'>): string {

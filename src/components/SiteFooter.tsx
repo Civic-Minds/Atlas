@@ -1,6 +1,8 @@
-import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
+import { ATLAS_MODE, FEATURE_ROUTES, FEATURES } from '../../shared/config';
+import { BETA_SITE_URL } from '../../shared/seo';
 import AtlasLogo from './AtlasLogo';
-import { ABOUT_ATLAS, ATLAS_BYLINE, DOCS_LINK_LABEL } from '../content/noticeCopy';
+import { ATLAS_BYLINE } from '../content/noticeCopy';
+import { PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
@@ -14,22 +16,23 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
     {
       title: 'Explore',
       links: [
-        { href: '/', label: 'Map' },
-        ...(FEATURES.agencyPages ? [{ href: AGENCY_INDEX_PATH, label: 'Agencies' }] : []),
+        { href: '/', label: PAGE_NAMES.map },
+        ...(FEATURES.agencyPages ? [{ href: AGENCY_INDEX_PATH, label: PAGE_NAMES.agencies }] : []),
       ],
     },
     {
       title: 'Learn',
       links: [
-        { href: DOCS_PATH, label: DOCS_LINK_LABEL },
-        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: 'Research' }] : []),
+        { href: DOCS_PATH, label: PAGE_NAMES.docs },
+        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research }] : []),
       ],
     },
     {
-      title: 'About',
+      // Ryan: the column is "Atlas" and its link "About" (link names are one word).
+      title: 'Atlas',
       links: [
-        { href: ABOUT_PATH, label: ABOUT_ATLAS },
-        ...(FEATURES.whatsNew ? [{ href: CHANGELOG_PATH, label: 'Changelog' }] : []),
+        { href: ABOUT_PATH, label: PAGE_NAMES.about },
+        ...(FEATURES.whatsNew ? [{ href: CHANGELOG_PATH, label: PAGE_NAMES.whatsNew }] : []),
       ],
     },
   ];
@@ -59,8 +62,10 @@ export default function SiteFooter() {
         </nav>
         <span className="order-1 col-span-3 -mt-4 sm:order-none sm:col-span-1 sm:mt-0">© {new Date().getFullYear()} Civic Minds.</span>
         <nav className="col-span-3 grid grid-cols-subgrid" aria-label="Legal links">
-          <a className={`col-start-2 justify-self-start whitespace-nowrap ${LINK}`} href={TERMS_PATH}>Terms</a>
-          <a className={`col-start-3 justify-self-start whitespace-nowrap ${LINK}`} href={PRIVACY_PATH}>Privacy</a>
+          {/* CIV-1630 (Ryan, option 1): "Beta · Terms · Privacy", on the public site only; beta doesn't link to itself. */}
+          {ATLAS_MODE === 'public' && <a className={`col-start-1 justify-self-start whitespace-nowrap ${LINK}`} href={BETA_SITE_URL}>{PAGE_NAMES.betaLink}</a>}
+          <a className={`col-start-2 justify-self-start whitespace-nowrap ${LINK}`} href={TERMS_PATH}>{PAGE_NAMES.termsLink}</a>
+          <a className={`col-start-3 justify-self-start whitespace-nowrap ${LINK}`} href={PRIVACY_PATH}>{PAGE_NAMES.privacyLink}</a>
         </nav>
       </div>
     </footer>

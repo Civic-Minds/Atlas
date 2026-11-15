@@ -9,7 +9,7 @@ describe('PageSection (CIV-1404: one section for the area and Live report pages)
     const section = container.querySelector('section')!;
     expect(section.className).toBe('mt-14');
     expect(section.getAttribute('aria-labelledby')).toBe('agencies-heading');
-    expect(section.innerHTML).toBe('<h2 id="agencies-heading" class="text-xl font-black tracking-tight">Agencies and weekday frequency</h2><p>body</p>');
+    expect(section.innerHTML).toBe('<h2 id="agencies-heading" class="text-xl font-black tracking-tight">Agencies and Weekday Frequency</h2><p>body</p>');
   });
   it('puts the line that says what the section shows under the title', () => {
     const { container } = render(<PageSection id="x" title="Routes" intro="Every analysed route, worst first."><p>body</p></PageSection>);

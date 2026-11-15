@@ -13,8 +13,8 @@ describe('Docs page Notices section (CIV-1236)', () => {
     const { container } = render(<AboutDocsPage />);
     const section = container.querySelector('#notices')!;
     expect([...section.querySelectorAll('h3')].map(h => h.textContent)).toEqual([
-      'Old and new schedules', "Errors in the agency’s data", 'When a route runs', 'Uneven schedules', 'Filters',
-      'Beta and on-demand service', 'Loading, errors and empty lists',
+      'Old and New Schedules', "Errors in the Agency’s Data", 'When a Route Runs', 'Uneven Schedules', 'Filters',
+      'Beta and On-Demand Service', 'Loading, Errors and Empty Lists',
     ]);
     const examples = [...section.querySelectorAll('li')].map(li => li.textContent!.replace(/[⁠ ‑]/g, m => (m === '‑' ? '-' : m === ' ' ? ' ' : '')));
     expect(examples).toHaveLength(14);

@@ -30,7 +30,7 @@ describe('state and province pages (CIV-976)', () => {
     expect(d.region.kind).toBe('state');
     expect(d.bbox).toEqual([39, -107.3, 40, -104.5]);
     expect(regionPageH1(d)).toBe('Colorado');
-    expect(regionPageTitle(d)).toBe('Colorado: how often transit runs across 2 agencies');
+    expect(regionPageTitle(d)).toBe('Colorado Transit Frequency | Transit Atlas');
     expect(regionPageDescription(d)).toBe('Compare 2 transit agencies in Colorado side by side: routes and weekday waits by time of day, from published schedules.');
     expect(regionIntroParts(d).lead).toBe('Colorado has 2 transit agencies operating 4 routes (1 commuter rail, 3 bus)');
     expect(regionBarNote(d)).toBe("The bar splits this state’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.");

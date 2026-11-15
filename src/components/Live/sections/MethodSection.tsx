@@ -10,6 +10,7 @@ import MethodFootnote, { Term } from '../MethodFootnote';
 import { aheadLine, bunchingLine, colourLine, deliveredLine, extraWaitLine, lateLine, networkFiguresLine, positionsLine, recordingGapsLine, runTimeLine, stopsLine, tripMatchLine } from '../methodLines';
 import type { Ready } from '../../../LiveRoutePage';
 import { percentText, countText } from '../../../../shared/numberText';
+import { DOCS_PATH } from '../../../../shared/pagePaths';
 
 /**
  * The two weeks, then the days left out (nothing when every day counted), running on in the paragraph (CIV-1075). `namedAbove`
@@ -101,6 +102,6 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
           { label: METHOD_GROUPS.colours, items: [w && colourLine] },
           { label: METHOD_GROUPS.limits, items: [recordingGapsLine] },
         
-    ]} after={<p className="mt-2 text-xs"><ArrowLink href="/about/docs#glossary">What these terms mean</ArrowLink></p>} />
+    ]} after={<p className="mt-2 text-xs"><ArrowLink href={`${DOCS_PATH}#glossary`}>What these terms mean</ArrowLink></p>} />
   );
 }

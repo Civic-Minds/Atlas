@@ -36,7 +36,7 @@ If you choose the locate-me button, your browser may provide precise coordinates
 
 If browser geolocation is unavailable or cannot determine a position, Atlas may request approximate city-level coordinates derived from hosting-provider request headers. This fallback is less precise than browser geolocation and is used only to center the map.
 
-## Third-party services {#third-party}
+## Third-Party Services {#third-party}
 
 Atlas processes public transit schedule data, including GTFS feeds published by transit agencies and data providers. Map tiles and map data are provided through CARTO and OpenStreetMap and are subject to their own terms, licenses, and privacy practices.
 
@@ -44,7 +44,7 @@ Atlas is hosted and delivered through third-party infrastructure. Vercel provide
 
 Atlas does not sell personal information or use analytics for advertising or account profiling. We disclose information to service providers only as needed to operate, secure, measure, support, or improve Atlas, or when required by law.
 
-## Retention and requests {#retention}
+## Retention and Requests {#retention}
 
 We keep information only for as long as reasonably necessary for the purpose for which it was collected, including operating the service, handling security and reliability issues, and responding to correspondence. Provider-specific systems may have their own retention periods.
 
@@ -52,7 +52,7 @@ Where applicable, you may ask for access to, correction of, deletion of, restric
 
 You can withdraw Google Analytics consent through *Privacy & analytics* in the About panel or through your browser’s privacy controls. This does not disable the map or change provider processing that is necessary to deliver the site.
 
-## Security and processing {#security}
+## Security and Processing {#security}
 
 Atlas is a general-audience service and is not directed at children. We use reasonable technical and organizational measures to protect information, but no internet service can guarantee absolute security.
 

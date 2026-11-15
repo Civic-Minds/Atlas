@@ -92,7 +92,7 @@ export default function AboutPage() {
         </section>
 
         {FEATURES.researchApps && <section className="border-b border-[var(--border-primary)] py-16">
-          <h2 id="research-heading" className="text-3xl font-black tracking-tight sm:text-4xl">Explore our research</h2>
+          <h2 id="research-heading" className="text-3xl font-black tracking-tight sm:text-4xl">Explore Our Research</h2>
           {/* Phones: one row to swipe, the next story peeking at the edge and each snapping into place (Ryan: "a carousel").
               While it scrolls it is a keyboard stop, so the arrow keys move it; wider screens show the stories three across.
               The row, not the section, is the landmark named by the heading, so it is announced once. */}

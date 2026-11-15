@@ -62,7 +62,7 @@ const RULES: Rule[] = [
   // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list.
   { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and/ },
   // CIV-1610 (Ryan): "Docs" on links, "Documentation" as the title, each from one constant.
-  { name: 'the Docs page named by hand (use DOCS_LINK_LABEL or DOCS_PAGE_TITLE)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Documentation</a>' },
+  { name: 'the Docs page named by hand (use DOCS_PAGE_TITLE, from PAGE_NAMES)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Documentation</a>' },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
   // CIV-1613: lowercase and "all-day" too ("or else all day" slipped through); the Docs page says "across the day" (Ryan, CIV-1610).
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\b[Aa]ll[-  ][Dd]ay\b(?![s-])/, slip: "'borrow an all-day average'" },
@@ -135,8 +135,8 @@ const RULES: Rule[] = [
     allowed: ['src/content/noticeCopy.ts'] },
   // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
   { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
-    pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
-    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts'] },
+    pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
+    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts', 'shared/pageNames.ts'] },
 
   // CIV-1615: each fixed page's path is one constant in shared/pagePaths.ts, read by its route, prerender, SEO entry and links.
   { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',

@@ -179,7 +179,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
             : <Tile key={k} label={label} value={MISSING_VALUE} sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
-      <SubsectionTitle className="mt-6">By hour of the day</SubsectionTitle>
+      <SubsectionTitle className="mt-6">By Hour of the Day</SubsectionTitle>
       <ChartRow cols={cols} withLabels={false} showNote />
     </>
   );

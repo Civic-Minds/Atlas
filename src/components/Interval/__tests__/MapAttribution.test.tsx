@@ -34,7 +34,7 @@ describe('MapAttribution', () => {
     fireEvent.click(about);
     expect(screen.getAllByRole('link', { name: 'About Atlas' })).toHaveLength(2);
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(2);
-    expect(screen.getByText("What’s new")).toBeInTheDocument();
+    expect(screen.getByText("What’s New")).toBeInTheDocument();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(1);
     fireEvent.click(about);

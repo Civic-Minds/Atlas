@@ -7,6 +7,7 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { PAGE_NAMES } from '../../shared/pageNames';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
@@ -313,12 +314,13 @@ export const VIEW_ON_MAP = 'View on map';
 export const SEE_ALL_AGENCIES = 'See all agencies';
 /** The link to the Docs page (About page, and the home page's static text, #1522). */
 export const READ_HOW_ATLAS_WORKS = 'Read how Atlas works';
-export const WHATS_NEW_TITLE = 'What’s new';
+/** CIV-1605 (Ryan): the agency table's hours-bar column, and the start of each bar's screen-reader name. */
+export const WEEKDAY_HOURS_LABEL = 'Weekday hours';
+export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
-/** The Docs page: "Docs" on every link to it, "Documentation" as its title (Ryan, CIV-1610). */
-export const DOCS_LINK_LABEL = 'Docs';
-export const DOCS_PAGE_TITLE = 'Documentation';
+/** The Docs page's one name, on its links, heading and tab (Ryan, page-names refactor; it replaced CIV-1610's "Docs" link label). */
+export const DOCS_PAGE_TITLE = PAGE_NAMES.docs;
 export const EXPORT_MAP_TITLE = 'Export map image';
 /** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
 export const LOCATE_ME_LABEL = 'Go to my location';

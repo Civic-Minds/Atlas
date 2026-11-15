@@ -13,12 +13,12 @@ describe('Free child fares (CIV-1149)', () => {
 
   it('shows the approved heading, both groups, the note and the table link', () => {
     render(<FreeChildFaresPage />);
-    expect(screen.getByRole('heading', { level: 1, name: 'Free child fares' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Free Child Fares' })).toBeInTheDocument();
     // CIV-1281: the finding is the page's first intro line, not a heading.
     expect(screen.queryByRole('heading', { name: 'Where kids ride free, age 5 is the most common cutoff.' })).toBeNull();
     expect(screen.getByText('Where kids ride free, age 5 is the most common cutoff.').closest('header')).not.toBeNull();
     expect(screen.getByText('374 of 553 agencies let children ride free up to a set age. Each bar counts the agencies whose free fare ends at that age.')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Free up to a set age' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Free Up to a Set Age' })).toBeInTheDocument();
     // #1290: the Other policies chart repeated the split bar's numbers, so only the split bar shows them.
     expect(screen.queryByRole('heading', { name: 'Other policies' })).toBeNull();
     expect(screen.getAllByText('Up to 5').length).toBeGreaterThan(0);
@@ -29,7 +29,7 @@ describe('Free child fares (CIV-1149)', () => {
     expect(screen.queryByText(/Each agency appears once/)).toBeNull();
     expect(screen.queryByText('Show as a table')).toBeNull();
     expect(screen.getByRole('group', { name: /How many agencies let children ride free up to each age/ })).toHaveAttribute('aria-details', screen.getByRole('table', { name: 'Free up to a set age' }).parentElement!.id);
-    expect(screen.getByRole('heading', { level: 2, name: 'Free up to a set age' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Free Up to a Set Age' })).toBeInTheDocument();
   });
 
   it('opens with the approved blurb and ends with Method, Canada and US numbers', () => {
@@ -121,22 +121,22 @@ describe('Free child fares (CIV-1149)', () => {
   it('is a card on the Research page, labelled Data; the others are a Map and a Story (CIV-1167)', () => {
     render(<ResearchPage />);
     const card = (name: RegExp) => screen.getByRole('link', { name });
-    expect(card(/Overnight service/)).toHaveTextContent(/^Map/);
-    expect(card(/Frequent service/)).toHaveTextContent(/^Story/);
-    expect(card(/Free child fares/)).toHaveTextContent(/^Data/);
+    expect(card(/Overnight service/i)).toHaveTextContent(/^Map/);
+    expect(card(/Frequent service/i)).toHaveTextContent(/^Story/);
+    expect(card(/Free child fares/i)).toHaveTextContent(/^Data/);
     expect(screen.queryByRole('heading', { name: 'Stories' })).toBeNull();
-    expect(card(/Free child fares/)).toHaveAttribute('href', '/research/free-child-fares');
-    expect(card(/Free child fares/)).toHaveTextContent('The age kids stop riding free.');
+    expect(card(/Free child fares/i)).toHaveAttribute('href', '/research/free-child-fares');
+    expect(card(/Free child fares/i)).toHaveTextContent('The age kids stop riding free.');
   });
 
   it('lists draft stories after the published ones with a Draft tag, on the dev server only (CIV-1550)', () => {
     render(<ResearchPage />);
     const links = screen.getAllByRole('link');
-    const draft = screen.getByRole('link', { name: /Airport story/ });
-    expect(links.indexOf(draft)).toBe(links.indexOf(screen.getByRole('link', { name: /Free child fares/ })) + 1);
+    const draft = screen.getByRole('link', { name: /Airport story/i });
+    expect(links.indexOf(draft)).toBe(links.indexOf(screen.getByRole('link', { name: /Free child fares/i })) + 1);
     expect(draft).toHaveAttribute('href', '/research/airports/story');
     expect(draft).toHaveTextContent(/^DraftStory/);
-    expect(screen.getByRole('link', { name: /Free child fares/ })).not.toHaveTextContent('Draft');
+    expect(screen.getByRole('link', { name: /Free child fares/i })).not.toHaveTextContent('Draft');
   });
 
   it('maps each state and province as a square tile: its most common free age, a tie as Mix, few agencies dashed (CIV-1282)', () => {

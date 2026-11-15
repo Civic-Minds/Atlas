@@ -249,6 +249,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-15 — One name per page, and title case for titles
+Ryan, 2026-11-15, after a page-name audit: every page has one shared name (`shared/pageNames.ts`) that its heading, links, back and close links and browser tab use. "Documentation" replaces "Docs" on links (CIV-1610's split is retired); "What’s New" is the one name for the release notes (the /changelog URL stays), and the map's What’s New button shows a dot until the current release is opened; the footer's "About" column is "Atlas", with an "About" link. Titles (page and section headings, header and footer links, footer columns, browser tabs) are title case, replacing CIV-1160's sentence case for them; everything else stays sentence case. Tabs use one format, "<page name> | Transit Atlas", within 60 characters, and link previews say "Transit Atlas".
+
 ### 2026-11-15 — "Area" for metro areas, "region" for states and provinces
 Ryan (Linear CIV-1614): page text and links call a metro area an "area" (/area/ pages); /region/ stays for states, provinces and territories, with no /province path and no redirects; an area still needs at least 2 agencies for its own page. The agency page names both, "Calgary, Alberta" (Ryan, follow-up: "Calgary area, Alberta" read oddly; a name with "Area" in it keeps it, "Greater Toronto and Hamilton Area, Ontario"), each linked when it has a page, and an area page links the states or provinces in its subtitle.
 

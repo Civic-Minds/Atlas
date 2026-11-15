@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { PageTitle } from '../ui/PageTitle';
+import { titleCase } from '../../../shared/titleCase';
 
 /** The small line above every research page's title (Ryan approved, CIV-1176). */
 export const RESEARCH_EYEBROW = 'Atlas research';
@@ -27,7 +28,7 @@ export default function ResearchHeader({ title, intro, width = 'page', children 
   return (
     <header className={`mx-auto ${w.header} text-center`}>
       <p className="text-xs font-black text-[var(--accent)]">{RESEARCH_EYEBROW}</p>
-      <PageTitle level="research" className="mt-5">{title}</PageTitle>
+      <PageTitle level="research" className="mt-5">{typeof title === 'string' && !/[.?!”]$|^\[/.test(title.trim()) ? titleCase(title) : title}</PageTitle>
       <div className={`${w.intro} space-y-4 text-left text-base leading-8 text-[var(--text-muted)] sm:text-lg`}>
         {intro}
       </div>

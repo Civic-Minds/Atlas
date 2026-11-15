@@ -8,6 +8,8 @@
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
 import { FREQUENT_SERVICE_TITLE } from './frequentService';
+import { PAGE_NAMES, tabTitle } from './pageNames';
+import { titleCase } from './titleCase';
 import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
@@ -15,7 +17,9 @@ export const SITE_URL = 'https://www.transitatlas.fyi';
 export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
 /** The preview site, for agencies' own previews (preview.transitatlas.fyi). */
 export const PREVIEW_SITE_URL = 'https://preview.transitatlas.fyi';
-export const SITE_NAME = 'Transit Atlas';
+export { SITE_NAME } from './pageNames';
+/** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
+export const HOME_TITLE = 'Transit Atlas: Scheduled Frequency Map';
 export const ORG_NAME = 'Civic Minds';
 
 export type SeoGate = 'researchApps' | 'whatsNew' | 'live' | 'history' | 'agencyPages';
@@ -63,39 +67,39 @@ export const HOME_DESCRIPTION =
 export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     path: '/',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: true,
     includeInSitemap: true,
   },
   {
     path: '/apps/frequency',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: true,
     canonicalPath: '/',
   },
   {
     path: ABOUT_PATH,
-    title: 'About Transit Atlas: frequency maps for planners',
+    title: tabTitle(PAGE_NAMES.aboutPage, 'Frequency Maps for Planners'),
     description:
-      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place. Built by Civic Minds for riders, planners and researchers.',
+      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place, for riders, planners and researchers.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,
   },
   {
     path: DOCS_PATH,
-    title: 'How Transit Atlas works: data, frequency and methods',
+    title: tabTitle(PAGE_NAMES.docs, 'Data, Frequency and Methods'),
     description:
-      'How Atlas turns published transit schedules into frequency maps: the data it uses, how frequency is measured, how service is classified and how errors are corrected.',
+      'How Atlas turns published schedules into frequency maps: its data, how frequency is measured, how service is classified and how errors are corrected.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,
   },
   {
     path: PRIVACY_PATH,
-    title: 'Privacy policy: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.privacy),
     description: 'What Transit Atlas collects, how analytics and location are handled, and how to ask for your information to be removed.',
     indexable: true,
     prerender: true,
@@ -103,7 +107,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: TERMS_PATH,
-    title: 'Terms of service: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.terms),
     description: 'The terms for using Transit Atlas, including what its scheduled-service data can and cannot be relied on for.',
     indexable: true,
     prerender: true,
@@ -111,7 +115,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/apps/history',
-    title: 'Service history: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.serviceHistory),
     description: 'See how scheduled transit service changed over time, using dated snapshots of agency schedules.',
     indexable: false,
     gate: 'history',
@@ -119,21 +123,21 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     // Compare's own address: the frequency map split in two, so it keeps the map's title and points at the map.
     path: '/apps/compare',
-    title: 'Transit Atlas: scheduled frequency map',
+    title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: false,
     canonicalPath: '/',
   },
   {
     path: LIVE_PATH,
-    title: `${LIVE_VEHICLES_TITLE}: Transit Atlas`,
+    title: tabTitle(titleCase(LIVE_VEHICLES_TITLE)),
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',
     indexable: false,
     gate: 'live',
   },
   {
     path: '/research/night',
-    title: 'Overnight service: Transit Atlas',
+    title: tabTitle('Overnight Service'),
     description: 'Find routes with sustained scheduled service from 2–5 AM.',
     indexable: false,
     gate: 'researchApps',
@@ -142,7 +146,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: RESEARCH_PATH,
-    title: 'Research: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.research),
     description: 'Research tools that show the service patterns the everyday frequency map cannot show on its own.',
     indexable: false,
     gate: 'researchApps',
@@ -150,14 +154,14 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/research/bustang-connections',
-    title: 'Bustang connections: Transit Atlas',
+    title: tabTitle('Bustang Connections'),
     description: 'How long riders wait for a local bus after each Bustang arrival.',
     indexable: false,
     gate: 'researchApps',
   },
   {
     path: '/research/free-child-fares',
-    title: 'Free child fares: Transit Atlas',
+    title: tabTitle('Free Child Fares'),
     description: 'See up to what age children ride free at 697 transit agencies.',
     indexable: false,
     gate: 'researchApps',
@@ -165,7 +169,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/research/frequent-service',
-    title: 'Frequent service map: Transit Atlas',
+    title: tabTitle('Frequent Service Map'),
     description: 'Routes that meet Atlas sustained-frequency thresholds, mapped across agencies.',
     indexable: false,
     gate: 'researchApps',
@@ -181,7 +185,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: CHANGELOG_PATH,
-    title: 'Changelog: Transit Atlas',
+    title: tabTitle(PAGE_NAMES.whatsNew),
     description: 'Every Atlas version and map data update, newest first.',
     indexable: false,
     gate: 'whatsNew',

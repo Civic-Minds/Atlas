@@ -28,6 +28,8 @@ import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { agencyInSentence } from './agencyArticle';
+import { titleCase } from './titleCase';
+import { SITE_NAME } from './pageNames';
 
 export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
@@ -199,23 +201,26 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
 }
 
 export function areaPageTitle(d: Pick<AreaPageData, 'area' | 'agencies'>): string {
-  return groupPageTitle(areaRegionTitle(d.area), d);
+  return groupPageTitle(areaPageH1(d), d);
 }
 
-/** A page title for agencies in one place (an area's title, a state's or province's name). */
+/**
+ * A page title for agencies in one place (an area's title, a state's or province's name), in the one tab format
+ * (shared/pageNames.ts tabTitle): the phrase goes first, then the brand. Title case (VISUAL.md).
+ */
 export function groupPageTitle(region: string, d: Pick<AgencyGroupData, 'agencies'>): string {
-  const across = `how often transit runs across ${countOf(d.agencies.length, 'agency', 'agencies')}`;
+  const across = `How Often Transit Runs Across ${countOf(d.agencies.length, 'Agency', 'Agencies')}`;
   return firstThatFits([
-    `${region}: ${across} | Transit Atlas`,
-    `${region}: ${across}`,
-    `${region} transit frequency | Transit Atlas`,
-    `${region} transit frequency`,
-    `${truncateAtWord(region, TITLE_MAX - ' transit frequency'.length)} transit frequency`,
+    `${region}: ${across} | ${SITE_NAME}`,
+    `${region} Transit Frequency | ${SITE_NAME}`,
+    `${region} Transit Frequency`,
+    `${truncateAtWord(region, TITLE_MAX - ' Transit Frequency'.length)} Transit Frequency`,
   ], TITLE_MAX);
 }
 
+/** The area page's title, in title case (VISUAL.md): "Pittsburgh Area", "Greater Toronto and Hamilton Area". */
 export function areaPageH1(d: Pick<AreaPageData, 'area'>): string {
-  return areaRegionTitle(d.area);
+  return titleCase(areaRegionTitle(d.area));
 }
 
 /**

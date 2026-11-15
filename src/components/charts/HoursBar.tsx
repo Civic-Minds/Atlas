@@ -1,5 +1,6 @@
 import { clockTime, hourTime, timeRange } from '../../../shared/timeText';
 import type { AgencyPageRoute } from '../../../shared/agencyPages';
+import { WEEKDAY_HOURS_LABEL } from '../../content/noticeCopy';
 
 /** The track's colour: the split bar's no-service grey. */
 const TRACK = 'var(--control-inactive-bg)';
@@ -30,7 +31,8 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
   const drawn = pieces.filter(([a, b]) => b >= a);
   const firstHour = runs.hours[0];
   const lastHour = runs.hours[runs.hours.length - 1];
-  const label = `Runs ${runs.first != null ? `from ${clockTime(runs.first)}` : `from the ${hourTime(firstHour)} hour`} ${runs.last != null ? `until ${clockTime(runs.last)}` : `to the ${hourTime(lastHour)} hour`}`;
+  // Ryan (CIV-1605): "Weekday hours", then the times: "Weekday hours: from 7 AM until 9:16 PM".
+  const label = `${WEEKDAY_HOURS_LABEL}: ${runs.first != null ? `from ${clockTime(runs.first)}` : `from the ${hourTime(firstHour)} hour`} ${runs.last != null ? `until ${clockTime(runs.last)}` : `to the ${hourTime(lastHour)} hour`}`;
   // Each time sits at its own end of the bar, so a night route's times sit over its pieces, not at the axis's ends.
   // Ends too close for two labels share one range ("1–5:30 AM").
   const pct = (minutes: number) => (100 * (minutes - axis.first * 60)) / span;

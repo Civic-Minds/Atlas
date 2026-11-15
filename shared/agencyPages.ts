@@ -25,6 +25,7 @@ import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
 import { countText } from './numberText';
 import { metresBetween } from './geoDistance';
+import { SITE_NAME } from './pageNames';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -394,7 +395,10 @@ const MAX_AREA_LIST = 12;
 
 export { AGENCY_PATH_PREFIX, agencyPagePath };
 
-/** "TTC frequency: how often routes run | Transit Atlas", dropping the brand, then the phrase, for long names (60 characters at most). */
+/**
+ * "TTC Frequency: How Often Routes Run | Transit Atlas", in the one tab format (shared/pageNames.ts tabTitle): the
+ * phrase goes first, then the brand, for long names (60 characters at most). Title case (VISUAL.md).
+ */
 export function agencyPageTitle(
   a: Pick<AgencyPageSummary, 'displayName'> & Partial<Pick<AgencyPageSummary, 'name' | 'city' | 'region' | 'parentAgency' | 'pageTitleQualifier'>>,
   /** sharedShortLabels: the short names more than one agency page would use. */
@@ -408,11 +412,10 @@ export function agencyPageTitle(
     : a.pageTitleQualifier && a.name ? agencyTitle({ name: a.name, pageTitleQualifier: a.pageTitleQualifier })
     : `${short} (${titlePlace(a, short)})`;
   return firstThatFits([
-    `${name} frequency: how often routes run | Transit Atlas`,
-    `${name} frequency: how often routes run`,
-    `${name} frequency | Transit Atlas`,
-    `${name} frequency`,
-    `${truncateAtWord(name, TITLE_MAX - ' frequency'.length)} frequency`,
+    `${name} Frequency: How Often Routes Run | ${SITE_NAME}`,
+    `${name} Frequency | ${SITE_NAME}`,
+    `${name} Frequency`,
+    `${truncateAtWord(name, TITLE_MAX - ' Frequency'.length)} Frequency`,
   ], TITLE_MAX);
 }
 
@@ -625,11 +628,15 @@ export function agencyPageDescription(a: AgencyPageSummary, intro?: string, size
   // description keeps (#1245): it stays as before apart from the names.
   const sized = sizedBy ? descriptionCuts(sizedBy, place) : shown;
   const at = sized.findIndex(c => c.length <= DESCRIPTION_MAX);
-  const base = at >= 0 ? shown[at] : truncateAtWord(shown[shown.length - 1], DESCRIPTION_MAX);
+  const picked = at >= 0 ? shown[at] : truncateAtWord(shown[shown.length - 1], DESCRIPTION_MAX);
+  // The shown names can be longer than the sizing names ("Maryland Transit Administration · Bus, Metro and Light Rail"):
+  // a cut that then runs past the limit gives way to the next shown cut that fits, so no description is cut off in search.
+  const base = picked.length <= DESCRIPTION_MAX ? picked
+    : shown.slice(Math.max(at, 0)).find(c => c.length <= DESCRIPTION_MAX) ?? truncateAtWord(picked, DESCRIPTION_MAX);
   const sizedBase = at >= 0 ? sized[at] : truncateAtWord(sized[sized.length - 1], DESCRIPTION_MAX);
   if (sizedBase.length >= DESCRIPTION_MIN || !sizedBase.endsWith('.')) return base;
   const tail = [' Weekday route frequency by time of day, from the published schedule.', ' Weekday waits by time of day.']
-    .find(t => sizedBase.length + t.length <= DESCRIPTION_MAX);
+    .find(t => sizedBase.length + t.length <= DESCRIPTION_MAX && base.length + t.length <= DESCRIPTION_MAX);
   return tail ? `${base}${tail}` : base;
 }
 

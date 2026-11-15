@@ -99,7 +99,7 @@ export default function DiagnosticsPerformancePage() {
         </div>
 
         <Panel aria-labelledby="performance-metrics-heading" role="region">
-          <h1 id="performance-metrics-heading" className="px-5 py-4 text-lg font-black border-b border-[var(--border-primary)]">Load measurements</h1>
+          <h1 id="performance-metrics-heading" className="px-5 py-4 text-lg font-black border-b border-[var(--border-primary)]">Load Measurements</h1>
           <div>
             {rows.map(metric => (
               <ListRow as="div" key={metric.label} className="gap-4">
