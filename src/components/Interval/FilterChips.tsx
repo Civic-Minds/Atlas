@@ -544,7 +544,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     </div>
   );
 
-  if (variant === 'history') {
+  if (variant === 'history' && !FEATURES.modeTransitions) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
@@ -564,28 +564,30 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     );
   }
 
-  // CIV-1567 (beta): the full row and Compare's shared group are one row, so entering or leaving Compare cross-fades:
-  // Frequency, Day and Time fade and fold away, "Both maps" and the group outline fade in, and Mode and Agencies stay
-  // put (same elements) instead of blinking out and back.
-  if (FEATURES.modeTransitions && (variant === 'full' || variant === 'shared')) {
+  // CIV-1567 (beta): the full row, Compare's shared group and History's row are one row, so switching between them
+  // cross-fades: controls a mode doesn't use fade and fold away ("Both maps" and the group outline fade in for
+  // Compare), and the ones it keeps stay put (same elements) instead of blinking out and back.
+  if (FEATURES.modeTransitions && (variant === 'full' || variant === 'shared' || variant === 'history')) {
     const shared = variant === 'shared';
+    const history = variant === 'history';
+    const full = variant === 'full';
+    // The full row tucks Frequency, Day and Time into "More filters" below lg; History always shows its own.
+    const coreClass = history ? '' : 'hidden lg:block';
     return (
       <div ref={rowRef} className="flex items-center">
-        <ModeCollapse open={!shared}>
-          <div className="flex items-center gap-2 pr-2">
+        <ModeCollapse open={full}>
+          <div className="relative lg:hidden pr-2">
             {/* Compact "More filters" panel — only below lg */}
-            <div className="relative lg:hidden">
-              <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
-                More filters
-                <Dot show={hasActiveCoreFilter} />
-              </button>
-              {openChip === 'compact' && compactFiltersPanel}
-            </div>
-            {frequencyChip('hidden lg:block')}
-            {dayChip('hidden lg:block')}
-            {periodChip('hidden lg:block')}
+            <button onClick={() => toggle('compact')} className={chipClass(hasActiveCoreFilter)}>
+              More filters
+              <Dot show={hasActiveCoreFilter} />
+            </button>
+            {openChip === 'compact' && compactFiltersPanel}
           </div>
         </ModeCollapse>
+        <ModeCollapse open={!shared}><div className="pr-2">{frequencyChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={full || (history && FEATURES.historyDayPicker)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={!shared}><div className="pr-2">{periodChip(coreClass)}</div></ModeCollapse>
         {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row; the outline fades with "Both maps". */}
         <div
           className={`flex items-center rounded-full border p-0.5 ${shared ? `${TOP_BAR_OUTLINE} ${FOLD_OUTLINE_OPEN}` : `-mx-[3px] border-transparent ${FOLD_OUTLINE_SHUT}`}`}
@@ -598,10 +600,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
               {!compactTopBar && 'Both maps'}
             </span>
           </ModeCollapse>
-          <div className="flex items-center gap-2">
-            {modeChip(shared ? '' : 'hidden lg:block')}
-            {agenciesChip}
-          </div>
+          <ModeCollapse open={!history}><div className="pr-2">{modeChip(shared ? '' : 'hidden lg:block')}</div></ModeCollapse>
+          <ModeCollapse open={!history}>{agenciesChip}</ModeCollapse>
         </div>
       </div>
     );

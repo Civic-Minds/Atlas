@@ -150,6 +150,11 @@ interface Props {
   headerPortalContainer?: Element | null;
   /** Top-bar slot beside History and Live where the Compare view tab renders. */
   viewTabsPortalContainer?: Element | null;
+  /**
+   * CIV-1567 (beta): set while a mode with no compare view (Live, History) is on. The Compare tab stays mounted (folded
+   * to its icon, as App's own tab was) and opens Compare's address through this.
+   */
+  compareTabElsewhere?: () => void;
   /** Phone version: the top bar's More menu, where Compare sits beside History and Live. */
   moreMenuPortalContainer?: Element | null;
   onMoreMenuDone?: () => void;
@@ -211,7 +216,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = 'Transit map' }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -1711,8 +1716,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         />
       )}
 
-      {viewTabsPortalContainer && compareAvailable && createPortal(
-        <CompareTab active={compareActive} onStart={startCompare} onExit={exitCompare} />,
+      {viewTabsPortalContainer && (compareAvailable || compareTabElsewhere) && createPortal(
+        <CompareTab active={compareActive} onStart={compareAvailable ? startCompare : compareTabElsewhere!} onExit={exitCompare} />,
         viewTabsPortalContainer,
       )}
 

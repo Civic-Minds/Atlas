@@ -787,7 +787,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {/* Compare (beta) portals in here from Interval. Phones reach it from the filter panel. */}
         <div ref={viewTabsPortalRef} className="hidden sm:contents" />
         {/* Live and History have no compare view: keep the tab (as an icon); it opens Compare's own address on the map. */}
-        {compareOn && (inLive || inHistory) && (
+        {/* CIV-1567 (beta): Interval keeps its own tab mounted there instead, so it folds rather than being swapped. */}
+        {compareOn && (inLive || inHistory) && !FEATURES.modeTransitions && (
           <CompareTab
             active={false}
             onStart={() => setActiveApp('frequency', COMPARE_PATH)}
@@ -934,6 +935,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onSelectionActiveChange={setIntervalSelectionActive}
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
+              compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
               headerPortalContainer={headerPortalEl}
               viewTabsPortalContainer={viewTabsPortalEl}
               moreMenuPortalContainer={moreMenuPortalEl}
