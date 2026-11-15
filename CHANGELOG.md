@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
 - **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text
 - **Route card notices no longer repeat what the rows say**: a [notice](https://github.com/Civic-Minds/Atlas/issues/1221) that a row's hours or gap already give is left out, the "runs only from" line shows once, and a route whose rows all meet the filter says when it runs instead of that it misses the filter
 - **Agency names read naturally in sentences**: notices and agency pages say "The TTC’s schedule ended…" and "BC Ferries’ schedule", and renamed agencies use their current names (Green Mountain Transit, Santa Maria Regional Transit)

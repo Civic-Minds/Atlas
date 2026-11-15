@@ -91,6 +91,7 @@ Words
 - Times: "2–5 AM", "11 AM–3 PM", "6:30–9 AM". Uppercase AM/PM after a space, an en dash between times (not "to"), no ":00" on the hour, AM/PM once when both times share it (Ryan, 2026-10-28). CIV-1095.
 - Route numbers keep the agency's own form ("1X", "SU 43", "99 B-Line", "SSSF"). Route labels come from `routeLabels` in `src/utils/format.ts`, built on `shared/routeDisplay.ts`, so a route reads the same way on every surface.
 - A route named by its number reads "Route " + the number as the route lists show it ("Route 504", "Route 52A", "Routes 501, 504"), from `routeShortLabel` / `routesShortLabel` in `src/utils/format.ts`; never built by hand. CIV-1569.
+- A direction with no destination or bound name reads "Direction 1" / "Direction 2" (GTFS direction 0 is "Direction 1"), from `directionBranchFallback` in `shared/headsignDisplay.ts`, on route cards, report details and Live. CIV-1569.
 - "The" before agency names (CIV-1103):
   - Names ending in Authority, Commission, District, Agency, Company, Corporation, Department, Board, Railway, Railroad, System or Service take "the". So do The Staten Island Ferry, The Cheyenne Transit Program, The Fayetteville Area System of Transit and The Yamhill County Transit Area.
   - Acronyms said letter by letter take "the" (the TTC, the MBTA, the CTA). Acronyms said as a word (MARTA, SEPTA) and brands (MiWay) don't.

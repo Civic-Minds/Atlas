@@ -4,7 +4,8 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { dateRange } from './dateText';
+import { dateRange } from './dateText.js';
+import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min, pct } from './liveFormat.js';
 import { hourTime } from './timeText.js';
 import { TRIP_TIME_LABEL } from './liveWording.js';
@@ -66,8 +67,8 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   return dirs.length === 1 ? `over ${n}, ${ends[0]}` : `over ${n}: ${ends.join('; ')}`;
 }
 export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
-/** A direction's name from the file ("Eastbound"), or "Direction 1" where the file has none. */
-export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? `Direction ${d}`;
+/** A direction's name from the file ("Eastbound"), or the shared fallback ("Direction 1" for direction 0) where the file has none. */
+export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? directionBranchFallback(d);
 
 /** Run time against the timetable in the whole minutes the tiles show (typical and scheduled each rounded first, so the difference matches the two figures). */
 export const runTimeDiffMin = (typicalMin: number, scheduledMin: number): number => Math.round(typicalMin) - Math.round(scheduledMin);
