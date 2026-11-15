@@ -90,7 +90,9 @@ const RULES: Rule[] = [
   // format.ts holds the builders; cleanRouteDisplayName rewrites "Route 01" inside a feed's own name.
   { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /Routes? \$\{|['"]Routes? ['"] *\+|>Routes? \$\{/, slip: '`Route ${r.shortName}`',
     allowed: ['src/utils/format.ts'] },
-  { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
+  // "One way" / "Other way" / "Pattern N" were the schedule pills' own unnamed-direction names (fixed with Live's made-up
+  // "Outbound"/"Inbound"); an agency's real "Outbound" label is a name, so only the made-up pill words are flagged.
+  { name: 'a "Direction N" or other unnamed-direction name built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+|['"](One way|Other way)['"]|`Pattern \$\{/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
   // How Atlas looks

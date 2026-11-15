@@ -37,6 +37,7 @@ import { reportDetails } from '../../../utils/reportIssue';
 import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { directionBranchFallback } from '../../../../shared/headsignDisplay';
 
 function formatMetricMap(
   values: Record<string, number | null | undefined> | null | undefined,
@@ -54,11 +55,11 @@ function formatMetricMap(
 /**
  * Labels for the full-day schedule's direction pills. Uses the bound label
  * (Westbound), else the destination from the headsign ("To Downtown"), and
- * only falls back to a generic name when a direction has neither. Never
- * "Direction 0/1".
+ * only falls back to the shared unnamed-direction name ("Direction 1", "Direction 2", directionBranchFallback; TEXT.md,
+ * CIV-1569) when a direction has neither.
  */
 export function directionPillLabels(
-  groups: Pick<DirectionGroup, 'boundLabel' | 'realTier' | 'span'>[],
+  groups: Pick<DirectionGroup, 'dirId' | 'boundLabel' | 'realTier' | 'span'>[],
   shortName: string,
   longName: string,
 ): string[] {
@@ -74,8 +75,7 @@ export function directionPillLabels(
     if (destinations.length === 1) return first;
     return `${first} / ${destinations[1].replace(/^to\s+/i, '')}`;
   });
-  const generic = (index: number) => groups.length === 2 ? (index === 0 ? 'One way' : 'Other way') : `Pattern ${index + 1}`;
-  const resolved = labels.map((label, index) => label ?? generic(index));
+  const resolved = labels.map((label, index) => label ?? directionBranchFallback(groups[index].dirId));
   return resolved.map((label, index) =>
     resolved.indexOf(label) === index ? label : `${label} (${resolved.slice(0, index + 1).filter(l => l === label).length})`);
 }

@@ -1,5 +1,6 @@
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { compareRouteNumber } from '../../shared/sortCompare';
+import { directionBranchFallback } from '../../shared/headsignDisplay';
 
 /** Live's route list order: by agency slug, then route number in natural order ("2" < "10", "7A" < "7B"). */
 export function compareLiveRoutes(
@@ -111,7 +112,7 @@ export function groupVehiclesByDirection(vehicles: readonly LiveVehicle[], direc
 /** The direction group a vehicle belongs to (see groupVehiclesByDirection). */
 export function vehicleDirectionKey(v: Pick<LiveVehicle, 'headsign' | 'directionId'>, directionLabels: ReadonlyMap<number, string>): string {
   return v.headsign
-    ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? (v.directionId === 0 ? 'Outbound' : 'Inbound')) : DIRECTION_UNCLEAR);
+    ?? (v.directionId != null ? (directionLabels.get(v.directionId) ?? directionBranchFallback(v.directionId)) : DIRECTION_UNCLEAR);
 }
 
 /**
@@ -136,7 +137,7 @@ export function orderDirectionGroups(groups: ReadonlyMap<string, LiveVehicle[]>,
     if (key === DIRECTION_UNCLEAR) return [1, 0, 0];
     const ids = vehicles.map(v => v.directionId).filter((d): d is number => d != null);
     const dir = ids.length > 0 ? Math.min(...ids) : Number.MAX_SAFE_INTEGER;
-    const main = directionLabels.get(dir) === key || (dir === 0 && key === 'Outbound') || (dir === 1 && key === 'Inbound') ? 0 : 1;
+    const main = directionLabels.get(dir) === key || (Number.isFinite(dir) && key === directionBranchFallback(dir)) ? 0 : 1;
     return [0, dir, main];
   };
   return [...groups.entries()]

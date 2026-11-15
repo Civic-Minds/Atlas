@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A direction with no name reads "Direction 1" or "Direction 2" everywhere**: the schedule's direction buttons said "One way" / "Other way" and Live said "Outbound" / "Inbound" for the same case
 - **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
 - **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"
 - **Empty cells show one kind of dash everywhere**: area tables, the free-fares map and Live tables used a shorter dash than the agency pages and frequency text
