@@ -45,7 +45,7 @@ describe('FlaggableValue + CardReportButton', () => {
     await activateReportMode();
     fireEvent.click(screen.getByRole('button', { name: /every 10 min/i }));
     await waitFor(() => expect(screen.getByRole('dialog')).toBeTruthy());
-    expect(screen.queryByLabelText('Stop is missing, misplaced, or assigned incorrectly')).toBeNull();
+    expect(screen.queryByLabelText('Stop is missing, misplaced or assigned incorrectly')).toBeNull();
     expect(screen.queryAllByRole('checkbox').filter(el => (el as HTMLInputElement).checked)).toHaveLength(0);
   });
 
