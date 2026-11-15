@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A line with [no regular service](https://github.com/Civic-Minds/Atlas/issues/1503) in a period shows no regular sections (beta)**: GO Barrie at PM peak read every 60 between Union and Aurora while its card said it runs irregularly
 - **A [selected route](https://github.com/Civic-Minds/Atlas/issues/1504) is drawn only when it passes the map's filters (beta)**: section colours drew GO Barrie and Stouffville at midday when the public map hid them
 - **Every search box hint starts with "Find"**: "Find routes…", "Find agencies…", "Find vehicles…", as History's boxes already did, where the rest said "Search"
 - **Unnamed directions are numbered the same way everywhere**: Live and problem reports called the first direction "Direction 0" where route cards say "Direction 1"

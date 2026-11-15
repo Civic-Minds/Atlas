@@ -225,6 +225,17 @@ describe('period section colours (CIV-321 S3)', () => {
     expect(buildSectionColourFeatures({ go: line() }, 'Weekday', 'default', undefined, 'amPeak')).toEqual([]);
   });
 
+  it('#1503: colours no section as regular where the route has no regular service in the period (GO Barrie PM peak)', () => {
+    // Release release-mwgrzbgq: northbound reads every 51-56 between Union and Aurora, southbound has only stray trips, so the
+    // route has no PM peak value and the card reads "Runs irregularly in this period" for both directions.
+    const barrie = fixture('go-br-weekday');
+    expect(barrie.features.some(f => f.properties?.stopId == null && f.properties?.routeFilterHeadwayByPeriod?.pmPeak == null)).toBe(true);
+    expect(buildSectionColourFeatures({ go: barrie }, 'Weekday', 'default', undefined, 'pmPeak')).toEqual([]);
+    // The same line in a period the route runs regularly is still coloured by its sections' own values.
+    expect(buildSectionColourFeatures({ go: line({ routeFilterHeadwayByPeriod: { midday: 30 } }) }, 'Weekday', 'default', undefined, 'midday').map(f => f.properties.tier)).toEqual(['60']);
+    expect(buildSectionColourFeatures({ go: line({ routeFilterHeadwayByPeriod: { midday: null } }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
+  });
+
   it('keeps one colour on data without per-stop period values or without a period value', () => {
     expect(buildSectionColourFeatures({ go: line({ stretchStopPeriodValues: undefined }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
     expect(buildSectionColourFeatures({ go: line({ directionFilterHeadwayByPeriod: { midday: null } }) }, 'Weekday', 'default', undefined, 'midday')).toEqual([]);
