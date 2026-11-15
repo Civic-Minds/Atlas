@@ -105,7 +105,7 @@ describe('FrequentServiceStory', () => {
 
   it('says in Method that the chart was checked again (CIV-1149)', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={vi.fn()} />);
-    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and stay in the chart\. 6 are left out:/)).toBeInTheDocument();
+    expect(screen.getByText(/Between October 30 and November 3, we opened the source again for each of the 69 agencies the chart counted\. 63 still matched and 61 stay in the chart\. 6 are left out:/)).toBeInTheDocument();
   });
 
   it('uses the shared method template: Date updated, and Sources in place of Review boundary (CIV-1167)', () => {
