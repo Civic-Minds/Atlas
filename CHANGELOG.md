@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
 - **The frequency bar's last group reads "Irregular or no trips"**: "Irregular or none" read oddly
 - **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"

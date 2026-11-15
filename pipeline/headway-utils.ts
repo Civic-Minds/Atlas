@@ -77,13 +77,42 @@ export function typicalOfGaps(gapsInTimeOrder: readonly number[], wholeDay = fal
   // Over a whole day, three gaps (four departures) cannot show an alternation, so a gap at least 3x
   // the median is a break between runs of service (centro 21950 70, 350, 70), not a wait riders see (#834).
   if (wholeDay && inRange.length === 3 && Math.max(...inRange) >= median * ALTERNATING_HOLE_RATIO) return median;
+  const reading = alternationReading(inRange, median);
+  if (reading != null) return reading;
+  // #1515: paired trips whose median lands on a lone middle gap. LIRR Babylon midday at Seaford runs
+  // 34, 18, 45, 15, 48, 14, 46, 12, 48, 12, 48: the 14:59 crosses into the PM peak at that stop, one
+  // gap drops out, the median is the lone 34 and the 45-48 gaps are under 1.5x it, so the pairs read
+  // 34 (at Wantagh, one stop away, the same trains read 48). When the median is itself long against
+  // the lower half of the gaps (at least 1.5x their median), it sits between two groups of gaps:
+  // the lower half's median is then the short gap the alternation is measured against. Only for
+  // two clear groups: short gaps (under 1.5x the lower half's median) and holes (at least 3x it),
+  // each a third of the gaps or more, with at most one gap between them; mixed spacings (a bus
+  // every 15-25 with a 40 or two) keep the median.
+  const lowerHalf = medianOfSortedGaps(sorted.slice(0, Math.ceil(sorted.length / 2)));
+  const shortCount = inRange.filter(g => g < lowerHalf * ALTERNATING_LONG_GAP_RATIO).length;
+  const holeCount = inRange.filter(g => g >= lowerHalf * ALTERNATING_HOLE_RATIO).length;
+  const twoGroups = shortCount >= inRange.length * ALTERNATING_LONG_SHARE && holeCount >= inRange.length * ALTERNATING_LONG_SHARE
+    && inRange.length - shortCount - holeCount <= 1;
+  if (lowerHalf > 0 && median >= lowerHalf * ALTERNATING_LONG_GAP_RATIO && twoGroups) {
+    const paired = alternationReading(inRange, lowerHalf);
+    if (paired != null) return Math.max(median, paired);
+  }
+  return median;
+}
+
+/**
+ * The alternation reading of typicalOfGaps against `base` (the gaps' median, or #1515's lower-half
+ * median): null when the gaps do not alternate (no inner long gaps making up a third of them).
+ */
+function alternationReading(inRange: readonly number[], base: number): number | null {
+  const median = base;
   const isLong = inRange.map(g => g >= median * ALTERNATING_LONG_GAP_RATIO);
   let lead = 0;
   while (lead < isLong.length && isLong[lead]) lead++;
   let trail = 0;
   while (trail < isLong.length - lead && isLong[isLong.length - 1 - trail]) trail++;
   const innerLong = isLong.slice(lead, isLong.length - trail).filter(Boolean).length;
-  if (innerLong < inRange.length * ALTERNATING_LONG_SHARE) return median;
+  if (innerLong < inRange.length * ALTERNATING_LONG_SHARE) return null;
   // When the long gaps take up most of the time, most riders wait a long gap: read the long
   // gaps' median. That holds for one block of long gaps (mata 42 Weekday at Frayser & Woodrow,
   // midday 30, 30, 60, 60, 60, 30, 30 reads 60, not 43) and for alternation with real holes,
