@@ -19,7 +19,12 @@ describe('vercel-ignore-build.sh', () => {
     git('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--no-verify', '-m', 'c');
     return git('rev-parse', 'HEAD');
   };
-  const run = (prev: string, curr: string) => spawnSync('bash', [script, prev, curr], { cwd: repo, encoding: 'utf8' }).status;
+  const run = (prev: string, curr: string, ref?: string) => {
+    const env: NodeJS.ProcessEnv = { ...process.env };
+    delete env.VERCEL_GIT_COMMIT_REF;
+    if (ref !== undefined) env.VERCEL_GIT_COMMIT_REF = ref;
+    return spawnSync('bash', [script, prev, curr], { cwd: repo, encoding: 'utf8', env }).status;
+  };
   // Exit code for a commit that changes `files` on top of the current tip.
   const exitFor = (files: Record<string, string>) => {
     const prev = git('rev-parse', 'HEAD');
@@ -57,5 +62,19 @@ describe('vercel-ignore-build.sh', () => {
     const head = git('rev-parse', 'HEAD');
     expect(run('', head)).toBe(1);
     expect(run('0123456789abcdef0123456789abcdef01234567', head)).toBe(1);
+  });
+
+  it('skips every branch except main before looking at paths', () => {
+    const prev = git('rev-parse', 'HEAD');
+    const curr = commit({ 'src/a.ts': 'd' });
+    expect(run(prev, curr, 'main')).toBe(1);
+    expect(run(prev, curr, 'chore/some-helper-branch')).toBe(0);
+    expect(run(prev, curr, 'beta')).toBe(0);
+    // Unset (local use) still runs the path check.
+    expect(run(prev, curr)).toBe(1);
+    // main keeps the path check: a docs-only push is still skipped, an unknown previous deploy still builds.
+    expect(run(curr, commit({ 'README.md': 'd' }), 'main')).toBe(0);
+    expect(run('', curr, 'main')).toBe(1);
+    expect(run('', curr, 'feat/x')).toBe(0);
   });
 });
