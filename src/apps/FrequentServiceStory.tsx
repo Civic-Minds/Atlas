@@ -199,7 +199,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className={STORY_HEADING}>There is no single “frequent.”</h2>
               <p className={STORY_PARAGRAPH}>
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes. Fifteen minutes is the most common choice. Transit planner <a className={UNDERLINED_LINK} href="https://humantransit.org/2011/12/how-frequent-is-freedom.html" rel="noopener noreferrer">Jarrett Walker</a> puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.”
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes. Fifteen minutes is the most common choice. Transit planner <a className={UNDERLINED_LINK} href="https://humantransit.org/2011/12/how-frequent-is-freedom.html" rel="noopener noreferrer">Jarrett Walker</a> puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.” The industry’s <a className={UNDERLINED_LINK} href="https://onlinepubs.trb.org/onlinepubs/tcrp/tcrp_rpt_165ch-05.pdf" rel="noopener noreferrer">planning manual</a> says that at 10 minutes or better there is “no need for passengers to consult schedules.”
               </p>
             </div>
             <div className="mt-10">
