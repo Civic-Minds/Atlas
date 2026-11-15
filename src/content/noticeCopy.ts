@@ -90,20 +90,20 @@ export const BOOKING_REQUIRED_NOTICE = 'Rides on this route must be booked ahead
 
 
 // N11 not-in-period, N12 misses-filter
-/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for all day. */
+/** Notices name the chosen time of day, never "the selected period" (Ryan); `periodRange` is "6–9 AM", or null for no chosen time ("across the day"). */
 export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange: string | null): string {
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
-    ? routeNoTripsText(when ? `from ${when}` : 'all day')
+    ? routeNoTripsText(when ? `from ${when}` : 'across the day')
     // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
-    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
+    : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'across the day'}.`;
 }
 
 // N123 part-of-route-meets-filter (CIV-514; CIV-1251, Ryan 2026-11-01): the selected route misses the filter, but its shared
 // stretch qualifies, as the shared-stretch overlay draws (failingRouteSharedRanges). Names the times, and the direction when
 // only one is like this: "Northbound, only the shared stretch runs every 15 min or better from 3–7 PM."
 export function selectedRoutePartMeetsFilterNotice(maxHeadway: number, periodRange: string | null, direction?: string): string {
-  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'all day';
+  const when = periodRange ? `from ${keepRangeTogether(periodRange)}` : 'across the day';
   return `${direction ? `${direction}, only` : 'Only'} the shared stretch runs ${headwayOrBetter(maxHeadway)} ${when}.`;
 }
 

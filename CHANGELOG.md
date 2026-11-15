@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"
 - **The Docs page matches the app and the site it's on**: it uses the filters' own definitions and the expired-schedule notice's real words, says correctly that a route with 8 or more gaps always gets one near miss, and leaves out on public what only beta has
 - **The Docs page quotes the app's real notices and labels**: two notices were quoted in old wording, and the Live report pages' "What these terms mean" link landed on a glossary without the Live terms on beta

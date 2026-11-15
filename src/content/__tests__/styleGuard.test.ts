@@ -108,8 +108,9 @@ const RULES: Rule[] = [
   { name: 'a lone dash typed for an empty value (use MISSING_VALUE)', doc: 'TEXT.md', pattern: /['"`][—–]['"`]|>[—–]<|=["'][—–]["']/, slip: "value ?? '—'",
     skipLine: /\.(split|join|replace)\(/, allowed: ['shared/missingValue.ts'] },
   // format.ts holds the builders; cleanRouteDisplayName rewrites "Route 01" inside a feed's own name.
-  { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /Routes? \$\{|['"]Routes? ['"] *\+|>Routes? \$\{/, slip: '`Route ${r.shortName}`',
-    allowed: ['src/utils/format.ts'] },
+  { name: 'a "Route " + number built by hand (use routeShortLabel / withRouteWord)', doc: 'TEXT.md', pattern: /[Rr]outes? \$\{(?!(ended|count|plural|headway))|['"][Rr]outes? ['"] *\+|>[Rr]outes? \$\{/, slip: '`Live has no route ${route}`',
+    // CIV-1613: lowercase "route ${…}" too. A long-name comparison and a file-name slug aren't text.
+    skipLine: /lowerLong ===|parts\.push\(`route/, allowed: ['src/utils/format.ts'] },
   // "One way" / "Other way" / "Pattern N" were the schedule pills' own unnamed-direction names (fixed with Live's made-up
   // "Outbound"/"Inbound"); an agency's real "Outbound" label is a name, so only the made-up pill words are flagged.
   { name: 'a "Direction N" or other unnamed-direction name built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+|['"](One way|Other way)['"]|`Pattern \$\{/, slip: '`Direction ${id + 1}`',
@@ -161,25 +162,26 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-// CIV-1613: the tightened rules found these; each needs Ryan's wording (or his OK that it's an agency's own words).
+// CIV-1613: NO_MIDDAY_PHRASE ("with no regular midday service") waits for Ryan's wording.
 const PENDING: Record<string, string[]> = {
   '"no regular service" (say "Irregular" or "Runs irregularly in this period")': ['shared/agencyPages.ts'],
-  '"All day" (the map has no All day option)': [
-    'src/components/FrequentServiceStoryMap.tsx', 'src/components/Live/sections/figures.ts', 'src/content/noticeCopy.ts',
-    'src/utils/mapExportDetails.ts', 'shared/liveDashboard.ts',
-  ],
-  '"every N minutes" as a frequency (write "every N min")': [
-    'src/apps/FrequentServiceStory.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/data/frequentServiceStory.ts',
-  ],
-  'a distance or speed unit written by hand (use metresText / speedText)': ['src/components/Live/sections/MethodSection.tsx', 'src/data/onDemandServiceAreas.ts'],
-  'a "Month D, YYYY" date typed into the code (use shared/dateText.ts)': ['src/apps/FrequentServiceStory.tsx'],
 };
 
-// Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep "minutes". Each is removed
-// from its file before the rules run, so only that exact text passes.
+// Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
+// removed from its file before the rules run, so only that exact text passes.
 const APPROVED_TEXT: Record<string, string[]> = {
-  // The frequent-service story quoting agencies' definitions.
-  'src/apps/FrequentServiceStory.tsx': ['“every 15 minutes or better”', '“every 15–20 minutes”'],
+  // The frequent-service story: its approved prose, and agencies' own definitions (CIV-1613, manager 2026-11-14).
+  'src/apps/FrequentServiceStory.tsx': [
+    '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
+    'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+  ],
+  'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
+  'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],
+  // A round figure reads better as "about 1 km"; TriMet's own rule for its Sandy zone.
+  'src/components/Live/sections/MethodSection.tsx': ['(about 1 km)'],
+  'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
+  // Live's notices, word for word (CIV-1045); Ryan's CIV-1160 answer 7 keeps "Live has no route 109 for MiWay."
+  'src/content/noticeCopy.ts': ['`Live has no route ${route} for ${agency}.`', "It follows ${agencyName} routes ${followed.join(', ')}."],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.

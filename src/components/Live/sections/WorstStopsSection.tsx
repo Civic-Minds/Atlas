@@ -17,6 +17,7 @@ import LateStopsMap from '../LateStopsMapLazy';
 import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
 import { countOf } from '../../../../shared/overflowText';
 import { percentText, countText } from '../../../../shared/numberText';
+import { routeShortLabel } from '../../../utils/format';
 
 /** The one derivation of the worst-stops list (the stops ranked by share of late departures), so every surface lists the same stops. */
 export function worstStopsModel(v3: LiveV3, data: DashboardBandData, dir: number | null, uncertain: readonly UncertainStart[], limit: number) {
@@ -85,7 +86,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   ) : <p className="mt-3 text-sm text-[var(--text-muted)]">{EMPTY}</p>;
   const mapped = map && top.length ? (() => {
     const spots = lateStopSpots(top.map(s => ({ key: `${s.stopId}-${s.directionId}`, lonLat: s.lonLat ?? null, name: s.name, line: `${both ? `${dirText(s.directionId)}: ` : ''}${percentText(s.lateShare)} late`, lateShare: s.lateShare })));
-    return <LateStopsMap spots={spots} routes={map} label={`Map of route ${map.route} and its ${countOf(top.length, 'stop')} most often late`} className="mt-6" />;
+    return <LateStopsMap spots={spots} routes={map} label={`Map of ${routeShortLabel(map.route)} and its ${countOf(top.length, 'stop')} most often late`} className="mt-6" />;
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map
     ? `${lateStopsIntro(top.length, { scope: 'route' })} ${LATE_MAP_HINT}`
