@@ -6,13 +6,15 @@ export interface MenuOption<K extends string> { key: K; label: string }
  * A small inline menu: the current choice as text with ▾, opening a list of options. Keyboard: Enter, Space or the
  * arrow keys open it; arrows move; Enter or Space picks; Escape or Tab closes. A menu of radio items for screen readers.
  */
-export default function MenuButton<K extends string>({ label, value, options, onChange, className = '' }: {
+export default function MenuButton<K extends string>({ label, value, options, onChange, className = '', align = 'left' }: {
   /** What the button shows (the current choice, in context). */
   label: string;
   value: K;
   options: readonly MenuOption<K>[];
   onChange: (key: K) => void;
   className?: string;
+  /** Which edge of the button the list lines up with. Use 'right' for a button at the right edge of a panel, so the list opens inward. */
+  align?: 'left' | 'right';
 }) {
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(0);
@@ -54,7 +56,7 @@ export default function MenuButton<K extends string>({ label, value, options, on
         {label}<span aria-hidden="true" className="text-[0.75em]">▾</span>
       </button>
       {open && (
-        <span id={menuId} role="menu" className="absolute left-0 top-full z-20 mt-1 flex min-w-[9rem] flex-col rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] py-1 text-sm">
+        <span id={menuId} role="menu" className={`absolute ${align === 'right' ? 'right-0 [&>button]:whitespace-nowrap' : 'left-0'} top-full z-20 mt-1 flex min-w-[9rem] flex-col rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] py-1 text-sm`}>
           {options.map((o, i) => (
             <button
               key={o.key}

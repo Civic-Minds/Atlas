@@ -170,6 +170,32 @@ export default defineConfig(({ mode, command, isPreview }) => {
     },
   };
 
+  // Dev-only (configureServer never runs in a build): serve tmp/dev-context/context.pmtiles at
+  // /dev-context/context.pmtiles (byte ranges) for the population/income context layer trial (CIV-482).
+  // The UI reads it only when VITE_CONTEXT_LAYER_URL is set.
+  const CONTEXT_FILE = resolve('tmp/dev-context/context.pmtiles');
+  const contextLayerFixture: Plugin = {
+    name: 'context-layer-fixture',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if ((req.url ?? '').split('?')[0] !== '/dev-context/context.pmtiles' || !existsSync(CONTEXT_FILE)) return next();
+        const { size } = statSync(CONTEXT_FILE);
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Cache-Control', 'no-store');
+        const match = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+        if (!req.headers.range || !match) { res.setHeader('Content-Length', String(size)); createReadStream(CONTEXT_FILE).pipe(res); return; }
+        const start = match[1] ? parseInt(match[1], 10) : 0;
+        const end = match[2] ? parseInt(match[2], 10) : size - 1;
+        res.statusCode = 206;
+        res.setHeader('Content-Range', `bytes ${start}-${end}/${size}`);
+        res.setHeader('Content-Length', String(end - start + 1));
+        createReadStream(CONTEXT_FILE, { start, end }).pipe(res);
+      });
+    },
+  };
+
   // Dev-only: serve an agency's dry-run process artifacts (see `npm run process
   // -- <feed> <slug> ... --dry-run`) instead of proxying to R2, whenever a local
   // preview file exists for that exact filename — same override-if-present,
@@ -220,6 +246,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       earlyDataUrl,
       flagsJson,
       historyV2Fixtures,
+      contextLayerFixture,
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
     // MapLibre spawns its worker as `type: 'module'` (see src/lib/mapStyle.ts).
