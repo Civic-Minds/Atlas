@@ -21,7 +21,7 @@ import PanelEmpty from '../components/ui/PanelEmpty';
 import { CARD_SUMMARY } from '../components/Interval/cardUi';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
 import AgencyName from '../components/ui/AgencyName';
-import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
+import { loadingText, NIGHT_LOAD_FAILED, nightNoRoutesNotice, NO_AGENCIES_MATCH_SEARCH, ZOOMED_OUT_NOTICE, OVERNIGHT_PART_OF_ROUTE } from '../content/noticeCopy';
 import { shouldLoadAgencyDetails } from '../hooks/useAgencyData';
 import { nightRouteKey, nightRoutesInView, type NightServiceFeatureProperties } from '../utils/nightRoutesInView';
 
@@ -234,7 +234,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
                   headway: nightGrade(route, agency.slug),
                   // CIV-1329: the dot takes the night shade of its grade, as the map and key draw it.
                   dotColor: getNightServiceTierColor(nightGrade(route, agency.slug), colorMode),
-                  subLabel: route.partOfRoute ? 'Overnight service on part of the route' : undefined,
+                  subLabel: route.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined,
                   disabled: !route.routeId || !onRouteSelect,
                 }))}
                 onSelect={key => {

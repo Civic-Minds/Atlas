@@ -59,7 +59,7 @@ import Panel from '../ui/Panel';
 import { pickLiveVehicles } from './map/liveVehiclePick';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED, MAP_EXPORT_TITLES, EXPORT_MAP_TITLE, LOCATE_ME_LABEL } from '../../content/noticeCopy';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -421,7 +421,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const state = exportStateRef.current;
     const view: MapExportView = state.nightServiceView ? 'night'
       : state.frequentServiceView ? 'frequent-service'
-      : state.liveRoutesOnly || state.exportTitle !== 'Transit Frequency' ? 'other'
+      : state.liveRoutesOnly || state.exportTitle !== MAP_EXPORT_TITLES.frequency ? 'other'
       : 'frequency';
 
     // Only routes actually drawn: hidden-by-zoom routes stay in the query results with zero
@@ -1372,7 +1372,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
-            aria-label="Export map image"
+            aria-label={EXPORT_MAP_TITLE}
             className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
@@ -1382,7 +1382,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <MapZoomButtons className="max-sm:hidden" onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
-          aria-label="Go to my location"
+          aria-label={LOCATE_ME_LABEL}
           className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
           <LocateFixed className="w-3.5 h-3.5" />

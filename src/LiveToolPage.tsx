@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadingText } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -350,7 +350,7 @@ export default function LiveToolPage() {
   // CIV-1413 C: a page without figures keeps the top bar's Atlas logo and the "← agency" link every Live page has in all states (CIV-1446).
   const bare = (line: ReactNode, busy = false) => shell(
     <>
-      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} /></header>
+      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} /></header>
       <div className="p-6">
         <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />
         <p className="mt-3 text-sm text-[var(--text-muted)]" aria-busy={busy || undefined}>{line}</p>
@@ -365,7 +365,7 @@ export default function LiveToolPage() {
     <>
       {/* On phones the bar's pills take two rows: 20px between rows and 10px below, so each pill's 44px tap area (PHONE_TAP_AREA) is its own. */}
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
-        <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
+        <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agencyName}</button>
         <div ref={setDirSlot} className="contents" />
         <div ref={setDataSlot} className="contents" />

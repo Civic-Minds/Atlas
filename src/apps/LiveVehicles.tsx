@@ -47,7 +47,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
+import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS } from '../content/noticeCopy';
 
 interface Props {
   agencies: Agency[];
@@ -1004,7 +1004,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (
-          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label="About Atlas">
+          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label={ABOUT_ATLAS}>
             <Info className="w-4 h-4" />
           </button>
         )}

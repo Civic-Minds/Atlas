@@ -1,5 +1,5 @@
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
-import { reportDetails } from '../../utils/reportIssue';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
 
 /** A vehicle as a report lists it: id, trip, direction, delay and when its position was sent. */
 function vehicleLine(v: LiveVehicle): string {
@@ -15,7 +15,7 @@ function vehicleLine(v: LiveVehicle): string {
 export function liveRouteReportDetails(args: { agencySlug: string; agencyName: string; routeShortName: string; direction?: string | null; vehicles: readonly LiveVehicle[]; now?: Date }): string {
   return reportDetails([
     ['Agency', args.agencyName],
-    ['Agency slug', args.agencySlug],
+    [REPORT_DETAIL_LABELS.agencySlug, args.agencySlug],
     ['Route', args.routeShortName],
     ['Direction', args.direction ?? 'all'],
     ['Reported at', (args.now ?? new Date()).toISOString()],
@@ -28,7 +28,7 @@ export function liveRouteReportDetails(args: { agencySlug: string; agencyName: s
 export function liveVehicleReportDetails(args: { agencySlug: string; agencyName: string; routeShortName: string; vehicle: LiveVehicle; now?: Date }): string {
   return reportDetails([
     ['Agency', args.agencyName],
-    ['Agency slug', args.agencySlug],
+    [REPORT_DETAIL_LABELS.agencySlug, args.agencySlug],
     ['Route', args.routeShortName],
     ['Reported at', (args.now ?? new Date()).toISOString()],
     '**Vehicle:**',

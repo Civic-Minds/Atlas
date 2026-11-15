@@ -93,6 +93,11 @@ const RULES: Rule[] = [
   { name: 'a "Direction N" built by hand (use directionBranchFallback)', doc: 'TEXT.md', pattern: /Direction \$\{|['"]Direction ['"] *\+/, slip: '`Direction ${id + 1}`',
     allowed: ['shared/headsignDisplay.ts'] },
 
+  // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
+  { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
+    pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit Frequency|Frequent Service|Service History|Live Transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
+    slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts'] },
+
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },
