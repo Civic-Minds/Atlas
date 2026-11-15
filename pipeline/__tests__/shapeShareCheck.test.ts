@@ -27,7 +27,9 @@ trips.push({ trip_id: 'sat', route_id: '19137', service_id: 'sat', direction_id:
 const byTrip = stopIdsByTrip(stopTimes as any);
 const base = { trips, stopIdsByTrip: byTrip, activeServiceIds: new Set(['wk']), routeIds: new Set(['19137']), directionId: 1, headsign: 'Downtown Transit Center' };
 
-// The published row from release-mvtnhbn1: headline 32 against a direction running every 30.
+// Reconstructed, not read from a release: release-mvtnhbn1 is pruned. CIV-1138 records headline 32,
+// AM peak 43 and PM peak 62 against a direction running every 30; midday 30 is assumed from the
+// 30-minute timetable and is the value the rule compares against.
 const cctaRow = { headway: 32, headwayByPeriod: { amPeak: 43, midday: 30, pmPeak: 62, evening: 75 } };
 
 describe('shape share check (CIV-1657)', () => {
