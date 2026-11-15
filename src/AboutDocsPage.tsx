@@ -2,11 +2,12 @@ import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES, PERIOD_LABELS, SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
 import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
-import { percentText } from '../shared/numberText';
+import { countText, percentText } from '../shared/numberText';
 import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
 import { metresText } from '../shared/unitText';
 import { hourRange } from '../shared/timeText';
-import { joinList } from '../shared/overflowText';
+import { joinList, plural } from '../shared/overflowText';
+import { RESEARCH } from './data/research';
 import ScrollX from './components/ui/ScrollX';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
@@ -42,6 +43,10 @@ const PERIOD_TIMES = Object.fromEntries(TIME_PERIODS.map(p => [p.key, hourRange(
 const TIER_LIST = `${joinList(SURFACE_TIER_MAXES.map(max => `≤${max}`))} min`;
 /** The agency table's period columns, in AgencyPage.tsx's order. */
 const AGENCY_TABLE_PERIODS = joinList([PERIOD_LABELS.amPeak, PERIOD_LABELS.midday, PERIOD_LABELS.pmPeak, PERIOD_LABELS.evening, PERIOD_LABELS.overnight]);
+/** The research pages, counted and named from RESEARCH so the page can't drift from the /research index (CIV-1610, CIV-1440). */
+const RESEARCH_VIEWS = `${countText(RESEARCH.length)} focused ${plural(RESEARCH.length, 'view')}, ${joinList(RESEARCH.map(entry => entry.title.toLowerCase()))}`;
+/** How a route is rated (FREQUENCY_RULES rules 2-4, D1): the Frequency section and the glossary's "Route rating" both read this (CIV-1440). */
+const ROUTE_RATING = 'A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.';
 
 const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
 
@@ -215,7 +220,7 @@ export default function AboutDocsPage() {
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
               {showAgencyPages && <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with {AGENCY_TABLE_PERIODS} waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within {metresText(150)} of one of its stops, and counts its stops as unique places (stops with the same name within {metresText(150)} count once). Area pages do the same for every agency in an area, such as the Greater Toronto and Hamilton Area.</li>}
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>}
-              {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> two focused views, overnight service and frequent service, built on source-reviewed data before anything becomes a general map feature.</li>}
+              {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> {RESEARCH_VIEWS}, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
             {showHistory && <p>The History eligibility rule requires at least {MIN_HISTORY_DISTINCT_YEARS} distinct snapshot years. Historical route identity is matched by exact route short name by default, with explicit aliases for documented redesigns.</p>}
             {showResearch && <p>Research outputs can become product features only after their definitions, coverage and source quality are clear. This is why Atlas sometimes contains a capability in the data or code before exposing it in the primary navigation.</p>}
@@ -259,7 +264,7 @@ export default function AboutDocsPage() {
 
           <Section id="frequency">
             <p>Atlas calculates scheduled headways: the time between consecutive departures. It reads departure times from <code className="text-xs text-[var(--text-primary)]">stop_times.txt</code> and expands valid frequency-based trips from <code className="text-xs text-[var(--text-primary)]">frequencies.txt</code>; it does not treat that optional table as a single route-level answer.</p>
-            <p>Departures are grouped by route, direction, day and service period. A route’s frequency is read at the middle stop of the stretch its regular trips all share, counting every trip that stops there. Stop-level cadence is calculated separately. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical wait. On route cards, when a rider arriving at a random time would wait at least 10 min longer than the median, the card shows that wait instead. It is read at midday, or else the PM peak, or else across the day, and only where the route runs through that time. The frequency filter and map colours still use the median.</p>
+            <p>Departures are grouped by route, direction, day and service period. {ROUTE_RATING} Stop-level cadence is calculated separately. For a group of departures, Atlas sorts the consecutive gaps and uses the median gap as the typical wait. On route cards, when a rider arriving at a random time would wait at least 10 min longer than the median, the card shows that wait instead. It is read at midday, or else the PM peak, or else across the day, and only where the route runs through that time. The frequency filter and map colours still use the median.</p>
             <p>One odd gap does not change the median, so one unusually long gap does not make otherwise regular service {headwayEvery(10)} look like service {headwayEvery(30)}. The exception is service where short and long gaps alternate (for example gaps of 60, 120, 60 min): the median would show only the short gap and halve the real wait, so Atlas reads the longer wait instead.</p>
             <p>Period calculations are kept inside their own time windows. Atlas does not silently borrow an average from across the day to fill a period with sparse or missing service.</p>
             <p>Atlas keeps separate projections for display cadence, filter cadence, branch cadence, shared-stretch cadence and stop-specific cadence. A stop or shared stretch can have a different value from the whole route because it may combine branches or cover only part of the route.</p>
@@ -459,7 +464,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">Frequency:</strong> How often a route runs. Atlas shows what the schedule promises, not what happened on the street.</p>
             <p><strong className="text-[var(--text-primary)]">“Every N min”:</strong> The time between trips in the selected period. A range such as “{headwayEveryRange(8, 25)}” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.</p>
             <p><strong className="text-[var(--text-primary)]">Frequency tier:</strong> A broad band, such as {TIER_LIST.replace(/ and /, ' or ')}, used to colour and filter routes on the map. The filter and the legend show it as “≤10 min”.</p>
-            <p><strong className="text-[var(--text-primary)]">Route rating:</strong> A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.</p>
+            <p><strong className="text-[var(--text-primary)]">Route rating:</strong> {ROUTE_RATING}</p>
             <p><strong className="text-[var(--text-primary)]">Service period:</strong> A named time window: {PERIOD_LABELS.amPeak} ({PERIOD_TIMES.amPeak}), {PERIOD_LABELS.midday} ({PERIOD_TIMES.midday}), {PERIOD_LABELS.pmPeak} ({PERIOD_TIMES.pmPeak}), {PERIOD_LABELS.evening} ({PERIOD_TIMES.evening}), {PERIOD_LABELS.late} ({PERIOD_TIMES.late}), or {PERIOD_LABELS.overnight} ({PERIOD_TIMES.overnight}). Each period is measured on its own. A quiet evening is not hidden by a busy midday.</p>
             <p><strong className="text-[var(--text-primary)]">Branch:</strong> One of several paths under one route number, such as trips that split to different destinations or turn back early. The route card lists each one with its own frequency.</p>
             <p><strong className="text-[var(--text-primary)]">Shared stretch:</strong> The part of a route where its branches run together, and riders there get every branch’s trips. The card shows it as “{SHARED_STRETCH_LABEL}”. It never makes the whole route pass the filter.</p>
