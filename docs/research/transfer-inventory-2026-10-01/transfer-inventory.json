@@ -63488,8 +63488,8 @@
       "transferCost": null,
       "paymentMethod": null,
       "exceptions": [],
-      "sourceUrl": "https://www.1015transit.com/pay",
-      "evidence": "Pay page lists \"In City One Way: $2.75\" and other trip fares; no transfer rule. Also checked 1015transit.com home and /riderinfo, and Iowa DOT agency listing.",
+      "sourceUrl": "https://www.1015transit.com/riderinfo",
+      "evidence": "10-15 Transit Rider Info FAQ gives the in-town fixed-route fare (\"Fixed route buses are $1 each way\") with a $2 day pass and $25 monthly pass, and publishes no transfer rule. The /pay page's \"In City One Way: $2.75\" table is for trips paid through the office, not the fixed-route bus fare. Rechecked 2026-11-15.",
       "researchDate": "2026-10-01",
       "status": "no_transfer_policy_published",
       "confidence": "medium",
@@ -63517,10 +63517,10 @@
         "transferLimit": null,
         "transferCost": null,
         "paymentMethod": null,
-        "sourceUrl": "https://www.1015transit.com/pay",
+        "sourceUrl": "https://www.1015transit.com/riderinfo",
         "confidence": "medium",
         "status": "no_transfer_policy_published",
-        "evidence": "Pay page lists \"In City One Way: $2.75\" and other trip fares; no transfer rule. Also checked 1015transit.com home and /riderinfo, and Iowa DOT agency listing.",
+        "evidence": "10-15 Transit Rider Info FAQ gives the in-town fixed-route fare (\"Fixed route buses are $1 each way\") with a $2 day pass and $25 monthly pass, and publishes no transfer rule. The /pay page's \"In City One Way: $2.75\" table is for trips paid through the office, not the fixed-route bus fare. Rechecked 2026-11-15.",
         "auditDate": "2026-11-15"
       },
       "notes": "Manually verified against the official source on 2026-11-15."
