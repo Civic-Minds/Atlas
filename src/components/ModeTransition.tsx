@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import type * as maplibregl from 'maplibre-gl';
 import { TRANSITION_SLOW } from '../styles';
@@ -28,8 +28,12 @@ export const LABEL_MAX_WAIT_MS = 2000;
 /** The one ease every mode entry uses: 300 ms out, none with reduced motion. Pair it with a `transition-[…]` property list. */
 export const MODE_EASE = `${TRANSITION_SLOW} motion-reduce:transition-none`;
 
-/** How long a mode's entry ease lasts, including the two starting frames (`MODE_EASE` is 300 ms). */
-export const MODE_EASE_MS = 360;
+/**
+ * How long to hold a mode's eased state after its starting frames, so the 300 ms `MODE_EASE` has finished.
+ * Counted from the end of `useModeEntering`, not from the click: setting up a mode can hold the page for a while
+ * before the ease starts, and a clock that ran from the click would cut the ease short.
+ */
+export const MODE_EASE_MS = 340;
 /** A little longer than the fade, so the cover goes only once the view is fully opaque. */
 const COVER_DROP_MS = 400;
 const FADE = `transition-opacity ${MODE_EASE}`;
@@ -55,46 +59,81 @@ export function useModeEntering(active: boolean, enabled: boolean): boolean {
   return enabled && entering;
 }
 
+/** `MODE_EASE` as a Web Animations timing: 300 ms, Tailwind's `ease-out`. */
+const SLIDE_TIMING = { duration: 300, easing: 'cubic-bezier(0, 0, 0.2, 1)' };
+
+/**
+ * Slides `ref` from `from` to `to` (CSS transforms) on the render where `start` turns true. Every slide started in the
+ * same render gets the same start time, so two panes moving together stay in step to the frame, and the browser runs
+ * them off the main thread. The element's own style should already hold `to`, which is where it stays afterwards.
+ */
+function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: string, to: string) {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!start || !el || typeof el.animate !== 'function') return;
+    const animation = el.animate([{ transform: from }, { transform: to }], SLIDE_TIMING);
+    animation.startTime = document.timeline.currentTime;
+    return () => animation.cancel();
+    // Only the start matters: the slide runs once per entry.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [start]);
+}
+
 /**
  * One pane of a split screen, for a mode that splits it (Compare). Off: a plain `className` div.
- * - `anchor="left"`: a new pane that grows in from zero width while entering. Its content is laid out at
- *   `width` (its finished width) from the first frame, so a map inside starts at its real size and is revealed.
- * - `anchor="center"`: the pane that was the whole screen. While the split eases (`easing`), its content keeps its
- *   old `width` centred in the narrowing pane, so a map inside glides instead of being resized every frame
- *   (each resize blanks a map's canvas for a frame); it resizes once when the ease ends, with the same centre.
+ * The split eases in with transforms only (`useSlide`), so the browser moves it on its own every frame even while the
+ * page is busy (a new map being set up, a pane being resized), and nothing is laid out again until it has finished:
+ * - `anchor="left"`: the new pane. While the split eases (`easing`) it is a plain panel, out of the split's layout,
+ *   that slides in from the right edge with the divider on its left edge; it ends exactly where the finished pane sits.
+ *   Its content mounts only once the ease has finished, so a heavy view such as a map never stalls the slide.
+ * - `anchor="center"`: the pane that was the whole screen. While the split eases it keeps its full size and its content
+ *   glides left to the centre of its finished half; when the ease ends it takes its half and resizes once, with the same centre.
+ *   `overlay` (laid out against the pane itself, such as a corner label) sits in the finished half from the first frame.
  * For `anchor="center"` keep `enabled` steady (the beta switch, not "mode is on"): turning it changes the elements
  * around the content and would remount a map inside.
  */
-export function ModeSplitPane({ enabled, anchor, entering, easing, width, className, overlay, children }: {
+export function ModeSplitPane({ enabled, anchor, entering, easing, divider, className, overlay, children }: {
   enabled: boolean;
   anchor: 'left' | 'center';
   entering: boolean;
   easing: boolean;
-  /** `left`: the pane's finished width; `center`: its width before the split. A CSS length. */
-  width: string;
+  /** The width of the divider between the two halves (the split's gap), a CSS length. */
+  divider: string;
   className: string;
   /** Laid out against the pane itself rather than its content (a label that must sit in the pane's own corner). */
   overlay?: ReactNode;
   children: ReactNode;
 }) {
+  const slideRef = useRef<HTMLDivElement>(null);
+  const sliding = enabled && easing && !entering;
+  const offset = anchor === 'left' ? 'translateX(100%)' : 'translateX(0px)';
+  const settled = anchor === 'left' ? 'translateX(0px)' : `translateX(calc(-25% - ${divider} / 4))`;
+  useSlide(slideRef, sliding, offset, settled);
   if (!enabled) return <div className={className}>{children}{overlay}</div>;
+  const transform = entering ? offset : settled;
   if (anchor === 'left') {
-    return (
-      <div className={`${className} overflow-hidden transition-[flex-grow] ${MODE_EASE}`} style={{ flexGrow: entering ? 0 : 1 }} data-mode-enter="pane">
-        <div className="absolute inset-y-0 left-0" style={{ width }}>{children}</div>
-        {overlay}
-      </div>
-    );
+    if (easing) {
+      return (
+        <div
+          ref={slideRef}
+          className="absolute inset-y-0 right-0 bg-[var(--bg-app)] will-change-transform"
+          style={{ width: `calc(50% + ${divider} / 2)`, borderLeft: `${divider} solid var(--text-primary)`, boxSizing: 'border-box', transform }}
+          data-mode-enter="sliding"
+        />
+      );
+    }
+    return <div className={className} data-mode-enter="pane">{children}{overlay}</div>;
   }
   return (
-    <div className={`${className} ${easing ? 'overflow-hidden' : ''}`} data-mode-enter="pane">
-      <div
-        className="absolute inset-y-0"
-        style={easing ? { left: '50%', width, transform: 'translateX(-50%)' } : { left: 0, right: 0 }}
-      >
+    <div className={`${className} ${easing ? 'overflow-hidden bg-[var(--bg-app)]' : ''}`} data-mode-enter="pane">
+      <div ref={slideRef} className={`absolute inset-0 ${easing ? 'will-change-transform' : ''}`} style={easing ? { transform } : undefined}>
         {children}
       </div>
-      {overlay}
+      {overlay != null && overlay !== false && (
+        <div className="absolute inset-y-0 left-0 pointer-events-none" style={{ width: easing ? `calc(50% - ${divider} / 2)` : '100%' }}>
+          {overlay}
+        </div>
+      )}
     </div>
   );
 }
@@ -105,19 +144,27 @@ export function modeFadeIn(enabled: boolean, entering: boolean): string {
   return entering ? 'opacity-0 transition-none' : `opacity-100 transition-opacity ${MODE_EASE}`;
 }
 
-/** True from the render where `active` turns on until the entry ease has finished. */
-export function useModeEasing(active: boolean, enabled: boolean): boolean {
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * True from the render where `active` turns on until the entry ease has finished (never with reduced motion).
+ * `entering` is `useModeEntering` for the same mode: the ease runs from when it turns false.
+ */
+export function useModeEasing(active: boolean, enabled: boolean, entering: boolean): boolean {
   const [seenActive, setSeenActive] = useState(active);
   const [easing, setEasing] = useState(false);
   if (seenActive !== active) {
     setSeenActive(active);
-    setEasing(enabled && active);
+    // With reduced motion there is no ease, so nothing waits for one.
+    setEasing(enabled && active && !prefersReducedMotion());
   }
   useEffect(() => {
-    if (!easing) return;
+    if (!easing || entering) return;
     const timer = window.setTimeout(() => setEasing(false), MODE_EASE_MS);
     return () => window.clearTimeout(timer);
-  }, [easing]);
+  }, [easing, entering]);
   return enabled && easing;
 }
 

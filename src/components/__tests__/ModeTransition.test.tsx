@@ -72,26 +72,35 @@ describe('useModeEntering, ModeSplitPane and modeFadeIn (CIV-1567)', () => {
     expect(result.current).toBe(false);
   });
 
-  it('the pane starts at zero width while entering and adds nothing with the switch off', () => {
-    const { container, rerender } = render(<ModeSplitPane enabled anchor="left" easing entering width="50vw" className="relative flex-1"><p>map</p></ModeSplitPane>);
-    const pane = container.firstElementChild as HTMLElement;
-    expect(pane.style.flexGrow).toBe('0');
-    expect((screen.getByText('map').parentElement as HTMLElement).style.width).toBe('50vw');
-    rerender(<ModeSplitPane enabled anchor="left" easing={false} entering={false} width="50vw" className="relative flex-1"><p>map</p></ModeSplitPane>);
-    expect(pane.style.flexGrow).toBe('1');
-    const off = render(<ModeSplitPane enabled={false} anchor="left" easing entering width="50vw" className="relative flex-1"><p>off</p></ModeSplitPane>);
+  it('the new pane slides in as an empty panel and mounts its content once the ease ends; nothing extra with the switch off', () => {
+    const { container, rerender } = render(<ModeSplitPane enabled anchor="left" easing entering divider="4px" className="relative flex-1"><p>map</p></ModeSplitPane>);
+    const panel = container.firstElementChild as HTMLElement;
+    expect(panel.dataset.modeEnter).toBe('sliding');
+    expect(panel.style.transform).toBe('translateX(100%)');
+    // Content waits for the ease, so setting up a map inside cannot stall the slide.
+    expect(screen.queryByText('map')).toBeNull();
+    rerender(<ModeSplitPane enabled anchor="left" easing entering={false} divider="4px" className="relative flex-1"><p>map</p></ModeSplitPane>);
+    expect((container.firstElementChild as HTMLElement).style.transform).toBe('translateX(0px)');
+    expect(screen.queryByText('map')).toBeNull();
+    rerender(<ModeSplitPane enabled anchor="left" easing={false} entering={false} divider="4px" className="relative flex-1"><p>map</p></ModeSplitPane>);
+    expect(screen.getByText('map').parentElement?.className).toBe('relative flex-1');
+    const off = render(<ModeSplitPane enabled={false} anchor="left" easing entering divider="4px" className="relative flex-1"><p>off</p></ModeSplitPane>);
     expect(off.container.innerHTML).toBe('<div class="relative flex-1"><p>off</p></div>');
   });
 
-  it('the old full-screen pane keeps its content at the old width, centred, only while the split eases', () => {
-    const { rerender } = render(<ModeSplitPane enabled anchor="center" entering easing width="100vw" className="relative flex-1"><p>map</p></ModeSplitPane>);
+  it('the old full-screen pane glides its content to its half with a transform only while the split eases', () => {
+    const { rerender } = render(<ModeSplitPane enabled anchor="center" entering easing divider="4px" className="relative flex-1" overlay={<span>label</span>}><p>map</p></ModeSplitPane>);
     const box = screen.getByText('map').parentElement as HTMLElement;
-    expect(box.style.width).toBe('100vw');
-    expect(box.style.transform).toBe('translateX(-50%)');
-    rerender(<ModeSplitPane enabled anchor="center" entering={false} easing={false} width="100vw" className="relative flex-1"><p>map</p></ModeSplitPane>);
-    expect(screen.getByText('map').parentElement).toBe(box);
+    expect(box.style.transform).toBe('translateX(0px)');
     expect(box.style.width).toBe('');
-    expect(box.style.right).toBe('0px');
+    // The label sits in the finished half from the first frame.
+    expect((screen.getByText('label').parentElement as HTMLElement).style.width).toBe('calc(50% - 2px)');
+    rerender(<ModeSplitPane enabled anchor="center" entering={false} easing divider="4px" className="relative flex-1" overlay={<span>label</span>}><p>map</p></ModeSplitPane>);
+    expect(box.style.transform).toBe('translateX(calc(-25% - 1px))');
+    rerender(<ModeSplitPane enabled anchor="center" entering={false} easing={false} divider="4px" className="relative flex-1" overlay={<span>label</span>}><p>map</p></ModeSplitPane>);
+    expect(screen.getByText('map').parentElement).toBe(box);
+    expect(box.style.transform).toBe('');
+    expect((screen.getByText('label').parentElement as HTMLElement).style.width).toBe('100%');
   });
 
   it('fades new controls in from transparent, and has no classes with the switch off', () => {
@@ -107,11 +116,25 @@ describe('useModeEasing (CIV-1567)', () => {
   afterEach(() => { vi.useRealTimers(); });
 
   it('is true from the mode turning on until the ease has finished', () => {
-    const { result, rerender } = renderHook(({ active }) => useModeEasing(active, true), { initialProps: { active: false } });
-    rerender({ active: true });
+    const { result, rerender } = renderHook(({ active, entering }) => useModeEasing(active, true, entering), { initialProps: { active: false, entering: false } });
+    rerender({ active: true, entering: true });
     expect(result.current).toBe(true);
-    act(() => { vi.advanceTimersByTime(MODE_EASE_MS); });
+    // A busy page can hold the starting frames for a long time; the ease is only counted once they are over.
+    act(() => { vi.advanceTimersByTime(2000); });
+    expect(result.current).toBe(true);
+    rerender({ active: true, entering: false });
+    act(() => { vi.advanceTimersByTime(MODE_EASE_MS - 1); });
+    expect(result.current).toBe(true);
+    act(() => { vi.advanceTimersByTime(1); });
     expect(result.current).toBe(false);
+  });
+
+  it('never holds anything for an ease with reduced motion', () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce'), media: q }));
+    const { result, rerender } = renderHook(({ active }) => useModeEasing(active, true, true), { initialProps: { active: false } });
+    rerender({ active: true });
+    expect(result.current).toBe(false);
+    vi.unstubAllGlobals();
   });
 });
 

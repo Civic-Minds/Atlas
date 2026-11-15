@@ -163,6 +163,9 @@ function readSavedAgenciesOff(): Set<string> {
 
 const EMPTY_LAYERS: Record<string, GeoJSON.FeatureCollection> = {};
 
+/** The gap between Compare's two maps (`gap-1`), which the split's entry ease draws as the divider (CIV-1567). */
+const COMPARE_DIVIDER = '0.25rem';
+
 /**
  * Where a compare side's label and controls sit on its map: top right of each half on desktop (never wider than its half),
  * centred on phones (where the halves stack). Map A's label sits where the sidebar cards start, just under
@@ -766,7 +769,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const compareTransitions = FEATURES.modeTransitions && compareActive;
   // The first frame of Compare: map B's half starts at zero width and its controls transparent, then ease in.
   const compareEntering = useModeEntering(compareActive, FEATURES.modeTransitions);
-  const compareEasing = useModeEasing(compareActive, FEATURES.modeTransitions);
+  const compareEasing = useModeEasing(compareActive, FEATURES.modeTransitions, compareEntering);
   const compareFadeIn = modeFadeIn(compareTransitions, compareEntering);
   const compareBDrawn = useMapDrawn(mapB, compareTransitions);
   const compareLabelA = useShownWhenDrawn(compareA, mapA, compareTransitions);
@@ -1195,8 +1198,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     <div className={`relative w-full h-full transition-colors ${TRANSITION_BASE}`} style={mapFooterStyle(footerHeight)}>
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
-        {/* Map A: while Compare's split eases in, it glides to its half instead of resizing every frame. */}
-        <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} width="100vw" className="relative flex-1 min-h-0 min-w-0"
+        {/* Map A: while Compare's split eases in, it glides to the centre of its half and resizes once at the end. */}
+        <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
           overlay={compareActive && (
             <CompareSideSlot side="A" className={compareFadeIn}>
               <CompareSideBar
@@ -1283,8 +1286,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           />
         </ModeSplitPane>
         {compareActive && (
-          // Map B's half: Interval fills the viewport, so its finished width is half the screen less the 1 (0.25rem) gap.
-          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} width="calc((100vw - 0.25rem) / 2)" className="relative flex-1 min-h-0 min-w-0">
+          // Map B's half: slides in as a plain panel; map B is set up once it has arrived.
+          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0">
             <ModeEnter enabled={compareTransitions} ready={compareBDrawn} label={loadingText('map')}>
               <MapCanvas
                 agencies={agencies}

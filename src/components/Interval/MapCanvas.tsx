@@ -1055,7 +1055,9 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         if (FEATURES.modeTransitions) map.redraw();
       }
     };
-    const observer = new ResizeObserver(() => requestAnimationFrame(resize));
+    // CIV-1567 (beta): resize inside the observer, which runs after layout and before paint, so a pane that changes
+    // size (Compare's split settling) is drawn at its new size in that same frame instead of one frame late.
+    const observer = new ResizeObserver(() => { if (FEATURES.modeTransitions) resize(); else requestAnimationFrame(resize); });
     observer.observe(container);
     resize();
     return () => observer.disconnect();
