@@ -797,7 +797,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   // On phones, a route or stop card opens as a bottom sheet: short at first so the map stays
   // visible, and dragged (or tapped) up to read the whole card.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
-  const sheetMode = FEATURES.mobileRouteSheet && isPhone && !!(panelRoute || panelStop) && !hasSearchResults;
+  const sheetMode = isPhone && !!(panelRoute || panelStop) && !hasSearchResults;
   // On phones the search box is too narrow to size panels from (#695, #698): search results
   // take the full screen width, and route and stop cards keep a fixed width.
   const matchSearchBarWidth = !!searchBarWidth && !isPhone;

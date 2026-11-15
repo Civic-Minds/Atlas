@@ -155,8 +155,6 @@ export default function AboutDocsPage() {
   const showLive = FEATURES.live;
   const showHistory = FEATURES.history;
   const showResearch = FEATURES.researchApps;
-  const showAgencyPages = FEATURES.agencyPages;
-  const showCompare = FEATURES.compareMode;
   // The checks list skips step 5 (on-demand) where on-demand is off, so later steps renumber.
   const flexStep = FEATURES.onDemand ? 1 : 0;
 
@@ -189,7 +187,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Explore:</strong> search agencies, routes, stops and nearby service across a large catalogue.</li>
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> compare service by day type, time period, route branch, direction and stop.</li>
-              {showCompare && <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time (desktop and tablet).</li>}
+              <li><strong className="text-[var(--text-primary)]">Compare:</strong> two maps side by side, each with its own frequency, day and time (desktop and tablet).</li>
               <li><strong className="text-[var(--text-primary)]">On phones:</strong> a Filters button in the header holds frequency, day, time and modes.</li>
               <li><strong className="text-[var(--text-primary)]">Export:</strong> save the map as an image with a poster layout and a source line.</li>
               <li><strong className="text-[var(--text-primary)]">Hourly chart:</strong> each hour shows the slower direction{FEATURES.runningTimes ? '; the full-day view also shows how long the trip takes by hour' : ''}.</li>
@@ -219,7 +217,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics and map colouring.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
-              {showAgencyPages && <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with {AGENCY_TABLE_PERIODS} waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within {metresText(150)} of one of its stops, and counts its stops as unique places (stops with the same name within {metresText(150)} count once). Area pages do the same for every agency in an area, such as the Greater Toronto and Hamilton Area.</li>}
+              <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with {AGENCY_TABLE_PERIODS} waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within {metresText(150)} of one of its stops, and counts its stops as unique places (stops with the same name within {metresText(150)} count once). Area pages do the same for every agency in an area, such as the Greater Toronto and Hamilton Area.</li>
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> {RESEARCH_VIEWS}, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>

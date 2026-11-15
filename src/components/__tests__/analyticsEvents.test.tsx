@@ -35,7 +35,7 @@ describe('OutboundLink', () => {
 
 describe('MapAttribution events', () => {
   it('reports feedback_opened and attribution outbound clicks', () => {
-    render(<MapAttribution whatsNewEnabled={false} />);
+    render(<MapAttribution />);
     fireEvent.click(screen.getByText('Feedback'));
     expect(trackEvent).toHaveBeenCalledWith('feedback_opened', { source: 'map_attribution' });
     // The basemap credit, "OpenStreetMap · CARTO": each name is its own tracked link.

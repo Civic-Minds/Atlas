@@ -60,81 +60,79 @@ for (const route of shellRoutes(mod.BUILD_FLAGS)) {
   console.log(`Link preview ${route.path}`);
 }
 
-// Agency pages: beta and dev builds only. They read the committed summary file, never R2, so an
+// Agency pages, in every build. They read the committed summary file, never R2, so an
 // unreachable R2 cannot fail the build. An empty or missing summary skips them, loudly.
-if (mod.BUILD_FLAGS.agencyPages) {
-  const agencies = agencyPageSummaries();
-  if (agencies.length === 0) {
-    console.warn('\n!!! AGENCY PAGES SKIPPED: shared/data/agency-pages.json has no agencies. Run scripts/build-agency-page-summaries.ts. !!!\n');
-  } else {
-    const urls: Array<string | SitemapEntry> = [];
-    // Metro areas (config/areas): pages only for areas flagged page: true. An agency links to its area.
-    const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
-      .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
-    const areaOf = new Map<string, { slug: string; name: string; bbox: AreaConfig['bbox'] }>();
-    for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name, bbox: area.bbox });
-    const bySlug = new Map(agencies.map(x => [x.slug, x]));
-    const areaMembers = new Map<string, typeof agencies>();
-    for (const area of areas) {
-      const members = area.agencies.map(s => bySlug.get(s)).filter((x): x is (typeof agencies)[number] => !!x);
-      for (const m of members) areaMembers.set(m.slug, members);
-    }
-    // #1291: no two agency pages share a search title; the build fails if a new agency would.
-    const titlePaths = new Map<string, string>();
-    const claimTitle = (title: string, path: string) => {
-      const other = titlePaths.get(title);
-      if (other) throw new Error(`Agency pages ${other} and ${path} share the title "${title}" (#1291): give one a name qualifier in its config.`);
-      titlePaths.set(title, path);
-    };
-    for (const a of agencies) {
-      const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
-      const seo = { ...resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(a.slug)?.slug) };
-      const ld = agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
-      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
-      claimTitle(seo.title, data.path);
-      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
-    }
-    // CIV-1277: one page per parent agency, adding up its members, at its own slug.
-    for (const parent of parentsWithMembers(agencies)) {
-      const home = parentHome(parent, parentMembers(parent, agencies))!;
-      const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
-      const seo = { ...resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(home.slug)?.slug) };
-      const ld = agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
-      writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
-      claimTitle(seo.title, data.path);
-      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
-    }
-    // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.
-    const { pages: areaPages } = areaPageStatus(agencies, areas);
-    for (const area of areas) {
-      if (!areaPages.has(area.slug)) continue;
-      const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
-      // CIV-1175: area pages show their city's map picture, and agency pages (above) their area's.
-      const seo = { ...resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin }), ...areaShareImageSeo(area.slug) };
-      const ld = areaPageJsonLd(data, seo.canonicalUrl, origin);
-      writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, ld);
-      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
-    }
-    // State and province pages (CIV-976): one per place with a listed agency, the same as the agency intros' place links.
-    const regions = regionPages(agencies);
-    for (const region of regions) {
-      const data = buildRegionPageData(region, agencies, AGENCY_PAGE_DATA.generatedAt);
-      const seo = resolveRegionSeo(data, { mode: mod.BUILD_MODE, origin });
-      const ld = regionPageJsonLd(data, seo.canonicalUrl, origin);
-      writePage(regionPagePath(region.name), seo, mod.renderRegionPage(data), { id: REGION_DATA_SCRIPT_ID, value: data }, ld);
-      urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
-    }
-    // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
-    {
-      const data = buildAgencyIndexData(agencies, areas, AGENCY_PAGE_DATA.generatedAt);
-      const seo = resolveAgencyIndexSeo(data, { mode: mod.BUILD_MODE, origin });
-      writePage(AGENCY_INDEX_PATH, seo, mod.renderAgencyIndex(data), { id: AGENCY_INDEX_DATA_SCRIPT_ID, value: data });
-      urls.push(seo.canonicalUrl);
-    }
-    // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
-    writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
-    console.log(`Prerendered ${agencies.length} agency pages, ${parentsWithMembers(agencies).length} parent agency pages, ${areaPages.size} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
+const agencies = agencyPageSummaries();
+if (agencies.length === 0) {
+  console.warn('\n!!! AGENCY PAGES SKIPPED: shared/data/agency-pages.json has no agencies. Run scripts/build-agency-page-summaries.ts. !!!\n');
+} else {
+  const urls: Array<string | SitemapEntry> = [];
+  // Metro areas (config/areas): pages only for areas flagged page: true. An agency links to its area.
+  const areas = readdirSync('config/areas').filter(f => f.endsWith('.json') && !f.startsWith('_'))
+    .map(f => JSON.parse(readFileSync(join('config/areas', f), 'utf8')) as AreaConfig).filter(a => a.page);
+  const areaOf = new Map<string, { slug: string; name: string; bbox: AreaConfig['bbox'] }>();
+  for (const area of areas) for (const slug of area.agencies) areaOf.set(slug, { slug: area.slug, name: area.name, bbox: area.bbox });
+  const bySlug = new Map(agencies.map(x => [x.slug, x]));
+  const areaMembers = new Map<string, typeof agencies>();
+  for (const area of areas) {
+    const members = area.agencies.map(s => bySlug.get(s)).filter((x): x is (typeof agencies)[number] => !!x);
+    for (const m of members) areaMembers.set(m.slug, members);
   }
+  // #1291: no two agency pages share a search title; the build fails if a new agency would.
+  const titlePaths = new Map<string, string>();
+  const claimTitle = (title: string, path: string) => {
+    const other = titlePaths.get(title);
+    if (other) throw new Error(`Agency pages ${other} and ${path} share the title "${title}" (#1291): give one a name qualifier in its config.`);
+    titlePaths.set(title, path);
+  };
+  for (const a of agencies) {
+    const data = agencyPageData(a, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(a.slug), areaMembers.get(a.slug));
+    const seo = { ...resolveAgencySeo(a, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(a.slug)?.slug) };
+    const ld = agencyPageJsonLd(a, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
+    writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
+    claimTitle(seo.title, data.path);
+    urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
+  }
+  // CIV-1277: one page per parent agency, adding up its members, at its own slug.
+  for (const parent of parentsWithMembers(agencies)) {
+    const home = parentHome(parent, parentMembers(parent, agencies))!;
+    const data = parentAgencyPageData(parent, agencies, AGENCY_PAGE_DATA.generatedAt, areaOf.get(home.slug), areaMembers.get(home.slug))!;
+    const seo = { ...resolveAgencySeo(data.agency, { mode: mod.BUILD_MODE, origin, intro: data.intro, description: data.description, path: data.path, pageTitle: data.pageTitle }), ...areaShareImageSeo(areaOf.get(home.slug)?.slug) };
+    const ld = agencyPageJsonLd(data.agency, seo.canonicalUrl, origin, data.area, data.intro, data.regionPage);
+    writePage(data.path, seo, mod.renderAgencyPage(data), { id: AGENCY_DATA_SCRIPT_ID, value: data }, ld);
+    claimTitle(seo.title, data.path);
+    urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
+  }
+  // An area needs two agencies for a page (areaPageStatus); vercel.json redirects a one-agency area to that agency.
+  const { pages: areaPages } = areaPageStatus(agencies, areas);
+  for (const area of areas) {
+    if (!areaPages.has(area.slug)) continue;
+    const data = buildAreaPageData(area, bySlug, AGENCY_PAGE_DATA.generatedAt);
+    // CIV-1175: area pages show their city's map picture, and agency pages (above) their area's.
+    const seo = { ...resolveAreaSeo(data, { mode: mod.BUILD_MODE, origin }), ...areaShareImageSeo(area.slug) };
+    const ld = areaPageJsonLd(data, seo.canonicalUrl, origin);
+    writePage(areaPagePath(area.slug), seo, mod.renderAreaPage(data), { id: AREA_DATA_SCRIPT_ID, value: data }, ld);
+    urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
+  }
+  // State and province pages (CIV-976): one per place with a listed agency, the same as the agency intros' place links.
+  const regions = regionPages(agencies);
+  for (const region of regions) {
+    const data = buildRegionPageData(region, agencies, AGENCY_PAGE_DATA.generatedAt);
+    const seo = resolveRegionSeo(data, { mode: mod.BUILD_MODE, origin });
+    const ld = regionPageJsonLd(data, seo.canonicalUrl, origin);
+    writePage(regionPagePath(region.name), seo, mod.renderRegionPage(data), { id: REGION_DATA_SCRIPT_ID, value: data }, ld);
+    urls.push({ loc: seo.canonicalUrl, lastmod: jsonLdDateModified(ld) });
+  }
+  // The index of every agency and area page, built from the same data (so new agencies and areas appear on their own).
+  {
+    const data = buildAgencyIndexData(agencies, areas, AGENCY_PAGE_DATA.generatedAt);
+    const seo = resolveAgencyIndexSeo(data, { mode: mod.BUILD_MODE, origin });
+    writePage(AGENCY_INDEX_PATH, seo, mod.renderAgencyIndex(data), { id: AGENCY_INDEX_DATA_SCRIPT_ID, value: data });
+    urls.push(seo.canonicalUrl);
+  }
+  // The committed public/sitemap.xml stays public-only; this build's copy also lists agency and area pages.
+  writeFileSync(join(dist, 'sitemap.xml'), buildSitemapXml(urls));
+  console.log(`Prerendered ${agencies.length} agency pages, ${parentsWithMembers(agencies).length} parent agency pages, ${areaPages.size} area pages and ${regions.length} state and province pages (data release ${AGENCY_PAGE_DATA.releaseId}); sitemap.xml updated`);
 }
 
 // Live report pages (builds with the Live reports switch on): one static page per published report, so a pasted

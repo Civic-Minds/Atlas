@@ -499,7 +499,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const onDemandStatus = useOnDemandStatus();
   const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
     && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
-  const compareAvailable = FEATURES.compareMode && phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
+  const compareAvailable = phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.
   const compareSideFromLink = (search: string | URLSearchParams, atComparePath: boolean): CompareSide | null => (

@@ -488,9 +488,9 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const agencyCardName = agency.onDemandOnly && agency.onDemandServiceArea
     ? onDemandCardName(agency.onDemandServiceArea, null, agencyNamePrimary)
     : agencyNamePrimary;
-  const hasAboutPage = FEATURES.agencyPages && (agencyPageSlugs as string[]).includes(agency.slug);
+  const hasAboutPage = (agencyPageSlugs as string[]).includes(agency.slug);
   // The region link shows the region's name alone (CIV-929), not the area page's "All … agencies" label.
-  const areaLink = hasAboutPage ? areaLinkFor(agency.slug, FEATURES.agencyPages) : null;
+  const areaLink = hasAboutPage ? areaLinkFor(agency.slug) : null;
   const regionTitle = agencyRegionTitle(agency.slug);
   const hasSource = FEATURES.dataSourceLink && !!agency.websiteUrl;
   // A name too long for the line drops its trailing "area" (CIV-523); the full name stays on hover.
