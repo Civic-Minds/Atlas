@@ -214,6 +214,14 @@ export function routeValueIsOneGap(features: readonly ShapeProperties[], period:
   return features.some(f => f.stretchPeriodOneGap?.[key] === true && f.directionFilterHeadwayByPeriod?.[key] === contract.filterValue);
 }
 
+/**
+ * CIV-1588 (#728 follow-up): a row's own steadiness when it reads no stretch values: a variant whose trips all run the main
+ * stretch in the period takes the main stretch's verdict; otherwise the feature's own flag (measured at its far terminal).
+ */
+export function ownRowSteady(f: ShapeProperties, period: PeriodKey): boolean | undefined {
+  return f.stretchMainConsistent?.[period] ?? f.headwayByPeriodSustained?.[period];
+}
+
 /** CIV-995 (a): the values one card row reads for a period, from its stretch or, on older data, from its own feature. */
 export interface StretchRowReading {
   /** 'stretch': over every trip at the row's stretch reference stop; 'feature': the feature's own headsign values (old data). */
@@ -251,7 +259,7 @@ export function stretchRow(f: ShapeProperties, period: TimePeriod): StretchRowRe
     source: 'feature',
     cadence: f.headwayByPeriod?.[key] ?? null,
     longestGap: f.maxGapByPeriod?.[key] ?? null,
-    consistent: f.headwayByPeriodSustained?.[key] ?? null,
+    consistent: ownRowSteady(f, key) ?? null,
     hourly: f.headwayByHour,
   };
 }

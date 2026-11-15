@@ -122,6 +122,8 @@ export interface RouteProperties {
   stretchRole?: 'main' | 'tail' | 'variant';
   /** CIV-995 (b): the periods in which every one of the row's own trips is counted at its stretch's reference stop (trip ids); only there does the card read the stretch's values. */
   stretchRowPeriods?: PeriodKey[];
+  /** CIV-1588: on a variant row, per period in which every one of its trips runs the main stretch, the main stretch's steadiness (its rows.consistent). */
+  stretchMainConsistent?: Partial<Record<PeriodKey, boolean>>;
   /** 0 for the main stretch; a tail's index into stretchMeta.tails. Absent for variants. */
   stretchIndex?: number;
   /** #1276: every stretch the row's stops cover ('main' or a tail index), matched against stretchPeriodEdge[period].stretch. */
