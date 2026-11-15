@@ -1,0 +1,134 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+67,10,935043,Bustleton-Northeast Ave,,0,2401,317788,1,1
+67,10,935013,Philadelphia Mills,,0,1421,317790,1,1
+67,10,935047,Bustleton-Northeast Ave,,0,1422,317788,1,1
+67,10,935009,Philadelphia Mills via Industrial,,0,1424,317791,1,1
+67,10,935006,Bustleton-Northeast Ave,,0,2402,317788,1,1
+67,10,935042,Philadelphia Mills via Industrial,,0,2403,317791,1,1
+67,10,935012,Bustleton-Northeast Ave,,0,2404,317788,1,1
+67,10,935041,Red Lion-Sandmeyer,,0,2401,317785,1,1
+67,10,935050,Philadelphia Mills,,0,2405,317790,1,1
+67,10,935007,Philadelphia Mills,,0,2406,317790,1,1
+67,10,935005,Bustleton-Northeast Ave,,0,1423,317788,1,1
+67,10,935040,Red Lion-Sandmeyer,,0,2407,317785,1,1
+67,10,935051,Academy-Chalfont,,0,2408,317789,1,1
+67,10,935053,Roosevelt-Red Lion via Bustleton-Verree,,0,2409,317787,1,1
+67,10,935029,Bustleton-Northeast Ave,,0,1422,317788,1,1
+67,10,935039,Bustleton-Northeast Ave,,0,1425,317788,1,1
+67,10,935010,Philadelphia Mills,,0,2402,317790,1,1
+67,10,935004,Red Lion-Sandmeyer,,0,1421,317785,1,1
+67,10,935038,Bustleton-Northeast Ave,,0,2401,317788,1,1
+67,10,935037,Red Lion-Sandmeyer,,0,1424,317785,1,1
+67,10,935008,Philadelphia Mills,,0,2403,317790,1,1
+67,10,935003,Bustleton-Northeast Ave,,0,1425,317788,1,1
+67,10,935024,Philadelphia Mills,,0,1005,317790,1,1
+67,10,935002,Bustleton-Northeast Ave,,0,2401,317788,1,1
+67,10,935023,Philadelphia Mills,,0,1427,317790,1,1
+67,10,935001,Bustleton-Northeast Ave,,0,2403,317788,1,1
+67,10,934988,Philadelphia Mills,,0,2410,317790,1,1
+67,10,935000,Bustleton-Northeast Ave,,0,2401,317788,1,1
+67,10,935022,Philadelphia Mills,,0,1428,317790,1,1
+67,10,934999,Bustleton-Northeast Ave,,0,1429,317788,1,1
+67,10,935021,Philadelphia Mills,,0,2411,317790,1,1
+67,10,935049,Philadelphia Mills,,0,2412,317792,1,1
+67,10,934998,Bustleton-Northeast Ave,,0,1430,317788,1,1
+67,10,935054,Philadelphia Mills,,0,1431,317790,1,1
+67,10,935020,Philadelphia Mills,,0,1432,317790,1,1
+67,10,935027,Red Lion-Sandmeyer,,0,1429,317786,1,1
+67,10,935048,Philadelphia Mills,,0,2416,317793,1,1
+67,10,935019,Bustleton-Northeast Ave,,0,1428,317788,1,1
+67,10,935052,Philadelphia Mills,,0,1467,317794,1,1
+67,10,935018,Philadelphia Mills,,0,1552,317790,1,1
+67,10,935034,Red Lion-Sandmeyer,,0,1430,317786,1,1
+67,10,934997,Bustleton-Northeast Ave,,0,2411,317788,1,1
+67,10,935032,Philadelphia Mills,,0,1435,317790,1,1
+67,10,935017,Bustleton-Northeast Ave,,0,1434,317788,1,1
+67,10,935033,Red Lion-Sandmeyer,,0,2412,317786,1,1
+67,10,934996,Bustleton-Northeast Ave,,0,1428,317788,1,1
+67,10,935031,Roosevelt-Red Lion via Bustleton-Verree,,0,1432,317787,1,1
+67,10,935016,Philadelphia Mills,,0,1430,317790,1,1
+67,10,935046,Bustleton-Northeast Ave,,0,2719,317788,1,1
+67,10,935026,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,935015,Roosevelt-Red Lion via Bustleton-Verree,,0,2622,317787,1,1
+67,10,935025,Philadelphia Mills,,0,1437,317790,1,1
+67,10,934995,Bustleton-Northeast Ave,,0,2412,317788,1,1
+67,10,935030,Roosevelt-Red Lion via Bustleton-Verree,,0,1435,317787,1,1
+67,10,935014,Philadelphia Mills,,0,2186,317790,1,1
+67,10,934994,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,934992,Roosevelt-Red Lion via Bustleton-Verree,,0,1430,317787,1,1
+67,10,934993,Bustleton-Northeast Ave,,0,2412,317788,1,1
+67,10,934991,Bustleton-Northeast Ave,,0,1437,317788,1,1
+67,10,935028,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,934990,Bustleton-Northeast Ave,,0,2186,317788,1,1
+67,10,934989,Bustleton-Northeast Ave,,0,1437,317788,1,1
+67,10,935045,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,935044,Bustleton-Northeast Ave,,0,1437,317788,1,1
+67,10,935036,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,935011,Bustleton-Northeast Ave,,0,1437,317788,1,1
+67,10,935035,Bustleton-Northeast Ave,,0,1436,317788,1,1
+67,10,935071,Frankford Transit Center,,1,2401,317798,1,1
+67,10,935087,Frankford Transit Center,,1,1423,317797,1,1
+67,10,935084,Frankford Transit Center,,1,1422,317798,1,1
+67,10,935086,Frankford Transit Center,,1,1425,317797,1,1
+67,10,935081,Frankford Transit Center,,1,2402,317798,1,1
+67,10,935085,Frankford Transit Center,,1,1421,317804,1,1
+67,10,935058,Frankford Transit Center,,1,2404,317798,1,1
+67,10,935107,Frankford Transit Center,,1,2401,317807,1,1
+67,10,935083,Frankford Transit Center,,1,1424,317804,1,1
+67,10,935114,Tomlinson-Jamison,,1,1426,317802,1,1
+67,10,935057,Frankford Transit Center,,1,1423,317798,1,1
+67,10,935106,Frankford Transit Center,,1,2403,317804,1,1
+67,10,935056,Frankford Transit Center,,1,2407,317807,1,1
+67,10,935082,Frankford Transit Center,,1,1425,317798,1,1
+67,10,935055,Frankford Transit Center,,1,2406,317804,1,1
+67,10,935105,Frankford Transit Center,,1,1005,317798,1,1
+67,10,935104,Frankford Transit Center,,1,2401,317798,1,1
+67,10,935073,Frankford Transit Center,,1,2402,317804,1,1
+67,10,935103,Frankford Transit Center,,1,1425,317798,1,1
+67,10,935063,Frankford Transit Center,,1,2403,317804,1,1
+67,10,935102,Frankford Transit Center,,1,2401,317798,1,1
+67,10,935070,Frankford Transit Center,,1,1005,317804,1,1
+67,10,935101,Frankford Transit Center,,1,2403,317798,1,1
+67,10,935069,Frankford Transit Center,,1,1427,317804,1,1
+67,10,935100,Frankford Transit Center,,1,2401,317798,1,1
+67,10,935067,Frankford Transit Center,,1,2410,317804,1,1
+67,10,935099,Frankford Transit Center,,1,1429,317798,1,1
+67,10,935059,Frankford Transit Center,,1,1428,317804,1,1
+67,10,935076,Frankford Transit Center,,1,1430,317798,1,1
+67,10,935119,Frankford Transit Center,,1,2414,317797,1,1
+67,10,935120,Frankford Transit Center,,1,1433,317797,1,1
+67,10,935117,Rhawn-Verree,,1,2413,317801,1,1
+67,10,935060,Frankford Transit Center,,1,2411,317804,1,1
+67,10,935113,Frankford Transit Center,,1,1435,317799,1,1
+67,10,935115,Frankford Transit Center,,1,1434,317803,1,1
+67,10,935116,Frankford Transit Center,,1,2415,317803,1,1
+67,10,935118,Frankford Transit Center,,1,2413,317806,1,1
+67,10,935062,Frankford Transit Center,,1,1429,317805,1,1
+67,10,935075,Frankford Transit Center,,1,2412,317800,1,1
+67,10,935112,Frankford Transit Center,,1,1428,317798,1,1
+67,10,935066,Frankford Transit Center,,1,1432,317804,1,1
+67,10,935074,Frankford Transit Center,,1,1430,317805,1,1
+67,10,935098,Frankford Transit Center,,1,2411,317798,1,1
+67,10,935111,Frankford Transit Center,,1,1436,317800,1,1
+67,10,935109,Frankford Transit Center,,1,1552,317804,1,1
+67,10,935097,Frankford Transit Center,,1,2412,317805,1,1
+67,10,935061,Frankford Transit Center,,1,1428,317798,1,1
+67,10,935108,Frankford Transit Center,,1,1435,317804,1,1
+67,10,935072,Frankford Transit Center,,1,2719,317798,1,1
+67,10,935095,Frankford Transit Center,,1,1436,317798,1,1
+67,10,935096,Frankford Transit Center,,1,1430,317804,1,1
+67,10,935065,Frankford Transit Center,,1,2412,317798,1,1
+67,10,935064,Frankford Transit Center,,1,1437,317804,1,1
+67,10,935094,Frankford Transit Center,,1,1436,317798,1,1
+67,10,935110,Frankford Transit Center,,1,2186,317804,1,1
+67,10,935093,Frankford Transit Center,,1,2412,317798,1,1
+67,10,935092,Frankford Transit Center,,1,1437,317798,1,1
+67,10,935091,Frankford Transit Center,,1,1436,317798,1,1
+67,10,935090,Frankford Transit Center,,1,2186,317798,1,1
+67,10,935089,Frankford Transit Center,,1,1437,317798,1,1
+67,10,935068,Frankford Transit Center,,1,1466,317804,1,1
+67,10,935088,Frankford Transit Center,,1,1436,317798,1,1
+67,10,935078,Frankford Transit Center,,1,1437,317798,1,1
+67,10,935077,Frankford Transit Center,,1,1436,317798,1,1
+67,10,935079,Frankford Transit Center,,1,1437,317798,1,1
+67,10,935080,Frankford Transit Center,,1,1436,317798,1,1
