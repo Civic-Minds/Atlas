@@ -229,18 +229,68 @@ export interface BackfillSupplementalPolicy {
   busOnly: boolean;
   supplementalExcluded: string[];
   note?: string;
+  /** CIV-1484: the archive directory of each supplemental feed, by url, when the run includes them. */
+  supplementalDirs: Record<string, string>;
 }
 
 /**
- * A backfill rebuilds from the main feed's archive only (supplemental feeds have no archive).
- * An agency with supplemental feeds is refused unless --bus-only is passed, and then the
- * run is stamped so nothing reads it as complete.
+ * A backfill rebuilds from archived zips. An agency with supplemental feeds (e.g. rail) needs an
+ * archive for every one of them: `--supplemental-zip-dir <url>=<dir>` per feed (or a bare `<dir>`
+ * when the agency has exactly one), whose zips are named like the main feed's (one {stem}.zip per
+ * period). Without them the run is refused unless --bus-only is passed, and then it is stamped so
+ * nothing reads it as complete. Both at once, a dir for an unknown url, or a missing feed are refused.
  */
-export function backfillSupplementalPolicy(slug: string, supplementalFeedUrls: string[] | undefined, busOnlyFlag: boolean): BackfillSupplementalPolicy {
+/**
+ * CIV-1484: `--supplemental-id-prefix <prefix>` (or `<url>=<prefix>`) for a backfill run only. An older archived
+ * period can reuse an id of the main feed (SEPTA's 2017 rail and bus feeds share two shape ids), which
+ * processAgencyFeeds refuses; the prefix keeps the feeds apart for this run without changing the agency's config
+ * (and so its live artifacts). History keys come from short names, so a prefixed route id only matters for a route
+ * with no short name. A configured prefix wins; a different one given here is refused.
+ */
+export function backfillSupplementalIdPrefixes(slug: string, supplementalFeedUrls: string[] | undefined, configured: Record<string, string> | undefined, prefixArgs: readonly string[]): Record<string, string> | undefined {
+  if (prefixArgs.length === 0) return configured;
   const urls = supplementalFeedUrls ?? [];
-  if (urls.length === 0) return { busOnly: false, supplementalExcluded: [] };
-  if (!busOnlyFlag) throw new Error(`${slug} has supplemental feeds (${urls.join(', ')}); pass --bus-only to backfill the main feed only (supplemental routes excluded)`);
-  return { busOnly: true, supplementalExcluded: urls, note: BUS_ONLY_NOTE };
+  if (urls.length === 0) throw new Error(`${slug} has no supplemental feeds; --supplemental-id-prefix does not apply`);
+  const out: Record<string, string> = { ...(configured ?? {}) };
+  const given = new Set<string>();
+  for (const raw of prefixArgs) {
+    const eq = raw.indexOf('=');
+    const looksLikeUrl = eq > 0 && /^[a-z]+:\/\//i.test(raw);
+    const [url, prefix] = looksLikeUrl ? [raw.slice(0, eq), raw.slice(eq + 1)] : [urls.length === 1 ? urls[0] : '', raw];
+    if (!url) throw new Error(`${slug} has ${urls.length} supplemental feeds; pass --supplemental-id-prefix <url>=<prefix>`);
+    if (!urls.includes(url)) throw new Error(`${slug}: ${url} is not one of its supplemental feeds (${urls.join(', ')})`);
+    if (!prefix) throw new Error(`${slug}: empty id prefix for ${url}`);
+    if (given.has(url)) throw new Error(`${slug}: two id prefixes given for ${url}`);
+    if (configured?.[url] && configured[url] !== prefix) throw new Error(`${slug}: ${url} already has the configured id prefix "${configured[url]}"`);
+    given.add(url);
+    out[url] = prefix;
+  }
+  return out;
+}
+
+export function backfillSupplementalPolicy(slug: string, supplementalFeedUrls: string[] | undefined, busOnlyFlag: boolean, supplementalDirArgs: readonly string[] = []): BackfillSupplementalPolicy {
+  const urls = supplementalFeedUrls ?? [];
+  if (supplementalDirArgs.length > 0) {
+    if (urls.length === 0) throw new Error(`${slug} has no supplemental feeds; --supplemental-zip-dir does not apply`);
+    if (busOnlyFlag) throw new Error(`${slug}: --bus-only and --supplemental-zip-dir cannot be combined`);
+    const dirs: Record<string, string> = {};
+    for (const raw of supplementalDirArgs) {
+      const eq = raw.indexOf('=');
+      const looksLikeUrl = eq > 0 && /^[a-z]+:\/\//i.test(raw);
+      const [url, dir] = looksLikeUrl ? [raw.slice(0, eq), raw.slice(eq + 1)] : [urls.length === 1 ? urls[0] : '', raw];
+      if (!url) throw new Error(`${slug} has ${urls.length} supplemental feeds; pass --supplemental-zip-dir <url>=<dir> for each`);
+      if (!urls.includes(url)) throw new Error(`${slug}: ${url} is not one of its supplemental feeds (${urls.join(', ')})`);
+      if (!dir) throw new Error(`${slug}: no directory given for ${url}`);
+      if (dirs[url]) throw new Error(`${slug}: two directories given for ${url}`);
+      dirs[url] = dir;
+    }
+    const missing = urls.filter(u => !dirs[u]);
+    if (missing.length > 0) throw new Error(`${slug}: no --supplemental-zip-dir for ${missing.join(', ')}; every supplemental feed needs its archive (or pass --bus-only alone)`);
+    return { busOnly: false, supplementalExcluded: [], supplementalDirs: dirs };
+  }
+  if (urls.length === 0) return { busOnly: false, supplementalExcluded: [], supplementalDirs: {} };
+  if (!busOnlyFlag) throw new Error(`${slug} has supplemental feeds (${urls.join(', ')}); pass --supplemental-zip-dir with their archives, or --bus-only to backfill the main feed only (supplemental routes excluded)`);
+  return { busOnly: true, supplementalExcluded: urls, note: BUS_ONLY_NOTE, supplementalDirs: {} };
 }
 
 // ---- change detection ----------------------------------------------------

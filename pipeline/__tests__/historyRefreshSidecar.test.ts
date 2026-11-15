@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import JSZip from 'jszip';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { processAgencyFeeds, type AgencyFeedConfig, type AgencyFeedResult } from '../agencyFeeds.js';
-import { historyV2InputFor, writeRefreshSidecar } from '../historyRefreshSidecar.js';
+import { buildMergedV2Routes, historyV2InputFor, writeRefreshSidecar } from '../historyRefreshSidecar.js';
 import type { HistoryV2Sink } from '../historyV2.js';
 
 const FIXTURE = join(import.meta.dirname, 'fixtures/mdot-mta-bus-rail');
@@ -97,4 +97,21 @@ describe('refresh History sidecar (writeRefreshSidecar)', () => {
     expect(out.routes).not.toEqual(JSON.parse(before).routes);
     expect(out.routes).toEqual(out.sidecar.routes);
   }, 240_000);
+});
+
+describe('buildMergedV2Routes (CIV-1484: shared by refresh and the two-feed backfill)', () => {
+  it('builds the same routes and supplementalRoutes that refresh stores, rail routes listed under their feed', async () => {
+    const result = await runAt('20260302');
+    const input = historyV2InputFor(result, bus, [{ url: SUBWAY_URL, buf: subway }]);
+    const { evidence, built } = await buildMergedV2Routes('mta-maryland', features(result), input);
+    const { objects, store } = memoryStore();
+    await writeRefreshSidecar('mta-maryland', '20260613', features(result), input, store);
+    const stored = JSON.parse(objects.get('history-v2/mta-maryland/20260613.json')!);
+    expect(evidence.refDate).toBe('20260304');
+    expect(built.routes).toEqual(stored.routes);
+    expect(built.supplementalRoutes).toEqual(stored.supplementalRoutes);
+    expect(built.supplementalRoutes[SUBWAY_URL].length).toBeGreaterThan(0);
+    for (const key of built.supplementalRoutes[SUBWAY_URL]) expect(built.routes[key]).toBeDefined();
+    expect(built.collisions).toEqual([]);
+  }, 120_000);
 });
