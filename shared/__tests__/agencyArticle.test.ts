@@ -85,7 +85,7 @@ describe('agencyPossessive (CIV-1103)', () => {
   });
 });
 
-describe('slash names read as their first name in any sentence (STYLE.md)', () => {
+describe('slash names read as their first name in any sentence (docs/style/TEXT.md)', () => {
   it('uses the first name', async () => {
     const { agencyInSentence, agencySentenceStart } = await import('../agencyArticle');
     expect(agencyInSentence('Lawrence Transit / KU on Wheels')).toBe('Lawrence Transit');

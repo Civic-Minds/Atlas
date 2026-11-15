@@ -183,7 +183,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/STYLE.md "Card notices").
+  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
     directions: currentRoute.directions,
     model,

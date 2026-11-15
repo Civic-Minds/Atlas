@@ -3,7 +3,7 @@ import { CLEAR_SEARCH_LABEL } from '../../content/noticeCopy';
 
 /**
  * The clear (X) inside a search box, one component for every search box (CIV-1569). It clears on pointer-down so the
- * box keeps focus; a keyboard click (detail 0) clears too. STYLE.md: inside a pill it sits at least `right-2` in from
+ * box keeps focus; a keyboard click (detail 0) clears too. docs/style/VISUAL.md: inside a pill it sits at least `right-2` in from
  * the edge, never flush with the border.
  * - `bar`: the top bar's search box, set absolutely at `right-2`.
  * - `pill`: a `SEARCH_PILL` box, in its flow; the pill's own right padding keeps it in from the edge.

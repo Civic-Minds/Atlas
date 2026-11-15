@@ -542,7 +542,7 @@ methodology rather than appearing beside every route. They affect whether a
 tier qualifies, but exposing the arithmetic on every card would imply a level
 of precision the display is not trying to provide.
 
-> Wording superseded by [STYLE.md](../../../STYLE.md): the rider-facing word is "Part-time", not "Time-limited" (CIV-211, [#933](https://github.com/Civic-Minds/Atlas/issues/933)). `time-limited` stays the internal `serviceClass` value.
+> Wording superseded by [TEXT.md](../../../style/TEXT.md): the rider-facing word is "Part-time", not "Time-limited" (CIV-211, [#933](https://github.com/Civic-Minds/Atlas/issues/933)). `time-limited` stays the internal `serviceClass` value.
 
 ### Q5 recommendation
 
