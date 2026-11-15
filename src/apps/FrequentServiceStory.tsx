@@ -194,7 +194,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               />
             </div>
             <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
-            <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {frequentServiceCoverageUpdated}.</p>
+            <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {longDate(frequentServiceCoverageUpdated)}.</p>
             <p className="mt-5 text-base leading-8 text-[var(--text-muted)]">The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service. Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
           </section>
 
