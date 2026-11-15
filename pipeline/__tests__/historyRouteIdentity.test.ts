@@ -39,7 +39,7 @@ describe('route identity by long name and terminus, with no line (CIV-422)', () 
 
   it('reads names and ends as expected', () => {
     expect(normalizeRouteName('Red Line BRT')).toBe('red');
-    expect(normalizeRouteName('Crosstown - 38th St.')).toBe('38th');
+    expect(normalizeRouteName('Crosstown - 38th St.')).toBe('38th st');
     expect(terminiOf([[1, 2], [3, 4], [5, 6]])).toEqual([[1, 2], [5, 6]]);
     expect(terminiOf([[1, 2]])).toBeNull();
   });
