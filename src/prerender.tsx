@@ -31,7 +31,7 @@ const PAGES: Record<string, () => ReactElement> = {
   [PRIVACY_PATH]: () => <LegalPage document="privacy" />,
   [TERMS_PATH]: () => <LegalPage document="terms" />,
   [FEATURE_ROUTES.research]: () => <ResearchPage />,
-  '/research/free-child-fares': () => <FreeChildFaresPage />,
+  [FEATURE_ROUTES.freeChildFares]: () => <FreeChildFaresPage />,
 };
 
 export const BUILD_MODE = ATLAS_MODE;
@@ -56,7 +56,7 @@ export const PRERENDER_PATHS = Object.keys(PAGES);
 
 /** #1522: the home page's static text (the map replaces it on mount). */
 export function renderHome(): string {
-  return renderToString(<StaticRouter location="/"><HomeStatic agencyPages={BUILD_FLAGS.agencyPages === true} /></StaticRouter>);
+  return renderToString(<StaticRouter location="/"><HomeStatic /></StaticRouter>);
 }
 
 export function renderAgencyPage(data: AgencyPageData): string {

@@ -216,9 +216,8 @@ describe('agencyRegionTitle', () => {
 describe('areaLinkFor', () => {
   const map: Record<string, [string, string]> = { ttc: ['toronto', 'Toronto'] };
   it('links only agencies in a paged area, and only with the flag on', () => {
-    expect(areaLinkFor('ttc', true, map)).toEqual({ href: '/area/toronto', label: 'All Greater Toronto and Hamilton Area agencies' });
-    expect(areaLinkFor('ttc', false, map)).toBeNull();
-    expect(areaLinkFor('nowhere', true, map)).toBeNull();
+    expect(areaLinkFor('ttc', map)).toEqual({ href: '/area/toronto', label: 'All Greater Toronto and Hamilton Area agencies' });
+    expect(areaLinkFor('nowhere', map)).toBeNull();
   });
 
   it('is built from paged areas only', () => {

@@ -79,17 +79,7 @@ function getAtlasMode(): AtlasMode {
 export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
-// One static page per agency at /agency/<slug>, per area at /area/<slug>, and the /agencies index, built from a
-// committed summary of the data release. On for every build (public too, Ryan 2026-10-13); the public build
-// still drops beta-only agencies (see agencyPagesData).
-export const AGENCY_PAGES_ENABLED = true;
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// Route and stop cards open as a bottom sheet on phones instead of a narrow floating panel.
-// On for every build (public too, Ryan 2026-10-20); it was beta-only while the layout was tried on real phones (#647).
-export const MOBILE_ROUTE_SHEET_ENABLED = true;
-// Compare mode: two maps side by side, same filter, each with its own day and time (CIV-19).
-// On for every build (public too, Ryan 2026-10-20); it was beta-only while it was tried out. Still hidden on phones (phoneModeFlags).
-export const COMPARE_MODE_ENABLED = true;
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
@@ -123,13 +113,6 @@ const devOnDemandUrl: unknown =
   typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined;
 export const ON_DEMAND_URL_OVERRIDE: string | undefined =
   typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
-// "What's new" link in the map's bottom bar, listing recent changes in plain words (CIV-83).
-// On in every build since 3.4; entries tagged beta stay beta-only (WHATS_NEW_BETA_ITEMS_ENABLED).
-export function whatsNewEnabledFor(_mode: AtlasMode): boolean {
-  return true;
-}
-export const WHATS_NEW_ENABLED = whatsNewEnabledFor(ATLAS_MODE);
-
 export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
   return `/data/catalog-${mode}.json`;
 }
@@ -183,10 +166,6 @@ export const FEATURES = {
   history: HISTORY_ENABLED,
   historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
-  // Map-image export graduated from beta to every deployment (Ryan, 2026-10-10).
-  mapExport: true,
-  mobileRouteSheet: MOBILE_ROUTE_SHEET_ENABLED,
-  compareMode: COMPARE_MODE_ENABLED,
   shareUtm: SHARE_UTM_ENABLED,
   collapseModeTabs: COLLAPSE_MODE_TABS_ENABLED,
   modeTransitions: MODE_TRANSITIONS_ENABLED,
@@ -195,8 +174,6 @@ export const FEATURES = {
   unevenBanner: UNEVEN_BANNER_ENABLED,
   segmentColours: SEGMENT_COLOURS_ENABLED,
   contextLayer: CONTEXT_LAYER_ENABLED,
-  whatsNew: WHATS_NEW_ENABLED,
-  agencyPages: AGENCY_PAGES_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,
   updateBanner: UPDATE_BANNER_ENABLED,
   mapContext: MAP_CONTEXT_ENABLED,
@@ -216,10 +193,8 @@ export const FEATURES = {
 export function seoFlags() {
   return {
     researchApps: FEATURES.researchApps,
-    whatsNew: FEATURES.whatsNew,
     live: FEATURES.live,
     history: FEATURES.history,
-    agencyPages: FEATURES.agencyPages,
   };
 }
 

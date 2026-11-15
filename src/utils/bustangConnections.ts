@@ -9,6 +9,7 @@ import type { DayType } from '../../shared/dayTypes';
 import { BAR_DISTANCE_CHOICES, type ConnectionSide, type NearbyChoice, type RouteConnection } from '../../shared/connections';
 import { agencyTodayYmd, isExpiredFeedExpiry } from '../../shared/feedAvailability';
 import { metresBetween } from '../../shared/geoDistance';
+import { MAP_EXPORT_TITLES } from '../content/noticeCopy';
 
 /** Keyed by distance; a file built before a distance was added has no entry for it. */
 type ByChoice<T> = Partial<Record<`${NearbyChoice}`, T>>;
@@ -69,7 +70,7 @@ export interface BustangData {
 
 /** The research view's list title, also the back link of a route opened from it. */
 export const BUSTANG_LIST_TITLE = 'Bustang routes';
-export const BUSTANG_INFO_HEADING = 'Bustang connections';
+export const BUSTANG_INFO_HEADING = MAP_EXPORT_TITLES.bustang;
 /** Where the view's map opens without a place in its link: Bustang's stops, Grand Junction to Denver ([south, west, north, east]). */
 export const BUSTANG_MAP_BOUNDS: [number, number, number, number] = [38.75, -108.65, 40.65, -104.7];
 /** The view's distance choice in its link (?within=800); 400, the default, is left out. */

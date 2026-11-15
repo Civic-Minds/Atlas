@@ -15,9 +15,6 @@ import {
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { loadHistoryConfig } from './historyConfig';
 
-/** Thin fetch layer over the pure reader. Fixture mode is on only when VITE_HISTORY_V2_BASE is set in `vite` dev. */
-export const historyV2FixtureMode = (): boolean => HISTORY_V2_BASE_OVERRIDE !== undefined;
-
 async function getJson(url: string): Promise<HistoryV2Result<unknown>> {
   try {
     const r = await fetch(url);

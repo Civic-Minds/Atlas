@@ -6,6 +6,7 @@ import type { PeriodKey, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
+import { regionSlug } from '../../shared/pagePaths';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import { withRouteWord } from './format';
@@ -213,13 +214,7 @@ export function pickExportPlace(samples: RenderedRouteSample[], agencies: Agency
 }
 
 export function slugifyForFilename(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/≤/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+  return regionSlug(text.replace(/≤/g, ''));
 }
 
 function filenameParts(state: MapExportState, place: string | null): string[] {

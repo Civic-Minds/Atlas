@@ -4,14 +4,15 @@ import { MAP_STEP_LIMITS, measureLabel, type MapMeasure } from './routeMapModel'
 import { STEP_LABELS, stepColor, type Step } from './routeStripModel';
 import { NOT_MEASURED_LABEL } from '../../../shared/liveWording';
 import { percentText } from '../../../shared/numberText';
+import { minutesText } from '../../../shared/liveFormat';
+import { headwayBandLabel } from '../../../shared/headwayText';
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
 function stepLabels(measure: MapMeasure): [string, string, string] {
   if (measure === 'bunching') return [...STEP_LABELS.bunching] as [string, string, string];
   const [a, b] = MAP_STEP_LIMITS[measure];
   if (measure === 'late') return [`Under ${percentText(a)}`, `${percentText(a)}–${percentText(b)}`, `${percentText(b)} or more`];
-  const m = (x: number) => `${x} min`;
-  return [`Under ${m(a)}`, `${a}–${m(b)}`, `${m(b)} or more`];
+  return [`Under ${minutesText(a)}`, headwayBandLabel(a, b), `${minutesText(b)} or more`];
 }
 
 /** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */

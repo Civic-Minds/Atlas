@@ -28,7 +28,7 @@ describe('MapAttribution', () => {
   });
 
   it('folds About, What’s new and Feedback into one About card on phones', () => {
-    render(<MapAttribution whatsNewEnabled />);
+    render(<MapAttribution />);
     const about = screen.getByRole('button', { name: 'About' });
     expect(screen.getAllByRole('link', { name: 'About Atlas' })).toHaveLength(1);
     fireEvent.click(about);

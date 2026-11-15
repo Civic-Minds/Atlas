@@ -69,8 +69,6 @@ export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80
 
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
 export const GLASS_PILL = 'backdrop-blur-md rounded-full';
-/** Filter chip pill base — border color added dynamically per active state */
-export const CHIP_BASE = `${GLASS_PILL} bg-[var(--bg-panel)] border`;
 
 /** Shared mode-aware control states. */
 /** Same selected tint for pills that float over the map: an opaque panel base with the tint laid on top. */
@@ -123,9 +121,6 @@ export const PANEL_TITLE_BAR = 'flex items-center gap-1.5 px-4 pt-3 pb-2.5 borde
 /** Title text inside PANEL_TITLE_BAR */
 export const PANEL_TITLE = 'text-xs font-black text-[var(--text-dim)]';
 
-/** Compact explanatory line beneath a research panel title. */
-export const PANEL_HELPER = 'px-4 pt-2 pb-2 text-xs text-[var(--text-dim)] font-bold leading-snug border-b border-[var(--border-primary)]';
-
 /** Back + card title row inside a floating panel */
 export const PANEL_CARD_HEADER = 'flex items-start gap-2 px-4 pt-3 pb-2.5 border-b border-[var(--border-primary)] shrink-0';
 
@@ -140,12 +135,6 @@ export const AGENCY_LIST_FILTERS = 'shrink-0 px-4 pt-3 pb-2 bg-[var(--bg-panel)]
 export const PILL_SCROLL_ROW = 'flex gap-1.5 overflow-x-auto items-center [&::-webkit-scrollbar]:hidden';
 
 export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text-dim)]';
-
-/** Accent group label in search results */
-export const PANEL_SEARCH_HEAD = 'px-4 text-xs font-bold text-[var(--accent)] mb-1.5';
-
-/** Sub-section label (In this area / Elsewhere) */
-export const PANEL_SEARCH_SUBHEAD = 'px-4 pt-2 pb-0.5 text-xs font-bold text-[var(--text-dim)]';
 
 /** Scrollable body inside a floating panel */
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
@@ -163,8 +152,6 @@ export const CARD_NOTICE = 'text-xs font-normal text-[var(--text-dim)]';
 export const CARD_NOTE = 'text-xs font-bold text-[var(--text-dim)]';
 /** A small section label ("Westbound", "On-demand service", the filter panel's "Mode"). */
 export const CARD_SECTION = 'text-xs font-black text-[var(--text-dim)]';
-/** The chart's period names over its bars (route card chart and the full-day view). */
-export const CHART_PERIOD_LABEL = 'text-xs font-black text-[var(--text-muted)]';
 /** A heading inside the chart area (the trip-time strip's "Trip time"). */
 export const CHART_HEADING = 'text-xs font-bold text-[var(--text-muted)]';
 /** The gap under a small heading before its content (a list's section head, a chart's title). */

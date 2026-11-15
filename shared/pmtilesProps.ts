@@ -15,6 +15,8 @@ const PERIOD_FLAT_PREFIXES = [
   // tilePeriodServiceExpr when present.
   ['routeFilterHeadwayByPeriod', 'rv'],
   ['routeRunsByPeriod', 'rr'],
+  // CIV-1579 shadow: the route's trunk (main stretch) filter value per period. Nothing reads it yet.
+  ['routeTrunkHeadwayByPeriod', 'tv'],
 ] as const;
 
 // MVT (the format tippecanoe/PMTiles serialize to) has no null value type -- a property written
@@ -62,7 +64,7 @@ export function periodHeadwayFlatKeys(period: PeriodKey): [string, string, strin
  *
  * Add a key here when a style expression or a queryRenderedFeatures reader needs it from the tile
  * (shared/__tests__/tileRouteProperties.test.ts fails when one is missing). The period maps are
- * kept as the flat pch_/wdpch_/hps_/msph_/wdph_/hph_/pws_ keys that flattenPeriodHeadwayProps adds.
+ * kept as the flat pch_/wdpch_/hps_/msph_/wdph_/hph_/pws_/rv_/rr_/tv_ keys that flattenPeriodHeadwayProps adds.
  */
 export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   'agencySlug', 'agencyName',
@@ -78,7 +80,7 @@ export const TILE_ROUTE_SCALAR_KEYS: readonly string[] = [
   'bookingRequired',
 ];
 
-export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr)_/;
+export const TILE_ROUTE_FLAT_KEY = /^(pch|wdpch|hps|msph|wdph|hph|pws|rv|rr|tv)_/;
 
 /** The route properties that go into tiles: the allowed scalars plus the flat period keys. */
 export function pickTileRouteProperties(props: Record<string, unknown>): Record<string, unknown> {

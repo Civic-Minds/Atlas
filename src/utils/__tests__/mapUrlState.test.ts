@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../mapUrlState';
+import { MAP_URL, readUrlParam, urlParamPresent, urlParamUpdate } from '../urlSchema';
 import { mergeUrlSearchParams } from '../syncUrlParams';
 
 // CIV-1011 #11: the map view's link parameters read and write through one schema. Old links must

@@ -14,7 +14,7 @@ export interface FreeChildFareBar {
 
 /** policy_type "age", by free_child_age: the oldest age that rides free. */
 export const FREE_CHILD_AGE_COUNTS: ReadonlyArray<readonly [age: number, agencies: number]> = [
-  [1, 1], [2, 1], [3, 2], [4, 80], [5, 129], [6, 20], [7, 2], [8, 3], [9, 3], [10, 8], [11, 28], [12, 45], [13, 1], [14, 1], [17, 3], [18, 47],
+  [1, 1], [2, 1], [3, 2], [4, 80], [5, 130], [6, 21], [7, 2], [8, 3], [9, 3], [10, 7], [11, 28], [12, 45], [13, 1], [14, 1], [17, 3], [18, 47],
 ];
 
 /** policy_type "age" as one group, in the legend and hover readouts (Ryan's short labels, 2026-11-02). */
@@ -22,12 +22,12 @@ export const FREE_CHILD_AGE_LABEL = 'Age limit';
 
 /** Every other policy_type, in chart order, with Ryan's short labels (2026-11-02). */
 export const FREE_CHILD_OTHER_POLICIES: ReadonlyArray<{ policyType: string; label: string; agencies: number; unknown?: boolean }> = [
-  { policyType: 'all-fare-free', label: 'Fare-free', agencies: 63 },
-  { policyType: 'height', label: 'Height limit', agencies: 39 },
-  { policyType: 'student-program', label: 'Student program', agencies: 24 },
+  { policyType: 'all-fare-free', label: 'Fare-free', agencies: 64 },
+  { policyType: 'height', label: 'Height limit', agencies: 40 },
+  { policyType: 'student-program', label: 'Student program', agencies: 25 },
   { policyType: 'age-conditional', label: 'Program only', agencies: 4 },
   { policyType: 'no-free-child-fare', label: 'None', agencies: 15 },
-  { policyType: 'unresolved', label: 'Not found', agencies: 34, unknown: true },
+  { policyType: 'unresolved', label: 'Not found', agencies: 42, unknown: true },
 ];
 
 export const freeChildAgeBars: FreeChildFareBar[] = FREE_CHILD_AGE_COUNTS.map(([age, agencies]) => ({ label: `Up to ${age}`, agencies }));
@@ -41,27 +41,27 @@ export const FREE_CHILD_REGIONS: ReadonlyArray<readonly [region: string, agencie
   ['Alabama', 4, [[5, 2]]],
   ['Alaska', 2, [[5, 1], [18, 1]]],
   ['Alberta', 6, [[4, 1], [5, 2], [12, 2]]],
-  ['Arizona', 4, [[4, 1]]],
+  ['Arizona', 5, [[4, 1]]],
   ['Arkansas', 2, [[4, 1], [7, 1]]],
   ['British Columbia', 14, [[4, 1], [12, 13]]],
   ['California', 98, [[4, 23], [5, 21], [6, 2], [7, 1], [11, 2], [12, 2], [18, 14]]],
-  ['Colorado', 22, [[4, 1], [5, 2], [10, 2], [18, 2]]],
+  ['Colorado', 25, [[4, 1], [5, 2], [10, 2], [18, 2]]],
   ['Connecticut', 2, [[4, 1]]],
   ['Delaware', 1, []],
   ['Florida', 21, [[4, 2], [5, 4], [6, 5], [8, 2], [18, 1]]],
   ['Georgia', 10, [[5, 3], [6, 1]]],
   ['Hawaii', 3, [[5, 1], [6, 1]]],
   ['Idaho', 3, [[5, 1], [18, 1]]],
-  ['Illinois', 10, [[4, 2], [5, 3], [6, 3]]],
-  ['Indiana', 7, [[4, 3], [5, 3]]],
-  ['Iowa', 12, [[4, 3], [5, 2], [8, 1], [12, 1], [17, 1], [18, 1]]],
+  ['Illinois', 11, [[4, 2], [5, 3], [6, 3]]],
+  ['Indiana', 8, [[4, 3], [5, 3]]],
+  ['Iowa', 13, [[4, 3], [5, 2], [8, 1], [12, 1], [17, 1], [18, 1]]],
   ['Kansas', 3, [[4, 1], [5, 1]]],
-  ['Kentucky', 3, [[5, 1], [6, 1]]],
+  ['Kentucky', 4, [[5, 1], [6, 2]]],
   ['Louisiana', 7, [[2, 1], [4, 1], [5, 2]]],
   ['Maine', 3, [[5, 3]]],
   ['Manitoba', 2, [[11, 1], [17, 1]]],
   ['Maryland', 5, [[5, 2], [12, 1]]],
-  ['Massachusetts', 4, [[11, 1]]],
+  ['Massachusetts', 4, [[5, 1], [11, 1]]],
   ['Michigan', 14, [[1, 1], [5, 4]]],
   ['Minnesota', 3, [[4, 1], [5, 2]]],
   ['Mississippi', 3, [[5, 1]]],
@@ -70,16 +70,16 @@ export const FREE_CHILD_REGIONS: ReadonlyArray<readonly [region: string, agencie
   ['Nebraska', 2, [[4, 1]]],
   ['Nevada', 2, [[5, 2]]],
   ['New Brunswick', 3, [[5, 1], [6, 1], [11, 1]]],
-  ['New Hampshire', 2, [[4, 1]]],
-  ['New Jersey', 4, [[4, 3], [5, 1]]],
-  ['New Mexico', 6, [[4, 1], [18, 1]]],
+  ['New Hampshire', 3, [[4, 2]]],
+  ['New Jersey', 3, [[4, 2], [5, 1]]],
+  ['New Mexico', 7, [[4, 1], [18, 1]]],
   ['New York', 30, [[4, 6], [5, 5], [9, 1]]],
   ['Newfoundland', 1, [[11, 1]]],
   ['North Carolina', 17, [[4, 3], [5, 6], [12, 1]]],
   ['North Dakota', 3, [[5, 1]]],
   ['Northwest Territories', 1, [[12, 1]]],
   ['Nova Scotia', 1, [[12, 1]]],
-  ['Ohio', 14, [[4, 1], [5, 6], [10, 1], [11, 1], [12, 2]]],
+  ['Ohio', 14, [[4, 1], [5, 6], [11, 1], [12, 2]]],
   ['Oklahoma', 2, [[18, 1]]],
   ['Ontario', 35, [[4, 3], [5, 8], [6, 2], [10, 1], [12, 18], [14, 1]]],
   ['Oregon', 15, [[4, 1], [5, 2], [6, 3], [9, 1], [10, 1], [18, 3]]],
@@ -88,14 +88,14 @@ export const FREE_CHILD_REGIONS: ReadonlyArray<readonly [region: string, agencie
   ['Quebec', 19, [[11, 16], [12, 2]]],
   ['Rhode Island', 1, [[4, 1]]],
   ['Saskatchewan', 4, [[5, 1], [9, 1], [13, 1]]],
-  ['South Carolina', 5, [[5, 2]]],
+  ['South Carolina', 6, [[5, 2]]],
   ['South Dakota', 2, [[18, 2]]],
-  ['Tennessee', 5, [[3, 1], [4, 1], [5, 2]]],
+  ['Tennessee', 6, [[3, 1], [4, 1], [5, 2]]],
   ['Texas', 20, [[4, 3], [5, 12]]],
   ['Utah', 2, [[5, 2]]],
   ['Vermont', 2, [[5, 1], [10, 1]]],
   ['Virginia', 17, [[3, 1], [4, 1], [5, 2], [10, 1], [11, 1], [12, 1], [17, 1], [18, 1]]],
-  ['Washington', 24, [[10, 1], [18, 19]]],
+  ['Washington', 25, [[10, 1], [18, 19]]],
   ['Washington DC', 2, [[4, 1]]],
   ['West Virginia', 2, [[5, 1]]],
   ['Wisconsin', 11, [[4, 6], [5, 2]]],
@@ -104,7 +104,7 @@ export const FREE_CHILD_REGIONS: ReadonlyArray<readonly [region: string, agencie
 ];
 
 /** Agencies in the chart by country (the Sample line in "Method"). */
-export const FREE_CHILD_AGENCIES_BY_COUNTRY = { 'United States': 465, Canada: 88 } as const;
+export const FREE_CHILD_AGENCIES_BY_COUNTRY = { 'United States': 477, Canada: 88 } as const;
 
 const sum = (bars: FreeChildFareBar[]) => bars.reduce((total, bar) => total + bar.agencies, 0);
 

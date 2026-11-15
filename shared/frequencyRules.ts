@@ -38,3 +38,6 @@ export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 
 /** Rail's tiers: the surface tiers plus 5 and 8 min (pipeline/defaults.ts modeTierOverrides). */
 export const RAIL_TIER_MAXES = [5, 8, 10, 15, 30, 60];
+
+/** Rail's own midday window (09:30 to 14:30, minutes after midnight), used by its tier scale and the rail roll-up, and named on the Docs page. */
+export const RAIL_TIER_WINDOW = { start: 570, end: 870 } as const;

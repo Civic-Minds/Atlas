@@ -1,0 +1,26 @@
+{
+  "slug": "gunnison-valley-rta",
+  "officialName": "Gunnison Valley Rural Transportation Authority",
+  "commonName": "Gunnison Valley RTA",
+  "websiteUrl": "https://www.gunnisonvalleyrta.com/",
+  "center": [
+    38.7453,
+    -106.9045
+  ],
+  "feedUrl": "http://mjcaction.com/MJC_GTFS_Public/gunnisonrta_google_transit.zip",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-163/latest.zip",
+  "bbox": [
+    38.5442,
+    -106.9813,
+    38.9009,
+    -106.8454
+  ],
+  "cities": [
+    "Gunnison, Colorado",
+    "Crested Butte, Colorado",
+    "Mt. Crested Butte, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "hiddenInProduction": true
+}

@@ -12,6 +12,7 @@ import { FEATURE_ROUTES } from './config';
 import { FREQUENT_SERVICE_TITLE } from './frequentService';
 import { SITE_NAME, tabTitle } from './pageNames';
 import { titleCase } from './titleCase';
+import { freeChildFareStats } from '../src/data/freeChildFares';
 
 export interface ResearchStoryText {
   /** The page's address. */
@@ -79,7 +80,8 @@ export const FREE_CHILD_FARES_STORY: ResearchStoryText = {
     `We read the official fare rules of ${agencies} transit agencies in Canada and the United States to find up to what age children ride free, and under what conditions.`,
   ],
   tabTitle: tabTitle(titleCase(FREE_CHILD_FARES_TITLE)),
-  description: 'See up to what age children ride free at 697 transit agencies.',
+  // The page's own agency count (CIV-1642: it read 697, the ledger's rows outside Canada and the US included).
+  description: `See up to what age children ride free at ${freeChildFareStats.agencies} transit agencies.`,
   shareImageAlt: FREE_CHILD_FARES_TITLE,
 };
 

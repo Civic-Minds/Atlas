@@ -1,23 +1,23 @@
 # Atlas child-fare ledger (2026-10-11)
 
-This ledger covers all 697 agencies in the Atlas registry.
+This ledger covers all 709 agencies in the Atlas registry.
 
 ## Research status
 
-- Manually verified (official source documents the policy): 656
-- Reviewed, still unresolved: 41
+- Manually verified (official source documents the policy): 660
+- Reviewed, still unresolved: 49
 
 `status: confirmed` means an official source documents the agency's child-fare policy. It does not mean children ride free; use `policy_type`.
 
 ## Policy type
 
-- age: 487
+- age: 488
 - age-conditional: 5
-- all-fare-free: 83
-- height: 39
-- student-program: 26
+- all-fare-free: 84
+- height: 40
+- student-program: 27
 - no-free-child-fare: 16
-- unresolved: 41
+- unresolved: 49
 
 - `age`: a general rule that children up to `free_child_age` (inclusive) ride free, sometimes with accompaniment or height conditions (see `conditions`).
 - `age-conditional`: free up to `free_child_age` only under a program condition (seasonal, weekend, resident, pass). Do not present as a general "kids under N ride free".

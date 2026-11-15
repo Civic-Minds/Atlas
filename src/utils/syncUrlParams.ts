@@ -35,11 +35,6 @@ export function readUrlParam(key: string): string | null {
   return typeof window === 'undefined' ? null : readUrlSearchParam(window.location.search, key);
 }
 
-/** Read a numeric param from the live URL; null outside the browser. */
-export function readUrlNumberParam(key: string): number | null {
-  return typeof window === 'undefined' ? null : readUrlSearchNumber(window.location.search, key);
-}
-
 /** Apply updates to the live URL (pathname preserved). */
 export function syncUrlParams(updates: Record<string, string | null | undefined>): void {
   if (typeof window === 'undefined') return;

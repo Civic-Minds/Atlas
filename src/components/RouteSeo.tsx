@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
-import { ATLAS_MODE, FEATURES, seoFlags } from '../../shared/config';
+import { ATLAS_MODE, seoFlags } from '../../shared/config';
 import { resolveSeo } from '../../shared/seo';
 import { AGENCY_PATH_PREFIX } from '../../shared/agencyPages';
 import { AREA_PATH_PREFIX } from '../../shared/areas';
@@ -13,7 +13,7 @@ export default function RouteSeo() {
   const { pathname } = useLocation();
   useEffect(() => {
     // Agency pages set their own head once their data is in.
-    if (FEATURES.agencyPages && (pathname.startsWith(AGENCY_PATH_PREFIX) || pathname.startsWith(AREA_PATH_PREFIX) || pathname.startsWith(REGION_PATH_PREFIX) || pathname === AGENCY_INDEX_PATH)) return;
+    if (pathname.startsWith(AGENCY_PATH_PREFIX) || pathname.startsWith(AREA_PATH_PREFIX) || pathname.startsWith(REGION_PATH_PREFIX) || pathname === AGENCY_INDEX_PATH) return;
     const seo = resolveSeo(pathname, {
       mode: ATLAS_MODE,
       flags: seoFlags(),

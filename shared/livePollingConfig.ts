@@ -486,11 +486,6 @@ export function scheduleOffsetForPattern(
   return cfg.scheduleOffsetMin[patternKey];
 }
 
-/** @deprecated use getLiveRouteConfig */
-export const LIVE_POLLING_CONFIG: Record<string, LiveRouteConfig> = Object.fromEntries(
-  LIVE_POLLING_ROUTES.map(c => [c.slug, c]),
-);
-
 export const LIVE_TRIP_UPDATES_FEEDS: Record<string, string> = Object.fromEntries(
   [...new Set(LIVE_POLLING_ROUTES.map(c => c.slug))].map(slug => [
     slug,

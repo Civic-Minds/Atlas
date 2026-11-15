@@ -17,9 +17,10 @@ const actual = inventory.records ?? [];
 const actualIds = new Set(actual.map((record) => record.slug));
 const errors = [];
 
-if (actual.length !== registry.length) errors.push(`record count ${actual.length} != registry count ${registry.length}`);
-for (const slug of expected) if (!actualIds.has(slug)) errors.push(`missing registry agency: ${slug}`);
-for (const slug of actualIds) if (!expected.has(slug)) errors.push(`unexpected agency: ${slug}`);
+// The inventory is a dated snapshot and the registry keeps changing, so agencies added since the snapshot, and ones
+// renamed or merged away, are listed rather than failing the check (CIV-1559 follow-up, manager's option 3).
+const notYetResearched = [...expected].filter((slug) => !actualIds.has(slug));
+const noLongerListed = [...actualIds].filter((slug) => !expected.has(slug));
 for (const record of actual) {
   if (!record.agencyName || !record.status || !record.researchDate) errors.push(`${record.slug}: missing identity/status/date`);
   if (record.amount != null && (!Number.isFinite(record.amount) || record.amount < 0)) errors.push(`${record.slug}: invalid amount`);
@@ -33,3 +34,5 @@ if (errors.length) {
 } else {
   console.log(`Validated ${actual.length} fare records against ${registry.length} registry agencies: ${path.relative(process.cwd(), fullPath)}`);
 }
+if (notYetResearched.length) console.log(`Not yet researched (in the registry, not in this snapshot) (${notYetResearched.length}): ${notYetResearched.join(', ')}`);
+if (noLongerListed.length) console.log(`No longer in the registry (renamed, merged or removed) (${noLongerListed.length}): ${noLongerListed.join(', ')}`);

@@ -50,18 +50,23 @@ export function stretchRowsFromMeta(f: ShapeProperties, period: TimePeriod): Str
 
 /**
  * The features that become destination rows for one direction: the main stretch's feature and one per tail. When several
- * features share a role and index, the one that draws the most stops wins (then the faster one). Variants get no row.
+ * features share a role and index, the one that draws the most stops wins, then the one that runs through more of the
+ * period (its longest full-period wait), then the faster one. Variants get no row. #1526: TTC 110's two Long Branch
+ * patterns tie on stops and midday median, and input order picked the 30th Street one, which skips 9:00 to 14:00.
  */
 export function stretchRowFeatures(features: readonly ShapeProperties[], period: TimePeriod): ShapeProperties[] {
   const best = new Map<string, ShapeProperties>();
+  const stops = (p: ShapeProperties) => p.stopOrder?.length ?? 0;
+  const coverage = (p: ShapeProperties) => (period !== 'all' ? p.periodCoverageHeadway?.[period] : null) ?? Infinity;
+  const speed = (p: ShapeProperties) => (period !== 'all' ? p.headwayByPeriod?.[period] : p.headway) ?? Infinity;
   for (const f of features) {
     if (f.stretchRole !== 'main' && f.stretchRole !== 'tail') continue;
     const key = `${f.stretchRole}:${f.stretchIndex ?? 0}`;
     const current = best.get(key);
     if (!current) { best.set(key, f); continue; }
-    const stops = (p: ShapeProperties) => p.stopOrder?.length ?? 0;
-    const speed = (p: ShapeProperties) => (period !== 'all' ? p.headwayByPeriod?.[period] : p.headway) ?? Infinity;
-    if (stops(f) > stops(current) || (stops(f) === stops(current) && speed(f) < speed(current))) best.set(key, f);
+    if (stops(f) !== stops(current)) { if (stops(f) > stops(current)) best.set(key, f); continue; }
+    if (coverage(f) !== coverage(current)) { if (coverage(f) < coverage(current)) best.set(key, f); continue; }
+    if (speed(f) < speed(current)) best.set(key, f);
   }
   return [...best.values()].sort((a, b) => (a.stretchRole === b.stretchRole ? (a.stretchIndex ?? 0) - (b.stretchIndex ?? 0) : a.stretchRole === 'main' ? -1 : 1));
 }

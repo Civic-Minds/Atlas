@@ -1,7 +1,6 @@
 import type * as maplibregl from 'maplibre-gl';
 import { fitTargetForPoints } from '../../../utils/routeFitTarget';
 import type { LonLat } from '../../../../shared/routeGeometry';
-import { FEATURES } from '../../../../shared/config';
 
 /** Which side of the map the card sits on, on wide screens. */
 export type CardSide = 'left' | 'right';
@@ -115,14 +114,14 @@ export const ROUTE_CARD_FRAME_ATTR = 'data-route-card-frame';
 
 /**
  * Padding for the main map's route selection. Where the route card is a phone bottom sheet
- * (FEATURES.mobileRouteSheet), frame above the sheet: the side-card padding (400px of left+right)
+ * (every phone), frame above the sheet: the side-card padding (400px of left+right)
  * leaves a phone map almost no width, so the fit zooms out to a continent. On wide screens, the card's measured
  * box sets the left padding: the fixed 320px sat inside a card that ends further right, and a long line's end
  * landed under it (#1516).
  */
 export function selectionFramePadding(
   map: maplibregl.Map,
-  phoneSheet: boolean = FEATURES.mobileRouteSheet,
+  phoneSheet: boolean = true,
   card?: Element | null,
 ): maplibregl.PaddingOptions {
   const cardRect = card && cardBesideMap(map) ? card.getBoundingClientRect() : null;

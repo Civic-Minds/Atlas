@@ -17,7 +17,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: 'Explore',
       links: [
         { href: '/', label: PAGE_NAMES.map },
-        ...(FEATURES.agencyPages ? [{ href: AGENCY_INDEX_PATH, label: PAGE_NAMES.agencies }] : []),
+        { href: AGENCY_INDEX_PATH, label: PAGE_NAMES.agencies },
       ],
     },
     {
@@ -32,7 +32,7 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: 'Atlas',
       links: [
         { href: ABOUT_PATH, label: PAGE_NAMES.about },
-        ...(FEATURES.whatsNew ? [{ href: CHANGELOG_PATH, label: PAGE_NAMES.whatsNew }] : []),
+        { href: CHANGELOG_PATH, label: PAGE_NAMES.whatsNew },
       ],
     },
   ];

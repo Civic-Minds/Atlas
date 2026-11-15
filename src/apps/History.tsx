@@ -288,7 +288,7 @@ function RouteHistoryCard({
   // The sheet opens like the map's route sheet: it fades and slides up when a route is picked
   // (this card mounts) and when History opens, and slides back down when History closes.
   const { visible: sheetEntered } = useFadePresence(true);
-  const sheetMode = FEATURES.mobileRouteSheet && isPhone;
+  const sheetMode = isPhone;
   const { expanded: sheetExpanded, handle: sheetHandle } = useBottomSheet(route.routeShortName);
   // The chart fill's gradient id. Not the route name: a name with a space ("Local Weekday") made
   // url(#…) invalid, so the fill fell back to solid black. Only letters, digits, - and _ are kept.

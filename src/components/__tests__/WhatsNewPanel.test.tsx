@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { FEATURES, WHATS_NEW_ENABLED, whatsNewEnabledFor } from '../../../shared/config';
 import { WhatsNewPanel } from '../WhatsNewPanel';
 import { MapAttribution } from '../Interval/MapAttribution';
 import { WHATS_NEW, visibleWhatsNew, type WhatsNewRelease } from '../../data/whatsNew';
@@ -21,13 +20,8 @@ const RELEASES: WhatsNewRelease[] = [
 ];
 
 describe('What’s new link', () => {
-  it('is hidden when the flag is off', () => {
-    render(<MapAttribution whatsNewEnabled={false} />);
-    expect(screen.queryByRole('button', { name: /What's new/ })).toBeNull();
-  });
-
-  it('shows the app version and opens the panel when the flag is on', async () => {
-    render(<MapAttribution whatsNewEnabled />);
+  it('shows the app version and opens the panel', async () => {
+    render(<MapAttribution />);
     const [major, minor] = version.split('.');
     const button = screen.getByRole('button', { name: `v${major}.${minor} · What’s New` });
     expect(button.className).toContain('text-xs');
@@ -37,16 +31,6 @@ describe('What’s new link', () => {
     expect(await screen.findByRole('dialog', { name: "What’s New" })).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-  });
-});
-
-describe('What’s new flag', () => {
-  it('is on in every build, public included', () => {
-    expect(whatsNewEnabledFor('public')).toBe(true);
-    expect(whatsNewEnabledFor('preview')).toBe(true);
-    expect(whatsNewEnabledFor('beta')).toBe(true);
-    expect(whatsNewEnabledFor('dev')).toBe(true);
-    expect(FEATURES.whatsNew).toBe(WHATS_NEW_ENABLED);
   });
 });
 

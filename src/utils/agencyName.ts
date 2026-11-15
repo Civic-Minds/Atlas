@@ -229,11 +229,6 @@ function isMixedCaseCode(s: string): boolean {
   return !/[\s,]/.test(s) && (s.match(/[A-Z]/g)?.length ?? 0) >= 2;
 }
 
-/** True when a bracket in a registry name is the agency's common name ("ETS", "The M"), not a place or service ("Mississauga", "Trains") (#1245). */
-export function bracketIsCommonName(bracket: string): boolean {
-  return !isPlaceAbbrev(bracket) && (looksLikeBrandCode(bracket) || isMixedCaseCode(bracket));
-}
-
 /**
  * The agency's name in a card's back link ("← Valley Metro"): shortenedName, except that a bracketed city
  * never stands in for the name ("Valley Metro (Phoenix)" → "Valley Metro", not "Phoenix"). A bracketed brand

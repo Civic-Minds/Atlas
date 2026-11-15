@@ -145,10 +145,12 @@ describe('tile rules fingerprint', () => {
   // CIV-1229 removed the ignored per-feature minzoom; tile output unchanged.
   // CIV-1329 / #1322 adds the nightService90 key, read with the 30/60 flags by the Overnight filter. No version bump, as
   // for #899: older tiles lack the key and evaluate on their 30/60 flags, and older apps ignore it. Hash only.
+  // CIV-1579 adds the tv_<period> keys (the trunk's filter value, shadow: nothing reads them yet). No version bump, as for
+  // #710: older tiles lack the keys and older apps ignore them; rv_ and every other tile value are unchanged. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '949a7eac19013092c1bfddb64aa4fd1cafe2accbbdc79db1d0b1db4f43c85f7d',
+      fingerprint: '5afebd1f62f12073f9667a140bb9c4510ca00f9ad027f4e22c72469264312a7a',
     });
   });
 });

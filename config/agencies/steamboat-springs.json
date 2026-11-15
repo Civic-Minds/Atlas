@@ -1,0 +1,25 @@
+{
+  "slug": "steamboat-springs",
+  "officialName": "Steamboat Springs Transit",
+  "commonName": "SST",
+  "websiteUrl": "https://steamboatsprings.net/166/Transit",
+  "center": [
+    40.4844,
+    -106.8317
+  ],
+  "feedUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
+  "region": "Colorado",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5757/latest.zip",
+  "bbox": [
+    40.4421,
+    -107.596,
+    40.5379,
+    -106.7994
+  ],
+  "cities": [
+    "Hayden, Colorado",
+    "Craig, Colorado"
+  ],
+  "timezone": "America/Denver",
+  "hiddenInProduction": true
+}

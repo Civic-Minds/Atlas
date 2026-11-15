@@ -135,6 +135,28 @@ describe('the week read for each re-pick fixture (no holiday list)', () => {
   });
 });
 
+describe('the archived zip\'s anchor skips token services (CIV-1641)', () => {
+  /** CTA 2022 shape: one- and two-trip Blue Line shuttles in force months before the timetable starts. */
+  function shuttleFeed(): RepickRows {
+    const rows = winterFeed();
+    rows.calendar = [...rows.calendar, cal('BLS-101', [1, 1, 1, 1, 1, 1, 1], '20200801', '20200801'), cal('BLS-102', [1, 1, 1, 1, 1, 1, 1], '20180401', '20180401')];
+    rows.trips = [...rows.trips, { service_id: 'BLS-101', route_id: 'Blue' }, { service_id: 'BLS-102', route_id: 'Blue' }, { service_id: 'BLS-102', route_id: 'Blue' }];
+    return rows;
+  }
+
+  it('the anchor is the timetable\'s first full week, not a shuttle\'s', () => {
+    const rows = shuttleFeed();
+    expect(firstFullWeekAnchor(rows)).toBe('20180903');
+    expect(week(rows, firstFullWeekAnchor(rows)!).week.services.Wednesday).toEqual(['MAIN']);
+  });
+
+  it('a feed split into 150 one-trip services, each under the bar, still gets an anchor from all of them', () => {
+    const ids = Array.from({ length: 150 }, (_, i) => `S${i}`);
+    const rows: RepickRows = { calendar: ids.map((id, i) => cal(id, MF, i === 0 ? '20180905' : '20181001', '20181231')), calendarDates: [], trips: ids.map(service_id => ({ service_id, route_id: 'R1' })) };
+    expect(firstFullWeekAnchor(rows)).toBe('20180910');
+  });
+});
+
 describe('process options', () => {
   it('carry a reference date or an anchor only when one is given', () => {
     const agency = { slug: 'x' } as any;

@@ -99,6 +99,15 @@ export interface RouteProperties {
   routeRunsByPeriod?: Partial<Record<PeriodKey, boolean>>;
   /** Each direction's own filter value. */
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /**
+   * CIV-1579 shadow, nothing reads it yet: routeFilterHeadwayByPeriod read on each direction's main stretch alone (the
+   * trunk), every direction passing; tiles carry it as tv_. Where a trunk is under 5 stops or 1 km (no trunk value),
+   * it is routeFilterHeadwayByPeriod's own value; null only where that is null. Same all-or-none rule. Overnight is the
+   * night value, as in routeFilterHeadwayByPeriod.
+   */
+  routeTrunkHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** CIV-1579 shadow: aligned to this row's stopOrder (never fullStopOrder), "1" where the stop is on the direction's main stretch, empty where off it (shared/stopRuns decodeStopRuns). */
+  trunkStopMask?: string;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
   stretchPeriodOneGap?: Partial<Record<PeriodKey, boolean>>;
   /** The direction's own value per period (pipeline stampStretchShadow): for an uneven period, its longest wait. Display only. */

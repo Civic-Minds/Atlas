@@ -240,11 +240,6 @@ export function areaSubtitleParts(d: Pick<AreaPageData, 'area' | 'regions' | 're
   return (d.regions ?? []).filter(r => r.toLowerCase() !== titlePlace).map(text => ({ text, ...(d.regionPages?.[text] ? { href: d.regionPages[text] } : {}) }));
 }
 
-/** One sentence that stands alone, used as the meta description's opening. */
-export function areaLeadSentence(d: AreaPageData): string {
-  return groupLeadSentence(areaRegionName(d.area), d);
-}
-
 /** The lead sentence for agencies in one place, named as inside a sentence ("the Calgary area", "Colorado"). */
 export function groupLeadSentence(where: string, d: Pick<AgencyGroupData, 'totalRoutes' | 'agencies'>): string {
   return `${countOf(d.totalRoutes, 'weekday route', 'weekday routes')} across ${countOf(d.agencies.length, 'transit agency', 'transit agencies')} in ${where}.`;
@@ -352,7 +347,7 @@ export function resolveAreaSeo(
 
 /** BreadcrumbList and Dataset; the breadcrumb is not shown on the page. */
 export function areaPageJsonLd(d: AreaPageData, canonicalUrl: string, origin: string): object {
-  const crumbs = [{ name: 'Transit Atlas', item: `${origin}/` }, { name: d.area.country, item: `${origin}${agencyIndexHeadingHref(d.area.country)}` }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
+  const crumbs = [{ name: SITE_NAME, item: `${origin}/` }, { name: d.area.country, item: `${origin}${agencyIndexHeadingHref(d.area.country)}` }, { name: areaRegionTitle(d.area), item: canonicalUrl }];
   const modified = formatIso(d.newestRefresh);
   return {
     '@context': 'https://schema.org',

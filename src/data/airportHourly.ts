@@ -20,7 +20,6 @@ export interface AirportHours {
 }
 
 export const AIRPORTS = hourly.airports as AirportHours[];
-export const AIRPORT_DATES = hourly.dates as Record<AirportDay, string>;
 
 const RIDE_INDEX: Record<AirportRide, 0 | 1 | 2> = { downtown: 0, withChange: 1, any: 2 };
 

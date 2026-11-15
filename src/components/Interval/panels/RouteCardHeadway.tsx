@@ -39,6 +39,7 @@ import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT, OVERNIGHT_PART_OF_ROU
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { directionBranchFallback } from '../../../../shared/headsignDisplay';
+import { correctionNoteForRoute } from '../../../../shared/correctionNotices';
 
 function formatMetricMap(
   values: Record<string, number | null | undefined> | null | undefined,
@@ -168,10 +169,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   // An ended timetable (N2) says more, so it wins over the listing end.
   const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? shortDate(routeAgency.listingEndedOn) ?? '' : '';
   const listingEnded = !!routeAgency?.listingEndedOn && listingEndHasPassed(routeAgency.listingEndedOn, agencyTodayYmd(routeAgency));
-  const routeOverrideNote = routeAgency?.overrideNote
+  // N5: the agency's override note when it names this route, else Atlas's own correction note for it (CIV-1639).
+  const routeOverrideNote = (routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
     ? routeAgency.overrideNote
-    : undefined;
+    : undefined)
+    ?? correctionNoteForRoute(routeAgency?.correctionNotices, currentRoute.routeShortName, currentRoute.directions.map(d => d.routeId));
   // The card's rows, built once (CIV-987): every part below reads this model.
   const model = React.useMemo(() => buildRouteCardModel({
     directions: currentRoute.directions,

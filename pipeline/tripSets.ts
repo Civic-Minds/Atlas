@@ -1251,6 +1251,13 @@ export interface DirectionRollup {
      * one side of its midpoint), so the direction has no regular cadence there.
      */
     filterValue: number | null;
+    /**
+     * CIV-1579 shadow: the main stretch's own filter value (stretchFilterValue), gated as filterValue
+     * is (the main stretch counts, runs through the period, not a sparse overnight), and only when the
+     * main stretch is at least SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM long, the
+     * branch minimum (Ryan, 2026-11-15). Nothing reads it yet.
+     */
+    trunkFilterValue: number | null;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
     runs: boolean;
     /** The main stretch has any departure in the period. A direction with none is skipped by the route (a one-way peak route). */
@@ -1488,6 +1495,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       mainValue: main[key].counts ? main[key].value : null,
       mainLow: !main[key].counts ? null : main[key].uneven ? main[key].headway : main[key].value,
       filterValue: null,
+      trunkFilterValue: null,
       typical: null,
       runs: false,
       hasService: false,
@@ -1495,6 +1503,8 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       gap: null,
     };
   }
+  // CIV-1579: a trunk shorter than a branch may be (5 stops, 1 km) has no trunk value.
+  const trunkLongEnough = d.main.stops.length >= SHARED_STRETCH_MIN_STOPS && d.main.lengthKm >= SHARED_STRETCH_MIN_KM;
   // Step 5a: the filter value and whether the direction runs, per period.
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = runsThroughPeriod(d.main.times, start, end, main[key].sustained);
@@ -1512,6 +1522,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
+    period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
     const setter = setterAt?.p;
     period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
@@ -1628,6 +1639,8 @@ export interface RouteRollup {
     value: number | null; coverage: number | null; range: [number, number] | null;
     /** Step 5a filter value: every direction's filterValue, the worst; null when any has none. */
     filterValue: number | null;
+    /** CIV-1579 shadow: every serving direction's trunkFilterValue, the worst; null when any has none. Nothing reads it yet. */
+    trunkFilterValue: number | null;
     /** At least one direction runs through the period ("All" for that period still draws the route). */
     runs: boolean;
   }>;
@@ -1675,11 +1688,13 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
     // stray or part-day trips leaves the route with no value (rule 3).
     const serving = known.filter(d => d.period[key].hasService);
     const filterValues = serving.map(d => d.period[key].filterValue);
+    const trunkValues = serving.map(d => d.period[key].trunkFilterValue);
     period[key] = {
       value,
       coverage: value != null && coverages.every(v => v != null) ? Math.max(...(coverages as number[])) : null,
       range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
+      trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       runs: known.some(d => d.period[key].runs),
     };
   }
@@ -1849,6 +1864,19 @@ export function stampStretchShadow(
     // #1267: Overnight reads the night verdict's value (directionNightValue), as Night Service does.
     p.routeFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].filterValue);
     p.directionFilterHeadwayByPeriod = byPeriod(k => k === 'overnight' ? dir.nightDirectionValue : dir.period[k].filterValue);
+    // CIV-1579 shadow (nothing reads it yet): the route value read on the main stretch alone (the trunk), every
+    // direction passing, the worst deciding. Where the trunk has no value but the route has (a trunk under the branch
+    // minimum), it is the route's own value, so a short-trunk route keeps today's D1 reading and the app can read this
+    // alone. Overnight is unchanged: it reads the night verdict, as above.
+    p.routeTrunkHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].trunkFilterValue ?? route.period[k].filterValue);
+    // CIV-1579: which of the row's stops are on its direction's main stretch (1, else empty), run-length encoded
+    // (encodeStopRuns), so coverage can count a trunk's stops without its branches. Aligned to the row's stopOrder,
+    // never fullStopOrder: the full line lives in the sections file, and coverage reads the route file.
+    const ownStops = p.stopOrder as readonly string[] | undefined;
+    if (stretches.main && Array.isArray(ownStops) && ownStops.length > 0) {
+      const onMain = new Set(stretches.main.stops);
+      p.trunkStopMask = encodeStopRuns(ownStops.map(stop => (onMain.has(stop) ? 1 : null)));
+    } else delete p.trunkStopMask;
     // CIV-321: per drawn stop and period, every trip of the direction running through the stop, along
     // the display-only full line where the row has one (S4), else the row's own stops.
     const stopOrder = (p.fullStopOrder ?? p.stopOrder) as readonly string[] | undefined;
@@ -1911,5 +1939,7 @@ export function stampStretchShadow(
     delete feature.properties.directionFilterHeadwayByPeriod;
     delete feature.properties.routeAllDayHeadway;
     delete feature.properties.routeMiddayCap;
+    delete feature.properties.routeTrunkHeadwayByPeriod;
+    delete feature.properties.trunkStopMask;
   }
 }
