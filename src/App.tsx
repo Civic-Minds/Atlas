@@ -67,6 +67,7 @@ import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/c
 import { splitRouteKey } from './utils/routeKey';
 import { LIVE_VEHICLES_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
+import { LIVE_PATH } from '../shared/pagePaths';
 
 export interface Agency {
   slug: string;
@@ -165,7 +166,7 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
   '/apps/frequency': 'frequency',
   '/apps/history': 'history',
-  '/apps/live': 'live',
+  [LIVE_PATH]: 'live',
   // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
   '/apps/compare': 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
@@ -175,7 +176,7 @@ const PATH_TO_APP: Record<string, AppId> = {
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/',
   history: '/apps/history',
-  live: '/apps/live',
+  live: LIVE_PATH,
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
 };

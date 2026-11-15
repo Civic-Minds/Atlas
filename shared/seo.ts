@@ -8,6 +8,7 @@
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
 import { FREQUENT_SERVICE_TITLE } from './frequentService';
+import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
@@ -41,7 +42,7 @@ export interface SeoRoute {
 }
 
 /** Every research page gets its own static file at build time, so a shared link shows its own preview (CIV-1167). */
-export const RESEARCH_PATH_PREFIX = '/research';
+export const RESEARCH_PATH_PREFIX = RESEARCH_PATH;
 
 const HOME_DESCRIPTION =
   'See how often transit routes actually run. Atlas maps scheduled frequency by agency, day and time of day, using published agency schedules.';
@@ -62,7 +63,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     canonicalPath: '/',
   },
   {
-    path: '/about',
+    path: ABOUT_PATH,
     title: 'About Transit Atlas: frequency maps for planners',
     description:
       'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place. Built by Civic Minds for riders, planners and researchers.',
@@ -71,7 +72,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/about/docs',
+    path: DOCS_PATH,
     title: 'How Transit Atlas works: data, frequency and methods',
     description:
       'How Atlas turns published transit schedules into frequency maps: the data it uses, how frequency is measured, how service is classified and how errors are corrected.',
@@ -80,7 +81,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/privacy',
+    path: PRIVACY_PATH,
     title: 'Privacy policy: Transit Atlas',
     description: 'What Transit Atlas collects, how analytics and location are handled, and how to ask for your information to be removed.',
     indexable: true,
@@ -88,7 +89,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/terms',
+    path: TERMS_PATH,
     title: 'Terms of service: Transit Atlas',
     description: 'The terms for using Transit Atlas, including what its scheduled-service data can and cannot be relied on for.',
     indexable: true,
@@ -111,7 +112,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     canonicalPath: '/',
   },
   {
-    path: '/apps/live',
+    path: LIVE_PATH,
     title: `${LIVE_VEHICLES_TITLE}: Transit Atlas`,
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',
     indexable: false,
@@ -127,7 +128,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     shareImage: { path: '/assets/research/share/night.png', alt: 'Overnight service' },
   },
   {
-    path: '/research',
+    path: RESEARCH_PATH,
     title: 'Research: Transit Atlas',
     description: 'Research tools that show the service patterns the everyday frequency map cannot show on its own.',
     indexable: false,
@@ -166,7 +167,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     shareImage: { path: '/assets/research/share/frequent-light.png', alt: FREQUENT_SERVICE_TITLE },
   },
   {
-    path: '/changelog',
+    path: CHANGELOG_PATH,
     title: 'Changelog: Transit Atlas',
     description: 'Every Atlas version and map data update, newest first.',
     indexable: false,

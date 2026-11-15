@@ -1,5 +1,6 @@
 import { headwayTierLabel } from './headwayText';
 import { hourRange, hourTime } from './timeText';
+import { RESEARCH_PATH } from './pagePaths';
 /**
  * Shared configuration constants
  */
@@ -213,7 +214,7 @@ export function seoFlags() {
 }
 
 export const FEATURE_ROUTES = {
-  research: '/research',
+  research: RESEARCH_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

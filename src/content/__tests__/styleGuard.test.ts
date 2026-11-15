@@ -136,6 +136,11 @@ const RULES: Rule[] = [
     pattern: /['"`>](View on map|See all agencies|What’s new|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
     slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts'] },
 
+  // CIV-1615: each fixed page's path is one constant in shared/pagePaths.ts, read by its route, prerender, SEO entry and links.
+  { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',
+    pattern: /['"`](\/about|\/about\/docs|\/agencies|\/changelog|\/terms|\/privacy|\/apps\/live|\/research)['"`]/, slip: '<a href="/about/docs">',
+    allowed: ['shared/pagePaths.ts'] },
+
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },

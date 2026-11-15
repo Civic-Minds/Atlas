@@ -6,6 +6,7 @@ import PanelHeader from './ui/PanelHeader';
 import { WhatsNewItemText } from './WhatsNewItemText';
 import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE } from '../content/noticeCopy';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
+import { CHANGELOG_PATH } from '../../shared/pagePaths';
 
 /** "Released Nov 9, 2026" from the release's own date; nothing when the date is unusable. */
 function releasedLabel(release: WhatsNewRelease): string | null {
@@ -57,7 +58,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
               </ul>
             </section>
           ))}
-          <a href="/changelog" className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
+          <a href={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
         </div>
       </Panel>
     </div>
