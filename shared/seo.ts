@@ -163,6 +163,8 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     path: FREE_CHILD_FARES_STORY.path,
     title: FREE_CHILD_FARES_STORY.tabTitle,
     description: FREE_CHILD_FARES_STORY.description,
+    // Ryan's yes (CIV-1629 follow-up, 2026-11-15): its card picture, rendered from free-child-fares-light.svg with Inter.
+    shareImage: { path: '/assets/research/share/free-child-fares.png', alt: FREE_CHILD_FARES_STORY.shareImageAlt! },
     indexable: false,
     gate: 'researchApps',
     prerender: true,

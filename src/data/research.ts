@@ -15,7 +15,7 @@ export interface ResearchEntry {
   published: string;
   /**
    * Its share picture, as `${picture}-light.${pictureExt}` and `${picture}-dark.${pictureExt}` (CIV-1167): the About page's story tiles
-   * show it (CIV-1206). Overnight is Ryan's pick 1 and Frequent his pick B4; Free child fares is a stand-in until he picks its own.
+   * show it (CIV-1206). Overnight is Ryan's pick 1 and Frequent his pick B4; Free child fares uses its own chart picture, also its link preview (Ryan, 2026-11-15).
    */
   picture: string;
   /** The picture's file type: 'svg' unless it is a photo ('png'). */

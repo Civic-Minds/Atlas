@@ -80,6 +80,7 @@ export const FREE_CHILD_FARES_STORY: ResearchStoryText = {
   ],
   tabTitle: tabTitle(titleCase(FREE_CHILD_FARES_TITLE)),
   description: 'See up to what age children ride free at 697 transit agencies.',
+  shareImageAlt: FREE_CHILD_FARES_TITLE,
 };
 
 /** A draft (dev server only, CIV-1550): its page and card read this too; no tab or preview until it's published. */

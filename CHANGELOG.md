@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Shared Free child fares links show their own picture**: the page's age chart instead of the site's map
 - **The Frequent Service story reads more plainly**: the method paragraph lists every kind of official source used, the Toronto line gives the TTC's Sunday start and says the map uses a broader test, the chart says most agencies pick 15 minutes and names each bar by its count, the opening maps change about once a second, the map steps say "part-time", and the step text no longer covers the map on narrow screens
 - **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
 - **Every page has one name, and titles are in title case**: "Documentation" and "What’s New" read the same on every link, heading and browser tab; page and section headings and tabs use title case; tabs share one "Page | Transit Atlas" format; link previews say "Transit Atlas"; and the map’s What’s New button shows a dot until the newest release is opened
