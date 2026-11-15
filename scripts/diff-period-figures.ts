@@ -14,6 +14,10 @@
  * Compared, for every day type, direction and period: the route's filter figure, the direction's
  * filter figure (a figure going from none to a value, or the reverse, is a change), the row's steady
  * flag and its longest gap. A summary written before the last two were added compares the figures only. Card edges ("every 4 from 7:28", CIV-1411) and each stretch's own edge are compared as text.
+ * Section colours' per-stop values (stretchStopPeriodValues, kept in <slug>-sections.json beside the
+ * route file) are summarized as encoded, with the stop order they run along, and compared stop by stop
+ * (CIV-1606): per agency and period, how many stops' values went up (a longer wait) or down, then one
+ * line per changed stop. A summary written before they were added skips this comparison.
  * The report starts with a summary (routes changed per agency, how many route figures got shorter or
  * longer, how many crossed 15 minutes or another tier boundary), then one line per change, by agency
  * and then by the size of the change.
@@ -25,13 +29,17 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { applyAgencySections, type AgencySections } from '../shared/agencySections.js';
 import { HEADWAY_TIERS, PERIOD_KEYS } from '../shared/config.js';
+import { decodeStopRuns } from '../shared/stopRuns.js';
 
 type Figures = Record<string, number | null | undefined>;
 type Flags = Record<string, boolean | null | undefined>;
 type Texts = Record<string, string | null | undefined>;
 /** One drawn row: the route's and the direction's filter value per period (what the map and its filter read), and the row's own steady flag and longest gap (what its card reads). */
-export type Row = { route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts };
+export type Row = { route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts;
+  /** The section colours' value per stop and period, run-length encoded as the pipeline writes it, and the stops it runs along. */
+  stopValues?: Texts; stopOrder?: string[] };
 export type Summary = Record<string, Record<string, Row>>;
 
 export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<string, unknown> | null }>): Record<string, Row> {
@@ -53,6 +61,8 @@ export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<
       longestGap: (p.maxGapByPeriod ?? {}) as Figures,
       edge: edgeTexts(p.stretchPeriodEdge as EdgeMap | undefined),
       stretchEdges: stretchEdgeTexts(p.stretchMeta as StretchMeta | undefined),
+      stopValues: (p.stretchStopPeriodValues ?? {}) as Texts,
+      ...(p.stretchStopPeriodValues ? { stopOrder: ((p.fullStopOrder ?? p.stopOrder ?? []) as unknown[]).map(String) } : {}),
     };
   }
   return rows;
@@ -83,7 +93,11 @@ function summarize(dir: string): Summary {
   for (const slug of readdirSync(dir).sort()) {
     const path = resolve(dir, slug, `${slug}.json`);
     if (!existsSync(path)) continue;
-    out[slug] = summarizeFeatures((JSON.parse(readFileSync(path, 'utf8')) as { features?: Array<{ properties?: Record<string, unknown> }> }).features ?? []);
+    const features = (JSON.parse(readFileSync(path, 'utf8')) as { features?: Array<{ properties?: Record<string, unknown> }> }).features ?? [];
+    // The section colours' fields live in the sections file; put them back on their features first.
+    const sectionsPath = resolve(dir, slug, `${slug}-sections.json`);
+    const sections = existsSync(sectionsPath) ? JSON.parse(readFileSync(sectionsPath, 'utf8')) as AgencySections : null;
+    out[slug] = summarizeFeatures(applyAgencySections(features, sections));
   }
   return out;
 }
@@ -92,23 +106,55 @@ const TIER_MAXES = HEADWAY_TIERS.map(t => t.max).filter(Number.isFinite);
 const tierOf = (v: number) => TIER_MAXES.filter(max => v > max).length;
 
 type What = 'route figure' | 'direction figure' | 'steady' | 'longest gap' | 'card edge' | 'stretch edges';
+/** One stop whose section-colour value changed in one period. */
+export type StopChange = { slug: string; route: string; day: string; direction: string; period: string; stopId: string; before: number | null; after: number | null };
+
+/** The stops whose value differs between two rows, matched by stop id (the n-th visit of a stop to its n-th visit). */
+export function diffStopValues(slug: string, b: Row, a: Row): StopChange[] {
+  const out: StopChange[] = [];
+  const bv = b.stopValues ?? {};
+  const av = a.stopValues ?? {};
+  const visits = (order: readonly string[] | undefined) => {
+    const seen = new Map<string, number>();
+    return (order ?? []).map(id => { const n = (seen.get(id) ?? 0) + 1; seen.set(id, n); return n > 1 ? `${id}#${n}` : id; });
+  };
+  const bKeys = visits(b.stopOrder);
+  const aKeys = visits(a.stopOrder);
+  for (const period of [...new Set([...PERIOD_KEYS, ...Object.keys(bv), ...Object.keys(av)])].filter(k => (bv[k] ?? null) !== (av[k] ?? null))) {
+    const bDecoded = decodeStopRuns(bv[period]);
+    const bVals = new Map(bKeys.map((k, i) => [k, bDecoded[i] ?? null] as const));
+    const aDecoded = decodeStopRuns(av[period]);
+    const aVals = new Map(aKeys.map((k, i) => [k, aDecoded[i] ?? null] as const));
+    for (const key of [...new Set([...aKeys, ...bKeys])]) {
+      const from = bVals.get(key) ?? null;
+      const to = aVals.get(key) ?? null;
+      if (from !== to) out.push({ slug, route: a.route, day: a.day, direction: a.direction, period, stopId: key, before: from, after: to });
+    }
+  }
+  return out;
+}
+
 export type Change = { slug: string; route: string; day: string; direction: string; period: string; what: What; before: number | boolean | string | null; after: number | boolean | string | null };
 
 /** Largest first: a figure gained or lost, then by minutes changed; a flag change last. */
 const size = (c: Change) => (typeof c.before !== 'number' && c.before != null) || (typeof c.after !== 'number' && c.after != null) ? 0
   : (c.before == null || c.after == null ? Infinity : Math.abs((c.after as number) - (c.before as number)));
 
-export function diffSummaries(before: Summary, after: Summary): { report: string; changes: Change[] } {
+export function diffSummaries(before: Summary, after: Summary): { report: string; changes: Change[]; stopChanges: StopChange[] } {
   const slugs = Object.keys(after).filter(slug => before[slug]).sort();
   const oneSide = [...new Set([...Object.keys(before), ...Object.keys(after)])].filter(slug => !before[slug] || !after[slug]).sort();
   const changes: Change[] = [];
   let unmatchedRows = 0;
   let figuresOnly = false;
+  let noStopValues = false;
+  const stopChanges: StopChange[] = [];
   for (const slug of slugs) {
     const seenRoute = new Set<string>();
     for (const [key, a] of Object.entries(after[slug])) {
       const b = before[slug][key];
       if (!b) { unmatchedRows++; continue; }
+      if (b.stopValues === undefined || a.stopValues === undefined) noStopValues = true;
+      else stopChanges.push(...diffStopValues(slug, b, a));
       const sides: Array<[What, Figures | Flags | Texts | undefined, Figures | Flags | Texts | undefined]> = [
         ['route figure', b.routeFigure, a.routeFigure], ['direction figure', b.directionFigure, a.directionFigure],
         ['steady', b.steady, a.steady], ['longest gap', b.longestGap, a.longestGap],
@@ -159,11 +205,37 @@ export function diffSummaries(before: Summary, after: Summary): { report: string
     `Routes changed per agency (${perAgency.size} agencies):`,
     ...[...perAgency].sort((x, y) => y[1].size - x[1].size || x[0].localeCompare(y[0])).map(([slug, routes]) => `- ${slug}: ${routes.size}`),
     '',
+    'Section colours, per stop (a stop that goes up waits longer):',
+    ...(noStopValues ? ['- One side has no per-stop values (an older summary): not compared.'] : []),
+    `- ${stopChanges.length} stop values changed: ${stopChanges.filter(c => c.before != null && c.after != null && c.after > c.before).length} up, ${stopChanges.filter(c => c.before != null && c.after != null && c.after < c.before).length} down, ${stopChanges.filter(c => c.before == null).length} from none to a value, ${stopChanges.filter(c => c.after == null).length} from a value to none.`,
+    ...stopCounts(stopChanges),
+    '',
     '| Agency | Route | Day | Direction | Period | What | Before | After |',
     '|---|---|---|---|---|---|---|---|',
     ...changes.map(c => `| ${c.slug} | ${c.route} | ${c.day} | ${c.direction} | ${c.period} | ${c.what} | ${show(c.before)} | ${show(c.after)} |`),
+    ...(stopChanges.length > 0 ? [
+      '',
+      '| Agency | Route | Day | Direction | Period | Stop | Before | After |',
+      '|---|---|---|---|---|---|---|---|',
+      ...stopChanges.map(c => `| ${c.slug} | ${c.route} | ${c.day} | ${c.direction} | ${c.period} | ${c.stopId} | ${show(c.before)} | ${show(c.after)} |`),
+    ] : []),
   ].join('\n');
-  return { report, changes };
+  return { report, changes, stopChanges };
+}
+
+/** Per agency and period: stops up, down, gained and lost. */
+function stopCounts(stopChanges: StopChange[]): string[] {
+  const counts = new Map<string, { up: number; down: number; gained: number; lost: number }>();
+  for (const c of stopChanges) {
+    const key = `${c.slug} ${c.period}`;
+    const n = counts.get(key) ?? { up: 0, down: 0, gained: 0, lost: 0 };
+    if (c.before == null) n.gained++;
+    else if (c.after == null) n.lost++;
+    else if (c.after > c.before) n.up++;
+    else n.down++;
+    counts.set(key, n);
+  }
+  return [...counts].sort((x, y) => x[0].localeCompare(y[0])).map(([key, n]) => `  - ${key}: ${n.up} up, ${n.down} down, ${n.gained} from none, ${n.lost} to none`);
 }
 
 function main(): void {

@@ -70,4 +70,21 @@ describe('diff-period-figures', () => {
     const { changes } = diffSummaries(side('a', [row('5', 'Weekday')]), side('a', [row('5', 'Weekday', { edge: { amPeak: 'every 4 from 7:28 (main)' } })]));
     expect(changes.map(c => [c.what, c.before, c.after])).toEqual([['card edge', null, 'every 4 from 7:28 (main)']]);
   });
+
+  it('summarizes and compares the section colours stop by stop, and skips an older summary (CIV-1606)', () => {
+    const rows = summarizeFeatures([{ properties: { routeId: 'r1', routeShortName: '5', day: 'Weekday', directionId: 1, headsign: 'West', stopOrder: ['a', 'b'], fullStopOrder: ['a', 'b', 'c', 'a'], stretchStopPeriodValues: { amPeak: '10*2,30*2' } } }]);
+    expect(rows['r1 | Weekday | 1 | West']).toMatchObject({ stopValues: { amPeak: '10*2,30*2' }, stopOrder: ['a', 'b', 'c', 'a'] });
+    const stops = { stopOrder: ['a', 'b', 'c', 'a'] };
+    const before = side('a', [row('5', 'Weekday', { ...stops, stopValues: { amPeak: '10*2,30*2', midday: '15*4' } })]);
+    const after = side('a', [row('5', 'Weekday', { ...stops, stopValues: { amPeak: '10*3,8', midday: '15*4' } })]);
+    const { stopChanges, report } = diffSummaries(before, after);
+    expect(stopChanges.map(c => [c.period, c.stopId, c.before, c.after])).toEqual([['amPeak', 'c', 30, 10], ['amPeak', 'a#2', 30, 8]]);
+    expect(report).toContain('- 2 stop values changed: 0 up, 2 down, 0 from none to a value, 0 from a value to none.');
+    expect(report).toContain('  - a amPeak: 0 up, 2 down, 0 from none, 0 to none');
+    expect(report).toContain('| a | 5 | Weekday | 0 to Downtown | amPeak | c | 30 | 10 |');
+    const old = side('a', [{ route: '5', day: 'Weekday', direction: '0 to Downtown', routeFigure: {}, directionFigure: {} }]);
+    const older = diffSummaries(old, after);
+    expect(older.stopChanges).toEqual([]);
+    expect(older.report).toContain('One side has no per-stop values (an older summary): not compared.');
+  });
 });
