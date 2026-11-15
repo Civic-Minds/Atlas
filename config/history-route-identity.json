@@ -8,5 +8,6 @@
   "nyct-bus-manhattan": ["M9"],
   "nyct-bus-bronx": ["Bx24"],
   "nyct-bus-queens": ["Q48"],
-  "mta-bus-company": ["Q101", "Q110", "Q112", "Q7"]
+  "mta-bus-company": ["Q101", "Q110", "Q112", "Q7"],
+  "ttc": ["107", "108", "117", "145", "185", "191", "310", "5", "6"]
 }
