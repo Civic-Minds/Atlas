@@ -215,8 +215,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15);
-              are placeholders until Ryan approves wording. */}
+          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15). */}
           <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
               <h2 id="definitions-heading" className={STORY_HEADING}>Most agencies don’t publish a number.</h2>

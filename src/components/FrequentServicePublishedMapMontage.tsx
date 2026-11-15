@@ -73,7 +73,8 @@ export default function FrequentServicePublishedMapMontage() {
         </div>
       </div>
       <figcaption className="px-4 py-3 text-xs text-[var(--text-muted)] sm:px-6">
-        System maps from 12 agencies in Canada and the United States, each as the agency publishes it.
+        {/* The count is the frames shown, so it can't drift from the list above. */}
+        System maps from {publishedMapFrames.length} agencies in Canada and the United States, each as the agency publishes it.
       </figcaption>
     </figure>
   );
