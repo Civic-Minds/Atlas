@@ -23,7 +23,8 @@ import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
-import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, OPEN_MAP_LINK, VIEW_ON_MAP } from './content/noticeCopy';
+import { agencyArticle } from '../shared/agencyArticle';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AreaPageData | null {
@@ -54,7 +55,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
     );
   }
 
@@ -69,11 +70,11 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <PageTitle>{areaPageH1(data)}</PageTitle>
               {subtitle && <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>}
             </div>
-            <ArrowLink className="shrink-0 whitespace-nowrap" href={areaMapHref(data)}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={areaMapHref(data)}>{VIEW_ON_MAP}</ArrowLink>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(areaIntroName(data, a))}<a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
           </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}

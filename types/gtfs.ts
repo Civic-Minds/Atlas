@@ -150,6 +150,8 @@ export interface GtfsFeedInfo {
 export interface GtfsData {
     /** Routes whose direction_id was synthesized from shapes/headsigns (no direction_id in the feed). */
     synthesizedDirectionRouteIds?: Set<string>;
+    /** Routes with no direction_id in the feed whose directions were read from stop order (CIV-1500); treated as the feed's. */
+    inferredDirectionRouteIds?: Set<string>;
     agencies: GtfsAgency[];
     routes: GtfsRoute[];
     trips: GtfsTrip[];

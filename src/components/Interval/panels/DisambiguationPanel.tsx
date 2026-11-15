@@ -1,10 +1,11 @@
+import { BACK_PLACES } from '../../../content/backLinks';
 import React from 'react';
 import Panel, { PanelBody } from '../../ui/Panel';
 import AgencyGroupHeader from '../../ui/AgencyGroupHeader';
 import AgencyName from '../../ui/AgencyName';
 import { CardBackLink } from '../../CardBack';
 import RouteListRow from '../../RouteListRow';
-import { CardReportButton } from '../cardUi';
+import { CardReportButton, REPORT_REASON } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
 import type { RouteLabel } from '../../../utils/routeFacts';
 
@@ -55,12 +56,12 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
       {/* Nothing comes before the chooser, so its back link closes it (CIV-929). The report flag sits on the
           same line (CIV-932); its negative margin keeps the line its old height. */}
       <div className="shrink-0 px-4 pt-4 flex items-start justify-between gap-2">
-        <CardBackLink onClick={() => setDisambiguationRoutes(null)}>Map</CardBackLink>
+        <CardBackLink onClick={() => setDisambiguationRoutes(null)}>{BACK_PLACES.map}</CardBackLink>
         <div className="-my-1">
           <CardReportButton
             title="Route chooser"
             details={chooserReportDetails(disambigDetails)}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </div>

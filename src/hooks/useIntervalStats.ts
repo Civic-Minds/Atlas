@@ -69,10 +69,8 @@ export interface HoveredBranch {
 export type { PeriodKey };
 export type TimePeriod = 'all' | PeriodKey;
 
-export const PERIOD_LABELS: Record<TimePeriod, string> = {
-  all: 'All day',
-  ...PERIOD_LABELS_BY_KEY,
-};
+// No label for 'all': the map has no All day option (CIV-1097, CIV-1451); 'all' is only the internal default.
+export const PERIOD_LABELS: Record<PeriodKey, string> = PERIOD_LABELS_BY_KEY;
 
 export { PERIOD_KEYS, TIME_PERIODS };
 
@@ -251,13 +249,6 @@ export function featureBbox(f: GeoJSON.Feature): [number, number, number, number
 export function inViewport(f: GeoJSON.Feature, b: ViewportBounds): boolean {
   const [minLon, minLat, maxLon, maxLat] = featureBbox(f);
   return maxLon >= b.w && minLon <= b.e && maxLat >= b.s && minLat <= b.n;
-}
-
-function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const latMid = (lat1 + lat2) * Math.PI / 360;
-  const dy = (lat2 - lat1) * 111320;
-  const dx = (lon2 - lon1) * 40075000 * Math.cos(latMid) / 360;
-  return Math.sqrt(dx * dx + dy * dy);
 }
 
 export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters) {

@@ -164,11 +164,11 @@
       "reviewedAt": "2026-09-16",
       "sources": [
         {
-          "url": "https://wwww.septa.org/maps/",
+          "url": "https://www.septa.org/maps/",
           "type": "system_map"
         },
         {
-          "url": "https://wwww.septa.org/initiatives/bus/maps-signs/",
+          "url": "https://www.septa.org/initiatives/bus/maps-signs/",
           "type": "frequent_network_page"
         }
       ],

@@ -57,6 +57,9 @@ export interface RouteStylingInput {
   colorMode: ColorVisionMode;
   colorVisionFriendly: boolean;
   onDemandFocus: OnDemandFocusTarget | null;
+  /** Several routes shown as one selection (the connections bar, CIV-1353): each keeps its frequency colour and the
+   * rest fade exactly as for a selected route. Takes the selected route's place while set. */
+  focusRoutes?: string[] | null;
 }
 
 /**
@@ -110,7 +113,7 @@ export function useRouteStyling(
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
   }: RouteStylingInput,
 ) {
   // Update Vector Tile Styling & Filters dynamically on parameters change
@@ -209,7 +212,12 @@ export function useRouteStyling(
     if (map.getLayer('selected-route-layer')) map.setFilter('selected-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-local-route-layer')) map.setFilter('selected-local-route-layer', selectedRouteFilter as any);
     if (map.getLayer('selected-route-segments-layer')) {
-      map.setFilter('selected-route-segments-layer', (selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], '']) as any);
+      // #1504: the selected route's section pieces obey the map's filters like its line does (selectedRouteFilter). The
+      // pieces carry none of the tile fields routeFilter reads, so its frequency, day and limited-service clauses are
+      // applied where the pieces are cut, from the map-filtered lines (sectionColourFeatures); Live's allowlist is
+      // added here.
+      const selectedPieces = selectedRoute ? routeKeyMatchExpression(selectedRoute) : ['==', ['get', 'routeId'], ''];
+      map.setFilter('selected-route-segments-layer', (liveRoutesOnly ? concatFilters(selectedPieces, liveRoutesFilter()) : selectedPieces) as any);
     }
     if (map.getLayer('route-segments-layer')) {
       // With a route selected the other lines' pieces step back like their base lines do.
@@ -332,6 +340,11 @@ export function useRouteStyling(
           map.setPaintProperty('history-routes-layer', 'line-opacity', 1);
           map.setPaintProperty('history-routes-layer', 'line-width', ROUTE_LINE_WIDTH_BY_ZOOM as any);
         }
+      } else if (focusRoutes?.length) {
+        // The selected route's own fade (below), for the set of routes at once.
+        const routeMatch: any = ['any', ...focusRoutes.map(key => routeKeyMatchExpression(key))];
+        setRouteLayerPaint(map, 'line-opacity', buildFocusedRouteLineOpacityExpression(routeMatch, headwayExpr, colorMode) as any);
+        setRouteLayerPaint(map, 'line-width', focusedRouteWidth(routeMatch) as any);
       } else if (selectedRoute) {
         const selKey = selectedRoute;
         const routeMatch: any = routeKeyMatchExpression(selKey);
@@ -417,8 +430,8 @@ export function useRouteStyling(
         // the real qualifying stretch on top, so the full-length base line reads as background
         // context, not a (wrong) claim that the whole route runs at that frequency. Scoped to
         // this default state only: a selected/hovered/stop-focused route already gets its own
-        // full-geometry-at-full-opacity treatment above by design (selecting a route bypasses
-        // the frequency filter entirely), so this doesn't need to layer on top of those too.
+        // full-geometry-at-full-opacity treatment above by design (a selected route is drawn only
+        // when it passes the map's filters, #1504), so this doesn't need to layer on top of those too.
         if (frequencySegmentOverlay.partialMatches.length > 0) {
           const partialMatch = buildPartialMatchFilterExpression(frequencySegmentOverlay.partialMatches);
           if (hasRoutes) {
@@ -505,7 +518,7 @@ export function useRouteStyling(
       }
     }
 
-  }, [mapLoaded, q, selectedRoute, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
+  }, [mapLoaded, q, selectedRoute, focusRoutes, hoveredSearchRoute, hoveredBranch, selectedStop, routesForStop, maxHeadway, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies, agencyFilterSlugs, agencies, tileFilter, nightServiceView, frequentServiceView, historyOverlay, layers, frequencySegmentOverlay, colorMode, onDemandFocus]);
 
   // Force-reset route paint when selection clears (guards against stuck highlight state).
   useEffect(() => {

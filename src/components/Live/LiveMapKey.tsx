@@ -2,13 +2,14 @@ import MapKey from '../ui/MapKey';
 import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
 import { MAP_STEP_LIMITS, measureLabel, type MapMeasure } from './routeMapModel';
 import { STEP_LABELS, stepColor, type Step } from './routeStripModel';
-import { pct } from './sections/figures';
+import { NOT_MEASURED_LABEL } from '../../../shared/liveWording';
+import { percentText } from '../../../shared/numberText';
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
 function stepLabels(measure: MapMeasure): [string, string, string] {
   if (measure === 'bunching') return [...STEP_LABELS.bunching] as [string, string, string];
   const [a, b] = MAP_STEP_LIMITS[measure];
-  if (measure === 'late') return [`Under ${pct(a)}`, `${pct(a)}–${pct(b)}`, `${pct(b)} or more`];
+  if (measure === 'late') return [`Under ${percentText(a)}`, `${percentText(a)}–${percentText(b)}`, `${percentText(b)} or more`];
   const m = (x: number) => `${x} min`;
   return [`Under ${m(a)}`, `${a}–${m(b)}`, `${m(b)} or more`];
 }
@@ -23,7 +24,7 @@ const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min la
  * The Live map's key, as a row of pills (the regular map's legend pills): the measure's definition, then its three colour
  * steps. Shared by the Live map and the "Stops most often late" map (CIV-1405); the caller places it.
  */
-export default function LiveMapKey({ measure, notMeasured = true }: { measure: MapMeasure; /** Whether the key lists "Not measured" (a map whose every mark is measured leaves it out). */ notMeasured?: boolean }) {
+export default function LiveMapKey({ measure, notMeasured = true }: { measure: MapMeasure; /** Whether the key lists NOT_MEASURED_LABEL (a map whose every mark is measured leaves it out). */ notMeasured?: boolean }) {
   const labels = stepLabels(measure);
   return (
     // On a phone the pills wrap inside the map's width; each label keeps its words on one line (#1151).
@@ -33,7 +34,7 @@ export default function LiveMapKey({ measure, notMeasured = true }: { measure: M
         <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
         <MapKey steps={[
           ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
-          ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>Not measured</span> }] : []),
+          ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
         ]} />
       </div>
     </div>

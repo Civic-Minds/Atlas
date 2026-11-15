@@ -33,7 +33,7 @@ export function FloatingMapCard({ at, padding, children }: { at: MapCardAt; padd
   const cardRef = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => { const h = cardRef.current?.offsetHeight ?? 0; if (h !== cardH) setCardH(h); });
   return (
-    <div ref={cardRef} className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)] shadow-2xl"
+    <div ref={cardRef} className="absolute z-20 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-header)]"
       style={{ left: Math.max(8, Math.min(at.w - 260 - 8, at.x - 130)), top: cardTop(at.y, cardH, at.h, padding?.top ?? 8, padding?.bottom ?? 8), width: 260 }}>
       {children}
     </div>
@@ -42,5 +42,5 @@ export function FloatingMapCard({ at, padding, children }: { at: MapCardAt; padd
 
 /** The name shown beside the pointer over a stop or segment. */
 export function MapHoverTip({ x, y, text }: { x: number; y: number; text: string }) {
-  return <div className="pointer-events-none absolute z-20 whitespace-nowrap rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 text-xs font-bold shadow-sm" style={{ left: x + 12, top: y + 12 }}>{text}</div>;
+  return <div className="pointer-events-none absolute z-20 whitespace-nowrap rounded-md border border-[var(--border-primary)] bg-[var(--bg-header)] px-2 py-1 text-xs font-bold" style={{ left: x + 12, top: y + 12 }}>{text}</div>;
 }

@@ -5,6 +5,7 @@ import { hourTime as clock } from '../../../shared/timeText';
 import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
 import { runTimeAmount } from '../../utils/headwayText';
+import { countText } from '../../../shared/numberText';
 
 export interface RunTimeHour {
   /** Hour of day the trips start, 0-23. */
@@ -111,7 +112,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
     <figure className="m-0">
       <div ref={ref} role="img" aria-label={ariaLabel} aria-describedby={tableId} tabIndex={0} className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]">
         <div className="h-5 truncate text-xs text-[var(--text-secondary)]" aria-hidden="true">
-          {hover != null && (() => { const p = pts.find(q => q.i === hover); return p ? <><span className="font-bold">{clock(p.hour)}</span> scheduled {runTimeAmount(p.scheduledMin)}, usually {Math.round(p.typicalMin)}, 1 in 10 over {Math.round(p.p90Min)} ({p.n.toLocaleString()} trips{p.n < minN ? ', too few to rely on' : ''})</> : null; })()}
+          {hover != null && (() => { const p = pts.find(q => q.i === hover); return p ? <><span className="font-bold">{clock(p.hour)}</span> scheduled {runTimeAmount(p.scheduledMin)}, usually {Math.round(p.typicalMin)}, 1 in 10 over {Math.round(p.p90Min)} ({countText(p.n)} trips{p.n < minN ? ', too few to rely on' : ''})</> : null; })()}
         </div>
         {width > 0 && pts.length > 0 && (
           <svg onPointerLeave={() => setHover(null)} width={width} height={H} aria-hidden="true" className="block overflow-visible">
@@ -157,7 +158,7 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
               { key: 'sched', header: 'Scheduled', cell: p => runTimeAmount(p.scheduledMin) },
               { key: 'usual', header: 'Usually', cell: p => runTimeAmount(p.typicalMin) },
               { key: 'p90', header: '1 in 10 over', cell: p => runTimeAmount(p.p90Min) },
-              { key: 'n', header: 'Trips', cell: p => p.n.toLocaleString() },
+              { key: 'n', header: 'Trips', cell: p => countText(p.n) },
             ]}
           />
       </div>

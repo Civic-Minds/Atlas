@@ -5,6 +5,7 @@
  * scripts/build-agency-page-summaries.ts); nothing here measures anything new.
  */
 import { agencyTodayYmd, isExpiredFeedExpiry } from './feedAvailability';
+import { shortDate } from './dateText';
 import { headwayEvery, headwayEveryRange, headwayOrBetter } from './headwayText';
 import { modeLabel, sortModes } from './modes';
 import { compareAgencyName, compareNullableAscending } from './sortCompare';
@@ -16,12 +17,14 @@ import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtW
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { AGENCY_PATH_PREFIX, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
+import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
 import { zoomForSpan } from './mapZoom';
-import { haversineM } from './shapeProjection';
-import { andOthers, joinList, plural } from './overflowText';
+import { andOthers, joinList, plural, countOf } from './overflowText';
 import { agencyNames } from '../src/utils/agencyName';
 import { splitRegistryName } from './agencyRegistryName';
+import { countText } from './numberText';
+import { metresBetween } from './geoDistance';
 
 export { headwayEvery };
 const MAX_NEARBY = 8;
@@ -265,10 +268,10 @@ export function agencyIntroSentence(
   parentName?: string,
 ): string {
   const n = a.routes.length;
-  if (n === 0) return `${title} has no weekday routes in the data.`;
+  if (n === 0) return `${agencySentenceStart(title)} has no weekday routes in the data.`;
   let s = `${introLead(a, place, modes, title, parentName)}${place}`;
-  if (a.stops) s += ` with ${a.stops.toLocaleString('en-US')} ${plural(a.stops, 'stop')}`;
-  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => c.name))}`;
+  if (a.stops) s += ` with ${countText(a.stops)} ${plural(a.stops, 'stop')}`;
+  if (connections.length) s += `${CONNECTS_WITH}${namesList(connections.map(c => agencyInSentence(c.name)))}`;
   return `${s}.`;
 }
 
@@ -332,7 +335,7 @@ export function introLead(
 ): string {
   const n = a.routes.length;
   // Ryan (2026-11-02): "{Member name}, part of {Parent name}, operates N routes in …".
-  return `${title}${parentName ? `${PART_OF}${parentName},` : ''} operates ${n.toLocaleString('en-US')} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
+  return `${agencySentenceStart(title)}${parentName ? `${PART_OF}${parentName},` : ''} operates ${countText(n)} ${plural(n, 'route')}${modes.length > 1 ? ` (${modesText(modes, ', ')})` : ''} in `;
 }
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
@@ -448,7 +451,7 @@ export const FREQUENCY_BANDS = [
 ] as const;
 export const NO_MIDDAY_PHRASE = 'with no regular midday service';
 /** CIV-1251 (Ryan, 2026-11-01): the bar's last group counts routes with no midday number, which includes routes with no midday trips. */
-export const noMiddayBarSentence = (n: number) => `${n} ${n === 1 ? 'route runs' : 'routes run'} irregularly or not at all at midday`;
+export const noMiddayBarSentence = (n: number) => `${countOf(n, 'route runs', 'routes run')} irregularly or not at all at midday`;
 export const NO_MIDDAY_SHORT = 'Irregular or none';
 
 /**
@@ -599,7 +602,7 @@ export function agencyLeadSentence(a: Pick<AgencyPageSummary, 'routes'>): string
 
 /** The fuller sentence for structured data: the intro plus what the page is. */
 export function agencyDatasetDescription(a: AgencyPageSummary, intro?: string): string {
-  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${a.displayName}, from the published schedule.`;
+  return `${intro ?? agencyLeadSentence(a)} Route-by-route frequency for ${agencyInSentence(a.displayName)}, from the published schedule.`;
 }
 
 /**
@@ -682,10 +685,10 @@ export const listingEndHasPassed = (listingEndedOn: string, todayYmd: string) =>
 export const listingEndedPageLine = (through: string, date: string, ended: boolean) => `This schedule covers service until ${through}, but most of its routes ${ended ? 'ended' : 'end'} ${date}.`;
 
 export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | 'validThrough' | 'listingEndedOn' | 'timezone'>, releaseDate: string | null, todayYmd: string = agencyTodayYmd(a)): string {
-  const published = formatDataDate(a.lastRefreshedAt);
-  const through = formatDataDate(a.validThrough);
-  const release = formatDataDate(releaseDate);
-  const listingEnded = formatDataDate(a.listingEndedOn);
+  const published = shortDate(a.lastRefreshedAt);
+  const through = shortDate(a.validThrough);
+  const release = shortDate(releaseDate);
+  const listingEnded = shortDate(a.listingEndedOn);
   // The map's rule (isAgencyFeedExpired): ended from the day after the last day, in the agency's own date.
   const datesClause = through && isExpiredFeedExpiry(a.validThrough, todayYmd)
     ? `This schedule ended on ${through}; the agency hasn’t published a newer one yet.`
@@ -697,15 +700,6 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : through ? `This schedule covers service until ${through}.`
     : '';
   return ["Based on the agency’s published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
-}
-
-/** "Oct 12, 2026" from an ISO or yyyymmdd date; null when unusable. */
-export function formatDataDate(value: string | null | undefined): string | null {
-  const m = dateParts(value);
-  if (!m) return null;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const month = months[Number(m[2]) - 1];
-  return month ? `${month} ${Number(m[3])}, ${m[1]}` : null;
 }
 
 /** "2026-10-12" from an ISO or yyyymmdd date; null when unusable. */
@@ -731,8 +725,9 @@ export function agencyBreadcrumbs(a: AgencyPageSummary, area?: { slug: string; n
   return crumbs;
 }
 
+/** Centres are [lat, lon]. */
 function distanceKm(a: [number, number], b: [number, number]): number {
-  return haversineM(a[0], a[1], b[0], b[1]) / 1000;
+  return metresBetween({ lat: a[0], lon: a[1] }, { lat: b[0], lon: b[1] }) / 1000;
 }
 
 /** Other agencies with a page in the same region, nearest first. */

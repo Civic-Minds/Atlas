@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadingText } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -19,7 +19,7 @@ import { LIVE_TOOL_URL, currentSearch, linkUpdate, readLink } from './utils/urlS
 import { stretchLabel } from './utils/stopLabel';
 import { agencyKpiTiles } from './utils/liveAgencyKpi';
 import { excludingDays, kpiTiles } from './utils/liveKpi';
-import { excludingText } from '../shared/liveWording';
+import { DIRECTION_LABEL, GROWS_LABEL, LATE_STOPS_TITLE, TIME_OF_DAY_LABEL, excludingText } from '../shared/liveWording';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import RouteMap, { type MapPick } from './components/Live/RouteMap';
@@ -41,7 +41,7 @@ import { worstStopRows } from './components/Live/sections/WorstStopsSection';
 import RunTimeWidget from './components/Live/tool/RunTimeWidget';
 import useNetworkData, { type ReadyRoute } from './components/Live/tool/useNetworkData';
 import { WeekTable } from './LiveDashboardView';
-import { PERIOD_BANDS_ONLY, mins, pct } from './components/Live/sections/figures';
+import { PERIOD_BANDS_ONLY, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { PILL_ROW } from './components/ui/PillGroup';
@@ -50,13 +50,14 @@ import LiveMapKey from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { MAP_BADGE, PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
+import { percentText, countText } from '../shared/numberText';
 
 
 
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delay starts" (the CIV-942 heatmap) is one of the set. */
+/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delays start" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
   return (
@@ -68,11 +69,11 @@ function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
 function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
-  return <PillMenu label="Time of day" value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
+  return <PillMenu label={TIME_OF_DAY_LABEL} value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
 }
 
 /** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
-function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows, and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
+function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -88,7 +89,7 @@ function PillMenu({ label, value, options, onPick, alignRight = false }: { label
         {options.find(([k]) => k === value)?.[1]}<span aria-hidden="true" className="ml-1">▾</span>
       </Pill>
       {open && (
-        <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1 shadow-lg`}>
+        <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1`}>
           {options.map(([k, text, plain]) => (
             <button key={k} type="button" role="menuitemradio" aria-checked={k === value} aria-label={plain} onClick={() => { onPick(k); setOpen(false); }}
               // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
@@ -114,7 +115,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
 /** The lines of a segment's card: only the segment, never its start stop. */
 function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string): string[] {
   const x = data.buildup.find(b => b.directionId === dir)?.stretches.find(t => t.fromStopId === fromStopId && t.toStopId === toStopId);
-  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `Trips where it grows ${pct(x.growShare)} of ${x.n.toLocaleString()}`] : [];
+  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `${GROWS_LABEL} ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
 }
 
 /** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
@@ -166,7 +167,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
     ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
-    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title="Stops most often late" rows={worst} /> }] : []),
+    ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
   ];
 }
 
@@ -256,7 +257,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
   const note = (
     <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2 max-sm:right-0">
-      {showNote && <p className="m-0 rounded-lg bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)] shadow-sm">{ready!.note}</p>}
+      {showNote && <p className="m-0 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)]">{ready!.note}</p>}
       <LiveMapKey measure={measure} />
       {/* The basemap's credit, in the regular map's footer pill. */}
       <div className={`${MAP_BADGE} pointer-events-auto h-8`}><BasemapCredit /></div>
@@ -272,7 +273,7 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   );
   // The direction switch sits in the top bar with the other pills.
   // One pill showing the current direction; a click switches to the other.
-  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label="Direction" onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
+  const direction = ids.length > 1 && dirSlot ? createPortal(<Pill size="segment" selected className={PHONE_TAP_AREA} aria-label={DIRECTION_LABEL} onClick={() => { setDir(ids[(ids.indexOf(shown) + 1) % ids.length]); setPick(null); }}>{v3!.directionLabels[String(shown)]}</Pill>, dirSlot) : null;
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   // The route menu at the right end of the top bar: the panel list's routes in its order, plus All routes; a pick sets route= as a list click does.
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
@@ -350,7 +351,7 @@ export default function LiveToolPage() {
   // CIV-1413 C: a page without figures keeps the top bar's Atlas logo and the "← agency" link every Live page has in all states (CIV-1446).
   const bare = (line: ReactNode, busy = false) => shell(
     <>
-      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} /></header>
+      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} /></header>
       <div className="p-6">
         <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />
         <p className="mt-3 text-sm text-[var(--text-muted)]" aria-busy={busy || undefined}>{line}</p>
@@ -365,7 +366,7 @@ export default function LiveToolPage() {
     <>
       {/* On phones the bar's pills take two rows: 20px between rows and 10px below, so each pill's 44px tap area (PHONE_TAP_AREA) is its own. */}
       <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
-        <AtlasLogo href="/" ariaLabel="Atlas by Civic Minds" showMark={false} />
+        <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agencyName}</button>
         <div ref={setDirSlot} className="contents" />
         <div ref={setDataSlot} className="contents" />

@@ -1,14 +1,16 @@
 import type { Agency } from '../App';
-import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE } from '../content/noticeCopy';
+import { shortDate } from '../../shared/dateText';
+import { DEFAULT_EXPORT_TITLE, ZOOMED_OUT_NOTICE, MAP_KEY_NIGHT } from '../content/noticeCopy';
 import type { DayType } from '../../shared/dayTypes';
-import type { TimePeriod } from '../hooks/useIntervalStats';
+import type { PeriodKey, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_LABELS } from '../hooks/useIntervalStats';
 import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import type { NightServiceFrequency } from '../../shared/nightService';
-import { formatStoredDate } from './format';
+import { withRouteWord } from './format';
 import { agencyNames } from './agencyName';
+import { agencyInSentence } from '../../shared/agencyArticle';
 import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
 
@@ -46,7 +48,7 @@ export type MapExportView = 'frequency' | 'frequent-service' | 'night' | 'other'
 
 export interface MapExportState {
   view: MapExportView;
-  /** View name as the app shows it, e.g. "Transit Frequency". */
+  /** View name as the app shows it, from MAP_EXPORT_TITLES, e.g. "Transit frequency". */
   viewTitle: string;
   colorMode: ColorVisionMode;
   maxHeadway: number;
@@ -76,23 +78,13 @@ export interface RenderedRouteSample {
   color: string | null;
 }
 
-/** "Transit Frequency" -> "Transit frequency". Keeps text sentence case, never all caps. */
-export function sentenceCase(text: string): string {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  return words.map((word, index) => {
-    if (index === 0) return word;
-    // Keep acronyms (e.g. "GO") and mixed-case brands as written.
-    return /[A-Z].*[A-Z]/.test(word) ? word : word.toLowerCase();
-  }).join(' ');
-}
-
 /** Same wording as the frequency chip's options. */
 export function describeHeadwayFilter(maxHeadway: number): string {
   return headwayFilterLabel(maxHeadway);
 }
 
-function periodPhrase(period: TimePeriod): string {
-  // "AM peak" stays, "Midday" -> "midday", "All day" -> "all day".
+function periodPhrase(period: PeriodKey): string {
+  // "AM peak" stays, "Midday" -> "midday".
   return PERIOD_LABELS[period]
     .split(' ')
     .map(word => (/^[AP]M$/.test(word) ? word : word.toLowerCase()))
@@ -131,7 +123,7 @@ function filterLine(state: MapExportState): string | null {
       ].filter(Boolean).join(' · ') || null;
     }
     case 'night':
-      return state.nightServiceFrequency ? `Overnight service ${headwayOrBetter(state.nightServiceFrequency)}` : null;
+      return state.nightServiceFrequency ? `${MAP_KEY_NIGHT} ${headwayOrBetter(state.nightServiceFrequency)}` : null;
     default:
       return null;
   }
@@ -264,7 +256,7 @@ export const MAP_EXPORT_SOURCE_SITE = 'transitatlas.fyi';
 /** "2026-10-09" or "2026-10-09T12:00:00Z" -> "2026-10-09"; null when it is not a real date. */
 function isoDay(value: string | null | undefined): string | null {
   const day = value?.trim().slice(0, 10);
-  if (!day || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !formatStoredDate(day)) return null;
+  if (!day || !/^\d{4}-\d{2}-\d{2}$/.test(day) || !shortDate(day)) return null;
   return day;
 }
 
@@ -291,13 +283,13 @@ export function buildExportSourceLine(samples: RenderedRouteSample[], agencies: 
   const known = inView.filter((agency): agency is Agency => !!agency);
 
   let source = 'Transit schedules';
-  if (!unknownAgency && known.length === 1) source = `Schedules from ${known[0].name}`;
+  if (!unknownAgency && known.length === 1) source = `Schedules from ${agencyInSentence(known[0].name)}`;
   else if (!unknownAgency && known.length > 1) source = `Schedules from ${known.length} agencies`;
 
   const day = isoDay(releaseGeneratedAt);
 
   const parts = [source];
-  if (day) parts.push(`updated ${formatStoredDate(day)}`);
+  if (day) parts.push(`updated ${shortDate(day)}`);
   parts.push(MAP_EXPORT_SOURCE_SITE);
   return parts.join(' · ');
 }
@@ -308,11 +300,11 @@ export function describeMapExport(state: MapExportState, samples: RenderedRouteS
   const drawnColors = samples.map(sample => sample.color).filter((color): color is string => !!color);
   const key = buildExportKey(keyCandidates(state), drawnColors);
 
-  const viewName = sentenceCase(state.viewTitle || DEFAULT_EXPORT_TITLE);
+  const viewName = state.viewTitle || DEFAULT_EXPORT_TITLE;
   // With no clear place, the view name becomes the heading instead of a guessed place.
   const lines: string[] = [];
   const route = state.view === 'frequency' && state.routeLabel
-    ? { label: `Route ${state.routeLabel}`, color: state.routeColor ?? '#71717a' }
+    ? { label: withRouteWord(state.routeLabel), color: state.routeColor ?? '#71717a' }
     : null;
   const filter = filterLine(state);
   if (filter) lines.push(filter);

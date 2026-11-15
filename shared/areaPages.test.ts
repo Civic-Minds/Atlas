@@ -93,7 +93,9 @@ describe('buildAreaPageData', () => {
   });
 
   it('names the dates', () => {
-    expect(areaDatesText(d)).toBe("Based on the agencies’ published schedules, not live arrivals. Newest schedule published Sep 1, 2026. This page was last updated Oct 13, 2026.");
+    expect(areaDatesText(d)).toBe("Based on the agencies’ published schedules, not live arrivals. Newest schedules published Sep 1, 2026. This page was last updated Oct 13, 2026.");
+    // One agency reads like an agency page.
+    expect(areaDatesText({ ...d, agencies: d.agencies.slice(0, 1) })).toBe("Based on the agency’s published schedule, not live arrivals. Newest schedule published Sep 1, 2026. This page was last updated Oct 13, 2026.");
   });
 });
 

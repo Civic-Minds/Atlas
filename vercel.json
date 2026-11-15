@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
   "headers": [
     {
       "source": "/assets/:file([^/]+-[A-Za-z0-9_-]{8}\\.[A-Za-z0-9]+)",
@@ -536,6 +537,14 @@
     {
       "source": "/research/night/",
       "destination": "/research/night/index.html"
+    },
+    {
+      "source": "/research/bustang-connections",
+      "destination": "/research/bustang-connections/index.html"
+    },
+    {
+      "source": "/research/bustang-connections/",
+      "destination": "/research/bustang-connections/index.html"
     },
     {
       "source": "/research/free-child-fares",

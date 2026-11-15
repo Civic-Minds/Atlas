@@ -1,5 +1,5 @@
 /**
- * CIV-1060: every hidden agency's card shows the same one sentence (docs/STYLE.md, "Agencies"), approved word for
+ * CIV-1060: every hidden agency's card shows the same one sentence (docs/style/VISUAL.md, "Agencies"), approved word for
  * word by Ryan (2026-11-13). Changing it needs his OK.
  *
  * An agency config marks the agency with `hiddenReason`, which says (for maintainers) why its data can't be shown;

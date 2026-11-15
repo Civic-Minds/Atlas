@@ -50,7 +50,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **No fixed cut-offs**
   - What: never summarize an agency or area by a fixed threshold such as "every 15 min or better"; show the real waits per period.
   - Why: many agencies have no routes that frequent, so a cut-off hides them.
-  - Source: [STYLE.md](../STYLE.md) (Frequencies), Linear CIV-296, comment of 2026-10-17 ("no fixed frequency cut-off")
+  - Source: [TEXT.md](../style/TEXT.md) (Frequencies), Linear CIV-296, comment of 2026-10-17 ("no fixed frequency cut-off")
 
 ### What the map shows and never shows
 
@@ -66,6 +66,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: a section needs at least 3 departures in a period for a value, then the same filter and "Hide limited service" behaviour as a whole route, with no new thresholds.
   - Why: one rule for routes and sections, so nothing special-cases a mode.
   - Source: Linear CIV-321, comment of 2026-10-18 (question 1)
+- **A selected route obeys the map's filters**
+  - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
+  - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
+  - Source: Ryan, CIV-1595 (#1504, option 1)
 - **The line is the track**
   - What: a line is coloured by every train running along it, including trains that skip a stop; the station's own stopping frequency shows on its card.
   - Why: the track really carries those trains; the stop's wait is a different fact.
@@ -77,7 +81,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **Expired feeds stay visible with a notice**
   - What: an agency with an expired feed is never hidden without Ryan's explicit yes.
   - Why: people can still find the agency, and the notice tells them the schedule may be old.
-  - Source: [STYLE.md](../STYLE.md) (Agencies), [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md)
+  - Source: [VISUAL.md](../style/VISUAL.md) (Agencies), [DATA_PRINCIPLES.md](../data/DATA_PRINCIPLES.md)
 - **The History route chart needs 3 dates**
   - What: a History route card draws its chart only when 3 or more dates have a value in the period; with 1 or 2 the chart is left out and the rows below stay. The chart itself follows CIV-1026: a line through every snapshot, dots by priority (first and latest, then each year's last, then other changes) at least 24 px apart, the latest value labelled, expand for the wide view.
   - Why: with two dates the chart repeats the two rows below it.
@@ -179,18 +183,18 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **The strip is the model for Live visuals**
   - What: stops as dots on a line, a 3-step colour scale, the marked stretch as a bracket, "less exact" stops hatched.
   - Why: Ryan liked it; reach for it before bar charts or prose.
-  - Source: [STYLE.md](../STYLE.md) (Live)
+  - Source: [VISUAL.md](../style/VISUAL.md) (Live)
 
 ### How we talk to riders and planners
 
 - **New UI text needs Ryan's word-for-word OK**
   - What: no new wording, note or label, including an existing note shown in a new situation, without his yes on that exact text.
   - Why: a proposal in Linear or an issue is not approval; "you decide" on data does not cover what users see.
-  - Source: [STYLE.md](../STYLE.md) (New wording needs a yes)
+  - Source: [TEXT.md](../style/TEXT.md) (New wording needs a yes)
 - **Removing something Ryan approved needs his OK**
   - What: taking out an approved element or wording is a UI change like any other.
   - Why: he approved it on purpose.
-  - Source: [STYLE.md](../STYLE.md) (New wording needs a yes)
+  - Source: [TEXT.md](../style/TEXT.md) (New wording needs a yes)
 - **Every UI change is shown on localhost before it merges**
   - What: a running localhost URL plus one line on what to check; a reviewer's approval is not design approval.
   - Why: Ryan signs off on how Atlas looks.
@@ -202,11 +206,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 - **Plain words, no all-caps, no dark fills**
   - What: labels a non-expert understands at once ("Part-time", not "Time-limited"); selected states are pale, never solid dark.
   - Why: settled look and voice; the glossary lists the UI word for each internal term.
-  - Source: [STYLE.md](../STYLE.md), [GLOSSARY.md](../GLOSSARY.md)
+  - Source: [TEXT.md](../style/TEXT.md), [VISUAL.md](../style/VISUAL.md), [GLOSSARY.md](../GLOSSARY.md)
 - **Frequencies are written by one function, in minutes**
   - What: "every 10 min", "every 16 min", ranges with an en dash; never hours, never typed by hand.
   - Why: the same frequency reads the same on every surface, and columns never mix units.
-  - Source: [STYLE.md](../STYLE.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
+  - Source: [TEXT.md](../style/TEXT.md) (Frequencies), [#938](https://github.com/Civic-Minds/Atlas/issues/938)
 - **Notice wording: one source, one style**
   - What: every notice, empty state, error and explainer text lives in src/content/noticeCopy.ts with a permanent code (N1, N2… for notices, E1, E2… for explainers; codes are never reused), and each "Learn more" notice is paired with one explainer. Notices lead with what the rider sees ("This route…", "This agency's…"), never "Atlas…"; one sentence where possible; no "so"; a notice about the chosen time of day names the times ("from 6–9 AM"), never "the selected period"; a beta-only feature says "only available on Atlas beta. View →" and never points to the preview site. Explainers (the "Learn more" side panels) use three short paragraphs: the issue in plain English, what we are doing about it, and what the reader can do; a date-bound notice switches tense on the date ("ends" before, "ended" from that day). An explainer says enough to explain the thing and no more.
   - Why: the same situation should read the same everywhere, and a notice must match its explainer.

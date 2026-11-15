@@ -1049,7 +1049,7 @@
    "country": "United States",
    "threshold": null,
    "label": "Frequent Bus Routes",
-   "sourceUrl": "https://wwww.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
+   "sourceUrl": "https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
    "httpStatus": "200",
    "quoteCheck2026_10_11": "verbatim",
    "result": "holds",

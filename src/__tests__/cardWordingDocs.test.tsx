@@ -6,13 +6,13 @@ import AboutDocsPage from '../AboutDocsPage';
 describe('card wording (CIV-1251): Docs text, word for word', () => {
   it.each([
     'Uneven service: Service that runs through the whole time period, but with gaps that vary. The card names the longest gap.',
-    'Occasional: A route that runs only now and then, such as school runs, routes with a few trips a day, or rush-hour-only service with no consistent gap.',
+    'Occasional: School runs, a few trips a day, on-demand.', // CIV-1610 (Ryan): the filter's own words
     'Service class: The kind of service a route runs: regular, part-time or occasional.',
     'Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap',
     'Consistent service: Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.',
     'A range such as “every 8–25 min” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.',
     'The card shows it as “Shared stretch”. It never makes the whole route pass the filter.',
-    'Part-timeRuns only part of the day, such as rush hour or evenings, with enough trips to give a frequency when it runs.',
+    'Part-timeOnly at rush hour, evenings or some days.',
     'Routes with only a few trips in a period read “Irregular” instead of a frequency',
   ])('%s', text => {
     const { container } = render(<AboutDocsPage />);

@@ -41,4 +41,19 @@ describe('MapAttribution', () => {
     fireEvent.pointerDown(document.body);
     expect(screen.getAllByRole('link', { name: 'Feedback' })).toHaveLength(1);
   });
+
+  it('adds the Census credit while the shading is on, shrinkable on phones; unchanged when off', () => {
+    const { container, rerender } = render(<MapAttribution contextLayerOn />);
+    const credit = screen.getByRole('link', { name: 'U.S. Census Bureau' });
+    expect(credit.closest('p')!.className).toContain('truncate');
+    // No survey years from the tiles yet: no hover text rather than one without its years.
+    expect(credit).not.toHaveAttribute('title');
+    rerender(<MapAttribution contextLayerOn contextYear={2023} />);
+    expect(screen.getByRole('link', { name: 'U.S. Census Bureau' })).toHaveAttribute('title', 'Source: U.S. Census Bureau, American Community Survey 5-year estimates (2019–2023) and TIGER/Line boundaries');
+    expect(container.querySelector('[data-map-attribution]')!.className).toContain('max-sm:max-w-[calc(100vw-5.75rem)]');
+    rerender(<MapAttribution />);
+    expect(screen.queryByRole('link', { name: 'U.S. Census Bureau' })).toBeNull();
+    expect(container.querySelector('p.truncate')).toBeNull();
+    expect(container.innerHTML).not.toContain('5.75rem');
+  });
 });

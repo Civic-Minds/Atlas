@@ -1,4 +1,5 @@
 import DataTable from './components/ui/DataTable';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
 import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
@@ -19,8 +20,9 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import type { LiveYesterday } from '../shared/liveYesterday';
-import { LATE_BY_HOUR_TITLE, NOT_ENOUGH_YESTERDAY, againstLastWeekday, dayText, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
 import { LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
+import { countText } from '../shared/numberText';
 
 const MIN_N = 30;
 
@@ -65,7 +67,7 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 export function KpiTile({ k, className = '', math, bare = false, caption = false }: { k: Kpi; className?: string; /** With `bare`: still show the one caption line under the figure. */ caption?: boolean; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
+    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${faded ? '. Few measurements: treat with care.' : ''}`}>
       <div className={KPI_TILE.label}>{k.label}</div>
       <div className={KPI_TILE.value}>{k.value}</div>
       {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
@@ -96,12 +98,12 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excludingTitle?: string;
 }) {
   return (
-    <section aria-label="This week compared with last week" className={`${TILE} !px-2.5 !py-1.5`}>
+    <section aria-label={WEEK_COMPARE_TITLE} className={`${TILE} !px-2.5 !py-1.5`}>
       <DataTable
-        caption="This week compared with last week"
+        caption={WEEK_COMPARE_TITLE}
         rows={tiles}
         rowKey={k => k.key}
-        rowTitle={k => `${k.sub}. ${k.n.toLocaleString()} ${k.unit} this week${k.nLastWeek != null ? `, ${k.nLastWeek.toLocaleString()} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
+        rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? '. Few measurements: treat with care.' : ''}`}
         columns={[
           { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
           { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tabular-nums tracking-tight', cell: k => (
@@ -110,7 +112,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? '–' : '–'}</span> },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm tabular-nums text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
@@ -128,7 +130,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
 /** The tiles row itself: the route dashboard and the agency dashboard show their figures the same way. */
 export function KpiTiles({ tiles, caption }: { tiles: Kpi[]; caption?: string | null }) {
   return (
-    <section aria-label="This week compared with last week" className="mt-5">
+    <section aria-label={WEEK_COMPARE_TITLE} className="mt-5">
       <ul className={`grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:grid-cols-3 ${tiles.length >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
         {tiles.map(k => <KpiTile key={k.key} k={k} />)}
       </ul>
@@ -159,7 +161,7 @@ export function periodNote(v3: LiveV3, directionId: number, uncertain: Uncertain
     return [`${label} near ${shortStopName(day.stops[end].name)}`];
   });
   if (!parts.length) return null;
-  return `${kind === 'delaysStart' ? 'Delays start' : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
+  return `${kind === 'delaysStart' ? DELAY_STARTS_LABEL : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
 }
 
 /** Each direction as two lines of stops on the same positions: delay on top, bunching underneath. */
@@ -171,7 +173,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
-    <Section id="dash-strip" title="Along the route" intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
+    <Section id="dash-strip" title={ALONG_ROUTE_TITLE} intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
           <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
@@ -227,7 +229,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>
       <ErrorBoundary label={bad(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="brief" /></ErrorBoundary>
       <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={dir} /></ErrorBoundary>
-      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title="Stops most often late" boundary={bad('The stop list')}
+      <WorstStopsSection v3={v3} data={data} dir={dir} uncertain={uncertain} limit={5} columns="compact" title={LATE_STOPS_TITLE} boundary={bad('The stop list')}
         footerLink={{ text: 'Every stop, in Full analysis', href: '?view=analysis#b2', onClick: () => toFull('b2') }} />
     </>
   );

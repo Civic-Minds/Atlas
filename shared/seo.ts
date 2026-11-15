@@ -6,6 +6,8 @@
  * free of import.meta and DOM access so plain Node scripts can load it.
  */
 
+import { LIVE_VEHICLES_TITLE } from './liveWording';
+
 export const SITE_URL = 'https://www.transitatlas.fyi';
 /** The beta site, where beta-only agencies and services can be seen (never the preview site, which is for agencies' own previews). */
 export const BETA_SITE_URL = 'https://beta.transitatlas.fyi';
@@ -109,7 +111,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: '/apps/live',
-    title: 'Live vehicles: Transit Atlas',
+    title: `${LIVE_VEHICLES_TITLE}: Transit Atlas`,
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',
     indexable: false,
     gate: 'live',
@@ -130,6 +132,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     indexable: false,
     gate: 'researchApps',
     prerender: true,
+  },
+  {
+    path: '/research/bustang-connections',
+    title: 'Bustang connections: Transit Atlas',
+    description: 'How long riders wait for a local bus after each Bustang arrival.',
+    indexable: false,
+    gate: 'researchApps',
   },
   {
     path: '/research/free-child-fares',

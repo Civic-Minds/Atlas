@@ -1,4 +1,5 @@
 import { stopCardSiblings } from '../../utils/stopStation';
+import { shortDate } from '../../../shared/dateText';
 import { searchAreas, type AreaSearchResult } from '../../../shared/areaSearch';
 import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react';
 import { useColorMode } from '../../hooks/useColorMode';
@@ -6,7 +7,7 @@ import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBound
 import type { Agency } from '../../App';
 import { findVariantFamily } from '../../utils/routeVariants';
 import { buildCurrentRoute, routeVariantFamily } from '../../utils/routeCardRoute';
-import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT, formatStoredDate } from '../../utils/format';
+import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
 import { routeListDisplay, type RouteListDisplay } from '../../utils/effectiveHeadway';
 import { combineSuggestedRouteNames, suggestedRouteGroupKey } from '../../utils/routeSuggestion';
@@ -99,6 +100,19 @@ interface SidebarControlsProps {
   routeBack?: { to: string; onClick: () => void };
   analyticsApp?: string;
   onSearchRouteHover?: (key: string | null) => void;
+  /** A research view's own section on the route card (Bustang departures, CIV-101); none on the regular map. */
+  routeCardExtra?: (routeKey: string) => React.ReactNode;
+  /** A research view's own section on the stop card (Bustang connections, CIV-101); none on the regular map. */
+  stopCardExtra?: (stop: StopCardExtraInput) => React.ReactNode;
+}
+
+/** What a research view reads to find a picked stop: the stop, its agency and the stops grouped with it. */
+export interface StopCardExtraInput {
+  agencySlug?: string;
+  stopId?: string;
+  lat?: number;
+  lon?: number;
+  siblingIdsByAgency?: Record<string, Set<string>>;
 }
 
 /**
@@ -148,6 +162,8 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   routeBack,
   onSearchRouteHover,
   analyticsApp = 'frequency',
+  routeCardExtra,
+  stopCardExtra,
 }) => {
   const colorMode = useColorMode();
   const nonCorridorLayers = useMemo(() => {
@@ -803,7 +819,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
   const expDateStr = (() => {
     const exp = routeAgency ? effectiveFeedExpiry(routeAgency) : null;
     if (!exp || exp.length !== 8) return '';
-    return formatStoredDate(exp);
+    return shortDate(exp) ?? '';
   })();
 
   if (!panelShouldRender) return null;
@@ -870,6 +886,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
             liveStop={FEATURES.live && currentStop.agencySlug && currentStop.stopId
               ? { slug: currentStop.agencySlug as string, stopId: currentStop.stopId as string, lat: currentStop.lat as number, lon: currentStop.lon as number }
               : null}
+            extra={stopCardExtra?.(currentStop as StopCardExtraInput)}
           />
         )}
 
@@ -898,6 +915,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
                   hoveredBranch={hoveredBranch}
                   setHoveredBranch={setHoveredBranch}
                   onInfoOpen={onInfoOpen}
+                  extra={selectedRoute ? routeCardExtra?.(selectedRoute) : undefined}
                 />
               </>
         )}

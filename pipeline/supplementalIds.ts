@@ -61,6 +61,7 @@ export function prefixGtfsIds(gtfs: GtfsData, prefix: string): GtfsData {
   return {
     ...gtfs,
     ...(gtfs.synthesizedDirectionRouteIds ? { synthesizedDirectionRouteIds: new Set([...gtfs.synthesizedDirectionRouteIds].map(id => p(id))) } : {}),
+    ...(gtfs.inferredDirectionRouteIds ? { inferredDirectionRouteIds: new Set([...gtfs.inferredDirectionRouteIds].map(id => p(id))) } : {}),
     routes: gtfs.routes.map(r => ({ ...r, route_id: p(r.route_id) })),
     trips: gtfs.trips.map(t => ({ ...t, route_id: p(t.route_id), trip_id: p(t.trip_id), shape_id: p(t.shape_id) })),
     stopTimes: gtfs.stopTimes.map(st => ({ ...st, trip_id: p(st.trip_id) })),

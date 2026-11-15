@@ -7,18 +7,21 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
-import { joinList, plural } from '../../shared/overflowText';
-import { METHOD_TITLE } from '../../shared/liveWording';
-import { formatStoredDate } from '../utils/format';
+import { BACK_PLACES, backLinkLabel } from './backLinks';
+import { shortDate } from '../../shared/dateText';
+import { joinList, plural, countOf } from '../../shared/overflowText';
+import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
+import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
+import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 
 // N2 timetable-ended, N3 manual-timetable-ended
 /** Shared user-facing copy for every expired-feed notice. */
 export function expiredFeedNotice(agencyName: string, expDateStr?: string, manualFeedSource = false): string {
   const { primary } = agencyNames(agencyName).card;
-  const ended = `${primary}’s schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
+  const ended = `${agencyPossessiveSentenceStart(primary)} schedule ended${expDateStr ? ` on ${expDateStr}` : ''}.`;
   // N3 (Ryan): the kept-by-hand detail is in its explainer (E1's MANUAL_FEED piece, N76), not the notice.
   void manualFeedSource;
   return `${ended} Times shown may be out of date.`;
@@ -90,7 +93,7 @@ export function selectedRouteOutsideFilterNotice(maxHeadway: number, periodRange
   const when = periodRange ? keepRangeTogether(periodRange) : null;
   return maxHeadway === Infinity
     ? routeNoTripsText(when ? `from ${when}` : 'all day')
-    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (STYLE.md).
+    // CIV-1251: a threshold in a sentence reads "every 15 min or better" (docs/style/TEXT.md).
     : `This route doesn’t run ${headwayOrBetter(maxHeadway)} ${when ? `for all of ${when}` : 'all day'}.`;
 }
 
@@ -108,8 +111,8 @@ export const EXPIRED_FEED_EXPLANATION =
 
 // N77 check-history / E1 line 2. No last-checked or last-refreshed date (Ryan, CIV-1242), so N78 is gone.
 export function expiredFeedCheckHistory(options: { count?: number; since?: string }): string {
-  if (options.count != null && options.since && formatStoredDate(options.since)) {
-    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${formatStoredDate(options.since)}.`;
+  if (options.count != null && options.since && shortDate(options.since)) {
+    return `We’ve checked for a new schedule ${options.count} ${plural(options.count, 'time')} since ${shortDate(options.since)}.`;
   }
   return '';
 }
@@ -158,14 +161,14 @@ export const NO_AGENCIES_MATCH_SEARCH = noSearchMatchText('agencies');
 export const NO_LIMITED_ROUTES_IN_VIEW = 'No part-time routes in view.';
 // CIV-1251: the list "See all part-time routes" opens, as the setting names them.
 export const PART_TIME_ROUTES_TITLE = 'Part-time routes';
-export const PART_TIME_ROUTES_SEARCH = 'Search part-time routes…';
+export const PART_TIME_ROUTES_SEARCH = searchPlaceholder('part-time routes');
 export const PART_TIME_ROUTES_NOUN = 'part-time routes';
 // N114 settings-hidden-routes-unavailable
 export const HIDDEN_ROUTES_UNAVAILABLE = 'The hidden-route list is unavailable right now.';
 // N117 settings-no-degraded-feeds
 export const NO_DEGRADED_FEEDS = 'No degraded or unusable feeds are currently recorded.';
 // N119 story-map-loading: loadingText with the agency's network, "Loading MiWay’s network…".
-export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyName}’s network`);
+export const storyMapLoadingText = (agencyName: string) => loadingText(`${agencyPossessive(agencyName)} network`);
 // N120 story-map-failed
 export const storyMapFailedText = (agencyName: string) => `The ${agencyName} network preview is unavailable.`;
 // N118 settings-no-feed-matches
@@ -190,21 +193,48 @@ export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 // D4 setting-hide-occasional (Ryan, CIV-1238: "Occasional", not "one-off")
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
 // D5 setting-hide-part-time
-export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings, or some days.' } as const;
+export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' } as const;
 // D6 setting-hide-degraded-feeds
 export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
 
 // ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
-// The back link from an agency or stop card to the map.
-export const BACK_TO_MAP_LABEL = 'Map';
+// The back link from an agency or stop card to the map (CIV-1462: the words live in backLinks.ts).
+export const BACK_TO_MAP_LABEL = BACK_PLACES.map;
 // The region pill and group for an agency with no region.
 export const OTHER_REGION_LABEL = 'Other';
 // The row for the shared main stretch above a direction's branch rows (route card, stop card).
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
-/** The map's search box hint, with "…" like every other search box (Ryan, CIV-1160 question 8, 2026-11-13). */
-export const SEARCH_ROUTES_PLACEHOLDER = 'Search routes…';
+/**
+ * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
+ * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160
+ * question 8. With nothing named it reads "Find…". `things` is in lower case unless it holds a name ("a MARTA route"). The top bar's one-word phone hint
+ * is SEARCH_SHORT_PLACEHOLDER.
+ */
+export function searchPlaceholder(things?: string): string {
+  return things ? `Find ${things}…` : 'Find…';
+}
+/** The top bar's hint on a phone, where the box has room for one word. */
+export const SEARCH_SHORT_PLACEHOLDER = 'Find';
+/** The map's search box hint. */
+export const SEARCH_ROUTES_PLACEHOLDER = searchPlaceholder('routes');
+/** The Bustang connections list with no trips on the chosen day (CIV-101). */
+export const NO_BUSTANG_TRIPS = 'No Bustang trips this day.';
+/** The Bustang connections view's search box (CIV-101): it finds routes. */
+export const SEARCH_BUSTANG_PLACEHOLDER = searchPlaceholder('routes');
+/** The Night service view's search box. */
+export const SEARCH_NIGHT_PLACEHOLDER = searchPlaceholder('agencies or routes');
+/** Live's search box. */
+export const SEARCH_VEHICLES_PLACEHOLDER = searchPlaceholder('vehicles');
+/** About's agency list. */
+export const SEARCH_AGENCIES_PLACEHOLDER = searchPlaceholder('agencies');
+/** Settings: the hidden-routes list. */
+export const SEARCH_HIDDEN_ROUTES_PLACEHOLDER = searchPlaceholder('hidden routes');
+/** Settings: the hidden feeds list. */
+export const SEARCH_FEEDS_PLACEHOLDER = searchPlaceholder('feeds');
+/** The agency filter chip's list, where the box is narrow. */
+export const SEARCH_ANY_PLACEHOLDER = searchPlaceholder();
 /** The nearby-routes panel's title and the back link to it, in sentence case (Ryan, CIV-1160 question 7, 2026-11-13). */
 export const NEAR_YOU_TITLE = 'Near you';
 /** The report action's name on the map menu, the cards and the info panel (Ryan, CIV-1160 question 6, 2026-11-13). */
@@ -221,8 +251,26 @@ export const DEFAULT_EXPORT_TITLE = 'Transit map';
 export const PRIVACY_SETTINGS_TITLE = 'Privacy & analytics';
 // The button that tries a failed load again.
 export const RETRY_LABEL = 'Retry';
-// The link that closes a card that couldn't be shown.
-export const CLOSE_LABEL = 'Close';
+/**
+ * Every close (X) button's screen-reader name, in one place (CIV-1569), mirroring backLinkLabel: "Close " + the thing
+ * it closes ("Close filters", "Close chart", "Close About Atlas"). A common thing is lower case; a name keeps its case.
+ */
+export const CLOSE_PLACES = {
+  filters: 'filters',
+  settings: 'settings',
+  schedule: 'schedule',
+  chart: 'chart',
+  reportForm: 'report form',
+  exportDialog: 'export dialog',
+  whatsNew: 'what’s new',
+  privacySettings: 'privacy and analytics settings',
+  aboutAtlas: BACK_PLACES.aboutAtlas,
+} as const;
+export function closeLabel(place: string): string {
+  return `Close ${place}`;
+}
+/** The clear (X) button inside a search box, to screen readers. */
+export const CLEAR_SEARCH_LABEL = 'Clear search';
 // Route card: a direction with no rows in the chosen period, by its times as the stop card says it (CIV-1251): "No trips from 9 AM–3 PM".
 export const noServiceInPeriodText = (periodRange: string) => stopRouteNoTripsNotice(periodRange);
 // Filter panel: the route settings shown outside the Frequency view.
@@ -239,6 +287,58 @@ export const MAP_KEY_SELECTED = 'Selected / qualifying';
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
 export const MAP_KEY_NIGHT = 'Overnight service';
+/** A Night service row whose overnight trips cover only part of the route (the list and the route card, CIV-1599). */
+export const OVERNIGHT_PART_OF_ROUTE = 'Overnight service on part of the route';
+/** The title an exported map image carries, by view (sentence case, docs/style/VISUAL.md; CIV-1599). The export reads
+ * the frequency view from MAP_EXPORT_TITLES.frequency, so the words and the check can't drift apart. */
+export const MAP_EXPORT_TITLES = {
+  frequency: 'Transit frequency',
+  frequentService: 'Frequent service',
+  night: MAP_KEY_NIGHT,
+  bustang: 'Bustang connections',
+  history: 'Service history',
+  live: LIVE_VEHICLES_TITLE,
+} as const;
+/** Shared labels used in more than one place (CIV-1599). */
+export const ABOUT_ATLAS = BACK_PLACES.aboutAtlas;
+export const VIEW_ON_MAP = 'View on map';
+export const SEE_ALL_AGENCIES = 'See all agencies';
+export const WHATS_NEW_TITLE = 'What’s new';
+export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
+export const ATLAS_BYLINE = 'Atlas by Civic Minds';
+/** The Docs page: "Docs" on every link to it, "Documentation" as its title (Ryan, CIV-1610). */
+export const DOCS_LINK_LABEL = 'Docs';
+export const DOCS_PAGE_TITLE = 'Documentation';
+export const EXPORT_MAP_TITLE = 'Export map image';
+/** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
+export const LOCATE_ME_LABEL = 'Go to my location';
+
+// ---- Neighbourhood shading (beta, CIV-482/CIV-524) ----
+// Every text of the population density / median household income layer, approved word for word by Ryan
+// (_review/civ-524). Class labels ("Under 50", "$50,000–$65,000") are built from the breaks in src/utils/contextLayer.ts.
+// The settings row and its options.
+export const CONTEXT_CONTROL_TITLE = 'Neighbourhood shading';
+export const CONTEXT_OPTION_OFF = 'None';
+export const CONTEXT_OPTION_DENSITY = 'Population density';
+export const CONTEXT_OPTION_INCOME = 'Median household income';
+// Legend titles, per metric (the unit is in the density title and in the income labels' $).
+export const CONTEXT_LEGEND_TITLE_DENSITY = 'People per square kilometre';
+export const CONTEXT_LEGEND_TITLE_INCOME = 'Typical household income';
+// The grey hatched swatch.
+export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
+// The short credit after "OpenStreetMap · CARTO" while the shading is on, and its hover text with the survey years.
+export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
+export const contextCreditTitle = (years: readonly [number, number]) =>
+  `Source: U.S. Census Bureau, American Community Survey 5-year estimates (${years[0]}–${years[1]}) and TIGER/Line boundaries`;
+// The tap card's lines: "1,240 people per square kilometre", "$62,000 a year", "Could be off by about 18%".
+export const contextDensityLine = (value: string) => `${value} people per square kilometre`;
+export const contextIncomeLine = (value: string) => `${value} a year`;
+export const contextMarginLine = (pct: string) => `Could be off by about ${pct}`;
+// An area at the survey's top code (the highest figure it reports).
+export const CONTEXT_INCOME_TOP = '$250,000 or more';
+export const CONTEXT_NO_DENSITY = 'No population figure for this area.';
+export const CONTEXT_NO_INCOME = 'No income figure for this area.';
+export const contextUncertainLine = (pct: string) => `Too uncertain to show. It could be off by about ${pct}.`;
 
 // ---- Route card ----
 // N1 weekday-variation
@@ -301,9 +401,9 @@ export const HISTORY_ROUTE_ORDER_NOTE = 'Biggest changes first';
 export const HISTORY_TITLE = 'Historical service';
 /** The History button's screen-reader name, off and on. */
 export const HISTORY_BUTTON_LABEL = 'History';
-export const HISTORY_BUTTON_ACTIVE_LABEL = 'Back to frequency map';
-/** The agency card's back link in History. */
-export const HISTORY_BACK_TO_AGENCIES = 'All agencies';
+export const HISTORY_BUTTON_ACTIVE_LABEL = backLinkLabel(BACK_PLACES.frequencyMap);
+/** The agency card's back link in History: the map's word for the agency list (CIV-1462). */
+export const HISTORY_BACK_TO_AGENCIES = BACK_PLACES.agencies;
 /** The year slider's hover hint and screen-reader name. */
 export const HISTORY_YEAR_HINT = 'Older to newer';
 export const HISTORY_YEAR_LABEL = 'History year';
@@ -311,13 +411,13 @@ export const HISTORY_YEAR_LABEL = 'History year';
 export const HISTORY_EXPAND_CHART = 'Expand chart';
 export const HISTORY_CHART_LABEL = 'Route history chart';
 /** The search box in History before an agency is open. */
-export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = 'Find an agency…';
+export const HISTORY_AGENCY_SEARCH_PLACEHOLDER = searchPlaceholder('an agency');
 /** Ryan's wording (CIV-1127): the frequency change box's sentence on weekdays. */
 export const HISTORY_FREQUENCY_CHANGE_NOTE = 'This compares the oldest and newest weekday schedules available for this route.';
 /** The frequency change box's sentence on Saturday or Sunday (Ryan approved word for word, CIV-1436, 2026-11-13; the weekday sentence stays his CIV-1127 wording). */
 export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
-  `This compares the oldest and newest ${day} schedules available for this route.`;
-/** A History row whose weekend day has no trips at all: STYLE.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
+  `This compares the oldest and newest ${dayInSentence(day)} schedules available for this route.`;
+/** A History row whose weekend day has no trips at all: docs/style/TEXT.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
@@ -325,7 +425,7 @@ export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
 
 // ---- Map ----
 // N46 networks-failed
-export const networksFailedText = (count: number) => (count === 1 ? "1 agency couldn’t load" : `${count} agencies couldn’t load`);
+export const networksFailedText = (count: number) => `${countOf(count, 'agency', 'agencies')} couldn’t load`;
 // N46 networks-failed (hover)
 /** The agencies' names: "TTC and YRT couldn't load." */
 export const networksFailedHint = (names: readonly string[]) => `${joinList(names)} couldn’t load.`;
@@ -390,10 +490,11 @@ export const AGENCY_PAGE_NOT_FOUND_TITLE = 'No page for this agency';
 export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
+/** The link back to the map on empty and not-found pages (CIV-1594). */
+export const OPEN_MAP_LINK = 'Open the Atlas map';
 
-const DAYS_PLURAL: Record<string, string> = { Weekday: 'weekdays', Saturday: 'Saturdays', Sunday: 'Sundays' };
 // N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
-export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${DAYS_PLURAL[day] ?? day}`);
+export const noServiceOnDayNotice = (subject: 'route' | 'agency', day: string) => noTripsText(subject, `on ${isDayType(day) ? dayPlural(day) : day}`);
 // N35 stop-no-routes-in-period (Ryan)
 export const stopNoRoutesNotice = (periodRange: string) => `No routes stop here from ${keepRangeTogether(periodRange)}.`;
 // N36 stop-not-found (Ryan)
@@ -443,6 +544,8 @@ export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
 export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+/** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
+export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren’t available yet.';
 /** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
 export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can’t be shown right now.";
 export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
@@ -507,13 +610,13 @@ export type HelpTopic = keyof typeof EXPLAINERS;
 // E1, N25 version (CIV-1051): "ends" before the listing-end date, "ended" from it on. Paragraphs 2 and 3 are N2's.
 export function listingEndedPanelLead(agencyName: string, date: string, ended: boolean): string {
   const { primary } = agencyNames(agencyName).card;
-  return `${primary}’s scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
+  return `${agencyPossessiveSentenceStart(primary)} scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
 }
 // E2: the date is the day the schedule went on the map.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
-  `${agencyNames(agencyName).card.primary}’s new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven’t found yet.`;
+  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven’t found yet.`;
 // E4
-export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencyNames(agencyName).card.primary);
+export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencySentenceStart(agencyNames(agencyName).card.primary));
 // E5
 export const ROUTE_DATA_QUALITY_LEAD = "Part of this route’s line on the map may be missing or drawn in the wrong place.";
 // E7: N14 itself, then the allowance (CIV-1077); 10 minutes is EDGE_GAP_ALLOWANCE_MINUTES (pipeline/transit-phase2.ts).
@@ -612,7 +715,6 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
   });
   const count = stops.length;
   const allTransferPoints = count > 0 && stops.every(stop => (stop.properties as OnDemandPickupStop | undefined)?.serviceType === 'on-demand-transfer-point');
-  const plural = (singular: string, pluralForm: string) => `${count} ${count === 1 ? singular : pluralForm}`;
   const scope = areaName ? 'This zone' : 'This service';
   const pickup = resolved.pickup;
   let sentence: string | null = null;
@@ -625,12 +727,12 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'fixed-stops':
       sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('set stop', 'set stops')}, shown on the map.`
+        ? `Pickups and drop-offs are at ${countOf(count, 'set stop', 'set stops')}, shown on the map.`
         : 'Pickups and drop-offs are at set stops, not door to door.';
       break;
     case 'virtual-stops':
       sentence = count > 0
-        ? `Pickups and drop-offs are at ${plural('virtual stop', 'virtual stops')}, shown on the map.`
+        ? `Pickups and drop-offs are at ${countOf(count, 'virtual stop', 'virtual stops')}, shown on the map.`
         : 'Pickups and drop-offs are at virtual stops, not door to door.';
       break;
     case 'connection-points':
@@ -638,12 +740,12 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
       break;
     case 'transfer-point-trips':
       sentence = count > 0
-        ? `Every trip starts or ends at this zone’s ${count === 1 ? 'transfer point' : 'transfer points'}, shown on the map.`
+        ? `Every trip starts or ends at this zone’s ${plural(count, 'transfer point')}, shown on the map.`
         : 'Every trip starts or ends at a transfer point.';
       break;
     default:
       if (count > 0) {
-        sentence = `${scope} has ${allTransferPoints ? plural('transfer point', 'transfer points') : plural('stop', 'stops')}, shown on the map.`;
+        sentence = `${scope} has ${allTransferPoints ? countOf(count, 'transfer point', 'transfer points') : countOf(count, 'stop', 'stops')}, shown on the map.`;
       }
   }
   if (!sentence) return null;

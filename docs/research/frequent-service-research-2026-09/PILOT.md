@@ -65,7 +65,7 @@ The local Atlas comparison found zero weekday route-pattern/day units under the 
 
 SEPTA’s current bus-network materials identify “Frequent Red” routes and define them as arriving every 15 minutes or better from 6 AM–9 PM on weekdays, with enhanced weekend service. The designation is explicitly map-facing: the colour is used on maps, signs, and digital displays.
 
-Sources: [SEPTA Maps](https://wwww.septa.org/maps/) and [New Maps and Signs for a New Bus Network](https://wwww.septa.org/initiatives/bus/maps-signs/).
+Sources: [SEPTA Maps](https://www.septa.org/maps/) and [New Maps and Signs for a New Bus Network](https://www.septa.org/initiatives/bus/maps-signs/).
 
 This is close to Atlas’s 15-minute research rule, but the official span extends two hours later than the current 7 AM–7 PM daytime window.
 

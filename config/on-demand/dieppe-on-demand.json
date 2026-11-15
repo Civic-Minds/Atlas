@@ -1,0 +1,915 @@
+{
+  "slug": "dieppe-on-demand",
+  "agency": {
+    "slug": "dieppe-on-demand",
+    "name": "Dieppe On-Demand Transit",
+    "region": "New Brunswick",
+    "center": [
+      46.083103,
+      -64.673619
+    ],
+    "url": "",
+    "bbox": [
+      46.037379,
+      -64.70476,
+      46.128827,
+      -64.642478
+    ],
+    "cities": [
+      "Dieppe, New Brunswick"
+    ],
+    "displayArea": "Dieppe",
+    "onDemandOnly": true,
+    "websiteUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+    "timezone": "America/Moncton"
+  },
+  "area": {
+    "serviceName": "Dieppe On-Demand Transit",
+    "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+    "sourceLabel": "City of Dieppe on-demand transit pages and service zone and transfer point GeoJSON (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-14",
+    "bookingInfo": "Book in the Blaise Transit app, at ride.blaisetransit.com or call 506-877-7818, 30 minutes to 7 days ahead.",
+    "bookingUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+    "tripRules": "Trips can start and end anywhere in the on-demand zone, or at the 8 transfer points outside it.",
+    "zoneMetadata": {
+      "Dieppe": {
+        "serviceName": "Dieppe On-Demand Transit",
+        "serviceHours": "Monday to Saturday 6 a.m. to 10:30 p.m.; Sunday 9 a.m. to 6:30 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 9,
+              "endHour": 18.5
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+          "retrievedAt": "2026-11-14"
+        }
+      },
+      "Greater Moncton Airport": {
+        "serviceName": "Dieppe On-Demand Transit",
+        "serviceHours": "Monday to Saturday 6 a.m. to 10:30 p.m.; Sunday 9 a.m. to 6:30 p.m.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 6,
+              "endHour": 22.5
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 9,
+              "endHour": 18.5
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+          "retrievedAt": "2026-11-14"
+        },
+        "hoursNote": "Pickup and drop-off at the airport's designated stop (3020, Aéroport)."
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+        "sourceLabel": "City of Dieppe on-demand service zone GeoJSON (agency-supplied)",
+        "sourceRetrievedAt": "2026-10-16",
+        "areaName": "Dieppe"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -64.697212,
+                46.037379
+              ],
+              [
+                -64.659127,
+                46.045149
+              ],
+              [
+                -64.667698,
+                46.051041
+              ],
+              [
+                -64.688345,
+                46.058921
+              ],
+              [
+                -64.690632,
+                46.068732
+              ],
+              [
+                -64.682742,
+                46.070286
+              ],
+              [
+                -64.680437,
+                46.07191
+              ],
+              [
+                -64.683798,
+                46.077259
+              ],
+              [
+                -64.685543,
+                46.084937
+              ],
+              [
+                -64.681324,
+                46.087271
+              ],
+              [
+                -64.675933,
+                46.089419
+              ],
+              [
+                -64.67612,
+                46.100266
+              ],
+              [
+                -64.674378,
+                46.101658
+              ],
+              [
+                -64.673043,
+                46.101799
+              ],
+              [
+                -64.668598,
+                46.102162
+              ],
+              [
+                -64.658053,
+                46.10408
+              ],
+              [
+                -64.650677,
+                46.103866
+              ],
+              [
+                -64.643097,
+                46.103208
+              ],
+              [
+                -64.642478,
+                46.107025
+              ],
+              [
+                -64.651201,
+                46.107922
+              ],
+              [
+                -64.662444,
+                46.106718
+              ],
+              [
+                -64.67453,
+                46.105809
+              ],
+              [
+                -64.683139,
+                46.105809
+              ],
+              [
+                -64.691393,
+                46.105026
+              ],
+              [
+                -64.697139,
+                46.105471
+              ],
+              [
+                -64.696457,
+                46.109832
+              ],
+              [
+                -64.693876,
+                46.11417
+              ],
+              [
+                -64.692742,
+                46.115985
+              ],
+              [
+                -64.693802,
+                46.1172
+              ],
+              [
+                -64.6893,
+                46.1194
+              ],
+              [
+                -64.688005,
+                46.118761
+              ],
+              [
+                -64.686024,
+                46.1211
+              ],
+              [
+                -64.676859,
+                46.123596
+              ],
+              [
+                -64.670006,
+                46.128401
+              ],
+              [
+                -64.67017,
+                46.128827
+              ],
+              [
+                -64.672121,
+                46.128631
+              ],
+              [
+                -64.67722,
+                46.12598
+              ],
+              [
+                -64.682366,
+                46.124962
+              ],
+              [
+                -64.684015,
+                46.124504
+              ],
+              [
+                -64.685334,
+                46.123788
+              ],
+              [
+                -64.692292,
+                46.118204
+              ],
+              [
+                -64.699447,
+                46.11371
+              ],
+              [
+                -64.701191,
+                46.112395
+              ],
+              [
+                -64.700269,
+                46.111262
+              ],
+              [
+                -64.698481,
+                46.110172
+              ],
+              [
+                -64.697931,
+                46.108385
+              ],
+              [
+                -64.698118,
+                46.103434
+              ],
+              [
+                -64.698994,
+                46.102614
+              ],
+              [
+                -64.700581,
+                46.10362
+              ],
+              [
+                -64.702369,
+                46.102298
+              ],
+              [
+                -64.700647,
+                46.101417
+              ],
+              [
+                -64.702535,
+                46.100033
+              ],
+              [
+                -64.701573,
+                46.099539
+              ],
+              [
+                -64.700559,
+                46.099103
+              ],
+              [
+                -64.699552,
+                46.098668
+              ],
+              [
+                -64.698568,
+                46.098263
+              ],
+              [
+                -64.696257,
+                46.100285
+              ],
+              [
+                -64.694941,
+                46.103493
+              ],
+              [
+                -64.691416,
+                46.103171
+              ],
+              [
+                -64.691204,
+                46.101802
+              ],
+              [
+                -64.689994,
+                46.101713
+              ],
+              [
+                -64.689602,
+                46.101707
+              ],
+              [
+                -64.688692,
+                46.103768
+              ],
+              [
+                -64.681513,
+                46.103733
+              ],
+              [
+                -64.678335,
+                46.103873
+              ],
+              [
+                -64.678233,
+                46.103354
+              ],
+              [
+                -64.678591,
+                46.103345
+              ],
+              [
+                -64.678588,
+                46.103028
+              ],
+              [
+                -64.679534,
+                46.103047
+              ],
+              [
+                -64.679563,
+                46.102541
+              ],
+              [
+                -64.681361,
+                46.1025
+              ],
+              [
+                -64.681561,
+                46.099346
+              ],
+              [
+                -64.680778,
+                46.099304
+              ],
+              [
+                -64.680761,
+                46.098617
+              ],
+              [
+                -64.680826,
+                46.09697
+              ],
+              [
+                -64.680794,
+                46.095372
+              ],
+              [
+                -64.680879,
+                46.092904
+              ],
+              [
+                -64.683028,
+                46.092973
+              ],
+              [
+                -64.68318,
+                46.091756
+              ],
+              [
+                -64.683592,
+                46.091864
+              ],
+              [
+                -64.684247,
+                46.091796
+              ],
+              [
+                -64.684207,
+                46.092912
+              ],
+              [
+                -64.684544,
+                46.092943
+              ],
+              [
+                -64.686798,
+                46.092989
+              ],
+              [
+                -64.686818,
+                46.09259
+              ],
+              [
+                -64.686838,
+                46.092191
+              ],
+              [
+                -64.688023,
+                46.092271
+              ],
+              [
+                -64.687993,
+                46.091211
+              ],
+              [
+                -64.687843,
+                46.090861
+              ],
+              [
+                -64.689247,
+                46.089955
+              ],
+              [
+                -64.688489,
+                46.089106
+              ],
+              [
+                -64.689907,
+                46.088325
+              ],
+              [
+                -64.691137,
+                46.084399
+              ],
+              [
+                -64.690687,
+                46.081
+              ],
+              [
+                -64.690986,
+                46.080585
+              ],
+              [
+                -64.691464,
+                46.08017
+              ],
+              [
+                -64.692186,
+                46.079987
+              ],
+              [
+                -64.691792,
+                46.079115
+              ],
+              [
+                -64.691228,
+                46.07921
+              ],
+              [
+                -64.690995,
+                46.078397
+              ],
+              [
+                -64.691977,
+                46.07822
+              ],
+              [
+                -64.691682,
+                46.077209
+              ],
+              [
+                -64.691364,
+                46.077223
+              ],
+              [
+                -64.691181,
+                46.076569
+              ],
+              [
+                -64.691392,
+                46.076482
+              ],
+              [
+                -64.690808,
+                46.075154
+              ],
+              [
+                -64.690466,
+                46.073979
+              ],
+              [
+                -64.691286,
+                46.073828
+              ],
+              [
+                -64.693153,
+                46.073502
+              ],
+              [
+                -64.693604,
+                46.073408
+              ],
+              [
+                -64.693038,
+                46.072122
+              ],
+              [
+                -64.695764,
+                46.071613
+              ],
+              [
+                -64.698201,
+                46.071169
+              ],
+              [
+                -64.697987,
+                46.070615
+              ],
+              [
+                -64.697734,
+                46.069674
+              ],
+              [
+                -64.698338,
+                46.069102
+              ],
+              [
+                -64.69837,
+                46.068005
+              ],
+              [
+                -64.697537,
+                46.06814
+              ],
+              [
+                -64.696468,
+                46.065541
+              ],
+              [
+                -64.701355,
+                46.064583
+              ],
+              [
+                -64.701812,
+                46.064458
+              ],
+              [
+                -64.701508,
+                46.063614
+              ],
+              [
+                -64.700373,
+                46.063792
+              ],
+              [
+                -64.700019,
+                46.062873
+              ],
+              [
+                -64.699428,
+                46.062974
+              ],
+              [
+                -64.699114,
+                46.062151
+              ],
+              [
+                -64.701059,
+                46.0618
+              ],
+              [
+                -64.70126,
+                46.061747
+              ],
+              [
+                -64.70116,
+                46.06165
+              ],
+              [
+                -64.700621,
+                46.061018
+              ],
+              [
+                -64.701425,
+                46.060024
+              ],
+              [
+                -64.69105,
+                46.053669
+              ],
+              [
+                -64.688003,
+                46.053657
+              ],
+              [
+                -64.686773,
+                46.048855
+              ],
+              [
+                -64.694478,
+                46.046888
+              ],
+              [
+                -64.695638,
+                46.045418
+              ],
+              [
+                -64.697212,
+                46.037379
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                -64.691285,
+                46.095957
+              ],
+              [
+                -64.690728,
+                46.095944
+              ],
+              [
+                -64.690746,
+                46.095619
+              ],
+              [
+                -64.690753,
+                46.095491
+              ],
+              [
+                -64.690752,
+                46.095346
+              ],
+              [
+                -64.688963,
+                46.095262
+              ],
+              [
+                -64.688974,
+                46.094708
+              ],
+              [
+                -64.684124,
+                46.094561
+              ],
+              [
+                -64.683784,
+                46.098829
+              ],
+              [
+                -64.691365,
+                46.099285
+              ],
+              [
+                -64.693307,
+                46.096976
+              ],
+              [
+                -64.693626,
+                46.096635
+              ],
+              [
+                -64.693369,
+                46.096522
+              ],
+              [
+                -64.693035,
+                46.0964
+              ],
+              [
+                -64.692556,
+                46.096186
+              ],
+              [
+                -64.692116,
+                46.096013
+              ],
+              [
+                -64.691285,
+                46.095957
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/",
+        "sourceLabel": "City of Dieppe on-demand service zone GeoJSON (agency-supplied)",
+        "sourceRetrievedAt": "2026-10-16",
+        "areaName": "Greater Moncton Airport"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -64.683711,
+                46.116633
+              ],
+              [
+                -64.6893,
+                46.1194
+              ],
+              [
+                -64.6938,
+                46.1172
+              ],
+              [
+                -64.6897,
+                46.1125
+              ],
+              [
+                -64.683711,
+                46.116633
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Aquatique Street Transfer Hub (D1305)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.70222,
+          46.09569
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Fox Creek / Amirault (D1002)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.70476,
+          46.06246
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Adélard-Savoie / Sylvio (D1140)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.70172,
+          46.10832
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "1127 Champlain (D1128)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.70164,
+          46.10495
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Lorette / Chartersville (D1158)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.68287,
+          46.10267
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Lorette / Benoit (D1302)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.68315,
+          46.09809
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Lorette / Lakeburn (D1156)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.68345,
+          46.09468
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "dieppe-on-demand",
+        "serviceType": "on-demand-transfer-point",
+        "stopName": "Lakeburn / Kedgwick (D1152)",
+        "areaName": "Dieppe",
+        "sourceUrl": "https://www.dieppe.ca/en/vivre-ici/transports/transport-a-la-demande/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.692,
+          46.09367
+        ]
+      }
+    }
+  ],
+  "notes": "Zone and transfer points from 'Dieppe On-Demand Transit Service Zone.geojson' and 'Dieppe On-Demand Transit Transfer Points.geojson', sent by the City of Dieppe (Urban Mobility) to Atlas Outreach on 2026-10-16: the revised boundary in effect since Aug 23, 2026. Geometry used exactly as given (WGS84 in the file). The zone is the file's zone 1 (TAD 1.1 and TAD 1.2), drawn as one MultiPolygon; it matches the turquoise zone on the City's map. Left out: the 8 small zone-2 shapes (TAD 2.1 to 2.8), each drawn around one of the 8 transfer points, which are drawn as points instead; 'Zone_3_Airport' (designated stop 3020, 'Aeroport'), a 0.3 km2 box at YQM, was left out at first and added in CIV-1572 (2026-11-14), geometry as given, once the Greater Moncton airport's own page (cyqm.ca/to-from/transportation) confirmed Dieppe on-demand serves the airport. The 8 transfer points match the list on the City's page (2 main, 6 secondary). Hours from the City's page and FAQ; no holiday hours are stated. The service is free and open to everyone (children 11 and under ride with someone 12 or older). Pickup is at a stop the app assigns, usually under 500 m away (FAQ); no pickup method is set because the pickup line would count the transfer points as those stops. Booking: Blaise Transit app, ride.blaisetransit.com or 506-877-7818. Run by the City of Dieppe, not Codiac Transpo, so it is its own on-demand-only agency (the 'dieppe' slug is Dieppe, France)."
+}

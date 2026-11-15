@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { nameCase } from '../../utils/format';
-import { CardReportButton, HeadwayBadge, LimitedBadge } from './cardUi';
+import { CardReportButton, HeadwayBadge, LimitedBadge, REPORT_REASON } from './cardUi';
 import { reportDetails } from '../../utils/reportIssue';
 import { headwayEvery, headwayEveryRange } from '../../utils/headwayText';
 import { IRREGULAR_PERIOD_SHORT_LABEL } from '../../utils/effectiveHeadway';
@@ -12,6 +12,7 @@ import ListRow from '../ui/ListRow';
 import { ROUTE_ROW_NAME } from '../RouteRowName';
 import PanelEmpty from '../ui/PanelEmpty';
 import { loadingText, NEAR_YOU_TITLE, NO_ROUTES_NEARBY } from '../../content/noticeCopy';
+import { metresText } from '../../../shared/unitText';
 
 interface NearbyRoutesPanelProps {
   routes: NearbyRoute[];
@@ -34,13 +35,9 @@ export function nearYouReportDetails(routes: readonly NearbyRoute[], point: { la
     ['Period', period ?? 'unknown'],
     '**Listed:**',
     ...(routes.length > 0
-      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : r.limited ? LIMITED_SERVICE_LABEL : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${fmtDist(r.distanceMeters)}`)
+      ? routes.map(r => `- ${r.agencyName} ${r.displayShortName ?? r.routeShortName}${r.routeLongName ? ` ${r.routeLongName}` : ''} (${r.rKey}): ${r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : r.limited ? LIMITED_SERVICE_LABEL : r.headway != null ? headwayEvery(r.headway) : 'no value'}, nearest stop ${r.nearestStopName}, ${metresText(r.distanceMeters)}`)
       : ['- Nothing listed']),
   ]);
-}
-
-function fmtDist(m: number): string {
-  return m < 100 ? `${Math.round(m)} m` : `${Math.round(m / 10) * 10} m`;
 }
 
 export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelProps>(function NearbyRoutesPanel({
@@ -67,7 +64,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
         <CardReportButton
           title={NEAR_YOU_TITLE}
           details={nearYouReportDetails(routes, point, day, period)}
-          excludeReasons={['Route line is missing or follows the wrong path']}
+          excludeReasons={[REPORT_REASON.line]}
         />
       )} />
 
@@ -117,7 +114,7 @@ export const NearbyRoutesPanel = forwardRef<HTMLDivElement, NearbyRoutesPanelPro
                   )}
                 </div>
                 <p className="text-xs text-[var(--text-dim)] font-medium truncate leading-tight">
-                  {nameCase(r.nearestStopName, 'stop')} · {fmtDist(r.distanceMeters)}
+                  {nameCase(r.nearestStopName, 'stop')} · {metresText(r.distanceMeters)}
                 </p>
               </div>
             </ListRow>

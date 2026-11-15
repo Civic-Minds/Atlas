@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { routeCardRowValue } from '../routeCardRowValue';
+import { buildSectionColourFeatures, tierOfHeadway } from '../sectionColours';
 import type { ShapeProperties } from '../../hooks/useIntervalStats';
 
 const ctx = { period: 'midday' as const, hoveredHour: null, stretchMode: false, noRegularService: false, maxHeadway: Infinity };
@@ -109,5 +112,30 @@ describe('the direction fallback of an unsteady stretch (#962)', () => {
     const value = routeCardRowValue(row(120, true), midday);
     expect(value.headway).toBe(120);
     expect(value.rowNoRegular).toBe(false);
+  });
+});
+
+// #1506: GO KI weekday midday, cut from the published release-mwgrzbgq route and sections files.
+describe('row dot with section colours (#1506)', () => {
+  const ki = JSON.parse(readFileSync(resolve(__dirname, 'fixtures', 'go-ki-weekday.json'), 'utf8')) as GeoJSON.FeatureCollection;
+  const kitchener = ki.features.find(f => f.properties?.stopId == null && f.properties?.headsign === 'Kitchener GO')!.properties as ShapeProperties;
+  const midday = { ...ctx, stretchMode: true };
+
+  it('public keeps the filter colour; with section colours the dot is never better than the row\'s number', () => {
+    const pub = routeCardRowValue(kitchener, midday);
+    expect(pub.shownHeadway).toBe(120);
+    expect(pub.colorHeadway).toBe(30);
+    expect(routeCardRowValue(kitchener, { ...midday, sectionColours: true }).colorHeadway).toBe(120);
+  });
+
+  it('the map draws that stretch in the same (infrequent) colour as the dot', () => {
+    const pieces = buildSectionColourFeatures({ go: ki }, 'Weekday', 'default', undefined, 'midday')
+      .filter(f => f.properties.headsign === 'Kitchener GO');
+    expect(pieces.map(f => f.properties.tier)).toEqual([tierOfHeadway(120)]);
+  });
+
+  it('a row reading its filter value or better keeps the filter colour', () => {
+    const union = ki.features.find(f => f.properties?.stopId == null && f.properties?.headsign === 'Union Station GO')!.properties as ShapeProperties;
+    expect(routeCardRowValue(union, { ...midday, sectionColours: true }).colorHeadway).toBe(30);
   });
 });

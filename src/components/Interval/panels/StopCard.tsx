@@ -16,6 +16,7 @@ import {
   CardReportButton,
   FlaggableValue,
   type CardReportButtonHandle,
+  REPORT_REASON,
 } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
 import StopRouteGroup from './StopRouteGroup';
@@ -27,6 +28,7 @@ import { routeListHeadwayText } from '../../../utils/effectiveHeadway';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { BACK_TO_MAP_LABEL, stopNoRoutesNotice } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
+import { metresText } from '../../../../shared/unitText';
 
 // The stop card's route and branch shapes live with the code that builds them (CIV-997).
 export type { StopBranch, StopRoute } from '../../../utils/stopRoutes';
@@ -79,6 +81,8 @@ export interface StopCardProps {
   /** The map hover for the destination rows (CIV-918). */
   hoveredBranch?: HoveredBranch | null;
   setHoveredBranch?: (branch: HoveredBranch | null) => void;
+  /** A research view's own section after "Nearby routes" (Bustang connections, CIV-101); the regular map passes none. */
+  extra?: React.ReactNode;
 }
 
 /** The chosen period's hours, "9 AM–3 PM" (the stop card's notices name it). */
@@ -101,6 +105,7 @@ export const StopCard: React.FC<StopCardProps> = ({
   liveStop,
   hoveredBranch,
   setHoveredBranch,
+  extra,
 }) => {
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const openRoute = (rKey: string) => {
@@ -127,7 +132,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           <div className="flex-1 min-w-0">
             <CardBackLink onClick={back?.onClick ?? (() => setSelectedStop(null))}>{back?.to ?? BACK_TO_MAP_LABEL}</CardBackLink>
             {stopAgencies.length === 1 ? (
-              <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+              <FlaggableValue reason={REPORT_REASON.stop} reportRef={reportRef} className="block w-full text-left">
                 <SidebarCardHeader
                   eyebrow={back?.namesAgency || back?.to === stopAgencies[0] ? null : stopAgencies[0]}
                   title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
@@ -141,7 +146,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                   selected={stopAgencyFilter}
                   onSelect={setStopAgencyFilter}
                 />
-                <FlaggableValue reason="Stop is missing, misplaced, or assigned incorrectly" reportRef={reportRef} className="block w-full text-left">
+                <FlaggableValue reason={REPORT_REASON.stop} reportRef={reportRef} className="block w-full text-left">
                   <SidebarCardHeader
                     title={`${nameCase(currentStop.stopName, 'stop')}${currentStop.direction ? ` — ${currentStop.direction}` : ''}`}
                     titleClamp
@@ -159,7 +164,7 @@ export const StopCard: React.FC<StopCardProps> = ({
               ['Period', period],
             ])}
             showLiveReason={!!liveStop}
-            excludeReasons={['Route line is missing or follows the wrong path']}
+            excludeReasons={[REPORT_REASON.line]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -207,7 +212,7 @@ export const StopCard: React.FC<StopCardProps> = ({
                 // "Moody Center", not the feed's "MOODY CENTER"; a feed's own mixed case stays as written (CIV-935).
                 // The stop name shortens; the distance always shows (#1154).
                 subLabel={nameCase(nearestStopName, 'stop')}
-                subLabelTrailing={` · ${Math.round(distanceMeters)} m away`}
+                subLabelTrailing={` · ${metresText(distanceMeters)} away`}
                 subLabelWeight="medium"
                 headway={headway ?? undefined}
                 colorHeadway={colorHeadway}
@@ -224,6 +229,7 @@ export const StopCard: React.FC<StopCardProps> = ({
           })}
         </SidebarCardSection>
       )}
+      {extra}
     </SidebarCardShell>
   );
 };

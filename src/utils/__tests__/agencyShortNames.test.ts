@@ -27,8 +27,9 @@ describe('agency short names (CIV-998)', () => {
     expect(agencyNames('STM (Montréal)').name).toBe('STM');
   });
 
-  it('drops a short name riders no longer use (SMAT became SMRT in 2022)', () => {
-    expect(agencyNames('Santa Maria Area Transit').name).toBe('Santa Maria Area Transit');
+  it('uses the current name of a renamed agency (SMAT became SMRT in 2022, CIV-1103)', () => {
+    expect(agencyNames(bySlug.get('smat')!).official).toBe('Santa Maria Regional Transit');
+    expect(agencyNames(bySlug.get('ccta')!).official).toBe('Green Mountain Transit');
   });
 
   it('lists show the short name with the place beside it (#1134)', () => {

@@ -10,13 +10,14 @@ import { nameCase } from '../../utils/format';
 import { stretchLabel } from '../../utils/stopLabel';
 import { delayHeatPoints } from './delayHeatModel';
 import { BUNCHING_STEP_LIMITS } from './routeStripModel';
-import { TRIP_TIME_LABEL } from '../../../shared/liveWording';
+import { BUNCHING_LABEL, EXTRA_WAIT_LABEL, LATE_LABEL, TRIP_TIME_LABEL } from '../../../shared/liveWording';
+import { DELAY_STARTS_LABEL } from '../../../shared/liveWording';
 
 export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayStarts';
 /** The measure switch, in order, with the labels the tiles already use. */
-export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', 'Late'], ['runTime', TRIP_TIME_LABEL], ['extraWait', 'Extra wait'], ['bunching', 'Bunching']];
-/** "Delay starts" is the CIV-942 heatmap prototype (label to confirm): its own toggle on the map, not in the switch (the top bar has no room for a fifth pill). */
-export const DELAY_STARTS_LABEL = 'Delay starts';
+export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', LATE_LABEL], ['runTime', TRIP_TIME_LABEL], ['extraWait', EXTRA_WAIT_LABEL], ['bunching', BUNCHING_LABEL]];
+/** "Delays start" is the CIV-942 heatmap: its own toggle on the map, not in the switch (the top bar has no room for a fifth pill). Its name is DELAY_STARTS_LABEL (CIV-1602). */
+export { DELAY_STARTS_LABEL };
 export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : MEASURES.find(([k]) => k === m)![1]);
 
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */

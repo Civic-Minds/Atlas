@@ -4,10 +4,13 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
-import { minutesText as min, pct } from './liveFormat.js';
+import { dateRange } from './dateText.js';
+import { directionBranchFallback } from './headsignDisplay.js';
+import { minutesText as min } from './liveFormat.js';
 import { hourTime } from './timeText.js';
-import { TRIP_TIME_LABEL } from './liveWording.js';
+import { NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
+import { percentText, countText } from './numberText.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -65,8 +68,8 @@ export function runTimeTileStretch(stretch: Record<string, RunTimeStretch> | und
   return dirs.length === 1 ? `over ${n}, ${ends[0]}` : `over ${n}: ${ends.join('; ')}`;
 }
 export interface RunTimeBranch { fromStopId: string; toStopId: string; fromName: string; toName: string; stops: number; all: RunTimeFigures; /** By time of day (older files: absent, all day only). */ bands?: Partial<Record<DashboardBand, RunTimeFigures | null>>; byHour: Array<{ hour: number } & RunTimeFigures> }
-/** A direction's name from the file ("Eastbound"), or "Direction 1" where the file has none. */
-export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? `Direction ${d}`;
+/** A direction's name from the file ("Eastbound"), or the shared fallback ("Direction 1" for direction 0) where the file has none. */
+export const directionLabel = (v3: LiveV3, d: number): string => v3.directionLabels[String(d)] ?? directionBranchFallback(d);
 
 /** Run time against the timetable in the whole minutes the tiles show (typical and scheduled each rounded first, so the difference matches the two figures). */
 export const runTimeDiffMin = (typicalMin: number, scheduledMin: number): number => Math.round(typicalMin) - Math.round(scheduledMin);
@@ -219,14 +222,14 @@ export const QUALITY_MAX_UNLISTED_SHARE = 0.5;
 export function qualityHold(v3: LiveV3): string | null {
   // A file without these blocks cannot be judged here; the page says what is missing section by section.
   if (!v3.swaps || !v3.adherence?.timepoints?.all?.overall) return null;
-  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${Math.round(v3.swaps.rate * 100)}% of its trips ran under a trip number that does not match the schedule. Its delays cannot be trusted yet.`;
+  if (v3.swaps.rate > QUALITY_MAX_SWAP_RATE) return `About ${percentText(v3.swaps.rate)} of its trips ran under a trip number that does not match the schedule. Its delays cannot be trusted yet.`;
   const n = v3.adherence.timepoints.all.overall.n;
   if (n < QUALITY_MIN_TIMEPOINT_DEPARTURES) return n === 0
     ? 'Its schedule gives no stop times to compare with. How late it runs cannot be measured.'
-    : `Only ${n.toLocaleString()} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
+    : `Only ${countText(n)} departures at stops with a scheduled time were measured this week, too few to say how late it runs.`;
   const lo = v3.leftOut;
   const seen = lo ? lo.kept + lo.noTimetableTrip + lo.excluded : 0;
-  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${Math.round((lo.noTimetableTrip / seen) * 100)}% of its vehicles ran under trip numbers that are not on the schedule. The figures would describe only a minority of its service.`;
+  if (lo && seen > 0 && lo.noTimetableTrip / seen > QUALITY_MAX_UNLISTED_SHARE) return `${percentText(lo.noTimetableTrip / seen)} of its vehicles ran under trip numbers that are not on the schedule. The figures would describe only a minority of its service.`;
   return null;
 }
 
@@ -260,11 +263,11 @@ export function bunchingSentence(label: string, b: DashboardBunchingBand): strin
   if (b.kind == null) return `${label}: too few measured stops to say where bunching forms.`;
   const first = b.stops.find(s => s.n >= 30);
   if (b.kind === 'forms' && b.forms) {
-    return `${label}: bunching forms between ${b.forms.fromName} and ${b.forms.toName}: gaps that are too short or too long go from ${pct(b.forms.fromBadShare)} to ${pct(b.forms.toBadShare)} (${Math.round(b.forms.rise * 100)} points) and stay up.`;
+    return `${label}: bunching forms between ${b.forms.fromName} and ${b.forms.toName}: gaps that are too short or too long go from ${percentText(b.forms.fromBadShare)} to ${percentText(b.forms.toBadShare)} (${Math.round(b.forms.rise * 100)} points) and stay up.`;
   }
   if (b.kind === 'gradual') {
     const top = b.stops.filter(s => s.n >= 30).reduce((m, s) => Math.max(m, s.badShare), 0);
-    return `${label}: bunching builds gradually, from ${first ? pct(first.badShare) : 'the start'} at the first measured stop to ${pct(top)} at its highest. No single stretch steps up by 10 points.`;
+    return `${label}: bunching builds gradually, from ${first ? percentText(first.badShare) : 'the start'} at the first measured stop to ${percentText(top)} at its highest. No single stretch steps up by 10 points.`;
   }
   return `${label}: gaps stay close to the schedule along the route.`;
 }
@@ -277,8 +280,8 @@ export const LINK_LABELS: Record<BunchingLinkKind, string> = {
 };
 
 export function linkValueText(kind: BunchingLinkKind, value: number | null): string {
-  if (value == null) return 'not measured';
-  if (kind === 'terminal_departures') return `${pct(value)} of gaps off`;
+  if (value == null) return NOT_MEASURED_VALUE;
+  if (kind === 'terminal_departures') return `${percentText(value)} of gaps off`;
   if (kind === 'stood_still') return `${Math.round(value * 10) / 10} a day`;
   if (kind === 'slow_stretch') return `${value >= 0 ? '+' : ''}${Math.round(value)} s vs schedule`;
   return `${Math.round(value * 10) / 10} a day`;
@@ -290,16 +293,6 @@ export function rankStops(stops: readonly DashboardStop[], directionId: number |
   return stops
     .filter(s => s.ranked && !lessExact(s) && (directionId == null || s.directionId === directionId))
     .sort((a, b) => b.lateShare - a.lateShare || b.n - a.n);
-}
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/** "Oct 8–14", or "Sep 30–Oct 14" across months, from two YYYY-MM-DD dates. */
-export function dateRangeText(first: string, last: string): string {
-  const [, m1, d1] = first.split('-').map(Number);
-  const [, m2, d2] = last.split('-').map(Number);
-  if (first === last) return `${MONTHS[m1 - 1]} ${d1}`;
-  return m1 === m2 ? `${MONTHS[m1 - 1]} ${d1}–${d2}` : `${MONTHS[m1 - 1]} ${d1}–${MONTHS[m2 - 1]} ${d2}`;
 }
 
 /** The analysis is "stale" once its newest day is more than this many days old. */
@@ -325,7 +318,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   return {
     upTo, daysOld, stale,
     // #1489: the short date every Live page writes ("Oct 14"), not the file's YYYY-MM-DD.
-    text: stale ? `Data up to ${dateRangeText(upTo, upTo)}, ${countOf(daysOld, 'day')} ago.` : `Data up to ${dateRangeText(upTo, upTo)}.`,
+    text: stale ? `Data up to ${dateRange(upTo, upTo)}, ${countOf(daysOld, 'day')} ago.` : `Data up to ${dateRange(upTo, upTo)}.`,
     devHint: stale ? `npm run live:analyze -- ${route} (needs fresh saved vehicle locations)` : undefined,
   };
 }

@@ -1,6 +1,8 @@
+import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import { shortDate } from '../../shared/dateText';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { X, Search, Radio } from 'lucide-react';
-import { DROPDOWN_PANEL, dropdownAnim, SEARCH_PILL, SEARCH_ICON, SEARCH_FIELD, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
+import { Radio } from 'lucide-react';
+import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
 import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
@@ -9,7 +11,7 @@ import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
-import { formatStoredDate, nameCase } from '../utils/format';
+import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
@@ -19,12 +21,13 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, DOCS_LINK_LABEL, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { PANEL_HEADER_BAR, PANEL_HEADER_TITLE, PanelBackButton, PanelCloseButton } from './ui/PanelHeader';
+import SearchBox from './ui/SearchBox';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
@@ -76,8 +79,7 @@ export type OpenInfoFn = (tab?: Tab, opts?: OpenInfoOptions) => void;
 
 export function liveRouteLabel(r: { displayRouteShortName: string; displayName?: string }): string {
   if (r.displayName) return nameCase(r.displayName, 'route');
-  const n = parseInt(r.displayRouteShortName, 10);
-  return `Route ${isNaN(n) ? r.displayRouteShortName : n}`;
+  return routeShortLabel(r.displayRouteShortName);
 }
 
 interface Props {
@@ -369,7 +371,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 if (view === 'agency-detail') setView('agencies');
                 else setView('home');
               }}
-              label={view === 'agency-detail' ? 'Back to agencies' : 'Back'}
+              label={backLinkLabel(view === 'agency-detail' ? BACK_PLACES.agencies : BACK_PLACES.aboutAtlas)}
             />
             <h2 className={`${PANEL_HEADER_TITLE} truncate min-w-0`}>
               {headerTitle}
@@ -377,7 +379,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           </div>
 
           <div className="flex-1" />
-          <PanelCloseButton onClick={onClose} className="z-10" label="Close" />
+          <PanelCloseButton onClick={onClose} className="z-10" label={closeLabel(CLOSE_PLACES.aboutAtlas)} />
         </div>
 
         {/* Content View Container */}
@@ -420,7 +422,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {/* Pinned to the panel's bottom edge, below the scrolling content. */}
               <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                  <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">Documentation</a>
+                  <a href="/about/docs" className="hover:text-[var(--accent)] hover:underline">{DOCS_LINK_LABEL}</a>
                   <span aria-hidden="true">·</span>
                   <a href="/terms" className="hover:text-[var(--accent)] hover:underline">Terms</a>
                   <span aria-hidden="true">·</span>
@@ -434,22 +436,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'agencies' && (
             <div className="flex flex-col h-full min-h-0 overflow-hidden">
               <div className={AGENCY_LIST_FILTERS}>
-                <div className={SEARCH_PILL}>
-                  <Search className={SEARCH_ICON} />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                    placeholder="Search agencies…"
-                    className={SEARCH_FIELD}
-                  />
-                  {query && (
-                    <button onClick={() => setQuery('')} className="text-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
+                <SearchBox inputRef={searchInputRef} value={query} onChange={setQuery} placeholder={SEARCH_AGENCIES_PLACEHOLDER} />
                 <div className={PILL_SCROLL_ROW} style={{ scrollbarWidth: 'none' }}>
                   {agencyFilterOptions.map(([id, label]) => {
                     const on = id === 'all' ? agencyFeatureFilters.size === 0 : agencyFeatureFilters.has(id);
@@ -571,7 +558,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'weekday-variation' && <ExplainerBody layout="weekday-variation" lead={WEEKDAY_VARIATION_LEAD} helpContext={helpContext} />}
           {view === 'new-schedule-data' && (
             <ExplainerBody layout="new-schedule-data" helpContext={helpContext}
-              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, helpContext.lastRefreshedAt ? formatStoredDate(helpContext.lastRefreshedAt) : null) : ''} />
+              lead={helpContext?.agencyName ? newScheduleDataLead(helpContext.agencyName, shortDate(helpContext.lastRefreshedAt)) : ''} />
           )}
           {view === 'corrected-data' && (
             <ExplainerBody layout="corrected-data" helpContext={helpContext}
@@ -588,7 +575,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {selectedAgency && (
                 <>
                   <LinkCard as="button"
-                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }} icon="chevron">View on map</LinkCard>
+                    onClick={() => { onAgencySelect?.(selectedAgency.slug); onClose(); }} icon="chevron">{VIEW_ON_MAP}</LinkCard>
 
                   {selectedLiveRoutes.length > 0 && (
                     <div>

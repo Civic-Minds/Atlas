@@ -12914,8 +12914,9 @@
     },
     {
       "slug": "smat",
-      "name": "Santa Maria Area Transit",
-      "officialName": "Santa Maria Area Transit",
+      "name": "Santa Maria Regional Transit (SMRT)",
+      "officialName": "Santa Maria Regional Transit",
+      "commonName": "SMRT",
       "websiteUrl": "https://smrt.tripshot.com/",
       "center": [
         34.95,
@@ -28096,6 +28097,32 @@
       "lastFeedStart": "20261017"
     },
     {
+      "slug": "manchester-nh",
+      "name": "Manchester Transit Authority",
+      "officialName": "Manchester Transit Authority",
+      "websiteUrl": "https://mtabus.org/",
+      "center": [
+        42.99,
+        -71.46
+      ],
+      "feedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+      "region": "New Hampshire",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3432/latest.zip",
+      "bbox": [
+        42.7484,
+        -71.5444,
+        43.2225,
+        -71.1978
+      ],
+      "cities": [
+        "Concord, New Hampshire",
+        "Nashua, New Hampshire",
+        "Salem, New Hampshire"
+      ],
+      "timezone": "America/New_York",
+      "hiddenInProduction": true
+    },
+    {
       "slug": "advance-transit",
       "name": "Advance Transit (Lebanon, NH)",
       "officialName": "Advance Transit",
@@ -28154,9 +28181,9 @@
     },
     {
       "slug": "ccta",
-      "name": "CCTA / Green Mountain Transit (Burlington, VT)",
-      "officialName": "CCTA / Green Mountain Transit",
-      "nameQualifier": "Burlington, VT",
+      "name": "Green Mountain Transit (GMT)",
+      "officialName": "Green Mountain Transit",
+      "commonName": "GMT",
       "websiteUrl": "https://www.ridegmt.com/",
       "center": [
         44.48,

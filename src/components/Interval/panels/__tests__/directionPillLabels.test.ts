@@ -3,7 +3,9 @@ import type { ShapeProperties } from '../../../../hooks/useIntervalStats';
 import { directionPillLabels } from '../RouteCardHeadway';
 
 const dir = (headsign: string | null) => ({ headsign } as unknown as ShapeProperties);
-const group = (headsigns: (string | null)[], boundLabel?: string, span: (string | null)[] = []) => ({
+let nextDir = 0;
+const group = (headsigns: (string | null)[], boundLabel?: string, span: (string | null)[] = [], dirId = nextDir++) => ({
+  dirId,
   boundLabel,
   realTier: headsigns.map(dir),
   span: span.map(dir),
@@ -30,10 +32,9 @@ describe('directionPillLabels', () => {
     expect(directionPillLabels([group([], undefined, ['Depot'])], '5', 'Main St')).toEqual(['To Depot']);
   });
 
-  it('only goes generic when a direction has no bound label or destination', () => {
-    expect(directionPillLabels([group([null]), group([''])], '5', 'Main St')).toEqual(['One way', 'Other way']);
-    expect(directionPillLabels([group([null]), group([null]), group([null])], '5', 'Main St'))
-      .toEqual(['Pattern 1', 'Pattern 2', 'Pattern 3']);
+  it('uses the shared unnamed-direction name only when a direction has no bound label or destination (CIV-1569)', () => {
+    expect(directionPillLabels([group([null], undefined, [], 0), group([''], undefined, [], 1)], '5', 'Main St')).toEqual(['Direction 1', 'Direction 2']);
+    expect(directionPillLabels([group(['Downtown'], undefined, [], 0), group([null], undefined, [], 1)], '5', 'Main St')).toEqual(['To Downtown', 'Direction 2']);
   });
 
   it('keeps pills distinct when two directions share a destination', () => {

@@ -1676,6 +1676,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchResearchFrequentService',
   'stretchMeta',
   'stretchRowPeriods',
+  'stretchMainConsistent',
   'stretchRole',
   'stretchIndex',
   'stretchCovers',
@@ -1821,6 +1822,13 @@ export function stampStretchShadow(
     const rowPeriods = ownSlot ? stretchRowPeriods(ownSlot, rowTripsOf(feature)) : [];
     if (rowPeriods.length > 0) p.stretchRowPeriods = rowPeriods;
     else delete p.stretchRowPeriods;
+    // CIV-1588 (#728 follow-up): a variant (short turn) whose own trips all run the main stretch in a period reads the
+    // main stretch's steadiness there, not its own far-terminal flag. No new threshold: the main stretch's own verdict.
+    const mainPeriods = p.stretchRole === 'variant' && stretches.main ? stretchRowPeriods(stretches.main, rowTripsOf(feature)) : [];
+    if (mainPeriods.length > 0) {
+      const consistent = rowsOf(stretches.main!).consistent;
+      p.stretchMainConsistent = Object.fromEntries(mainPeriods.map(k => [k, consistent.includes(k)]));
+    } else delete p.stretchMainConsistent;
   }
   // The filter fields sit on every feature of a route-day or on none (no mixing with today's pools).
   const complete = new Map<string, boolean>();

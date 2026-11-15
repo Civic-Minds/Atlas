@@ -21,7 +21,8 @@ import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
-import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY } from './content/noticeCopy';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, OPEN_MAP_LINK, VIEW_ON_MAP } from './content/noticeCopy';
+import { agencyArticle } from '../shared/agencyArticle';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): RegionPageData | null {
@@ -49,7 +50,7 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
 
   if (!data) {
     return (
-      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
     );
   }
 
@@ -64,11 +65,11 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             <div className="min-w-0">
               <PageTitle>{regionPageH1(data)}</PageTitle>
             </div>
-            <ArrowLink className="shrink-0 whitespace-nowrap" href={mapHref}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={mapHref}>{VIEW_ON_MAP}</ArrowLink>
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{a.title}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(a.title)}<a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{a.title}</a>{joiners.separators[i]}</span>)}
             {joiners.tail}
             {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>

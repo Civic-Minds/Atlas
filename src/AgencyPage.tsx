@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MISSING_VALUE } from '../shared/missingValue';
 import { useParams } from 'react-router';
 import {
   bandCounts,
@@ -8,7 +9,6 @@ import {
   agencyPageH1,
   agencyPagePath,
   agencyStats,
-  headwayEvery,
   resolveAgencySeo,
   AGENCY_DATA_SCRIPT_ID,
   CONNECTS_WITH,
@@ -22,7 +22,8 @@ import {
 import { areaRegionName, areaRegionTitle } from '../shared/areaRegions';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
 import { areaPagePath } from '../shared/areas';
-import { andOthers } from '../shared/overflowText';
+import { andOthers, plural } from '../shared/overflowText';
+import { agencyArticle } from '../shared/agencyArticle';
 import { periodEdgeText, routeListHeadwayText } from './utils/effectiveHeadway';
 import { ATLAS_MODE, PERIOD_LABELS } from '../shared/config';
 import DocsPageLayout from './components/ui/DocsPageLayout';
@@ -38,7 +39,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, OPEN_MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -49,12 +50,13 @@ function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
 }
 
 /** "A, B and C" or "A, B, C and 4 other agencies" (namesList's wording), each name a link when it has a page. */
-function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string }>; others: number; counted: readonly [string, string] }) {
+function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: string; href?: string; before?: string }>; others: number; counted: readonly [string, string] }) {
   return (
     <>
       {items.map((p, i) => (
         <span key={p.name}>
           {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
+          {p.before}
           {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
         </span>
       ))}
@@ -73,7 +75,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   const sentence = 'mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]';
   const placeAt = introLead.length;
   const noMidday = data.agency.routes.length > 0 && data.agency.routes.every(r => r.midday == null)
-    ? ` ${data.agency.routes.length === 1 ? 'Its route has' : 'Its routes have'} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
+    ? ` ${plural(data.agency.routes.length, 'Its route has', 'Its routes have')} ${NO_MIDDAY_PHRASE.replace(/^with /, '')}.`
     : '';
   if (!intro.startsWith(introLead) || !intro.startsWith(place, placeAt)) return <p className={sentence}>{intro}{noMidday}</p>;
   const at = intro.indexOf(CONNECTS_WITH, placeAt);
@@ -92,7 +94,7 @@ function Intro({ data }: { data: AgencyPageData }) {
       {at >= 0 && named.length > 0 && (
         <>
           {CONNECTS_WITH}
-          <LinkedNames items={named.map(c => ({ name: c.name, href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
+          <LinkedNames items={named.map(c => ({ name: c.name, before: agencyArticle(c.name), href: c.page ? agencyPagePath(c.slug) : undefined }))} others={others} counted={['agency', 'agencies']} />
         </>
       )}
       .{noMidday}
@@ -115,7 +117,7 @@ function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPa
   if (v != null) return routeListHeadwayText(v, r.shared?.[col], true);
   if (Array.isArray(r.noRegular) && r.noRegular.includes(col)) return IRREGULAR_PERIOD_SHORT_LABEL;
   // CIV-1251: a period column with service but no number reads Irregular, whichever check found it.
-  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : headwayEvery(null);
+  return Array.isArray(r.limited) && r.limited.includes(col) ? IRREGULAR_PERIOD_SHORT_LABEL : MISSING_VALUE;
 }
 
 /**
@@ -151,7 +153,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">Open the Atlas map</ArrowLink>} />
+      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
     );
   }
 
@@ -169,7 +171,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 : data!.area ? <p className="mt-1 text-sm text-[var(--text-muted)]">{areaRegionTitle(data!.area)}</p>
                 : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
-            <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>View on map</ArrowLink>
+            <ArrowLink className="shrink-0 whitespace-nowrap" href={data!.mapHref ?? agencyMapHref(agency)}>{VIEW_ON_MAP}</ArrowLink>
           </div>
           <Intro data={data!} />
 
@@ -215,7 +217,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                 <SectionTitle id="nearby-heading">
                   {data!.area?.page !== false && data!.area ? <>Nearby agencies in <a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{areaRegionName(data!.area)}</a></> : 'Nearby agencies'}
                 </SectionTitle>
-                <ArrowLink href={AGENCY_INDEX_PATH}>See all agencies</ArrowLink>
+                <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
@@ -226,7 +228,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           )}
 
           {nearby.length === 0 && (
-            <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">See all agencies</ArrowLink>
+            <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">{SEE_ALL_AGENCIES}</ArrowLink>
           )}
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { dateRange } from '../shared/dateText';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { ATLAS_MODE, FEATURES } from '../shared/config';
 import {
-  dateRangeText, freshness, goodDayCounts,
+  freshness, goodDayCounts,
   type DashboardBand, type DashboardBandData, type LiveDashboardResponse, type LiveV3,
 } from '../shared/liveDashboard';
 import { useLiveDashboard, liveAgencyPath, liveToolPath } from './hooks/useLiveDashboard';
@@ -27,7 +28,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { DELAY_STARTS_TITLE, excludingText, LATE_BY_HOUR_TITLE, liveSubtitle, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, METHOD_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
@@ -40,6 +41,7 @@ import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
 import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
+import { countText } from '../shared/numberText';
 
 
 /** The stop-name fields of a v3 file; every one of them is shown in normal case. */
@@ -68,7 +70,7 @@ export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
   // The dashboard's own tiles (labels, change chips, noise rule), so the two views always match.
   return (
-    <Section id="week" title="This week compared with last week">
+    <Section id="week" title={WEEK_COMPARE_TITLE}>
       <KpiRow v3={v3} />
     </Section>
   );
@@ -81,7 +83,7 @@ export function routeSubtitle(v3: LiveV3, /** The agency's short name (useLiveAg
   // figures still names its whole window.
   const thisWeek = w?.thisWeek.dates.length ? w.thisWeek.dates : v3.window.dates;
   const trips = w?.thisWeek.late ? w.thisWeek.late.n : goodDayCounts(v3).runs;
-  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${trips.toLocaleString()} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
+  return liveSubtitle({ thisWeek, lastWeek: w?.comparable ? w.lastWeek.dates : null, middle: `${countText(trips)} trips`, agency: agencyName, upTo: v3.window.dates[v3.window.dates.length - 1] });
 }
 
 /**
@@ -106,7 +108,7 @@ export function DataUpTo({ dates, route = '' }: { dates: readonly string[]; rout
   const last = dates[dates.length - 1];
   if (!last) return null;
   const f = freshness({ window: { dates } } as LiveV3, route, Date.now());
-  const text = `data up to ${dateRangeText(last, last)}`;
+  const text = `data up to ${dateRange(last, last)}`;
   return f.stale
     ? <span role="status" title={f.text} className="text-sm font-bold text-[var(--status-caution-text)]">{text}</span>
     : <span className="text-sm text-[var(--text-muted)]">{text}</span>;
@@ -145,7 +147,7 @@ function AnalysisPage() {
   }, [agencyName, route, routeTitle]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
   const title = `${agencyName} ${route}`;
-  const back = FEATURES.live ? <ArrowLink href="/apps/live">Open Live</ArrowLink> : null;
+  const back = FEATURES.live ? <ArrowLink href="/apps/live">{OPEN_LIVE_LABEL}</ArrowLink> : null;
   // CIV-1446: every route page, loaded or not (a route held back, an unknown route), leads back to the agency's page.
   const toAgency = <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />;
   if (state.kind === 'loading') return <DocsPageLayout width="wide"><div className="mt-24">{toAgency}</div><p className="mt-2 text-sm text-[var(--text-muted)]" aria-busy="true">{loadingText(title)}</p></DocsPageLayout>;
@@ -166,30 +168,30 @@ function AnalysisPage() {
           <p className="m-0 text-sm text-[var(--text-muted)] sm:col-span-2 sm:row-start-2">
             <RouteSubtitle v3={v3} agency={agency} route={route} />
           </p>
-          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">View on Live map</ArrowLink>}
+          {FEATURES.liveReports && <ArrowLink href={liveToolPath(agency, route)} className="mt-3 shrink-0 whitespace-nowrap sm:col-start-2 sm:row-start-1 sm:mt-0">{VIEW_ON_LIVE_MAP}</ArrowLink>}
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
         {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label="Filters">
           <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
-          <PillGroup label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
-            options={[['both', 'Both directions'], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
+          <PillGroup label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
+            options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         </div>}
         {view !== 'analysis' ? (
           <LiveDashboardView lite={view === 'lite'} v3={v3} data={v3.bands.all} band="all" dir={dir} uncertain={uncertain}
             filters={null}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>
-        <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title="Stops most often late" id="b2" intro notRanked /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
         </>)}
-        {/* One "How this is measured" for Summary and Full analysis alike, every line of the method (CIV-308). */}
+        {/* One METHOD_TITLE for Summary and Full analysis alike, every line of the method (CIV-308). */}
         {/* #1490: Summary and Dashboard name the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
         <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={view !== 'analysis' ? excludingText(routeLeftOut(v3)) : null} /></ErrorBoundary>
     </DocsPageLayout>

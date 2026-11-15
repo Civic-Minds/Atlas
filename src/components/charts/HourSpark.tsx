@@ -5,6 +5,7 @@ import { HOUR_TO_PERIOD, hoverOfHour, liveChartHours, type HourHover } from '../
 import PeriodBand from './PeriodBand';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import DataTable from '../ui/DataTable';
+import { countText } from '../../../shared/numberText';
 
 export interface HourValue {
   /** Hour of day, 0-23. */
@@ -81,7 +82,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
         <div aria-hidden="true" onPointerLeave={() => setHv(null)}>
           {/* The hovered hour's figures, in the sparkline's way: a highlight behind the bar and one line above. */}
           <div className="h-5 truncate text-xs text-[var(--text-secondary)]">
-            {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {byHour.get(hover)!.n.toLocaleString()} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null ? idleText : null}
+            {hover != null && byHour.get(hover) ? (hoverLine ? hoverLine(clock(hover), byHour.get(hover)!) : <><span className="font-bold">{clock(hover)}</span> {format(byHour.get(hover)!.value)}, {countText(byHour.get(hover)!.n)} {unit}{byHour.get(hover)!.n < minN ? ' (too few to rely on)' : ''}</>) : hv == null ? idleText : null}
           </div>
           {/* The peak label sits above the tallest bar: room is kept for it so it never runs into the line above. */}
           <div className={`relative ${yAxis ? 'mt-2.5' : peakLabel ? 'mt-3' : ''}`} style={{ paddingLeft: ml }}>
@@ -144,7 +145,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
             columns={[
               { key: 'hour', header: 'Hour', rowHeader: true, className: 'font-normal', cell: v => clock(v.hour) },
               { key: 'value', header: valueHeader, className: 'whitespace-nowrap', cell: v => format(v.value) },
-              { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: v => v.n.toLocaleString() },
+              { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: v => countText(v.n) },
             ]}
           />
       </div>

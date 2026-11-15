@@ -12,8 +12,14 @@ export function bottomSheetFrameClass(visible: boolean): string {
   return `${BOTTOM_SHEET_FRAME} ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`;
 }
 
+/** The short state's height: enough of the card to read while the map stays visible. */
+export const BOTTOM_SHEET_SHORT = 'h-[42dvh]';
+
+/** A short sheet only as tall as its card, up to the usual short height: for a card of a few lines (Live's vehicle card, CIV-1413 D). */
+export const BOTTOM_SHEET_FIT_CONTENT = 'h-auto max-h-[42dvh]';
+
 /** The sheet's scrolling body; `collapsedHeight` is the short state's height class. */
-export function bottomSheetBodyClass(expanded: boolean, collapsedHeight = 'h-[42dvh]'): string {
+export function bottomSheetBodyClass(expanded: boolean, collapsedHeight = BOTTOM_SHEET_SHORT): string {
   return `relative ${FLOATING_CARD} rounded-b-none px-4 pt-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-y-auto overflow-x-hidden overscroll-contain transition-[height] duration-200 ease-out ${expanded ? 'h-[calc(100dvh-76px)]' : collapsedHeight}`;
 }
 

@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
-import { dateRangeText, type LiveV3 } from '../../../../shared/liveDashboard';
-import { pctTenth } from '../../../../shared/liveFormat';
+import { dateRange } from '../../../../shared/dateText';
+import type { LiveV3 } from '../../../../shared/liveDashboard';
 import { TILE } from '../../../pageStyles';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
+import { percentTenthText, countText } from '../../../../shared/numberText';
 
+import { SERVICE_DELIVERED_TITLE } from '../../../../shared/liveWording';
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
   const sd = v3.serviceDelivered;
@@ -13,7 +15,7 @@ export function deliveredModel(v3: LiveV3, dir: number | null) {
   const overall = dir == null ? sd.overall : sd.overall.byDirection[String(dir)];
   const days = sd.byDay.filter(d => d.healthy);
   const skipped = sd.byDay.filter(d => !d.healthy);
-  const points: ProfilePoint[] = days.map(d => ({ label: dateRangeText(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
+  const points: ProfilePoint[] = days.map(d => ({ label: dateRange(d.date, d.date), y: dir == null ? d.share ?? 0 : d.byDirection[String(dir)] ?? 0, n: d.seen + d.notSeen }));
   return { overall, skipped, points };
 }
 
@@ -26,14 +28,14 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   const full = detail === 'full';
   const m = deliveredModel(v3, dir);
   if (!m && full) return null;
-  const frame = (children: ReactNode) => <Section id={full ? 'delivered' : 'x-delivered'} title="Service delivered" shrink={!full} boundary={boundary}>{children}</Section>;
+  const frame = (children: ReactNode) => <Section id={full ? 'delivered' : 'x-delivered'} title={SERVICE_DELIVERED_TITLE} shrink={!full} boundary={boundary}>{children}</Section>;
   if (!m) return frame(null);
   const { overall, skipped, points } = m;
   const chart = (
     <ProfileBars
       ariaLabel="Share of scheduled trips that ran, day by day"
       points={points}
-      formatY={y => `${Math.round(y * 1000) / 10}%`}
+      formatY={percentTenthText}
       unit="trips"
       valueHeader="Ran"
       rowHeader="Day"
@@ -54,8 +56,8 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       {overall?.share != null && (
         <div className={TILE}>
           <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
-          <div className="mt-1 text-3xl font-black tracking-tight">{pctTenth(overall.share)}</div>
-          <div className="mt-1 text-xs text-[var(--text-dim)]">{(overall.seen + overall.notSeen).toLocaleString()} trips</div>
+          <div className="mt-1 text-3xl font-black tracking-tight">{percentTenthText(overall.share)}</div>
+          <div className="mt-1 text-xs text-[var(--text-dim)]">{countText(overall.seen + overall.notSeen)} trips</div>
         </div>
       )}
       {chart}

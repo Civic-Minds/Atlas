@@ -1,0 +1,89 @@
+# Wait-band pass (CIV-1188): for every agency in the current published release, the share of route-km in each wait
+# band (10, 15, 20, 30, 60 minutes, slower, no service) by day type and period, by the map's own filter.
+# Read-only: public URLs only (the R2_PUBLIC_URL secret is the public bucket's address, used because the custom domain
+# returns 403 to GitHub runners), never writes to R2. The rule code is checked out at the release's own
+# codeVersion. Results come back as a workflow artifact. Plan: Atlas/editorial/drafts/wait-band-pass-plan.md.
+# Runs on a dryrun/civ-1188-* tag push (so it can run without pushing main) or by hand.
+name: Wait-band pass
+
+on:
+  push:
+    tags:
+      - 'dryrun/civ-1188-*'
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Optional: comma-separated agency slugs to run instead of all (e.g. "ttc,miway,marta").'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wait-band-pass
+  cancel-in-progress: false
+
+env:
+  STUDY: docs/research/wait-bands-2026-11
+  R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+  ATLAS_USER_AGENT: Atlas wait-band pass (github.com/Civic-Minds/Atlas)
+
+jobs:
+  pass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Read the release pointer
+        id: release
+        run: |
+          set -euo pipefail
+          base="${R2_PUBLIC_URL:-https://data.transitatlas.fyi}"
+          curl -fsSL --retry 3 -A "$ATLAS_USER_AGENT" "${base%/}/atlas/release.json" -o release.json
+          cat release.json
+          code=$(node -e "console.log(JSON.parse(require('fs').readFileSync('release.json','utf8')).codeVersion)")
+          [[ "$code" =~ ^[0-9a-f]{7,40}$ ]] || { echo "Bad codeVersion: $code"; exit 1; }
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+      - name: Check out the rule code at the release's codeVersion
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.release.outputs.code }}
+          path: rules
+          fetch-depth: 0
+      - name: Install the rule code's dependencies
+        run: |
+          cd rules
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check the input
+        env:
+          ONLY: ${{ inputs.only }}
+        run: '[[ "${ONLY:-}" =~ ^[a-z0-9,\-]*$ ]] || { echo "Bad slugs: $ONLY"; exit 1; }'
+      - name: Run the pass
+        env:
+          ONLY: ${{ inputs.only }}
+        run: |
+          set -euo pipefail
+          extra=()
+          [ -n "${ONLY:-}" ] && extra=(--only "$ONLY")
+          rules/node_modules/.bin/tsx $STUDY/src/wait-band-pass.ts --rules rules --out output "${extra[@]}"
+          {
+            echo "## Wait-band pass"
+            echo '```'
+            cat output/run.json
+            echo '```'
+            echo "Skipped agencies:"
+            grep -v ',counted,' output/agencies.csv | tail -n +2 | cut -d, -f1,4 || true
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wait-bands
+          path: |
+            output
+            release.json
+          retention-days: 30
+          if-no-files-found: warn

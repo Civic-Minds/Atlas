@@ -101,6 +101,17 @@ export const MODE_TRANSITIONS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 
 // stop), with the route-level tier still deciding the filter. Beta and dev only until the
 // segment colours have been looked at on real routes.
 export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// Population density / median household income shading under the route lines (CIV-482). There is no production data URL yet, so even where the flag is on the control stays hidden
+// unless a dev-only file URL is set (CONTEXT_LAYER_URL below).
+// CIV-524 (Ryan, 2026-11-14: "I think it should be local only"): local dev only, like the connections bar; off on
+// public, preview and beta.
+export const CONTEXT_LAYER_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
+// Local testing only: a PMTiles URL for the context layer (served by vite from tmp/dev-context, see
+// vite.config.ts). Ignored in every built site, so a deployed build can never be pointed at other data.
+const devContextUrl: unknown =
+  typeof import.meta !== 'undefined' && import.meta.env?.DEV ? import.meta.env.VITE_CONTEXT_LAYER_URL : undefined;
+export const CONTEXT_LAYER_URL: string | undefined =
+  typeof devContextUrl === 'string' && devContextUrl ? devContextUrl : undefined;
 // On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
 // preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
 export const ON_DEMAND_PUBLIC = false;
@@ -147,6 +158,11 @@ export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
+// The connections top bar (CIV-1353): pick a route's trip, a wait and a walk, and the map shows the connecting
+// routes. Local only for now (Ryan, 2026-11-06: "can it be local only for now"): on the Vite dev server, as Live is,
+// never on beta or public builds.
+// Plain import.meta.env, as getAtlasMode reads it, so Vite and Vitest both resolve it; the guard covers tsx scripts.
+export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -172,6 +188,7 @@ export const FEATURES = {
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
   segmentColours: SEGMENT_COLOURS_ENABLED,
+  contextLayer: CONTEXT_LAYER_ENABLED,
   whatsNew: WHATS_NEW_ENABLED,
   agencyPages: AGENCY_PAGES_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,
@@ -185,6 +202,7 @@ export const FEATURES = {
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
+  connectionsBar: CONNECTIONS_BAR_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -202,6 +220,8 @@ export const FEATURE_ROUTES = {
   research: '/research',
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
+  /** CIV-101: beta-only, not listed on /research yet. */
+  bustangConnections: '/research/bustang-connections',
   frequentService: {
     map: '/research/frequent-service',
     story: '/research/frequent-service/story',

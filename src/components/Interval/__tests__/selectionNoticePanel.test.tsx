@@ -9,7 +9,7 @@ describe('not-found and load-error notes close like a card (CIV-1145)', () => {
     render(<SelectionNoticePanel message={STOP_NOT_FOUND} onClose={onClose} />);
     expect(screen.getByText(STOP_NOT_FOUND)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Close/ })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: '← Map' }));
+    fireEvent.click(screen.getByRole('button', { name: '← Back to map' }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
@@ -17,7 +17,7 @@ describe('not-found and load-error notes close like a card (CIV-1145)', () => {
     const onClose = vi.fn();
     render(<SelectionLoadPanel kind="route" failed onClose={onClose} />);
     expect(screen.queryByRole('button', { name: /Close/ })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: '← Map' }));
+    fireEvent.click(screen.getByRole('button', { name: '← Back to map' }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

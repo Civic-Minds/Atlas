@@ -4,6 +4,7 @@ import { routeCardDisplayLimited } from './effectiveHeadway';
 import { headwayAboutRange } from './headwayText';
 import { branchDisplayHourHeadway } from './routeFacts';
 import { rowStretchHourValue, rowTrips, unsteadyDirectionFallback } from './rowTrips';
+import { rowShortEndHeadway } from './rowShortEnd';
 import { hasRegularServiceInPeriod, isOneGapRow, variantRowHeadway, type RouteContract } from './stretchCard';
 import { rowRunsThroughNight } from '../../shared/nightService';
 
@@ -30,6 +31,14 @@ export interface RouteCardRowContext {
   maxHeadway: number;
   /** CIV-995 (b): rows read their stretch's values (default); false keeps each row's own trips (lists, History, stop card). */
   stretchValues?: boolean;
+  /**
+   * #1506: the map colours lines section by section (beta). The line along a row's stretch then takes that stretch's own
+   * grade, not the route's one colour, so the row's dot is never better than the number it shows (GO KI midday: "every
+   * 120 min" to Kitchener had the route's orange dot, every 30, beside a grey line). The lists' range dot does the same.
+   */
+  sectionColours?: boolean;
+  /** #1502, #1505: the stops of the row's direction's main stretch (mainStretchStops), so a row finds its short ends. */
+  mainStretchStops?: ReadonlySet<string>;
 }
 
 /** What one route card row shows: its number, its words and its colour (CIV-992; moved out of RouteCardHeadway). */
@@ -46,6 +55,8 @@ export interface RouteCardRowValue {
   edgeText: string | undefined;
   /** The text beside or under the number. */
   headwayLabel: string | undefined;
+  /** The number the row shows: its words' number where its words name one (CIV-1199), else its headway. */
+  shownHeadway?: number;
   /** The filter's colour for the row's dot. */
   colorHeadway: number | null | undefined;
   trunkHeadway: number | null | undefined;
@@ -120,17 +131,32 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   const isLimited = rowNoRegular
     ? true
     : displayH == null && hoveredHour == null && routeCardDisplayLimited(d, period);
+  // #1502, #1505 (beta): an end of the row's line under the branch rule's minimum that the section colours draw slower than
+  // the row's number reads as the range from that number to the end's own (CTA Green to Cottage Grove: "every 10–20 min"),
+  // the range a one-row branch reads (CIV-1447), so the row never says better than the line beside it. A row with words of
+  // its own keeps them.
+  const endH = ctx.sectionColours && hoveredHour == null && !nightRow && variantH === undefined && allDayH == null && !ownWords
+    && !rowNoRegular && typeof displayH === 'number'
+    ? rowShortEndHeadway(d, period, displayH, ctx.mainStretchStops)
+    : undefined;
+  const slowEnd = endH != null && typeof displayH === 'number' && endH > displayH ? endH : undefined;
+  const rangeLow = slowEnd != null ? Math.min(trunkHeadway ?? Infinity, displayH as number) : trunkHeadway;
+  const shownHeadway = rowNoRegular ? undefined : slowEnd ?? (edgeText != null && trips.partPeriodEvery != null ? trips.partPeriodEvery : uneven ? uneven.worst : displayH ?? undefined);
+  const dotHeadway = ctx.sectionColours && typeof branchFilterHeadway === 'number' && shownHeadway != null
+    ? Math.max(branchFilterHeadway, shownHeadway)
+    : branchFilterHeadway;
   return {
     displayH,
-    headway: rowNoRegular ? undefined : displayH ?? undefined,
+    headway: rowNoRegular ? undefined : slowEnd ?? displayH ?? undefined,
+    shownHeadway,
     isLimited,
     rowNoRegular,
     edgeText,
     headwayLabel: !nightRow && hoveredHour == null && variantH === undefined
       ? (edgeText ?? (uneven ? headwayAboutRange(uneven.typical, uneven.worst) : undefined))
       : undefined,
-    colorHeadway: hoveredHour == null && !rowNoRegular ? branchFilterHeadway : undefined,
-    trunkHeadway,
+    colorHeadway: hoveredHour == null && !rowNoRegular ? dotHeadway : undefined,
+    trunkHeadway: rangeLow,
     dimmed,
   };
 }

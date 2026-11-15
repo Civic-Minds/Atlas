@@ -35,4 +35,22 @@ describe('MNR express/local bus pairs (CIV-1086)', () => {
     const other = times('X', [['177', '05:26'], ['175', '05:40'], ['94', '06:30']]);
     expect(dropMnrExpressBusPairs(feed([trip('X'), trip('LB')], [...other, ...local('LB')])).dropped).toBe(0);
   });
+
+  // CIV-1307: weekday LB964 leaves Wassaic at 13:26 and EB964 at 13:54; both reach Southeast at 14:54.
+  it('leaves out the express that reaches the end with a local serving all its stops', () => {
+    const lateExpress = times('EB964', [['177', '13:54'], ['176', '14:04'], ['94', '14:54']]);
+    const earlyLocal = times('LB964', [['177', '13:26'], ['176', '13:36'], ['101', '13:46'], ['100', '14:01'], ['98', '14:14'], ['97', '14:29'], ['94', '14:54']]);
+    const { gtfs, dropped } = dropMnrExpressBusPairs(feed([trip('EB964', 'Southeast (Bus)', 'wkd'), trip('LB964', 'Southeast (Bus)', 'wkd')], [...lateExpress, ...earlyLocal]));
+    expect(dropped).toBe(1);
+    expect(gtfs.trips.map(t => t.trip_id)).toEqual(['LB964']);
+  });
+
+  it('keeps buses that reach the end at different minutes, or where the earlier one skips stops', () => {
+    const lateExpress = times('EB', [['177', '13:54'], ['176', '14:04'], ['94', '14:55']]);
+    const earlyLocal = times('LB', [['177', '13:26'], ['176', '13:36'], ['101', '13:46'], ['94', '14:54']]);
+    expect(dropMnrExpressBusPairs(feed([trip('EB'), trip('LB')], [...lateExpress, ...earlyLocal])).dropped).toBe(0);
+    const sameEnd = times('EB', [['177', '05:54'], ['176', '06:04'], ['94', '06:54']]);
+    const otherLocal = times('X', [['177', '05:26'], ['175', '05:40'], ['94', '06:54']]);
+    expect(dropMnrExpressBusPairs(feed([trip('EB'), trip('X')], [...sameEnd, ...otherLocal])).dropped).toBe(0);
+  });
 });

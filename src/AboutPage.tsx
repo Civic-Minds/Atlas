@@ -18,11 +18,11 @@ const STORY_TILT = [-1.5, 1, -0.75];
 /** Where / When / How often, each on a pale tint of one frequency colour with its icon in that colour (CIV-1206 D). */
 const QUESTIONS = [
   { title: 'Where', body: 'See the routes and places connected by a network.', Icon: MapPin },
-  { title: 'When', body: 'See what still runs in the morning, evening, or overnight.', Icon: Clock },
+  { title: 'When', body: 'See what still runs in the morning, evening or overnight.', Icon: Clock },
   { title: 'How often', body: 'Compare scheduled frequency without opening a schedule.', Icon: Repeat },
 ];
 
-/** A pale tint of a frequency colour on the page background: never a dark fill (STYLE.md). */
+/** A pale tint of a frequency colour on the page background: never a dark fill (docs/style/VISUAL.md). */
 const tint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
 
 /** A picture with a light and a dark version; CSS shows the current theme's (index.css, .theme-light-only). */
@@ -73,14 +73,14 @@ export default function AboutPage() {
   const tiers = useHeadwayTiers();
   const stories = useOverflows<HTMLDivElement>();
   return (
-    <PageShell variant="wide" logoHref="/about">
+    <PageShell variant="wide">
 
         {/* The headline beside a picture of the map (CIV-1206 D, Ryan: "a picture of the Atlas map beside the headline"):
             Toronto's routes in their frequency colours, without the base map's street names. */}
         <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14">
           <div>
             <PageTitle level="hero">Find the transit service that actually runs.</PageTitle>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency, and place.</p>
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ArrowLink href="/">Try Atlas</ArrowLink>
               {FEATURES.researchApps && <a href="/research" className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
@@ -128,7 +128,7 @@ export default function AboutPage() {
         <section className="grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
           <h2 className="max-w-xs text-2xl font-black tracking-tight">Built for looking closer.</h2>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
-            <p>Atlas brings published agency schedules into one place so riders, planners, researchers, and advocates can compare routes across cities, time periods, and modes.</p>
+            <p>Atlas brings published agency schedules into one place so riders, planners, researchers and advocates can compare routes across cities, time periods and modes.</p>
             <p>It does not replace official trip planning or live alerts. It makes the patterns in scheduled service easier to see.</p>
             <ArrowLink href="/about/docs">Read how Atlas works</ArrowLink>
           </div>

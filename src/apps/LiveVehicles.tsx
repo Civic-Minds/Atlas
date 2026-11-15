@@ -12,7 +12,7 @@ import { fetchAgencyGeo } from '../lib/agencyGeo';
 import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, SIDEBAR_LEFT_FALLBACK, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
-import { BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
+import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import ListRow from '../components/ui/ListRow';
 import Tag from '../components/ui/Tag';
 import { useRouteAnalysis } from '../hooks/useRouteAnalysisPatterns';
@@ -24,7 +24,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
-import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, vehicleModeCount, nameCase } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, liveVehicleRowLabel, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
@@ -33,7 +33,7 @@ import { andOthers, countOf } from '../../shared/overflowText';
 import { inferLiveDirection } from '../utils/liveDirection';
 import { DIRECTION_UNCLEAR, compareLiveRoutes, focusDirectionKey, groupVehiclesByDirection, orderAlongRoute, orderDirectionGroups, riderHeadsign, routeDirectionLabels } from '../utils/liveGrouping';
 import { liveRouteReportDetails, liveVehicleReportDetails } from '../components/Live/liveReport';
-import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY } from '../components/Interval/cardUi';
+import { CardDirectionRow, CardHelpNotice, CardReportButton, SidebarCardHeaderBlock, SidebarCardListRows, SidebarCardSection, SidebarCardShell, CARD_LIST_ROUTE, SIDEBAR_CARD_BODY, REPORT_REASON } from '../components/Interval/cardUi';
 import { liveVehiclesFingerprint } from '../utils/liveVehiclesFingerprint';
 import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRouteKey } from '../utils/routeKey';
 import type { MapFocus } from '../utils/routeFocus';
@@ -47,7 +47,9 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText } from '../content/noticeCopy';
+import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS } from '../content/noticeCopy';
+import { speedText } from '../../shared/unitText';
+import { directionBranchFallback } from '../../shared/headsignDisplay';
 
 interface Props {
   agencies: Agency[];
@@ -349,7 +351,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         const dominantStatus: LiveVehicle['status'] =
           lateCount > 0 ? 'late' : earlyCount > 0 ? 'early' : vs[0].status;
         const displayName = nameCase(cleanRouteDisplayName(
-          routeNamesByKey.get(key) || vs[0].displayName || `Route ${routeShortName}`,
+          routeNamesByKey.get(key) || vs[0].displayName || routeShortLabel(routeShortName),
           routeShortName,
         ), 'route');
         return { agencySlug, routeShortName, displayName, vehicles: vs, lateCount, earlyCount, dominantStatus };
@@ -580,8 +582,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const canGroupByDirection = useMemo(() => {
     if (!vehiclesByDirection || vehiclesByDirection.size === 0) return false;
     if (vehiclesByDirection.size > 1) return true;
-    const [soleKey] = [...vehiclesByDirection.keys()];
-    return soleKey !== 'Outbound' && soleKey !== 'Inbound';
+    // A sole group named only by the unnamed-direction fallback says nothing; a real name (even an agency's own
+    // "Outbound") is worth showing.
+    const [[soleKey, soleVehicles]] = [...vehiclesByDirection.entries()];
+    return !soleVehicles.some(v => v.directionId != null && soleKey === directionBranchFallback(v.directionId));
   }, [vehiclesByDirection]);
 
   // Every vehicle stays on the map; a picked route keeps its own at full strength and fades the rest. A picked
@@ -708,6 +712,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
   const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
+  // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
+  const vehicleCardOpen = !!(selectedGroup && cardVehicle);
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -731,7 +737,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}, vehicle ${cardVehicle.vehicleLabel ?? cardVehicle.id}`}
             details={liveVehicleReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, vehicle: cardVehicle })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -783,7 +789,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}`}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
             showLiveReason
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -828,7 +834,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 // One line per vehicle (CIV-1125 option B): the speed beside the delay, at the right.
                 value={(v.speedKmh != null || delayLabel(v)) ? (
                   <span className="inline-flex items-center gap-2 shrink-0 whitespace-nowrap">
-                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{v.speedKmh} km/h</span>}
+                    {v.speedKmh != null && <span className="text-xs font-bold text-[var(--text-dim)]">{speedText(v.speedKmh)}</span>}
                     {delayLabel(v) && (
                       <span
                         style={{ color: v.status === 'no_data' ? undefined : colors.border }}
@@ -865,7 +871,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
       >
         {cardOpen ? (
           // The report form takes the card's width (CIV-932), as History's card does (CIV-1117).
-          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded) : SIDEBAR_CARD_BODY}>
+          <div data-report-anchor="true" className={sheetMode ? bottomSheetBodyClass(sheetExpanded, vehicleCardOpen ? BOTTOM_SHEET_FIT_CONTENT : undefined) : SIDEBAR_CARD_BODY}>
             {sheetMode && <BottomSheetHandle expanded={sheetExpanded} handle={sheetHandle} />}
             {cardBody}
           </div>
@@ -1002,7 +1008,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (
-          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label="About Atlas">
+          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label={ABOUT_ATLAS}>
             <Info className="w-4 h-4" />
           </button>
         )}

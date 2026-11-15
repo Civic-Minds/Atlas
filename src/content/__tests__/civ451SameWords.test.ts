@@ -19,7 +19,7 @@ describe('CIV-451 History copy keeps the same words', () => {
     expect(HISTORY_TITLE).toBe('Historical service');
     expect(HISTORY_BUTTON_LABEL).toBe('History');
     expect(HISTORY_BUTTON_ACTIVE_LABEL).toBe('Back to frequency map');
-    expect(HISTORY_BACK_TO_AGENCIES).toBe('All agencies');
+    expect(HISTORY_BACK_TO_AGENCIES).toBe('Agencies'); // CIV-1462: the map's word for the agency list
     expect(HISTORY_YEAR_HINT).toBe('Older to newer');
     expect(HISTORY_YEAR_LABEL).toBe('History year');
     expect(HISTORY_EXPAND_CHART).toBe('Expand chart');

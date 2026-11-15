@@ -80,7 +80,9 @@ Read first: [Decisions](product/DECISIONS.md), then the [Style guide](STYLE.md) 
 
 | Doc | Job |
 |---|---|
-| [Style guide](STYLE.md) | Open before any UI change, for how Atlas looks and what words it uses. |
+| [Style guide](STYLE.md) | Open before any UI change: the two rules that come first, and links to its two halves. |
+| [How Atlas looks](style/VISUAL.md) | Open when you change layout, components, colour, map overlays, Live visuals, or make a chart or graphic (including LinkedIn graphics). |
+| [How Atlas talks](style/TEXT.md) | Open when you change any words users see: frequencies, times, agency names, notices. |
 | [UI components](../src/components/README.md) | Open before you build UI, to reuse a shared primitive instead of adding one. |
 | [UI fix validation](engineering/FIXING_UI_ISSUES.md) | Open when your fix changes shared UI, before you commit. |
 

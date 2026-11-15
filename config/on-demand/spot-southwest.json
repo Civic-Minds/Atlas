@@ -1,0 +1,846 @@
+{
+  "slug": "spot-southwest",
+  "agency": {
+    "slug": "spot-southwest",
+    "name": "SPOT Southwest",
+    "region": "Oregon",
+    "center": [
+      45.437292,
+      -122.828281
+    ],
+    "url": "",
+    "bbox": [
+      45.407641,
+      -122.877757,
+      45.466943,
+      -122.778806
+    ],
+    "cities": [
+      "Beaverton, Oregon",
+      "Tigard, Oregon"
+    ],
+    "displayArea": "Southwest Beaverton",
+    "onDemandOnly": true,
+    "websiteUrl": "https://catchthespot.org/",
+    "timezone": "America/Los_Angeles"
+  },
+  "area": {
+    "serviceName": "SPOT Southwest",
+    "sourceUrl": "https://catchthespot.org/",
+    "sourceLabel": "SPOT page and SPOT Southwest GTFS-Flex feed (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-14",
+    "bookingInfo": "Book in the SPOT Ride app or call 503-907-7768.",
+    "bookingUrl": "https://catchthespot.org/",
+    "tripRules": "Trips can start and end anywhere in Southwest Beaverton and River Terrace, or at Washington Square Transit Center and 13 other stops outside it.",
+    "zoneMetadata": {
+      "Southwest Beaverton and River Terrace": {
+        "serviceName": "SPOT Southwest",
+        "serviceHours": "Monday to Friday 6:30 a.m. to 9:30 p.m. No weekend service.",
+        "hoursNote": "Closed New Year's Day, Memorial Day, Independence Day (July 3 and 4), Labor Day, Thanksgiving Day and Christmas Day.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6.5,
+              "endHour": 21.5
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://catchthespot.org/",
+          "retrievedAt": "2026-11-14"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://catchthespot.org/",
+        "sourceLabel": "SPOT Southwest GTFS-Flex locations.geojson (agency-supplied)",
+        "sourceRetrievedAt": "2026-10-13",
+        "areaName": "Southwest Beaverton and River Terrace"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.87775670297769,
+              45.43091281872959
+            ],
+            [
+              -122.87476748053403,
+              45.42854437302712
+            ],
+            [
+              -122.87173043827447,
+              45.42471384909533
+            ],
+            [
+              -122.86719553191573,
+              45.425809766675734
+            ],
+            [
+              -122.8626092951172,
+              45.42581403795016
+            ],
+            [
+              -122.86298847492291,
+              45.42581403795016
+            ],
+            [
+              -122.86286842845942,
+              45.42708953011212
+            ],
+            [
+              -122.86210871434,
+              45.42791595271108
+            ],
+            [
+              -122.8599815148056,
+              45.42804924554546
+            ],
+            [
+              -122.8599435290996,
+              45.429142234915176
+            ],
+            [
+              -122.85979158627569,
+              45.429675392781135
+            ],
+            [
+              -122.85887992933236,
+              45.43012857300753
+            ],
+            [
+              -122.85827215803683,
+              45.43098160826885
+            ],
+            [
+              -122.85702550805146,
+              45.43104054022018
+            ],
+            [
+              -122.85580345421937,
+              45.42939929604844
+            ],
+            [
+              -122.85518295531888,
+              45.42963132656128
+            ],
+            [
+              -122.85447972323159,
+              45.42982468459337
+            ],
+            [
+              -122.85439928738212,
+              45.429806331589894
+            ],
+            [
+              -122.85432769354965,
+              45.42972845776247
+            ],
+            [
+              -122.85427837547279,
+              45.42963111532825
+            ],
+            [
+              -122.85405336174722,
+              45.42943859313072
+            ],
+            [
+              -122.85372732858507,
+              45.429211459357596
+            ],
+            [
+              -122.85365687773877,
+              45.42913235607376
+            ],
+            [
+              -122.85360447728215,
+              45.42908692914564
+            ],
+            [
+              -122.85359523014273,
+              45.42904799174954
+            ],
+            [
+              -122.85359496666314,
+              45.42904639606335
+            ],
+            [
+              -122.85388450458167,
+              45.428897522902055
+            ],
+            [
+              -122.85452792217853,
+              45.42850052588568
+            ],
+            [
+              -122.85401368475063,
+              45.42788959604287
+            ],
+            [
+              -122.85330697586235,
+              45.426281661300244
+            ],
+            [
+              -122.85643781743782,
+              45.425863549142385
+            ],
+            [
+              -122.8625004584923,
+              45.42581413931237
+            ],
+            [
+              -122.85845034442666,
+              45.42581791128259
+            ],
+            [
+              -122.8585070901349,
+              45.42101946854313
+            ],
+            [
+              -122.8594401837796,
+              45.421009011583614
+            ],
+            [
+              -122.85949965387744,
+              45.41836488951669
+            ],
+            [
+              -122.85160339562438,
+              45.418423613164904
+            ],
+            [
+              -122.85146880879454,
+              45.407641254250954
+            ],
+            [
+              -122.84671504172393,
+              45.40765527794056
+            ],
+            [
+              -122.84670995547856,
+              45.40765841878743
+            ],
+            [
+              -122.84667296188402,
+              45.40765841878743
+            ],
+            [
+              -122.84647319647387,
+              45.4076480301287
+            ],
+            [
+              -122.84644426174064,
+              45.40764891005018
+            ],
+            [
+              -122.84663969629001,
+              45.40828801583887
+            ],
+            [
+              -122.84663811292766,
+              45.42120936262062
+            ],
+            [
+              -122.83637493956263,
+              45.42120395012134
+            ],
+            [
+              -122.83638012744244,
+              45.42101238022952
+            ],
+            [
+              -122.83247194174531,
+              45.42103635878903
+            ],
+            [
+              -122.83207307651918,
+              45.4217382792975
+            ],
+            [
+              -122.82611747916253,
+              45.421739585048634
+            ],
+            [
+              -122.82606323778906,
+              45.425703226427046
+            ],
+            [
+              -122.8158308138662,
+              45.425809623676095
+            ],
+            [
+              -122.81576194140592,
+              45.430626264746294
+            ],
+            [
+              -122.81633039705542,
+              45.431372223540194
+            ],
+            [
+              -122.81573885340613,
+              45.43200972019638
+            ],
+            [
+              -122.81570141116457,
+              45.43592842704892
+            ],
+            [
+              -122.81826257073921,
+              45.43593565173593
+            ],
+            [
+              -122.81825887710502,
+              45.43682765008659
+            ],
+            [
+              -122.82037896568443,
+              45.4368341043735
+            ],
+            [
+              -122.81769287035854,
+              45.43979253228752
+            ],
+            [
+              -122.81700491259882,
+              45.44080251981451
+            ],
+            [
+              -122.81625463408633,
+              45.441370671808365
+            ],
+            [
+              -122.82596663908032,
+              45.43827307851697
+            ],
+            [
+              -122.82605316474977,
+              45.45304277992497
+            ],
+            [
+              -122.82616696976073,
+              45.45564938960046
+            ],
+            [
+              -122.8262339006347,
+              45.45818434102573
+            ],
+            [
+              -122.82607125913474,
+              45.46036361747449
+            ],
+            [
+              -122.82609432212269,
+              45.463213088907295
+            ],
+            [
+              -122.82613993784422,
+              45.46566030785704
+            ],
+            [
+              -122.84581918538842,
+              45.46565032844584
+            ],
+            [
+              -122.84647384705043,
+              45.46576556636154
+            ],
+            [
+              -122.84875342220761,
+              45.46692939274941
+            ],
+            [
+              -122.85178535769678,
+              45.46694259595222
+            ],
+            [
+              -122.85173317528243,
+              45.46560205605805
+            ],
+            [
+              -122.84936249088771,
+              45.46558734234384
+            ],
+            [
+              -122.84935200113372,
+              45.4641674508505
+            ],
+            [
+              -122.85170170602055,
+              45.46402766685274
+            ],
+            [
+              -122.85173850531892,
+              45.46203531820472
+            ],
+            [
+              -122.86751201850254,
+              45.46202929929291
+            ],
+            [
+              -122.86746199456476,
+              45.45845968414996
+            ],
+            [
+              -122.87018304477387,
+              45.45851427646647
+            ],
+            [
+              -122.87074505648626,
+              45.45945343915931
+            ],
+            [
+              -122.87078436588988,
+              45.45980574717116
+            ],
+            [
+              -122.8716490338711,
+              45.459794514619695
+            ],
+            [
+              -122.87192001243386,
+              45.46021234377346
+            ],
+            [
+              -122.87270037463266,
+              45.46020596591081
+            ],
+            [
+              -122.87270650543077,
+              45.44763612883378
+            ],
+            [
+              -122.86749748972552,
+              45.44764465672765
+            ],
+            [
+              -122.86750635497879,
+              45.43675926266801
+            ],
+            [
+              -122.87011848426222,
+              45.43671175566929
+            ],
+            [
+              -122.87010305888977,
+              45.43319411281982
+            ],
+            [
+              -122.87768044160771,
+              45.43319766335899
+            ],
+            [
+              -122.87775670297769,
+              45.43091281872959
+            ]
+          ],
+          [
+            [
+              -122.87258171092765,
+              45.45009746640562
+            ],
+            [
+              -122.87255643115512,
+              45.45289681994638
+            ],
+            [
+              -122.86813446046844,
+              45.45289437774373
+            ],
+            [
+              -122.86775251991098,
+              45.44982174706965
+            ],
+            [
+              -122.8678776220287,
+              45.44831678509548
+            ],
+            [
+              -122.87253107147245,
+              45.448209214612774
+            ],
+            [
+              -122.87258171092765,
+              45.45009746640562
+            ]
+          ],
+          [
+            [
+              -122.84617924173658,
+              45.42950902054358
+            ],
+            [
+              -122.8460306964617,
+              45.430054577367855
+            ],
+            [
+              -122.84596137533345,
+              45.43027349359192
+            ],
+            [
+              -122.84593661778759,
+              45.43068005004103
+            ],
+            [
+              -122.84594460181228,
+              45.43112812868527
+            ],
+            [
+              -122.84569260160121,
+              45.431323394932285
+            ],
+            [
+              -122.84533560130222,
+              45.43134181624143
+            ],
+            [
+              -122.84503376314333,
+              45.43125339390245
+            ],
+            [
+              -122.84491629705892,
+              45.43103891023318
+            ],
+            [
+              -122.84386688695723,
+              45.43095456085899
+            ],
+            [
+              -122.84378766281056,
+              45.430256119319466
+            ],
+            [
+              -122.84443631051101,
+              45.430270018737914
+            ],
+            [
+              -122.84463932238674,
+              45.43023874504168
+            ],
+            [
+              -122.8448571887899,
+              45.430137974124776
+            ],
+            [
+              -122.8448769948266,
+              45.42984261005623
+            ],
+            [
+              -122.84496117048235,
+              45.42917542905936
+            ],
+            [
+              -122.84613962966333,
+              45.42921712810272
+            ],
+            [
+              -122.84617924173658,
+              45.42950902054358
+            ]
+          ],
+          [
+            [
+              -122.84477845806298,
+              45.44565040408604
+            ],
+            [
+              -122.84432846071265,
+              45.445832095384766
+            ],
+            [
+              -122.84358102921603,
+              45.4458416296645
+            ],
+            [
+              -122.84242590781213,
+              45.44603867108465
+            ],
+            [
+              -122.84173736485768,
+              45.445269570029055
+            ],
+            [
+              -122.84354179867766,
+              45.44448402795389
+            ],
+            [
+              -122.84477845806298,
+              45.44565040408604
+            ]
+          ],
+          [
+            [
+              -122.83833382744805,
+              45.45834253954167
+            ],
+            [
+              -122.8382609719537,
+              45.46075361377069
+            ],
+            [
+              -122.83636010587405,
+              45.460772195830664
+            ],
+            [
+              -122.83634685942057,
+              45.45825427089872
+            ],
+            [
+              -122.83833382744805,
+              45.45834253954167
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Mountainside HS - East (Altura)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.85508133716364,
+          45.42959281358694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Mountainside HS - West (Amity Orchards)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.86024321208454,
+          45.42688270369397
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Scholls Heights Elementary",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.84546229578208,
+          45.431318016717675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Sexton Mountain ES",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8363614412676,
+          45.45870344755853
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Cooper Mountain Nature Park",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.87104400652863,
+          45.452519210393014
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Nancy Ryles ES",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.84365053800458,
+          45.445800154753506
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "Washington Square Transit Center",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.77880604216323,
+          45.45259114286226
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Hart Rd (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8245156,
+          45.46551186
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Sexton Mountain Dr (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8246806,
+          45.46026843
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Brockman St (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8241931,
+          45.45289986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Weir Rd (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8247346,
+          45.44754062
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Osprey Dr (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8244515,
+          45.44270807
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Teal Blvd (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.8248173,
+          45.4403488
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "spot-southwest",
+        "serviceType": "on-demand",
+        "stopName": "SW Maverick Ter (East of Murray)",
+        "areaName": "Southwest Beaverton and River Terrace",
+        "sourceUrl": "https://catchthespot.org/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.82455547876509,
+          45.455813464829546
+        ]
+      }
+    }
+  ],
+  "notes": "Zone and stops from gtfs-flex.zip (Spare GTFS-Flex Editor export of 2026-10-13), sent by Ride Connection (operator) to Atlas Outreach on 2026-10-13. The zone is the feed's one location, 'Mountainside Boundary' (locations.geojson, with its 4 holes), used exactly as given; it is named from the feed's route description. The 14 stops are the feed's one location group (stops.txt): Washington Square Transit Center, schools, Cooper Mountain Nature Park and 7 stops east of Murray Blvd, all outside the zone; the feed allows trips between the zone and these stops. Calendar runs 2026-09-01 to 2030-01-05, weekdays. The feed's booking window is 6 a.m. to 9:45 p.m.; the hours shown are the rider page's (6:30 a.m. first pickup, 9:30 p.m. last drop-off). Open to everyone and free (catchthespot.org: 'It's for everyone'); funded by a STIF grant through Washington County. Pickup is where the rider is (page), but no curb or door rule is stated, so no pickup method is set. Not attached to TriMet: SPOT is run by Washington County and Ride Connection."
+}

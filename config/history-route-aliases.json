@@ -25,5 +25,21 @@
   "caltrain": {
     "Local Weekday": [{ "key": "Local", "days": "weekday" }],
     "Local Weekend": [{ "key": "Local", "days": "weekend" }]
+  },
+  "port-authority-pa": {
+    "SLVR": ["BLLB"],
+    "BLUE": ["BLSV"]
+  },
+  "trimet": {
+    "NS": ["193", "NS Line"],
+    "A": ["194", "A Loop"],
+    "B": ["195", "B Loop"],
+    "FX2": ["2"]
+  },
+  "bigbluebus": {
+    "R10": ["10"],
+    "R12": ["22"],
+    "R3": ["23"],
+    "R7": ["27"]
   }
 }

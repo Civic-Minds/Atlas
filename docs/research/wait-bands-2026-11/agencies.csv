@@ -1,0 +1,548 @@
+slug,name,country,status,total_route_km,routes_counted,routes_irregular_dropped,release_id,code_version
+abqride,ABQ RIDE (Albuquerque),United States,counted,419.228,22,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ace,Altamont Corridor Express,United States,counted,0.000,0,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+actransit,Alameda-Contra Costa Transit District (AC Transit),United States,counted,1334.426,70,53,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+advance-transit,"Advance Transit (Lebanon, NH)",United States,counted,26.995,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+akron,Akron Metro Regional Transit Authority,United States,counted,395.960,22,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+albany-ga,Albany Transit System,United States,counted,31.613,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+albemarle-county,Charlottesville Area Transit (CAT),United States,counted,118.623,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+all-points-transit,All Points Transit (Montrose),United States,counted,59.024,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+amarillo,Amarillo City Transit,United States,counted,122.509,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+anchorage,Anchorage People Mover,United States,counted,197.466,13,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+annapolis,Annapolis Transit,United States,counted,82.349,6,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+appleton,Valley Transit (Appleton/Fox Cities),United States,counted,180.415,18,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+art,Arlington Transit (ART),United States,counted,134.798,14,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+arvin,Arvin Transit,United States,counted,49.447,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+asheville,Asheville Rides Transit,United States,counted,198.011,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ata,Area Transportation Authority (ATA),United States,counted,166.757,11,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+athens-acc,Athens Clarke County Transit,United States,counted,182.954,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+athens-oh,Athens Public Transit,United States,counted,152.297,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+augusta,Augusta Transit,United States,counted,121.261,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+avon-transit,Avon Transit,United States,counted,21.247,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+avta,Antelope Valley Transit Authority (AVTA),United States,counted,702.203,16,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+b-line,B-Line (Corpus Christi RTA),United States,counted,457.329,28,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bangor,Bangor Community Connector,United States,counted,120.080,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+banning,Banning Connect,United States,counted,45.007,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+barrie,Barrie Transit,Canada,counted,257.104,13,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bart,Bay Area Rapid Transit (BART),United States,counted,394.933,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+barta,BARTA (Reading),United States,counted,231.101,19,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+basin-transit,Basin Transit,United States,counted,353.254,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bata,"Bay Area Transportation Authority (Traverse City, MI)",United States,counted,254.367,11,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bay-metro,Bay Metro (Bay City),United States,counted,250.211,10,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bay-transit,Bay Transit,United States,counted,21.383,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bc-ferries,BC Ferries,Canada,counted,66.591,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bc-fraser-valley,BC Transit (Fraser Valley),Canada,counted,571.092,31,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+beach-cities-transit,"Beach Cities Transit (South Bay, CA)",United States,counted,42.388,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+beaumont-ca,Beaumont Transit,United States,counted,45.589,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+beaver-county,Beaver County Transit Authority,United States,counted,114.039,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+beeline,Westchester County Bee-Line System (BeeLine),United States,counted,783.300,34,23,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+belleville,Belleville Transit,Canada,counted,86.482,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ben-franklin,"Ben Franklin Transit (Tri-Cities, WA)",United States,counted,398.294,24,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bettendorf,Bettendorf Transit,United States,counted,87.259,3,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bigbluebus,Big Blue Bus (Santa Monica),United States,counted,218.758,16,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+billings,MET Transit (Billings),United States,counted,146.282,11,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bis-man,Bis-Man Transit (Bismarck-Mandan),United States,counted,99.120,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+blacksburg,Blacksburg Transit,United States,counted,256.812,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bloomington,Bloomington Transit,United States,counted,127.457,15,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bowling-green,City of Bowling Green,United States,counted,22.178,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+brampton,Brampton Transit,Canada,counted,708.941,48,22,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+brandon,Brandon Transit,Canada,counted,82.302,8,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+brantford,Brantford Transit,Canada,counted,168.794,13,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+brazos,Brazos Transit District,United States,counted,27.718,1,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+breck-free-ride,Breckenridge Free Ride,United States,counted,54.935,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bridgeport-gbt,Greater Bridgeport Transit,United States,counted,243.270,15,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+broome,Broome County Transit,United States,counted,206.105,14,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+broward-transit,Broward County Transit,United States,counted,80.562,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+brownsville,Brownsville Metro,United States,counted,35.685,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bts-or,Basin Transit Service (BTS),United States,counted,94.393,6,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+burbankbus,BurbankBus,United States,counted,28.771,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+burlington,Burlington Transit,Canada,counted,173.330,12,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+burlington-ia,Burlington Urban Service (BUS),United States,counted,21.656,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bustang,Bustang (CDOT),United States,counted,821.449,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+bustang-outrider,Bustang Outrider,United States,counted,0.000,0,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+butler-county-rta,Butler County Regional Transit Authority,United States,counted,253.204,12,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+butler-pa,Butler Transit Authority,United States,counted,83.944,4,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+calgary,Calgary Transit,Canada,counted,2052.191,137,124,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+caltrain,Caltrain,United States,counted,204.689,3,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+camarillo,Camarillo Area Transit,United States,counted,9.704,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cambus,CAMBUS (University of Iowa),United States,counted,46.438,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+campbell-river,BC Transit (Campbell River),Canada,counted,68.078,6,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+camtran,CamTran,United States,counted,194.988,15,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+capmetro,Capital Metro (Austin),United States,counted,1052.761,60,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+carson-circuit,Carson Circuit,United States,counted,23.185,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+carta,Charleston Area Regional Transportation Authority (CARTA),United States,counted,346.718,21,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+carta-chattanooga,Chattanooga Area Regional Transportation Authority,United States,counted,140.026,12,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cascades-east,"Cascades East Transit (Bend, OR)",United States,counted,378.152,16,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+casper,Casper Area Transit,United States,counted,42.343,3,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cat-harrisburg,Capital Area Transit (Harrisburg),United States,counted,321.144,20,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cat-or,Canby Area Transit (CAT),United States,counted,32.307,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cat-savannah,Chatham Area Transit (CAT),United States,counted,309.709,17,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cata-lansing,Capital Area Transportation Authority,United States,counted,364.543,31,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cata-state-college,CATA (State College),United States,counted,156.817,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cats,Charlotte Area Transit System (CATS),United States,counted,848.208,52,12,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cats-baton,Capital Area Transit System (Baton Rouge),United States,counted,329.826,19,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ccta,"CCTA / Green Mountain Transit (Burlington, VT)",United States,counted,93.916,10,15,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cdta,Capital District Transportation Authority,United States,counted,772.733,41,23,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cedar-rapids,Cedar Rapids Transit,United States,counted,292.215,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+centro,Centro (Syracuse),United States,counted,768.236,60,23,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+chapel-hill-transit,Chapel Hill Transit,United States,counted,202.506,21,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+chatham-kent,Ride CK,Canada,counted,276.251,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+chemung-county,Chemung County C-TRAN,United States,counted,279.463,11,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cherriots,"Cherriots (Salem, OR)",United States,counted,426.528,28,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cheyenne,Cheyenne Transit Program,United States,counted,13.558,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cincinnatimetro,Cincinnati Metro (SORTA),United States,counted,872.302,39,14,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+citibus,Citibus (Lubbock),United States,counted,225.587,16,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+citilink-fw,"Citilink (Fort Wayne, IN)",United States,counted,234.842,20,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+citybus-lafayette,CityBus of Greater Lafayette,United States,counted,151.772,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+citylink-north,Kootenai County Citylink North,United States,counted,68.801,3,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+citylink-peoria,"CityLink (Peoria, IL)",United States,counted,273.504,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+clallamtransit,Clallam Transit System,United States,counted,485.810,14,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+clemson-cat,Clemson Area Transit (CATbus),United States,counted,37.976,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+coast-nh,COAST (Seacoast NH),United States,counted,123.423,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+coast-rta,Coast RTA,United States,counted,138.658,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+coast-transit-ms,Coast Transit Authority,United States,counted,22.134,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cobblinc,"CobbLinc (Marietta, GA)",United States,counted,260.541,10,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cobourg,Cobourg Transit,Canada,counted,27.007,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+codiac,Codiac Transpo (Moncton),Canada,counted,360.599,21,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+collier,Collier Area Transit (Naples),United States,counted,327.994,14,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+colts,County of Lackawanna Transit System (COLTS),United States,counted,332.326,20,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+columbia-area-transit,Columbia Area Transit,United States,counted,255.583,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+comet,"The COMET (Columbia, SC)",United States,counted,476.782,38,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+communitytransit,Community Transit (Everett),United States,counted,1054.677,36,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+comox-valley,BC Transit (Comox Valley),Canada,counted,241.610,14,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+concord-kannapolis,Rider Transit,United States,counted,157.703,8,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+connect-transit,Connect Transit (Bloomington-Normal),United States,counted,141.378,17,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+coralville,Coralville Transit,United States,counted,55.549,5,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cornwall,Cornwall Transit,Canada,counted,66.713,6,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+corona,Corona Cruiser,United States,counted,40.930,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+corvallis,Corvallis Transit System,United States,counted,131.992,9,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cota,Central Ohio Transit Authority (COTA),United States,counted,719.293,25,14,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+countyconnection,County Connection (CCCTA),United States,counted,550.623,33,18,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cowichan,BC Transit (Cowichan Valley),Canada,counted,285.295,12,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cta,Chicago Transit Authority (CTA),United States,counted,1823.954,125,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ctran,"C-TRAN (Vancouver, WA)",United States,counted,391.526,26,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cttransit,CTtransit,United States,counted,2253.724,159,25,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cue-bus,CUE Bus (Fairfax),United States,counted,22.382,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+culvercitybus,Culver City Bus,United States,counted,103.873,8,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+cyride,CyRide (Ames),United States,counted,141.496,15,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dart,Dallas Area Rapid Transit (DART),United States,counted,1791.105,92,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dart-first-state,DART First State,United States,counted,1032.862,40,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dash,DASH (Alexandria),United States,counted,139.180,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+davenport,Davenport CitiBus,United States,counted,131.847,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dayton,Greater Dayton RTA,United States,counted,634.005,21,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dcta,Denton County Transportation Authority (DCTA),United States,counted,106.156,13,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ddot,DDOT (Detroit),United States,counted,777.464,36,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+decatur,Decatur Public Transit System,United States,counted,215.725,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dekalb,DeKalb Public Transit,United States,counted,169.160,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+des-moines,Des Moines Area Regional Transit Authority (DART),United States,counted,194.361,10,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+detroit-people-mover,Detroit People Mover,United States,counted,4.598,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+drt,Durham Region Transit,Canada,counted,836.958,36,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dubuque,The Jule (Dubuque),United States,counted,156.628,13,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+duke,Duke University Transit,United States,counted,5.347,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+duluth-transit,Duluth Transit Authority,United States,counted,197.332,15,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+durango-transit,Durango Transit,United States,counted,60.911,5,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+dutchess,Dutchess County Public Transit,United States,counted,338.614,18,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ecat,ECAT (Escambia County),United States,counted,373.454,20,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+eco-transit,Core Transit,United States,counted,191.810,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+edmonton,Edmonton Transit Service (ETS),Canada,counted,2155.983,168,72,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+embark,Embark (Oklahoma City),United States,counted,604.880,40,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+emerygoround,Emery Go-Round,United States,counted,49.882,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+emta,Erie Metropolitan Transit Authority,United States,counted,309.799,23,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+essex-county,Cape Ann Transportation Authority (CATA),United States,counted,126.773,8,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+eugene-ltd,Lane Transit District,United States,counted,407.058,26,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+evansville,METS (Evansville),United States,counted,19.676,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+everetttransit,Everett Transit,United States,counted,113.156,9,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo,exo (Trains),Canada,counted,205.553,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-laurentides,exo (Laurentides),Canada,counted,841.677,42,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-lrrs,exo (Le Richelain–Roussillon),Canada,counted,455.200,36,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-presquile,exo (La Presqu'île),Canada,counted,179.268,14,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-sudouest,exo (Sud-Ouest),Canada,counted,445.687,24,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-terrebonne,exo (Terrebonne-Mascouche),Canada,counted,373.528,18,19,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+exo-vallee-richelieu,exo (Vallée du Richelieu),Canada,counted,185.512,9,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ez-rider,EZ Rider (Midland/Odessa),United States,counted,71.797,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fact,Fayette Area Coordinated Transportation,United States,counted,72.296,4,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fairfax,Fairfax Connector,United States,counted,1542.672,84,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fast-ca,Fairfield and Suisun Transit (FAST Transit),United States,counted,42.871,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fast-nc,Fayetteville Area System of Transit,United States,counted,51.419,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fax,Fresno Area Express (FAX),United States,counted,377.549,19,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+foothill,Foothill Transit,United States,counted,1001.175,35,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fort-mcmurray,Regional Municipality of Wood Buffalo Transit,Canada,counted,106.396,9,30,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fort-smith,City of Fort Smith,United States,counted,20.386,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fred-transit,FXBGO! (Fredericksburg),United States,counted,49.968,2,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+fredericton,Fredericton Transit,Canada,counted,287.220,16,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+freedom-transit,Freedom Transit,United States,counted,143.809,5,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gaston-county,Gaston County Transit,United States,counted,20.504,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gcrta,GCRTA (Cleveland),United States,counted,977.770,43,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+get,Golden Empire Transit District (GET),United States,counted,345.588,16,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+glendalebeeline,Glendale Beeline,United States,counted,162.571,10,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gltc,Greater Lynchburg Transit Company,United States,counted,16.698,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+go,GO Transit,Canada,counted,3306.674,40,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+godurham,GoDurham,United States,counted,243.514,17,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gold-coast,Gold Coast Transit District (Oxnard),United States,counted,257.145,18,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+goldengate,Golden Gate Transit,United States,counted,247.085,8,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+goraleigh,GoRaleigh (Capital Area Transit),United States,counted,428.231,34,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gotriangle,GoTriangle (Raleigh-Durham),United States,counted,413.561,16,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gptc,"Gary Public Transportation Corporation (Gary, IN)",United States,counted,290.649,10,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+grand-forks,Cities Area Transit (Grand Forks),United States,counted,157.392,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+grand-junction,Grand Valley Transit,United States,counted,291.589,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+greeley,Greeley-Evans Transit (GET),United States,counted,32.385,3,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+green-bay,Green Bay Metro,United States,counted,103.883,11,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+greenlink,"GreenLink (Greenville, SC)",United States,counted,165.901,13,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+greensboro,Greensboro Transit Authority,United States,counted,210.669,17,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+greenway,Greenway Public Transportation,United States,counted,165.774,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+grovelink,Ride Connection (GroveLink),United States,counted,38.041,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+grt,Grand River Transit (Waterloo Region),Canada,counted,662.110,53,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+grtc,"GRTC Transit (Richmond, VA)",United States,counted,480.685,29,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gtrans,GTrans (Gardena Municipal Bus Lines),United States,counted,91.620,4,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+guelph,Guelph Transit,Canada,counted,234.520,31,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+gwinnett-transit,Gwinnett County Transit,United States,counted,270.493,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+halifax,Halifax Transit,Canada,counted,1193.685,77,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hamilton,Hamilton Street Railway,Canada,counted,438.971,32,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hart,Hillsborough Area Regional Transit (HART),United States,counted,652.415,31,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hobbs,City of Hobbs Transit,United States,counted,85.817,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+howard-county,City of Kokomo,United States,counted,27.856,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hrt,Hampton Roads Transit,United States,counted,1053.094,52,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hub-city-transit,Hub City Transit,United States,counted,117.878,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+hudsonlink,Hudson Link,United States,counted,90.093,4,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+humboldt,Humboldt Transit Authority,United States,counted,226.338,10,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+huntsville,Huntsville Shuttle,United States,counted,295.086,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+imperial-valley,Imperial Valley Transit,United States,counted,413.867,11,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+indian-river,Indian River Transit,United States,counted,61.645,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+indigo,IndiGO,United States,counted,145.436,9,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+indygo,IndyGo (Indianapolis),United States,counted,609.438,28,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+intercitytransit,Intercity Transit (Olympia),United States,counted,406.058,30,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+iowa-city,Iowa City Transit,United States,counted,151.433,11,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+islandtransit,Island Transit (Whidbey Island),United States,counted,400.325,14,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jackson-ms,City of Jackson (JTRAN),United States,counted,151.151,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jacksonville-nc,Jacksonville Transit,United States,counted,45.226,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+janesville,Janesville Transit System,United States,counted,109.714,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jeffersontransit,Jefferson Transit,United States,counted,483.322,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jefftran,Jefferson City Transit (JeffTran),United States,counted,83.142,7,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jfk-airtrain,JFK AirTrain,United States,counted,17.410,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+jta,Jacksonville Transportation Authority (JTA),United States,counted,738.016,31,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+juneau,Capital Transit (Juneau),United States,counted,68.334,5,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kalamazoo,Kalamazoo Metro Transit,United States,counted,227.469,20,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kamloops,BC Transit (Kamloops),Canada,counted,179.750,14,12,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kart,Kings Area Rural Transit,United States,counted,139.904,11,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kaua-i-county,The Kauai Bus,United States,counted,423.985,9,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kcata,Kansas City Area Transportation Authority (KCATA),United States,counted,544.685,28,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kelowna,BC Transit (Kelowna),Canada,counted,348.353,28,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kenosha,Kenosha Area Transit,United States,counted,163.636,8,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kern-transit,Kern Transit,United States,counted,522.885,6,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+key-west-transit,Key West Transit,United States,counted,95.219,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kingcountymetro,King County Metro (Seattle),United States,counted,2274.710,129,13,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kingston,Kingston Transit,Canada,counted,330.599,27,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kitsaptransit,Kitsap Transit,United States,counted,581.301,42,35,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+kittitas-county,City of Ellensburg Public Transit (Central Transit),United States,counted,52.558,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+knox-county,City of Galesburg,United States,counted,80.883,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+knoxville,Knoxville Area Transit,United States,counted,243.631,19,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lacmta,Los Angeles County Metropolitan Transportation Authority (LA Metro),United States,counted,3058.073,107,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ladot,Los Angeles Department of Transportation (LADOT/DASH),United States,counted,940.632,46,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lafayette-la,Lafayette Transit System,United States,counted,329.363,15,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+laguna-beach,Laguna Beach Transit,United States,counted,13.554,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lake-charles,Lake Charles Transit,United States,counted,103.612,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+laketran,"Laketran (Lake County, OH)",United States,counted,211.896,8,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lancaster,"Red Rose Transit Authority (Lancaster, PA)",United States,counted,366.585,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lanta,Lehigh and Northampton Transportation Authority (LANTA),United States,counted,577.235,28,12,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+laredo,El Metro (Laredo),United States,counted,355.521,25,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+las-cruces,RoadRUNNER Transit (Las Cruces),United States,counted,35.699,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lassen,Lassen Rural Bus (LRB),United States,counted,25.588,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lavta,Livermore Amador Valley Transit Authority,United States,counted,164.581,10,20,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lawrence-ku,Lawrence Transit / KU on Wheels,United States,counted,164.052,20,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lcta,Luzerne County Transportation Authority,United States,counted,276.632,20,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+leetran,LeeTran (Fort Myers),United States,counted,536.927,22,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lethbridge,Lethbridge Transit,Canada,counted,143.538,13,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lexington,"Lextran (Lexington, KY)",United States,counted,261.147,24,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lincoln,StarTran (Lincoln),United States,counted,227.312,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+linter,L'Inter des Laurentides,Canada,counted,81.152,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lirr,MTA Long Island Rail Road,United States,counted,715.380,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+london,London Transit,Canada,counted,511.648,36,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+longbeach,Long Beach Transit,United States,counted,577.595,34,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+longview,City of Longview Transit,United States,counted,151.292,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+los-alamos-county,Atomic City Transit,United States,counted,67.118,6,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+loudoun-transit,Loudoun County Transit,United States,counted,874.296,37,13,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+lynx,LYNX (Central Florida),United States,counted,1278.564,55,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+madison-metro,Madison Metro Transit,United States,counted,425.247,24,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+marathon-county,Metro Ride,United States,counted,82.375,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+marble-valley,Marble Valley Transit (Rutland),United States,counted,45.671,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+marc,MARC Train (MTA Maryland),United States,counted,181.695,2,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+marintransit,Marin Transit,United States,counted,329.228,15,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+marta,MARTA (Atlanta),United States,counted,1667.588,86,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+martin-county,Martin County Public Transit,United States,counted,137.996,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mason-city,Mason City Public Transit,United States,counted,56.181,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mata,Memphis Area Transit Authority,United States,counted,695.300,25,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+matbus,"MATBUS (Fargo, ND)",United States,counted,180.534,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mats,Mount Adams Transportation Service,United States,counted,53.665,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+maui-county,Maui County Transit,United States,counted,333.925,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+max-transit,MAX Transit (Birmingham),United States,counted,316.605,17,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mbta,Massachusetts Bay Transportation Authority,United States,counted,1695.166,148,12,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mcallen,Metro McAllen,United States,counted,265.881,14,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mckinley-county,A:Shiwi Transit,United States,counted,28.262,2,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mcts,Milwaukee County Transit System (MCTS),United States,counted,794.235,43,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+medicine-hat,Medicine Hat Transit,Canada,counted,116.827,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mendocino,Mendocino Transit Authority,United States,counted,40.949,3,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+merced,Merced County Transit (The Bus),United States,counted,389.130,15,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metra,Metra (Chicago),United States,counted,725.259,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metro-transit,Metro Transit (Minneapolis),United States,counted,1955.427,92,24,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metrobus,Metrobus (St. John's),Canada,counted,231.967,18,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metrohouston,METRO Houston,United States,counted,2987.195,109,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metrolink,Metrolink,United States,counted,627.704,5,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+metrostlouis,Metro St. Louis,United States,counted,1189.046,59,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+miami-dade-transit,Miami-Dade Transit,United States,counted,2527.489,120,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+milton,Milton Transit,Canada,counted,149.117,12,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+missoula,Mountain Line (Missoula),United States,counted,100.851,12,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+miway,MiWay (Mississauga),Canada,counted,937.652,56,11,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mmvta,Mid Mon Valley Transit,United States,counted,281.695,7,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mnr,Metro-North Railroad (MNR),United States,counted,131.908,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+modesto,Stanislaus Regional Transit Authority (The S),United States,counted,622.757,25,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mont-tremblant,Mont-Tremblant,Canada,counted,49.877,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+montebello,Montebello Bus Lines,United States,counted,42.933,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+montgomery-transit,Montgomery Transit (The M),United States,counted,433.737,14,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+moorpark,Moorpark City Transit,United States,counted,24.393,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+moose-jaw,Moose Jaw Transit,Canada,counted,53.223,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mountain-line,Mountain Line Transit Authority (Morgantown),United States,counted,275.432,19,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mountain-transit-ca,Mountain Transit (Big Bear Lake),United States,counted,132.615,5,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mountain-village,Town of Mountain Village Transit,United States,counted,0.000,0,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mountainline,Mountain Line (Flagstaff),United States,counted,114.808,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mountainmetro,Mountain Metropolitan Transit (Colorado Springs),United States,counted,333.502,32,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mst,Monterey-Salinas Transit (MST),United States,counted,661.127,34,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mta-bus-company,MTA Bus Company,United States,counted,1671.304,92,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mta-flint,Mass Transportation Authority (Flint),United States,counted,325.070,19,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mta-maryland,Maryland Transit Administration (MTA Maryland),United States,counted,1407.189,65,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mtd-champaign,Champaign-Urbana MTD,United States,counted,412.753,28,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+muscogee-county,METRA,United States,counted,191.790,10,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+muskegon,Muskegon Area Transit System,United States,counted,91.667,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+mvta,Minnesota Valley Transit Authority (MVTA),United States,counted,516.602,17,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nanaimo,BC Transit (Nanaimo),Canada,counted,437.377,20,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nash-county,Tar River Transit,United States,counted,158.100,10,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nashvillemta,Nashville MTA WeGo Public Transit,United States,counted,610.190,31,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ncsu-wolfline,NCSU Wolfline,United States,counted,73.298,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nctd,North County Transit District (NCTD),United States,counted,685.204,29,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+needles,Needles Area Transit,United States,counted,22.566,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+new-castle,New Castle Area Transit Authority,United States,counted,283.534,11,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nfta,NFTA (Buffalo),United States,counted,667.542,37,18,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+niagara,Niagara Transit,Canada,counted,1010.334,99,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nice,Nassau Inter-County Express (NICE Bus),United States,counted,704.908,41,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+njt,NJ Transit,United States,counted,8577.044,245,32,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+norta,New Orleans Regional Transit Authority (NORTA),United States,counted,506.023,34,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+north-bay,North Bay Transit,Canada,counted,161.054,9,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+norwalktransit,Norwalk Transit System,United States,counted,125.952,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyc-ferry,NYC Ferry,United States,counted,134.167,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-bus-bronx,MTA NYCT Bus (Bronx),United States,counted,435.501,46,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-bus-brooklyn,MTA NYCT Bus (Brooklyn),United States,counted,783.459,68,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-bus-manhattan,MTA NYCT Bus (Manhattan),United States,counted,343.168,41,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-bus-queens,MTA NYCT Bus (Queens),United States,counted,508.549,40,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-bus-si,MTA NYCT Bus (Staten Island),United States,counted,1610.787,58,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+nyct-subway,MTA NYCT Subway,United States,counted,710.396,27,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+oakville,Oakville Transit,Canada,counted,258.358,19,16,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+octa,Orange County Transportation Authority (OCTA),United States,counted,1468.683,52,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+octranspo,OC Transpo (Ottawa),Canada,counted,1587.232,94,80,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+omahametro,Omaha Metro,United States,counted,439.952,21,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+omniride,OmniRide (PRTC),United States,counted,976.933,22,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+omnitrans,OmniTrans (San Bernardino),United States,counted,743.598,28,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+orangeville,Orangeville Transit,Canada,counted,35.745,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+orillia,Orillia Transit,Canada,counted,43.076,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ottumwa,10-15 Transit,United States,counted,105.811,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+owen-sound,Owen Sound Transit,Canada,counted,45.178,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pace-bus,Pace Bus (Chicago suburbs),United States,counted,2682.884,120,12,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+palm-tran,Palm Tran (West Palm Beach),United States,counted,752.958,28,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+part,Putnam Area Rapid Transit (PART),United States,counted,126.636,3,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pasadenatransit,Pasadena Transit,United States,counted,148.996,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+patco,PATCO Speedline (Philadelphia-Camden),United States,counted,22.917,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+path,PATH (Port Authority Trans-Hudson),United States,counted,44.404,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pemberton,BC Transit (Pemberton Valley),Canada,counted,0.000,0,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+petaluma,Petaluma Transit,United States,counted,61.328,7,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pgc-the-bus,Prince George's County (The Bus),United States,counted,414.090,22,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pierce-county-ferries,Pierce County Ferries,United States,counted,11.872,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+piercetransit,Pierce Transit,United States,counted,954.009,37,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pocatello,Pocatello Regional Transit,United States,counted,137.589,6,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+port-authority-pa,Pittsburgh Regional Transit,United States,counted,1870.787,91,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+port-huron,Blue Water Area Transit (Port Huron),United States,counted,131.931,10,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+portlandme,Greater Portland Metro,United States,counted,231.446,14,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+prince-albert,Prince Albert Transit,Canada,counted,75.213,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+psta,Pinellas Suncoast Transit Authority (PSTA),United States,counted,849.014,38,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pueblo-transit,Pueblo Transit,United States,counted,129.899,12,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pvpta,Palos Verdes Peninsula Transit Authority (PVPTA),United States,counted,61.864,2,8,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+pvta,Pioneer Valley Transit Authority,United States,counted,898.856,47,14,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+qline,QLine (Detroit),United States,counted,5.165,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+raba,Redding Area Bus Authority,United States,counted,124.181,7,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+racine,Ryde Racine,United States,counted,155.547,8,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+radford,Radford Transit,United States,counted,182.930,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rapid-city,"Rapid Transit System (Rapid City, SD)",United States,counted,15.135,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rct,Redwood Coast Transit (RCT),United States,counted,229.309,5,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+red-deer,Red Deer Transit,Canada,counted,148.064,11,29,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+regina,Regina Transit,Canada,counted,356.408,22,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rem,REM (Montréal),Canada,counted,121.369,3,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rfta,Roaring Fork Transportation Authority (RFTA),United States,counted,243.821,11,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rgrta,Rochester-Genesee Regional Transportation Authority,United States,counted,307.957,27,101,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+richland-county-oh,Richland County Transit,United States,counted,194.443,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rideon,Ride On (Montgomery County),United States,counted,1247.138,78,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rioc-tram,Roosevelt Island Tramway,United States,counted,4.854,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+riovista,Rio Vista Delta Breeze,United States,counted,47.489,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ripta,Rhode Island Public Transit Authority (RIPTA),United States,counted,855.408,49,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rivercities,RiverCities Transit,United States,counted,166.787,9,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+riverside,Riverside Transit Agency,United States,counted,1010.724,32,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rock-county,Beloit Transit System,United States,counted,187.404,7,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rockford,Rockford Mass Transit District,United States,counted,477.985,30,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rockregion,Rock Region Metro (Little Rock),United States,counted,215.885,16,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+roseville,Roseville Transit,United States,counted,186.098,10,22,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+roundabout,Clear Creek County Transit (RoundAbout),United States,counted,60.780,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rtc,RTC (Québec),Canada,counted,1286.023,80,63,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rtcsnv,Regional Transportation Commission of Southern Nevada (RTC),United States,counted,1063.981,39,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rtcwashoe,Regional Transportation Commission of Washoe County (RTC Washoe),United States,counted,204.722,19,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rtd-denver,Regional Transportation District (RTD Denver),United States,counted,2510.115,112,18,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rtl,RTL (Longueuil),Canada,counted,1013.853,71,77,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rts,RTS (Gainesville),United States,counted,299.764,27,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+rvtd,Rogue Valley Transportation District (RVTD),United States,counted,72.130,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sacrt,Sacramento Regional Transit (SacRT),United States,counted,709.750,37,27,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+saint-hyacinthe,Ville de Saint-Hyacinthe,Canada,counted,109.901,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+saint-john,Saint John Transit,Canada,counted,151.684,13,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sam,Sandy Area Metro (SAM),United States,counted,59.460,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+samtrans,San Mateo County Transit District (samTrans),United States,counted,614.302,30,45,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+san-angelo,Concho Valley Transit (San Angelo),United States,counted,28.603,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sandusky,Sandusky Transit System,United States,counted,138.388,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+santa-cruz-metro,Santa Cruz METRO,United States,counted,605.108,26,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+santaclarita,Santa Clarita Transit,United States,counted,410.924,12,26,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+santafetrails,Santa Fe Trails,United States,counted,67.632,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+santarosa,Santa Rosa CityBus,United States,counted,177.370,15,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sarnia,Sarnia Transit,Canada,counted,35.915,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sarta,Stark Area Regional Transit Authority,United States,counted,369.321,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+saskatoon,Saskatoon Transit,Canada,counted,370.714,40,13,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sbmtd,Santa Barbara Metropolitan Transit District (MTD),United States,counted,219.766,18,20,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sct,Suffolk County Transit (SCT),United States,counted,837.273,22,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sdmts,Metropolitan Transit System (San Diego MTS),United States,counted,1625.676,98,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+seat,South East Area Transit,United States,counted,42.546,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+seattle-monorail,Seattle Center Monorail,United States,counted,1.502,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+seattle-streetcar,Seattle Streetcar,United States,counted,6.002,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+septa,SEPTA (Philadelphia),United States,counted,3088.095,145,29,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+setd,Sunset Empire Transportation District,United States,counted,136.971,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sevier-county,City of Gatlinburg Trolley,United States,counted,57.773,4,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sfmta,San Francisco Municipal Transportation Agency (SFMTA - Muni),United States,counted,762.802,64,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sheboygan-county,Shoreline Metro,United States,counted,15.642,1,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sherbrooke,Société de transport de Sherbrooke,Canada,counted,458.677,40,18,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sierra-vista,City of Sierra Vista,United States,counted,22.915,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+simcoe,Simcoe County LINX,Canada,counted,252.840,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+simi-valley,Simi Valley Transit,United States,counted,56.153,2,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sioux-city,Sioux City Transit,United States,counted,147.698,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sioux-falls,Sioux Area Metro (SAM),United States,counted,91.075,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sjrtd,San Joaquin RTD,United States,counted,625.408,31,11,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sjsr,Saint-Jean-sur-Richelieu,Canada,counted,166.294,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+skagittransit,Skagit Transit,United States,counted,393.625,18,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+slorta,San Luis Obispo Regional Transit Authority (SLORTA),United States,counted,528.352,16,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+slotransit,City of San Luis Obispo Transit,United States,counted,139.777,11,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+smart,SMART (Detroit suburbs),United States,counted,1303.573,38,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+smart-ca,Sonoma-Marin Area Rail Transit (SMART),United States,counted,77.532,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+smart-or,South Metro Area Regional Transit (SMART),United States,counted,112.950,7,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+smart-telluride,San Miguel Authority for Regional Transportation (SMART),United States,counted,44.299,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+smat,Santa Maria Area Transit,United States,counted,526.126,19,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+snoqualmie-valley,Snoqualmie Valley Transportation,United States,counted,24.493,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+snowmass-village,Snowmass Village Shuttle,United States,counted,12.201,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+soltrans,SolTrans (Vallejo),United States,counted,290.465,10,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sonoma-county,Sonoma County Transit (SCT),United States,counted,521.976,16,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+soundtransit,Sound Transit (Seattle),United States,counted,272.588,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+south-bend,South Bend Transpo,United States,counted,184.732,15,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+south-okanagan,BC Transit (South Okanagan-Similkameen),Canada,counted,108.276,8,8,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+space-coast,Space Coast Area Transit,United States,counted,507.184,18,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+spokane,Spokane Transit Authority,United States,counted,602.976,41,9,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sportran,SporTran (Shreveport),United States,counted,542.935,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+springfield-il,SMTD (Springfield IL),United States,counted,283.725,22,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+springfield-mo,City Utilities Transit (Springfield),United States,counted,265.369,14,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+squamish,BC Transit (Squamish),Canada,counted,54.032,4,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+st-george,SunTran (St. George),United States,counted,181.975,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+st-thomas,St. Thomas Transit,Canada,counted,57.957,5,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+stanford,Stanford Marguerite Shuttle (SMS),United States,counted,139.399,17,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+starmetro,StarMetro (Tallahassee),United States,counted,498.700,30,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+staten-island-ferry,Staten Island Ferry,United States,counted,8.132,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+stl,STL (Laval),Canada,counted,696.123,43,8,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+stlevis,STLévis,Canada,counted,369.696,19,57,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+stm,STM (Montréal),Canada,counted,2633.557,207,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sto,STO (Gatineau),Canada,counted,835.864,50,51,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+stratford,Stratford Transit,Canada,counted,81.352,7,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+streamline,Streamline (Bozeman),United States,counted,64.841,5,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sudbury,Greater Sudbury Transit,Canada,counted,287.875,24,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+summit-stage,Summit Stage,United States,counted,65.491,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sun-metro,Sun Metro (El Paso),United States,counted,604.827,40,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sunline,SunLine Transit Agency (Coachella Valley),United States,counted,438.848,12,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sunrail,SunRail (Orlando),United States,counted,97.753,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+sunshine-bus,Sunshine Bus Company,United States,counted,116.277,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+t3-transit,T3 Transit (PEI),Canada,counted,128.126,8,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+taft,Taft Area Transit,United States,counted,0.000,0,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tampa-international-airport,Tampa International Airport,United States,counted,2.281,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tank,Transit Authority of Northern Kentucky (TANK),United States,counted,243.058,11,13,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tarc,Transit Authority of River City (Louisville),United States,counted,293.858,12,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tarta,TARTA (Toledo),United States,counted,342.523,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tcat,Tompkins Consolidated Area Transit,United States,counted,214.288,20,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+telluride,Town of Telluride (Galloping Goose),United States,counted,0.000,0,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+terrebonne-parish,Good Earth Transit (Houma),United States,counted,25.094,2,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+texarkana,Texarkana T-Line,United States,counted,150.187,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+the-rapid,The Rapid (Grand Rapids),United States,counted,540.213,30,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+thebus,TheBus (Honolulu),United States,counted,1519.505,84,34,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+theride,TheRide (Ann Arbor),United States,counted,314.703,30,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+thousand-oaks,Thousand Oaks Transit,United States,counted,140.922,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+thunder-bay,Thunder Bay Transit,Canada,counted,152.793,18,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tillamook,Tillamook County Transportation District,United States,counted,465.060,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+timmins,Timmins Transit,Canada,counted,193.829,12,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+topeka,Topeka Metro,United States,counted,147.759,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tor,Transport of Rockland (TOR),United States,counted,315.184,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+torrance-transit,Torrance Transit,United States,counted,252.200,11,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+transfort,Transfort (Fort Collins),United States,counted,225.016,18,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+translink,TransLink (Vancouver),Canada,counted,3290.158,227,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tricounty-link,TriCounty Link,United States,counted,113.661,3,11,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tridelta,Tri Delta Transit (Antioch),United States,counted,173.201,10,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+trimet,"TriMet (Portland, OR)",United States,counted,1253.433,62,13,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+trinity,Trinity Transit,United States,counted,94.330,1,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+trinitymetro,Trinity Metro (Fort Worth),United States,counted,556.658,33,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+ttc,Toronto Transit Commission,Canada,counted,2928.647,226,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tulare-county-transit,Tulare County Area Transit (TCAT),United States,counted,413.704,17,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+tulsa-transit,Tulsa Transit (MTTA),United States,counted,357.969,17,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+uga,UGA Campus Transit,United States,counted,205.610,17,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+um-transit,University of Michigan Transit Services (Ann Arbor),United States,counted,78.795,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+unioncity,Union City Transit,United States,counted,57.033,5,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+unitrans,Unitrans (Davis),United States,counted,137.807,22,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+upexpress,UP Express (Toronto),Canada,counted,24.315,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+uta,Utah Transit Authority (UTA),United States,counted,1873.143,79,6,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vacaville,City Coach (Vacaville),United States,counted,31.776,3,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vail-transit,Vail Transit,United States,counted,88.497,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+valley-express,Valley Express,United States,counted,84.617,5,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+valley-metro-roanoke,"Valley Metro (Roanoke, VA)",United States,counted,482.543,33,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+valley-regional-transit,Valley Regional Transit (Boise),United States,counted,236.790,15,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+valleymetro,Valley Metro (Phoenix),United States,counted,2370.362,89,23,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vctc,Ventura County Transportation Commission (VCTC Intercity),United States,counted,368.078,7,10,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+via,VIA Metropolitan Transit (San Antonio),United States,counted,1680.130,81,7,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+victoria,BC Transit (Victoria),Canada,counted,1007.327,61,8,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vine,VINE Transit (Napa),United States,counted,291.371,12,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+visalia,Visalia Transit,United States,counted,626.281,34,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+votran,Votran (Volusia County),United States,counted,449.706,26,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vre,Virginia Railway Express (VRE),United States,counted,57.727,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vta,Santa Clara Valley Transportation Authority (VTA),United States,counted,1050.340,45,22,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+vvta,Victor Valley Transit Authority (VVTA),United States,counted,683.786,28,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+waco,Waco Transit System,United States,counted,78.884,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+washington-county,Johnson City,United States,counted,145.893,11,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wata,Williamsburg Area Transit Authority,United States,counted,172.397,12,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+watertowncitibus,Watertown Citibus,United States,counted,14.011,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+waukesha-metro,Waukesha Metro Transit,United States,counted,76.459,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wave-mobile,Wave Transit (Mobile),United States,counted,176.103,11,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+westberkeley,West Berkeley Shuttle,United States,counted,0.000,0,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+westcat,WestCAT (Pinole),United States,counted,216.243,11,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+westmoreland,Westmoreland Transit,United States,counted,449.778,11,4,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+weta,San Francisco Bay Area Water Emergency Transportation Authority (WETA),United States,counted,96.054,6,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+whatcomtransit,Whatcom Transportation Authority,United States,counted,411.407,31,3,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+whistler,BC Transit (Whistler),Canada,counted,86.902,9,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+whitehorse,Whitehorse Transit,Canada,counted,35.513,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+whitman-county,City of Pullman,United States,counted,93.911,8,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wichita,Wichita Transit,United States,counted,273.780,18,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wilmington-nc,Wave Transit (Wilmington),United States,counted,157.148,17,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+windsor,Transit Windsor,Canada,counted,336.755,17,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+winnipeg,Winnipeg Transit,Canada,counted,996.574,70,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+winston-salem,Winston-Salem Transit Authority (WSTA),United States,counted,254.255,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+winter-park,The Lift,United States,counted,69.995,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wmata,"WMATA (Washington, DC)",United States,counted,2441.122,132,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wrta,Worcester Regional Transit Authority,United States,counted,325.383,24,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+wsf,Washington State Ferries,United States,counted,31.019,1,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+xpress-ga,Xpress (Georgia Regional),United States,counted,36.001,1,26,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+yakima,Yakima Transit,United States,counted,185.122,9,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+yamhill,Yamhill County Transit Area,United States,counted,228.863,8,1,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+yellowknife,Yellowknife Transit,Canada,counted,23.257,3,0,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+yolobus,Yolo County Transportation District (Yolobus),United States,counted,358.571,10,5,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+youngstown-wrta,Western Reserve Transit Authority (Youngstown),United States,counted,295.830,22,2,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7
+yrt,York Region Transit,Canada,counted,1227.536,62,61,release-mwgrzbgq,53e20dd5982afd76597ee5e990804535f975ebd7

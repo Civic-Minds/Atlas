@@ -4,9 +4,11 @@
  * the strip's stop hover (stopDetail); only the grouping and labels differ. Every heading and line here is wording to
  * confirm with Ryan.
  */
-import { USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
-import { pct, tenth } from '../../../shared/liveFormat';
+import { DELAY_NOT_MEASURED, EXTRA_WAIT_LABEL, USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
+import { tenth } from '../../../shared/liveFormat';
 import { bunchParts, type RouteStripStop } from './routeStripModel';
+import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
+import { percentText } from '../../../shared/numberText';
 
 export interface CardGroup { heading: string | null; lines: string[] }
 
@@ -15,12 +17,12 @@ export const STOP_CARD_WORDS = {
   wait: 'Rider wait at this stop',
   lateShare: (pct: string) => `${pct} are 5½+ min late`,
   // The measures keep the names the switcher and the table use, with the key's approved definitions.
-  extraWait: (min: string) => `Extra wait: ${min} min beyond the scheduled gap`,
+  extraWait: (min: string) => `${EXTRA_WAIT_LABEL}: ${min} min beyond the scheduled gap`,
   noExtraWait: 'Extra wait: none beyond the scheduled gap',
   gaps: (close: string, far: string) => `Bunching: ${close} too close · ${far} too far apart`,
   gapsTotal: (total: string) => `Bunching: ${total} too close or too far apart`,
-  notMeasured: 'Delay not measured',
-  lessExact: 'Less exact here: vehicles report their location less often',
+  notMeasured: DELAY_NOT_MEASURED,
+  lessExact: LIVE_LESS_EXACT_HERE,
 } as const;
 
 
@@ -30,7 +32,7 @@ export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null
   const vehicles: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
     vehicles.push(Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early'));
-    if (stop.lateShare != null) vehicles.push(W.lateShare(pct(stop.lateShare)));
+    if (stop.lateShare != null) vehicles.push(W.lateShare(percentText(stop.lateShare)));
   } else vehicles.push(W.notMeasured);
   const wait: string[] = [];
   if (extraWaitMin != null) {

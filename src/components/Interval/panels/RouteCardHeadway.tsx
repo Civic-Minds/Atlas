@@ -1,10 +1,11 @@
 import { originVariantText } from '../../../utils/nameCase';
+import { shortDate } from '../../../../shared/dateText';
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
 import type { Agency } from '../../../App';
 import type { OpenInfoFn } from '../../InfoPanel';
-import { routeLabels, formatBranchLabel, formatStoredDate } from '../../../utils/format';
+import { routeLabels, formatBranchLabel } from '../../../utils/format';
 import { agencyNames } from '../../../utils/agencyName';
 import { HeadwaySparkline } from '../HeadwaySparkline';
 import { branchHourStack, routeHourModel, stableBranchColors, stackBranches, stackHeadway } from '../../../utils/hourChartModel';
@@ -24,6 +25,7 @@ import {
   CardReportButton,
   FlaggableValue,
   type CardReportButtonHandle,
+  REPORT_REASON,
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
@@ -32,10 +34,11 @@ import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovere
 import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
-import { reportDetails } from '../../../utils/reportIssue';
-import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT } from '../../../content/noticeCopy';
+import { reportDetails, REPORT_DETAIL_LABELS } from '../../../utils/reportIssue';
+import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT, OVERNIGHT_PART_OF_ROUTE } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { directionBranchFallback } from '../../../../shared/headsignDisplay';
 
 function formatMetricMap(
   values: Record<string, number | null | undefined> | null | undefined,
@@ -53,11 +56,11 @@ function formatMetricMap(
 /**
  * Labels for the full-day schedule's direction pills. Uses the bound label
  * (Westbound), else the destination from the headsign ("To Downtown"), and
- * only falls back to a generic name when a direction has neither. Never
- * "Direction 0/1".
+ * only falls back to the shared unnamed-direction name ("Direction 1", "Direction 2", directionBranchFallback; TEXT.md,
+ * CIV-1569) when a direction has neither.
  */
 export function directionPillLabels(
-  groups: Pick<DirectionGroup, 'boundLabel' | 'realTier' | 'span'>[],
+  groups: Pick<DirectionGroup, 'dirId' | 'boundLabel' | 'realTier' | 'span'>[],
   shortName: string,
   longName: string,
 ): string[] {
@@ -73,8 +76,7 @@ export function directionPillLabels(
     if (destinations.length === 1) return first;
     return `${first} / ${destinations[1].replace(/^to\s+/i, '')}`;
   });
-  const generic = (index: number) => groups.length === 2 ? (index === 0 ? 'One way' : 'Other way') : `Pattern ${index + 1}`;
-  const resolved = labels.map((label, index) => label ?? generic(index));
+  const resolved = labels.map((label, index) => label ?? directionBranchFallback(groups[index].dirId));
   return resolved.map((label, index) =>
     resolved.indexOf(label) === index ? label : `${label} (${resolved.slice(0, index + 1).filter(l => l === label).length})`);
 }
@@ -131,6 +133,8 @@ export interface RouteCardHeadwayProps {
   hoveredBranch: HoveredBranch | null;
   setHoveredBranch: (b: HoveredBranch | null) => void;
   onInfoOpen?: OpenInfoFn;
+  /** A research view's own section at the end of the card (Bustang departures, CIV-101); the regular map passes none. */
+  extra?: React.ReactNode;
 }
 
 export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
@@ -156,12 +160,13 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   hoveredBranch,
   setHoveredBranch,
   onInfoOpen,
+  extra,
 }) => {
   const [hoveredHour, setHoveredHour] = React.useState<number | null>(null);
   const reportRef = React.useRef<CardReportButtonHandle>(null);
   const agencyDisplayName = agencyNames(routeAgency?.name ?? routeSlug ?? '').name;
   // An ended timetable (N2) says more, so it wins over the listing end.
-  const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? formatStoredDate(routeAgency.listingEndedOn) : '';
+  const listingEndedDate = !routeIsStale && routeAgency?.listingEndedOn ? shortDate(routeAgency.listingEndedOn) ?? '' : '';
   const listingEnded = !!routeAgency?.listingEndedOn && listingEndHasPassed(routeAgency.listingEndedOn, agencyTodayYmd(routeAgency));
   const routeOverrideNote = routeAgency?.overrideNote
     && (!routeAgency.overrideNoteRoutes?.length || routeAgency.overrideNoteRoutes.includes(currentRoute.routeShortName ?? ''))
@@ -179,10 +184,11 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     nightView,
     stableColors,
     hideSpan,
+    sectionColours: FEATURES.segmentColours,
   }), [currentRoute, directionGroups, agencyFeatures, period, maxHeadway, nightView, stableColors, hideSpan]);
   const { contract, displayGroups, showDirectionSections, doesNotRun, hasPeriodService, primaryMultiBranch, activeRangeDirections } = model;
   const selectedPeriod = period !== 'all' ? TIME_PERIODS.find(p => p.key === period) : undefined;
-  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/STYLE.md "Card notices").
+  // Every notice on the card, decided in one place (CIV-1200), each in its place (CIV-1202; docs/style/TEXT.md "Card notices").
   const notices = routeCardNotices({
     directions: currentRoute.directions,
     model,
@@ -315,8 +321,8 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
     ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
-    ['Agency data refreshed', routeAgency?.lastRefreshedAt ?? 'unknown'],
-    ['Feed expiry', (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.dataRefreshed, routeAgency?.lastRefreshedAt ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.feedExpiry, (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
     '',
@@ -348,7 +354,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
             ref={reportRef}
             title={`${routeAgency?.name ?? agencyDisplayName} ${routeTitle || 'Unknown route'}`}
             details={details}
-            excludeReasons={['Stop is missing, misplaced, or assigned incorrectly']}
+            excludeReasons={[REPORT_REASON.stop]}
           />
         </div>
       </SidebarCardHeaderBlock>
@@ -487,7 +493,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     if (row.night) {
                       const { grade } = row.night;
                       return (
-                        <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                        <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                           <CardDirectionRow
                             labelWeight="regular"
                             singleLine
@@ -496,7 +502,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                             headway={grade ?? undefined}
                             limited={grade == null}
                             limitedLabel={grade == null ? model.noRegularLabel : undefined}
-                            subLabel={grade != null && row.night.partOfRoute ? 'Overnight service on part of the route' : undefined}
+                            subLabel={grade != null && row.night.partOfRoute ? OVERNIGHT_PART_OF_ROUTE : undefined}
                             {...hoverProps(group.dirId, d, row.hover)}
                           />
                         </FlaggableValue>
@@ -505,7 +511,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                     const shown = row.display(hoveredHour);
                     if (!row.label && !model.collapseGroups && shown.value.displayH == null) return null;
                     return (
-                      <FlaggableValue key={`r${i}`} reason="Frequency is wrong" reportRef={reportRef} className="block w-full text-left">
+                      <FlaggableValue key={`r${i}`} reason={REPORT_REASON.frequency} reportRef={reportRef} className="block w-full text-left">
                         <CardDirectionRow
                           labelWeight="regular"
                           singleLine={shown.singleLine}
@@ -567,6 +573,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
           </div>
         )}
       </SidebarCardList>
+      {extra}
       </>)}
     </SidebarCardShell>
   );

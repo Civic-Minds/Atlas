@@ -14629,7 +14629,7 @@
         "thresholdMinutes": null,
         "span": null,
         "days": null,
-        "sourceUrl": "https://wwww.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
+        "sourceUrl": "https://www.septa.org/wp-content/uploads/page/communication/SEPTA_System-Map_v3-0.pdf",
         "sourceType": "system_map",
         "quote": "Frequent Bus Routes",
         "quoteMethod": "pdftotext",

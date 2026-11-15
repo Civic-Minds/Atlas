@@ -16,6 +16,9 @@ import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay'
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
 import { topMapHit } from './map/mapHitTargets';
+import { useContextLayer } from './map/useContextLayer';
+import { ContextPopup } from './ContextPopup';
+import type { ContextMetric } from '../../utils/contextLayer';
 import { resetRoutesLayerDefaultPaint as resetRouteLayersPaint, localRouteHeadwayColor } from './map/routeStyle';
 import { useRouteStyling } from './map/useRouteStyling';
 import { useSelectionFraming } from './map/useSelectionFraming';
@@ -57,7 +60,7 @@ import Panel from '../ui/Panel';
 import { pickLiveVehicles } from './map/liveVehiclePick';
 import ListRow from '../ui/ListRow';
 import { drawnRouteLayers, queryDrawnRouteFeatures } from './map/drawnRoutes';
-import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED } from '../../content/noticeCopy';
+import { REPORT_A_PROBLEM, approximateLocationHint, CLIPBOARD_DENIED, DEFAULT_EXPORT_TITLE, LOCATION_DENIED, LOCATION_TIMED_OUT, LOCATION_UNAVAILABLE, LOCATION_URL_COPIED, ON_DEMAND_AREAS_FAILED, MAP_EXPORT_TITLES, EXPORT_MAP_TITLE, LOCATE_ME_LABEL } from '../../content/noticeCopy';
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
@@ -157,6 +160,8 @@ interface MapCanvasProps {
   highlightRoutes?: string[];
   /** Route key hovered in search results — highlighted on the map, others faded. */
   hoveredSearchRoute?: string | null;
+  /** Routes shown together as the selection (the connections bar, CIV-1353); see useRouteStyling. */
+  focusRoutes?: string[] | null;
   hoveredBranch?: HoveredBranch | null;
   setSelectedRoute: React.Dispatch<React.SetStateAction<string | null>>;
   selectedStop: string | null;
@@ -243,6 +248,10 @@ interface MapCanvasProps {
   agencyDataLoading?: boolean;
   /** Number of agencies whose route data failed to load. */
   agencyDataFailedCount?: number;
+  /** Population / income shading under the routes; null is off (beta trial, CIV-482). */
+  contextMetric?: ContextMetric | null;
+  /** Tells the app which survey years the shading tiles carry (last year of the 5-year window), for the credit's hover text. */
+  onContextYearChange?: (year: number | null) => void;
 }
 
 const MapCanvasInner: React.FC<MapCanvasProps> = ({
@@ -257,6 +266,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   liveSelectedRoute = null,
   highlightRoutes = [],
   hoveredSearchRoute = null,
+  focusRoutes = null,
   hoveredBranch = null,
   setSelectedRoute,
   selectedStop,
@@ -316,6 +326,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   exportTitle = DEFAULT_EXPORT_TITLE,
   agencyDataLoading = false,
   agencyDataFailedCount = 0,
+  contextMetric = null,
+  onContextYearChange,
 }) => {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = useColorMode();
@@ -410,7 +422,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const state = exportStateRef.current;
     const view: MapExportView = state.nightServiceView ? 'night'
       : state.frequentServiceView ? 'frequent-service'
-      : state.liveRoutesOnly || state.exportTitle !== 'Transit Frequency' ? 'other'
+      : state.liveRoutesOnly || state.exportTitle !== MAP_EXPORT_TITLES.frequency ? 'other'
       : 'frequency';
 
     // Only routes actually drawn: hidden-by-zoom routes stay in the query results with zero
@@ -955,7 +967,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
 
 
   const routeSegmentFeatures = useSectionColourFeatures({
-    layers, filteredLayers, mapFilteredLayers, period, day, selectedRoute, colorMode, showRouteLayers,
+    filteredLayers, mapFilteredLayers, period, day, colorMode, showRouteLayers,
     nightServiceView, frequentServiceView,
   });
 
@@ -1266,11 +1278,13 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     agencies, layers, q, period, maxHeadway, tileFilter, selectedRoute: mapSelectedRoute, hoveredSearchRoute, hoveredBranch,
     selectedStop, routesForStop, stopZoomTier, showRouteLayers, liveRoutesOnly, filterToAgencies,
     agencyFilterSlugs, nightServiceView, frequentServiceView, historyOverlay, frequencySegmentOverlay,
-    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus,
+    frequencySegmentOverlayRef, colorMode, colorVisionFriendly, onDemandFocus, focusRoutes,
   });
 
   // Overlay layers (history, live vehicles) — extracted to hooks
   useHistoryLayer(mapRef, mapLoaded);
+  const contextLayer = useContextLayer(mapRef, mapLoaded, contextMetric);
+  useEffect(() => { onContextYearChange?.(contextLayer.year); }, [contextLayer.year]);
   // Clean up deck overlay on unmount
   useEffect(() => {
     return () => {
@@ -1287,6 +1301,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <React.Suspense fallback={null}>
           <LiveVehiclesLayer mapRef={mapRef} deckOverlayRef={deckOverlayRef} mapLoaded={mapLoaded} />
         </React.Suspense>
+      )}
+
+      {contextMetric && contextLayer.popup && (
+        <ContextPopup metric={contextMetric} {...contextLayer.popup} onClose={contextLayer.closePopup} />
       )}
 
       {/* Geolocate Button Control Overlay */}
@@ -1364,7 +1382,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         {exportEnabled && (
           <button
             onClick={() => setExportDialogOpen(true)}
-            aria-label="Export map image"
+            aria-label={EXPORT_MAP_TITLE}
             className="box-border !h-8 !w-8 max-sm:!h-[32px] max-sm:!w-[32px] min-h-8 min-w-8 shrink-0 p-0 max-sm:hidden flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
@@ -1374,7 +1392,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <MapZoomButtons className="max-sm:hidden" onZoomIn={() => { onUserMove?.(); mapRef.current?.zoomIn({ duration: 200 }); }} onZoomOut={() => { onUserMove?.(); mapRef.current?.zoomOut({ duration: 200 }); }} />
         <button
           onClick={locateUser}
-          aria-label="Go to my location"
+          aria-label={LOCATE_ME_LABEL}
           className="w-8 h-8 max-sm:w-[32px] max-sm:h-[32px] flex items-center justify-center rounded-full bg-[var(--bg-panel)] border border-[var(--border-primary)] text-[var(--text-dim)] backdrop-blur-md hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-colors cursor-pointer"
         >
           <LocateFixed className="w-3.5 h-3.5" />

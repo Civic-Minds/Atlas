@@ -7,7 +7,6 @@ import {
   areaAgencySummaries,
   bandCounts,
   bestRoute,
-  formatDataDate,
   formatIso,
   hasMiddayService,
   agencyTitle,
@@ -15,6 +14,7 @@ import {
   modesText,
   type AgencyPageSummary,
 } from './agencyPages';
+import { shortDate } from './dateText';
 import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
@@ -22,10 +22,11 @@ import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
 import { agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { countOf } from './overflowText';
+import { countOf, plural } from './overflowText';
 import { capitalizeFirst } from './headwayText';
 import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
+import { agencyInSentence } from './agencyArticle';
 
 export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
 
@@ -286,16 +287,19 @@ export function areaIntroName(_d: Pick<AreaPageData, 'area'>, a: Pick<AreaAgency
 export function areaAboutParagraph(d: AreaPageData): string {
   const parts = areaIntroParts(d);
   const j = areaIntroJoiners(parts);
-  return `${parts.lead}${j.opener}${parts.named.map((a, i) => areaIntroName(d, a) + j.separators[i]).join('')}${j.tail}`;
+  return `${parts.lead}${j.opener}${parts.named.map((a, i) => agencyInSentence(areaIntroName(d, a)) + j.separators[i]).join('')}${j.tail}`;
 }
 
 /** The line under an area page's frequency bar. */
 export const AREA_BAR_NOTE = "The bar splits this area’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.";
 
-export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate'>): string {
-  const refreshed = formatDataDate(d.newestRefresh);
-  const release = formatDataDate(d.releaseDate);
-  return ["Based on the agencies’ published schedules, not live arrivals.", refreshed ? `Newest schedule published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+/** The dates line of an area or region page. "Schedule" agrees with the page's agency count (Ryan, 2026-11-14), so a one-agency region reads like an agency page. */
+export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDate' | 'agencies'>): string {
+  const refreshed = shortDate(d.newestRefresh);
+  const release = shortDate(d.releaseDate);
+  const one = d.agencies.length === 1;
+  const schedules = plural(d.agencies.length, 'schedule');
+  return [`Based on the ${one ? 'agency’s' : 'agencies’'} published ${schedules}, not live arrivals.`, refreshed ? `Newest ${schedules} published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /**

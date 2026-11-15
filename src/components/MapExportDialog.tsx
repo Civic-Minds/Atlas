@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Download, Share2, X } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
+import { PanelCloseButton } from './ui/PanelHeader';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP, CARD_NOTE } from '../styles';
 import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
-import { MAP_EXPORT_NOT_READY, MAP_EXPORT_WAITING } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, MAP_EXPORT_NOT_READY, MAP_EXPORT_WAITING, EXPORT_MAP_TITLE } from '../content/noticeCopy';
 
 interface Props {
   open: boolean;
@@ -117,12 +118,10 @@ export default function MapExportDialog({ open, prepareSource, releaseSource, de
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">Export map image</h2>
+            <h2 id="map-export-title" className="text-sm font-black text-[var(--text-primary)]">{EXPORT_MAP_TITLE}</h2>
             <p className={`mt-1 ${CARD_NOTE}`}>A picture of this map, with whose schedules it shows, when the data was updated, and the Atlas link.</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close export dialog" className="text-[var(--text-dim)] hover:text-[var(--text-primary)]">
-            <X className="h-4 w-4" />
-          </button>
+          <PanelCloseButton onClick={onClose} label={closeLabel(CLOSE_PLACES.exportDialog)} size="plain" />
         </div>
 
         {waitingForMap && <p role="status" className={`mt-2 ${CARD_NOTE}`}>{MAP_EXPORT_WAITING}</p>}

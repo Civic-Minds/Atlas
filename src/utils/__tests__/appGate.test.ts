@@ -10,7 +10,7 @@ describe('isAppGated', () => {
 
   it('gates flagged apps when their flag is off', () => {
     const off = { live: false, history: false, researchApps: false };
-    for (const app of ['live', 'history', 'night'] as const) {
+    for (const app of ['live', 'history', 'night', 'bustang'] as const) {
       expect(isAppGated(app, off)).toBe(true);
       expect(isAppGated(app, allOn)).toBe(false);
     }

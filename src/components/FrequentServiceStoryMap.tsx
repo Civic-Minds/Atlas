@@ -10,6 +10,7 @@ import type { Agency } from '../App';
 import { headwayOrBetter } from '../utils/headwayText';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { isLimitedService, type IrregularRouteProperties } from '../../shared/irregularRoutes';
+import { STORY_DAYTIME_PERIODS } from '../../shared/frequentDayCounts';
 
 interface Props {
   agencies: Agency[];
@@ -65,10 +66,10 @@ function runsThroughTheDay(feature: StoryFeature): boolean {
 // CIV-1410: the frequency step reads the main map's own frequency filter (featurePassesHeadwayFilter, the route's typical
 // wait with the worst direction deciding) in each daytime period, so a route the map shows at 15 or better stays here.
 // The strict daytime15 flag (no single gap over 15 minutes) dropped routes the map shows as frequent, like TTC 501 Queen.
-const DAYTIME_PERIODS = ['amPeak', 'midday', 'pmPeak'] as const;
+// The daytime periods are shared with the weekday-versus-Sunday chart's counts (CIV-1603).
 function meetsOnTheMainMap(feature: StoryFeature, maxHeadway: number): boolean {
   const properties = feature.properties;
-  return properties != null && DAYTIME_PERIODS.every(period => featurePassesHeadwayFilter(properties, period, maxHeadway));
+  return properties != null && STORY_DAYTIME_PERIODS.every(period => featurePassesHeadwayFilter(properties, period, maxHeadway));
 }
 
 export function featuresForStage(features: StoryFeature[], stage: number, frequencyMinutes: 15 | 30) {

@@ -1,6 +1,8 @@
 {
   "minYears": 10,
   "slugs": [
+    "bigbluebus",
+    "brampton",
     "burlington",
     "cdta",
     "communitytransit",
@@ -8,6 +10,7 @@
     "gcrta",
     "grt",
     "halifax",
+    "hart",
     "indygo",
     "lacmta",
     "marta",
@@ -15,8 +18,11 @@
     "metro-transit",
     "metrostlouis",
     "miami-dade-transit",
+    "port-authority-pa",
     "rtd-denver",
     "spokane",
-    "stm"
+    "stm",
+    "trimet",
+    "winnipeg"
   ]
 }

@@ -2,6 +2,7 @@ import type { Key } from 'react';
 import { withCount } from './chartCategories';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import { ACTIVE_BG, CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
+import { countText } from '../../../shared/numberText';
 
 /** One column: its name under the axis, its count and fill, and a sentence for screen readers. */
 export interface SparkColumn {
@@ -41,7 +42,7 @@ export default function CategorySpark({ columns: allColumns, keepEmpty = false, 
       {/* Each column, its count, bar and name, is one target for the pointer, tap and keyboard, with the pointer cursor throughout (#1290). */}
       <div className="relative mt-2.5 select-none pt-4" style={{ paddingLeft: AXIS_W }} onMouseLeave={clear}>
         <div className="absolute inset-x-0 top-4" style={{ height }} aria-hidden="true">
-          <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => t.toLocaleString()} textClassName="text-[var(--text-primary)]" />
+          <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => countText(t)} textClassName="text-[var(--text-primary)]" />
         </div>
         <div role="group" aria-label={label} aria-details={details} className="relative flex gap-1">
           {columns.map(c => {
@@ -50,7 +51,7 @@ export default function CategorySpark({ columns: allColumns, keepEmpty = false, 
                 <span className="relative block w-full" style={{ height }} aria-hidden="true">
                   {c.value > 0 && <>
                     <span data-bar className={`${SPARK_BAR} opacity-90 transition-opacity`} style={{ bottom: 0, height: Math.max(2, pos(c.value)), background: c.fill, opacity: faded(c.key) ? FADED_OPACITY : undefined }} />
-                    <span className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap leading-3 ${CHART_TEXT} ${CHART_COUNT}`} style={{ bottom: Math.max(2, pos(c.value)) + 2 }}>{c.value.toLocaleString()}</span>
+                    <span className={`absolute left-1/2 -translate-x-1/2 whitespace-nowrap leading-3 ${CHART_TEXT} ${CHART_COUNT}`} style={{ bottom: Math.max(2, pos(c.value)) + 2 }}>{countText(c.value)}</span>
                   </>}
                 </span>
                 <span className="mt-1 block break-words text-center" aria-hidden="true">
