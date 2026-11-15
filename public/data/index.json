@@ -28119,8 +28119,7 @@
         "Nashua, New Hampshire",
         "Salem, New Hampshire"
       ],
-      "timezone": "America/New_York",
-      "hiddenInProduction": true
+      "timezone": "America/New_York"
     },
     {
       "slug": "advance-transit",
