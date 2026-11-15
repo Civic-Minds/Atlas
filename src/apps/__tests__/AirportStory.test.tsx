@@ -20,6 +20,7 @@ vi.mock('maplibre-gl', () => ({
 // The map's route files (TTC's is about 24 MB) are never fetched in tests.
 vi.mock('../../lib/agencyGeo', () => ({ fetchAgencyGeo: () => new Promise(() => {}) }));
 import AirportStory from '../AirportStory';
+import { AIRPORTS, landableAt } from '../../data/airportHourly';
 import { AIRPORT_STORY_DRAFT } from '../../../shared/researchStories';
 
 describe('AirportStory (CIV-1550, dev only)', () => {
@@ -53,5 +54,14 @@ describe('AirportStory (CIV-1550, dev only)', () => {
     for (const name of ['The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     expect(screen.queryByText(/Before publishing/)).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
+  });
+
+  it('Memphis has no weekday departure in the 11 AM and 12 PM hours, and its last downtown hour is 4 PM (the 11 AM card)', () => {
+    const mem = AIRPORTS.find(a => a.code === 'MEM')!;
+    expect(landableAt(mem, 'wk', 10, 'any')).toBe(true);
+    expect(landableAt(mem, 'wk', 11, 'any')).toBe(false);
+    expect(landableAt(mem, 'wk', 12, 'any')).toBe(false);
+    // The card's 4:34 PM: the last weekday hour with a ride downtown is 4 PM.
+    expect(Array.from({ length: 24 }, (_, h) => h).filter(h => landableAt(mem, 'wk', h)).at(-1)).toBe(16);
   });
 });
