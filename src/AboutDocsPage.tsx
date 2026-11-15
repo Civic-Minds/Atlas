@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
-import { FEATURES, HEADWAY_TIERS, PERIOD_LABELS, TIME_PERIODS } from '../shared/config';
+import { FEATURES, PERIOD_LABELS, SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayEvery } from '../shared/headwayText';
 import { hourRange } from '../shared/timeText';
 import { joinList } from '../shared/overflowText';
@@ -34,8 +34,8 @@ import {
 
 /** Each period's hours ("6–9 AM"), from TIME_PERIODS so the page can't drift from the app (CIV-1610). */
 const PERIOD_TIMES = Object.fromEntries(TIME_PERIODS.map(p => [p.key, hourRange(p.startHour, p.endHour)])) as Record<(typeof TIME_PERIODS)[number]['key'], string>;
-/** The frequency tiers as the page lists them: "≤10, ≤15, ≤20, ≤30 and ≤60 min" (HEADWAY_TIERS, CIV-1610). */
-const TIER_LIST = `${joinList(HEADWAY_TIERS.filter(t => t.max !== Infinity).map(t => `≤${t.max}`))} min`;
+/** The frequency tiers as the page lists them: "≤10, ≤15, ≤20, ≤30 and ≤60 min" (the tier breakpoints, CIV-1610; the page needs no colours). */
+const TIER_LIST = `${joinList(SURFACE_TIER_MAXES.map(max => `≤${max}`))} min`;
 /** The agency table's period columns, in AgencyPage.tsx's order. */
 const AGENCY_TABLE_PERIODS = joinList([PERIOD_LABELS.amPeak, PERIOD_LABELS.midday, PERIOD_LABELS.pmPeak, PERIOD_LABELS.evening, PERIOD_LABELS.overnight]);
 
