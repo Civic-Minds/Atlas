@@ -29,6 +29,9 @@ const LiveToolPage = React.lazy(() => import('./LiveToolPage'));
 const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 const FreeChildFaresPage = React.lazy(() => import('./apps/FreeChildFaresPage'));
 const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentServiceStoryPage'));
+// CIV-1550: the airport story draft, on the dev server only (registered in the DEV block below). The import itself sits behind
+// import.meta.env.DEV, so a built bundle has no chunk for it at all, not just no route.
+const AirportStory = import.meta.env.DEV ? React.lazy(() => import('./apps/AirportStory')) : () => null;
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
@@ -83,6 +86,8 @@ ReactDOM.createRoot(rootElement).render(
             <>
               <Route path="/dev/diagnostics/uneven-headway" element={<DiagnosticsUnevenPage />} />
               <Route path="/dev/diagnostics/performance" element={<DiagnosticsPerformancePage />} />
+              {/* CIV-1550: the airport story draft for Ryan's review; never on public or beta. */}
+              <Route path="/research/airports/story" element={<AirportStory />} />
             </>
           )}
           {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}
