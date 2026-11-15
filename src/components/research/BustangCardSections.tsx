@@ -100,7 +100,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
           <p className="text-xs font-bold text-[var(--text-muted)] mb-1">{title}</p>
           <div className="flex flex-wrap gap-1">
             {list.map(t => (
-              <Pill key={t.id} selected={t.id === picked} onClick={() => setPicked(p => (p === t.id ? null : t.id))} className="tabular-nums">
+              <Pill key={t.id} selected={t.id === picked} onClick={() => setPicked(p => (p === t.id ? null : t.id))}>
                 {clockTime(t.stops[0].departure)}
               </Pill>
             ))}
@@ -117,7 +117,7 @@ export function BustangRouteDepartures({ data, day, within, routeId }: { data: B
                   return (
                     <li key={`${ts.stop}-${i}`} className="py-2">
                       <p className="text-xs font-bold text-[var(--text-primary)]">{stop.name}</p>
-                      <p className={`${CARD_SUMMARY} mt-0 tabular-nums`}>
+                      <p className={`${CARD_SUMMARY} mt-0`}>
                         {ts.after ? `Arrives ${clockTime(ts.arrival)}` : `Leaves ${clockTime(ts.departure)}`}
                         {ts.after && ts.before && ts.departure !== ts.arrival ? `, leaves ${clockTime(ts.departure)}` : ''}
                       </p>
@@ -166,7 +166,7 @@ function StopSide({ data, routes, trips, side, nameAgency }: { data: BustangData
                         <span className="ml-1.5 min-w-0 truncate text-[var(--text-muted)]">{route.stopName}</span>
                         <span className="shrink-0 whitespace-nowrap text-[var(--text-muted)]">, {route.distanceM}&nbsp;m</span>
                       </span>
-                      <span className="shrink-0 whitespace-nowrap tabular-nums">{best!.count} of {best!.of}</span>
+                      <span className="shrink-0 whitespace-nowrap">{best!.count} of {best!.of}</span>
                     </li>
                   ))}
                 </ul>

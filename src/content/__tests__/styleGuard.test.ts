@@ -146,6 +146,8 @@ const RULES: Rule[] = [
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },
   { name: 'a <table> outside DataTable', doc: 'VISUAL.md', pattern: /<table\b/, slip: '<table className="w-full">',
     allowed: ['src/components/ui/DataTable.tsx'] },
+  // Ryan, 2026-11-15: normal (proportional) digits everywhere, charts included.
+  { name: 'fixed-width digits (tabular-nums or font-variant-numeric)', doc: 'VISUAL.md', pattern: /\btabular-nums\b|font-variant-numeric|fontVariantNumeric|['"]tnum['"]/, slip: '<span className="tabular-nums">' },
   { name: 'a shadow (keep the flat look)', doc: 'VISUAL.md', pattern: /\bshadow-(sm|md|lg|xl|2xl|inner)\b|\bshadow\b(?=[\s"'`])|boxShadow|box-shadow/, slip: '<div className="rounded-lg shadow-md">' },
   // CIV-1607: every pill search box is SearchBox, so each has the clear X; the top bar's box (App.tsx) is the one exception.
   { name: 'a search box built by hand (use SearchBox)', doc: 'VISUAL.md', pattern: /className=\{SEARCH_(FIELD|PILL)\}|<Search className=\{SEARCH_ICON\}/, slip: '<input className={SEARCH_FIELD} />',

@@ -1246,7 +1246,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
           onPointerMove={event => event.stopPropagation()}
           onWheel={event => event.stopPropagation()}
         >
-            <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[0]}</span>
+            <span className={CARD_NOTE}>{availableYears[0]}</span>
             <input
               type="range"
               min={0}
@@ -1259,9 +1259,9 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
             />
             {/* The latest year shows once: while the chip is on it, the end label is left out (CIV-400, CIV-444). */}
             {selectedYear !== availableYears[availableYears.length - 1] && (
-              <span className={`${CARD_NOTE} tabular-nums`}>{availableYears[availableYears.length - 1]}</span>
+              <span className={CARD_NOTE}>{availableYears[availableYears.length - 1]}</span>
             )}
-            <Pill as="span" selected className="tabular-nums">{selectedYear}</Pill>
+            <Pill as="span" selected>{selectedYear}</Pill>
         </div>
       )}
     </>

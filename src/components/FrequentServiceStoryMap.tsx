@@ -271,7 +271,7 @@ export default function FrequentServiceStoryMap({ agencies, stage, frequencyMinu
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">{researchRecord.agencyName}{ready && <BasemapCredit />}</span>
         <span className="flex flex-col items-start gap-y-1 sm:items-end sm:text-right">
           <span>{stage === 0 ? 'All weekday routes' : stage === 1 ? 'Limited-service routes removed' : stage === 2 ? 'Routes with sustained daytime service' : `Weekday daytime · ${headwayOrBetter(frequencyMinutes)}`}</span>
-          {ready && <span className="tabular-nums">{routeCount} routes</span>}
+          {ready && <span>{routeCount} routes</span>}
         </span>
       </figcaption>
     </figure>
