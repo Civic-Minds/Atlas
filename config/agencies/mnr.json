@@ -68,5 +68,23 @@
   "lastPeekedExpiry": "20270523",
   "lastServiceWeek": "59f81e5b18c42758",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261101"
+  "lastFeedStart": "20261101",
+  "branchReadCorrections": [
+    {
+      "routeShortName": "id:2",
+      "directionId": 0,
+      "day": "Saturday",
+      "period": "midday",
+      "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+      "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
+    },
+    {
+      "routeShortName": "id:2",
+      "directionId": 0,
+      "day": "Sunday",
+      "period": "midday",
+      "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+      "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
+    }
+  ]
 }

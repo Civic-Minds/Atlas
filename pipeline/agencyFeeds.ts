@@ -1,3 +1,4 @@
+import type { BranchReadCorrection } from './branchReadCorrections.js';
 /**
  * One place to turn an agency's GTFS inputs into published route artifacts.
  *
@@ -40,6 +41,8 @@ export interface AgencyFeedConfig {
   routeSplits?: RouteSplit[];
   /** #1292: the main stretch's reference stop for a route and direction (NYC J, skip-stop). */
   refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
+  /** #1514: route-periods whose slower branch is read by branch pooling (pipeline/branchReadCorrections.ts). */
+  branchReadCorrections?: BranchReadCorrection[];
   /** #1289: names for separate lines that share a short name (preprocess/same-name-routes.ts). */
   sameNameRoutes?: SameNameRoute[];
   keepLongShapeJumps?: boolean;
@@ -121,6 +124,7 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     mergeEquivalentShapeVariantsRouteTypes: agency.mergeEquivalentShapeVariantsRouteTypes,
     routeSplits: agency.routeSplits,
     refStopOverrides: agency.refStopOverrides,
+    branchReadCorrections: agency.branchReadCorrections,
     sameNameRoutes: agency.sameNameRoutes,
     keepLongShapeJumps: agency.keepLongShapeJumps,
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,

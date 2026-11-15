@@ -58,6 +58,7 @@ import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
+import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
 import { runNow } from '../shared/runClock.js';
@@ -524,6 +525,8 @@ export interface ProcessOptions extends GtfsTransformOptions {
   slug?: string;
   /** #1292: per route and direction, the main stretch's reference stop where the middle stop is skipped by the route's own trips. */
   refStopOverrides?: Array<{ routeShortName: string; directionId: number; stopId: string }>;
+  /** #1514: named route-periods whose slower branch is read by branch pooling (pipeline/branchReadCorrections.ts). */
+  branchReadCorrections?: BranchReadCorrection[];
   /** Prefix for this feed's route, trip and shape ids (a supplemental feed's `supplementalIdPrefixes` entry). */
   idPrefix?: string;
   /** CIV-1006: force a route's booking-required status by short name, over the pickup_type share rule. */
@@ -3843,6 +3846,7 @@ export async function processGtfsBuffer(
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
+    const branchReadRollups = new Map<string, ReturnType<typeof rollupDirection>>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
       const groupRoute = gKey.slice(0, gKey.indexOf('::'));
@@ -3874,6 +3878,15 @@ export async function processGtfsBuffer(
         }
       }
       stretchesByKey.set(gKey, stretches);
+      // #1514: for a named route-direction-day only, the same direction read with branch pooling; only the named
+      // periods' filter values are taken from it, after the stamp below.
+      if (correctionsFor(options?.branchReadCorrections, gKey).length > 0) {
+        const pooled = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop, true);
+        pooled.midday899 = stretches.midday899;
+        pooled.handoverAt = stretches.handoverAt;
+        pooled.nextDaysAt = stretches.nextDaysAt;
+        branchReadRollups.set(gKey, rollupDirection(pooled));
+      }
     }
     options?.onStretches?.({ stretches: stretchesByKey, stopDepsByGroup });
     stampStretchShadow(features, stretchesByKey, feature => {
@@ -3896,6 +3909,13 @@ export async function processGtfsBuffer(
       };
       return ids ? { ids, span, frequencyTrip: id => frequencyTemplateTripIds.has(id) } : null;
     });
+    // #1514: the named route-periods take the branch-read value, only ever longer (applyBranchReadCorrections' guard).
+    for (const change of applyBranchReadCorrections(features, options?.branchReadCorrections, feature => {
+      const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);
+      return slot ? { group: slot.shortName, dirId: slot.dirId, day: slot.day } : null;
+    }, (key, period) => branchReadRollups.get(key)?.period[period]?.filterValue)) {
+      console.log('BRANCHREAD\t' + JSON.stringify({ agency: options?.slug, ...change }));
+    }
     // CIV-1161 step 1 with the CIV-1204 gate (Ryan, 2026-10-31): a headline that riders wait 10+ minutes longer than, at
     // the main stretch's reference stop (#1255), reads their wait instead (riderWait, never faster), and its tier can only
     // get worse, where the direction runs through the window that wait reads there (gatedRiderWait). Where it does not, the

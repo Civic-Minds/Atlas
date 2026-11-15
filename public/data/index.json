@@ -602,7 +602,17 @@
       "lastPeekedExpiry": "20261127",
       "lastServiceWeek": "d1b72d45f1f34124",
       "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261104"
+      "lastFeedStart": "20261104",
+      "branchReadCorrections": [
+        {
+          "routeShortName": "KI",
+          "directionId": 0,
+          "day": "Weekday",
+          "period": "pmPeak",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+          "reason": "Kitchener line westbound: beyond Bramalea the Kitchener branch runs far less often than the every-30 trunk to Bramalea in the PM peak; its trains skip different stops, so the branch was never read."
+        }
+      ]
     },
     {
       "slug": "grt",
@@ -5578,7 +5588,17 @@
       "lastPeekedExpiry": "20261212",
       "lastServiceWeek": "38ea6ab81b5a20f2",
       "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261027"
+      "lastFeedStart": "20261027",
+      "branchReadCorrections": [
+        {
+          "routeShortName": "id:CR-Providence",
+          "directionId": 1,
+          "day": "Weekday",
+          "period": "pmPeak",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+          "reason": "Inbound, the Providence branch beyond Canton Junction runs hourly in the PM peak (Mansfield 15:25, 16:28, 17:34, 18:37) while the trunk it shares with Stoughton runs every 25; its trains each skip a different stop, so the branch was never read."
+        }
+      ]
     },
     {
       "slug": "pvta",
@@ -17151,7 +17171,25 @@
       "lastPeekedExpiry": "20270523",
       "lastServiceWeek": "59f81e5b18c42758",
       "feedObtainedAt": "20261101",
-      "lastFeedStart": "20261101"
+      "lastFeedStart": "20261101",
+      "branchReadCorrections": [
+        {
+          "routeShortName": "id:2",
+          "directionId": 0,
+          "day": "Saturday",
+          "period": "midday",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+          "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
+        },
+        {
+          "routeShortName": "id:2",
+          "directionId": 0,
+          "day": "Sunday",
+          "period": "midday",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+          "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
+        }
+      ]
     },
     {
       "slug": "njt",
@@ -17266,7 +17304,17 @@
           "rawArchiveKey": "20270313-0b0c31986a080e18"
         }
       ],
-      "lastFeedStart": "20261020"
+      "lastFeedStart": "20261020",
+      "branchReadCorrections": [
+        {
+          "routeShortName": "MNBN",
+          "directionId": 0,
+          "day": "Weekday",
+          "period": "pmPeak",
+          "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
+          "reason": "Main/Bergen County Line to Hoboken: the Main Line (Paterson 15:29, 16:00, 16:48, 17:37, 18:29) and the Bergen County Line (15:48, 17:05, 17:53) each run about hourly between Ridgewood and Secaucus; the route read the combined trunk."
+        }
+      ]
     },
     {
       "slug": "path",

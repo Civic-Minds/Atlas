@@ -246,6 +246,11 @@ export function directionStretches(
   mainBy: 'shared' | 'mostVisits' = 'shared',
   /** #1292: the main stretch's reference stop from the agency config (refStopOverrides), when it is on the main stretch. */
   mainRefStop?: string,
+  /**
+   * #1514: read a branch whose trips each skip a different stop or two (see below). Only for a route-direction-day an
+   * agency names in branchReadCorrections: as a shared rule it changed other routes on two cloud dry runs (#1514).
+   */
+  poolBranchSkippers = false,
 ): DirectionStretches {
   const withVisits = trips.filter(trip => trip.visits.length > 0);
   const patterns = new Map<string, { stops: string[]; trips: DirectionTrip[] }>();
@@ -256,7 +261,7 @@ export function directionStretches(
     if (entry) entry.trips.push(trip);
     else patterns.set(id, { stops, trips: [trip] });
   }
-  const all = [...patterns.values()];
+  let all = [...patterns.values()];
   if (all.length === 0) return { key, main: null, tails: [], regularPatternCount: 0, variantTripCount: 0 };
   // Regular: the pattern runs steadily through at least one period at its own middle stop (the
   // steady test plus the D8 midpoint test). Stray, part-day and garage trips fail it, whatever
@@ -272,13 +277,14 @@ export function directionStretches(
   // MIN_PEAK_BLOCK_DEPARTURES there (TransLink 044's Dundarave Express: 15:06, 16:03, 17:07). Three
   // trips spread over the day are a schedule (GO 88C, Saturday 10:00-14:30).
   const peakWindows = PERIOD_WINDOWS.filter(w => w.key === 'amPeak' || w.key === 'pmPeak');
-  const eligible = all.filter(p => {
+  const isEligible = (p: { trips: readonly DirectionTrip[] }) => {
     if (p.trips.length < MIN_SCHEDULE_DEPARTURES) return false;
     const starts = p.trips.map(t => t.visits[0].minutes);
     if (Math.max(...starts) - Math.min(...starts) <= BURST_MAX_SPAN_MINUTES) return false;
     const onePeak = peakWindows.some(w => starts.every(t => t >= w.start && t < w.end));
     return !onePeak || p.trips.length >= MIN_PEAK_BLOCK_DEPARTURES;
-  });
+  };
+  let eligible = all.filter(isEligible);
   // Two stops are one terminal when they are the same stop or within SAME_TERMINAL_METERS.
   const sameTerminal = (a: string, b: string) => {
     if (a === b) return true;
@@ -287,7 +293,52 @@ export function directionStretches(
   };
   const steadyIn = (periods: readonly PeriodKey[]) => eligible.filter(p => runsSteadily(p.trips, p.stops[Math.floor(p.stops.length / 2)], periods));
   let regular = steadyIn(DAYTIME_PERIODS);
+  const steadyByDay = regular.length > 0;
   if (regular.length === 0) regular = steadyIn(ALL_PERIODS);
+  // #1514: a branch whose trains each skip a different stop or two is split into several small
+  // patterns, none steady alone, so the branch is never read and the route shows its busier trunk
+  // (MBTA Providence, PM: the shared trunk every 25 while Providence trains run every 66). Here a
+  // pattern that is not regular takes in the trips that serve a subset of its stops, in order,
+  // between the same two end stops, when together they run steadily by day, and only when the
+  // pattern reaches a branch: a run of stops long enough to be a tail (SHARED_STRETCH_MIN_STOPS and
+  // _KM) that no regular pattern serves. Off by default: process-core asks for it only for the
+  // route-direction-days in an agency's branchReadCorrections, and uses the result only for the
+  // periods named there.
+  if (steadyByDay && poolBranchSkippers) {
+    const regularStops = new Set(regular.flatMap(p => p.stops));
+    const reachesBranch = (p: (typeof all)[number]) => {
+      let run: string[] = [];
+      for (const stop of [...p.stops, null]) {
+        if (stop != null && !regularStops.has(stop)) { run.push(stop); continue; }
+        if (run.length >= SHARED_STRETCH_MIN_STOPS && (runKm(run, stopCoord) ?? 0) >= SHARED_STRETCH_MIN_KM) return true;
+        run = [];
+      }
+      return false;
+    };
+    const skipsStopsOf = (v: (typeof all)[number], p: (typeof all)[number]) => {
+      if (v.stops.length >= p.stops.length || v.stops[0] !== p.stops[0] || v.stops[v.stops.length - 1] !== p.stops[p.stops.length - 1]) return false;
+      let i = 0;
+      for (const stop of p.stops) if (stop === v.stops[i]) i++;
+      return i === v.stops.length;
+    };
+    const regularNow = new Set(regular);
+    const absorbed = new Set<(typeof all)[number]>();
+    for (const p of [...all].sort((x, y) => y.trips.length - x.trips.length || y.stops.length - x.stops.length)) {
+      if (regularNow.has(p) || absorbed.has(p) || !reachesBranch(p)) continue;
+      const skippers = all.filter(v => v !== p && !regularNow.has(v) && !absorbed.has(v) && skipsStopsOf(v, p));
+      if (skippers.length === 0) continue;
+      const pooled = { stops: p.stops, trips: [...p.trips, ...skippers.flatMap(v => v.trips)] };
+      if (!isEligible(pooled) || !runsSteadily(pooled.trips, p.stops[Math.floor(p.stops.length / 2)], DAYTIME_PERIODS)) continue;
+      p.trips = pooled.trips;
+      for (const v of skippers) absorbed.add(v);
+      regular.push(p);
+      regularNow.add(p);
+    }
+    if (absorbed.size > 0) {
+      all = all.filter(v => !absorbed.has(v));
+      eligible = all.filter(isEligible);
+    }
+  }
   // CIV-786: a pattern that takes the same trip in turn with a regular sibling is regular too. HSR 16 on
   // weekends runs via Wilson every 30 from 7:19 to 11:49, then via Fiddler's Green every 30 from 12:19:
   // the morning pattern starts inside the AM peak and stops before midday ends, so it runs steadily
