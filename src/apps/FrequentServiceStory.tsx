@@ -48,18 +48,18 @@ const HEADWAY_COLUMNS: DataTableColumn<HeadwayBar>[] = [
  * CIV-1603 section 1: the drop from every agency we could check, to those with a named frequent network, to those that give
  * a number, to those the agency chart shows. The same counts as the method box (frequentServiceDefinitionSample,
  * frequentServiceStoryStats.chartedAgencies); nothing is recounted.
- * The bar names are placeholders until Ryan approves wording.
+ * Bar names, heading, intro, note and chart name approved word for word by Ryan (2026-11-15).
  */
 const DEFINITION_FUNNEL = [
-  { key: 'checked', label: '[Label 1]', agencies: frequentServiceDefinitionSample.agencies },
-  { key: 'named', label: '[Label 2]', agencies: frequentServiceDefinitionSample.namedNetwork },
-  { key: 'number', label: '[Label 3]', agencies: frequentServiceDefinitionSample.withWait },
+  { key: 'checked', label: 'Checked', agencies: frequentServiceDefinitionSample.agencies },
+  { key: 'named', label: 'Named frequent network', agencies: frequentServiceDefinitionSample.namedNetwork },
+  { key: 'number', label: 'Say how often', agencies: frequentServiceDefinitionSample.withWait },
   // The agency chart's own count: still confirmed on the October 30 recheck, after the tier rule (CIV-1178).
-  { key: 'charted', label: '[Label 4]', agencies: frequentServiceStoryStats.chartedAgencies },
+  { key: 'charted', label: 'In the chart above', agencies: frequentServiceStoryStats.chartedAgencies },
 ] as const;
 type DefinitionStep = (typeof DEFINITION_FUNNEL)[number];
 const DEFINITION_COLUMNS: DataTableColumn<DefinitionStep>[] = [
-  { key: 'step', header: '[Ryan’s wording: table column]', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
+  { key: 'step', header: 'Step', cell: step => step.label, rowHeader: true, className: 'font-normal', width: 10 },
   { key: 'agencies', header: 'Agencies', cell: step => step.agencies, className: 'tabular-nums', width: 6 },
 ];
 
@@ -199,7 +199,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             <div className="max-w-2xl">
               <h2 id="chart-heading" className={STORY_HEADING}>There is no single “frequent.”</h2>
               <p className={STORY_PARAGRAPH}>
-                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes.
+                Pick a representative threshold to see how agencies turn that number into a service promise. This chart shows the {frequentServiceStoryStats.chartedAgencies} agencies that publish a specific number of minutes. Fifteen minutes is the most common choice. Transit planner <a className={UNDERLINED_LINK} href="https://humantransit.org/2011/12/how-frequent-is-freedom.html" rel="noopener noreferrer">Jarrett Walker</a> puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.”
               </p>
             </div>
             <div className="mt-10">
@@ -215,22 +215,22 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption
+          {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15);
               are placeholders until Ryan approves wording. */}
           <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
             <div className="max-w-2xl">
-              <h2 id="definitions-heading" className={STORY_HEADING}>[Ryan’s wording: section 1 heading]</h2>
-              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 1 intro]</p>
+              <h2 id="definitions-heading" className={STORY_HEADING}>Most agencies don’t publish a number.</h2>
+              <p className={STORY_PARAGRAPH}>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. Not finding a definition does not mean an agency has no frequent service.</p>
             </div>
             <div className="mt-10">
               <RankedBars
-                label="[Ryan’s wording: section 1 chart name for screen readers]"
+                label="Chart showing how many agencies define frequent service, from every agency checked to the ones in the chart above"
                 bars={DEFINITION_FUNNEL.map(step => ({ key: step.key, label: step.label, value: step.agencies, fill: 'var(--text-muted)', sentence: `${step.label}: ${countOf(step.agencies, 'agency', 'agencies')}` }))}
                 max={frequentServiceDefinitionSample.agencies}
                 details={definitionTableId}
               />
-              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 1 caption]</p>
-              <ChartTableDetails id={definitionTableId} caption="[Ryan’s wording: section 1 heading]" columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
+              <p className="mt-5 text-xs leading-5 text-[var(--text-dim)]">We couldn’t check {frequentServiceDefinitionSample.blocked} others because their websites block automated visits. The last bar counts the agencies still confirmed when we checked again between October 30 and November 3.</p>
+              <ChartTableDetails id={definitionTableId} caption="Most agencies don’t publish a number." columns={DEFINITION_COLUMNS} rows={DEFINITION_FUNNEL} rowKey={step => step.key} />
             </div>
           </section>
 

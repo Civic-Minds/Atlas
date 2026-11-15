@@ -179,6 +179,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/apps/FrequentServiceStory.tsx': [
     '“every 15 minutes or better”', '“every 15–20 minutes”', 'between October 30 and November 3', 'Between October 30 and November 3',
     'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service', '${bar.minutes}-minute service',
+    // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
+    '“around every 15 minutes all day.”',
   ],
   'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
   'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],

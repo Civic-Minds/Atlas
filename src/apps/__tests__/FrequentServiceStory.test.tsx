@@ -159,12 +159,12 @@ describe('FrequentServiceStory', () => {
 
   it('CIV-1603: shows the agencies checked, with a named network and with a number, from the method box’s counts', () => {
     render(<FrequentServiceStory agencies={agencies} onExploreMap={() => {}} />);
-    const counts = screen.getAllByRole('button', { name: /^\[Label \d\]: / }).map(b => b.getAttribute('aria-label'));
+    const counts = screen.getAllByRole('button', { name: /^(Checked|Named frequent network|Say how often|In the chart above): / }).map(b => b.getAttribute('aria-label'));
     expect(counts).toEqual([
-      `[Label 1]: ${frequentServiceDefinitionSample.agencies} agencies`,
-      `[Label 2]: ${frequentServiceDefinitionSample.namedNetwork} agencies`,
-      `[Label 3]: ${frequentServiceDefinitionSample.withWait} agencies`,
-      `[Label 4]: ${frequentServiceStoryStats.chartedAgencies} agencies`,
+      `Checked: ${frequentServiceDefinitionSample.agencies} agencies`,
+      `Named frequent network: ${frequentServiceDefinitionSample.namedNetwork} agencies`,
+      `Say how often: ${frequentServiceDefinitionSample.withWait} agencies`,
+      `In the chart above: ${frequentServiceStoryStats.chartedAgencies} agencies`,
     ]);
   });
 
