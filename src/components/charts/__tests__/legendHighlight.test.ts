@@ -9,9 +9,7 @@ import { describe, expect, it } from 'vitest';
  */
 const DIR = join(__dirname, '..');
 // Legends that don't pick yet, each with its reason. Remove an entry once its chart uses useActivePart (a test below fails then).
-const PENDING: Record<string, string> = {
-  'GapsChart.tsx': "Live's bunching chart (Live is off everywhere); its three-colour key needs the shared highlight.",
-};
+const PENDING: Record<string, string> = {};
 
 const charts = readdirSync(DIR).filter(f => f.endsWith('.tsx')).map(f => [f, readFileSync(join(DIR, f), 'utf8')] as const);
 const hasLegend = (src: string) => /LegendItem|legend/i.test(src);

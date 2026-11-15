@@ -5,6 +5,8 @@ import type { StopGaps } from '../../hooks/useLiveGaps';
 import LegendItem from '../ui/LegendItem';
 import { useWidth } from './RunTimeChart';
 import { TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../shared/liveWording';
+import { ACTIVE_BG, FADED_OPACITY, useActivePart } from './useActivePart';
+import { countOf } from '../../../shared/overflowText';
 
 const PAD_TOP = 22;
 const PAD_BOTTOM = 22;
@@ -30,6 +32,8 @@ const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); retu
  */
 export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: StopGaps; ariaLabel: string; height?: number }) {
   const [ref, width] = useWidth();
+  // VISUAL.md: the legend picks its step, the shared way (useActivePart).
+  const pick = useActivePart();
   const perHour = new Map<number, number>();
   for (const m of gaps.m) { const h = Math.floor(m / 60) % 24; perHour.set(h, (perHour.get(h) ?? 0) + 1); }
   const axis = liveChartHours(h => (perHour.get(h) ?? 0) >= MIN_HOUR_GAPS);
@@ -51,7 +55,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
   const schedPath = sched.filter(p => p.min != null).map((p, k) => `${k ? 'L' : 'M'}${x(p.h * 60)},${y(p.min!)}H${x((p.h + 1) * 60)}`).join('');
   const dots = gaps.m.map((m, i) => ({ m, min: gaps.g[i] / 60, step: gapStep(gaps.g[i], gaps.s[i]) })).filter(d => d.m >= x0 && d.m < x1);
   return (
-    <figure className="m-0">
+    <figure className="m-0" onMouseLeave={pick.clear}>
       <div ref={ref} role="img" aria-label={ariaLabel}>
         {width > 0 && (
           <svg width={width} height={H} aria-hidden="true" className="block">
@@ -61,7 +65,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
             <text x={0} y={10} fontSize={12} fill="var(--text-dim)">min</text>
             {/* Near-timetable gaps first, so the bunched and long ones sit on top. */}
             {[0, 1, 2].map(s => dots.filter(d => d.step === s).map((d, k) => (
-              <circle key={`${s}-${k}`} cx={x(d.m)} cy={y(d.min)} r={1.6} fill={STEP_COLOR[s]} opacity={s ? 0.8 : 0.4} />
+              <circle key={`${s}-${k}`} cx={x(d.m)} cy={y(d.min)} r={1.6} fill={STEP_COLOR[s]} opacity={(s ? 0.8 : 0.4) * (pick.faded(s) ? FADED_OPACITY : 1)} />
             )))}
             <path d={schedPath} fill="none" stroke="var(--text-secondary)" strokeWidth={1.5} strokeDasharray="4 3" />
             {axis.map(h => SPARKLINE_HOUR_LABELS[h] && (
@@ -71,10 +75,23 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
         )}
         {width === 0 && <div style={{ height: H }} />}
       </div>
-      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
-        <LegendItem color={STEP_COLOR[2]}>{TOO_CLOSE_LABEL}</LegendItem>
-        <LegendItem color={STEP_COLOR[0]}>Near the schedule</LegendItem>
-        <LegendItem color={STEP_COLOR[1]}>{TOO_FAR_LABEL}</LegendItem>
+      <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-[var(--text-muted)]" onMouseLeave={pick.clear}>
+        {([[2, TOO_CLOSE_LABEL], [0, 'Near the schedule'], [1, TOO_FAR_LABEL]] as const).map(([s, label]) => {
+          const count = dots.filter(d => d.step === s).length;
+          return (
+            <button
+              key={s}
+              type="button"
+              aria-pressed={pick.active === s}
+              aria-label={`${label}: ${countOf(count, 'gap')}`}
+              className="rounded px-1.5 py-0.5"
+              style={{ background: pick.active === s ? ACTIVE_BG : undefined }}
+              {...pick.partEvents(s)}
+            >
+              <LegendItem color={STEP_COLOR[s]}>{label}</LegendItem>
+            </button>
+          );
+        })}
         <span className="inline-flex items-center gap-1.5"><svg width="14" height="4" aria-hidden="true"><line x1="0" x2="14" y1="2" y2="2" stroke="var(--text-secondary)" strokeWidth="1.5" strokeDasharray="4 3" /></svg>Scheduled</span>
       </div>
     </figure>
