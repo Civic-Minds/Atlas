@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { type DashboardBand, type LiveV3 } from '../../../../shared/liveDashboard';
-import { fadedNoteText } from '../../../../shared/liveWording';
+import { EXTRA_WAIT_LABEL, fadedNoteText } from '../../../../shared/liveWording';
 import { isMajorStop, shortStopName } from '../../../utils/stopLabel';
 import ProfileBars, { sharedScale, type ProfilePoint } from '../../charts/ProfileBars';
 import SortableDataTable from '../../ui/SortableDataTable';
@@ -32,7 +32,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
   const full = detail === 'full';
   const m = extraWaitModel(v3, band, dir);
   if (!m && full) return null;
-  const frame = (children: ReactNode) => <Section id={full ? 'wait' : 'x-wait'} title="Extra wait" shrink={!full} boundary={boundary}>{children}</Section>;
+  const frame = (children: ReactNode) => <Section id={full ? 'wait' : 'x-wait'} title={EXTRA_WAIT_LABEL} shrink={!full} boundary={boundary}>{children}</Section>;
   if (!m) return frame(null);
   const { all, dirs, pointsOf, scale } = m;
   // The Full analysis lists the five longest waits (the rest are in the chart's hover text); Explore lists ten.
@@ -59,7 +59,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
                 points={points}
                 formatY={mins}
                 unit="gaps"
-                valueHeader="Extra wait"
+                valueHeader={EXTRA_WAIT_LABEL}
                 caption={full ? undefined : 'How much longer riders wait than the schedule says, at each stop.'}
                 fadedNote={!full}
                 peakLabel={full}
@@ -84,7 +84,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           columns={[
             { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
-            { key: 'extra', header: 'Extra wait', worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
+            { key: 'extra', header: EXTRA_WAIT_LABEL, worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
             { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
             { key: 'n', header: 'Gaps', narrowHide: true, cell: s => s.gaps.toLocaleString() },
           ]}

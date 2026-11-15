@@ -28,7 +28,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { DELAY_STARTS_TITLE, excludingText, LATE_BY_HOUR_TITLE, liveSubtitle, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, METHOD_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';
@@ -69,7 +69,7 @@ export type Ready = Extract<LiveDashboardResponse, { status: 'ready' }>;
 function WeekCompare({ v3 }: { v3: LiveV3 }) {
   // The dashboard's own tiles (labels, change chips, noise rule), so the two views always match.
   return (
-    <Section id="week" title="This week compared with last week">
+    <Section id="week" title={WEEK_COMPARE_TITLE}>
       <KpiRow v3={v3} />
     </Section>
   );
@@ -181,16 +181,16 @@ function AnalysisPage() {
             filters={null}
             toFull={hash => { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${hash}`); setView('analysis'); }} />
         ) : (<>
-        <ErrorBoundary label={BOUNDARY('This week compared with last week')}><WeekCompare v3={v3} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><WeekCompare v3={v3} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="bars" id="b1" title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(TRIP_TIME_LABEL)}><RunTimeSection v3={v3} band={band} dir={dir} detail="full" id="runtime" /></ErrorBoundary>
         <ErrorBoundary label={BOUNDARY(DELAY_STARTS_TITLE)}><BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Stops most often late')}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title="Stops most often late" id="b2" intro notRanked /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Extra wait')}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Where bunching forms')}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
-        <ErrorBoundary label={BOUNDARY('Service delivered')}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(LATE_STOPS_TITLE)}><WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={LATE_MAP_STOPS} map={{ agency, route }} columns="full" title={LATE_STOPS_TITLE} id="b2" intro notRanked /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(EXTRA_WAIT_LABEL)}><ExtraWaitSection v3={v3} band={band} dir={dir} detail="full" /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(BUNCHING_FORMS_TITLE)}><BunchingSection v3={v3} dir={dir} band={band} gaps={gaps} detail="full" uncertain={uncertain} /></ErrorBoundary>
+        <ErrorBoundary label={BOUNDARY(SERVICE_DELIVERED_TITLE)}><DeliveredSection v3={v3} dir={dir} detail="full" /></ErrorBoundary>
         </>)}
-        {/* One "How this is measured" for Summary and Full analysis alike, every line of the method (CIV-308). */}
+        {/* One METHOD_TITLE for Summary and Full analysis alike, every line of the method (CIV-308). */}
         {/* #1490: Summary and Dashboard name the left-out days on late by hour (its All days note); the method doesn't repeat them. */}
         <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} namedAbove={view !== 'analysis' ? excludingText(routeLeftOut(v3)) : null} /></ErrorBoundary>
     </DocsPageLayout>

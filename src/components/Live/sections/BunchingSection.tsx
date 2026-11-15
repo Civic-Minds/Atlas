@@ -13,6 +13,7 @@ import { pct } from './figures';
 import Tag from '../../ui/Tag';
 import { LIVE_NOTHING_LINKED } from '../../../content/noticeCopy';
 
+import { BUNCHING_FORMS_TITLE, BY_TIME_OF_DAY_TITLE } from '../../../../shared/liveWording';
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
 export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBand) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
@@ -75,7 +76,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
   const reserveBracket = rows.some(b => b.bands[band]?.kind === 'forms' && b.bands[band]?.forms);
   const twoLineNames = models.some(m => m && branchNamesWrap(m));
   return (
-    <Section id={full ? 'b4' : 'x-bunching'} title="Where bunching forms" shrink={!full} boundary={boundary}>
+    <Section id={full ? 'b4' : 'x-bunching'} title={BUNCHING_FORMS_TITLE} shrink={!full} boundary={boundary}>
       {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How often vehicles come too close together or too far apart, stop by stop, and where that starts.</p>}
       {/* One key above the directions' strips, not one under each (CIV-1448). */}
       {full && <StripsLegend v3={v3} directionIds={rows.filter(b => b.bands[band]).map(b => b.directionId)} band={band} uncertain={uncertain} modes={BUNCHING_ONLY} />}
@@ -125,7 +126,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
               )}
               {full && (
                 <PerPeriod
-                  title="By time of day"
+                  title={BY_TIME_OF_DAY_TITLE}
                   rows={PERIOD_BANDS_ONLY.flatMap(([k, name]) => {
                     const pb = b.bands[k];
                     if (!pb || pb.kind == null) return [];

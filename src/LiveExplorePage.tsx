@@ -41,7 +41,7 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins, pct } from './components/Live/se
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { DELAY_STARTS_TITLE, LATE_BY_HOUR_TITLE, TYPICAL_ADDED, TRIP_TIME_LABEL } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, EXTRA_WAIT_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
 
 type Day = 'all' | 'weekday' | 'weekend';
@@ -87,8 +87,8 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         <Panel title={stretchLabel(f.fromName, f.toName)} sub={strip.label}>
           <Block>
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
-            <Fact label="Trips where it grows" value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
-            <Fact label="Typical delay" value={mins(f.medianDelayMin)} />
+            <Fact label={GROWS_LABEL} value={pct(f.growShare)} sub={`of ${f.n.toLocaleString()}`} />
+            <Fact label={DELAY_LEGEND_TITLE} value={mins(f.medianDelayMin)} />
             <Fact label="1 in 10 later than" value={mins(f.p90DelayMin)} />
           </Block>
         </Panel>
@@ -122,11 +122,11 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       <Block>
         {s.n > 0 && s.delayMin != null ? (
           <>
-            <Fact label="Typical delay" value={delayText(s.delayMin)} />
+            <Fact label={DELAY_LEGEND_TITLE} value={delayText(s.delayMin)} />
             {full && <Fact label="1 in 10 later than" value={mins(full.p90Min)} />}
-            {s.lateShare != null && <Fact label="Late" value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
+            {s.lateShare != null && <Fact label={LATE_LABEL} value={pct(s.lateShare)} sub={`of ${s.n.toLocaleString()} departures`} />}
           </>
-        ) : <Fact label="Typical delay" value="not measured" />}
+        ) : <Fact label={DELAY_LEGEND_TITLE} value="not measured" />}
         {s.uncertain && <p className="mt-2 text-xs text-[var(--text-dim)]">{LIVE_LESS_EXACT_HERE}</p>}
       </Block>
       {bunch && bunch.n > 0 && (
@@ -137,13 +137,13 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
       )}
       {extra && (
         <Block>
-          <Fact label="Extra wait" value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
+          <Fact label={EXTRA_WAIT_LABEL} value={minutesText(Math.max(0, extra.extraWaitMin))} sub={scheduledEveryText(extra.scheduledGapMin)} />
         </Block>
       )}
       {into && into.n > 0 && (
         <Block title={stretchLabel(into.fromName, into.toName)}>
           <Fact label={TYPICAL_ADDED} value={mins(into.medianAddedMin)} />
-          <Fact label="Trips where it grows" value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
+          <Fact label={GROWS_LABEL} value={pct(into.growShare)} sub={`of ${into.n.toLocaleString()}`} />
         </Block>
       )}
     </Panel>
@@ -259,7 +259,7 @@ export default function LiveExplorePage() {
       <RouteDevHint v3={v3} route={route} />
       {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
 
-      <ErrorBoundary label={BOUNDARY('This week compared with last week')}><KpiRow v3={v3} /></ErrorBoundary>
+      <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
 
       <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
         <Group label="Direction" value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
@@ -267,7 +267,7 @@ export default function LiveExplorePage() {
         <Group label="Time of day" value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
       </div>
 
-      <ErrorBoundary label={BOUNDARY('Along the route')}>
+      <ErrorBoundary label={BOUNDARY(ALONG_ROUTE_TITLE)}>
         <Main v3={v3} band={band} dir={dir} uncertain={uncertain} sel={sel} setSel={setPicked} />
       </ErrorBoundary>
 
@@ -275,10 +275,10 @@ export default function LiveExplorePage() {
         before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
       <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
-      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY('Extra wait')} />
-      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY('Where bunching forms')} />
-      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY('Service delivered')} />
-      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title="Stops most often late" id="x-stops" shrink boundary={BOUNDARY('Stops most often late')} onPick={pickStop} canPick={onStrip} />
+      <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />
+      <BunchingSection v3={v3} dir={dir} band={band} detail="compact" boundary={BOUNDARY(BUNCHING_FORMS_TITLE)} />
+      <DeliveredSection v3={v3} dir={dir} detail="compact" boundary={BOUNDARY(SERVICE_DELIVERED_TITLE)} />
+      <WorstStopsSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} limit={10} columns="full" title={LATE_STOPS_TITLE} id="x-stops" shrink boundary={BOUNDARY(LATE_STOPS_TITLE)} onPick={pickStop} canPick={onStrip} />
       <ErrorBoundary label={LIVE_METHOD_DRAW_ERROR}><MethodSection scope="route" data={data} /></ErrorBoundary>
     </article>,
   );

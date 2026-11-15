@@ -7,6 +7,7 @@ import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
 
+import { SERVICE_DELIVERED_TITLE } from '../../../../shared/liveWording';
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
   const sd = v3.serviceDelivered;
@@ -27,7 +28,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   const full = detail === 'full';
   const m = deliveredModel(v3, dir);
   if (!m && full) return null;
-  const frame = (children: ReactNode) => <Section id={full ? 'delivered' : 'x-delivered'} title="Service delivered" shrink={!full} boundary={boundary}>{children}</Section>;
+  const frame = (children: ReactNode) => <Section id={full ? 'delivered' : 'x-delivered'} title={SERVICE_DELIVERED_TITLE} shrink={!full} boundary={boundary}>{children}</Section>;
   if (!m) return frame(null);
   const { overall, skipped, points } = m;
   const chart = (

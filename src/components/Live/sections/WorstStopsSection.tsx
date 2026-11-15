@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { LATE_THRESHOLD, lateStopsIntro } from '../../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, LATE_LABEL, LATE_THRESHOLD, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -71,10 +71,10 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
             : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: 'Direction', align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
-            ? { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
-            : { key: 'late', header: 'Late', width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
+            ? { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
+            : { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${s.n.toLocaleString()} departures`}>{pct(s.lateShare)}</span> },
           ...(full ? [
-            { key: 'median', header: 'Typical delay', width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
+            { key: 'median', header: DELAY_LEGEND_TITLE, width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
             { key: 'p90', header: '1 in 10 later than', narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
             { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => s.n.toLocaleString() },
           ] : []),

@@ -3,7 +3,7 @@
  * way everywhere. Page-only lines are written next to their page.
  */
 import { COLOURED_CHANGES } from '../../../shared/liveDashboard';
-import { LATE_DEFINITION, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
+import { BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
 
 // E9–E23 as Ryan approved them (CIV-1075): each line is the bold term, then the rest of its sentence, no colon.
@@ -13,16 +13,16 @@ export const RUN_TIME_TEXT = 'is how long a typical trip takes over the main str
 export const EXTRA_WAIT_TEXT = 'is how much longer riders wait than the schedule says, worked out from the gaps between vehicles at each stop.';
 export const bunchingText = (underMin = 2) => `is when the gap between vehicles is under ${underMin} min, or more than twice the scheduled gap.`;
 
-export const lateLine = <Term t="Late">{LATE_DEFINITION}</Term>;
+export const lateLine = <Term t={LATE_LABEL}>{LATE_DEFINITION}</Term>;
 /** What "ahead" means, its own line after the Late definition. */
 export const aheadLine = (aheadMin: number) => <Term t="Ahead">is {aheadMin} min or more ahead of schedule.</Term>;
 export const runTimeLine = (shortTurns = false) => (
   <Term t={TRIP_TIME_LABEL}>{RUN_TIME_TEXT}{shortTurns ? '; only trips seen at both ends count, so short turns are left out' : ''}.</Term>
 );
-export const extraWaitLine = <Term t="Extra wait">{EXTRA_WAIT_TEXT}</Term>;
-export const bunchingLine = (underMin = 2) => <Term t="Bunching">{bunchingText(underMin)}</Term>;
+export const extraWaitLine = <Term t={EXTRA_WAIT_LABEL}>{EXTRA_WAIT_TEXT}</Term>;
+export const bunchingLine = (underMin = 2) => <Term t={BUNCHING_LABEL}>{bunchingText(underMin)}</Term>;
 export const deliveredLine = (rule = false) => (
-  <Term t="Delivered">is the share of scheduled trips that actually ran{rule ? '; a trip counts as run when a vehicle was seen under its trip number' : ''}.</Term>
+  <Term t={DELIVERED_LABEL}>is the share of scheduled trips that actually ran{rule ? '; a trip counts as run when a vehicle was seen under its trip number' : ''}.</Term>
 );
 
 export const positionsLine = <Term t="Vehicle positions">are recorded once a minute for each vehicle. The time it left each stop is estimated from those and compared with the schedule.</Term>;

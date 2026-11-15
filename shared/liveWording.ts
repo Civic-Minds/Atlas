@@ -13,6 +13,33 @@ import { countOf } from './overflowText';
 /** The name of how long a trip takes end to end, on Live and the map alike (Ryan, CIV-1160 question 6, 2026-11-13: "Trip time", not "Run time"). */
 export const TRIP_TIME_LABEL = 'Trip time';
 export const DELAY_LEGEND_TITLE = 'Typical delay';
+
+// The names of Live's measures and sections, each written once (CIV-1596). Every page, panel, table and glossary reads
+// these; the style guard fails on a copy typed by hand in Live code.
+/** The share of departures more than 5½ min behind: tile, column, map measure and glossary term. */
+export const LATE_LABEL = 'Late';
+/** The extra minutes riders wait beyond the scheduled gap: tile, section, map measure and glossary term. */
+export const EXTRA_WAIT_LABEL = 'Extra wait';
+/** The share of gaps too short or too long: tile, column, map measure and glossary term. */
+export const BUNCHING_LABEL = 'Bunching';
+/** The share of scheduled trips that ran, in a narrow column and the glossary. */
+export const DELIVERED_LABEL = 'Delivered';
+/** The same share as a tile, section title and sort choice. */
+export const SERVICE_DELIVERED_TITLE = 'Service delivered';
+/** The late-stops section and widget on the agency and route pages. */
+export const LATE_STOPS_TITLE = 'Stops most often late';
+/** The week table's section and caption. */
+export const WEEK_COMPARE_TITLE = 'This week compared with last week';
+/** The bunching section. */
+export const BUNCHING_FORMS_TITLE = 'Where bunching forms';
+/** The route strip's section. */
+export const ALONG_ROUTE_TITLE = 'Along the route';
+/** The share of trips in which a stretch's delay grows. */
+export const GROWS_LABEL = 'Trips where it grows';
+/** The stretch that adds the most minutes, in the delay build-up section. */
+export const ADDS_MOST_TITLE = 'Stretch that adds the most';
+/** The by-hour part of the bunching and build-up sections. */
+export const BY_TIME_OF_DAY_TITLE = 'By time of day';
 export const EARLY_STEP_LABEL = '1+ min ahead';
 /** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
 export const DELAY_STEP_LABELS = ['On time', '1–3 min', '3+ min behind'] as const;

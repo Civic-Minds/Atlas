@@ -6,7 +6,7 @@
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
 import { minutesText, pct, tenth } from '../../../shared/liveFormat';
-import { DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
+import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, USUALLY_ON_TIME, bunchTotalParts, bunchedAndLong, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -59,15 +59,15 @@ export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, strin
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
   delay: DELAY_LEGEND_TITLE,
-  bunching: 'Bunching',
+  bunching: BUNCHING_LABEL,
 };
 /** The words both strips (RouteStrip, BranchStrip) write, kept in one place so the two cannot drift apart (CIV-1160). */
 /** A track's name in its hover and screen-reader text. */
-export const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: 'Bunching' };
+export const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunching: BUNCHING_LABEL };
 /** The screen-reader table's caption: "Eastbound: delay and bunching at each stop". */
 export const stripTableCaption = (label: string): string => `${label}: delay and bunching at each stop`;
 /** The screen-reader table's column headers. */
-export const STRIP_COLUMNS = { stop: 'Stop', delay: 'Typical delay', late: 'Late', bunch: 'Gaps off', n: 'Departures' } as const;
+export const STRIP_COLUMNS = { stop: 'Stop', delay: DELAY_LEGEND_TITLE, late: LATE_LABEL, bunch: 'Gaps off', n: 'Departures' } as const;
 /** A table cell or hover value with nothing measured. */
 export const NOT_MEASURED_CELL = 'not measured';
 /** The phone list's switch between key stops and every stop. */
@@ -232,7 +232,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
     const step = stopStep(s, mode);
     if (step == null) missing++; else counts.set(step, (counts.get(step) ?? 0) + 1);
   }
-  const what = mode === 'delay' ? 'Typical delay' : 'Share of gaps too short or too long';
+  const what = mode === 'delay' ? DELAY_LEGEND_TITLE : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
   const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${countOf(stops.length, 'stop')}: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
