@@ -8,6 +8,8 @@ import {
   isOnDemandStopShown,
   isOnDemandZoneShown,
   localDateIn,
+  onDemandZonesInEffect,
+  withoutExpiredOnDemandZones,
   onDemandHoursConfirmed,
   onDemandRunningNote,
   resolveOnDemandZone,
@@ -180,6 +182,35 @@ describe('zones past their last day', () => {
     expect(localDateIn('America/Edmonton', now)).toBe('2026-12-31');
     expect(localDateIn('Europe/Paris', now)).toBe('2027-01-01');
     expect(localDateIn(undefined, now)).toBe('2026-12-31');
+  });
+});
+
+describe('zones with a first day (CIV-1753)', () => {
+  const service = {
+    features: [{ properties: { areaName: 'Old' } }, { properties: { areaName: 'New' } }, { properties: { areaName: 'Always' } }],
+    stopFeatures: [{ properties: { areaName: 'New' } }, { properties: { areaName: 'Old, New' } }],
+    zoneMetadata: { Old: { validUntil: '2026-12-31' }, New: { validFrom: '2027-01-01' }, Always: {} },
+  };
+  const inEffect = (today: string) => onDemandZonesInEffect(service, today).features.map(f => f.properties.areaName);
+
+  it('hides a zone before its first day and shows it from that day on', () => {
+    expect(isOnDemandZoneShown(service, 'New', 'Weekday', 'all', '2026-12-31')).toBe(false);
+    expect(isOnDemandZoneShown(service, 'New', 'Weekday', 'all', '2027-01-01')).toBe(true);
+    expect(isOnDemandZoneShown(service, 'New', 'Weekday', 'all', '2027-01-02')).toBe(true);
+    expect(isOnDemandStopShown(service, { areaName: 'New' }, 'Weekday', 'all', '2026-12-31')).toBe(false);
+  });
+
+  it('swaps the old zone for the new one with no gap and no overlap', () => {
+    expect(inEffect('2026-12-31')).toEqual(['Old', 'Always']);
+    expect(inEffect('2027-01-01')).toEqual(['New', 'Always']);
+    expect(inEffect('2027-01-02')).toEqual(['New', 'Always']);
+    expect(onDemandZonesInEffect(service, '2026-12-31').stopFeatures).toHaveLength(1);
+    expect(Object.keys(onDemandZonesInEffect(service, '2027-01-01').zoneMetadata ?? {})).toEqual(['New', 'Always']);
+  });
+
+  it('leaves a zone that starts later in what the release build keeps', () => {
+    expect(withoutExpiredOnDemandZones(service, '2026-11-16').features).toHaveLength(3);
+    expect(withoutExpiredOnDemandZones(service, '2027-01-01').features.map(f => f.properties.areaName)).toEqual(['New', 'Always']);
   });
 });
 
