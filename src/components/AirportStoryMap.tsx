@@ -21,7 +21,7 @@ import { headwayToTierColor, type ColorVisionMode } from '../utils/colors';
 interface Props {
   day: AirportDay;
   hour: number;
-  /** How far the scroll section has blended to the dark tokens, 0 (day) to 1 (night); 1 for a reader already in dark mode. */
+  /** The reader's theme for the basemap: 0 light, 1 dark (the page no longer blends to dark at night, CIV-1550). */
   night: number;
   /** The airport code of the zoom in ZOOMS the map is flown in to, or null for the continent view. */
   zoom: string | null;
