@@ -20,6 +20,14 @@ describe('Studio link in the header (CIV-1694)', () => {
     expect(screen.getByRole('link', { name: 'Studio' })).toHaveAttribute('href', '/studio');
   });
 
+  it('sits after Docs, just before Go to Atlas (CIV-1745)', () => {
+    flags.studio = true;
+    render(<SiteHeader />);
+    const names = screen.getAllByRole('link').map(l => l.textContent?.trim() ?? '');
+    const order = names.filter(n => /^(Agencies|Research|Docs|Studio)$/.test(n) || /Go to Atlas/.test(n));
+    expect(order.slice(-3)).toEqual(['Docs', 'Studio', expect.stringMatching(/Go to Atlas/)]);
+  });
+
   it('is not there with the flag off', () => {
     flags.studio = false;
     render(<SiteHeader />);
