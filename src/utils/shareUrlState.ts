@@ -313,7 +313,8 @@ export function encodeFullDayUrlState(state: FullDayUrlState, defaultDirection: 
  *   - `routes=<key>,<key>`: the chooser for overlapping routes, named by its route keys (not a
  *     click point) so the link opens the same list wherever the map is.
  */
-export const AGENCY_CARD_PARAM = 'operator';
+export { AGENCY_CARD_PARAM } from '../../shared/pagePaths';
+import { AGENCY_CARD_PARAM } from '../../shared/pagePaths';
 export const ROUTE_CHOOSER_PARAM = 'routes';
 
 /** The agency card's slug from a link, or null. Slugs are [a-z0-9-]; anything else is ignored. */
