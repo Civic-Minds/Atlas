@@ -155,7 +155,10 @@ export default function MapAppMap({ layer, selected, onPick, anchor = null, card
     });
     if (framed.current !== key && (m.stops.length || m.segments.length || ln?.length)) {
       framed.current = key;
-      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates), ...(ln ?? []).flatMap(l => l.coordinates)];
+      // A lines map with a highlighted route (Studio's picked route, CIV-1731) frames that route's lines alone.
+      const hl = latestHl.current;
+      const framedLines = ln && hl && ln.some(l => l.route === hl) ? ln.filter(l => l.route === hl) : ln;
+      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates), ...(framedLines ?? []).flatMap(l => l.coordinates)];
       // The map sits in a flex layout whose size can change after the first paint: measure it again before framing.
       map.resize();
       frameRoute(map, points, { padding: pad ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });

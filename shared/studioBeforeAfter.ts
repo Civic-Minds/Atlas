@@ -100,6 +100,21 @@ export function frequencyMoved(before: StudioRouteDay | null, after: StudioRoute
   return !!before && !!after && PERIOD_KEYS.some(k => movedBy(before.headway[k], after.headway[k], FREQUENCY_STEP_MIN));
 }
 
+/**
+ * How one time of day changed on a route, for the Studio map's colours (CIV-1731), by the same step as the page's
+ * groups (FREQUENCY_STEP_MIN): `more` (service starts, or comes at least that much more often), `less` (it stops, or comes
+ * at least that much less often), `same`, or `none` (no frequency on either side).
+ */
+export type StudioPeriodChange = 'more' | 'less' | 'same' | 'none';
+export function periodChange(before: StudioRouteDay | null, after: StudioRouteDay | null, period: PeriodKey): StudioPeriodChange {
+  const b = before?.headway[period] ?? null, a = after?.headway[period] ?? null;
+  if (b == null && a == null) return 'none';
+  if (!movedBy(b, a, FREQUENCY_STEP_MIN)) return 'same';
+  if (b == null) return 'more';
+  if (a == null) return 'less';
+  return a < b ? 'more' : 'less';
+}
+
 /** Where a route's change goes on the page (see StudioChangeSize). */
 export function changeSize(before: StudioRouteDay | null, after: StudioRouteDay | null): StudioChangeSize {
   if (!before || !after) return 'frequency';
