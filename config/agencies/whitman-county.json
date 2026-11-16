@@ -21,8 +21,8 @@
   ],
   "timezone": "America/Los_Angeles",
   "lastFeedExpiry": "20281116",
-  "lastFeedVersion": "Greyhound open + Special Service removed,Holiday service,resume regular service",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "resume regular service after football",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -42,7 +42,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -53,7 +53,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://pullmanbusbeacon.com/gtfs",
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "0d5704e2b602fd4f",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261106"
+  "lastServiceWeek": "f80da3ddc30f0f79",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "unknown-ee618e204a5e606b",
+  "lastFeedContentKey": "ee73073ea422e803"
 }

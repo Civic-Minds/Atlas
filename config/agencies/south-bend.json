@@ -11,12 +11,12 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7019/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "South Bend, Indiana",
     "Elkhart, Indiana"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -49,5 +49,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "d85ed8aa4ed3af7f",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261018"
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "20261216-c3fc4eea7ead2871",
+  "lastFeedContentKey": "8bbec192634cb8c0"
 }

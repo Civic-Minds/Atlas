@@ -14,18 +14,18 @@
     -64.55
   ],
   "feedUrl": "https://www7.moncton.ca/opendata/google_transit.zip",
-  "lastFeedExpiry": "20261128",
-  "lastFeedVersion": "2026 Oct 12  to Nov 28 2026",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270220",
+  "lastFeedVersion": "2026 Nov 29  to Feb 20 2027",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.codiactranspo.ca/",
   "cities": [
     "Moncton, New Brunswick"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1111/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261128",
+  "expiredFeedCheckExpiry": "20270220",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,7 +36,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 65,
-      "feedExpiry": "20261128",
+      "feedExpiry": "20270220",
       "routeCount": 22,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -47,13 +47,14 @@
   },
   "timezone": "America/Halifax",
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1111/latest.zip",
+  "lastFeedSourceUrl": "https://www7.moncton.ca/opendata/google_transit.zip",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20261128",
-  "lastServiceWeek": "2ac573177de8791e",
-  "feedObtainedAt": "20261007",
-  "lastFeedStart": "20260930"
+  "lastPeekedExpiry": "20270220",
+  "lastServiceWeek": "f745a986f0444e77",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261111",
+  "lastRawArchiveKey": "20270220-e59cd52b9fd51e1d"
 }

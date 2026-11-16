@@ -11,10 +11,10 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5780/latest.zip",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "08012026Augusta",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20240224-4a743b70003a6451",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270130-52c0d28a2eef7189",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -45,6 +45,6 @@
     "checkedAt": "2026-11-16"
   },
   "lastServiceWeek": "bcf1ed9db4941d48",
-  "feedObtainedAt": "20261102",
+  "feedObtainedAt": "20261116",
   "lastFeedStart": "20261024"
 }

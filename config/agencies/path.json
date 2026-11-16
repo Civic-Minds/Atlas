@@ -29,22 +29,23 @@
   ],
   "timezone": "America/New_York",
   "lastRawArchiveKey": "20260601-572eaf8ff298767c",
-  "lastFeedCheckAt": "20261109",
-  "expiredFeedCheckCount": 0,
-  "expiredFeedCheckSince": null,
+  "lastFeedCheckAt": "20261116",
+  "expiredFeedCheckCount": 1,
+  "expiredFeedCheckSince": "20260622",
   "expiredFeedCheckExpiry": "20261114",
-  "feedRefreshStatus": "current",
-  "feedRefreshError": null,
-  "feedRefreshErrorAt": null,
-  "feedRefreshRetryCount": 0,
+  "feedRefreshStatus": "stale",
+  "feedRefreshError": "all available feeds expired (latest 20261114)",
+  "feedRefreshErrorAt": "20261116",
+  "feedRefreshRetryCount": 1,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/14843/PATHGTFS.zip",
   "lastPeekedExpiry": "20261114",
   "feedQuality": {
-    "status": "review",
-    "score": 70,
+    "status": "degraded",
+    "score": 35,
     "reasons": [
-      "2 route have stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule.",
+      "The schedule dates in this feed have passed."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -59,7 +60,8 @@
       "mismatchRoutes": 2,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-14"
+    "checkedAt": "2026-11-14",
+    "scoredAt": "2026-11-16"
   },
   "lastServiceWeek": "7c1ef8082468e813",
   "feedObtainedAt": "20261102",

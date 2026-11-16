@@ -8,10 +8,10 @@
     -97.52
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2062/latest.zip",
-  "lastFeedExpiry": "20271108",
-  "lastFeedVersion": "07/11/2026-22:30",
+  "lastFeedExpiry": "20271115",
+  "lastFeedVersion": "14/11/2026-22:30",
   "region": "Oklahoma",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Oklahoma City, Oklahoma",
     "Edmond, Oklahoma",
@@ -19,7 +19,7 @@
     "Midwest City, Oklahoma",
     "Moore, Oklahoma"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20301231",
@@ -36,7 +36,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 177,
-      "feedExpiry": "20271108",
+      "feedExpiry": "20271115",
       "routeCount": 44,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -50,7 +50,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20301231",
-  "lastServiceWeek": "4a4ac3e5ab724dfd",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260909"
+  "lastServiceWeek": "d649b13669680621",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260916",
+  "lastRawArchiveKey": "20271115-f8e0d9527799a3e6",
+  "lastFeedContentKey": "7fdbcbe304308b98"
 }

@@ -17,7 +17,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2684/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20261102",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://acerail.com/",
   "cities": [
     "Livermore, California",
@@ -27,7 +27,7 @@
     "San Jose, California",
     "Pleasanton, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -58,7 +58,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "31415a6fb5c248bd",
+  "lastServiceWeek": "a0cece85545f021b",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20250101"
+  "lastFeedStart": "20250101",
+  "lastRawArchiveKey": "20271231-2ab27930a69218f9",
+  "lastFeedContentKey": "c3337f93ec4822f5"
 }

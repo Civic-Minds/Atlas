@@ -16,14 +16,14 @@
   "feedUrl": "https://www.valleyexpressbus.org/wp-content/uploads/2026/04/Spring-2026-Valley-Express-GTFS.zip",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Farebox Test",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Simi Valley, California",
     "Camarillo, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250815-66df0279f8010e64",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "unknown-8f649471451f0a15",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -54,6 +54,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "4f364ef925cc6447",
-  "feedObtainedAt": "20260420",
-  "lastFeedStart": "20260323"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260323",
+  "lastFeedContentKey": "20fbf5536fd51ea2"
 }

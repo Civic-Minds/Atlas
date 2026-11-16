@@ -10,15 +10,15 @@
   "lastFeedExpiry": "20271001",
   "lastFeedVersion": "1",
   "region": "California",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Glendale, California",
     "Burbank, California",
     "Pasadena, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20220831-fd08ce68f5a5f345",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20271001-c92aadfbd96fbd86",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271001",
@@ -52,6 +52,7 @@
     "checkedAt": "2026-11-16"
   },
   "lastServiceWeek": "3b470c5993d3f5d9",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20260830"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260830",
+  "lastFeedContentKey": "5421d12650c030c4"
 }

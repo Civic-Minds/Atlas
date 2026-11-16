@@ -15,12 +15,12 @@
   ],
   "feedUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5547/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "2026-08-27",
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20251231-915e28c519db2c9f",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261231-6c920e76a8ac381f",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -53,6 +53,7 @@
   "lastFeedSourceUrl": "https://schedule.ivtransit.com/gtfs/data.zip",
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "58c3204b795a7c5d",
-  "feedObtainedAt": "20260827",
-  "lastFeedStart": "20260101"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260101",
+  "lastFeedContentKey": "20db36b44194ac22"
 }

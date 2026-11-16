@@ -9,13 +9,13 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-217/latest.zip",
   "lastFeedExpiry": "20270110",
-  "lastFeedVersion": "August 2026_20261107",
+  "lastFeedVersion": "August 2026_20261114",
   "region": "Texas",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "San Antonio, Texas"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -46,7 +46,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "8d859bb80b57fd9c",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260824"
+  "lastServiceWeek": "caae37e79af742eb",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260824",
+  "lastRawArchiveKey": "20270110-6c2a75acd3471161",
+  "lastFeedContentKey": "1778d7aa44adec2f"
 }

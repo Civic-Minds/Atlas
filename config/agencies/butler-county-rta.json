@@ -20,9 +20,9 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 48,
+      "featureCount": 41,
       "feedExpiry": "20281116",
-      "routeCount": 13,
+      "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
@@ -31,9 +31,9 @@
     "checkedAt": "2026-11-16"
   },
   "lastFeedExpiry": "20281116",
-  "lastFeedVersion": "Fall 2026 Version 10122026",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedVersion": "Fall 2026 Version 11162026",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -45,7 +45,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.buztrakr.com/gtfs",
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "e6481d44d69f627c",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261011"
+  "lastServiceWeek": "a23b02dff86b2240",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "unknown-a02cf6ed5d1cefdd",
+  "lastFeedContentKey": "283996f7cbb4a54c"
 }

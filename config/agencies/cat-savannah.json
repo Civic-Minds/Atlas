@@ -16,14 +16,14 @@
   "region": "Georgia",
   "lastFeedExpiry": "20261122",
   "lastFeedVersion": "S1000070",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.catchacat.org",
   "cities": [
     "Savannah, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250727-6723aa5560da6d1c",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261122-a9ead00107f2b233",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261122",
@@ -64,6 +64,7 @@
   ],
   "lastPeekedExpiry": "20261122",
   "lastServiceWeek": "e635e906ca81879a",
-  "feedObtainedAt": "20260825",
-  "lastFeedStart": "20260831"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260831",
+  "lastFeedContentKey": "b47cf5dc5ef9feae"
 }

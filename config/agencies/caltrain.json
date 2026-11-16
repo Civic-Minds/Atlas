@@ -17,8 +17,8 @@
   "feedUrl": "http://data.trilliumtransit.com/gtfs/caltrain-ca-us/caltrain-ca-us.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-54/latest.zip",
   "lastFeedExpiry": "20270131",
-  "lastFeedVersion": "UTC: 10-Jun-2026 22:25",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "UTC: 13-Nov-2026 14:55",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "San Mateo, California",
     "San Jose, California",
@@ -31,8 +31,8 @@
     "Gilroy, California",
     "Daly City, California"
   ],
-  "lastRawArchiveKey": "20270131-786de3fea43ef033",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270131-a045808f6fecfd7d",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -63,7 +63,8 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "cb56639392cc28ef",
-  "feedObtainedAt": "20260828",
-  "lastFeedStart": "20260131"
+  "lastServiceWeek": "8715e91a13ddeaa7",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastFeedContentKey": "54bbdc5b7eb594e3"
 }

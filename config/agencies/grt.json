@@ -25,15 +25,15 @@
   ],
   "lastFeedExpiry": "20261220",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Waterloo, Ontario",
     "Kitchener, Ontario",
     "Cambridge, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "20260426-071369b92e6aeb7d",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261220-8a2aabd2e2d0e7eb",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261220",
@@ -78,7 +78,8 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastServiceWeek": "4e894f57adb47ed5",
-  "feedObtainedAt": "20261023",
-  "lastFeedStart": "20261109"
+  "lastServiceWeek": "7439775b2abb2873",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261116",
+  "lastFeedContentKey": "e9351c56b02f7869"
 }

@@ -14,18 +14,18 @@
     -79.3
   ],
   "feedUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
-  "lastFeedExpiry": "20261219",
+  "lastFeedExpiry": "20270109",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-724/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Burlington, Ontario",
     "Hamilton, Ontario"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261219",
+  "expiredFeedCheckExpiry": "20270109",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -36,7 +36,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 74,
-      "feedExpiry": "20261219",
+      "feedExpiry": "20270109",
       "routeCount": 16,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -52,8 +52,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip",
-  "lastPeekedExpiry": "20261219",
-  "lastServiceWeek": "a3bce9675f0646df",
-  "feedObtainedAt": "20260928",
-  "lastFeedStart": "20261101"
+  "lastPeekedExpiry": "20270109",
+  "lastServiceWeek": "f9fbd9f6df47d776",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261101",
+  "lastRawArchiveKey": "20270109-19580d83833429c1",
+  "lastFeedContentKey": "65f12195faaea43a"
 }

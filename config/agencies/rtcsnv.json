@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2351/latest.zip",
   "lastFeedExpiry": "20270821",
-  "lastFeedVersion": "August 2026_20260730",
+  "lastFeedVersion": "August 2026_20261103",
   "region": "Nevada",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Las Vegas, Nevada",
     "Spring Valley, Nevada",
@@ -21,7 +21,7 @@
     "Henderson, Nevada",
     "Enterprise, Nevada"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270821",
@@ -52,7 +52,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "6f807fa1a5f4417c",
-  "feedObtainedAt": "20260730",
-  "lastFeedStart": "20260823"
+  "lastServiceWeek": "1dd43781f583743d",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260823",
+  "lastRawArchiveKey": "20270821-1448e595969c5a9e",
+  "lastFeedContentKey": "bad99acbf06aa09e"
 }

@@ -9,14 +9,14 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=47",
   "lastFeedExpiry": "20261219",
-  "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Kelowna, British Columbia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2555/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -50,6 +50,8 @@
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=47",
   "lastPeekedExpiry": "20261219",
   "lastServiceWeek": "2b55aad97c28ae13",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261107"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "20261219-e7ab390eea556828",
+  "lastFeedContentKey": "8365ce9998af3ab7"
 }

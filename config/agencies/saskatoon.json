@@ -16,7 +16,7 @@
   ],
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Saskatoon, Saskatchewan",
     "Confederation, Saskatchewan",
@@ -25,8 +25,8 @@
     "Lakewood, Saskatchewan"
   ],
   "timezone": "America/Regina",
-  "lastRawArchiveKey": "20250830-3e8e316896a70dd6",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270102-efe9c9b4674be2e6",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -57,6 +57,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "8d49cb506c44667f",
-  "feedObtainedAt": "20260924",
-  "lastFeedStart": "20260830"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260830",
+  "lastFeedContentKey": "4d3044851e79577a"
 }

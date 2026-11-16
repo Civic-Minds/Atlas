@@ -13,14 +13,14 @@
     -74.3
   ],
   "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-  "lastFeedExpiry": "20261220",
-  "lastFeedVersion": "1788765058143",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20261223",
+  "lastFeedVersion": "1794319481124",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.villedemont-tremblant.qc.ca",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20261220",
+  "expiredFeedCheckExpiry": "20261223",
   "timezone": "America/Toronto",
   "feedQuality": {
     "status": "healthy",
@@ -32,7 +32,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 5,
-      "feedExpiry": "20261220",
+      "feedExpiry": "20261223",
       "routeCount": 1,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -47,8 +47,10 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tcmt6w8qbuxm",
-  "lastPeekedExpiry": "20261220",
-  "lastServiceWeek": "19c07ce761241f6a",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20260908"
+  "lastPeekedExpiry": "20261223",
+  "lastServiceWeek": "f4fb6d25d920b097",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261116",
+  "lastRawArchiveKey": "20261223-32adf54df052501b",
+  "lastFeedContentKey": "1ab57c940dee44a2"
 }

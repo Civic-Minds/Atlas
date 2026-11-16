@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "20261005",
   "region": "Indiana",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.indygo.net",
   "cities": [
     "Indianapolis, Indiana",
@@ -19,8 +19,8 @@
     "Fishers, Indiana"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250607-c00a632c8badd09b",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270213-247d9db49d4dcba2",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -51,6 +51,7 @@
   "lastFeedSourceUrl": "https://realtime.indygo.net/InfoPoint/gtfs-zip.ashx",
   "lastPeekedExpiry": "20270213",
   "lastServiceWeek": "4004079c5e3c89bd",
-  "feedObtainedAt": "20261005",
-  "lastFeedStart": "20261005"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261005",
+  "lastFeedContentKey": "eeedf8cf03cc4ca4"
 }

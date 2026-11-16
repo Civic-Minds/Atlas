@@ -15,7 +15,7 @@
   "lastFeedVersion": null,
   "region": "Illinois",
   "preprocess": "cta-loop-directions",
-  "lastRefreshedAt": "2026-11-15",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "South Shore, Illinois",
     "Chicago Lawn, Illinois",
@@ -28,7 +28,7 @@
     "Near North Side, Illinois",
     "Oak Park, Illinois"
   ],
-  "lastFeedCheckAt": "20261115",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -61,7 +61,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.transitchicago.com/downloads/sch_data/google_transit.zip",
   "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "cd2225a3e6978141",
+  "lastServiceWeek": "7fdfef220476f266",
   "feedObtainedAt": "20261114",
   "lastFeedStart": "20261029",
   "lastRawArchiveKey": "20261231-ddbf306e6a57e419",

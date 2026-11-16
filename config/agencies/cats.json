@@ -11,12 +11,12 @@
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": null,
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Charlotte, North Carolina",
     "Huntersville, North Carolina"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -55,7 +55,9 @@
     }
   ],
   "lastPeekedExpiry": "20270131",
-  "lastServiceWeek": "d08a7cc17950eaed",
+  "lastServiceWeek": "6f553300a97cb048",
   "feedObtainedAt": "20261026",
-  "lastFeedStart": "20261026"
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "20270131-0c42101ca9dd424b",
+  "lastFeedContentKey": "563db6e236e3e1b1"
 }

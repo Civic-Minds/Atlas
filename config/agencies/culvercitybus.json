@@ -11,15 +11,15 @@
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "S1000254_2026.08.05",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Mid-City, California",
     "Inglewood, California",
     "Santa Monica, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260712-b7c46c977165e86f",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261213-b50df610855bea32",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -50,6 +50,7 @@
   "lastFeedSourceUrl": "https://web.culvercity.org/gtfs/gtfsexport.zip",
   "lastPeekedExpiry": "20261213",
   "lastServiceWeek": "f20907bc8ba459a8",
-  "feedObtainedAt": "20260824",
-  "lastFeedStart": "20260713"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260713",
+  "lastFeedContentKey": "abc81e46f038b19c"
 }

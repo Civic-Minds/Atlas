@@ -17,8 +17,8 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261108",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "20261112",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "South Ozone Park, New York",
     "Sheepshead Bay, New York",
@@ -31,7 +31,7 @@
     "Parkchester, New York",
     "Park Slope, New York"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -62,7 +62,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-515/latest.zip",
   "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "c5b3b3b5a1767710",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261102"
+  "lastServiceWeek": "b06559526f138ffb",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261102",
+  "lastRawArchiveKey": "20271231-4f917b925de3c1f0",
+  "lastFeedContentKey": "1c1d24f90f2d2ba8"
 }

@@ -16,11 +16,11 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/97_gtfs.zip",
   "lastFeedExpiry": "20261213",
   "lastFeedVersion": "f3eb566c-18ab-42f6-a5e2-e58b848458a2",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Everett, Washington"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261213",
@@ -53,5 +53,7 @@
   "lastPeekedExpiry": "20261213",
   "lastServiceWeek": "96e80fd615bf2603",
   "feedObtainedAt": "20261016",
-  "lastFeedStart": "20260906"
+  "lastFeedStart": "20260906",
+  "lastRawArchiveKey": "20261213-1295d3768900b12d",
+  "lastFeedContentKey": "1458a78bcc58ab25"
 }

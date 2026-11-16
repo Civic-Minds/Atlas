@@ -41,8 +41,8 @@
   },
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501231",
@@ -56,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "d3c49a97eda7edd9",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20160705"
+  "lastFeedStart": "20160705",
+  "lastRawArchiveKey": "20501231-52290d74f8733919",
+  "lastFeedContentKey": "b24ac43298e3dd74"
 }

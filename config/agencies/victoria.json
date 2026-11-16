@@ -9,15 +9,15 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
   "lastFeedExpiry": "20270103",
-  "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Victoria, British Columbia",
     "Saanich, British Columbia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2571/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -50,7 +50,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=48",
   "lastPeekedExpiry": "20270103",
-  "lastServiceWeek": "847a201a7fa2d271",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261107"
+  "lastServiceWeek": "98df77c15aa3e499",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "20270103-c361d3361a6464a3",
+  "lastFeedContentKey": "a8bbd4d79150cd3d"
 }

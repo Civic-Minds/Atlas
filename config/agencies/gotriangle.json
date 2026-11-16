@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20270213",
   "lastFeedVersion": "2026-08 service V1",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Durham, North Carolina",
     "Cary, North Carolina",
@@ -21,7 +21,7 @@
     "Burlington, North Carolina"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3183/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "fc20bec301bc59d7",
   "feedObtainedAt": "20260827",
-  "lastFeedStart": "20260802"
+  "lastFeedStart": "20260802",
+  "lastRawArchiveKey": "20270213-c93599ca8e2a1f32",
+  "lastFeedContentKey": "1743fa68d693cb2a"
 }

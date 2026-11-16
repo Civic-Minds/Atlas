@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20261128",
   "lastFeedVersion": "2026.09",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://vvta.org/",
   "cities": [
     "Victorville, California",
@@ -22,8 +22,8 @@
     "Rancho Cucamonga, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250329-3f568bd33b3ddb28",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261128-79f6041fcbc4b05c",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261128",
@@ -56,6 +56,7 @@
   "lastFeedSourceUrl": "https://api.transloc.com/gtfs/vvta.zip",
   "lastPeekedExpiry": "20261128",
   "lastServiceWeek": "faad8a4c315f5c09",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261025"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261025",
+  "lastFeedContentKey": "e70036c332e2922f"
 }

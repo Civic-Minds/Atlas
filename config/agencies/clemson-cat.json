@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20281116",
   "skipBlockTripHeadways": true,
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "South Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-798/latest.zip",
   "bbox": [
@@ -25,8 +25,8 @@
     "Greenville, South Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20200101-974da843f871ba68",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20501230-974ca7da6ed27b72",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -59,6 +59,7 @@
   "lastFeedSourceUrl": "https://catbus.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
   "lastPeekedExpiry": "20501230",
   "lastServiceWeek": "d2c7fd54ee9d1b4c",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20201130"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20201130",
+  "lastFeedContentKey": "7b7b3a0c0af6f77b"
 }

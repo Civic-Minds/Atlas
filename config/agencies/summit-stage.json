@@ -11,7 +11,7 @@
   "feedUrl": "https://data.trilliumtransit.com/gtfs/summitstage-co-us/summitstage-co-us.zip",
   "lastFeedExpiry": "20270417",
   "lastFeedVersion": "UTC: 30-Oct-2026 20:14",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Breckenridge, Colorado",
     "Frisco, Colorado",
@@ -44,7 +44,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270417",
@@ -55,7 +55,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "e2929116f946ec14",
+  "lastServiceWeek": "16e014b5455d9b79",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261030"
+  "lastFeedStart": "20261030",
+  "lastRawArchiveKey": "20270417-d8c6919e4eabc85c",
+  "lastFeedContentKey": "f5b2288bf72f965a"
 }

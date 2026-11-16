@@ -21,7 +21,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2142/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Brossard, Quebec",
     "Verdun, Quebec",
@@ -29,7 +29,7 @@
     "Le Vieux-Longueuil, Quebec",
     "Le Sud-Ouest, Quebec"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -64,5 +64,7 @@
   "lastPeekedExpiry": "20270103",
   "lastServiceWeek": "e4ad35cb2eca9c8f",
   "feedObtainedAt": "20260827",
-  "lastFeedStart": "20260827"
+  "lastFeedStart": "20261104",
+  "lastRawArchiveKey": "20270103-48d006fe6bc2ddb3",
+  "lastFeedContentKey": "19e00762e5426d0e"
 }

@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": "2026 AUG_20261008",
   "region": "Utah",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Salt Lake City, Utah",
     "Ogden, Utah",
@@ -24,7 +24,7 @@
     "Sandy, Utah",
     "Orem, Utah"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -77,5 +77,7 @@
   "lastPeekedExpiry": "20261205",
   "lastServiceWeek": "e9bfd6b4f2b3fc34",
   "feedObtainedAt": "20261008",
-  "lastFeedStart": "20260816"
+  "lastFeedStart": "20260816",
+  "lastRawArchiveKey": "20261205-6ac179d6b7ec2a1f",
+  "lastFeedContentKey": "06f2d2baeca3c2ba"
 }

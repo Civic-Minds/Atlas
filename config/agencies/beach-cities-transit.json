@@ -11,14 +11,14 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1999/latest.zip",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "New Schedule",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Redondo Beach, California",
     "Hawthorne, California",
     "Inglewood, California",
     "Torrance, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -51,5 +51,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "f866bc69b1c43369",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261004"
+  "lastFeedStart": "20261004",
+  "lastRawArchiveKey": "unknown-f93d910e27657566",
+  "lastFeedContentKey": "91e6264fe90422f8"
 }

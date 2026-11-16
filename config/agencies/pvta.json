@@ -25,14 +25,14 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2416/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Springfield, Massachusetts",
     "North Chicopee, Massachusetts",
     "Chicopee, Massachusetts",
     "Worcester, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -65,5 +65,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "cbde892bbc440f35",
   "feedObtainedAt": "20261028",
-  "lastFeedStart": "20261028"
+  "lastFeedStart": "20261102",
+  "lastRawArchiveKey": "20261219-c7defae022053b4e",
+  "lastFeedContentKey": "15bb99fe8cdd1e60"
 }

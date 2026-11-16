@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "20261104",
   "region": "California",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.avta.com",
   "cities": [
     "Lancaster, California",
@@ -24,8 +24,8 @@
     "Reseda, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20210801-aee75355a03ea49e",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261231-f165b574ca7eb463",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -58,6 +58,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "25f60aca65ebadc5",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261104"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261104",
+  "lastFeedContentKey": "b28d61066394a873"
 }
