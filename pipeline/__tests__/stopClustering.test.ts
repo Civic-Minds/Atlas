@@ -58,4 +58,35 @@ describe('stop groups (#1147)', () => {
     expect(stops.filter(s => s.properties.isHubRef).length).toBe(n);
     for (const g of groups(stops)) expect(radius(g)).toBeLessThanOrEqual(GROUP_RADIUS_M);
   });
+
+  // CIV-758: the build's stops carry only a name and a position, so every stop ties on strength.
+  const bare = (name: string, northM: number, eastM = 0) => stop(name, northM, eastM, { routeIds: undefined });
+  const dotName = (stops: ClusterStop[]) => stops.find(s => s.properties.isHubRef)!.properties.stopName;
+
+  it('puts the dot of a tied group on the stop nearest its centre, not the first one listed', () => {
+    // Listed first: a stop 100-140 m north of the corner's own stops. The group's centre is 30 m north.
+    const stops = [bare('MAIN at FIRST far side', 120), bare('MAIN at FIRST', 20), bare('FIRST at MAIN', 0), bare('MAIN at FIRST south', -20)];
+    runStopClustering(stops);
+    expect(groups(stops).length).toBe(1);
+    expect(dotName(stops)).toBe('MAIN at FIRST');
+  });
+
+  it('keeps the strongest stop as the dot where stops carry rail or route fields', () => {
+    const stops = [stop('Union', 120, 0, { isRail: true }), stop('Union', 0), stop('Union', 10), stop('Union', -10)];
+    runStopClustering(stops);
+    expect(stops.filter(s => s.properties.isHubRef).map(s => s.properties.isRail)).toEqual([true]);
+  });
+
+  it('keeps the dot of a two-stop group where it was', () => {
+    const stops = [bare('Bell Manor Loop Platform 2', 0), bare('Bell Manor Loop Platform 1', 8)];
+    runStopClustering(stops);
+    expect(dotName(stops)).toBe('Bell Manor Loop Platform 2');
+  });
+
+  it('never moves a dot to a stop that leaves one of its group beyond the radius', () => {
+    // The centre's nearest stop (at 60 m) is 260 m from the stop at -200 m, so the anchor keeps the dot.
+    const stops = [bare('KING at JAMES', 0), bare('KING at JAMES', -200), bare('KING at JAMES', 240), bare('KING at JAMES', 60)];
+    runStopClustering(stops);
+    for (const g of groups(stops)) expect(radius(g)).toBeLessThanOrEqual(GROUP_RADIUS_M);
+  });
 });

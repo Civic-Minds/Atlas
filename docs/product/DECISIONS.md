@@ -164,6 +164,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How Live reads
 
+- **Live report pages stay local**
+  - What: the Live report pages are on only on the local dev server, not on Beta or Public, until the GTFS-RT archive restarts and the page design is approved.
+  - Why: their data is not being refreshed, and the design is still in progress.
+  - Source: [decision log](#decision-log) (2026-11-15)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
@@ -248,6 +252,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-15 — Live report pages stay local
+Ryan, 2026-11-15: the Live report pages (`/apps/live/:agency` and below) stay local only until the GTFS-RT archive restarts and the page design is approved. Their data is not being refreshed (the `live-report-refresh.yml` schedule is commented out and the archive is paused), so `VITE_LIVE_REPORTS_ENABLED` was removed from Beta's Vercel settings; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md).
 
 ### 2026-11-15 — One name per page, and title case for titles
 Ryan, 2026-11-15, after a page-name audit: every page has one shared name (`shared/pageNames.ts`) that its heading, links, back and close links and browser tab use. "Documentation" replaces "Docs" on links (CIV-1610's split is retired); "What’s New" is the one name for the release notes (the /changelog URL stays), and the map's What’s New button shows a dot until the current release is opened; the footer's "About" column is "Atlas", with an "About" link. Titles (page and section headings, header and footer links, footer columns, browser tabs) are title case, replacing CIV-1160's sentence case for them; everything else stays sentence case. Tabs use one format, "<page name> | Transit Atlas", within 60 characters, and link previews say "Transit Atlas".
@@ -401,6 +408,8 @@ integration easier. This preserves Atlas as a dependable platform, in the same w
 that a search provider does not reorder its canonical results for every client.
 
 ### 2026-07-15 — Operational consumers own operational decisions
+
+Under review: Ryan, 2026-11-15, may be outdated ("'Atlas's decision log already says advice on day-to-day operations belongs in Bridge' is outdated" / "Potentially at least").
 
 Atlas provides live and historical transit context but does not own product-specific
 decisions such as dispatch recommendations, rider reroute choices, trip-prediction

@@ -66,13 +66,10 @@ export const routeLateDays = (v3: LiveV3): number => healthyCounts(v3.bands.all.
 
 export const routeLateOverall = (v3: LiveV3): number | null => healthyCounts(v3.bands.all.adherence.timepoints.all.byDate, healthyDatesOf(v3), 'all')?.lateShare ?? null;
 
-/** The Yesterday view's figures for one day, in place of the week's. */
-export interface OneDay { label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[] }
-
 type MiniProps = { chart: 'mini'; hours: readonly HourValue[]; band: DashboardBand; overall: number | null; /** Good days behind the figure; fewer than 3 dims it. */ days?: number; /** Bar area height in px. */ height?: number; /** What the figures cover, before the days counted ("both directions"). */ scope?: string; /** The days left out, if any. */ leftOut?: string[] };
 type Props = {
   /**
-   * `spark` is the dashboard's line chart per kind of day (`allOnly` keeps All days; `oneDay` shows one day);
+   * `spark` is the dashboard's line chart per kind of day (`allOnly` keeps All days);
    * `bars` is the stacked Ahead / On time / Late bars: for the three kinds of day when `day` is not set (Full
    * analysis), for that one day with a tile (Explore, which filters hours by `band` and may put `before` above);
    * `mini` is the tool panel's one-line chart with the time of day shaded.
@@ -80,7 +77,7 @@ type Props = {
   chart: 'spark' | 'bars';
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null;
   title?: string; id?: string; shrink?: boolean; boundary?: string; before?: ReactNode;
-  day?: DayKind; allOnly?: boolean; oneDay?: OneDay;
+  day?: DayKind; allOnly?: boolean;
 };
 
 interface DayChart { kind: string; label: string; late: { share: number; n: number; days: number } | null; hours: HourValue[]; /** Rests on fewer than 3 good days. */ thin?: boolean; /** The days of this kind left out, if any. */ leftOut?: string[] }
@@ -133,12 +130,12 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
   );
 }
 
-function Spark({ v3, data, band, dir, allOnly = false, oneDay, title }: Props & { title: string }) {
+function Spark({ v3, data, band, dir, allOnly = false, title }: Props & { title: string }) {
   const m = lateByHourModel(v3, data, dir);
   const healthy = healthyDatesOf(v3);
-  const cols: DayChart[] = oneDay ? [{ kind: 'all', label: oneDay.label, late: oneDay.late, hours: oneDay.hours }] : DAYS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
+  const cols: DayChart[] = DAYS.filter(([kind]) => !allOnly || kind === 'all').map(([kind, label]) => {
     const late = lateForDays(m.blockOf(kind).byDate, healthy, kind);
-    return { kind, label, late, hours: m.sparkHours(kind, band), thin: !oneDay && isThin(late?.days), leftOut: oneDay ? [] : leftOutDays(v3, kind) };
+    return { kind, label, late, hours: m.sparkHours(kind, band), thin: isThin(late?.days), leftOut: leftOutDays(v3, kind) };
   });
   return (
     <Section id="dash-days" title={title} intro={<>How often trips leave the end of the line {LATE_THRESHOLD}, by kind of day and the hour they start.{dir != null && ' Both directions: this view is not split by direction yet.'}</>}>
