@@ -9,6 +9,7 @@
  * - typical value rounded to nearest ½ min, the 1-in-10 rounded down, shown only when greater than the typical value;
  * - "looser than needed": typical at least 30 s under the timetable and 1-in-10 at or under it, at most 2 listed.
  */
+import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, halfMinutes, halfMinutesDown, tidyStopName, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 
 /** The Live card's bands, in its order. */
@@ -88,7 +89,7 @@ export function timeLossReport(data: SegmentDelayData, bands: readonly SegmentBa
   for (const band of bands) {
     const perDir: TimeLossDirection[] = [];
     for (const d of directions) {
-      const dir: TimeLossDirection = { directionId: d, label: data.directionLabels?.[String(d)] ?? `Direction ${d}`, slower: [], looser: [], measured: 0, tooFewPasses: 0, patternEnds: 0 };
+      const dir: TimeLossDirection = { directionId: d, label: directionBranchFallback(d, data.directionLabels?.[String(d)]), slower: [], looser: [], measured: 0, tooFewPasses: 0, patternEnds: 0 };
       for (const seg of data.segments) {
         if (seg.directionId !== d) continue;
         const b = seg.bands[band];

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { timeLossReport } from '../timeLossReport';
-import { timeLossMarkdown } from '../../../scripts/live-time-loss-report';
-import type { SegmentBandStat, SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
+import { timeLossReport } from '../../src/utils/timeLossReport';
+import { timeLossMarkdown } from '../live-time-loss-report';
+import type { SegmentBandStat, SegmentDelayData, SegmentDelaySegment } from '../../src/utils/segmentDelayView';
 
 const stat = (gainedMedianSec: number, gainedP90Sec: number, trips = 40, days = 6): SegmentBandStat => ({
   trips, days, firstDate: '2026-10-01', lastDate: '2026-10-08', actualMedianSec: 100 + gainedMedianSec, scheduledMedianSec: 100, gainedMedianSec, gainedP90Sec,

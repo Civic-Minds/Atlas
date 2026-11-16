@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_LIVE_ARCHIVE_BUCKET, liveAgencyConfig, localDate, localHour, localServiceStart } from '../liveAgencyConfig';
-import { loadLiveAgencyConfig } from '../../scripts/live-agency-config';
-import { serviceWindowFolders, torontoServiceStart } from '../../scripts/live-fetch-archive';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET, liveAgencyConfig, localDate, localHour, localServiceStart } from '../../shared/liveAgencyConfig';
+import { loadLiveAgencyConfig } from '../live-agency-config';
+import { serviceWindowFolders, torontoServiceStart } from '../live-fetch-archive';
 
 describe('liveAgencyConfig', () => {
   it('gives the TTC its own places, labels and 4 a.m. day end, in the shared bucket', () => {
