@@ -8,6 +8,7 @@ import LeftOutDays from '../LeftOutDays';
 import { percentTenthText, countText } from '../../../../shared/numberText';
 
 import { SERVICE_DELIVERED_TITLE } from '../../../../shared/liveWording';
+import { DELIVERED_BY_DAY_LABEL } from '../../../content/noticeCopy';
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
   const sd = v3.serviceDelivered;
@@ -33,7 +34,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   const { overall, skipped, points } = m;
   const chart = (
     <ProfileBars
-      ariaLabel="Share of scheduled trips that ran, day by day"
+      ariaLabel={DELIVERED_BY_DAY_LABEL}
       points={points}
       formatY={percentTenthText}
       unit="trips"

@@ -6,6 +6,7 @@ import { NOT_MEASURED_LABEL } from '../../../shared/liveWording';
 import { percentText } from '../../../shared/numberText';
 import { minutesText } from '../../../shared/liveFormat';
 import { headwayBandLabel } from '../../../shared/headwayText';
+import { MAP_COLOURS_LABEL } from '../../content/noticeCopy';
 
 /** The three step labels of a measure's key: the bunching key the strips already use, and the same shape for the others. */
 function stepLabels(measure: MapMeasure): [string, string, string] {
@@ -32,7 +33,7 @@ export default function LiveMapKey({ measure, notMeasured = true, variant = 'pil
     ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
   ];
   if (variant === 'one') return (
-    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
+    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
       <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}{KEY_DEFINITION[measure] && <span className="font-normal text-[var(--text-muted)]"> · {KEY_DEFINITION[measure]}</span>}</span>
       <MapKey steps={steps} />
     </div>
@@ -41,7 +42,7 @@ export default function LiveMapKey({ measure, notMeasured = true, variant = 'pil
     // On a phone the pills wrap inside the map's width; each label keeps its words on one line (#1151).
     <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
       {KEY_DEFINITION[measure] && <div className={`${MAP_BADGE} min-h-8 max-w-full py-1`}><span className={MAP_BADGE_LABEL}>{KEY_DEFINITION[measure]}</span></div>}
-      <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
+      <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
         <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}</span>
         <MapKey steps={[
           ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),

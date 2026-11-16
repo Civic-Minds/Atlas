@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadingText, ATLAS_BYLINE } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE, LOADING_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -57,7 +57,7 @@ const DELAY_STAYS = 'Added and kept';
 /** The measures, in the top bar with the other switchers (CIV-1732, Ryan's option A). "Delays start" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
-  return <MapPillGroup label="Measure" options={MAP_MEASURES} value={measure} onChange={setMeasure} />;
+  return <MapPillGroup label={MEASURE_LABEL} options={MAP_MEASURES} value={measure} onChange={setMeasure} />;
 }
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
@@ -135,7 +135,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
 /** The panel while a picked route's figures are on their way: the page's own word and soft grey blocks where the figures will be. */
 function LoadingWidget() {
   return (
-    <Widget title="Loading…" size="medium">
+    <Widget title={LOADING_LABEL} size="medium">
       <div aria-busy="true" className="flex flex-col gap-3">
         {[40, 72, 56].map(h => <div key={h} className="rounded-lg bg-[var(--bg-btn-hover)]" style={{ height: h }} />)}
       </div>
@@ -224,7 +224,7 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
     const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
   })], [s, networkV3, measure, band]);
-  const routeMenu = pickSlot ? createPortal(<PillMenu label="Route" alignRight value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
+  const routeMenu = pickSlot ? createPortal(<PillMenu label={ROUTE_MENU_LABEL} alignRight value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
   const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />;

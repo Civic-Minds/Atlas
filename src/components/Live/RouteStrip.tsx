@@ -4,6 +4,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { LEGEND_LAST_STEP_TAIL, LEGEND_TITLE, LESS_EXACT, MIN_N, NOT_MEASURED_CELL, NOT_MEASURED_KEY, SHOW_KEY_STOPS, STRIP_COLUMNS, STRIP_ROLE, TRACK_NAME, fewerThanText, gapsOffText, showAllStopsText, stripTableCaption, bunchParts, delayText, legendSteps, shownDelayMin, stepLabel, keyStops, labelLines, labelWidth, pickLabels, stepColor, stopDetail, stopStep, stopN, stopValue, stretchSpan, stripSummary, type RouteStripMode, type RouteStripStop, type RouteStripStretch, type Step, type StretchSpan, stripLegendFlags } from './routeStripModel';
 import { shortStopName, stretchLabel, stripStopName } from '../../utils/stopLabel';
 import { percentText, countText } from '../../../shared/numberText';
+import { NOTE_COLUMN } from '../../content/noticeCopy';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
 export { routeStripFromV3 } from './routeStripModel';
@@ -196,7 +197,7 @@ export default function RouteStrip({ stops, modes = ['delay', 'bunching'], direc
             { key: 'late', header: STRIP_COLUMNS.late, cell: r => (r.s.lateShare != null && r.s.n > 0 ? percentText(r.s.lateShare) : NOT_MEASURED_CELL) },
             { key: 'bunch', header: STRIP_COLUMNS.bunch, cell: r => { const b = bunchParts(r.s); return b ? `${b.total}%` : NOT_MEASURED_CELL; } },
             { key: 'n', header: STRIP_COLUMNS.n, cell: r => countText(r.s.n) },
-            { key: 'note', header: 'Note', cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
+            { key: 'note', header: NOTE_COLUMN, cell: r => [r.s.uncertain ? 'less exact' : '', r.s.n < minN ? 'few departures' : ''].filter(Boolean).join(', ') },
           ]}
         />
     </div>
