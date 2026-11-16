@@ -18,15 +18,19 @@ describe('For Transit Planners page (CIV-1320)', () => {
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
 
-  it('shows the map pictures from its own folder, each in a light and a dark version except the export', () => {
+  it('shows the map pictures from its own folder: the hero, then one 4:3 picture per feature card, light and dark, desktop and phone (CIV-1701)', () => {
     const { container } = render(<PlannersPage />);
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
-    for (const name of ['hero', 'tiers-all', 'tiers-10', 'compare', 'chicago', 'routecard', 'bayarea']) {
-      expect(srcs).toContain(`/assets/planners/${name}-light.webp`);
-      expect(srcs).toContain(`/assets/planners/${name}-dark.webp`);
+    const phone = [...container.querySelectorAll('source')].map(s => s.getAttribute('srcset'));
+    for (const theme of ['light', 'dark']) {
+      expect(srcs).toContain(`/assets/planners/hero-${theme}.webp`);
+      for (const card of ['frequency', 'dayweek', 'agency', 'export']) {
+        expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
+        expect(phone).toContain(`/assets/planners/card-${card}-phone-${theme}.webp`);
+      }
     }
-    expect(srcs).toContain('/assets/planners/export.webp');
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '');
+    for (const img of container.querySelectorAll('picture img')) expect(img.className).toContain('aspect-[4/3]');
   });
 
   it('opens the map from the top, gives the contact email, and ends with one Request a demo button (CIV-1706)', () => {
