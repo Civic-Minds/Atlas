@@ -33,6 +33,15 @@ export const PAGE_NAMES = {
   plannersLink: 'For Planners',
 } as const;
 
+/** The footer's link-column headings (CIV-1699, Ryan: For Planners gets its own "Product" column, Studio joins it later). */
+export const FOOTER_HEADINGS = {
+  explore: 'Explore',
+  learn: 'Learn',
+  product: 'Product',
+  /** Ryan: the column is "Atlas" and its link "About" (link names are one word). */
+  atlas: 'Atlas',
+} as const;
+
 /** Browser tab titles stay within this many characters (search results cut the rest). */
 export const TAB_TITLE_MAX = 60;
 
