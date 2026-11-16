@@ -257,6 +257,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-15 — Links to the map on pages read "Try Atlas"
+Ryan, 2026-11-15 (CIV-1703): "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then option 2, "Try Atlas". One constant (`MAP_LINK` in `src/content/noticeCopy.ts`) is the text of every link that sends people to the map: page heroes, empty and not-found pages. It replaces "Open the Atlas map" and "Open the map"; the style guard catches any of them typed by hand. The shared header keeps Ryan's own "Go to Atlas" (#1509, 2026-11-14).
+
 ### 2026-11-15 — Atlas Studio is a section of Atlas, local only for now
 Ryan, 2026-11-15 ("Yes local only", CIV-1680): Atlas Studio, the paid agency tier in [STRATEGY.md](STRATEGY.md), lives in the same Atlas code as its own section behind its own feature flag, following [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). The flag is off on public and beta and on only in local dev until the demo is ready. Studio tools (the before/after report, the vehicles calculator) get their UI there. The shell (sign-in, private per-agency views) waits until an agency says yes.
 
