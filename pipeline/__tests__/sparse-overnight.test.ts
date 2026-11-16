@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, sparseOvernightHeadway } from '../headway-utils';
+import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, sparseOvernightHeadway, computePeriodSustained } from '../headway-utils';
 import { decidePeriod } from '../routeGrading';
 import { overnightPeriodValues } from '../overnightTerminal';
 import { processGtfsBuffer } from '../process-core';
@@ -154,5 +154,37 @@ describe('sparse overnight window (#897)', () => {
     const p = await route(at('04:38', '04:53', '04:57'));
     expect(p.headwayByPeriod.overnight).toBe(10);
     expect(p.stopPeriodHeadways.s1.overnight).toBe(10);
+  });
+});
+
+describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
+  // TTC 63 Saturday at Liberty Village: two night arrivals, then the day's own first trips at 05:48
+  // and 06:00. The 06:00 trip made four departures and an every 15.
+  const liberty = at('02:04', '02:19', '05:48', '06:00');
+
+  it('tests the three night departures and withholds their value', () => {
+    expect(isSparseOvernightWindow(liberty)).toBe(true);
+    expect(periodHeadwayInWindow(liberty, 'overnight')).toBeNull();
+    expect(sparseOvernightHeadway(liberty)).toBe(sparseOvernightHeadway(at('02:04', '02:19', '05:48')));
+    expect(computePeriodSustained(liberty).overnight).toBe(false);
+  });
+
+  it('keeps coverage and max gap', () => {
+    expect(computePeriodCoverageHeadways(liberty).overnight).toBe(209);
+    expect(computePeriodMaxGaps(liberty).overnight).toBe(209);
+  });
+
+  it('leaves steady three-plus-06:00 windows and every other count alone', () => {
+    expect(periodHeadwayInWindow(at('05:00', '05:20', '05:40', '06:00'), 'overnight')).toBe(20);
+    expect(isSparseOvernightWindow(at('02:00', '02:10', '05:00', '05:50'))).toBe(false);
+    expect(isSparseOvernightWindow(at('02:00', '02:10', '02:20', '05:00', '06:00'))).toBe(false);
+  });
+
+  it('shows no overnight value on the row or any stop, with or without a 06:00 trip', async () => {
+    for (const night of [at('02:04', '02:19', '05:48', '06:00'), at('02:04', '02:19', '05:48')]) {
+      const p = await route(night);
+      expect(p.headwayByPeriod.overnight ?? null).toBeNull();
+      for (const stop of Object.values(p.stopPeriodHeadways ?? {}) as any[]) expect(stop.overnight ?? null).toBeNull();
+    }
   });
 });
