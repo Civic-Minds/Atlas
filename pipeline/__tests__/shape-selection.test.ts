@@ -61,6 +61,14 @@ describe('phase 1 shape filter by day type (CIV-1718, #1543)', () => {
     expect(ctx.shapeFilterForPhase1.get('r30::0')).toEqual(new Set(['half', 'loop']));
   });
 
+  it('leaves a day split between two legs as before (Barrie 8A Sunday)', () => {
+    const ctx = build(
+      [...trips(20, 'wd', 'main'), ...trips(13, 'sun', 'leg-a'), ...trips(13, 'sun', 'leg-b')],
+      [line('main', 30), line('leg-a', 10), line('leg-b', 20)],
+    );
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
+  });
+
   it('still drops a short turn on a day the main shape serves', () => {
     const ctx = build([...trips(20, 'wd', 'main'), ...trips(5, 'wd', 'short'), ...trips(10, 'sat', 'main')], [line('main', 10), line('short', 5)]);
     expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));

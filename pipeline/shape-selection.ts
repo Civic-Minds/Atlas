@@ -83,7 +83,14 @@ function busAnalysisShapeIds(shapeEntries: { sid: string; trips: number; len: nu
  * weekend half-loop (322), and the route had no Weekday row. When the chosen shapes run no trip
  * at all on a day, that day's own pick is added; a day they serve at all changes nothing, so a
  * day's short turns and minority patterns stay out as before.
+ * The day's pick is added only when it carries DAY_PICK_MIN_SHARE of that day's trips, so it is
+ * the day's whole service. A day split between patterns stays as before: Barrie 8A on Sundays
+ * runs two hourly legs that meet at the downtown terminal, and the pick would keep one of them
+ * on a 13-13 tie. In the 530-agency dry run, picks covered all or at least 80% of their day
+ * (Space Coast 29 Saturday: 8 of 10, the other 2 on a 2-stop piece), or 74% and under.
  */
+const DAY_PICK_MIN_SHARE = 0.8;
+
 function withEachDaysPattern(
   selected: Set<string>,
   countsByDay: Iterable<Map<string, number>>,
@@ -99,6 +106,9 @@ function withEachDaysPattern(
     }
     if (total === 0 || covered > 0) continue;
     const dayPick = busAnalysisShapeIds([...counts].map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) })));
+    let picked = 0;
+    for (const [sid, n] of counts) if (dayPick.has(sid)) picked += n;
+    if (picked < total * DAY_PICK_MIN_SHARE) continue;
     if (result === selected) result = new Set(selected);
     for (const sid of dayPick) result.add(sid);
   }
