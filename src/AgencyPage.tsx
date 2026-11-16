@@ -45,7 +45,7 @@ import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
 import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL } from './content/noticeCopy';
-import { capitalizeFirst } from './utils/headwayText';
+import { capitalizeFirst, periodShapeParts } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {
@@ -125,6 +125,15 @@ function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number
  * stretch), "Limited" when the route runs but has no trustworthy cadence, "Irregular" where the
  * map list says so (#1249, CIV-1238), else a dash.
  */
+/**
+ * CIV-1772 (Ryan, option 1): the frequency stays on one line and a gap, start or end note is a small grey second line,
+ * the same in every cell, so rows read evenly.
+ */
+function PeriodCell({ text }: { text: string }) {
+  const { main, note } = periodShapeParts(text);
+  return <>{main}{note && <span className="block text-xs text-[var(--text-muted)]">{note}</span>}</>;
+}
+
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute, hoursBar = false): string {
   const v = r[col];
   // CIV-1300 (#1311): the route card's own reading, as the map's lists show it.
@@ -219,11 +228,11 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours".
                       ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
-                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => cell('am', r, !!hoursAxis) },
-                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => cell('midday', r, !!hoursAxis) },
-                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => cell('pm', r, !!hoursAxis) },
-                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => cell('evening', r, !!hoursAxis) },
-                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => cell('overnight', r, !!hoursAxis) },
+                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
+                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => <PeriodCell text={cell('midday', r, !!hoursAxis)} /> },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => <PeriodCell text={cell('pm', r, !!hoursAxis)} /> },
+                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => <PeriodCell text={cell('evening', r, !!hoursAxis)} /> },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => <PeriodCell text={cell('overnight', r, !!hoursAxis)} /> },
                     ]}
                   />
                 </ScrollX>
