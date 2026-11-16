@@ -215,7 +215,11 @@ export function computeRawDepartures(
     referenceDate?: string,
     shapeFilter?: Map<string, Set<string>>,
     agencySlug?: string,
-    options?: { skipBlockTripHeadways?: boolean },
+    options?: {
+        skipBlockTripHeadways?: boolean;
+        /** CIV-1720: per headsign key, shapes the filter holds only from a day's own pick. */
+        dayPickShapes?: Map<string, Set<string>>;
+    },
 ): RawRouteDepartures[] {
     const { routes } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
@@ -236,6 +240,7 @@ export function computeRawDepartures(
         const grouped = new Map<string, {
             routeId: string; dirId: string; headsign?: string; shapeId?: string; routeVariant?: string;
             times: number[]; serviceIds: Set<string>; missingDir: boolean; allBlockTrips: boolean;
+            dayPick: boolean;
         }>();
 
         for (const [, data] of tripData) {
@@ -256,6 +261,7 @@ export function computeRawDepartures(
                     : shapeFilter.get(baseKey);
                 if (expected && !expected.has(data.shapeId as string)) continue;
             }
+            const dayPick = !!data.headsign && !!options?.dayPickShapes?.get(`${baseKey}::${data.headsign}`)?.has(data.shapeId as string);
             if (!grouped.has(key)) grouped.set(key, {
                 routeId: data.routeId,
                 dirId: data.dirId,
@@ -266,6 +272,7 @@ export function computeRawDepartures(
                 serviceIds: new Set(),
                 missingDir: false,
                 allBlockTrips: true,
+                dayPick,
             });
             const group = grouped.get(key)!;
             if (!data.blockTrip) group.allBlockTrips = false;
@@ -274,6 +281,8 @@ export function computeRawDepartures(
             if (data.missingDir) group.missingDir = true;
         }
 
+        const dayStart = results.length;
+        const fromDayPick = new Set<RawRouteDepartures>();
         for (const [, group] of grouped) {
             const { routeId, dirId, headsign, shapeId, routeVariant } = group;
             let departureTimes = deduplicateDepartures(group.times);
@@ -316,6 +325,16 @@ export function computeRawDepartures(
                 serviceIds: Array.from(group.serviceIds),
                 warnings,
             });
+            if (group.dayPick) fromDayPick.add(results[results.length - 1]);
+        }
+        // CIV-1720: a pattern kept only by a day's own shape pick is dropped on a day when another
+        // pattern of its direction has a timetable (two or more departures, as #720 reads it below).
+        if (fromDayPick.size > 0) {
+            const drawn = new Set(results.slice(dayStart)
+                .filter(r => !fromDayPick.has(r) && r.departureTimes.length >= 2)
+                .map(r => `${r.route}::${r.dir}`));
+            const kept = results.slice(dayStart).filter(r => !fromDayPick.has(r) || !drawn.has(`${r.route}::${r.dir}`));
+            results.splice(dayStart, results.length - dayStart, ...kept);
         }
     }
 

@@ -939,12 +939,13 @@ export async function processGtfsBuffer(
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,
     shapeFilterForPhase1,
+    dayPickShapes,
     lastStopByTrip,
     stopNameById,
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways });
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways, dayPickShapes });
   onStatus?.('Running phase 2...');
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
