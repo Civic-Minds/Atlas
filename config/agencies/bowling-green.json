@@ -9,7 +9,7 @@
   "feedUrl": "https://gobg.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-40184/latest.zip",
   "region": "Kentucky",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-09",
   "feedQuality": {
@@ -24,7 +24,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 7,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 7,
       "problemShapes": 0,
       "problemShapeRoutes": 0,

@@ -7,7 +7,7 @@
     -78.9325
   ],
   "feedUrl": "https://duke.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-02",
   "region": "North Carolina",
@@ -41,7 +41,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 16,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 10,
       "problemShapes": 0,
       "problemShapeRoutes": 0,

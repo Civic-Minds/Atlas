@@ -14,7 +14,7 @@
     -116.1
   ],
   "feedUrl": "https://sunlinebus.com/gtfs",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Add training route",
   "region": "California",
   "lastRefreshedAt": "2026-11-02",
@@ -42,7 +42,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 2,
       "featureCount": 74,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 17,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
