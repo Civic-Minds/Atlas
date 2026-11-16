@@ -14,10 +14,10 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
+  "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-718/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -50,7 +50,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-cornwall.zip",
   "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "e2fdbf075e864b32",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "47203a3542c07b32",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20261231-c96ff4b7fc649c26",
+  "lastFeedContentKey": "9f6bfb1ff968365c"
 }

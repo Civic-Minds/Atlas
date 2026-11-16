@@ -8,13 +8,13 @@
     -83.0458
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2281/latest.zip",
-  "lastFeedExpiry": "20261231",
+  "lastFeedExpiry": "20271231",
   "lastFeedVersion": "1",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Detroit, Michigan"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -40,7 +40,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 3,
-      "feedExpiry": "20261231",
+      "feedExpiry": "20271231",
       "routeCount": 1,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -53,7 +53,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "5659ae000b2ddb09",
+  "lastServiceWeek": "dc6cdafa39e3874b",
   "feedObtainedAt": "20261001",
-  "lastFeedStart": "20241031"
+  "lastFeedStart": "20241031",
+  "lastRawArchiveKey": "20271231-4ce9ce9e60810a95",
+  "lastFeedContentKey": "c6eeeeacc29d803a"
 }

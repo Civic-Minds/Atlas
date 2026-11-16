@@ -9,7 +9,7 @@
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
   "lastFeedExpiry": "20271105",
   "lastFeedVersion": "60",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Iowa",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2304/latest.zip",
   "bbox": [
@@ -22,8 +22,8 @@
     "Davenport, Iowa"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20241231-19de367bf787d09c",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20271105-28d18a2259a76dd9",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271105",
@@ -54,6 +54,7 @@
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/citibuspublic.etaspot.net/gtfs.zip",
   "lastPeekedExpiry": "20271105",
   "lastServiceWeek": "310d5346b1fc0bca",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20221015"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20221015",
+  "lastFeedContentKey": "478b2b3b58f6e531"
 }

@@ -11,7 +11,7 @@
   "lastFeedExpiry": "20270116",
   "lastFeedVersion": "S1000234",
   "region": "Colorado",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.ridetransfort.com/",
   "cities": [
     "Fort Collins, Colorado",
@@ -20,8 +20,8 @@
     "Boulder, Colorado"
   ],
   "timezone": "America/Denver",
-  "lastRawArchiveKey": "20240511-1765080d3133e8df",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270116-24f1fd8aa9638a88",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270116",
@@ -52,6 +52,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "b8ae5db90169eb8e",
-  "feedObtainedAt": "20260810",
-  "lastFeedStart": "20260817"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260817",
+  "lastFeedContentKey": "0c2aebcd53360b7d"
 }

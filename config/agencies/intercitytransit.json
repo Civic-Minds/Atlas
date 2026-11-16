@@ -18,12 +18,12 @@
   "mergeEquivalentShapeVariantsAllModes": true,
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": "20260927",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Olympia, Washington",
     "Lakewood, Washington"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -58,5 +58,7 @@
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "c0e8f93b9486f234",
   "feedObtainedAt": "20261016",
-  "lastFeedStart": "20260927"
+  "lastFeedStart": "20260927",
+  "lastRawArchiveKey": "20270102-52ec11657dfd7852",
+  "lastFeedContentKey": "3f1475354903f110"
 }

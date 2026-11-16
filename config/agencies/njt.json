@@ -68,7 +68,7 @@
   ],
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-508/latest.zip",
-  "lastFeedCheckAt": "20261110",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270417",
@@ -96,7 +96,7 @@
   "lastFeedExpiry": "20270417",
   "lastPeekedExpiry": "20270417",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-10",
+  "lastRefreshedAt": "2026-11-16",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
@@ -120,5 +120,7 @@
       "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
       "reason": "Main/Bergen County Line to Hoboken: the Main Line (Paterson 15:29, 16:00, 16:48, 17:37, 18:29) and the Bergen County Line (15:48, 17:05, 17:53) each run about hourly between Ridgewood and Secaucus; the route read the combined trunk."
     }
-  ]
+  ],
+  "lastRawArchiveKey": "20270417-220b83fe55f43fb7",
+  "lastFeedContentKey": "e47fe42285dde92c"
 }

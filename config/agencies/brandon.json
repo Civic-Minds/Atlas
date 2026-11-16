@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
   "lastFeedExpiry": "20261227",
   "lastFeedVersion": "2026 11 02 - 2026 12 27",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Manitoba",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
   "bbox": [
@@ -18,11 +18,11 @@
     49.9072,
     -99.8338
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261227",
-  "timezone": "America/Chicago",
+  "timezone": "America/New_York",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -51,5 +51,6 @@
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/tld-4820/latest.zip",
   "lastServiceWeek": "71a838148445b35e",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261102"
+  "lastFeedStart": "20261102",
+  "lastRawArchiveKey": "20261227-a872dfcd53e86943"
 }

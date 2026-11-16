@@ -22,8 +22,8 @@
   "timezone": "America/New_York",
   "timezoneOverride": "America/New_York",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "August_20_2026",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -43,7 +43,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -55,6 +55,8 @@
   "lastFeedSourceUrl": "https://www.johnsoncitytransit.org/google_transit.zip",
   "lastPeekedExpiry": "20271231",
   "lastServiceWeek": "bd7af3a7a96ac2c5",
-  "feedObtainedAt": "20260820",
-  "lastFeedStart": "20260820"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260820",
+  "lastRawArchiveKey": "20271231-55e65c8d908bc66b",
+  "lastFeedContentKey": "69f33cd89c58ed03"
 }

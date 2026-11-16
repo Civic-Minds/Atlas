@@ -17,12 +17,12 @@
   "feedUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3219/latest.zip",
   "lastFeedExpiry": "20261206",
-  "lastFeedVersion": "11-09-26  02:35",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "11-16-26  02:35",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Medford, Oregon"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261206",
@@ -54,6 +54,8 @@
   "lastFeedSourceUrl": "https://gtfs.rvtd.cadavl.com/RVTD/GTFS/GTFS_RVTD.zip",
   "lastPeekedExpiry": "20261206",
   "lastServiceWeek": "bb1b359045066087",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260605"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260605",
+  "lastRawArchiveKey": "20261122-dd76c234f7bec9d9",
+  "lastFeedContentKey": "f5c722f5f7d79ad9"
 }

@@ -21,7 +21,7 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-742/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Pierrefonds, Quebec",
     "Notre-Dame-de-Grâce, Quebec",
@@ -30,7 +30,7 @@
     "Verdun, Quebec",
     "Ville-Marie, Quebec"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -61,7 +61,9 @@
     "checkedAt": "2026-11-16"
   },
   "lastPeekedExpiry": "20270103",
-  "lastServiceWeek": "a921ed53576d61ac",
+  "lastServiceWeek": "ff9ed0c0f2fb6d3e",
   "feedObtainedAt": "20261001",
-  "lastFeedStart": "20261001"
+  "lastFeedStart": "20261110",
+  "lastRawArchiveKey": "20270103-35050e30efee34ec",
+  "lastFeedContentKey": "1ce77be8ae610dd6"
 }

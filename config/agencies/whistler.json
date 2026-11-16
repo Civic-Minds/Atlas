@@ -14,7 +14,7 @@
   "lastFeedVersion": "202611090/20261108 21:00:00/20261109 04:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2583/latest.zip",
   "lastRefreshedAt": "2026-11-09",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270417",
@@ -35,7 +35,8 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-16"
+    "checkedAt": "2026-11-16",
+    "scoredAt": "2026-11-16"
   },
   "timezone": "America/Vancouver",
   "feedRefreshStatus": "current",
@@ -47,5 +48,6 @@
   "lastPeekedExpiry": "20270417",
   "lastServiceWeek": "b837e4d9a658d429",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261107"
+  "lastFeedStart": "20261107",
+  "refusedFeedSha256": "24d21630aef22a8ed1122b11b44e248fac7b9775e70a3717ae22380b4a169d09"
 }

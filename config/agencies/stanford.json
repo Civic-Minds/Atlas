@@ -17,13 +17,13 @@
   "feedUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-59/latest.zip",
   "lastFeedExpiry": "20270926",
-  "lastFeedVersion": "2026-10-03T16:41:58Z+eta155",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "2026-11-12T19:12:26Z+eta161",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Palo Alto, California",
     "Mountain View, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270926",
@@ -54,7 +54,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://transportation-forms.stanford.edu/google/google_transit.zip",
   "lastPeekedExpiry": "20270926",
-  "lastServiceWeek": "cf6582daa45f5883",
-  "feedObtainedAt": "20261016",
-  "lastFeedStart": "20260901"
+  "lastServiceWeek": "1edcd771fa6e8910",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260901",
+  "lastRawArchiveKey": "20270926-88b83866d5e57585",
+  "lastFeedContentKey": "b8e4758e4ad4f6d6"
 }

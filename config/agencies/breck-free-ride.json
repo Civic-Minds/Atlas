@@ -11,7 +11,7 @@
   "feedUrl": "https://mybreckfreeride.com/gtfs",
   "lastFeedExpiry": "20270404",
   "lastFeedVersion": "124-UWM Summer 26,103-Winter 26/27.1,111-Winter 26/27.2,111-Winter 26/27.3",
-  "lastRefreshedAt": "2026-11-14",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Breckenridge, Colorado"
   ],
@@ -35,7 +35,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261114",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270404",
@@ -47,8 +47,8 @@
   "lastFeedSourceUrl": "https://mybreckfreeride.com/gtfs",
   "lastPeekedExpiry": "20270404",
   "lastServiceWeek": "5c43af96ffa5d778",
-  "feedObtainedAt": "20261114",
+  "feedObtainedAt": "20261116",
   "lastFeedStart": "20260531",
-  "lastRawArchiveKey": "20270404-0d7f8bba4f095db2",
-  "lastFeedContentKey": "35ffa0a90ea1d95d"
+  "lastRawArchiveKey": "20270404-674f4a531e402861",
+  "lastFeedContentKey": "2da3c6bc473f74ca"
 }

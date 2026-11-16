@@ -40,9 +40,9 @@
     "checkedAt": "2026-11-16"
   },
   "lastFeedExpiry": "20270319",
-  "lastFeedVersion": "20261109",
-  "lastRefreshedAt": "2026-11-10",
-  "lastFeedCheckAt": "20261110",
+  "lastFeedVersion": "20261110",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270319",
@@ -50,11 +50,13 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
   "lastPeekedExpiry": "20270319",
-  "lastFeedStart": "20261110",
+  "lastFeedStart": "20261111",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "0cfaba44d3ed143c",
-  "feedObtainedAt": "20261109"
+  "lastServiceWeek": "ab0002106fe461c7",
+  "feedObtainedAt": "20261116",
+  "lastRawArchiveKey": "20270319-bf9e878d4127910e",
+  "lastFeedContentKey": "ff5e406c6fd94456"
 }

@@ -18,11 +18,11 @@
   "region": "North Dakota",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "9/7/2026 Schedule",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Fargo, North Dakota"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991230",
@@ -53,7 +53,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://ridematbus.com/gtfs",
   "lastPeekedExpiry": "20991230",
-  "lastServiceWeek": "6641d82099091bee",
+  "lastServiceWeek": "1799fdfc45c1a316",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260906"
+  "lastFeedStart": "20260906",
+  "lastRawArchiveKey": "unknown-4f38d57b91bf7e38",
+  "lastFeedContentKey": "b711ef9ea1e27902"
 }

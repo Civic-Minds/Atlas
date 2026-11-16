@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20270131",
   "lastFeedVersion": "Version_20260926",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Vista, California",
     "Escondido, California",
@@ -25,8 +25,8 @@
     "Rancho Penasquitos, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20250517-3b39f629f5e0d959",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270131-c17a0dfa9ed36195",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270131",
@@ -67,6 +67,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "3fe7f3f09bf5df47",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20260926"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260926",
+  "lastFeedContentKey": "6ce261d795bd97cf"
 }

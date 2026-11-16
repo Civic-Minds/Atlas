@@ -18,8 +18,8 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-5864/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -54,5 +54,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "3acd3d1ddbc3c11f",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261018"
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "20261216-844d63d11edbc8f7",
+  "lastFeedContentKey": "f2b151c1dd7fc113"
 }

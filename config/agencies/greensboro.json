@@ -10,15 +10,15 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Route 11 Updates",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
   "cities": [
     "Greensboro, North Carolina",
     "High Point, North Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250228-1828d0c249445f06",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "unknown-bc0d44d501a609d3",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -49,6 +49,7 @@
   "lastFeedSourceUrl": "https://trackmygta.com/gtfs",
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "5ad4f7f4e6d34a9c",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261106"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261106",
+  "lastFeedContentKey": "bc4dd1b7a486d597"
 }

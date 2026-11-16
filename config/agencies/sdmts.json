@@ -9,9 +9,9 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-13/latest.zip",
   "lastFeedExpiry": "20270130",
-  "lastFeedVersion": "Generated on 20261027",
+  "lastFeedVersion": "Generated on 20261110",
   "region": "California",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "San Diego, California",
     "Chula Vista, California",
@@ -24,7 +24,7 @@
     "Rancho Penasquitos, California",
     "Escondido, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -83,7 +83,9 @@
     }
   ],
   "lastPeekedExpiry": "20270130",
-  "lastServiceWeek": "4f2b68331d08b03c",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20260906"
+  "lastServiceWeek": "43db81de08e31938",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260906",
+  "lastRawArchiveKey": "20270130-dec11d09769f01c3",
+  "lastFeedContentKey": "614c4ebd1c9590fc"
 }

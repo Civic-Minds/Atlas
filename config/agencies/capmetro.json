@@ -10,12 +10,12 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-150/latest.zip",
   "lastFeedExpiry": "20270109",
-  "lastFeedVersion": "261102_1010",
+  "lastFeedVersion": "261110_1310",
   "mergeEquivalentShapeVariantsRouteTypes": [
     "3"
   ],
   "region": "Texas",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "University of Texas, Texas",
     "Austin, Texas",
@@ -24,7 +24,7 @@
     "Round Rock, Texas",
     "Leander, Texas"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270109",
@@ -32,17 +32,17 @@
     "status": "review",
     "score": 100,
     "reasons": [
-      "99 route shapes needed adjustment before display."
+      "80 route shapes needed adjustment before display."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
-      "shapeAnomalies": 283,
+      "shapeAnomalies": 256,
       "routeHeadwayMismatches": 0,
       "featureCount": 318,
       "feedExpiry": "20270109",
       "routeCount": 70,
-      "problemShapes": 99,
+      "problemShapes": 80,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
@@ -65,7 +65,9 @@
     }
   ],
   "lastPeekedExpiry": "20270109",
-  "lastServiceWeek": "554bad53db7b3026",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261102"
+  "lastServiceWeek": "d56dde33e70467a6",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261110",
+  "lastRawArchiveKey": "20270109-e315e6c8c6f7cc7d",
+  "lastFeedContentKey": "fc687c4f0d3bdf36"
 }

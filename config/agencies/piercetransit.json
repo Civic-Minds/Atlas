@@ -15,7 +15,7 @@
   "feedUrl": "https://gtfs.sound.obaweb.org/prod/3_gtfs.zip",
   "lastFeedExpiry": "20261212",
   "lastFeedVersion": "S1000138",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.piercetransit.org",
   "cities": [
     "Tacoma, Washington",
@@ -30,7 +30,7 @@
     "Kent, Washington"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-265/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -63,5 +63,7 @@
   "lastPeekedExpiry": "20261212",
   "lastServiceWeek": "b13457bbebd97bc2",
   "feedObtainedAt": "20261016",
-  "lastFeedStart": "20260830"
+  "lastFeedStart": "20260830",
+  "lastRawArchiveKey": "20261212-66bca616c14a84f0",
+  "lastFeedContentKey": "e3d439938c55a517"
 }

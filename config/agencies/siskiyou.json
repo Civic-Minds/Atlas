@@ -22,7 +22,7 @@
   "lastFeedExpiry": "20300725",
   "lastFeedVersion": "UTC: 02-Jul-2026 18:56",
   "lastRefreshedAt": "2026-10-12",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20300925",
@@ -33,7 +33,7 @@
     "status": "unusable",
     "score": 0,
     "reasons": [
-      "This agency's schedule file has no routes we can show."
+      "This agency’s schedule file has no routes we can show."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -44,7 +44,7 @@
       "feedExpiry": "20300725"
     },
     "checkedAt": "2026-10-12",
-    "scoredAt": "2026-11-09"
+    "scoredAt": "2026-11-16"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

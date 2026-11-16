@@ -38,10 +38,10 @@
     }
   ],
   "lastFeedExpiry": "20261212",
-  "lastFeedVersion": "Fall 2026, 2026-11-03T23:46:00+00:00, version D",
+  "lastFeedVersion": "Fall 2026, 2026-11-13T21:35:28+00:00, version D",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-437/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Dorchester, Massachusetts",
     "Brookline, Massachusetts",
@@ -54,7 +54,7 @@
     "Newton, Massachusetts",
     "Cambridge, Massachusetts"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261212",
@@ -63,19 +63,19 @@
     "score": 96,
     "reasons": [
       "4 route shapes needed adjustment before display.",
-      "6 route have stops whose frequency differs from the overall route schedule."
+      "5 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 5,
-      "routeHeadwayMismatches": 12,
-      "featureCount": 1108,
+      "routeHeadwayMismatches": 11,
+      "featureCount": 1114,
       "feedExpiry": "20261212",
-      "routeCount": 183,
+      "routeCount": 187,
       "problemShapes": 4,
       "problemShapeRoutes": 1,
-      "mismatchRoutes": 6,
+      "mismatchRoutes": 5,
       "resumesOn": null
     },
     "checkedAt": "2026-11-16"
@@ -120,9 +120,9 @@
     }
   ],
   "lastPeekedExpiry": "20261212",
-  "lastServiceWeek": "38ea6ab81b5a20f2",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261027",
+  "lastServiceWeek": "6e95fea34a9ed269",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261106",
   "branchReadCorrections": [
     {
       "routeShortName": "id:CR-Providence",
@@ -132,5 +132,7 @@
       "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
       "reason": "Inbound, the Providence branch beyond Canton Junction runs hourly in the PM peak (Mansfield 15:25, 16:28, 17:34, 18:37) while the trunk it shares with Stoughton runs every 25; its trains each skip a different stop, so the branch was never read."
     }
-  ]
+  ],
+  "lastRawArchiveKey": "20261212-3c90dac02874275c",
+  "lastFeedContentKey": "c958350dc6b69e18"
 }

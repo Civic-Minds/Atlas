@@ -31,9 +31,9 @@
     "checkedAt": "2026-11-16"
   },
   "lastFeedExpiry": "20280101",
-  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280101",
@@ -45,7 +45,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-orillia.zip",
   "lastPeekedExpiry": "20280101",
-  "lastServiceWeek": "8fe86e75342304ab",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "29d63a25f5b531a2",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20280101-0f9997caebd3a05d",
+  "lastFeedContentKey": "01350e339938669a"
 }

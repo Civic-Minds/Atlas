@@ -11,11 +11,11 @@
   "lastFeedExpiry": "20280101",
   "lastFeedVersion": "",
   "region": "California",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Santa Maria, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20280101",
@@ -48,7 +48,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20280101",
-  "lastServiceWeek": "735abdbe9055ae12",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20240527"
+  "lastServiceWeek": "fe25065527764552",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20240527",
+  "lastRawArchiveKey": "unknown-6a75a41ac9e72056",
+  "lastFeedContentKey": "69c5690e9307b3f4"
 }

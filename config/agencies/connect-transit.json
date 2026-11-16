@@ -10,7 +10,7 @@
   "feedUrl": "https://rideconnecttransit.com/gtfs",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Sapphire Change 9/14/2026",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Illinois",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2267/latest.zip",
   "bbox": [
@@ -23,7 +23,7 @@
     "Bloomington, Illinois",
     "Normal, Illinois"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -56,5 +56,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "cefccfa47bb8f558",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20260913"
+  "lastFeedStart": "20260913",
+  "lastRawArchiveKey": "unknown-04cfa7ac42236b6f",
+  "lastFeedContentKey": "3d7abbe8a0d436f2"
 }

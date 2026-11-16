@@ -21,8 +21,8 @@
   ],
   "timezone": "America/Chicago",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "UTC: 05-Feb-2026 10:06",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "UTC: 10-Nov-2026 20:51",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "review",
     "score": 90,
@@ -44,7 +44,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -56,6 +56,8 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "1590d353a04848e1",
-  "feedObtainedAt": "20260205",
-  "lastFeedStart": "20260205"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261110",
+  "lastRawArchiveKey": "20271231-32db2354d3261f0f",
+  "lastFeedContentKey": "77cd9ed86879831b"
 }

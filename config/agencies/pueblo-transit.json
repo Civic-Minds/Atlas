@@ -9,12 +9,12 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2232/latest.zip",
   "region": "Colorado",
   "lastFeedExpiry": "20270301",
-  "lastFeedVersion": "UTC: 24-Apr-2026 17:32",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "UTC: 13-Nov-2026 19:07",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Pueblo, Colorado"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270301",
@@ -45,7 +45,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "e659fcb8b0b463e4",
-  "feedObtainedAt": "20260424",
-  "lastFeedStart": "20260424"
+  "lastServiceWeek": "68b64b6f060e6f73",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20270301-afa8eec08bb4f558",
+  "lastFeedContentKey": "dd64d2a65a655b28"
 }

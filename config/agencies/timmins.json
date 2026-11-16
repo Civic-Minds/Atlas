@@ -15,8 +15,8 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Timmins, Ontario"
   ],
@@ -40,7 +40,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -51,7 +51,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-timmins.zip",
   "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "29cfd7d70ee97231",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "c51134a3eb746e9d",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20261231-b34f52921f2e2745",
+  "lastFeedContentKey": "39e7b0f858789b48"
 }

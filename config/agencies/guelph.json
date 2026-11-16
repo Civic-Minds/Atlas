@@ -16,8 +16,8 @@
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3140/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
-  "lastFeedCheckAt": "20261109",
+  "lastRefreshedAt": "2026-11-16",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -26,7 +26,7 @@
     "Guelph, Ontario"
   ],
   "timezone": "America/Toronto",
-  "lastRawArchiveKey": "20250830-f57cc654275f6804",
+  "lastRawArchiveKey": "20270102-e0355092013a310b",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://drive.usercontent.google.com/download?id=1SsCgQ0agO_EONavJoOuBPMlbcu2VcUs4&export=download",
   "feedQuality": {
@@ -53,7 +53,8 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "6f58c3d36d5e8002",
-  "feedObtainedAt": "20260930",
-  "lastFeedStart": "20260906"
+  "lastServiceWeek": "808385f81c8ca7f8",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260906",
+  "lastFeedContentKey": "0b9acf680f4db355"
 }

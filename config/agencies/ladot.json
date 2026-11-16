@@ -8,10 +8,10 @@
     -118.24
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-1210/latest.zip",
-  "lastFeedExpiry": "20271231",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 142 Detour and Southeast Regular Route,183-Downtown DASH eff 7-11-2026",
   "region": "California",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Los Angeles, California",
     "Florence-Graham, California",
@@ -24,10 +24,10 @@
     "North Hills, California",
     "North Hollywood, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271231",
+  "expiredFeedCheckExpiry": "20991231",
   "timezone": "America/Los_Angeles",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1210/latest.zip",
@@ -41,7 +41,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 225,
-      "feedExpiry": "20271231",
+      "feedExpiry": "20281116",
       "routeCount": 51,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -54,8 +54,10 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastPeekedExpiry": "20271231",
-  "lastServiceWeek": "3c2a3704eb1547ef",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20260519"
+  "lastPeekedExpiry": "20991231",
+  "lastServiceWeek": "fd6fac75912664ca",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260519",
+  "lastRawArchiveKey": "unknown-b842821b724faeed",
+  "lastFeedContentKey": "6ac6431149d377b8"
 }

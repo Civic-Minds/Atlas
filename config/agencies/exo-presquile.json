@@ -21,11 +21,11 @@
   "lastFeedVersion": null,
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-743/latest.zip",
   "gtfsFares": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Pierrefonds, Quebec"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -56,7 +56,9 @@
     "checkedAt": "2026-11-16"
   },
   "lastPeekedExpiry": "20270103",
-  "lastServiceWeek": "1cddbac894f74f2a",
+  "lastServiceWeek": "32ef21ecce7c4772",
   "feedObtainedAt": "20260803",
-  "lastFeedStart": "20260803"
+  "lastFeedStart": "20261110",
+  "lastRawArchiveKey": "20270103-bcf9c4958f85e717",
+  "lastFeedContentKey": "f6603fe06d5164f8"
 }

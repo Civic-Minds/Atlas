@@ -8,9 +8,9 @@
     -96.7354
   ],
   "feedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastFeedExpiry": "20271102",
-  "lastFeedVersion": "105",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedExpiry": "20271112",
+  "lastFeedVersion": "107",
+  "lastRefreshedAt": "2026-11-16",
   "region": "South Dakota",
   "mdbFeedUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
   "bbox": [
@@ -23,11 +23,11 @@
     "Sioux Falls, South Dakota"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20240403-d45b07265ba69af5",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20271112-353eb4969c715b44",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20271102",
+  "expiredFeedCheckExpiry": "20271112",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -38,7 +38,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 24,
-      "feedExpiry": "20271102",
+      "feedExpiry": "20271112",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -53,8 +53,9 @@
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://s3.amazonaws.com/etatransit.gtfs/siouxareametro.etaspot.net/gtfs.zip",
-  "lastPeekedExpiry": "20271102",
-  "lastServiceWeek": "3dd7b5322319568f",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20240916"
+  "lastPeekedExpiry": "20271112",
+  "lastServiceWeek": "41713e423ec36590",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20240916",
+  "lastFeedContentKey": "8c2d5fa6cccd9430"
 }

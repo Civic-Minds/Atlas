@@ -17,13 +17,13 @@
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Add training route",
   "region": "California",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Cathedral City, California",
     "Indio, California",
     "Palm Desert, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -58,5 +58,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "14d07bbf93202acc",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20260916"
+  "lastFeedStart": "20260916",
+  "lastRawArchiveKey": "unknown-67e62bc1a8997f01",
+  "lastFeedContentKey": "89f8371c5dfc3df5"
 }

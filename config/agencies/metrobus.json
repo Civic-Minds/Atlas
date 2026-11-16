@@ -18,11 +18,11 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-758/latest.zip",
   "lastFeedExpiry": "20270103",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "St. John's, Newfoundland and Labrador"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270103",
@@ -53,7 +53,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "9849736e9b7326ac",
+  "lastServiceWeek": "9572260237f41d7f",
   "feedObtainedAt": "20261021",
-  "lastFeedStart": "20261026"
+  "lastFeedStart": "20261026",
+  "lastRawArchiveKey": "20270103-dc1b66d89e52377b",
+  "lastFeedContentKey": "224e510ec06082bc"
 }

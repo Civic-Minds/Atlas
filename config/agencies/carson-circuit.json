@@ -10,15 +10,15 @@
   "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
   "lastFeedExpiry": "20261126",
   "lastFeedVersion": "20231127",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Carson, California",
     "Compton, California",
     "Gardena, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20211111-1c359ccdcc3657b6",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261126-f26b0e1a77ad4deb",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20320103",
@@ -52,6 +52,7 @@
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip",
   "lastPeekedExpiry": "20320103",
   "lastServiceWeek": "9f90ca1c07cde3c8",
-  "feedObtainedAt": "20250430",
-  "lastFeedStart": "20231127"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20231127",
+  "lastFeedContentKey": "834706c8db322ee7"
 }

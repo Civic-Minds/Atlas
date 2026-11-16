@@ -16,14 +16,14 @@
   "region": "Florida",
   "lastFeedExpiry": "20270101",
   "lastFeedVersion": "26-05-02 SUM_20260728",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.talgov.com/starmetro",
   "cities": [
     "Tallahassee, Florida"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20240901-cca38c6c6d9dd482",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270101-14919518fce3a202",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270101",
@@ -54,6 +54,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "dd5a65dd71503037",
-  "feedObtainedAt": "20260728",
-  "lastFeedStart": "20260502"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260502",
+  "lastFeedContentKey": "c6f83a1a720a2921"
 }
