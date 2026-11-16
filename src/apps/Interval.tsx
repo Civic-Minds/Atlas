@@ -62,7 +62,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL } from '../content/noticeCopy';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -1568,7 +1568,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                       onClick={() => { setMapContextView('routes'); setMapContextOpen(true); }}
                       aria-label={`${countOf(mapContextRouteCount ?? 0, 'route')} in view`}
                       aria-expanded={mapContextOpen && mapContextView === 'routes'}
-                      title="Routes in view"
+                      title={ROUTES_IN_VIEW_LABEL}
                       className="flex items-center gap-1.5 cursor-pointer hover:text-[var(--accent)] transition-colors"
                     >
                       <span className={MAP_BADGE_COUNT}>{mapContextRouteCount ?? 0}</span>
@@ -1587,7 +1587,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                     onClick={() => { setMapContextView('agencies'); setMapContextOpen(true); }}
                     aria-label={`${countOf(mapContextAgencyCount, 'agency', 'agencies')} in view`}
                     aria-expanded={mapContextOpen && mapContextView === 'agencies'}
-                    title="Agencies in view"
+                    title={AGENCIES_IN_VIEW_LABEL}
                     className={`${MAP_BADGE} h-8 max-sm:h-[32px] cursor-pointer hover:text-[var(--accent)] transition-colors`}
                   >
                     <span className={MAP_BADGE_COUNT}>{mapContextAgencyCount}</span>

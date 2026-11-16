@@ -26,7 +26,7 @@ import LiveStopArrivals from './LiveStopArrivals';
 import { compareHeadwayThenNumber } from '../../../utils/sortCompare';
 import { routeListHeadwayText } from '../../../utils/effectiveHeadway';
 import type { RouteLabel } from '../../../utils/routeFacts';
-import { BACK_TO_MAP_LABEL, stopNoRoutesNotice } from '../../../content/noticeCopy';
+import { BACK_TO_MAP_LABEL, stopNoRoutesNotice, NEARBY_ROUTES_LABEL } from '../../../content/noticeCopy';
 import { formatPeriodRangeLong, TIME_PERIODS } from '../../../../shared/config';
 import { metresText } from '../../../../shared/unitText';
 
@@ -200,7 +200,7 @@ export const StopCard: React.FC<StopCardProps> = ({
       </SidebarCardList>
 
       {nearbyConnections.length > 0 && (
-        <SidebarCardSection label="Nearby routes">
+        <SidebarCardSection label={NEARBY_ROUTES_LABEL}>
           {nearbyConnections.map(({ rKey, label: route, headway, sharedHeadway, colorHeadway, edgeText, nearestStopName, distanceMeters }) => {
             // Hovering shows the whole route on the map, as the stop's own route lines do (CIV-1053).
             const hovered = !!hoveredBranch && hoveredBranch.routeKey === rKey && hoveredBranch.directionId == null;

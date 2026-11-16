@@ -44,7 +44,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL, ROUTES_FREQUENCY_HEADING, ROUTE_COLUMN, SERVICES_HEADING } from './content/noticeCopy';
 import { capitalizeFirst, periodShapeParts } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -211,7 +211,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           <Intro data={data!} />
 
           <section className="mt-14" aria-labelledby="routes-heading">
-            <SectionTitle id="routes-heading">Routes and Weekday Frequency</SectionTitle>
+            <SectionTitle id="routes-heading">{ROUTES_FREQUENCY_HEADING}</SectionTitle>
             <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
             <FrequencyBar counts={bandCounts(agency.routes)} />
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">The bar splits this agency’s routes by how often they run on a weekday midday. Each route is judged by its slower direction.</p>
@@ -225,7 +225,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: 'Route', rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
+                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
                       // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours".
                       ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
                       { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
@@ -243,7 +243,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
           {'services' in data! && (
             // CIV-1277 (Ryan, 2026-11-02): a parent agency lists its members under "Services".
             <section className="mt-12" aria-labelledby="services-heading">
-              <SectionTitle id="services-heading">Services</SectionTitle>
+              <SectionTitle id="services-heading">{SERVICES_HEADING}</SectionTitle>
               <AgencyModeTable data={(data as ParentAgencyPageData).services} />
             </section>
           )}

@@ -7,7 +7,7 @@ import CardRouteList from '../components/Interval/CardRouteList';
 import { CARD_SUMMARY, CardSectionLabel } from '../components/Interval/cardUi';
 import ResearchInfo from '../components/ResearchInfo';
 import { outdatedLabel } from '../components/research/BustangCardSections';
-import { loadingText, NO_BUSTANG_TRIPS } from '../content/noticeCopy';
+import { loadingText, NO_BUSTANG_TRIPS, DAY_LABEL, LOCAL_STOP_WITHIN_LABEL } from '../content/noticeCopy';
 import { shortDate } from '../../shared/dateText';
 import { countOf } from '../../shared/overflowText';
 import { DAY_TYPES, type DayType } from '../../shared/dayTypes';
@@ -63,12 +63,12 @@ export default function BustangConnections({ active, data, day, setDay, within, 
             {!FEATURES.connectionsBar && <>
             <div>
               <CardSectionLabel>Day</CardSectionLabel>
-              <PillGroup label="Day" value={day} onChange={v => setDay(v as DayType)}
+              <PillGroup label={DAY_LABEL} value={day} onChange={v => setDay(v as DayType)}
                 options={DAY_TYPES.map(d => [d, d] as const)} />
             </div>
             <div>
               <CardSectionLabel>Local stop within</CardSectionLabel>
-              <PillGroup label="Local stop within" value={String(within)} onChange={v => setWithin(parseNearbyChoice(v))}
+              <PillGroup label={LOCAL_STOP_WITHIN_LABEL} value={String(within)} onChange={v => setWithin(parseNearbyChoice(v))}
                 options={LIST_DISTANCE_CHOICES.map(m => [String(m), metresText(m)] as const)} />
             </div>
             </>}

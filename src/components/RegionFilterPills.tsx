@@ -1,5 +1,6 @@
 import React from 'react';
 import Pill from './ui/Pill';
+import { CLEAR_REGION_FILTERS_LABEL } from '../content/noticeCopy';
 
 interface RegionFilterPillsProps {
   regions: string[];
@@ -22,7 +23,7 @@ export default function RegionFilterPills({
           tone="glass"
           onClick={() => setSelectedRegions(new Set())}
           selected={selectedRegions.size === 0}
-          title="Clear region filters"
+          title={CLEAR_REGION_FILTERS_LABEL}
           className="shrink-0"
         >
           All

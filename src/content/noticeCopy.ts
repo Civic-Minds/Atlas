@@ -790,3 +790,95 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
   if (!sentence) return null;
   return pickup?.note ? `${sentence} ${pickup.note}` : sentence;
 }
+
+// CIV-1774 (Ryan, 2026-11-16: "in one place only for grammar reasons /branding"): button, link, tag, control and
+// heading labels that were typed into their components, moved here word for word.
+/** The shared page header's link to the map. */
+export const GO_TO_ATLAS_LABEL = 'Go to Atlas';
+/** The page header's nav, for screen readers. */
+export const SITE_NAV_LABEL = 'Site navigation';
+export const SITE_FOOTER_LABEL = 'Site footer';
+export const FOOTER_LINKS_LABEL = 'Footer links';
+export const LEGAL_LINKS_LABEL = 'Legal links';
+/** A long page's contents list. */
+export const ON_THIS_PAGE_LABEL = 'On this page';
+export const ZOOM_IN_LABEL = 'Zoom in';
+export const ZOOM_OUT_LABEL = 'Zoom out';
+export const CLEAR_REGION_FILTERS_LABEL = 'Clear region filters';
+/** The frequency split bar's screen-reader name. */
+export const ROUTES_BY_MIDDAY_FREQUENCY_LABEL = 'Routes by weekday midday frequency';
+/** A research page's method section. */
+export const METHOD_HEADING = 'Method';
+/** The stop card's section. */
+export const NEARBY_ROUTES_LABEL = 'Nearby routes';
+export const ROUTE_CHOOSER_LABEL = 'Route chooser';
+export const LIVE_DATA_AVAILABLE_LABEL = 'Live data available';
+/** The agency card's link to the agency's own site, its screen-reader name and its hover hint. */
+export const SOURCE_LINK_LABEL = 'Source';
+export const SOURCE_LINK_ARIA_LABEL = 'Source (opens in a new tab)';
+export const OPENS_IN_NEW_TAB_HINT = 'Opens in a new tab';
+/** The report form's buttons. */
+export const CANCEL_LABEL = 'Cancel';
+export const CHANGE_LABEL = 'Change';
+export const FIRST_LAST_TRIP_ALLOWANCE_LABEL = 'About the first-or-last-trip allowance';
+export const MAP_LEGEND_LABEL = 'Map legend';
+/** A map key's screen-reader name. */
+export const MAP_COLOURS_LABEL = 'Map colours';
+export const EXPAND_SCHEDULE_LABEL = 'Expand schedule';
+export const SCHEDULE_DIRECTION_LABEL = 'Schedule direction';
+/** The map's filter controls. */
+export const FILTERS_LABEL = 'Filters';
+export const FILTERS_BOTH_MAPS_LABEL = 'Filters for both maps';
+export const MORE_FILTERS_LABEL = 'More filters';
+/** The settings panel's switches. */
+export const TOGGLE_DARK_MODE_LABEL = 'Toggle light/dark mode';
+export const TOGGLE_HIGH_CONTRAST_LABEL = 'Toggle high contrast mode';
+export const TOGGLE_LEGEND_LABEL = 'Toggle persistent legend';
+export const TOGGLE_DATA_SAVER_LABEL = 'Toggle data saver';
+/** The connections bar's controls (CIV-1353). */
+export const WAIT_LABEL = 'Wait';
+export const WALK_LABEL = 'Walk';
+export const SIDE_LABEL = 'Side';
+export const OVERNIGHT_FREQUENCY_LABEL = 'Overnight frequency';
+export const TIME_WINDOW_LABEL = 'Time window';
+/** The map's agency filter chip and its two bulk buttons. */
+export const AGENCIES_FILTER_LABEL = 'Agencies';
+export const SELECT_ALL_LABEL = 'All';
+export const SELECT_NONE_LABEL = 'None';
+/** The Compare button and its screen-reader name. */
+export const COMPARE_LABEL = 'Compare';
+export const COMPARE_ARIA_LABEL = 'Compare two maps';
+export const ROUTES_IN_VIEW_LABEL = 'Routes in view';
+export const AGENCIES_IN_VIEW_LABEL = 'Agencies in view';
+/** The top bar's logo and views menu. */
+export const ATLAS_HOME_LABEL = 'Atlas home';
+export const MORE_VIEWS_LABEL = 'More Atlas views';
+export const LIVE_TAB_LABEL = 'Live';
+/** Tags beside an agency or a What's New item. */
+export const LIVE_TAG = 'Live';
+export const HISTORY_TAG = 'History';
+export const NEW_TAG = 'New';
+export const BETA_TAG = 'Beta';
+export const DRAFT_TAG = 'Draft';
+export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
+/** The analytics prompt. */
+export const TOGGLE_ANALYTICS_LABEL = 'Toggle Google Analytics';
+export const ANALYTICS_CONSENT_LABEL = 'Analytics consent';
+export const READ_PRIVACY_POLICY_LABEL = 'Read the Privacy Policy';
+export const SHOW_MORE_RESULTS_LABEL = 'Show more results';
+/** The recent searches list. */
+export const CLEAR_LABEL = 'Clear';
+/** The agency card's link to its agency page, and the stop card's details link. */
+export const AGENCY_ABOUT_LINK_LABEL = 'About';
+export const DETAILS_LABEL = 'Details';
+export const SEE_ALL_CHANGES_LABEL = 'See all changes';
+export const EXPLORE_RESEARCH_LABEL = 'Explore research';
+export const WHAT_ATLAS_SHOWS_LABEL = 'What Atlas shows';
+export const FEEDBACK_LABEL = 'Feedback';
+/** Section headings and table columns on the agency, area and index pages. */
+export const AREAS_HEADING = 'Areas';
+export const AGENCIES_FREQUENCY_HEADING = 'Agencies and Weekday Frequency';
+export const AGENCY_COLUMN = 'Agency';
+export const ROUTES_FREQUENCY_HEADING = 'Routes and Weekday Frequency';
+export const ROUTE_COLUMN = 'Route';
+export const SERVICES_HEADING = 'Services';

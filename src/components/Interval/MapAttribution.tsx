@@ -10,7 +10,7 @@ import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
-import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE } from '../../content/noticeCopy';
+import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
 import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
@@ -90,7 +90,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
               onClick={() => { trackEvent('feedback_opened', { source: 'map_attribution' }); setAboutOpen(false); }}
               className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}
             >
-              Feedback
+              {FEEDBACK_LABEL}
             </a>
           </div>
         )}
@@ -115,7 +115,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
         onClick={() => trackEvent('feedback_opened', { source: 'map_attribution' })}
         className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} no-underline hover:text-[var(--text-primary)]`}
       >
-        Feedback
+        {FEEDBACK_LABEL}
       </a>
       {/* With the shading on, the credit is longer: on phones the row is narrowed and the credit shrinks (ellipsis) so it stays left of the zoom buttons. */}
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>

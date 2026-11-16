@@ -8,6 +8,7 @@ import RouteListRow from '../../RouteListRow';
 import { CardReportButton, REPORT_REASON } from '../cardUi';
 import { reportDetails } from '../../../utils/reportIssue';
 import type { RouteLabel } from '../../../utils/routeFacts';
+import { ROUTE_CHOOSER_LABEL } from '../../../content/noticeCopy';
 
 export interface DisambigRoute {
   key: string;
@@ -59,7 +60,7 @@ export const DisambiguationPanel: React.FC<DisambiguationPanelProps> = ({
         <CardBackLink onClick={() => setDisambiguationRoutes(null)}>{BACK_PLACES.map}</CardBackLink>
         <div className="-my-1">
           <CardReportButton
-            title="Route chooser"
+            title={ROUTE_CHOOSER_LABEL}
             details={chooserReportDetails(disambigDetails)}
             excludeReasons={[REPORT_REASON.stop]}
           />

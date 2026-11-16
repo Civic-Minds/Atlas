@@ -14,7 +14,7 @@ import { compareSideListText, IRREGULAR_PERIOD_SHORT_LABEL, routeListHeadwayText
 import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import { CardDivider, HeadwayBadge, LimitedBadge } from './cardUi';
-import { LIMITED_SERVICE_LABEL, NO_ROUTE_SUGGESTIONS } from '../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, NO_ROUTE_SUGGESTIONS, CLEAR_LABEL } from '../../content/noticeCopy';
 
 // Reusable/helper interfaces for route snippets
 export interface RecentRoute {
@@ -147,7 +147,7 @@ export const SearchSuggestionsPanel: React.FC<SearchSuggestionsPanelProps> = ({
               onClick={clearRecentSearches}
               className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
             >
-              Clear
+              {CLEAR_LABEL}
             </button>
           </div>
           <div>

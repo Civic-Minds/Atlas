@@ -3,6 +3,7 @@ import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import SplitBar from './components/charts/SplitBar';
 import { plural } from '../shared/overflowText';
 import { routeLabels } from './utils/format';
+import { ROUTES_BY_MIDDAY_FREQUENCY_LABEL } from './content/noticeCopy';
 
 const BAND_PHRASES = FREQUENCY_BANDS.map(b => b.phrase);
 const BAND_SHORT = [...FREQUENCY_BANDS.map(b => b.short), NO_MIDDAY_SHORT];
@@ -24,7 +25,7 @@ export function FrequencyBar({ counts }: { counts: number[] }) {
   const unitBand = shown.find(x => x.i < BAND_SHORT.length - 1)?.i;
   return (
     <SplitBar
-      label="Routes by weekday midday frequency"
+      label={ROUTES_BY_MIDDAY_FREQUENCY_LABEL}
       segments={counts.map((n, i) => ({
         key: i,
         value: n,

@@ -3,7 +3,7 @@ import { FLOATING_CARD, MAP_LEGEND_SLOT, Z_MAP_OVERLAY } from '../../styles';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
 import { useHeadwayTiers } from '../../hooks/useHeadwayTiers';
 import MapKey from '../ui/MapKey';
-import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED, ON_DEMAND_PARTIAL_COVERAGE } from '../../content/noticeCopy';
+import { MAP_KEY_FREQUENCY, MAP_KEY_OTHER, MAP_KEY_SELECTED, ON_DEMAND_PARTIAL_COVERAGE, MAP_LEGEND_LABEL } from '../../content/noticeCopy';
 import { FEATURES } from '../../../shared/config';
 import { ContextKey } from './ContextLegend';
 import type { ContextMetric } from '../../utils/contextLayer';
@@ -25,7 +25,7 @@ export function PersistentMapLegend({ contextMetric = null }: { /** The populati
   return (
     <aside
       ref={ref}
-      aria-label="Map legend"
+      aria-label={MAP_LEGEND_LABEL}
       data-map-overlay="legend"
       className={`${FLOATING_CARD} ${MAP_LEGEND_SLOT} ${Z_MAP_OVERLAY} w-72 max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
     >

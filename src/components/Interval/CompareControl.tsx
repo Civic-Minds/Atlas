@@ -9,7 +9,7 @@ import { SideBadge } from '../ui/SideBadge';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
 import { compareSideHeading, type CompareSide } from '../../utils/compareSides';
 import { plural } from '../../../shared/overflowText';
-import { DAY_LABEL, FREQUENCY_LABEL, TIME_LABEL } from '../../content/noticeCopy';
+import { DAY_LABEL, FREQUENCY_LABEL, TIME_LABEL, COMPARE_ARIA_LABEL, COMPARE_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
 export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
@@ -34,7 +34,7 @@ export function CompareTab({ active, onStart, onExit }: { active: boolean; onSta
   return (
     <ModeTab
       icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
-      label="Compare" ariaLabel="Compare two maps"
+      label={COMPARE_LABEL} ariaLabel={COMPARE_ARIA_LABEL}
       active={active}
       onClick={active ? onExit : onStart}
     />
@@ -46,7 +46,7 @@ export function CompareMenuItem({ active, onStart, onExit, onDone }: { active: b
   return (
     <ModeTab
       variant="menu" icon={<Columns2 className="h-3.5 w-3.5" aria-hidden="true" />}
-      label="Compare" ariaLabel="Compare two maps" active={active}
+      label={COMPARE_LABEL} ariaLabel={COMPARE_ARIA_LABEL} active={active}
       onClick={() => { (active ? onExit : onStart)(); onDone(); }}
     />
   );
