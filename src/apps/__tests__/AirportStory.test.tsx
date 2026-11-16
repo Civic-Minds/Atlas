@@ -51,12 +51,21 @@ describe('AirportStory (CIV-1550, dev only)', () => {
     render(<AirportStory />);
     expect(screen.getByRole('heading', { level: 1, name: "[Ryan’s wording: title]" })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'One weekday at the airports' })).toBeInTheDocument();
-    for (const name of ['The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
+    for (const name of ['[Ryan’s wording: week grid heading]', 'The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     expect(screen.queryByText(/Before publishing/)).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
   });
 
-  it('Memphis has no weekday departure in the 11 AM and 12 PM hours, and its last downtown hour is 4 PM (the 11 AM card)', () => {
+  it('keeps the reader’s theme through the night: no blend to dark (Ryan’s pick, 2026-11-16)', () => {
+    const page = readFileSync('src/apps/AirportStory.tsx', 'utf8');
+    expect(page).not.toContain('nightBlend');
+    // The hour steps are the Frequent service story's IntersectionObserver steps, one per hour.
+    expect(page).toContain('new IntersectionObserver(');
+    const { container } = render(<AirportStory />);
+    expect(container.querySelectorAll('[data-hour-step]')).toHaveLength(25);
+  });
+
+    it('Memphis has no weekday departure in the 11 AM and 12 PM hours, and its last downtown hour is 4 PM (the 11 AM card)', () => {
     const mem = AIRPORTS.find(a => a.code === 'MEM')!;
     expect(landableAt(mem, 'wk', 10, 'any')).toBe(true);
     expect(landableAt(mem, 'wk', 11, 'any')).toBe(false);

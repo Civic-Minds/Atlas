@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { applyNightBlend, clearNightBlend } from '../lib/nightBlend';
 import { longDate } from '../../shared/dateText';
 import { clockTime, hourTime } from '../../shared/timeText';
 import ResearchMethod from '../components/research/ResearchMethod';
@@ -12,10 +11,10 @@ import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
 
 /**
  * CIV-1550: the airport story, local dev only (main.tsx registers it under import.meta.env.DEV, so it is in no built
- * bundle). A scroll story on the Frequent service story's pattern: a sticky map of the 157 airports through one weekday,
- * 6 AM to 6 AM the next morning hour by hour with scroll, with the scroll section (and the sticky site header while it is
- * over the section) blending from the reader's light tokens to Atlas's dark tokens between 7 PM and 11 PM, and back to
- * light between 4 AM and 6 AM. The hours after midnight use the same weekday's masks (Tuesday stands for every
+ * bundle). A scroll story on the Frequent service story's pattern (its sticky map and IntersectionObserver steps): a
+ * sticky map of the 157 airports through one weekday, morning to overnight, 6 AM to 6 AM the next morning hour by hour
+ * with scroll. Ryan's pick (2026-11-16): the page keeps the reader's own theme throughout (no blend to dark at night), and
+ * the week grid stays further down. The hours after midnight use the same weekday's masks (Tuesday stands for every
  * weekday), so the closing 6 AM shows the opening 6 AM's airports. All text is a draft
  * for Ryan's review; nothing here is approved yet. Counts come from src/data/airport-hourly.json.
  */
@@ -40,8 +39,7 @@ const MEMPHIS = AIRPORTS.find(a => a.code === 'MEM');
 const MEMPHIS_GAP = [11, 12].filter(h => MEMPHIS && !landableAt(MEMPHIS, 'wk', h, 'any'));
 
 /**
- * The weekday's text cards. Each shows from its slot until the next card's; the background blends from 7 PM to 11 PM
- * and back from 4 AM to 6 AM. Memphis (CIV-1550 draft contrast): of the large airports, the one whose last weekday bus
+ * The weekday's text cards. Each shows from its slot until the next card's. Memphis (CIV-1550 draft contrast): of the large airports, the one whose last weekday bus
  * downtown leaves earliest (route 28, 4:34 PM, a constant from the study: the data holds hours, not minutes). Oakland's
  * earlier last trip is left out: its only direct rides are overnight buses, and BART runs all day with a change.
  */
@@ -64,80 +62,41 @@ function StorySection({ id, heading, children }: { id: string; heading: string; 
   );
 }
 
-/** The evening blend to dark, 7 PM to 11 PM, and the morning blend back to light, 4 AM to the closing 6 AM. */
-const NIGHT_FROM = slotOf(19);
-const NIGHT_TO = slotOf(23);
-const DAWN_FROM = slotOf(4);
-const DAWN_TO = slotOf(6, true);
-/** Night progress at a scroll position: 0 by day, rising to 1 by 11 PM and back to 0 by the closing 6 AM. */
-const nightAt = (pos: number) => clamp01((pos - NIGHT_FROM) / (NIGHT_TO - NIGHT_FROM)) - clamp01((pos - DAWN_FROM) / (DAWN_TO - DAWN_FROM));
-/** Scroll per hour, in viewport heights, and the hold after the closing 6 AM before the section scrolls away (the spacer's height). */
-const SLOT_VH = 18;
-const HOLD_VH = 45;
+/** The map's basemap follows the reader's theme: 0 (light) or 1 (dark). */
 const pageIsLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 export default function AirportStory() {
-  /** Position through the hours: 0 at 6 AM, 24 at the closing 6 AM, fractional between. */
-  const [position, setPosition] = useState(0);
+  /** The hour slot the scroll has reached: 0 at 6 AM, 24 at the closing 6 AM. */
+  const [hourIndex, setHourIndex] = useState(0);
   const [night, setNight] = useState(() => (pageIsLight() ? 0 : 1));
-  const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
+  const hourStepRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  // One rAF-throttled scroll handler: the hour position comes from how far the map's container has scrolled past the
-  // map's pinned top, and the night progress from that position between the 7 PM and 11 PM slots and back between the
-  // 4 AM and closing 6 AM slots (with reduced motion, a plain switch to dark at 7 PM and back to light at the closing 6 AM). The blended tokens go on the section and, while the sticky site header sits over the section, on the header.
+  // The Frequent service story's steps (FrequentServiceStory): one invisible step per hour after the sticky map, and the
+  // furthest step on screen sets the hour. Each hour is a plain switch, so a reader who has turned off motion sees no
+  // animation here (the map's fly-ins jump for them too).
   useEffect(() => {
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    const sticky = stickyRef.current;
-    if (!section || !track || !sticky) return;
-    const header = document.querySelector<HTMLElement>('[data-page-header]');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const slot = (window.innerHeight * SLOT_VH) / 100;
-      const pinnedTop = parseFloat(getComputedStyle(sticky).top) || 0;
-      const pos = Math.min(HOURS.length - 1, Math.max(0, (pinnedTop - track.getBoundingClientRect().top) / slot));
-      setPosition(pos);
-      if (!pageIsLight()) {
-        clearNightBlend(section);
-        if (header) clearNightBlend(header);
-        setNight(1);
-        return;
-      }
-      const p = reduced.matches ? (pos >= NIGHT_FROM && pos < DAWN_TO ? 1 : 0) : nightAt(pos);
-      setNight(p);
-      applyNightBlend(section, p);
-      if (header) {
-        const h = header.getBoundingClientRect();
-        const s = section.getBoundingClientRect();
-        if (s.top < h.bottom && s.bottom > h.top) applyNightBlend(header, p);
-        else clearNightBlend(header);
-      }
-    };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
-    update();
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    reduced.addEventListener('change', schedule);
-    const theme = new MutationObserver(schedule);
-    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-color-vision'] });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-      reduced.removeEventListener('change', schedule);
-      theme.disconnect();
-      clearNightBlend(section);
-      if (header) clearNightBlend(header);
-    };
+    if (typeof IntersectionObserver === 'undefined') return;
+    const visibleSteps = new Set<number>();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const step = Number((entry.target as HTMLElement).dataset.hourStep);
+        if (entry.isIntersecting) visibleSteps.add(step);
+        else visibleSteps.delete(step);
+      });
+      setHourIndex(Math.max(...visibleSteps, 0));
+    }, { threshold: 0.35 });
+    hourStepRefs.current.forEach(step => { if (step) observer.observe(step); });
+    return () => observer.disconnect();
+  }, []);
+
+  // The map's basemap follows the reader's theme when it changes.
+  useEffect(() => {
+    const theme = new MutationObserver(() => setNight(pageIsLight() ? 0 : 1));
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => theme.disconnect();
   }, []);
 
   const { colorVisionFriendly } = useColorVision();
-  const hourIndex = Math.floor(position);
   const hour = HOURS[hourIndex];
   const current = [...STEPS].reverse().find(s => s.slot <= hourIndex) ?? STEPS[0];
   // A zoom holds from its hour's slot until its `until` slot (the first one after it).
@@ -163,26 +122,27 @@ export default function AirportStory() {
           intro={<>{AIRPORT_STORY_DRAFT.intro!({}).map(text => <p key={text}>{text}</p>)}</>}
         />
 
-        {/* Day to night and back, hour by hour with scroll: the section's tokens blend from light to dark between 7 PM and
-            11 PM and back between 4 AM and 6 AM (lib/nightBlend), with plain switches at 7 PM and the closing 6 AM under
-            reduced motion. A reader already in dark mode sees no change. */}
-        <section
-          ref={sectionRef}
-          aria-label="One weekday at the airports"
-          className="relative left-1/2 mt-24 w-screen -translate-x-1/2 bg-[var(--bg-app)] px-2 py-12 text-[var(--text-primary)] sm:mt-32 sm:px-3"
-        >
-          <div ref={trackRef} className="relative min-w-0">
-            <div ref={stickyRef} className="sticky top-16 min-w-0 lg:top-24">
+        {/* Morning to overnight, hour by hour with scroll, in the reader's own theme (the Frequent service story's layout). */}
+        <section aria-label="One weekday at the airports" className="relative left-1/2 mt-24 w-screen -translate-x-1/2 px-2 sm:mt-32 sm:px-3">
+          <div className="relative min-w-0 pb-[12vh]">
+            <div className="sticky top-16 min-w-0 lg:top-24">
               <AirportStoryMap day="wk" hour={hour} night={night} zoom={zoom} colorMode={colorVisionFriendly ? 'friendly' : 'default'}>
                 <p className={STEP_TEXT} aria-live="polite">{current.text}</p>
               </AirportStoryMap>
             </div>
-            {/* 24 hour slots of SLOT_VH plus HOLD_VH: (25 - 1) * 18 + 45 = 477vh. */}
-            <div aria-hidden="true" className="h-[477vh]" />
+            {/* One step per hour, 18vh apart, and the Frequent service story's hold after the last one. */}
+            <div className="relative z-10 space-y-[12vh] pb-[60vh] pt-8" aria-hidden="true">
+              {HOURS.map((_, i) => <div key={i} ref={step => { hourStepRefs.current[i] = step; }} data-hour-step={i} className="h-[6vh]" />)}
+            </div>
           </div>
         </section>
 
         <div className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
+          {/* The week grid stays further down (Ryan's pick, 2026-11-16); the chart itself is not built yet. */}
+          <StorySection id="airport-week-heading" heading="[Ryan’s wording: week grid heading]">
+            <p className={PLACEHOLDER}>[Chart later: week grid per airport, with real scheduled flights marked at featured airports.]</p>
+          </StorySection>
+
           <StorySection id="airport-weekend-heading" heading="The weekend gap">
             <p className={STORY_PARAGRAPH}>16 airports have no transit at all on Saturday, and 44 have none on Sunday.</p>
           </StorySection>
