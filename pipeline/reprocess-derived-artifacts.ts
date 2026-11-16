@@ -102,7 +102,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
-import { runNow } from '../shared/runClock.js';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 
 interface Agency {
   slug: string;
@@ -187,7 +187,7 @@ const writeToR2 = process.argv.includes('--write');
 // and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.
 const runPrefix = parseRunPrefixArg(process.argv.slice(2), '--run-prefix');
 const overrides = parseGateOverrides(process.argv.slice(2));
-const todayYmd = runNow().toISOString().slice(0, 10).replace(/-/g, ''); // #1523: ATLAS_RUN_AT pins it
+const todayYmd = pipelineRunDateYmd(); // #1523/#1537: the run's one Toronto date (ATLAS_RUN_AT pins it), not UTC
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 const includeHidden = process.argv.includes('--include-hidden');
