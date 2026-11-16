@@ -17,7 +17,14 @@ describe('headerModeTag', () => {
     const brand = readFileSync(resolve(__dirname, '../components/AtlasBrand.tsx'), 'utf8');
     expect(brand).not.toMatch(/import Tag\b/);
     expect(brand).not.toMatch(/<Tag\b/);
-    expect(brand).toMatch(/\{MODE_TAG && <span className=\{bylineText\}>\{MODE_TAG\}<\/span>\}/);
-    expect(brand).toMatch(/<span className=\{`\$\{bylineText\} [^`]*`\}>by Civic Minds<\/span>/);
+    expect(brand).toMatch(/by Civic Minds/);
+  });
+
+  // Ryan, 2026-11-16, option 1: the word shares the wordmark's line, muted; with a word the byline is right-aligned under it.
+  it('puts the word on the wordmark line and right-aligns the byline when there is one', () => {
+    const brand = readFileSync(resolve(__dirname, '../components/AtlasBrand.tsx'), 'utf8');
+    expect(brand).toMatch(/MODE_TAG && <span className="font-medium text-\[var\(--text-muted\)\]"> \{MODE_TAG\}<\/span>/);
+    expect(brand).toMatch(/MODE_TAG \? 'items-end text-right' : 'items-start text-left'/);
+    expect(brand).not.toMatch(/TAG_VARIANT|tag=/);
   });
 });
