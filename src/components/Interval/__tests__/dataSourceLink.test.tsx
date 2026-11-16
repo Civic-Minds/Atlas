@@ -60,6 +60,12 @@ describe('Source link', () => {
       expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     });
 
+    it('has no link to the service or booking website (CIV-1784): Atlas is for planners, not trip planning', () => {
+      demandCard(withSite);
+      for (const link of screen.queryAllByRole('link')) expect(link.getAttribute('href')).not.toBe(HAMILTON_MY_RIDE_SERVICE_AREA.sourceUrl);
+      expect(screen.queryAllByRole('link', { name: 'Details' }).length).toBeLessThanOrEqual(1);
+    });
+
     it('is absent in public mode', () => {
       flags.on = false;
       demandCard(withSite);
@@ -75,10 +81,9 @@ describe('Source link', () => {
   describe('header links (CIV-841)', () => {
     const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
 
-    it('the area link, Details and Source on one line under the name, above the facts, each opening in a new tab (CIV-929)', () => {
+    it('the area link and Source on one line under the name, Details on the route count line, each opening in a new tab (CIV-929, CIV-1785)', () => {
       card(ttc);
       const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton' });
-      const facts = screen.getByText(/^\d+ routes?/);
       const about = screen.getByRole('link', { name: 'Details' });
       const source = screen.getByRole('link', { name: /^Source/ });
       expect(about).toHaveAttribute('href', '/agency/ttc');
@@ -87,12 +92,15 @@ describe('Source link', () => {
       expect(area).toHaveAttribute('title', 'Greater Toronto and Hamilton Area');
       for (const link of [about, source, area]) expect(link).toHaveAttribute('target', '_blank');
       const line = area.closest('p')!;
-      expect(about.closest('p')).toBe(line);
       expect(source.closest('p')).toBe(line);
       expect(line.className).toContain('whitespace-nowrap');
-      expect(area.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-      expect(about.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(area.compareDocumentPosition(source) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      // "0 routes · Details →": the count, then the agency page's link, under the links line; no "match filters".
+      const facts = about.closest('p')!;
+      expect(facts).not.toBe(line);
+      expect(facts.textContent).toMatch(/^\d+ routes?·Details/);
       expect(line.compareDocumentPosition(facts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(screen.queryByText(/match(es)? filters/)).toBeNull();
       expect(screen.queryByText(/agencies$/)).toBeNull();
     });
 
