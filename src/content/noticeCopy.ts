@@ -581,6 +581,12 @@ export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren�
 /** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
 export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can’t be shown right now.";
 export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
+/**
+ * CIV-1768 (Ryan, 2026-11-16: "Unable to load then a countdown until it retries"): every feed in view failed. Shown
+ * where the loading line sits, in place of LIVE_FEEDS_DOWN; the countdown is to the next poll.
+ */
+export const LIVE_UNABLE_TO_LOAD = 'Unable to load';
+export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`;
 /** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
 export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
 export const LIVE_GAP_NOT_SEEN = "The car ahead’s passing wasn’t seen";
