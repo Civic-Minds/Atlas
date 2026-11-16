@@ -3,6 +3,7 @@ import {
   LIVE_ARCHIVE_SHARDS,
   LIVE_ARCHIVE_POSITION_FEEDS,
   LIVE_ARCHIVE_TRIP_FEEDS,
+  LIVE_ARCHIVE_BUCKET_BY_SLUG,
 } from '../liveArchiveFeeds';
 import {
   LIVE_TRIP_UPDATES_FEEDS,
@@ -22,15 +23,22 @@ describe('liveArchiveFeeds', () => {
   });
 
   it('trip-update archive URLs match LIVE_POLLING endpoints', () => {
-    for (const feed of LIVE_ARCHIVE_TRIP_FEEDS) {
+    for (const feed of LIVE_ARCHIVE_TRIP_FEEDS.filter(f => !f.archiveOnly)) {
       expect(LIVE_TRIP_UPDATES_FEEDS[feed.slug], feed.slug).toBe(feed.url);
     }
   });
 
   it('vehicle-position archive URLs match LIVE_POLLING endpoints', () => {
-    for (const feed of LIVE_ARCHIVE_POSITION_FEEDS) {
+    for (const feed of LIVE_ARCHIVE_POSITION_FEEDS.filter(f => !f.archiveOnly)) {
       expect(LIVE_VEHICLE_POSITIONS_FEEDS[feed.slug], feed.slug).toBe(feed.url);
     }
+  });
+
+  it('records Kingston only as archive-only, never as a Live agency (CIV-1682)', () => {
+    expect(LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === 'kingston')?.archiveOnly).toBe(true);
+    expect(LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'kingston')?.archiveOnly).toBe(true);
+    expect(LIVE_TRIP_UPDATES_FEEDS.kingston).toBeUndefined();
+    expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBe('atlas-live-kingston');
   });
 
   it('archives Halifax trip + vehicle feeds (no API key)', () => {
