@@ -42,11 +42,12 @@ import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, 
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
+import { useRetrySeconds } from '../hooks/useRetrySeconds';
 import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveFeedErrorText, LIVE_FEEDS_DOWN, LIVE_FEEDS_DOWN_STUCK, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS } from '../content/noticeCopy';
+import { loadingText, LIVE_FEEDS_UNAVAILABLE, LIVE_UNABLE_TO_LOAD, liveRetryCountdown, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -184,7 +185,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
-  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
+  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug, nextPollAt } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
   // The picked route's vehicles' directions from their trips (the analysis's timetable, via useLiveTripDirections below).
   const [tripDirections, setTripDirections] = useState<ReadonlyMap<string, number> | null>(null);
@@ -246,6 +247,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const allVehicles = useMemo(() => Object.values(resolvedVehiclesBySlug).flat(), [resolvedVehiclesBySlug]);
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
+  const retrySeconds = useRetrySeconds(errors.length > 0 ? nextPollAt : null);
 
   // Group failing agencies by identical message+stuck-state so "everyone's down
   // for the same reason" reads as one line instead of repeating per agency.
@@ -941,15 +943,12 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <PanelEmpty kind="loading">{loadingText('feed')}</PanelEmpty>
             ) : hasAnyError ? (
               (() => {
-                const totalFailing = errorGroups.reduce((n, g) => n + g.agencyNames.length, 0);
-                const allStuck = errorGroups.every(g => g.stuck);
-                // Naming every agency only helps when there's one to name — once
-                // everything in view is down, a single generic line reads cleaner.
-                const [title, message] = totalFailing === 1
-                  ? [errorGroups[0].agencyNames[0], liveFeedErrorText(errorGroups[0].message, errorGroups[0].stuck)]
-                  : [LIVE_FEEDS_UNAVAILABLE, allStuck ? LIVE_FEEDS_DOWN_STUCK : LIVE_FEEDS_DOWN];
+                // CIV-1768: where the loading line sits, "Unable to load" and a countdown to the next try,
+                // in place of "Atlas will keep trying." The line under it still names what can't be shown.
+                const names = errorGroups.flatMap(g => g.agencyNames);
+                const who = names.length === 1 ? liveUnreachableText(names) : LIVE_FEEDS_UNAVAILABLE;
                 return (
-                  <PanelEmpty kind="error" detail={<CardHelpNotice message={message} />}>{title}</PanelEmpty>
+                  <PanelEmpty kind="error" detail={<CardHelpNotice message={retrySeconds == null ? who : `${who} ${liveRetryCountdown(retrySeconds)}`} />}>{LIVE_UNABLE_TO_LOAD}</PanelEmpty>
                 );
               })()
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
@@ -1003,7 +1002,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
       {/* Toolbar */}
       <div data-map-overlay="live-toolbar" className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
-        <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label="Toggle light mode">
+        <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label={TOGGLE_DARK_MODE_LABEL}>
           {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
         {onInfoOpen && (

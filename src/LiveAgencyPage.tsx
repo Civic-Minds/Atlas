@@ -37,7 +37,7 @@ import LateStopsMap from './components/Live/LateStopsMapLazy';
 import LegendItem from './components/ui/LegendItem';
 import { lateShareColor } from './components/Live/lateShare';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
-import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText } from './content/noticeCopy';
+import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';
 import { percentTenthText, percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -125,9 +125,9 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: 'Route', rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
+              { key: 'route', header: ROUTE_COLUMN, rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
               { key: 'late', sortable: true, header: LATE_LABEL, width: FIGURE_COL, cell: r => <span title={`${countText(r.lateN)} trips this week`}>{percentOrDash(r.lateShare)}</span> },
-              { key: 'lastWeek', header: 'Last week', width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => percentOrDash(r.lateLastWeek) },
+              { key: 'lastWeek', header: LAST_WEEK_COLUMN, width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => percentOrDash(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? MISSING_VALUE : runTimeShareText(r.runTimeOver)) },
               { key: 'bunching', sortable: true, header: BUNCHING_LABEL, width: FIGURE_COL, cell: r => (r.bunchingShare != null && r.bunchedShare != null && r.gappedShare != null ? bunchPartsText(r.bunchingShare, r.bunchedShare, r.gappedShare) : percentOrDash(r.bunchingShare)) },
               { key: 'delivered', sortable: true, header: DELIVERED_LABEL, width: FIGURE_COL, cell: r => (r.deliveredShare == null ? MISSING_VALUE : percentTenthText(r.deliveredShare)) },
@@ -164,8 +164,8 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
         defaultSort={valueHeader ? 'value' : undefined}
         rowKey={r => `${r.route}-${r.directionId}-${r.fromStopId}-${r.toStopId}`}
         columns={[
-          { key: 'stretch', header: 'Stretch', rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
-          { key: 'route', header: 'Route', width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
+          { key: 'stretch', header: STRETCH_COLUMN, rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
+          { key: 'route', header: ROUTE_COLUMN, width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: DIRECTION_LABEL, width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
           ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
         ]}
@@ -214,7 +214,7 @@ export default function LiveAgencyPage() {
             : <><p className="mt-5 text-sm text-[var(--text-muted)]">{LIVE_WEEK_NOT_IN_FILES}</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
         </ErrorBoundary>
 
-        <Section id="agency-routes" title="Routes" intro="Every analysed route, worst first.">
+        <Section id="agency-routes" title={ROUTES_HEADING} intro="Every analysed route, worst first.">
           <RoutesTable s={s} />
         </Section>
 

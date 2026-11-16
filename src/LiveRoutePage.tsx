@@ -39,7 +39,7 @@ import BunchingSection from './components/Live/sections/BunchingSection';
 import DeliveredSection from './components/Live/sections/DeliveredSection';
 import ExtraWaitSection from './components/Live/sections/ExtraWaitSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText } from './content/noticeCopy';
+import { LIVE_METHOD_DRAW_ERROR, liveDrawError, liveNoRoute, loadingText, FILTERS_LABEL, VIEW_LABEL } from './content/noticeCopy';
 import { LATE_MAP_STOPS } from './components/Live/lateStopsMapModel';
 import { countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -173,8 +173,8 @@ function AnalysisPage() {
         </div>
         <RouteDevHint v3={v3} route={route} />
         {data.note && <p className="mt-4 max-w-3xl text-sm font-bold text-[var(--status-caution-text)]">{data.note}</p>}
-        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label="Filters">
-          <PillGroup label="View" value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
+        {view !== 'lite' && <div className={`mt-4 ${PILL_ROW}`} role="group" aria-label={FILTERS_LABEL}>
+          <PillGroup label={VIEW_LABEL} value={view} onChange={v => setView(v as 'lite' | 'dashboard' | 'analysis')} options={[['lite', 'Summary'], ['dashboard', 'Dashboard'], ['analysis', 'Full analysis']]} />
           <PillGroup label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
             options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         </div>}

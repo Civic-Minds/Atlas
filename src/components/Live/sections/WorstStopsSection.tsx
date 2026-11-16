@@ -12,7 +12,7 @@ import Section from './Section';
 import { mins } from './figures';
 import { lateShareColor } from '../lateShare';
 import LegendItem from '../../ui/LegendItem';
-import { LIVE_NO_STOP_TO_RANK } from '../../../content/noticeCopy';
+import { LIVE_NO_STOP_TO_RANK, DEPARTURES_COLUMN, STOPS_MOST_OFTEN_LATE_LABEL, STOP_COLUMN } from '../../../content/noticeCopy';
 import LateStopsMap from '../LateStopsMapLazy';
 import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
 import { countOf } from '../../../../shared/overflowText';
@@ -69,8 +69,8 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
         rowKey={s => `${s.stopId}-${s.directionId}`}
         columns={[
           onPick && canPick
-            ? { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
-            : { key: 'stop', header: 'Stop', rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
+            ? { key: 'stop', header: STOP_COLUMN, rowHeader: true, className: 'font-normal', cell: s => !canPick(s.directionId, s.stopId) ? s.name : <button type="button" onClick={() => onPick(s.directionId, s.stopId)} className="text-left font-[inherit] hover:underline max-sm:min-h-[44px] max-sm:w-full">{s.name}</button> }
+            : { key: 'stop', header: STOP_COLUMN, rowHeader: true, className: 'font-normal break-words', cell: s => <span title={s.name}>{s.name}</span> },
           ...(both ? [{ key: 'dir', header: DIRECTION_LABEL, align: 'left' as const, cell: (s: (typeof top)[number]) => directionLabels[String(s.directionId)] }] : []),
           full
             ? { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => bar(s.lateShare) }
@@ -78,7 +78,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
           ...(full ? [
             { key: 'median', header: DELAY_LEGEND_TITLE, width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
             { key: 'p90', header: P90_LATER_LABEL, narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
-            { key: 'n', header: 'Departures', narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
+            { key: 'n', header: DEPARTURES_COLUMN, narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
           ] : []),
         ]}
       />
@@ -98,7 +98,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   );
   if (id) return <Section id={id} title={title} shrink={shrink} boundary={boundary}>{introLine}{mapped ?? table}{note}</Section>;
   return (
-    <section className="mt-12 max-w-xl" aria-label="The stops most often late">
+    <section className="mt-12 max-w-xl" aria-label={STOPS_MOST_OFTEN_LATE_LABEL}>
       <ErrorBoundary label={boundary ?? ''}>
         <div className="min-w-0">
           <SectionTitle>{title}</SectionTitle>

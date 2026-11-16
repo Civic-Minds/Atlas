@@ -4,6 +4,7 @@ import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
 import { delayAmount, headwayAbout } from '../../../utils/headwayText';
+import { LIVE_AT_STOP_LABEL } from '../../../content/noticeCopy';
 
 const POLL_MS = 20_000;
 
@@ -50,7 +51,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
   });
 
   return (
-    <SidebarCardSection label="Live at this stop">
+    <SidebarCardSection label={LIVE_AT_STOP_LABEL}>
       <div className="px-1 pb-1">
         {hasPredicted && (
           <div className="flex flex-wrap gap-1.5">
