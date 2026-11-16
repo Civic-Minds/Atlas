@@ -12,7 +12,7 @@ describe('LegalPage', () => {
     render(<LegalPage document="privacy" />);
 
     expect(screen.getByRole('heading', { name: 'Privacy Policy' })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Go to Atlas' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Try Atlas' })).toHaveAttribute('href', '/');
     expect(screen.getByText('Last updated October 27, 2026.')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Analytics' })).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Location' })).toBeTruthy();

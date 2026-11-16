@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router';
 import EmptyPage from './components/ui/EmptyPage';
 import ArrowLink from './components/ui/ArrowLink';
-import { NOT_FOUND_BODY, NOT_FOUND_TITLE, OPEN_MAP_LINK } from './content/noticeCopy';
+import { NOT_FOUND_BODY, NOT_FOUND_TITLE, MAP_LINK } from './content/noticeCopy';
 import { tabTitle } from '../shared/pageNames';
 
 /** Shown for addresses the app has no page for; public/404.html is the same page for the server's 404. */
@@ -18,6 +18,6 @@ export default function NotFoundPage() {
     robots.content = 'noindex';
   }, []);
   return (
-    <EmptyPage title={NOT_FOUND_TITLE} body={NOT_FOUND_BODY} action={<ArrowLink as={Link} to="/">{OPEN_MAP_LINK}</ArrowLink>} />
+    <EmptyPage title={NOT_FOUND_TITLE} body={NOT_FOUND_BODY} action={<ArrowLink as={Link} to="/">{MAP_LINK}</ArrowLink>} />
   );
 }

@@ -44,7 +44,7 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, OPEN_MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL } from './content/noticeCopy';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL } from './content/noticeCopy';
 import { capitalizeFirst } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -174,7 +174,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
 
   if (!agency) {
     return (
-      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
+      <EmptyPage title={AGENCY_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{MAP_LINK}</ArrowLink>} />
     );
   }
 

@@ -7,10 +7,10 @@ describe('SiteHeader on phones (CIV-1301)', () => {
     render(<SiteHeader />);
     const docs = screen.getByRole('link', { name: 'Docs' });
     expect(docs.className.split(/\s+/)).toEqual(expect.arrayContaining(['hidden', 'sm:inline']));
-    for (const name of [/Agencies/, /Research/, /Go to Atlas/]) {
+    for (const name of [/Agencies/, /Research/, /Try Atlas/]) {
       const link = screen.queryByRole('link', { name });
       if (link) expect(link.className.split(/\s+/), String(name)).not.toContain('hidden');
     }
-    expect(screen.getByRole('link', { name: /Go to Atlas/ })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: /Try Atlas/ })).toHaveAttribute('href', '/');
   });
 });
