@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A search box's clear × stays inside the box**: in the Agencies filter, typing a long name pushed the × past the panel's edge ([#1563](https://github.com/Civic-Minds/Atlas/issues/1563))
 - **On-demand zones can start on a set date (beta)**: a service that changes its area on a known day, like Chandler Flex in January 2027, shows the new area from that day without anyone republishing the data
 - **Routes run in two legs on some days are read whole**: Barrie 8A and 8B on Sundays run as two hourly legs that meet downtown, and only one leg was read, so their Sunday rows were missing ([#1546](https://github.com/Civic-Minds/Atlas/issues/1546))
 - **A route's daytime or evening pattern is no longer hidden by another that runs at other hours**: OC Transpo 24 on Sundays showed only its late "Blair" trips, and 35 on weekdays lost its peak trips to Avalon ([#1549](https://github.com/Civic-Minds/Atlas/issues/1549))
