@@ -131,7 +131,7 @@ function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number
  */
 function PeriodCell({ text }: { text: string }) {
   const { main, note } = periodShapeParts(text);
-  return <>{main}{note && <span className="block text-xs text-[var(--text-muted)]">{note}</span>}</>;
+  return <>{main}{note && <span className="block whitespace-nowrap text-xs text-[var(--text-muted)]">{note}</span>}</>;
 }
 
 function cell(col: 'am' | 'midday' | 'pm' | 'evening' | 'overnight', r: AgencyPageRoute, hoursBar = false): string {
