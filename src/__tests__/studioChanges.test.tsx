@@ -1,15 +1,16 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { changeSize, studioBeforeAfterFile, type StudioComparisonInput } from '../../shared/studioBeforeAfter';
+import { changeSize, periodChange, studioBeforeAfterFile, type StudioComparisonInput } from '../../shared/studioBeforeAfter';
 
+vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioChangesReport } = await import('../StudioChangesPage');
-const { default: StudioNav } = await import('../components/StudioNav');
+const { StudioRouteTable, smallChangeParts } = await import('../StudioChangesPage');
+const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../StudioPage');
 
 const day = (headway: Record<string, number>, trips: number, first: number | null, last: number, runs: number[]) =>
   ({ headway, trips, first, last, runMinutes: Object.fromEntries(runs.map((r, i) => [String(i), r])) });
@@ -70,50 +71,70 @@ describe('Studio before/after file (CIV-1715)', () => {
   });
 });
 
-describe('Studio Schedule Changes page (CIV-1715)', () => {
-  it('draws a before/after table per route, Route 12 at about every 30 min', () => {
-    render(<StudioChangesReport file={FILE} agency="Kingston Transit" />);
+const change = (route: string) => FILE.changes.find(c => c.route === route)!;
+
+describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-1731)', () => {
+  it('draws Route 12 at about every 30 min, never the notice\'s 10', () => {
+    render(<StudioRouteTable change={change('12')} />);
     const r12 = routeBlock('12');
     expect(rowCells(r12, 'AM peak')).toEqual(['AM peak', '—', '31 min']);
     expect(rowCells(r12, 'Midday')).toEqual(['Midday', '—', '30 min']);
     expect(rowCells(r12, 'PM peak')).toEqual(['PM peak', '—', '30 min']);
     expect(r12.textContent).not.toMatch(/\b10 min\b/);
     expect(rowCells(r12, 'Trips')).toEqual(['Trips', '26', '48']);
+  });
+
+  it('gives Route 10\'s frequency, trips and last trip both sides', () => {
+    render(<StudioRouteTable change={change('10')} />);
     const r10 = routeBlock('10');
     expect(rowCells(r10, 'Midday')).toEqual(['Midday', '60 min', '30 min']);
     expect(rowCells(r10, 'Trips')).toEqual(['Trips', '51', '66']);
     expect(rowCells(r10, 'Last trip')).toEqual(['Last trip', '11:55 PM', '10:57 PM']);
   });
 
-  it('leads with frequency changes, then first or last trip, removed routes, then small changes in one table', () => {
-    render(<StudioChangesReport file={FILE} agency="Kingston Transit" />);
-    const headings = screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent);
-    expect(headings).toEqual(['Frequency or Trips Changed', 'First or Last Trip or Trip Time Changed', 'Route Removed', 'Small Changes']);
-    expect(routeBlock('1')).toBeNull();
-    const small = screen.getByRole('table', { name: 'Small Changes' });
-    expect(within(small).getByText('First trip 6:10 AM → 6:08 AM')).toBeTruthy();
-    expect(within(small).getByText('Trip time 43–46 min → 45 min')).toBeTruthy();
-    expect(screen.getByText('No change: Routes 90A, 801.')).toBeTruthy();
-  });
-
-  it('says weekends are left out, and why', () => {
-    render(<StudioChangesReport file={FILE} agency="Kingston Transit" />);
-    expect(screen.getByText('How the Kingston Transit weekday schedule changed between Aug 27, 2026 and Sep 17, 2026.')).toBeTruthy();
-    expect(screen.getByText('Saturdays and Sundays aren’t compared: the newer schedule file’s calendar leaves out many of their trips.')).toBeTruthy();
+  it('says a small change in one line, only what differs', () => {
+    expect(smallChangeParts(change('1'))).toEqual(['First trip 6:10 AM → 6:08 AM', 'Last trip 11:38 PM → 11:40 PM', 'Trip time 43–46 min → 45 min']);
   });
 });
 
-describe('Studio page links (CIV-1715)', () => {
-  it('links the other Studio page with the flag on', () => {
-    flags.studio = true;
-    render(<StudioNav current="studioVehicles" />);
-    expect(screen.getByRole('link', { name: 'Schedule Changes' })).toHaveAttribute('href', '/studio/changes');
+describe('Studio map page (CIV-1731)', () => {
+  it('groups the changes as the page did: frequency or trips, first or last trip, removed, small', () => {
+    expect(changeGroups(FILE).map(g => [g.title, g.routes.map(c => c.route)])).toEqual([
+      ['Frequency or Trips Changed', ['10', '12']],
+      ['First or Last Trip or Trip Time Changed', ['2']],
+      ['Route Removed', ['7B']],
+      ['Small Changes', ['1']],
+    ]);
   });
 
-  it('is not there with the flag off', () => {
-    flags.studio = false;
-    render(<StudioNav current="studioVehicles" />);
-    expect(screen.queryByRole('link', { name: 'Schedule Changes' })).toBeNull();
-    flags.studio = true;
+  it('colours a route by its change at the time of day, by the page\'s 5-min step', () => {
+    expect(routeChangeAt(FILE, '10', 'midday')).toBe('more');
+    expect(routeChangeAt(FILE, '10', 'amPeak')).toBe('same');
+    expect(routeChangeAt(FILE, '12', 'amPeak')).toBe('more');
+    expect(routeChangeAt(FILE, '12', 'evening')).toBe('none');
+    expect(routeChangeAt(FILE, '7B', 'evening')).toBe('less');
+    expect(routeChangeAt(FILE, '801', 'midday')).toBe('same');
+    const d = (headway: Record<string, number>) => ({ headway, trips: 1, first: 0, last: 0, runMinutes: [] });
+    expect(periodChange(d({ evening: 63 }), d({ evening: 66 }), 'evening')).toBe('same');
+    expect(periodChange(d({ evening: 30 }), d({}), 'evening')).toBe('less');
+  });
+
+  it('shows the time of day\'s figure, older → newer where it changed', () => {
+    expect(rowFigure(change('10'), 'midday')).toBe('60 min → 30 min');
+    expect(rowFigure(change('10'), 'amPeak')).toBe('30 min');
+    expect(rowFigure(change('7B'), 'evening')).toBe('96 min → —');
+  });
+
+  it('draws newer shapes, a removed route\'s older one dashed, and the picked route\'s older shape under it', () => {
+    const line: Array<[number, number]> = [[0, 0], [1, 1]];
+    const side = (names: string[]) => ({ routes: Object.fromEntries(names.map(n => [n, { days: { Weekday: { lines: [line] } } }])) });
+    const file = studioBeforeAfterFile(CMP, { before: side(['1', '10', '12', '2', '7B', '801']), after: side(['1', '10', '12', '2', '801']) });
+    const lines = studioMapLines(file, 'midday', '10');
+    const of = (id: string) => lines.find(l => l.id === id);
+    expect(of('7B:before:0')).toMatchObject({ dashed: true, color: CHANGE_COLOR.less });
+    expect(of('10:after:0')).toMatchObject({ dashed: false, color: CHANGE_COLOR.more });
+    expect(of('10:before:0')).toMatchObject({ dashed: true, color: CHANGE_COLOR.same });
+    expect(of('12:before:0')).toBeUndefined();
+    expect(of('801:after:0')!.color).toBe(CHANGE_COLOR.same);
   });
 });
