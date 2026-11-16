@@ -15,7 +15,7 @@
   ],
   "feedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-7927/latest.zip",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
   "correctionNotices": [
     {
@@ -48,7 +48,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 3,
       "featureCount": 28,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 11,
       "problemShapes": 0,
       "problemShapeRoutes": 0,

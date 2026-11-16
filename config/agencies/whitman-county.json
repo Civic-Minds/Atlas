@@ -20,7 +20,7 @@
     "Whitman County, Washington"
   ],
   "timezone": "America/Los_Angeles",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Greyhound open + Special Service removed,Holiday service,resume regular service",
   "lastRefreshedAt": "2026-11-09",
   "feedQuality": {
@@ -33,7 +33,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 8,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 8,
       "problemShapes": 0,
       "problemShapeRoutes": 0,

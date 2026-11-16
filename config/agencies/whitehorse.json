@@ -7,7 +7,7 @@
     -135.05
   ],
   "feedUrl": "https://files.mobilitydatabase.org/mdb-689/latest.zip",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
   "lastRefreshedAt": "2026-11-09",
   "region": "Yukon",
@@ -38,7 +38,7 @@
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
       "featureCount": 24,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 8,
       "problemShapes": 1,
       "problemShapeRoutes": 0,
