@@ -14,7 +14,7 @@
   ],
   "feedUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "lastFeedExpiry": "20270509",
   "lastFeedVersion": "S1000125",
   "cities": [
@@ -22,8 +22,8 @@
     "East Chattanooga, Tennessee"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20260110-43ad9b4912295a43",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270509-c30f6a52f15c19bc",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270509",
@@ -54,6 +54,7 @@
   "lastFeedSourceUrl": "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
   "lastPeekedExpiry": "20270509",
   "lastServiceWeek": "92e146d616b2e4e9",
-  "feedObtainedAt": "20260820",
-  "lastFeedStart": "20260823"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260823",
+  "lastFeedContentKey": "dbdd7a37945fc2c3"
 }

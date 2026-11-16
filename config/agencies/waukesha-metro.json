@@ -10,15 +10,15 @@
   "region": "Wisconsin",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "11/7/2026",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.waukesha-wi.gov/departments/transit.php",
   "cities": [
     "Waukesha, Wisconsin",
     "West Allis, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250601-9d45b36319c36615",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270110-d32f7bc9b8614f14",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -34,7 +34,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 38,
+      "featureCount": 37,
       "feedExpiry": "20270110",
       "routeCount": 8,
       "problemShapes": 0,
@@ -49,6 +49,7 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "321e03a9f92690cc",
-  "feedObtainedAt": "20261109"
+  "lastServiceWeek": "80cc44cc4ef87b90",
+  "feedObtainedAt": "20261116",
+  "lastFeedContentKey": "b49ca0dfa71e4ede"
 }

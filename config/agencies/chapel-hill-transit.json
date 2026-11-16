@@ -10,11 +10,11 @@
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Fall 2026 Update (No Special Services)",
   "region": "North Carolina",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Chapel Hill, North Carolina"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -45,7 +45,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "cd81de7f9a45a50d",
+  "lastServiceWeek": "189f75d8dd0aa391",
   "feedObtainedAt": "20261031",
-  "lastFeedStart": "20261008"
+  "lastFeedStart": "20261008",
+  "lastRawArchiveKey": "unknown-621622e2efcea431",
+  "lastFeedContentKey": "a08d827ebe719619"
 }

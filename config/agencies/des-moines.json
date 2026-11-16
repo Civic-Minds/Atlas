@@ -12,13 +12,13 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-193/latest.zip",
   "lastFeedExpiry": "20270221",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Des Moines, Iowa",
     "West Des Moines, Iowa",
     "Ankeny, Iowa"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270221",
@@ -49,6 +49,8 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "373fa1be57bdb70c",
-  "lastFeedStart": "20260823"
+  "lastServiceWeek": "0f4fdecb4844f243",
+  "lastFeedStart": "20260823",
+  "lastRawArchiveKey": "20270221-7f5cff5dd4ef8a9b",
+  "lastFeedContentKey": "6e60e31ab0e49b37"
 }

@@ -12,7 +12,7 @@
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": null,
   "region": "Illinois",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "South Shore, Illinois",
     "Waukegan, Illinois",
@@ -25,7 +25,7 @@
     "Chicago Lawn, Illinois",
     "Skokie, Illinois"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -58,7 +58,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "6e75c346fc3718aa",
+  "lastServiceWeek": "fda37d1aea8246ba",
   "feedObtainedAt": "20261020",
-  "lastFeedStart": "20250101"
+  "lastFeedStart": "20250101",
+  "lastRawArchiveKey": "20261231-f2230b96e41159e3",
+  "lastFeedContentKey": "6257f695216c8abf"
 }

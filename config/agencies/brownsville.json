@@ -25,11 +25,11 @@
       ]
     }
   ],
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Brownsville, Texas"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -64,5 +64,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "9bf4fcebd7ec44e0",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20240723"
+  "lastFeedStart": "20240723",
+  "lastRawArchiveKey": "20501230-c59f027b356b2352",
+  "lastFeedContentKey": "73dd128ebc597468"
 }

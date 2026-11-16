@@ -21,7 +21,7 @@
   "timezone": "America/Edmonton",
   "lastFeedExpiry": "20261210",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -41,7 +41,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261210",
@@ -54,5 +54,7 @@
   "lastPeekedExpiry": "20261210",
   "lastServiceWeek": "c6578b891cd2ce19",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20260821"
+  "lastFeedStart": "20260821",
+  "lastRawArchiveKey": "20261210-c2b3f3185c2c49d8",
+  "lastFeedContentKey": "0715f1c16df5b479"
 }

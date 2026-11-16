@@ -17,15 +17,15 @@
   "feedUrl": "https://tracksctbus.org/gtfs",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3115/latest.zip",
   "lastFeedExpiry": "20281116",
-  "lastFeedVersion": "265-10/26/2026,272-10/31/2026,262-10/31/2026",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "272-10/31/2026,262-10/31/2026,265-11/14/2026",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Brentwood, New York",
     "Levittown, New York",
     "Milford, Connecticut",
     "Stratford, Connecticut"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -56,7 +56,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://tracksctbus.org/gtfs",
   "lastPeekedExpiry": "20991231",
-  "lastServiceWeek": "4fbef175d73e28e6",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261025"
+  "lastServiceWeek": "b00ce5cd291e3577",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261030",
+  "lastRawArchiveKey": "unknown-f1f535ce9d3addbc",
+  "lastFeedContentKey": "659b7855de999f74"
 }

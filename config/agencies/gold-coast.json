@@ -17,15 +17,15 @@
   ],
   "lastFeedExpiry": "20270102",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Oxnard, California",
     "Ventura, California"
   ],
   "timezone": "America/Los_Angeles",
   "timezoneOverride": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260808-26a2b10b0d954217",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270102-f87d40f563072ee5",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -56,6 +56,7 @@
   "lastFeedSourceUrl": "https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip",
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "e43c037bf732a7ec",
-  "feedObtainedAt": "20261015",
-  "lastFeedStart": "20260719"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260719",
+  "lastFeedContentKey": "58b8ce862d45dc68"
 }

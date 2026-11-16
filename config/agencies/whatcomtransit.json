@@ -16,13 +16,13 @@
   "feedUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
   "lastFeedExpiry": "20270206",
   "lastFeedVersion": "S1000178",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Bellingham, Washington",
     "Abbotsford, British Columbia",
     "South Surrey, British Columbia"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270206",
@@ -53,7 +53,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://github.com/whatcomtrans/publicwtadata/raw/master/GTFS/wta_gtfs_latest.zip",
   "lastPeekedExpiry": "20270206",
-  "lastServiceWeek": "859e15059888c4e8",
+  "lastServiceWeek": "14ecb9a597a61f2e",
   "feedObtainedAt": "20260911",
-  "lastFeedStart": "20260920"
+  "lastFeedStart": "20260920",
+  "lastRawArchiveKey": "20270206-45133ca3e1519925",
+  "lastFeedContentKey": "483fff8b6b17435c"
 }

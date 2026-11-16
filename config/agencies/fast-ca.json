@@ -17,14 +17,14 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-76/latest.zip",
   "lastFeedExpiry": "20270630",
   "lastFeedVersion": "20260928",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.fasttransit.org/",
   "cities": [
     "Fairfield, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260630-c9633fc2dffd25c5",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270630-37878ccbfc6717ab",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270630",
@@ -58,6 +58,7 @@
     "checkedAt": "2026-11-16"
   },
   "lastServiceWeek": "c7510f2827d8d759",
-  "feedObtainedAt": "20260928",
-  "lastFeedStart": "20260701"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260701",
+  "lastFeedContentKey": "e2782f9eaa14ca42"
 }

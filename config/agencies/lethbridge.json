@@ -9,17 +9,17 @@
   ],
   "feedUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
   "lastFeedExpiry": "20261231",
-  "lastFeedVersion": "2026-09-04",
+  "lastFeedVersion": "2026-11-11",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1997/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Lethbridge, Alberta"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
-  "timezone": "America/Denver",
+  "timezone": "Canada/Saskatchewan",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -46,7 +46,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip",
   "lastPeekedExpiry": "20261231",
-  "lastServiceWeek": "d2fb6a0a088453a2",
-  "feedObtainedAt": "20260902",
-  "lastFeedStart": "20260904"
+  "lastServiceWeek": "db17ea5f3946bd69",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261111",
+  "lastRawArchiveKey": "20261231-a783c6e60612c331",
+  "lastFeedContentKey": "498ba44e65a07f78"
 }

@@ -22,7 +22,7 @@
     "Birmingham, Alabama",
     "Hoover, Alabama"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20350201",
@@ -50,7 +50,7 @@
       "resumesOn": null
     },
     "checkedAt": "2026-11-02",
-    "scoredAt": "2026-11-09"
+    "scoredAt": "2026-11-16"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,

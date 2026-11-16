@@ -19,7 +19,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-53/latest.zip",
   "lastFeedExpiry": "20270110",
   "lastFeedVersion": "72",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Oakland, California",
     "Berkeley, California",
@@ -32,7 +32,7 @@
     "Fremont, California",
     "Hayward, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270110",
@@ -65,5 +65,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "da367563f5969064",
   "feedObtainedAt": "20261020",
-  "lastFeedStart": "20260112"
+  "lastFeedStart": "20260112",
+  "lastRawArchiveKey": "20260830-838bae35002f76c2",
+  "lastFeedContentKey": "1c5250a8f8340fde"
 }

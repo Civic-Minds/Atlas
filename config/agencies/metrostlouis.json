@@ -83,7 +83,7 @@
   "lastFeedExpiry": "20261129",
   "lastFeedVersion": null,
   "region": "Missouri",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "St. Louis, Missouri",
     "Florissant, Missouri",
@@ -91,8 +91,8 @@
     "Saint Peters, Missouri"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20261025-4c0fd0987c705d50",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261129-75b2e33e46ec92c5",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261129",
@@ -137,6 +137,7 @@
   ],
   "lastPeekedExpiry": "20261129",
   "lastServiceWeek": "b73eb5c15fa818a9",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261102"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261102",
+  "lastFeedContentKey": "228c21954179d74e"
 }

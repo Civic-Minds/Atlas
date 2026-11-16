@@ -15,14 +15,14 @@
   ],
   "feedUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
+  "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-759/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Milton, Ontario",
     "Brampton, Ontario"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -53,7 +53,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "http://metrolinx.tmix.se/gtfs/gtfs-milton.zip",
   "lastPeekedExpiry": "20270102",
-  "lastServiceWeek": "fce177370a8fb1d2",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "86f1692b5a666419",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20270102-3082cb4f4d993506",
+  "lastFeedContentKey": "380abd01d31fa0b4"
 }

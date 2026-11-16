@@ -23,7 +23,7 @@
   "hiddenReason": "no-route-lines",
   "internalNote": "Real fixed-route bus service (route_type 3, ordered stop sequences) but upstream feed never published shapes.txt — nothing to draw on the map. Needs a stop-sequence fallback capability Atlas doesn't have yet. Tracked in #216.",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -34,7 +34,7 @@
     "status": "unusable",
     "score": 0,
     "reasons": [
-      "This agency's schedule file has no routes we can show."
+      "This agency’s schedule file has no routes we can show."
     ],
     "metrics": {
       "validationErrors": 0,
@@ -49,11 +49,11 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-09",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-16",
+    "scoredAt": "2026-11-16"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "pipeline produced 0 route lines",
-  "feedRefreshErrorAt": "20261109",
-  "feedRefreshRetryCount": 2
+  "feedRefreshErrorAt": "20261116",
+  "feedRefreshRetryCount": 3
 }

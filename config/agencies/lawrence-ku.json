@@ -9,7 +9,7 @@
   "feedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Kansas",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2063/latest.zip",
   "bbox": [
@@ -21,7 +21,7 @@
   "cities": [
     "Lawrence, Kansas"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -56,5 +56,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "c012908dcd017a93",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261017"
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "20261215-830931be06c45204",
+  "lastFeedContentKey": "c8f9606fc577b727"
 }

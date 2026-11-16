@@ -9,7 +9,7 @@
   "feedUrl": "https://gtfs.remix.com/ats_albany_ga_us.zip",
   "lastFeedExpiry": "20261231",
   "lastFeedVersion": "Updated: Sep 18, 2026, 5:21 PM",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Georgia",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2146/latest.zip",
   "bbox": [
@@ -22,8 +22,8 @@
     "Albany, Georgia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20240630-cc0eb0e68ef49960",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261231-0d50a45ac0003f8d",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261231",
@@ -54,6 +54,7 @@
   },
   "lastPeekedExpiry": "20261231",
   "lastServiceWeek": "0c2f9c8ce408eac4",
-  "feedObtainedAt": "20260918",
-  "lastFeedStart": "20241118"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20241118",
+  "lastFeedContentKey": "40853b723f7e24ef"
 }

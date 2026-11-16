@@ -17,7 +17,7 @@
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-64/latest.zip",
   "lastFeedExpiry": "20270129",
   "lastFeedVersion": "20260922",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://wheelsbus.com/",
   "cities": [
     "Livermore, California",
@@ -25,8 +25,8 @@
     "Dublin, California"
   ],
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260430-d4b24aea487f70da",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270129-bf557a226c99e213",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270129",
@@ -57,6 +57,7 @@
   },
   "lastPeekedExpiry": "20270129",
   "lastServiceWeek": "bfffedadaf64c15f",
-  "feedObtainedAt": "20260922",
-  "lastFeedStart": "20260921"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260921",
+  "lastFeedContentKey": "403fbea65d449d9b"
 }

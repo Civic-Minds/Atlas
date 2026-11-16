@@ -23,7 +23,7 @@
   "timezone": "America/New_York",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Saturday Schedule - 10/23/2026",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -43,7 +43,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -56,5 +56,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "0c83213d940cc716",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261022"
+  "lastFeedStart": "20261022",
+  "lastRawArchiveKey": "unknown-9c340d18b89f64d6",
+  "lastFeedContentKey": "2db27d64bc5239d1"
 }

@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://wave.connexionz.net/rtt/public/resource/gtfs.zip",
   "lastFeedExpiry": "20271231",
-  "lastFeedVersion": "20261015",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "20261109",
+  "lastRefreshedAt": "2026-11-16",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3536/latest.zip",
   "bbox": [
@@ -22,7 +22,7 @@
   "cities": [
     "Wilmington, North Carolina"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271231",
@@ -53,7 +53,9 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "135aaac637fcf936",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261012"
+  "lastServiceWeek": "eecd7871536238b7",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261012",
+  "lastRawArchiveKey": "20271231-ed5764c0c63e6ad5",
+  "lastFeedContentKey": "286e344d5f290fe2"
 }

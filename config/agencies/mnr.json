@@ -20,7 +20,7 @@
   "preprocess": "mnr-bus-pairs",
   "lastFeedExpiry": "20270523",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Greenburgh, New York",
     "Danbury, Connecticut",
@@ -33,7 +33,7 @@
     "East Norwalk, Connecticut",
     "Kings Bridge, New York"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270523",
@@ -50,8 +50,8 @@
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 7,
-      "featureCount": 71,
+      "routeHeadwayMismatches": 6,
+      "featureCount": 69,
       "feedExpiry": "20270523",
       "routeCount": 6,
       "problemShapes": 0,
@@ -66,9 +66,9 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastPeekedExpiry": "20270523",
-  "lastServiceWeek": "59f81e5b18c42758",
+  "lastServiceWeek": "312204cc11a035ab",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261101",
+  "lastFeedStart": "20261110",
   "branchReadCorrections": [
     {
       "routeShortName": "id:2",
@@ -86,5 +86,7 @@
       "issue": "https://github.com/Civic-Minds/Atlas/issues/1514",
       "reason": "Harlem Line outbound: Southeast to Wassaic runs every two hours at midday (10:17, 12:18, 14:16); its trains skip different stops, so the branch was never read and the route showed the trunk's 61."
     }
-  ]
+  ],
+  "lastRawArchiveKey": "20270523-5daece1bde6ed22e",
+  "lastFeedContentKey": "58d55e30e2e31925"
 }

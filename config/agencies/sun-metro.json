@@ -16,14 +16,14 @@
   "region": "Texas",
   "lastFeedExpiry": "20270130",
   "lastFeedVersion": "September 20, 2026_20261012",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.sunmetro.net",
   "cities": [
     "El Paso, Texas"
   ],
   "timezone": "America/Detroit",
-  "lastRawArchiveKey": "20260613-c56de1a2d238fe79",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270130-687217d8c61e6a4b",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270130",
@@ -62,6 +62,7 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://transit.sunmetro.net/google_transit/google_transit.zip",
   "lastServiceWeek": "58275792b430653f",
-  "feedObtainedAt": "20261012",
-  "lastFeedStart": "20260920"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20260920",
+  "lastFeedContentKey": "0f26caa081c72398"
 }

@@ -15,15 +15,15 @@
   ],
   "feedUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
   "lastFeedExpiry": "20270924",
-  "lastFeedVersion": "1/20261101 22:00:00/20261102 00:00:00",
+  "lastFeedVersion": "1/20261113 22:00:00/20261114 00:00:00",
   "excludeRouteShortNames": [
     "LOS"
   ],
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Kitchener, Ontario"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270924",
@@ -56,7 +56,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://metrolinx.tmix.se/gtfs/gtfs-stratford.zip",
   "lastPeekedExpiry": "20270924",
-  "lastServiceWeek": "0d965541a8485df5",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261101"
+  "lastServiceWeek": "99bfa40aaddde18a",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastRawArchiveKey": "20270924-3c0b54a8dbafc362",
+  "lastFeedContentKey": "1372f10d3afee84c"
 }

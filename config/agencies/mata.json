@@ -10,7 +10,7 @@
   "lastFeedExpiry": "20261205",
   "lastFeedVersion": null,
   "region": "Tennessee",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Memphis, Tennessee",
     "New South Memphis, Tennessee",
@@ -19,8 +19,8 @@
     "Cordova, Tennessee"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20250310-afc2dd4fc38ea397",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261205-20803dd6a8e1efec",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261205",
@@ -53,6 +53,7 @@
   "lastFeedSourceUrl": "https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip",
   "lastPeekedExpiry": "20261205",
   "lastServiceWeek": "b411be9e922a5b4b",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261109"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261116",
+  "lastFeedContentKey": "0f91bf53291a8f08"
 }

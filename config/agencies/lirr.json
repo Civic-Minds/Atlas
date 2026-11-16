@@ -18,7 +18,7 @@
   "feedUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
   "lastFeedExpiry": "20270228",
   "lastFeedVersion": "GO203_26",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Hempstead, New York",
     "Brentwood, New York",
@@ -31,27 +31,27 @@
     "East Village, New York",
     "Corona, New York"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270228",
   "feedQuality": {
     "status": "review",
-    "score": 92,
+    "score": 83,
     "reasons": [
-      "1 route has stops whose frequency differs from the overall route schedule."
+      "2 route have stops whose frequency differs from the overall route schedule."
     ],
     "metrics": {
       "validationErrors": 0,
       "validationWarnings": 0,
       "shapeAnomalies": 0,
-      "routeHeadwayMismatches": 1,
-      "featureCount": 124,
+      "routeHeadwayMismatches": 3,
+      "featureCount": 125,
       "feedExpiry": "20270228",
       "routeCount": 12,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
-      "mismatchRoutes": 1,
+      "mismatchRoutes": 2,
       "resumesOn": null
     },
     "checkedAt": "2026-11-16"
@@ -64,7 +64,9 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip",
   "lastPeekedExpiry": "20270228",
-  "lastServiceWeek": "8cd104f02a00b3b5",
+  "lastServiceWeek": "36d5a7c4e2a5b034",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261109"
+  "lastFeedStart": "20261116",
+  "lastRawArchiveKey": "20270228-c07d30eec656023a",
+  "lastFeedContentKey": "ec5be2a31a432d81"
 }

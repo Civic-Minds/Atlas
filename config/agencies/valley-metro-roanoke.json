@@ -17,11 +17,11 @@
   "region": "Virginia",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "11/1/2026",
-  "lastRefreshedAt": "2026-11-09",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Roanoke, Virginia"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -57,5 +57,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "366091b36bba6176",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261031"
+  "lastFeedStart": "20261031",
+  "lastRawArchiveKey": "unknown-45dce175a5ce1474",
+  "lastFeedContentKey": "7dea89386d40a272"
 }

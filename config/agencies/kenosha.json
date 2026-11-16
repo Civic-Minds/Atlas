@@ -10,7 +10,7 @@
   "mdbFeedUrl": "https://kenoshatransit.com/gtfs",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Route 1",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Wisconsin",
   "bbox": [
     42.4973,
@@ -22,8 +22,8 @@
     "Kenosha, Wisconsin"
   ],
   "timezone": "America/Chicago",
-  "lastRawArchiveKey": "20240901-de364d144f1f2a51",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "unknown-f5160cb1d9452de7",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -62,6 +62,7 @@
   ],
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "06be1750cbd9cfc0",
-  "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261002"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261002",
+  "lastFeedContentKey": "e3953058469be971"
 }

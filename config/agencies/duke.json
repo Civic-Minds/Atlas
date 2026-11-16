@@ -9,7 +9,7 @@
   "feedUrl": "https://duke.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": null,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-378/latest.zip",
   "bbox": [
@@ -22,8 +22,8 @@
     "Durham, North Carolina"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20250810-6d0d75181fa18f7f",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20501230-d40d294dbbcc6b68",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20501230",
@@ -56,6 +56,7 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "98b4a9835c5bc51f",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20241216"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20241216",
+  "lastFeedContentKey": "21f9cf359e5e1241"
 }

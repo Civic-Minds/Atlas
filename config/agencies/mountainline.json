@@ -11,11 +11,11 @@
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "11/10/2026",
   "region": "Arizona",
-  "lastRefreshedAt": "2026-11-11",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Flagstaff, Arizona"
   ],
-  "lastFeedCheckAt": "20261111",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -48,5 +48,7 @@
   "lastPeekedExpiry": "20991231",
   "lastFeedStart": "20261109",
   "lastServiceWeek": "38cb82c7e34ff2de",
-  "feedObtainedAt": "20261111"
+  "feedObtainedAt": "20261111",
+  "lastRawArchiveKey": "unknown-a233cbbf8f35ce78",
+  "lastFeedContentKey": "ab9f02a7e14d8cb1"
 }

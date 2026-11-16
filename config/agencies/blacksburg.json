@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "lastFeedExpiry": "20261230",
-  "lastFeedVersion": "FY27 Blacksburg 1.9B",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedVersion": "FY27 Blacksburg 1.9C",
+  "lastRefreshedAt": "2026-11-16",
   "region": "Virginia",
   "mdbFeedUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "bbox": [
@@ -23,8 +23,8 @@
     "Roanoke, Virginia"
   ],
   "timezone": "America/New_York",
-  "lastRawArchiveKey": "20260731-0bc49aabb978919b",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20261210-121d4a658f698087",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261230",
@@ -54,8 +54,8 @@
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.bt4uclassic.org/gtfs/google_transit.zip",
   "lastPeekedExpiry": "20261230",
-  "lastServiceWeek": "bead9e6a3c66adc7",
-  "feedObtainedAt": "20261102",
-  "listingEndedOn": "20261030",
-  "lastFeedStart": "20261001"
+  "lastServiceWeek": "cab5ce21d45bbb8f",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261113",
+  "lastFeedContentKey": "88ea9e4ccacf0a59"
 }

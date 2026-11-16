@@ -9,8 +9,8 @@
   ],
   "feedUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
   "lastFeedExpiry": "20270102",
-  "lastFeedVersion": "202611080/20261107 21:00:00/20261108 04:00:00",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "202611160/20261115 21:00:00/20261116 04:00:00",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "https://www.bctransit.com/",
   "cities": [
     "Abbotsford, British Columbia",
@@ -20,7 +20,7 @@
     "New Westminster, British Columbia"
   ],
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-1991/latest.zip",
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270102",
@@ -51,9 +51,11 @@
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-1991/latest.zip",
+  "lastFeedSourceUrl": "https://bct.tmix.se/Tmix.Cap.TdExport.WebApi/gtfs/?operatorIds=13",
   "lastPeekedExpiry": "20270102",
   "lastServiceWeek": "850b0fe6ff4a23f9",
-  "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261106"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261114",
+  "lastRawArchiveKey": "20270102-fa508778315bf031",
+  "lastFeedContentKey": "5c3b4f86323dd8da"
 }

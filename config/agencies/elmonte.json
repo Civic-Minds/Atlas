@@ -2,7 +2,6 @@
   "slug": "elmonte",
   "officialName": "El Monte Transit",
   "hiddenInProduction": true,
-  "issueUrl": "https://github.com/Civic-Minds/Atlas/issues/634",
   "center": [
     34.0689,
     -118.0362
@@ -19,7 +18,7 @@
   "timezone": "America/Los_Angeles",
   "lastRawArchiveKey": "20251031-7b5bc958bf995eaa",
   "pmtilesPending": true,
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20271126",
@@ -42,13 +41,13 @@
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-09",
-    "scoredAt": "2026-11-09"
+    "checkedAt": "2026-11-16",
+    "scoredAt": "2026-11-16"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "pipeline produced 0 route lines",
-  "feedRefreshErrorAt": "20261109",
-  "feedRefreshRetryCount": 2,
+  "feedRefreshErrorAt": "20261116",
+  "feedRefreshRetryCount": 3,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip"
 }

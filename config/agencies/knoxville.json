@@ -16,11 +16,11 @@
   "region": "Tennessee",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "August 2026 Shake-Up",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Knoxville, Tennessee"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -53,5 +53,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "6654ea0dafb3b665",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20260930"
+  "lastFeedStart": "20260930",
+  "lastRawArchiveKey": "unknown-3ab4f5a0d202a897",
+  "lastFeedContentKey": "543f15f9aeb84a87"
 }

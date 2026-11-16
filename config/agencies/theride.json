@@ -9,17 +9,17 @@
     -83.743
   ],
   "feedUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
-  "lastFeedExpiry": "20270130",
-  "lastFeedVersion": "S1000302",
-  "lastRefreshedAt": "2026-11-02",
+  "lastFeedExpiry": "20270123",
+  "lastFeedVersion": "S1000304",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Ann Arbor, Michigan",
     "Canton, Michigan"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20270130",
+  "expiredFeedCheckExpiry": "20270123",
   "timezone": "America/New_York",
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://www.theride.org/sites/default/files/google/google_transit.zip",
@@ -32,8 +32,8 @@
       "validationWarnings": 0,
       "shapeAnomalies": 1,
       "routeHeadwayMismatches": 0,
-      "featureCount": 156,
-      "feedExpiry": "20270130",
+      "featureCount": 155,
+      "feedExpiry": "20270123",
       "routeCount": 30,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
@@ -42,12 +42,14 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastPeekedExpiry": "20270130",
+  "lastPeekedExpiry": "20270123",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "ae556bd31a360bd2",
-  "feedObtainedAt": "20260910",
-  "lastFeedStart": "20260823"
+  "lastServiceWeek": "380ac789b81b61f1",
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261115",
+  "lastRawArchiveKey": "20270123-9c51bf75a481fa3c",
+  "lastFeedContentKey": "6ee95bcb4c69af4c"
 }

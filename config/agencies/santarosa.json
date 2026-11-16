@@ -16,12 +16,12 @@
   "feedUrl": "http://api.511.org/transit/datafeeds?operator_id=SR",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2948/latest.zip",
   "lastFeedExpiry": "20270213",
-  "lastFeedVersion": "20261108",
-  "lastRefreshedAt": "2026-11-09",
+  "lastFeedVersion": "20261109",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Santa Rosa, California"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270213",
@@ -53,6 +53,8 @@
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
-  "lastServiceWeek": "a4741bcf0d28f890",
-  "feedObtainedAt": "20261109"
+  "lastServiceWeek": "918bf6d5f6d2a079",
+  "feedObtainedAt": "20261116",
+  "lastRawArchiveKey": "20270213-149b21f793b143d6",
+  "lastFeedContentKey": "3f88e629cf5c160c"
 }

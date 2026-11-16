@@ -19,7 +19,7 @@
   "lastFeedExpiry": "20261219",
   "lastFeedVersion": "2026.11.01_November_20261006",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-728/latest.zip",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "cities": [
     "Vaughan, Ontario",
     "Richmond Hill, Ontario",
@@ -32,7 +32,7 @@
     "Etobicoke, Ontario",
     "Pickering, Ontario"
   ],
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20261219",
@@ -67,5 +67,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "e8a2deb3cea81d16",
   "feedObtainedAt": "20261101",
-  "lastFeedStart": "20261101"
+  "lastFeedStart": "20261101",
+  "lastRawArchiveKey": "20261219-4486ee2b5656dd7d",
+  "lastFeedContentKey": "f5f9d2ea6aea33ca"
 }

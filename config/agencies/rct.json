@@ -19,11 +19,11 @@
   "lastFeedVersion": "Updated: Oct 31, 2026, 2:41 PM",
   "keepLongShapeJumps": true,
   "poolSingleTripShapes": true,
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.redwoodcoasttransit.org/",
   "timezone": "America/Los_Angeles",
-  "lastRawArchiveKey": "20260530-8364fe10c2bd25da",
-  "lastFeedCheckAt": "20261109",
+  "lastRawArchiveKey": "20270530-17a4d3d91154fa8d",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20270530",
@@ -54,6 +54,7 @@
   "lastFeedSourceUrl": "https://gtfs.remix.com/redwoodcoast.zip",
   "lastPeekedExpiry": "20270530",
   "lastServiceWeek": "6985ab64e7258ccd",
-  "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261031"
+  "feedObtainedAt": "20261116",
+  "lastFeedStart": "20261031",
+  "lastFeedContentKey": "0e57a95e6c16b588"
 }

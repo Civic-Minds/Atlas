@@ -21,7 +21,7 @@
   "timezone": "Pacific/Honolulu",
   "lastFeedExpiry": "20281116",
   "lastFeedVersion": "CORRECTED RUN NUMBERS Routes with 900/950 Express and Kilauea Food Mart.",
-  "lastRefreshedAt": "2026-11-02",
+  "lastRefreshedAt": "2026-11-16",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -41,7 +41,7 @@
     },
     "checkedAt": "2026-11-16"
   },
-  "lastFeedCheckAt": "20261109",
+  "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
   "expiredFeedCheckExpiry": "20991231",
@@ -54,5 +54,7 @@
   "lastPeekedExpiry": "20991231",
   "lastServiceWeek": "9d796411312730ab",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20251223"
+  "lastFeedStart": "20251223",
+  "lastRawArchiveKey": "unknown-14f48457db933660",
+  "lastFeedContentKey": "7b6ac3c921813352"
 }
