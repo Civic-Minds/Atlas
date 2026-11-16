@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes keep a day whose trips run a different pattern from the rest of the week**: Medicine Hat 30 on weekdays, DRT 407 to Raleigh on weekends, GRT 203 to Cambridge Centre on weekdays, Kingston 6 and Space Coast 29 on weekends had no row for that day, because the shapes were chosen from the whole week's trips and that day's own pattern lost ([#1543](https://github.com/Civic-Minds/Atlas/issues/1543))
 - **Loop routes in feeds without directions get their frequency back**: Kingston 2 and 19, Cornwall 1 and 4 and Medicine Hat 30 on weekends had no figure on the map, because a loop the feed also runs in two halves was split into two fake directions ([#1542](https://github.com/Civic-Minds/Atlas/issues/1542), [#1539](https://github.com/Civic-Minds/Atlas/issues/1539))
 - **Links to the map on pages now read "Try Atlas"**: the For Transit Planners and not-found pages had said "Open the map" or "Open the Atlas map"
 - **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
