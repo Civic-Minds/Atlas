@@ -9,7 +9,9 @@ import { FEATURES } from '../shared/config';
 import { LIVE_VEHICLES_TITLE, OPEN_LIVE_LABEL } from '../shared/liveWording';
 import { LIVE_PATH } from '../shared/pagePaths';
 import { titleCase } from '../shared/titleCase';
-import { MAP_LINK, REQUEST_DEMO_LABEL } from './content/noticeCopy';
+import { MAP_LINK } from './content/noticeCopy';
+import FeatureCard from './components/FeatureCard';
+import RequestDemoCard from './components/RequestDemoCard';
 
 /**
  * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft, word for word ("wording is ok until i see the actual
@@ -18,9 +20,6 @@ import { MAP_LINK, REQUEST_DEMO_LABEL } from './content/noticeCopy';
  */
 
 const CONTACT_EMAIL = 'hey@ryanisnota.pro';
-
-/** A pale tint of a frequency colour on the page background: never a dark fill (STYLE.md), as on About. */
-const tint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
 
 /** A map picture with a light and a dark version, as on About (index.css, .theme-light-only). Decorative: the text says what it shows. */
 function ThemedPicture({ base, ext, className }: { base: string; ext: string; className: string }) {
@@ -36,18 +35,7 @@ function Email() {
   return <a href={`mailto:${CONTACT_EMAIL}`} className="text-[var(--accent)] hover:underline">{CONTACT_EMAIL}</a>;
 }
 
-/** A feature section: a tinted card, its heading and text beside its pictures (stacked on phones). */
-function Feature({ title, color, pictures, children }: { title: string; color: string; pictures: ReactNode; children: ReactNode }) {
-  return (
-    <section className="grid gap-8 rounded-2xl p-6 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-10" style={{ background: tint(color) }}>
-      <div>
-        <h2 className="text-2xl font-black tracking-tight">{title}</h2>
-        <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
-      </div>
-      <div>{pictures}</div>
-    </section>
-  );
-}
+const Feature = FeatureCard;
 
 const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
 const pic = (name: string) => `/assets/planners/${name}`;
@@ -142,9 +130,9 @@ export default function PlannersPage() {
       </TextSection>
 
       {/* CIV-1706 (Ryan, 2026-11-15): the page ends with one ask, this button, with no line above it. It replaces the
-          "Get in Touch" section. The pill copies About's "Explore research" button. */}
-      <div className="flex flex-wrap gap-3 pb-16 sm:pb-20">
-        <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(REQUEST_DEMO_LABEL)}`} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{REQUEST_DEMO_LABEL}</a>
+          "Get in Touch" section. Ryan, 2026-11-16: it's a feature card, the shared Request a demo card. */}
+      <div className="pb-16 sm:pb-20">
+        <RequestDemoCard color={color(5)} />
       </div>
 
     </PageShell>
