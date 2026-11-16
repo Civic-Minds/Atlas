@@ -1392,6 +1392,38 @@ export async function processGtfsBuffer(
     }
     return hit;
   };
+  /** CIV-1723: every stop of the leg is on another shape of the route in that direction. */
+  const legRunsOnOtherPatterns = (routeId: string, dir: string | number, legShapeId: string, exclude: string[]): boolean => {
+    const leg = stopSequenceOfShape(routeId, dir, legShapeId);
+    if (leg.length === 0) return false;
+    const others = new Set<string>();
+    const shapeIds = new Set((tripsByRouteDir.get(`${routeId}::${String(dir)}`) ?? []).map(trip => trip.shape_id).filter((id): id is string => !!id && !exclude.includes(id)));
+    for (const id of shapeIds) for (const stopId of stopSequenceOfShape(routeId, dir, id)) others.add(stopId);
+    return leg.every(stopId => others.has(stopId));
+  };
+  /**
+   * CIV-1723: no other shape of the route that way ends at the leg's last stop, so a row read there
+   * does not read another pattern's arrivals as its own (TTC 63B at St Clair). South Bend 7's legs
+   * all end at MTC, and an evening-only row read there showed the other patterns' daytime "every 60".
+   */
+  const endsOnOwnStop = (routeId: string, dir: string | number, legShapeId: string, exclude: string[]): boolean => {
+    const leg = stopSequenceOfShape(routeId, dir, legShapeId);
+    const end = leg[leg.length - 1];
+    if (end == null) return false;
+    const shapeIds = new Set((tripsByRouteDir.get(`${routeId}::${String(dir)}`) ?? []).map(trip => trip.shape_id).filter((id): id is string => !!id && !exclude.includes(id)));
+    for (const id of shapeIds) if (stopSequenceOfShape(routeId, dir, id).at(-1) === end) return false;
+    return true;
+  };
+  /**
+   * CIV-1723: a shape whose trips end where they start is a loop, never where the route goes on to
+   * (Cascades East 20: Indian Head back to Indian Head; its stop sequence drops the repeated stop).
+   */
+  const shapeIsLoop = (routeId: string, dir: string | number, legShapeId: string): boolean =>
+    (tripsByRouteDir.get(`${routeId}::${String(dir)}`) ?? []).some(trip => {
+      if (trip.shape_id !== legShapeId) return false;
+      const times = [...(stopTimesByTripId.get(trip.trip_id) ?? [])].sort((x, y) => Number(x.stop_sequence) - Number(y.stop_sequence));
+      return times.length > 1 && times[0].stop_id === times[times.length - 1].stop_id;
+    });
   const dedupeKeyRoute = new Map<string, { routeId: string; dir: string | number }>();
   /** CIV-1719: the shape drawing each dedupe slot, to tell two legs of one route apart. */
   const dedupedShapeId = new Map<string, string>();
@@ -1475,17 +1507,27 @@ export async function processGtfsBuffer(
       fullLineCandidates.set(dedupeKey, list);
       dedupeKeyRoute.set(dedupeKey, { routeId: result.route, dir: result.dir });
     }
-    // CIV-1719 (#1546): of two legs of one route that a day's own pick joined (one ends where the
-    // other starts, joinsAsLeg), the slot is drawn by the leg that goes on, so the row reads arrivals where the route ends,
+    // CIV-1719 (#1546), CIV-1723 (#1550): of two legs of one route (one ends where the other
+    // starts, joinsAsLeg), the slot is drawn by the leg that goes on, so the row reads arrivals where the route ends,
     // not at the stop where the legs meet and the next leg's departures leave (Barrie 8B Sunday:
-    // 725 to 9012, then 9012 to Georgian College, hourly each, read "every 30" at 9012).
+    // 725 to 9012, then 9012 to Georgian College, hourly each, read "every 30" at 9012). For legs a
+    // day's pick joined (CIV-1719), always; otherwise only when the leg ending at the junction has
+    // no stop of its own, every stop served by another pattern of the route that way (TTC 63B,
+    // peaks only: its first leg runs on 63A's stops to 14743 and read 63A's midday "every 10"
+    // there), and the leg that goes on ends at a stop of its own and is not a loop.
     const incumbentShapeId = dedupedShapeId.get(dedupeKey);
     let legOrder: 'incumbent' | 'candidate' | null = null;
-    const dayPicked = result.headsign ? dayPickShapes.get(`${result.route}::${result.dir}::${result.headsign}`) : undefined;
-    if (existing && incumbentShapeId && shapeId && incumbentShapeId !== shapeId && dayPicked?.has(incumbentShapeId) && dayPicked.has(shapeId)) {
+    if (existing && incumbentShapeId && shapeId && incumbentShapeId !== shapeId) {
       const before = stopSequenceOfShape(result.route, result.dir, incumbentShapeId);
       const after = stopSequenceOfShape(result.route, result.dir, shapeId);
-      if (joinsAsLeg(before, after)) legOrder = before[before.length - 1] === after[0] ? 'candidate' : after[after.length - 1] === before[0] ? 'incumbent' : null;
+      const order = joinsAsLeg(before, after) ? (before[before.length - 1] === after[0] ? 'candidate' : after[after.length - 1] === before[0] ? 'incumbent' : null) : null;
+      const dayPicked = result.headsign ? dayPickShapes.get(`${result.route}::${result.dir}::${result.headsign}`) : undefined;
+      const firstLeg = order === 'candidate' ? incumbentShapeId : shapeId;
+      const nextLeg = order === 'candidate' ? shapeId : incumbentShapeId;
+      if (order && ((dayPicked?.has(incumbentShapeId) && dayPicked.has(shapeId))
+        || (legRunsOnOtherPatterns(result.route, result.dir, firstLeg, [incumbentShapeId, shapeId])
+          && endsOnOwnStop(result.route, result.dir, nextLeg, [incumbentShapeId, shapeId])
+          && !shapeIsLoop(result.route, result.dir, nextLeg)))) legOrder = order;
     }
     if (legOrder === 'incumbent') continue;
     if (legOrder !== 'candidate' && decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
