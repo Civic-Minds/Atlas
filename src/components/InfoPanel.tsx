@@ -22,7 +22,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -508,8 +508,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                                       {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
                                     </Tag>
                                   )}
-                                  {showRecordingBadge && <Tag>Live</Tag>}
-                                  {showHistoryBadge && <Tag>History</Tag>}
+                                  {showRecordingBadge && <Tag>{LIVE_TAG}</Tag>}
+                                  {showHistoryBadge && <Tag>{HISTORY_TAG}</Tag>}
                                 </>
                               ) : undefined}
                             />
@@ -611,7 +611,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedHistory && (
                     <div>
                       <div className="mb-2">
-                        <Tag className="inline-block">History</Tag>
+                        <Tag className="inline-block">{HISTORY_TAG}</Tag>
                       </div>
                       <p className="text-xs text-[var(--text-dim)]">
                         Historical frequency data available for {countOf(selectedHistory.routes.length, 'route')} {historyYearsText}.

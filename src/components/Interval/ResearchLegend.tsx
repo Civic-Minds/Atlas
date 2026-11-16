@@ -5,6 +5,7 @@ import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
 import MapKey from '../ui/MapKey';
 import type { FrequentServiceFrequency } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
+import { MAP_COLOURS_LABEL } from '../../content/noticeCopy';
 
 /**
  * The colour key for a research view, drawn as a stat-pill beside the route and agency pills
@@ -14,7 +15,7 @@ import type { NightServiceFrequency } from '../../../shared/nightService';
 export default function ResearchLegend({ view, frequentFrequency, nightFrequency = 60 }: { view: 'night' | 'frequent'; frequentFrequency: FrequentServiceFrequency; nightFrequency?: NightServiceFrequency }) {
   const mode = useColorMode();
   return (
-    <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} role="group" aria-label="Map colours">
+    <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} role="group" aria-label={MAP_COLOURS_LABEL}>
       <MapKey steps={view === 'night'
         // CIV-1329: one shade per night grade up to the one selected (30 darker, 90 lighter).
         ? ([30, 60, 90] as const).filter(grade => grade <= nightFrequency)

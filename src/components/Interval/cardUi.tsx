@@ -27,7 +27,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -366,7 +366,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                       onClick={() => { setValidationError(''); setSelectedCategory(null); }}
                       className="text-xs font-black text-[var(--text-muted)] hover:text-[var(--accent)]"
                     >
-                      Change
+                      {CHANGE_LABEL}
                     </button>
                   </div>
                   <div className="space-y-0">
@@ -425,7 +425,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
-              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">Cancel</button>
+              <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">{CANCEL_LABEL}</button>
               {selectedCategory && <button type="submit" className={`h-8 px-3 rounded-lg border text-xs font-black hover:opacity-90 transition-opacity ${ACTION_PRIMARY}`}>{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</button>}
             </div>
           </form>
@@ -635,7 +635,7 @@ export function HeadwayBadge({
   const base = 'font-black text-[var(--text-primary)] text-xs leading-snug';
   return (
     <span className={`inline-flex items-center gap-1 ${base} ${twoPart(words) ? 'min-w-0' : 'shrink-0'} ${className}`}>
-      {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label="Live data available" />}
+      {live && <Radio className="w-2.5 h-2.5 text-[var(--accent)] shrink-0" aria-label={LIVE_DATA_AVAILABLE_LABEL} />}
       {twoPart(words) ? (stacked ? <StackedBadge dot={dot} text={words} /> : <TwoPartBadge dot={dot} text={words} className={base} />) : <>{dot}<span className="whitespace-nowrap">{words}</span></>}
       {suffix && <span className={`text-xs font-bold whitespace-nowrap ${SUFFIX_TONE[suffixTone]}`}>{suffix}</span>}
     </span>
@@ -933,8 +933,8 @@ export function CardSummaryRow({
 export function AgencyDataSourceLink({ agency }: { agency: { slug: string; websiteUrl?: string } }) {
   if (!FEATURES.dataSourceLink || !agency.websiteUrl) return null;
   return (
-    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label="Source (opens in a new tab)" title="Opens in a new tab">
-      Source
+    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={agency.websiteUrl} kind="agency_website" agencySlug={agency.slug} aria-label={SOURCE_LINK_ARIA_LABEL} title={OPENS_IN_NEW_TAB_HINT}>
+      {SOURCE_LINK_LABEL}
     </ArrowLink>
   );
 }

@@ -21,7 +21,7 @@ import { encodeFullDayUrlState, parseFullDayUrlState } from '../../utils/shareUr
 import { HOUR_TO_PERIOD, PERIOD_BANDS } from '../../utils/sparklinePeriods';
 import { FullDayPeriodBands, HoveredPeriodName } from './FullDayPeriodBands';
 import { tripsPerHourAxisTicks, hourBarColorHeadway, hourBarEmphasis, hourChartLitPeriod, hourChartMaxFreq, sparklineBarHeight } from '../../utils/hourChartModel';
-import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, TRIPS_PER_HOUR_LABEL, EXPAND_SCHEDULE_LABEL, SCHEDULE_DIRECTION_LABEL } from '../../content/noticeCopy';
 export { tripsPerHourAxisTicks, sparklineBarHeight };
 
 /** Bar area height of the route card's compact sparkline, in px. The one place to change it. */
@@ -270,7 +270,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 
   return (
     <div className={`relative ${sharedMode ? '' : expanded ? 'mt-2 mb-4' : 'mt-6 mb-4'}`}>
-      {allowExpand && !expanded && <ExpandButton label="Expand schedule" onClick={() => setIsExpanded(true)} />}
+      {allowExpand && !expanded && <ExpandButton label={EXPAND_SCHEDULE_LABEL} onClick={() => setIsExpanded(true)} />}
       <div
         className={`relative ${expanded ? 'pt-1' : 'pt-5'} ${interactive ? 'cursor-pointer select-none' : ''}`}
         onClick={handleClick}
@@ -401,7 +401,7 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
           onClose={closeExpanded}
         >
             {directionOptions && directionOptions.length > 1 && !bothDirections && (
-              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Schedule direction">
+              <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label={SCHEDULE_DIRECTION_LABEL}>
                 {directionOptions.map(option => (
                   <Pill
                     key={option.key}

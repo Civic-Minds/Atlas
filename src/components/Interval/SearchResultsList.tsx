@@ -12,7 +12,7 @@ import ListRow from '../ui/ListRow';
 import PanelEmpty from '../ui/PanelEmpty';
 import type { AreaSearchResult } from '../../../shared/areaSearch';
 import { plural } from '../../../shared/overflowText';
-import { NO_SEARCH_MATCHES } from '../../content/noticeCopy';
+import { NO_SEARCH_MATCHES, SHOW_MORE_RESULTS_LABEL } from '../../content/noticeCopy';
 
 interface SearchSplitListProps<T> {
   headLabel: string;
@@ -263,7 +263,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           onClick={onShowMoreResults}
           className="mx-4 mt-2 rounded-lg bg-[var(--bg-btn-hover)] px-3 py-2 text-xs font-black text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
         >
-          Show more results
+          {SHOW_MORE_RESULTS_LABEL}
         </button>
       )}
     </div>

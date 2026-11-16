@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { SectionTitle } from '../ui/PageTitle';
+import { METHOD_HEADING } from '../../content/noticeCopy';
 
 /**
  * "Method" at the bottom of every research page (CIV-1167). Each part is a paragraph that opens with its
@@ -45,7 +46,7 @@ const PARTS: ReadonlyArray<[keyof ResearchMethodParts, string]> = [
 export default function ResearchMethod({ parts }: { parts: ResearchMethodParts }) {
   return (
     <section aria-labelledby="research-method-heading">
-      <SectionTitle id="research-method-heading" className="scroll-mt-16 text-[var(--text-primary)]">Method</SectionTitle>
+      <SectionTitle id="research-method-heading" className="scroll-mt-16 text-[var(--text-primary)]">{METHOD_HEADING}</SectionTitle>
       <div className="mt-5 space-y-5 text-sm leading-7 text-[var(--text-muted)]">
         {PARTS.filter(([key]) => parts[key] != null).map(([key, label]) => (
           <p key={key}><strong className="text-[var(--text-primary)]">{label}</strong> {parts[key]}</p>

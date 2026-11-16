@@ -8,6 +8,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - A text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies").
   - An arrow-only control or the logo says the same words to screen readers ("Back to About Atlas").
   - Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies").
+- No "[Placeholder" text can reach a public or beta build. It is a stand-in for wording Ryan has not given yet, so it may only sit behind a dev-only flag (true only on the Vite dev server), and each file is listed with its flag in the test. CIV-1775. (checked: `placeholderGuard.test.ts`)
 - A close X says "Close " + what it closes to screen readers ("Close filters"; `closeLabel`). CIV-1569. (checked)
 
 ## Frequencies
@@ -84,6 +85,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
 - Every link that sends people to the map reads "Try Atlas" (`MAP_LINK`): page heroes, empty and not-found pages. Never "Open the map" or "Open the Atlas map". The shared header keeps "Go to Atlas" (#1509). (Ryan, 2026-11-15: "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then "Try Atlas"). CIV-1594, CIV-1703. (checked)
 - A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s New", "About Atlas", map export titles). CIV-1599. (checked)
+- Every button, link, tag, heading, control label and table column is written in `src/content/noticeCopy.ts` (or `PAGE_NAMES`), never typed into its component, even when it is used once. Live's words live in `shared/liveWording.ts`; story and Docs headings are prose and stay with their page. CIV-1774. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)
 - A period with no service of one mode reads "No {period} buses / trains / ferries / streetcars / trolleybuses / monorail trains / people movers / cable cars / gondolas / funiculars", e.g. "No midday streetcars". CIV-471.

@@ -8,7 +8,7 @@ import { MAP_CONSENT_SLOT, DROPDOWN_PANEL, dropdownAnim, MAP_BADGE, Z_HEADER, Z_
 import Toggle from './ui/Toggle';
 import ArrowLink from './ui/ArrowLink';
 import PanelHeader from './ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, ANALYTICS_CONSENT_PROMPT, ANALYTICS_SETTING_NOTE, PRIVACY_SETTINGS_TITLE, ANALYTICS_CONSENT_LABEL, READ_PRIVACY_POLICY_LABEL, TOGGLE_ANALYTICS_LABEL } from '../content/noticeCopy';
 import { PRIVACY_PATH } from '../../shared/pagePaths';
 
 declare global { interface Navigator { globalPrivacyControl?: boolean } }
@@ -29,10 +29,10 @@ function Controls({ onClose }: { onClose: () => void }) {
               <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">Google Analytics</p>
               <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">{ANALYTICS_SETTING_NOTE}</p>
             </div>
-            <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label="Toggle Google Analytics" />
+            <Toggle on={consent === 'granted'} onToggle={() => choose(consent === 'granted' ? 'denied' : 'granted')} label={TOGGLE_ANALYTICS_LABEL} />
           </div>
         </div>
-        <ArrowLink tone="inline" href={PRIVACY_PATH}>Read the Privacy Policy</ArrowLink>
+        <ArrowLink tone="inline" href={PRIVACY_PATH}>{READ_PRIVACY_POLICY_LABEL}</ArrowLink>
       </div>
     </div>
   </div>;
@@ -72,5 +72,5 @@ export default function AnalyticsConsent() {
 
 /** The prompt's pill: the fixed copy above, and the last pill of the map's bottom-left row. */
 export function ConsentPill({ className = '', choose }: { className?: string; choose: (consent: AnalyticsConsent) => void }) {
-  return <div role="dialog" aria-label="Analytics consent" className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>{ANALYTICS_CONSENT_PROMPT}</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
+  return <div role="dialog" aria-label={ANALYTICS_CONSENT_LABEL} className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>{ANALYTICS_CONSENT_PROMPT}</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
 }

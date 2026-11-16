@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { ON_THIS_PAGE_LABEL } from '../content/noticeCopy';
 
 type PageContentsItem = { id: string; label: string };
 
@@ -140,7 +141,7 @@ export default function PageContents({ items, title }: { items: readonly PageCon
     window.history.pushState(null, '', `#${id}`);
   };
   return (
-    <nav aria-label="On this page" className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-20  lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
+    <nav aria-label={ON_THIS_PAGE_LABEL} className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-20  lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
       {title && (
         <p
           aria-hidden="true"

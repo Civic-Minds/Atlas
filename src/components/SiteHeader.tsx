@@ -1,7 +1,7 @@
 import ArrowLink from './ui/ArrowLink';
 import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
-import { ATLAS_BYLINE, DOCS_PAGE_TITLE } from '../content/noticeCopy';
+import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import { ABOUT_PATH, DOCS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
 
@@ -19,12 +19,12 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
       {showWordmark ? (
         <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" hideByline />
       ) : <span aria-hidden="true" />}
-      <nav aria-label="Site navigation" className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
+      <nav aria-label={SITE_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
         {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</a>}
         {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
         <a href={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</a>
         {FEATURES.studio && <a href={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</a>}
-        <ArrowLink tone="quiet" href="/">Go to Atlas</ArrowLink>
+        <ArrowLink tone="quiet" href="/">{GO_TO_ATLAS_LABEL}</ArrowLink>
       </nav>
     </header>
   );
