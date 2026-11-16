@@ -25,7 +25,6 @@ import { passesRouteFilter } from '../../hooks/useIntervalStats';
 import { IRREGULAR_PERIOD_SHORT_LABEL, routeListDisplay } from '../../utils/effectiveHeadway';
 import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLOCK, CARD_BODY_TEXT, CARD_SUMMARY, CardBodyText, CardHelpNotice, CardSectionLabel, CardReportButton, CorrectedDataNotice, NewScheduleDataNotice, REPORT_REASON } from './cardUi';
 import CardRouteList from './CardRouteList';
-import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
 import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
@@ -313,15 +312,9 @@ export function OnDemandHoursRows({
   );
 }
 
-export function buildHeaderSummary(
-  routes: RouteRow[],
-  maxHeadway: number,
-): string {
-  const matching = routes.filter(r => r.matchesFilter).length;
-  const parts = [`${routes.length} ${plural(routes.length, 'route')}`];
-  // CIV-1471: correct singulars (docs/style/TEXT.md): "1 matches filters", "3 match filters".
-  if (maxHeadway !== Infinity) parts.push(`${matching} ${plural(matching, 'matches', 'match')} filters`);
-  return parts.join(' · ');
+/** "15 routes". No count of routes that match the filters (CIV-1785): the "N routes outside your filters" note says it. */
+export function buildHeaderSummary(routes: RouteRow[]): string {
+  return `${routes.length} ${plural(routes.length, 'route')}`;
 }
 
 
@@ -497,15 +490,15 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const area = areaLink && regionTitle
     ? { href: areaLink.href, label: areaLinkName(regionTitle, hasSource ? AREA_LINK_MAX_CHARS.aboutAndSource : AREA_LINK_MAX_CHARS.about), title: regionTitle }
     : null;
-  // One line right under the name (CIV-929): the area link, then "About →" (CIV-841), then "Source →" when that is on.
-  // Each opens in a new tab, since they leave the map; the area name is cut with an ellipsis if it runs long.
+  // One line right under the name (CIV-929): the area link, then "Source →" when that is on. The agency page's link sits
+  // on the route count line instead (CIV-1785). Each opens in a new tab, since they leave the map; the area name is cut
+  // with an ellipsis if it runs long.
   const agencyLinks = [
     area && (
       <ArrowLink key="area" size="xs" tone="inline" href={area.href} target="_blank" rel="noopener noreferrer" className="max-w-full [&>svg]:shrink-0" title={area.title}>
         <span className="truncate min-w-0">{area.label}</span>
       </ArrowLink>
     ),
-    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">{DETAILS_LABEL}</ArrowLink>,
     hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
   ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);
@@ -697,7 +690,14 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
           name={agencyCardName}
           place={agency.onDemandOnly ? null : agencyNameSecondary}
           back={{ to: BACK_TO_MAP_LABEL, onClick: onClose }}
-          facts={agency.onDemandOnly ? ON_DEMAND_SERVICE_LABEL : buildHeaderSummary(filteredRoutes, maxHeadway)}
+          facts={<>
+            {agency.onDemandOnly ? ON_DEMAND_SERVICE_LABEL : buildHeaderSummary(filteredRoutes)}
+            {/* CIV-1785 (Ryan): the agency page's link on the route count line, "15 routes · Details →". */}
+            {hasAboutPage && <>
+              <span className="mx-1 text-[var(--text-dim)] select-none" aria-hidden="true">·</span>
+              <ArrowLink size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">{DETAILS_LABEL}</ArrowLink>
+            </>}
+          </>}
           report={reportButton}
           links={agencyLinks}
         >
@@ -730,13 +730,6 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
                 {service.tripRules && <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{service.tripRules}</p>}
                 {coverageNote?.kind === 'partly-mapped' && (
                   <p className="text-xs leading-snug text-[var(--text-muted)] mt-1">{notOnMapYetNotice(coverageNote.missing)}</p>
-                )}
-                {service.sourceUrl && (
-                  <p className="mt-1 text-xs">
-                    <ArrowLink as={OutboundLink} size="xs" tone="inline" href={service.sourceUrl} kind="on_demand_source" agencySlug={agency.slug}>
-                      {DETAILS_LABEL}
-                    </ArrowLink>
-                  </p>
                 )}
               </div>
             );
