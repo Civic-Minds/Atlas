@@ -22,10 +22,11 @@ on:
         options:
           - no-publish
           - publish
-  # Off until the first publish has been reviewed. Monday 09:30 UTC = 04:30 or 05:30 Toronto, after the 4 a.m. end of
-  # Sunday's service date. A scheduled run publishes.
-  # schedule:
-  # - cron: '30 9 * * 1'
+  # Daily (Ryan, 2026-11-15, CIV-1690: "Can rebuild daily"), recorded agencies only (TTC streetcars today).
+  # 09:17 UTC = 04:17 or 05:17 Toronto, after the 4 a.m. end of the service date, off the :00/:30 rush.
+  # A scheduled run publishes; the publish job writes only the report JSON under atlas/live/ttc/.
+  schedule:
+    - cron: '17 9 * * *'
 
 permissions:
   contents: read

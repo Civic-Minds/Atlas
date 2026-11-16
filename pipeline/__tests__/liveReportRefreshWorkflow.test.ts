@@ -7,19 +7,19 @@ describe('live report refresh workflow contract', () => {
   const buildJob = workflow.slice(workflow.indexOf('\n  build:'), workflow.indexOf('\n  publish:'));
   const publishJob = workflow.slice(workflow.indexOf('\n  publish:'));
 
-  it('runs by hand only, and a manual run does not publish unless asked', () => {
+  it('runs daily off the hour (CIV-1690), and a manual run does not publish unless asked', () => {
     expect(workflow).toContain('  workflow_dispatch:');
-    expect(workflow).toContain("# - cron: '30 9 * * 1'");
-    expect(workflow).not.toMatch(/^\s*schedule:/m);
+    const crons = [...workflow.matchAll(/^\s+- cron: '([^']+)'/gm)].map(m => m[1]);
+    expect(crons).toEqual(['17 9 * * *']);
     expect(workflow).toMatch(/mode:\n(.*\n)*?\s+default: no-publish/);
     expect(publishJob).toContain("if: github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')");
     expect(buildJob).toContain('"$GITHUB_REF" != "refs/heads/main"');
   });
 
-  it('has no trigger but a manual run', () => {
+  it('has only a manual run and the daily schedule as triggers', () => {
     const on = workflow.slice(workflow.indexOf('\non:\n') + 5, workflow.indexOf('\npermissions:'));
     const triggers = on.split('\n').filter(l => /^  [a-z_]+:/.test(l)).map(l => l.trim());
-    expect(triggers).toEqual(['workflow_dispatch:']);
+    expect(triggers).toEqual(['workflow_dispatch:', 'schedule:']);
   });
 
   it('keeps the two jobs apart: publish waits for build, and neither keeps the checkout token', () => {
