@@ -266,6 +266,9 @@ Ryan, 2026-11-15 ("Yes local only", CIV-1680): Atlas Studio, the paid agency tie
 ### 2026-11-15 — Live report pages stay local
 Ryan, 2026-11-15: the Live report pages (`/apps/live/:agency` and below) stay local only until the GTFS-RT archive restarts and the page design is approved. Their data is not being refreshed (the `live-report-refresh.yml` schedule is commented out and the archive is paused), so `VITE_LIVE_REPORTS_ENABLED` was removed from Beta's Vercel settings; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md).
 
+### 2026-11-15 — Live report data refreshes daily again
+Ryan, 2026-11-15 ("Can rebuild daily", CIV-1690): `live-report-refresh.yml` runs every day at 09:17 UTC for TTC, the agency still being recorded, so the entry above's "not being refreshed" no longer holds. The pages stay local only: the design is not yet approved.
+
 ### 2026-11-15 — The Docs page is "Docs" again
 Ryan, 2026-11-15 (CIV-1697): "Should we rename Documentation page back to Docs", then option 1, back everywhere. The page's one shared name (`PAGE_NAMES.docs`) is "Docs" on its links, heading and browser tab; this reverses the "Documentation" part of the entry below. The URL stays /about/docs.
 
