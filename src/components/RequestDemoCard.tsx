@@ -15,16 +15,7 @@ const pic = (name: string) => `/assets/planners/${name}`;
  */
 export default function RequestDemoCard({ color }: { color: string }) {
   return (
-    <FeatureCard title={titleCase(REQUEST_DEMO_LABEL)} color={color} pictures={
-      <>
-        {(['light', 'dark'] as const).map(theme => (
-          <picture key={theme} className={`block ${theme === 'light' ? 'theme-light-only' : 'theme-dark-only'}`}>
-            <source media="(max-width: 639px)" srcSet={pic(`card-demo-phone-${theme}.webp`)} />
-            <img src={pic(`card-demo-desktop-${theme}.webp`)} alt="" className="block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover" />
-          </picture>
-        ))}
-      </>
-    }>
+    <FeatureCard title={titleCase(REQUEST_DEMO_LABEL)} color={color} picture={pic('card-demo')}>
       <p>{REQUEST_DEMO_TEXT}</p>
       <div className="flex flex-wrap gap-3 pt-2">
         <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(REQUEST_DEMO_LABEL)}`} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{REQUEST_DEMO_LABEL}</a>

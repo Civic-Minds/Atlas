@@ -25,6 +25,12 @@ describe('For Transit Planners page (CIV-1320)', () => {
     expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
+  it('alternates the picture side of the feature cards on desktop, right then left (CIV-1754)', () => {
+    const { container } = render(<PlannersPage />);
+    const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
+    expect(sides.slice(0, 4)).toEqual(['right', 'left', 'right', 'left']);
+  });
+
   it('shows the map pictures from its own folder: the hero, then one 4:3 picture per feature card, light and dark, desktop and phone (CIV-1701)', () => {
     const { container } = render(<PlannersPage />);
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));

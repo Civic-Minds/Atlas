@@ -11,6 +11,7 @@ import { DOCS_PATH, LIVE_PATH } from '../shared/pagePaths';
 import { titleCase } from '../shared/titleCase';
 import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 import FeatureCard from './components/FeatureCard';
+import ThemedPicture from './components/ui/ThemedPicture';
 import RequestDemoCard from './components/RequestDemoCard';
 import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCoverage';
 
@@ -21,39 +22,7 @@ import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCove
  * frequency-colour tints for the feature cards.
  */
 
-
-/** A map picture with a light and a dark version, as on About (index.css, .theme-light-only). Decorative: the text says what it shows. */
-function ThemedPicture({ base, ext, className }: { base: string; ext: string; className: string }) {
-  return (
-    <>
-      <img src={`${base}-light.${ext}`} alt="" className={`theme-light-only ${className}`} />
-      <img src={`${base}-dark.${ext}`} alt="" className={`theme-dark-only ${className}`} />
-    </>
-  );
-}
-
-const Feature = FeatureCard;
-
-const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
 const pic = (name: string) => `/assets/planners/${name}`;
-
-/**
- * A feature card's picture (CIV-1701): a faded real map with the card's own app control, trimmed to a couple of rows.
- * Every card's picture is 4:3, so the cards line up; phones get their own smaller version so the control's rows still
- * read. Made by scripts/planner-pictures/capture.mts.
- */
-function CardPicture({ name }: { name: string }) {
-  return (
-    <>
-      {(['light', 'dark'] as const).map(theme => (
-        <picture key={theme} className={`block ${theme === 'light' ? 'theme-light-only' : 'theme-dark-only'}`}>
-          <source media="(max-width: 639px)" srcSet={pic(`card-${name}-phone-${theme}.webp`)} />
-          <img src={pic(`card-${name}-desktop-${theme}.webp`)} alt="" className={PICTURE} />
-        </picture>
-      ))}
-    </>
-  );
-}
 
 /** A text section beside its heading, like About's "Built for looking closer." */
 function TextSection({ title, children }: { title: string; children: ReactNode }) {
@@ -86,23 +55,23 @@ export default function PlannersPage() {
       </section>
 
       <div className="grid gap-5 py-16 sm:py-20">
-        <Feature title="See Frequency, Not Just Routes" color={color(0)} pictures={<CardPicture name="frequency" />}>
+        <FeatureCard title="See Frequency, Not Just Routes" color={color(0)} picture={pic('card-frequency')}>
           <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map, or a check against your own frequency standards, takes one click.</p>
-        </Feature>
-        <Feature title="See How Service Changes Over the Day and Week" color={color(1)} pictures={<CardPicture name="dayweek" />}>
+        </FeatureCard>
+        <FeatureCard title="See How Service Changes Over the Day and Week" color={color(1)} picture={pic('card-dayweek')} flip>
           <p>Switch between weekday, Saturday and Sunday, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.</p>
-        </Feature>
-        <Feature title="Every Agency in a Region, on One Map" color={color(2)} pictures={<CardPicture name="agency" />}>
+        </FeatureCard>
+        <FeatureCard title="Every Agency in a Region, on One Map" color={color(2)} picture={pic('card-agency')}>
           <p>Atlas puts every agency it covers on the same map, so you can spot weak connections, like a hub where one agency runs {headwayEvery(10)} and the other once an hour. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
-        </Feature>
-        <Feature title="A Map Instead of a Long Report" color={color(3)} pictures={<CardPicture name="export" />}>
+        </FeatureCard>
+        <FeatureCard title="A Map Instead of a Long Report" color={color(3)} picture={pic('card-export')} flip>
           <p>Existing-conditions work often ends up as a long report with a few static maps, but Atlas gives you a map people can explore. Share links keep the place, frequency tier, day, time of day, agencies and any open route or stop, and map images export with a source line, ready for a slide deck or a report.</p>
-        </Feature>
+        </FeatureCard>
         {/* CIV-1705: the Live card. No picture yet; its text is a placeholder until Ryan gives the words. */}
-        <Feature title={titleCase(LIVE_VEHICLES_TITLE)} color={color(4)} pictures={null}>
+        <FeatureCard title={titleCase(LIVE_VEHICLES_TITLE)} color={color(4)} picture={null}>
           <p>[Placeholder, CIV-1705: Ryan’s words for the Live card]</p>
           {FEATURES.live && <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink>}
-        </Feature>
+        </FeatureCard>
       </div>
 
       <TextSection title="Where the Data Comes From">
