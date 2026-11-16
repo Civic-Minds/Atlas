@@ -11,12 +11,12 @@ The shared components live in `src/components/ui/`.
 
 - Docs-style pages (About, Docs, Terms, Privacy, What’s New, Research) use `DocsPageLayout` (`src/components/ui/DocsPageLayout.tsx`). Commit ce33bc90.
 - Data pages (agency, area, agencies index) use its data-page form. Commit ce33bc90.
-- The site header stays pinned on every docs-style page. Commit 15e232a9.
+- The site header stays pinned on every page that uses `PageShell` (docs-style, data, Planners, Live report and not-found pages). Commit 15e232a9, CIV-1708.
 - On every page with the shared header and footer, the Atlas logo opens the About home page and "Go to Atlas" opens the map (#1509).
   - Ryan, 2026-11-14: "like we already have the go to atlas button so confusing". Two links to the same place were confusing.
   - This replaces CIV-1312, where only the About page's logo stayed on /about.
   - Pages with their own header (the Live tool, diagnostics) keep the logo on the map.
-  - `DocsPageLayout` always uses `PageShell`'s sticky header.
+  - The pin lives in `PageShell` only; no page imports `SiteHeader` itself (shared UI guard).
 - The "On this page" menu is `PageContents` (`src/components/PageContents.tsx`). Commit 49f72ada.
   - It highlights the section being read.
 - Page and section headings use `PageTitle` and `SectionTitle` (`src/components/ui/PageTitle.tsx`), so the same kind of page looks the same.
