@@ -1,0 +1,151 @@
+/**
+ * CIV-1715: the Studio "Schedule Changes" page's data, one file per agency. Built from CIV-1684's comparison
+ * (pipeline/feedCompare.ts) by `scripts/compare-feed-dates.ts --json tmp/studio/<slug>-before-after.json` and served
+ * only by the Vite dev server at studioBeforeAfterDevUrl (vite.config.ts); never uploaded to R2 or built into a
+ * deployment. The input type is structural (a FeedComparison fits it) so nothing here pulls the pipeline into the app.
+ */
+import { PERIOD_KEYS, type PeriodKey } from './config';
+import type { DayType } from './dayTypes';
+
+/** One route on the compared day, on one side. Minutes after midnight for first/last (past 1440 runs into the night). */
+export interface StudioRouteDay {
+  /** The map's route figure per period, in minutes; null or missing where the route has none. */
+  headway: Partial<Record<PeriodKey, number | null>>;
+  trips: number;
+  first: number | null;
+  last: number | null;
+  /** Midday median run time per direction, whole minutes, lowest first. */
+  runMinutes: number[];
+}
+
+/**
+ * How big a route's change is, which decides where the page puts it:
+ * - `frequency`: a period's frequency starts, stops or moves by FREQUENCY_STEP_MIN or more, or the trip count moves by
+ *   TRIP_STEP or more (and routes added or removed);
+ * - `hours`: otherwise, the first or last trip moves by SPAN_STEP_MIN or more, or the trip time by RUN_STEP_MIN or more;
+ * - `small`: everything else (a minute or two of span or trip time, a frequency a few minutes off, a trip or two).
+ */
+export type StudioChangeSize = 'frequency' | 'hours' | 'small';
+export const FREQUENCY_STEP_MIN = 5;
+export const TRIP_STEP = 3;
+export const SPAN_STEP_MIN = 15;
+export const RUN_STEP_MIN = 5;
+
+export interface StudioRouteChange {
+  route: string;
+  name: string | null;
+  /** Null: the route doesn't run on the compared day on that side (added or removed). */
+  before: StudioRouteDay | null;
+  after: StudioRouteDay | null;
+  size: StudioChangeSize;
+}
+
+export interface StudioBeforeAfterFile {
+  slug: string;
+  before: { file: string; date: string };
+  after: { file: string; date: string };
+  /** The day type compared (Weekday for Kingston), or null when none could be. */
+  day: DayType | null;
+  /** Day types the comparison left out because a side's calendar doesn't hold that day's listed trips, and which side. */
+  leftOut: Array<{ day: DayType; sides: Array<'before' | 'after'> }>;
+  /** Changed, added and removed routes, in route order. */
+  changes: StudioRouteChange[];
+  unchanged: string[];
+  /**
+   * Every route's drawn lines on the compared day, by side and route name (CIV-1731's map), changed or not. Missing in
+   * files built before CIV-1731; a route that doesn't run on a side has no entry there.
+   */
+  lines?: { before: Record<string, StudioRouteLine[]>; after: Record<string, StudioRouteLine[]> };
+}
+
+/** One drawn line as [lng, lat] pairs (pipeline/feedCompare.ts's RouteLine). */
+export type StudioRouteLine = Array<[number, number]>;
+
+/** Where the Vite dev server serves an agency's file (tmp/studio/<slug>-before-after.json). */
+export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-before-after.json`;
+
+// ---- Building the file from a comparison ----
+
+interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number> }
+interface InputRoute { route: string; longName: string | null; days: Partial<Record<DayType, InputDay>> }
+/** The parts of pipeline/feedCompare.ts's FeedComparison this file reads. */
+export interface StudioComparisonInput {
+  slug: string;
+  before: { file: string; date: string };
+  after: { file: string; date: string };
+  comparedDays: DayType[];
+  /** Per day type left out, one reason per side, each starting "before:" or "after:". */
+  notRead: Partial<Record<DayType, string[]>>;
+  added: InputRoute[];
+  removed: InputRoute[];
+  changed: Array<{ route: string; longName: string | null; days: Partial<Record<DayType, { before: InputDay | null; after: InputDay | null }>> }>;
+  unchanged: string[];
+}
+/** The parts of pipeline/feedCompare.ts's FeedSide the lines come from. */
+export interface StudioSideInput { routes: Record<string, { days: Partial<Record<DayType, { lines?: StudioRouteLine[] }>> }> }
+
+const slim = (d: InputDay | null | undefined): StudioRouteDay | null => d ? {
+  headway: Object.fromEntries(PERIOD_KEYS.filter(k => d.headway[k] != null).map(k => [k, d.headway[k]])),
+  trips: d.trips,
+  first: d.first,
+  last: d.last,
+  runMinutes: Object.values(d.runMinutes).map(Math.round).sort((a, b) => a - b),
+} : null;
+
+const movedBy = (a: number | null | undefined, b: number | null | undefined, step: number) =>
+  (a == null) !== (b == null) || (a != null && b != null && Math.abs(a - b) >= step);
+
+/** Whether a period's frequency starts, stops or moves by FREQUENCY_STEP_MIN or more: these routes lead the page. */
+export function frequencyMoved(before: StudioRouteDay | null, after: StudioRouteDay | null): boolean {
+  return !!before && !!after && PERIOD_KEYS.some(k => movedBy(before.headway[k], after.headway[k], FREQUENCY_STEP_MIN));
+}
+
+/** Where a route's change goes on the page (see StudioChangeSize). */
+export function changeSize(before: StudioRouteDay | null, after: StudioRouteDay | null): StudioChangeSize {
+  if (!before || !after) return 'frequency';
+  if (frequencyMoved(before, after)) return 'frequency';
+  if (Math.abs(before.trips - after.trips) >= TRIP_STEP) return 'frequency';
+  if (movedBy(before.first, after.first, SPAN_STEP_MIN) || movedBy(before.last, after.last, SPAN_STEP_MIN)) return 'hours';
+  const lo = (d: StudioRouteDay) => d.runMinutes[0], hi = (d: StudioRouteDay) => d.runMinutes[d.runMinutes.length - 1];
+  if (movedBy(lo(before), lo(after), RUN_STEP_MIN) || movedBy(hi(before), hi(after), RUN_STEP_MIN)) return 'hours';
+  return 'small';
+}
+
+const byRoute = (a: { route: string }, b: { route: string }) => a.route.localeCompare(b.route, undefined, { numeric: true });
+
+const sideLines = (side: StudioSideInput, day: DayType): Record<string, StudioRouteLine[]> => Object.fromEntries(
+  Object.entries(side.routes)
+    .map(([name, r]) => [name, r.days[day]?.lines ?? []] as const)
+    .filter(([, lines]) => lines.length > 0)
+    .sort((a, b) => byRoute({ route: a[0] }, { route: b[0] })));
+
+/** The page's file. With both sides, it also carries every route's lines on the compared day. */
+export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { before: StudioSideInput; after: StudioSideInput }): StudioBeforeAfterFile {
+  const day = cmp.comparedDays.includes('Weekday') ? 'Weekday' : (cmp.comparedDays[0] ?? null);
+  const changes: StudioRouteChange[] = [];
+  if (day) {
+    for (const r of cmp.added) if (r.days[day]) changes.push({ route: r.route, name: r.longName, before: null, after: slim(r.days[day]), size: 'frequency' });
+    for (const r of cmp.removed) if (r.days[day]) changes.push({ route: r.route, name: r.longName, before: slim(r.days[day]), after: null, size: 'frequency' });
+    for (const c of cmp.changed) {
+      const entry = c.days[day];
+      if (!entry) continue;
+      const before = slim(entry.before), after = slim(entry.after);
+      changes.push({ route: c.route, name: c.longName, before, after, size: changeSize(before, after) });
+    }
+  }
+  changes.sort(byRoute);
+  const leftOut = (Object.entries(cmp.notRead) as Array<[DayType, string[]]>).map(([d, why]) => ({
+    day: d,
+    sides: (['before', 'after'] as const).filter(side => why.some(w => w.startsWith(`${side}:`))),
+  }));
+  return {
+    slug: cmp.slug,
+    before: { file: cmp.before.file, date: cmp.before.date },
+    after: { file: cmp.after.file, date: cmp.after.date },
+    day,
+    leftOut,
+    changes,
+    unchanged: cmp.unchanged,
+    ...(sides && day ? { lines: { before: sideLines(sides.before, day), after: sideLines(sides.after, day) } } : {}),
+  };
+}

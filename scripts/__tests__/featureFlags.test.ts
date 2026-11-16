@@ -34,4 +34,11 @@ describe('npm run flags (CIV-1402)', () => {
     expect(out).toMatch(/^live\s+\?\s+off$/m);
     expect(out).toContain('public: no flags.json yet');
   });
+
+  it('keeps Atlas Studio local only: off on public and beta builds, on in local dev (CIV-1693)', async () => {
+    expect((await featuresForEnv({ VITE_ATLAS_MODE: 'public', PROD: true, DEV: false })).features.studio).toBe(false);
+    expect((await featuresForEnv({ VITE_ATLAS_MODE: 'beta', VITE_HISTORY_ENABLED: 'true', VITE_LIVE_REPORTS_ENABLED: 'true', PROD: true, DEV: false })).features.studio).toBe(false);
+    expect((await featuresForEnv(devScriptEnv('dev:public'))).features.studio).toBe(true);
+    expect((await featuresForEnv(devScriptEnv('dev:beta'))).features.studio).toBe(true);
+  });
 });

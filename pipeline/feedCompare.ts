@@ -16,6 +16,10 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../shared/dayTy
 import type { GtfsData } from '../types/gtfs.js';
 
 export type PeriodFigures = Partial<Record<PeriodKey, number | null>>;
+/** A drawn line as [lng, lat] pairs, rounded to ROUTE_LINE_DECIMALS. */
+export type RouteLine = Array<[number, number]>;
+/** About a metre: enough to draw a route, small enough to keep the Studio file light. */
+export const ROUTE_LINE_DECIMALS = 5;
 
 /** One route on one day type, on one side. */
 export interface RouteDay {
@@ -30,6 +34,8 @@ export interface RouteDay {
   runMinutes: Record<string, number>;
   /** Headsigns drawn, by direction id (labels only). */
   headsigns: Record<string, string[]>;
+  /** The route's drawn lines that day, one per distinct pattern shape (for the Studio map; not compared). */
+  lines?: RouteLine[];
 }
 
 export interface RouteSide {
@@ -157,6 +163,26 @@ function runMinutesOf(entry: { p?: Partial<Record<PeriodKey, [number, number, nu
   return null;
 }
 
+type Geometry = { type: string; coordinates?: unknown };
+const roundTo = (v: number) => Number(v.toFixed(ROUTE_LINE_DECIMALS));
+
+/** A route feature's lines, rounded, with repeated points dropped (rounding can merge neighbours). */
+export function routeLines(geometry: Geometry | null | undefined): RouteLine[] {
+  if (!geometry) return [];
+  const parts = geometry.type === 'LineString' ? [geometry.coordinates] : geometry.type === 'MultiLineString' ? (geometry.coordinates as unknown[]) : [];
+  const out: RouteLine[] = [];
+  for (const part of parts) {
+    const line: RouteLine = [];
+    for (const c of (part as number[][]) ?? []) {
+      const pt: [number, number] = [roundTo(c[0]), roundTo(c[1])];
+      const prev = line[line.length - 1];
+      if (!prev || prev[0] !== pt[0] || prev[1] !== pt[1]) line.push(pt);
+    }
+    if (line.length >= 2) out.push(line);
+  }
+  return out;
+}
+
 /** Reads one side. Options are the agency's process options (slug, preprocess...); the date replaces the picked week. */
 export async function readFeedSide(buf: Buffer, date: string, options: ProcessOptions = {}): Promise<FeedSide> {
   const ymd = normalizeYmd(date);
@@ -178,8 +204,10 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   const problem = dateReadProblem(listedTrips, readListedTrips, ymd);
   if (problem) throw new DateNotReadError(problem);
 
-  const parsed = JSON.parse(result.geojson) as { features: Array<{ properties?: Props | null }>; runningTimes?: Record<string, any> };
-  const rows = parsed.features.map(f => f.properties).filter((p): p is Props => !!p && p.routeId != null && p.stopId == null);
+  const parsed = JSON.parse(result.geojson) as { features: Array<{ properties?: Props | null; geometry?: Geometry | null }>; runningTimes?: Record<string, any> };
+  const routeFeatures = parsed.features.filter(f => !!f.properties && f.properties.routeId != null && f.properties.stopId == null);
+  const rows = routeFeatures.map(f => f.properties as Props);
+  const linesOf = new Map<Props, RouteLine[]>(routeFeatures.map(f => [f.properties as Props, routeLines(f.geometry)]));
   if (rows.length === 0) throw new DateNotReadError(`The pipeline drew no routes for ${ymd}.`);
 
   const countedDay: Record<DayType, DayName> = {
@@ -213,7 +241,11 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     if (!side.routeIds.includes(routeId)) side.routeIds.push(routeId);
     const dayType = p.day as DayType;
     if (!DAY_TYPES.includes(dayType)) continue;
-    const day = side.days[dayType] ??= { headway: {}, trips: 0, first: null, last: null, runMinutes: {}, headsigns: {} };
+    const day = side.days[dayType] ??= { headway: {}, trips: 0, first: null, last: null, runMinutes: {}, headsigns: {}, lines: [] };
+    for (const line of linesOf.get(p) ?? []) {
+      const key = JSON.stringify(line);
+      if (!day.lines!.some(l => JSON.stringify(l) === key)) day.lines!.push(line);
+    }
     // The route figure is the same on every row of the route that day; a second route id with the same name keeps the shorter.
     for (const k of PERIOD_KEYS) {
       const v = (p.routeFilterHeadwayByPeriod ?? {})[k] ?? null;

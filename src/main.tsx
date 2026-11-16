@@ -35,6 +35,9 @@ const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentService
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
+// Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
+const StudioVehiclesPage = import.meta.env.DEV ? React.lazy(() => import('./StudioVehiclesPage')) : () => null;
+const StudioChangesPage = import.meta.env.DEV ? React.lazy(() => import('./StudioChangesPage')) : () => null;
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -95,6 +98,10 @@ ReactDOM.createRoot(rootElement).render(
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
+          {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). */}
+          {FEATURES.studio && <Route path={FEATURE_ROUTES.studio} element={<Navigate to={FEATURE_ROUTES.studioVehicles} replace />} />}
+          {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<StudioVehiclesPage />} />}
+          {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<StudioChangesPage />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}

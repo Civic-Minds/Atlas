@@ -6,7 +6,7 @@
  * Usage:
  *   npx tsx scripts/vehicles-needed.ts <feed.zip> [--slug <slug>] [--headway <min>] [--period <key>]
  *     [--route <short name>] [--anchor YYYYMMDD] [--target-applies trunk|branch] [--branch-split current|even]
- *     [--short-turn-headway <min>] [--recovery schedule|<n>%|<n>]
+ *     [--short-turn-headway <min>] [--recovery schedule|<n>%|<n>] [--json <out.json>]
  *
  * --slug     reads config/agencies/<slug>.json so preprocess and excludes match the map.
  * --anchor   the rider-week anchor (default: today), for an archived feed whose service has ended.
@@ -18,6 +18,10 @@
  * --recovery  layover counted in the cycle: the schedule's own (default), a percent of running time
  *            (10%), or minutes per leg (8). It replaces the schedule's layover.
  *
+ * --json     also writes the Studio page's rows (every period, by interlined route group; see
+ *            pipeline/vehicleGroups.ts) to a local file, e.g. tmp/studio/kingston-vehicles.json, which
+ *            only the Vite dev server serves (CIV-1693). Uses the schedule's layover; nothing is uploaded.
+ *
  * Output: one row per service pattern (a round trip: out-and-back, loop, or one-way), then each
  * route's totals, shared middles (trunks), interlined groups, and notes. See pipeline/vehiclePatterns.ts.
  *
@@ -25,13 +29,15 @@
  * features), read from processGtfsBuffer, so it matches what the map shows. The day counted is the
  * route's representative weekday (pickRepresentativeWeekday) in the week the map reads.
  */
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { basename, dirname, resolve } from 'node:path';
 import { processGtfsBuffer, type ProcessOptions } from '../pipeline/process-core.js';
 import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { pickRepresentativeWeekday } from '../pipeline/representativeWeekday.js';
 import { tripRunsForDay } from '../pipeline/vehiclesNeeded.js';
 import { cycleMin, needVehicles, unevenLegs, parseRecovery, periodPatterns, recoveryMin, targetVehicles, type Places, type TargetOptions } from '../pipeline/vehiclePatterns.js';
+import { vehicleGroupRows } from '../pipeline/vehicleGroups.js';
+import type { StudioVehiclesFile } from '../shared/studioVehicles.js';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
 import { WEEKDAYS, type DayName, type GtfsData } from '../types/gtfs.js';
 
@@ -40,7 +46,7 @@ function option(name: string): string | undefined {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 }
-const optionNames = new Set(['--slug', '--headway', '--period', '--route', '--anchor', '--target-applies', '--branch-split', '--short-turn-headway', '--recovery']);
+const optionNames = new Set(['--slug', '--headway', '--period', '--route', '--anchor', '--target-applies', '--branch-split', '--short-turn-headway', '--recovery', '--json']);
 const positional = args.filter((a, i) => !a.startsWith('--') && !optionNames.has(args[i - 1]));
 const zipPath = positional[0];
 if (!zipPath || !existsSync(zipPath)) {
@@ -62,6 +68,7 @@ if (branchSplit !== 'current' && branchSplit !== 'even') throw new Error('--bran
 const shortTurnHeadway = option('--short-turn-headway') != null ? Number(option('--short-turn-headway')) : null;
 if (shortTurnHeadway != null && !(shortTurnHeadway > 0)) throw new Error('--short-turn-headway must be a positive number of minutes');
 const recovery = parseRecovery(option('--recovery'));
+const jsonOut = option('--json');
 
 const config: AgencyFeedConfig | null = slug
   ? JSON.parse(readFileSync(resolve('config/agencies', `${slug}.json`), 'utf8')) as AgencyFeedConfig
@@ -215,3 +222,17 @@ for (const period of periods) {
   if (extra.length) console.log(`\n${extra.join('\n')}`);
 }
 console.log('\nPull-out and pull-in between the garage and the route are not in GTFS and are not estimated.');
+
+if (jsonOut) {
+  const file: StudioVehiclesFile = { slug: slug ?? basename(zipPath, '.zip'), feed: basename(zipPath), referenceDate, periods: {} };
+  for (const period of PERIOD_KEYS) {
+    const routes = routeIds.flatMap(routeId => {
+      const index = pickRepresentativeWeekday(countsByRoute.get(routeId)!, true);
+      return index == null ? [] : [{ routeId, analysis: analysis(WEEKDAYS[index], period) }];
+    });
+    file.periods[period] = vehicleGroupRows(routes, nameOf);
+  }
+  mkdirSync(dirname(resolve(jsonOut)), { recursive: true });
+  writeFileSync(resolve(jsonOut), `${JSON.stringify(file, null, 1)}\n`);
+  console.error(`Wrote ${jsonOut}`);
+}
