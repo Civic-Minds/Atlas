@@ -1,0 +1,283 @@
+{
+  "slug": "chandler-flex",
+  "agency": {
+    "slug": "chandler-flex",
+    "name": "Chandler Flex",
+    "region": "Arizona",
+    "center": [
+      33.262388,
+      -111.845855
+    ],
+    "url": "",
+    "bbox": [
+      33.218352,
+      -111.902418,
+      33.306423,
+      -111.789293
+    ],
+    "cities": [
+      "Chandler, Arizona"
+    ],
+    "displayArea": "Chandler",
+    "onDemandOnly": true,
+    "websiteUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+    "timezone": "America/Phoenix"
+  },
+  "area": {
+    "serviceName": "Chandler Flex",
+    "sourceUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+    "sourceLabel": "City of Chandler Chandler Flex page and service-area shapefile (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-16",
+    "eligibility": "Riders 13 and older; younger children ride with a parent or guardian.",
+    "bookingInfo": "Book in the Chandler Flex app or call 602-932-0291.",
+    "bookingUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+    "pickup": {
+      "method": "virtual-stops"
+    },
+    "zoneMetadata": {
+      "Southwest Chandler": {
+        "serviceName": "Chandler Flex",
+        "serviceHours": "Monday to Friday 5:30 a.m. to 9 p.m. No weekend service.",
+        "hoursNote": "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving and Christmas. 7 a.m. to 7 p.m. on Martin Luther King Jr. Day, Presidents Day, Good Friday, Juneteenth, Veterans Day and the day after Thanksgiving.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 21
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+          "retrievedAt": "2026-11-16"
+        },
+        "validUntil": "2026-12-31"
+      },
+      "Southwest Chandler, 2027 area": {
+        "serviceName": "Chandler Flex",
+        "serviceHours": "Monday to Friday 5:30 a.m. to 9 p.m. No weekend service.",
+        "hoursNote": "No service on New Year's Day, Memorial Day, Independence Day, Labor Day, Thanksgiving and Christmas. 7 a.m. to 7 p.m. on Martin Luther King Jr. Day, Presidents Day, Good Friday, Juneteenth, Veterans Day and the day after Thanksgiving.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 5.5,
+              "endHour": 21
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+          "retrievedAt": "2026-11-16"
+        },
+        "validFrom": "2027-01-01"
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chandler-flex",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+        "sourceLabel": "City of Chandler ChandlerFlexServiceArea shapefile (agency-supplied by email, 2026-11-16)",
+        "sourceRetrievedAt": "2026-11-16",
+        "areaName": "Southwest Chandler"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.893593,
+              33.291401
+            ],
+            [
+              -111.89335,
+              33.283256
+            ],
+            [
+              -111.893311,
+              33.251593
+            ],
+            [
+              -111.893196,
+              33.232605
+            ],
+            [
+              -111.858836,
+              33.232805
+            ],
+            [
+              -111.841293,
+              33.233063
+            ],
+            [
+              -111.838438,
+              33.233095
+            ],
+            [
+              -111.838438,
+              33.233101
+            ],
+            [
+              -111.82397,
+              33.233291
+            ],
+            [
+              -111.824125,
+              33.262465
+            ],
+            [
+              -111.806802,
+              33.262623
+            ],
+            [
+              -111.789542,
+              33.262868
+            ],
+            [
+              -111.789738,
+              33.306423
+            ],
+            [
+              -111.824159,
+              33.306204
+            ],
+            [
+              -111.867896,
+              33.306115
+            ],
+            [
+              -111.88078,
+              33.305965
+            ],
+            [
+              -111.894392,
+              33.305892
+            ],
+            [
+              -111.902418,
+              33.305626
+            ],
+            [
+              -111.902252,
+              33.292046
+            ],
+            [
+              -111.893793,
+              33.292115
+            ],
+            [
+              -111.893593,
+              33.291401
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "chandler-flex",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.chandleraz.gov/residents/transportation/transit/chandler-flex",
+        "sourceLabel": "City of Chandler ChandlerFlexServiceArea shapefile (agency-supplied by email, 2026-11-16)",
+        "sourceRetrievedAt": "2026-11-16",
+        "areaName": "Southwest Chandler, 2027 area"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.893593,
+              33.291401
+            ],
+            [
+              -111.89335,
+              33.283256
+            ],
+            [
+              -111.893311,
+              33.251593
+            ],
+            [
+              -111.893196,
+              33.232605
+            ],
+            [
+              -111.858836,
+              33.232805
+            ],
+            [
+              -111.858615,
+              33.232808
+            ],
+            [
+              -111.858501,
+              33.218352
+            ],
+            [
+              -111.806557,
+              33.219033
+            ],
+            [
+              -111.789293,
+              33.219228
+            ],
+            [
+              -111.789408,
+              33.233746
+            ],
+            [
+              -111.789475,
+              33.248305
+            ],
+            [
+              -111.789738,
+              33.306423
+            ],
+            [
+              -111.824159,
+              33.306204
+            ],
+            [
+              -111.867896,
+              33.306115
+            ],
+            [
+              -111.88078,
+              33.305965
+            ],
+            [
+              -111.894392,
+              33.305892
+            ],
+            [
+              -111.902418,
+              33.305626
+            ],
+            [
+              -111.902252,
+              33.292046
+            ],
+            [
+              -111.893793,
+              33.292115
+            ],
+            [
+              -111.893593,
+              33.291401
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Zones from the City of Chandler's ChandlerFlexServiceArea shapefile, emailed 2026-11-16 (8 polygons, State Plane Arizona Central feet, reprojected to WGS84 with mapshaper; pieces snapped within 20 ft and dissolved, and a zero-width slit the dissolve left along the old south edge removed). Ryan picked (CIV-1753): the current area plus Expansion Zone 1.B now, then the 2027 area from its start date, switched by date (validUntil/validFrom) with no republish. 'Southwest Chandler' = Original Service Area Core (2022-2024) + 2024 Expansion + Expansion Zone 1.B - 2026, dissolved; it runs until 2026-12-31. 'Southwest Chandler, 2027 area' = Original Service Area Core + 2024 Expansion + 2027 Expansion Zone (which contains 1.B), dissolved; it starts 2027-01-01. The 2027 start date is assumed: the file says only 'Service Area (2027-)' and the City page gives no date; confirm with Chandler. Left out: '2024 Expansion - Student Only' (inside both the City's 'Service Area (2024-2026)' and 'Service Area (2027-)' polygons, so those two were not used as given; eligibility-limited areas are never drawn), and '2027 Expansion Zone 2 - (Not approved)'. Hours, fares, booking and pickup ('virtual bus stop' at a nearby corner; door-to-door for wheelchair riders) from the City page, 2026-11-16. Weekend days are set to no service because the page lists Monday to Friday only. Run by Via under a City contract through 2027-06-30."
+}

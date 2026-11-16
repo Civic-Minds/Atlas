@@ -60,6 +60,12 @@ export interface OnDemandZoneDetails {
   hoursSource?: { url: string; retrievedAt: string };
   /** Last day a temporary zone is expected to run (YYYY-MM-DD); the publish gate blocks it after. */
   validUntil?: string;
+  /**
+   * First day a zone runs (YYYY-MM-DD), for a change announced ahead (CIV-1753: Chandler Flex's 2027 area).
+   * The release keeps the zone; the app hides it until this day in the agency's local date, so the swap
+   * needs no republish. Pair it with validUntil (the day before) on the zone it replaces.
+   */
+  validFrom?: string;
   /** Where a trip can go in this zone, when it differs from the service's rule (CIV-1427: Tri Delta's Brentwood). */
   tripRules?: string;
 }
@@ -159,29 +165,53 @@ export function localDateIn(timeZone: string | null | undefined, now: Date = new
   }
 }
 
+/** The service without the named zones, their hours, and any stops tied only to them. */
+function withoutZones<T extends {
+  features: readonly { properties?: unknown }[];
+  stopFeatures?: readonly { properties?: unknown }[];
+  zoneMetadata?: Record<string, OnDemandZoneDetails>;
+}>(service: T, dropped: ReadonlySet<string>): T {
+  if (dropped.size === 0) return service;
+  const keepStop = (stop: { properties?: unknown }) => {
+    const names = (areaNameOf(stop.properties) ?? '').split(', ').filter(Boolean);
+    return names.length === 0 || names.some(name => !dropped.has(name));
+  };
+  return {
+    ...service,
+    features: service.features.filter(f => !dropped.has(areaNameOf(f.properties) ?? '')),
+    ...(service.stopFeatures ? { stopFeatures: service.stopFeatures.filter(keepStop) } : {}),
+    zoneMetadata: Object.fromEntries(Object.entries(service.zoneMetadata ?? {}).filter(([name]) => !dropped.has(name))),
+  };
+}
+
+function zonesWhere(zoneMetadata: Record<string, OnDemandZoneDetails> | undefined, test: (zone: OnDemandZoneDetails) => boolean): Set<string> {
+  return new Set(Object.entries(zoneMetadata ?? {}).filter(([, zone]) => test(zone)).map(([name]) => name));
+}
+
 /**
  * The service with every zone past its last day removed, along with its hours and any stops tied
- * only to it. One rule for every surface: the release build, the map, cards and search all use it.
+ * only to it. The release build uses this: zones that start later (validFrom) stay in the release.
  */
 export function withoutExpiredOnDemandZones<T extends {
   features: readonly { properties?: unknown }[];
   stopFeatures?: readonly { properties?: unknown }[];
   zoneMetadata?: Record<string, OnDemandZoneDetails>;
 }>(service: T, today: string): T {
-  const expired = new Set(Object.entries(service.zoneMetadata ?? {})
-    .filter(([, zone]) => zone.validUntil && zone.validUntil < today)
-    .map(([name]) => name));
-  if (expired.size === 0) return service;
-  const keepStop = (stop: { properties?: unknown }) => {
-    const names = (areaNameOf(stop.properties) ?? '').split(', ').filter(Boolean);
-    return names.length === 0 || names.some(name => !expired.has(name));
-  };
-  return {
-    ...service,
-    features: service.features.filter(f => !expired.has(areaNameOf(f.properties) ?? '')),
-    ...(service.stopFeatures ? { stopFeatures: service.stopFeatures.filter(keepStop) } : {}),
-    zoneMetadata: Object.fromEntries(Object.entries(service.zoneMetadata ?? {}).filter(([name]) => !expired.has(name))),
-  };
+  return withoutZones(service, zonesWhere(service.zoneMetadata, zone => !!zone.validUntil && zone.validUntil < today));
+}
+
+/**
+ * Only the zones running on `today` (the agency's local date): past their last day (validUntil) or
+ * before their first day (validFrom) are removed. One rule for every surface in the app: the
+ * loader applies it, so the map, cards and search all see the same zones.
+ */
+export function onDemandZonesInEffect<T extends {
+  features: readonly { properties?: unknown }[];
+  stopFeatures?: readonly { properties?: unknown }[];
+  zoneMetadata?: Record<string, OnDemandZoneDetails>;
+}>(service: T, today: string): T {
+  return withoutZones(service, zonesWhere(service.zoneMetadata, zone =>
+    (!!zone.validUntil && zone.validUntil < today) || (!!zone.validFrom && zone.validFrom > today)));
 }
 
 /** A temporary zone (or service) whose last day, validUntil, is before `today`. */
@@ -191,12 +221,19 @@ export function isOnDemandZoneExpired(service: OnDemandServiceDetails, areaName:
   return !!until && until < today;
 }
 
+/** A zone (or service) whose first day, validFrom, is after `today`. */
+export function isOnDemandZoneUpcoming(service: OnDemandServiceDetails, areaName: string | undefined, today: string): boolean {
+  const zone = areaName ? service.zoneMetadata?.[areaName] : undefined;
+  const from = zone?.validFrom ?? service.validFrom;
+  return !!from && from > today;
+}
+
 /**
  * Whether a polygon should be drawn for the selected day and period. Unknown hours stay visible; a
- * temporary zone past its last day (in the agency's local date, `today`) never is.
+ * zone past its last day or before its first day (in the agency's local date, `today`) never is.
  */
 export function isOnDemandZoneShown(service: OnDemandServiceDetails, areaName: string | undefined, day: DayType, period: OnDemandPeriod, today?: string): boolean {
-  if (today && isOnDemandZoneExpired(service, areaName, today)) return false;
+  if (today && (isOnDemandZoneExpired(service, areaName, today) || isOnDemandZoneUpcoming(service, areaName, today))) return false;
   return onDemandRunningState(resolveOnDemandZone(service, areaName).availability, day, period) !== 'not-running';
 }
 
