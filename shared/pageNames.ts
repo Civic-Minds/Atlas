@@ -31,6 +31,10 @@ export const PAGE_NAMES = {
   /** CIV-1320: the page for planners, and its footer link (Ryan: "For Planners" to keep it shorter). */
   planners: 'For Transit Planners',
   plannersLink: 'For Planners',
+  /** CIV-1694: the header link to Atlas Studio (local only). Proposed, waiting on Ryan's OK. */
+  studio: 'Studio',
+  /** CIV-1693: Studio's buses-needed calculator. Proposed, waiting on Ryan's OK. */
+  studioVehicles: 'Buses Needed',
 } as const;
 
 /** Browser tab titles stay within this many characters (search results cut the rest). */

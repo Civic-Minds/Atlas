@@ -1,6 +1,6 @@
 import { headwayTierLabel } from './headwayText';
 import { hourRange, hourTime } from './timeText';
-import { RESEARCH_PATH } from './pagePaths';
+import { RESEARCH_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
  * Shared configuration constants
  */
@@ -155,6 +155,10 @@ export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!i
 // local for now"): on the Vite dev server, as the connections bar is, never on beta or public builds.
 export const AGENCY_HOURS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
+// Atlas Studio, the agency tools section (CIV-1693; DECISIONS.md 2026-11-15, Ryan: "Yes local only"): its pages and the
+// header's Studio link. Local only until the demo is ready: on the Vite dev server, never on beta or public builds.
+export const STUDIO_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
+
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
  * routes, data, and controls instead of checking environment flags independently.
@@ -190,6 +194,7 @@ export const FEATURES = {
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
+  studio: STUDIO_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -203,6 +208,9 @@ export function seoFlags() {
 
 export const FEATURE_ROUTES = {
   research: RESEARCH_PATH,
+  /** CIV-1693: Atlas Studio, local only (FEATURES.studio). */
+  studio: STUDIO_PATH,
+  studioVehicles: STUDIO_VEHICLES_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

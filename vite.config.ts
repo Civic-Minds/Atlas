@@ -170,6 +170,26 @@ export default defineConfig(({ mode, command, isPreview }) => {
     },
   };
 
+  // Dev-only (configureServer never runs in a build): serve tmp/studio/<slug>-vehicles.json at
+  // /dev-studio/<slug>-vehicles.json for Atlas Studio's buses-needed page (CIV-1693). Written by
+  // `scripts/vehicles-needed.ts <feed.zip> --slug <slug> --json tmp/studio/<slug>-vehicles.json`; never on R2.
+  const STUDIO_DIR = resolve('tmp/studio');
+  const studioFixtures: Plugin = {
+    name: 'studio-fixtures',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const m = /^\/dev-studio\/([\w-]+-vehicles\.json)$/.exec((req.url ?? '').split('?')[0]);
+        if (!m) return next();
+        const file = resolve(STUDIO_DIR, m[1]);
+        if (!file.startsWith(STUDIO_DIR) || !existsSync(file)) return next();
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'no-store');
+        createReadStream(file).pipe(res);
+      });
+    },
+  };
+
   // Dev-only (configureServer never runs in a build): serve tmp/dev-context/context.pmtiles at
   // /dev-context/context.pmtiles (byte ranges) for the population/income context layer trial (CIV-482).
   // The UI reads it only when VITE_CONTEXT_LAYER_URL is set.
@@ -246,6 +266,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
       earlyDataUrl,
       flagsJson,
       historyV2Fixtures,
+      studioFixtures,
       contextLayerFixture,
       ...(useLocalPreviews ? [localPmtilesPreview, localAgencyDataPreview] : []),
     ],
