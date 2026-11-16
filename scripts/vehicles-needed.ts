@@ -167,7 +167,7 @@ for (const period of periods) {
       const t = targets.find(x => x.id === p.id);
       sched += p.scheduledVehicles;
       if (p.role !== 'partial') {
-        implied += at ?? 0;
+        implied += cycle / p.headwayMin;
         targetSum += t?.vehicles ?? 0;
       }
       patternRows.push([
@@ -189,7 +189,7 @@ for (const period of periods) {
       ]);
     }
     const map = mapHeadway.get(routeId);
-    routeRows.push([shortName, day.slice(0, 3), fmt(map?.byPeriod[period]), String(patterns.length), String(sched), String(implied), ...(targetHeadway != null ? [String(targetSum)] : [])]);
+    routeRows.push([shortName, day.slice(0, 3), fmt(map?.byPeriod[period]), String(patterns.length), String(sched), String(Math.ceil(implied - 1e-9)), ...(targetHeadway != null ? [String(targetSum)] : [])]);
     for (const trunk of a.trunks.filter(t => t.routeId === routeId)) {
       extra.push(`shared middle ${shortName}: ${trunk.branches.map(id => labelOf.get(id)).join(', ')} share ${trunk.stopIds.length} stops, ${stopName.get(trunk.stopIds[0]) ?? trunk.stopIds[0]} to ${stopName.get(trunk.stopIds.at(-1)!) ?? trunk.stopIds.at(-1)}`);
     }
@@ -209,7 +209,7 @@ for (const period of periods) {
   };
   console.log(`\n${PERIOD_LABELS[period]}: patterns`);
   print(['pattern', 'day', 'ends', 'role', 'paired by', 'round trips', 'hw', 'running', 'sched layover', 'recovery', 'cycle', 'scheduled now', 'implied at hw', ...(targetHeadway != null ? [`at target ${targetHeadway}`] : []), 'notes'], patternRows);
-  console.log(`\n${PERIOD_LABELS[period]}: routes (implied = sum over regular patterns; partial trips counted in scheduled only)`);
+  console.log(`\n${PERIOD_LABELS[period]}: routes (implied = sum of cycle / headway over regular patterns, rounded up once; pattern rows round each pattern up; partial trips counted in scheduled only)`);
   print(['route', 'day', 'map hw', 'patterns', 'scheduled now', 'implied', ...(targetHeadway != null ? [`at target ${targetHeadway}`] : [])], routeRows);
   if (extra.length) console.log(`\n${extra.join('\n')}`);
 }
