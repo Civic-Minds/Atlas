@@ -37,7 +37,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 44,
+          "featureCount": 46,
           "feedExpiry": "20261226",
           "routeCount": 13,
           "problemShapes": 0,
@@ -45,8 +45,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -161,8 +160,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261230",
       "lastFeedStart": "20260924"
@@ -237,8 +235,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -364,7 +361,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "132840bd0106c4bc",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261101",
+      "lastFeedStart": "20261008",
       "lastRawArchiveKey": "20270130-6f6de0ac016fc735",
       "lastFeedContentKey": "0738e276080d9a6b"
     },
@@ -410,8 +407,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261230",
       "lastFeedStart": "20261001"
@@ -451,7 +447,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 5,
           "routeHeadwayMismatches": 0,
-          "featureCount": 31,
+          "featureCount": 27,
           "feedExpiry": "20261231",
           "routeCount": 12,
           "problemShapes": 5,
@@ -526,8 +522,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "lastFeedSourceKind": "configured",
@@ -700,7 +695,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 292,
+          "featureCount": 293,
           "feedExpiry": "20261220",
           "routeCount": 52,
           "problemShapes": 0,
@@ -829,8 +824,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -953,8 +947,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -1159,8 +1152,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -1230,7 +1222,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 5,
-          "featureCount": 736,
+          "featureCount": 742,
           "feedExpiry": "20261213",
           "routeCount": 174,
           "problemShapes": 0,
@@ -1238,8 +1230,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -1302,8 +1293,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/d78a1c1ad6a940009de8b68839a8f606/data",
@@ -1511,8 +1501,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20271029",
       "lastFeedVersion": "1/20261029 03:35:57/20261029 04:00:00",
@@ -1563,7 +1552,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 4,
           "routeHeadwayMismatches": 0,
-          "featureCount": 49,
+          "featureCount": 51,
           "feedExpiry": "20261231",
           "routeCount": 18,
           "problemShapes": 4,
@@ -1822,8 +1811,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -1954,8 +1942,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -2220,8 +2207,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -2359,8 +2345,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -2429,8 +2414,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Montreal",
       "feedRefreshStatus": "current",
@@ -2483,7 +2467,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 189,
+          "featureCount": 190,
           "feedExpiry": "20261220",
           "routeCount": 76,
           "problemShapes": 0,
@@ -2491,8 +2475,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Montreal",
       "lastFeedSourceKind": "configured",
@@ -2562,7 +2545,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 4,
-          "featureCount": 1118,
+          "featureCount": 1119,
           "feedExpiry": "20270103",
           "routeCount": 207,
           "problemShapes": 0,
@@ -2570,8 +2553,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Montreal",
       "lastFeedSourceKind": "configured",
@@ -2816,8 +2798,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270103",
       "lastServiceWeek": "41a2fb33edd6b074",
@@ -3094,8 +3075,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270103",
       "lastServiceWeek": "1baa51f8550c5d03",
@@ -3165,8 +3145,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270103",
       "lastServiceWeek": "692e39935f5b700d",
@@ -3398,7 +3377,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 351,
+          "featureCount": 355,
           "feedExpiry": "20270103",
           "routeCount": 69,
           "problemShapes": 0,
@@ -3544,8 +3523,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Edmonton",
       "lastFeedSourceKind": "configured",
@@ -3614,7 +3592,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 904,
+          "featureCount": 906,
           "feedExpiry": "20261212",
           "routeCount": 240,
           "problemShapes": 0,
@@ -3622,8 +3600,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Edmonton",
       "feedRefreshStatus": "current",
@@ -3677,7 +3654,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 329,
+          "featureCount": 332,
           "feedExpiry": "20261212",
           "routeCount": 72,
           "problemShapes": 0,
@@ -3685,8 +3662,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Winnipeg",
       "lastFeedSourceKind": "configured",
@@ -3739,7 +3715,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 5,
           "routeHeadwayMismatches": 1,
-          "featureCount": 95,
+          "featureCount": 96,
           "feedExpiry": "20270109",
           "routeCount": 22,
           "problemShapes": 0,
@@ -3747,8 +3723,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -3874,8 +3849,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-734/latest.zip",
@@ -4059,8 +4033,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -4115,8 +4088,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -4235,7 +4207,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 1,
-          "featureCount": 277,
+          "featureCount": 279,
           "feedExpiry": "20261205",
           "routeCount": 54,
           "problemShapes": 0,
@@ -4319,8 +4291,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -4379,8 +4350,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -4502,8 +4472,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "modeOverrides": [
         {
@@ -4558,7 +4527,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 227,
+          "featureCount": 228,
           "feedExpiry": "20270103",
           "routeCount": 45,
           "problemShapes": 0,
@@ -4566,8 +4535,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Detroit",
       "lastFeedSourceKind": "configured",
@@ -4681,8 +4649,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -4781,8 +4748,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
@@ -4835,8 +4801,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270504",
       "lastFeedVersion": "21",
@@ -4954,8 +4919,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://scheduledata.rgrta.com/google_transit.zip",
@@ -5010,8 +4974,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -5069,8 +5032,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -5120,8 +5082,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -5166,7 +5127,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 83,
+          "featureCount": 84,
           "feedExpiry": "20271231",
           "routeCount": 23,
           "problemShapes": 0,
@@ -5228,7 +5189,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 31,
           "routeHeadwayMismatches": 0,
-          "featureCount": 79,
+          "featureCount": 80,
           "feedExpiry": "20270213",
           "routeCount": 29,
           "problemShapes": 11,
@@ -5289,8 +5250,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -5349,8 +5309,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -5401,8 +5360,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -5454,7 +5412,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 113,
+          "featureCount": 114,
           "feedExpiry": "20271231",
           "routeCount": 21,
           "problemShapes": 0,
@@ -5462,8 +5420,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -5505,7 +5462,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 134,
+          "featureCount": 136,
           "feedExpiry": "20261220",
           "routeCount": 32,
           "problemShapes": 0,
@@ -5513,8 +5470,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Detroit",
       "feedRefreshStatus": "current",
@@ -5563,7 +5519,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 17,
           "routeHeadwayMismatches": 3,
-          "featureCount": 159,
+          "featureCount": 160,
           "feedExpiry": "20270103",
           "routeCount": 30,
           "problemShapes": 0,
@@ -5571,8 +5527,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -5659,7 +5614,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 5,
           "routeHeadwayMismatches": 11,
-          "featureCount": 1114,
+          "featureCount": 1119,
           "feedExpiry": "20261212",
           "routeCount": 187,
           "problemShapes": 4,
@@ -5831,7 +5786,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 2,
-          "featureCount": 124,
+          "featureCount": 128,
           "feedExpiry": "20270213",
           "routeCount": 24,
           "problemShapes": 0,
@@ -5896,7 +5851,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 2,
-          "featureCount": 1015,
+          "featureCount": 1023,
           "feedExpiry": "20270109",
           "routeCount": 184,
           "problemShapes": 0,
@@ -5904,8 +5859,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -5953,8 +5907,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Edmonton",
       "lastFeedSourceKind": "configured",
@@ -6089,8 +6042,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -6584,8 +6536,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Vancouver",
       "feedRefreshStatus": "current",
@@ -6648,7 +6599,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 799,
+          "featureCount": 803,
           "feedExpiry": "20271231",
           "routeCount": 142,
           "problemShapes": 0,
@@ -6667,7 +6618,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "519eb4a14554b073",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261029",
+      "lastFeedStart": "20260928",
       "lastRawArchiveKey": "20270326-ff9b26cf8dc49558",
       "lastFeedContentKey": "f7c177636f1ad8e5"
     },
@@ -6734,7 +6685,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 24,
+          "featureCount": 23,
           "feedExpiry": "20270328",
           "routeCount": 5,
           "problemShapes": 0,
@@ -6773,7 +6724,7 @@
       "lastPeekedExpiry": "20270328",
       "lastServiceWeek": "3a1699ab963194b3",
       "feedObtainedAt": "20261116",
-      "lastFeedStart": "20261101",
+      "lastFeedStart": "20261001",
       "lastRawArchiveKey": "20270326-c7e14003910e5b32",
       "lastFeedContentKey": "6643cb33b347bfcd"
     },
@@ -6824,7 +6775,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 214,
+          "featureCount": 215,
           "feedExpiry": "20261212",
           "routeCount": 39,
           "problemShapes": 0,
@@ -6903,8 +6854,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7028,8 +6978,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7286,8 +7235,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270401",
       "lastServiceWeek": "d9c4a9cea0298518",
@@ -7344,8 +7292,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7406,8 +7353,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7665,7 +7611,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "aa270f40f9da1d05",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-b7d58bb4a7f43d24",
       "lastFeedContentKey": "254606f01f3b6377"
     },
@@ -7721,8 +7667,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://s3.amazonaws.com/datatools-511ny/public/Hudson_Link.zip",
@@ -7776,8 +7721,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7960,8 +7904,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -8024,8 +7967,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -8183,8 +8125,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -8305,7 +8246,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 136,
+          "featureCount": 138,
           "feedExpiry": "20270102",
           "routeCount": 30,
           "problemShapes": 0,
@@ -8372,8 +8313,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -8434,8 +8374,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8496,8 +8435,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8568,8 +8506,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8630,8 +8567,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8693,8 +8629,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8756,8 +8691,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -8870,8 +8804,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastServiceWeek": "2b20c11478c25cee",
       "feedObtainedAt": "20261102",
@@ -9072,7 +9005,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 518,
+          "featureCount": 520,
           "feedExpiry": "20270403",
           "routeCount": 123,
           "problemShapes": 0,
@@ -9147,8 +9080,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.vta.org/gtfs_vta.zip",
@@ -9235,8 +9167,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -9307,8 +9238,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -9448,8 +9378,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -9511,8 +9440,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -9649,8 +9577,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270110",
       "feedRefreshStatus": "current",
@@ -9715,8 +9642,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -9817,8 +9743,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -9877,8 +9802,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -10004,8 +9928,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -10225,8 +10148,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -10610,7 +10532,7 @@
       ],
       "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-125/latest.zip",
-      "lastFeedExpiry": "20261231",
+      "lastFeedExpiry": "20270201",
       "lastFeedVersion": "UTC: 20-Oct-2026 18:09",
       "lastRefreshedAt": "2026-11-16",
       "lastFeedCheckAt": "20261116",
@@ -10629,7 +10551,7 @@
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 0,
           "featureCount": 16,
-          "feedExpiry": "20261231",
+          "feedExpiry": "20270201",
           "routeCount": 8,
           "problemShapes": 1,
           "problemShapeRoutes": 0,
@@ -10641,8 +10563,8 @@
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/basin-or-us/basin-or-us.zip",
-      "lastPeekedExpiry": "20270101",
-      "lastFeedStart": "20261020",
+      "lastPeekedExpiry": "20270201",
+      "lastFeedStart": "20260821",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
@@ -10756,8 +10678,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -10805,7 +10726,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 31,
+          "featureCount": 32,
           "feedExpiry": "20270228",
           "routeCount": 9,
           "problemShapes": 0,
@@ -10813,8 +10734,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -10874,8 +10794,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -10986,8 +10905,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -11045,8 +10963,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -11182,8 +11099,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "stale",
       "feedRefreshError": "all available feeds expired (latest 20260201)",
@@ -11313,8 +11229,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -11434,8 +11349,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -11492,8 +11406,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -11554,8 +11467,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -11704,8 +11616,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12002,8 +11913,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -12125,7 +12035,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 269,
+          "featureCount": 271,
           "feedExpiry": "20270213",
           "routeCount": 53,
           "problemShapes": 0,
@@ -12133,8 +12043,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12197,8 +12106,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12317,7 +12225,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 503,
+          "featureCount": 507,
           "feedExpiry": "20270130",
           "routeCount": 103,
           "problemShapes": 0,
@@ -12488,8 +12396,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12547,7 +12454,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 157,
+          "featureCount": 158,
           "feedExpiry": "20270103",
           "routeCount": 28,
           "problemShapes": 0,
@@ -12555,8 +12462,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12612,8 +12518,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12667,8 +12572,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12726,8 +12630,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12857,7 +12760,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 171,
+          "featureCount": 172,
           "feedExpiry": "20261204",
           "routeCount": 38,
           "problemShapes": 0,
@@ -12865,8 +12768,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -12910,7 +12812,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 143,
+          "featureCount": 146,
           "feedExpiry": "20261129",
           "routeCount": 38,
           "problemShapes": 0,
@@ -12918,8 +12820,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -13212,8 +13113,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -13494,7 +13394,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 2,
           "routeHeadwayMismatches": 1,
-          "featureCount": 717,
+          "featureCount": 723,
           "feedExpiry": "20270102",
           "routeCount": 130,
           "problemShapes": 0,
@@ -13614,8 +13514,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Denver",
       "feedRefreshStatus": "current",
@@ -13661,7 +13560,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 127,
+          "featureCount": 128,
           "feedExpiry": "20261211",
           "routeCount": 22,
           "problemShapes": 0,
@@ -13669,8 +13568,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -13735,7 +13633,7 @@
       "lastFeedSourceUrl": "https://passio3.com/santafenm/passioTransit/gtfs/google_transit.zip",
       "lastServiceWeek": "0e1ba62bb86d89e4",
       "feedObtainedAt": "20261116",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastFeedContentKey": "b454a5b8dec0afc7"
     },
     {
@@ -13865,8 +13763,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -13963,8 +13860,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -14033,8 +13929,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "feedRefreshStatus": "current",
@@ -14193,7 +14088,7 @@
         -92.3139
       ],
       "feedUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
-      "lastFeedExpiry": "20261115",
+      "lastFeedExpiry": "20261231",
       "lastFeedVersion": null,
       "region": "Arkansas",
       "lastRefreshedAt": "2026-11-06",
@@ -14214,29 +14109,26 @@
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.rrmetro.cadavl.com/RRMETRO/GTFS/GTFS_RRMETRO.zip",
       "feedQuality": {
-        "status": "degraded",
-        "score": 65,
-        "reasons": [
-          "The schedule dates in this feed have passed."
-        ],
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
         "metrics": {
           "validationErrors": 0,
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 92,
-          "feedExpiry": "20261115",
+          "featureCount": 93,
+          "feedExpiry": "20261231",
           "routeCount": 16,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
-      "lastPeekedExpiry": "20261115",
-      "lastFeedStart": "20261106",
+      "lastPeekedExpiry": "20261231",
+      "lastFeedStart": "20261008",
       "lastServiceWeek": "7d5d2b179e4d9049",
       "feedObtainedAt": "20261106"
     },
@@ -14286,8 +14178,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -14335,7 +14226,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 143,
+          "featureCount": 144,
           "feedExpiry": "20261205",
           "routeCount": 25,
           "problemShapes": 0,
@@ -14415,8 +14306,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -14467,8 +14357,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -14517,7 +14406,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 36,
           "routeHeadwayMismatches": 0,
-          "featureCount": 116,
+          "featureCount": 117,
           "feedExpiry": "20270109",
           "routeCount": 14,
           "problemShapes": 0,
@@ -14525,8 +14414,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270109",
       "feedRefreshStatus": "current",
@@ -14586,8 +14474,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastServiceWeek": "e4e8e6c9e16a7092",
       "lastFeedStart": "20260823",
@@ -14707,7 +14594,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 423,
+          "featureCount": 424,
           "feedExpiry": "20261129",
           "routeCount": 59,
           "problemShapes": 0,
@@ -14781,7 +14668,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 199,
+          "featureCount": 200,
           "feedExpiry": "20270102",
           "routeCount": 30,
           "problemShapes": 0,
@@ -14789,8 +14676,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270102",
       "lastServiceWeek": "b012dea50dea6c51",
@@ -14837,8 +14723,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15022,8 +14907,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15072,8 +14956,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15307,8 +15190,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15358,8 +15240,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15428,8 +15309,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastServiceWeek": "7254c05ceaac9a27",
       "feedObtainedAt": "20261002",
@@ -15546,8 +15426,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20301231",
       "feedRefreshStatus": "current",
@@ -15659,7 +15538,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 3,
-          "featureCount": 986,
+          "featureCount": 988,
           "feedExpiry": "20261231",
           "routeCount": 132,
           "problemShapes": 0,
@@ -15794,7 +15673,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 5,
-          "featureCount": 678,
+          "featureCount": 683,
           "feedExpiry": "20261219",
           "routeCount": 134,
           "problemShapes": 0,
@@ -15802,8 +15681,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15864,8 +15742,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15922,8 +15799,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15979,8 +15855,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -16051,7 +15926,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 582,
+          "featureCount": 583,
           "feedExpiry": "20271231",
           "routeCount": 123,
           "problemShapes": 0,
@@ -16059,8 +15934,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-331/latest.zip",
@@ -16160,8 +16034,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20280930",
       "lastServiceWeek": "eb51abf65c72524e",
@@ -16281,7 +16154,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 4,
-          "featureCount": 1086,
+          "featureCount": 1089,
           "feedExpiry": "20270220",
           "routeCount": 161,
           "problemShapes": 0,
@@ -16415,7 +16288,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 757,
+          "featureCount": 761,
           "feedExpiry": "20270327",
           "routeCount": 126,
           "problemShapes": 0,
@@ -16657,8 +16530,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://mcg.montgomerycountymd.gov/DOT-Transit/Resources/Files/GTFS/RideOnGTFS.zip",
@@ -16727,8 +16599,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -16788,8 +16659,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -16855,8 +16725,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -16947,8 +16816,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -17019,8 +16887,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-513/latest.zip",
@@ -17091,8 +16958,7 @@
           "mismatchRoutes": 2,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-512/latest.zip",
@@ -17152,7 +17018,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 240,
+          "featureCount": 241,
           "feedExpiry": "20270102",
           "routeCount": 40,
           "problemShapes": 0,
@@ -17160,8 +17026,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-520/latest.zip",
@@ -17230,8 +17095,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-528/latest.zip",
@@ -17301,8 +17165,7 @@
           "mismatchRoutes": 6,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-514/latest.zip",
@@ -17359,7 +17222,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 7,
-          "featureCount": 492,
+          "featureCount": 493,
           "feedExpiry": "20270102",
           "routeCount": 92,
           "problemShapes": 0,
@@ -17367,8 +17230,7 @@
           "mismatchRoutes": 6,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "20261012",
@@ -17633,7 +17495,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 10,
           "routeHeadwayMismatches": 20,
-          "featureCount": 2040,
+          "featureCount": 2048,
           "feedExpiry": "20270417",
           "routeCount": 261,
           "problemShapes": 0,
@@ -17800,7 +17662,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 3,
-          "featureCount": 245,
+          "featureCount": 249,
           "feedExpiry": "20270209",
           "routeCount": 57,
           "problemShapes": 0,
@@ -17808,8 +17670,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastServiceWeek": "96e3029320158a8e",
       "feedObtainedAt": "20261013",
@@ -17866,7 +17727,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 3,
-          "featureCount": 228,
+          "featureCount": 229,
           "feedExpiry": "20270109",
           "routeCount": 46,
           "problemShapes": 0,
@@ -18132,8 +17993,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -18246,7 +18106,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 513,
+          "featureCount": 515,
           "feedExpiry": "20270220",
           "routeCount": 100,
           "problemShapes": 0,
@@ -18254,8 +18114,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -18352,8 +18211,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18414,8 +18272,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18477,8 +18334,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18529,7 +18385,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 79,
+          "featureCount": 80,
           "feedExpiry": "20261231",
           "routeCount": 24,
           "problemShapes": 0,
@@ -18537,8 +18393,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18602,8 +18457,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18725,8 +18579,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18785,8 +18638,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18906,8 +18758,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -18969,8 +18820,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -19031,8 +18881,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -19277,8 +19126,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -19355,7 +19203,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "a8006c3ef45d3130",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-d009ebf5574617c0",
       "lastFeedContentKey": "03dadf12cb15fc7c"
     },
@@ -19579,8 +19427,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20260710",
@@ -19632,8 +19479,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20260519",
@@ -19677,7 +19523,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 2,
           "routeHeadwayMismatches": 0,
-          "featureCount": 96,
+          "featureCount": 98,
           "feedExpiry": "20290131",
           "routeCount": 22,
           "problemShapes": 0,
@@ -19685,8 +19531,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20290131",
       "lastFeedVersion": "20261105",
@@ -19738,8 +19583,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270131",
       "lastFeedVersion": "20260720",
@@ -19791,8 +19635,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20260302",
@@ -19844,8 +19687,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270630",
       "lastFeedVersion": "20260903",
@@ -19898,8 +19740,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270731",
       "lastFeedVersion": "20261104",
@@ -19944,7 +19785,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 36,
+          "featureCount": 38,
           "feedExpiry": "20261231",
           "routeCount": 16,
           "problemShapes": 0,
@@ -19952,8 +19793,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20260217",
@@ -20006,8 +19846,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20261105",
@@ -20169,7 +20008,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 229,
+          "featureCount": 231,
           "feedExpiry": "20270326",
           "routeCount": 40,
           "problemShapes": 0,
@@ -20177,8 +20016,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "modeOverrides": [
         {
@@ -20296,7 +20134,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 201,
+          "featureCount": 203,
           "feedExpiry": "20270131",
           "routeCount": 34,
           "problemShapes": 0,
@@ -20304,8 +20142,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -20560,7 +20397,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 170,
+          "featureCount": 171,
           "feedExpiry": "20270102",
           "routeCount": 31,
           "problemShapes": 0,
@@ -20568,8 +20405,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -20623,8 +20459,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -20688,8 +20523,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261212",
       "feedRefreshStatus": "current",
@@ -20739,8 +20573,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "Pacific/Honolulu",
       "feedRefreshStatus": "current",
@@ -20790,7 +20623,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 316,
+          "featureCount": 317,
           "feedExpiry": "20270115",
           "routeCount": 59,
           "problemShapes": 0,
@@ -20798,8 +20631,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -20857,8 +20689,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20271014",
       "feedRefreshStatus": "current",
@@ -20916,8 +20747,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -20982,8 +20812,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -21042,8 +20871,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -21088,7 +20916,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 9,
           "routeHeadwayMismatches": 0,
-          "featureCount": 79,
+          "featureCount": 80,
           "feedExpiry": "20271002",
           "routeCount": 23,
           "problemShapes": 0,
@@ -21096,8 +20924,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -21204,7 +21031,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 3,
           "routeHeadwayMismatches": 0,
-          "featureCount": 79,
+          "featureCount": 83,
           "feedExpiry": "20261206",
           "routeCount": 19,
           "problemShapes": 0,
@@ -21312,8 +21139,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270130",
       "feedRefreshStatus": "current",
@@ -21373,8 +21199,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://www.loudoun.gov/loudountransitgtfs",
@@ -21429,8 +21254,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20501230",
       "feedRefreshStatus": "current",
@@ -21481,7 +21305,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 83,
+          "featureCount": 85,
           "feedExpiry": "20270301",
           "routeCount": 24,
           "problemShapes": 0,
@@ -21489,8 +21313,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -21582,8 +21405,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261231",
       "lastFeedStart": "20260115"
@@ -21643,7 +21465,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 320,
+          "featureCount": 322,
           "feedExpiry": "20270522",
           "routeCount": 61,
           "problemShapes": 0,
@@ -21651,8 +21473,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270522",
       "feedRefreshStatus": "current",
@@ -21707,8 +21528,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -22016,8 +21836,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -22070,7 +21889,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 100,
+          "featureCount": 101,
           "feedExpiry": "20270527",
           "routeCount": 23,
           "problemShapes": 0,
@@ -22078,8 +21897,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedStart": "20261105",
       "feedRefreshStatus": "current",
@@ -22136,8 +21954,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270529",
       "lastPeekedExpiry": "20270529",
@@ -22198,7 +22015,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 112,
+          "featureCount": 115,
           "feedExpiry": "20261122",
           "routeCount": 18,
           "problemShapes": 0,
@@ -22272,8 +22089,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261205",
       "lastFeedStart": "20260910",
@@ -22427,8 +22243,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -22610,8 +22425,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2266/latest.zip",
@@ -22656,7 +22470,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 28,
+          "featureCount": 27,
           "feedExpiry": "20270130",
           "routeCount": 10,
           "problemShapes": 0,
@@ -22664,8 +22478,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -22790,8 +22603,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -22847,8 +22659,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -22974,8 +22785,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "stale",
       "feedRefreshError": "GTFS validation failed (1 error(s))",
@@ -23033,8 +22843,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -23154,8 +22963,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -23277,8 +23085,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -23470,8 +23277,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -23593,8 +23399,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270215",
       "feedRefreshStatus": "current",
@@ -23727,7 +23532,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "20a2aa6db3b08110",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-74311bb1729a0fc0",
       "lastFeedContentKey": "9a4cc1854a097ad1"
     },
@@ -23911,7 +23716,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 111,
+          "featureCount": 113,
           "feedExpiry": "20261118",
           "routeCount": 22,
           "problemShapes": 0,
@@ -23919,8 +23724,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -23976,8 +23780,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24040,8 +23843,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24133,8 +23935,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2330/latest.zip",
@@ -24253,8 +24054,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24358,8 +24158,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24407,8 +24206,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
@@ -24523,8 +24321,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24578,8 +24375,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "US/Central",
       "lastFeedSourceKind": "configured",
@@ -24630,7 +24426,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 37,
+          "featureCount": 38,
           "feedExpiry": "20270110",
           "routeCount": 8,
           "problemShapes": 0,
@@ -24691,8 +24487,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24804,8 +24599,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24911,8 +24705,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -25028,8 +24821,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20261218",
       "lastServiceWeek": "c3ae93e734bd1912",
@@ -25196,8 +24988,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -25313,8 +25104,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -25417,8 +25207,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -25484,7 +25273,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "d85ed8aa4ed3af7f",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-c3fc4eea7ead2871",
       "lastFeedContentKey": "8bbec192634cb8c0"
     },
@@ -25586,8 +25375,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://racine.connexionz.net/rtt/public/utility/gtfs.aspx",
@@ -25639,8 +25427,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -25700,8 +25487,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270425",
       "lastFeedStart": "20261102",
@@ -25747,7 +25533,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 127,
+          "featureCount": 128,
           "feedExpiry": "20261219",
           "routeCount": 26,
           "problemShapes": 0,
@@ -25869,8 +25655,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Detroit",
       "feedRefreshStatus": "current",
@@ -25923,7 +25708,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 131,
+          "featureCount": 134,
           "feedExpiry": "20261231",
           "routeCount": 25,
           "problemShapes": 0,
@@ -25931,8 +25716,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26090,7 +25874,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 160,
+          "featureCount": 161,
           "feedExpiry": "20270124",
           "routeCount": 40,
           "problemShapes": 0,
@@ -26098,8 +25882,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -26205,7 +25988,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 15,
           "routeHeadwayMismatches": 1,
-          "featureCount": 101,
+          "featureCount": 102,
           "feedExpiry": "20261231",
           "routeCount": 29,
           "problemShapes": 2,
@@ -26213,8 +25996,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26279,7 +26061,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "cd0938eca3e1841f",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-0a1e9d4211879f54",
       "lastFeedContentKey": "f140c2997dbc3b26"
     },
@@ -26318,7 +26100,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 9,
           "routeHeadwayMismatches": 0,
-          "featureCount": 72,
+          "featureCount": 73,
           "feedExpiry": "20270103",
           "routeCount": 18,
           "problemShapes": 4,
@@ -26326,8 +26108,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -26382,8 +26163,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26439,8 +26219,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx",
@@ -26497,8 +26276,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26546,19 +26324,19 @@
       "lastPeekedExpiry": "20271231",
       "feedQuality": {
         "status": "review",
-        "score": 85,
+        "score": 64,
         "reasons": [
-          "1 minor schedule issue found while reading the feed.",
+          "3 minor schedule issues found while reading the feed.",
           "1 route has stops whose frequency differs from the overall route schedule."
         ],
         "metrics": {
           "validationErrors": 0,
-          "validationWarnings": 1,
+          "validationWarnings": 3,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 39,
+          "featureCount": 37,
           "feedExpiry": "20271231",
-          "routeCount": 20,
+          "routeCount": 18,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
           "mismatchRoutes": 1,
@@ -26572,7 +26350,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "919cb92ec414300a",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-149f103fe3cbd50d",
       "lastFeedContentKey": "f118e9718df881be"
     },
@@ -26631,8 +26409,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -26699,7 +26476,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "230cde35b2f187a3",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-e8b20612f791692c",
       "lastFeedContentKey": "e5513709cb1f351a"
     },
@@ -26755,8 +26532,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20501230",
       "feedRefreshStatus": "current",
@@ -26824,7 +26600,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "3acd3d1ddbc3c11f",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-844d63d11edbc8f7",
       "lastFeedContentKey": "f2b151c1dd7fc113"
     },
@@ -27005,8 +26781,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -27098,8 +26873,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -27211,8 +26985,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -27267,8 +27040,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "feedRefreshStatus": "current",
@@ -27385,7 +27157,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 47,
+          "featureCount": 48,
           "feedExpiry": "20281116",
           "routeCount": 20,
           "problemShapes": 0,
@@ -27393,8 +27165,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20290629",
       "feedRefreshStatus": "current",
@@ -27453,8 +27224,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -27520,8 +27290,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20501230",
       "feedRefreshStatus": "current",
@@ -27642,8 +27411,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -27806,7 +27574,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 106,
+          "featureCount": 107,
           "feedExpiry": "20270313",
           "routeCount": 30,
           "problemShapes": 0,
@@ -27814,8 +27582,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-2122/latest.zip",
@@ -27873,8 +27640,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -27994,8 +27760,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -28053,7 +27818,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 31,
+          "featureCount": 29,
           "feedExpiry": "20271231",
           "routeCount": 19,
           "problemShapes": 0,
@@ -28069,7 +27834,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "d7bd0a5158573a6a",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261114",
+      "lastFeedStart": "20261017",
       "lastRawArchiveKey": "20261215-510b4ade471d8415",
       "lastFeedContentKey": "f36622a41fdec9a5"
     },
@@ -28113,7 +27878,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 48,
+          "featureCount": 50,
           "feedExpiry": "20261230",
           "routeCount": 24,
           "problemShapes": 0,
@@ -28132,8 +27897,9 @@
       "lastPeekedExpiry": "20261230",
       "lastServiceWeek": "cab5ce21d45bbb8f",
       "feedObtainedAt": "20261116",
-      "lastFeedStart": "20261113",
-      "lastFeedContentKey": "88ea9e4ccacf0a59"
+      "lastFeedStart": "20261001",
+      "lastFeedContentKey": "88ea9e4ccacf0a59",
+      "listingEndedOn": "20261030"
     },
     {
       "slug": "cata-state-college",
@@ -28178,8 +27944,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "lastFeedSourceKind": "configured",
@@ -28231,7 +27996,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 1,
-          "featureCount": 45,
+          "featureCount": 46,
           "feedExpiry": "20270514",
           "routeCount": 21,
           "problemShapes": 0,
@@ -28239,8 +28004,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -28299,8 +28063,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "feedRefreshStatus": "current",
@@ -28362,8 +28125,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "feedRefreshStatus": "current",
@@ -28424,8 +28186,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -28498,7 +28259,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "c012908dcd017a93",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261114",
+      "lastFeedStart": "20261017",
       "lastRawArchiveKey": "20261215-830931be06c45204",
       "lastFeedContentKey": "c8f9606fc577b727"
     },
@@ -28548,8 +28309,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -28669,7 +28429,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 2,
           "routeHeadwayMismatches": 1,
-          "featureCount": 112,
+          "featureCount": 113,
           "feedExpiry": "20270103",
           "routeCount": 20,
           "problemShapes": 2,
@@ -28677,8 +28437,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -28741,8 +28500,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "refusedFeedSha256": "e901a61abb6b1a26ace0577213fa1096cc3baa1d26764dfd54d08cdfbbe3a24a",
       "lastFeedStart": "20261017"
@@ -28797,8 +28555,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastRawArchiveKey": "20280115-c8d565a4e3fb20e9",
       "lastFeedContentKey": "7fac8279d849a761",
@@ -28916,8 +28673,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -28974,8 +28730,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -29047,7 +28802,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "8d1488151c5eac18",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261114",
+      "lastFeedStart": "20261017",
       "lastRawArchiveKey": "20261215-2e3e3e1fc96add42",
       "lastFeedContentKey": "f9a3b7d77093c30f"
     },
@@ -29091,7 +28846,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 24,
+          "featureCount": 22,
           "feedExpiry": "20271231",
           "routeCount": 11,
           "problemShapes": 0,
@@ -29107,7 +28862,7 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "b24e418fab89e110",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261114",
+      "lastFeedStart": "20261017",
       "lastRawArchiveKey": "20261215-cd7b5cf3bd78d12a",
       "lastFeedContentKey": "8ba7dca7f32883f6"
     },
@@ -29225,7 +28980,7 @@
       "lastPeekedExpiry": "20270430",
       "lastServiceWeek": "539d1b92e7f408a1",
       "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261105",
+      "lastFeedStart": "20261002",
       "lastRawArchiveKey": "20270425-7f97b8370deb4574",
       "lastFeedContentKey": "4877f3670fcecfd4"
     },
@@ -29294,8 +29049,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20290115",
       "lastFeedStart": "20260917",
@@ -29347,8 +29101,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -29406,8 +29159,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedStart": "20240701",
       "feedRefreshStatus": "current",
@@ -29464,8 +29216,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -29590,8 +29341,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20351231",
       "feedRefreshStatus": "current",
@@ -29652,8 +29402,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -29711,8 +29460,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
@@ -29778,8 +29526,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -29899,8 +29646,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Chicago",
       "lastFeedSourceKind": "configured",
@@ -29961,8 +29707,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -30024,8 +29769,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -30210,8 +29954,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20271231",
       "feedRefreshStatus": "current",
@@ -30327,8 +30070,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://webapps.fo.umich.edu/transit_uploads/google_transit.zip",
@@ -30521,8 +30263,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -30642,7 +30383,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 1,
           "routeHeadwayMismatches": 0,
-          "featureCount": 22,
+          "featureCount": 26,
           "feedExpiry": "20281231",
           "routeCount": 6,
           "problemShapes": 1,
@@ -30650,8 +30391,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -30697,7 +30437,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 27,
+          "featureCount": 29,
           "feedExpiry": "20271231",
           "routeCount": 11,
           "problemShapes": 0,
@@ -30716,7 +30456,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "75170ffdd5a3dc95",
       "feedObtainedAt": "20261116",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastFeedContentKey": "7bb67b759305f031"
     },
     {
@@ -30835,8 +30575,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedStart": "20261019",
       "feedRefreshStatus": "current",
@@ -30892,8 +30631,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31020,8 +30758,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31160,8 +30897,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastPeekedExpiry": "20270201",
       "feedRefreshStatus": "current",
@@ -31308,8 +31044,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31370,8 +31105,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31486,7 +31220,7 @@
           "validationWarnings": 1,
           "shapeAnomalies": 3,
           "routeHeadwayMismatches": 0,
-          "featureCount": 45,
+          "featureCount": 48,
           "feedExpiry": "20270130",
           "routeCount": 12,
           "problemShapes": 3,
@@ -31557,8 +31291,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31611,7 +31344,7 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 0,
-          "featureCount": 25,
+          "featureCount": 26,
           "feedExpiry": "20270101",
           "routeCount": 9,
           "problemShapes": 0,
@@ -31619,8 +31352,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31680,8 +31412,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31735,8 +31466,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -31833,8 +31563,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31895,8 +31624,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -31951,8 +31679,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -32068,8 +31795,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "lastFeedSourceKind": "configured",
@@ -32197,8 +31923,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -32290,8 +32015,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -32349,8 +32073,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -32381,7 +32104,7 @@
       ],
       "feedUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
       "agencyId": "23",
-      "lastFeedExpiry": "20271231",
+      "lastFeedExpiry": "20270326",
       "lastFeedVersion": "FAL26-161.5",
       "lastRefreshedAt": "2026-11-16",
       "lastFeedCheckAt": "20261116",
@@ -32414,7 +32137,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://metro.kingcounty.gov/GTFS/google_transit.zip",
-      "lastPeekedExpiry": "20271231",
+      "lastPeekedExpiry": "20270326",
       "lastServiceWeek": "519eb4a14554b073",
       "feedObtainedAt": "20261116",
       "lastFeedStart": "20261029",
@@ -35275,8 +34998,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270131",
       "lastFeedVersion": "20261102",
@@ -35355,7 +35077,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "0538c41af06db047",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-d396fe4fe1522a54",
       "lastFeedContentKey": "5451bdcf643106d3"
     },
@@ -35458,8 +35180,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "20250101",
@@ -35517,8 +35238,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20281116",
       "lastFeedVersion": "Yellow Route Fixed",
@@ -35576,8 +35296,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20301001",
       "lastFeedVersion": "1",
@@ -35701,8 +35420,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20301031",
       "lastFeedVersion": "20240118",
@@ -35762,8 +35480,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20250228",
@@ -35843,7 +35560,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "4ef348f9ed0cb650",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-68cb6b733bab4b25",
       "lastFeedContentKey": "f932ee00eb16d5d3"
     },
@@ -36017,8 +35734,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "Updated: Oct 28, 2025, 12:33 PM",
@@ -36140,8 +35856,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20261231",
       "lastFeedVersion": "20260316",
@@ -36199,8 +35914,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270923",
       "lastFeedVersion": "",
@@ -36322,8 +36036,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedExpiry": "20270430",
       "lastFeedVersion": "20260512",
@@ -36391,8 +36104,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -36455,8 +36167,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -36640,8 +36351,7 @@
           "mismatchRoutes": 0,
           "resumesOn": "20261123"
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -36676,7 +36386,7 @@
       "websiteUrl": "https://townofmountainvillage.com/getting-around/",
       "region": "Colorado",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2050/latest.zip",
-      "lastFeedExpiry": "20280503",
+      "lastFeedExpiry": "20270404",
       "lastFeedVersion": "UTC: 16-Oct-2026 21:24",
       "lastRefreshedAt": "2026-11-16",
       "cities": [
@@ -36715,7 +36425,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us--flex-v2.zip",
-      "lastPeekedExpiry": "20280503",
+      "lastPeekedExpiry": "20270404",
       "lastFeedStart": "20261016",
       "lastRawArchiveKey": "20270404-e028ddfa30ace595",
       "lastFeedContentKey": "b0b130a94e5662d5",
@@ -36838,8 +36548,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -37187,8 +36896,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -37510,7 +37218,7 @@
       "lastPeekedExpiry": "20271231",
       "lastServiceWeek": "093e4234723bf495",
       "feedObtainedAt": "20261102",
-      "lastFeedStart": "20261115",
+      "lastFeedStart": "20261018",
       "lastRawArchiveKey": "20261216-a3b3b57e6c78179f",
       "lastFeedContentKey": "01875e9b7f2cc31d"
     },
@@ -37549,8 +37257,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://data.trilliumtransit.com/gtfs/10-15transit-ia-us/10-15transit-ia-us.zip",
@@ -37602,8 +37309,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip",
@@ -37666,7 +37372,7 @@
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
-      "lastPeekedExpiry": "20400629",
+      "lastPeekedExpiry": "20501230",
       "lastServiceWeek": "e0cc370be7b1d79e",
       "feedObtainedAt": "20261116",
       "lastFeedStart": "20210628",
@@ -37707,8 +37413,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip",
@@ -37758,8 +37463,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://gatlinburg.connexionz.net/rtt/public/utility/gtfs.aspx",
@@ -37809,8 +37513,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip",
@@ -37862,8 +37565,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/12009/VistaTransit_AZ_GTFS.zip",
@@ -37916,8 +37618,7 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16",
-        "scoredAt": "2026-11-16"
+        "checkedAt": "2026-11-16"
       },
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/ellensburg-wa-us/ellensburg-wa-us.zip",
