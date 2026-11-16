@@ -28,7 +28,7 @@ import CardRouteList from './CardRouteList';
 import { OutboundLink } from '../OutboundLink';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
-import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, AGENCY_ABOUT_LINK_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
+import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
 import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
 import {
@@ -505,7 +505,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         <span className="truncate min-w-0">{area.label}</span>
       </ArrowLink>
     ),
-    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">{AGENCY_ABOUT_LINK_LABEL}</ArrowLink>,
+    hasAboutPage && <ArrowLink key="about" size="xs" tone="inline" href={agencyPagePath(agency.slug)} target="_blank" rel="noopener noreferrer">{DETAILS_LABEL}</ArrowLink>,
     hasSource && <AgencyDataSourceLink key="source" agency={agency} />,
   ].filter(Boolean) as React.ReactNode[];
   const rolloutNotice = getRolloutNotice(agency);

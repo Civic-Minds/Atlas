@@ -75,11 +75,11 @@ describe('Source link', () => {
   describe('header links (CIV-841)', () => {
     const ttc = { ...base, slug: 'ttc', name: 'Toronto Transit Commission', websiteUrl: 'https://www.ttc.ca' } as unknown as Agency;
 
-    it('the area link, About and Source on one line under the name, above the facts, each opening in a new tab (CIV-929)', () => {
+    it('the area link, Details and Source on one line under the name, above the facts, each opening in a new tab (CIV-929)', () => {
       card(ttc);
       const area = screen.getByRole('link', { name: 'Greater Toronto and Hamilton' });
       const facts = screen.getByText(/^\d+ routes?/);
-      const about = screen.getByRole('link', { name: 'About' });
+      const about = screen.getByRole('link', { name: 'Details' });
       const source = screen.getByRole('link', { name: /^Source/ });
       expect(about).toHaveAttribute('href', '/agency/ttc');
       expect(area).toHaveAttribute('href', '/area/toronto');
@@ -96,10 +96,10 @@ describe('Source link', () => {
       expect(screen.queryByText(/agencies$/)).toBeNull();
     });
 
-    it('public mode: About and the region link, no Source', () => {
+    it('public mode: Details and the region link, no Source', () => {
       flags.on = false;
       card(ttc);
-      expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Details' })).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Greater Toronto and Hamilton' })).toBeInTheDocument();
       expect(screen.queryByText('Source')).toBeNull();
     });

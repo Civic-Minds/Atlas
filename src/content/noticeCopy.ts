@@ -328,11 +328,12 @@ export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
 /** CIV-1692 (Ryan, option 1): the tag beside the wordmark says which Atlas this is. Beta on beta, Internal on the local dev server, none on public. */
-export const HEADER_TAG_BETA = 'Beta';
+/** The one Beta tag (CIV-1780, Ryan: one constant wherever the meaning is the same): beside the wordmark and on a What's New item. */
+export const BETA_TAG = 'Beta';
 export const HEADER_TAG_INTERNAL = 'Internal';
 /** The wordmark's tag for a mode, or null for none. Preview builds from the Beta project in beta mode, so it reads Beta too. */
 export function headerModeTag(mode: AtlasMode): string | null {
-  if (mode === 'beta') return HEADER_TAG_BETA;
+  if (mode === 'beta') return BETA_TAG;
   if (mode === 'dev') return HEADER_TAG_INTERNAL;
   return null;
 }
@@ -858,7 +859,6 @@ export const LIVE_TAB_LABEL = 'Live';
 export const LIVE_TAG = 'Live';
 export const HISTORY_TAG = 'History';
 export const NEW_TAG = 'New';
-export const BETA_TAG = 'Beta';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
 /** The analytics prompt. */
@@ -868,11 +868,11 @@ export const READ_PRIVACY_POLICY_LABEL = 'Read the Privacy Policy';
 export const SHOW_MORE_RESULTS_LABEL = 'Show more results';
 /** The recent searches list. */
 export const CLEAR_LABEL = 'Clear';
-/** The agency card's link to its agency page, and the stop card's details link. */
-export const AGENCY_ABOUT_LINK_LABEL = 'About';
+/** A card's link to more about it: the agency card's link to its agency page (CIV-1780, Ryan: "Details", as the stop card's; was "About") and an on-demand service's source. */
 export const DETAILS_LABEL = 'Details';
 export const SEE_ALL_CHANGES_LABEL = 'See all changes';
-export const EXPLORE_RESEARCH_LABEL = 'Explore research';
+/** About's link to the research (CIV-1780, Ryan: title case, as its heading). */
+export const EXPLORE_RESEARCH_LABEL = 'Explore Research';
 export const WHAT_ATLAS_SHOWS_LABEL = 'What Atlas shows';
 export const FEEDBACK_LABEL = 'Feedback';
 /** Section headings and table columns on the agency, area and index pages. */
