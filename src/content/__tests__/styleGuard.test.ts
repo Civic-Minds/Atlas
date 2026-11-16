@@ -170,12 +170,12 @@ const RULES: Rule[] = [
   { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_VEHICLES_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
     pattern: /(["'`])(Delays? starts?|Live vehicles|Live transit)\1/, slip: "label: 'Delay starts'", allowed: ['shared/liveWording.ts'] },
   // CIV-1774 (Ryan, 2026-11-16: "in one place only for grammar reasons /branding"): a button, link, tag, heading, control
-  // label or table column typed into a component. Its words go in noticeCopy (or PAGE_NAMES). Live code is Live's own
-  // (shared/liveWording.ts, the rule above); long-form story and Docs headings are prose, not labels.
+  // label or table column typed into a component. Its words go in noticeCopy (or PAGE_NAMES); Live's too since CIV-1781.
+  // Long-form story and Docs headings are prose, not labels.
   { name: 'a UI label typed into a component (put its words in noticeCopy or PAGE_NAMES)', doc: 'TEXT.md',
     pattern: /<(button|a|ArrowLink|Pill|Tag|SectionTitle|SubsectionTitle)\b[^>{]*>\s*[A-Z][^<{}]*<\/|\b(label|aria-label|ariaLabel|linkLabel|title)=["'][A-Z]|\bheader: ['"][A-Z]/,
     slip: '<ArrowLink href="/">Go to Atlas</ArrowLink>',
-    only: /^src\/(?!(?:.*\/)?[Ll]ive[^/]*$|.*(\/Live\/|Diagnostics|FrequentService|FreeChildFares|AirportStory|AboutDocsPage|charts\/(RunTimeChart|HourSpark))).*\.tsx$/ },
+    only: /^src\/(?!.*(Diagnostics|FrequentService|FreeChildFares|AirportStory|AboutDocsPage)).*\.tsx$/ },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];

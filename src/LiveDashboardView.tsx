@@ -20,7 +20,7 @@ import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
 import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE } from '../shared/liveWording';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError, DIRECTION_SHOWN_LABEL } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 
@@ -161,7 +161,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
     <Section id="dash-strip" title={ALONG_ROUTE_TITLE} intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
-          <PillGroup label="Direction shown" value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
+          <PillGroup label={DIRECTION_SHOWN_LABEL} value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
         </div>
       )}
       {/* One key for every direction shown, above the strips as in the Full analysis, as the map's route card shows its key once (CIV-1448). */}

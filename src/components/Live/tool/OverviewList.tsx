@@ -5,6 +5,7 @@ import type { DashboardBand, LiveV3 } from '../../../../shared/liveDashboard';
 import { routeLabels } from '../../../utils/format';
 import { measureLabel, type MapMeasure } from '../routeMapModel';
 import { rankRoutes, routeBars } from '../overviewListModel';
+import { ROUTES_HEADING } from '../../../content/noticeCopy';
 
 /**
  * The agency overview: every route with its figure for the chosen measure, worst first; a click selects the route. The
@@ -17,7 +18,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
   const shown = rows;
   const bars = useMemo(() => routeBars(rows, measure), [rows, measure]);
   return (
-    <section aria-label="Routes" className={`flex min-h-0 flex-initial flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur`}>
+    <section aria-label={ROUTES_HEADING} className={`flex min-h-0 flex-initial flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur`}>
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
         <span>Routes</span>
         <span>{measureLabel(measure)}</span>

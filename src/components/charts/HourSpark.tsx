@@ -6,6 +6,7 @@ import PeriodBand from './PeriodBand';
 import { AXIS_W, SPARK_BAR, SparkTicks } from './sparkParts';
 import DataTable from '../ui/DataTable';
 import { countText } from '../../../shared/numberText';
+import { HOUR_COLUMN } from '../../content/noticeCopy';
 
 export interface HourValue {
   /** Hour of day, 0-23. */
@@ -143,7 +144,7 @@ export default function HourSpark({ values, scale, color, barColor, format, aria
             rows={ordered}
             rowKey={v => v.hour}
             columns={[
-              { key: 'hour', header: 'Hour', rowHeader: true, className: 'font-normal', cell: v => clock(v.hour) },
+              { key: 'hour', header: HOUR_COLUMN, rowHeader: true, className: 'font-normal', cell: v => clock(v.hour) },
               { key: 'value', header: valueHeader, className: 'whitespace-nowrap', cell: v => format(v.value) },
               { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: v => countText(v.n) },
             ]}

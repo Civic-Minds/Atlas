@@ -882,3 +882,28 @@ export const AGENCY_COLUMN = 'Agency';
 export const ROUTES_FREQUENCY_HEADING = 'Routes and Weekday Frequency';
 export const ROUTE_COLUMN = 'Route';
 export const SERVICES_HEADING = 'Services';
+
+// CIV-1781: Live's labels, moved here word for word as CIV-1774 moved the rest ("Toggle light mode" now reads
+// TOGGLE_DARK_MODE_LABEL, CIV-1780). FILTERS_LABEL, DAY_LABEL, MAP_COLOURS_LABEL and ROUTE_COLUMN are shared.
+export const LAST_WEEK_COLUMN = 'Last week';
+export const STRETCH_COLUMN = 'Stretch';
+export const ROUTES_HEADING = 'Routes';
+export const DIRECTION_SHOWN_LABEL = 'Direction shown';
+export const VIEW_LABEL = 'View';
+export const MEASURE_LABEL = 'Measure';
+export const LOADING_LABEL = 'Loading…';
+export const ROUTE_MENU_LABEL = 'Route';
+export const LIVE_AT_STOP_LABEL = 'Live at this stop';
+export const NOTE_COLUMN = 'Note';
+export const DELIVERED_BY_DAY_LABEL = 'Share of scheduled trips that ran, day by day';
+export const STOP_COLUMN = 'Stop';
+export const SCHEDULED_EVERY_COLUMN = 'Scheduled every';
+export const GAPS_COLUMN = 'Gaps';
+export const DEPARTURES_COLUMN = 'Departures';
+export const BY_HOUR_HEADING = 'By Hour of the Day';
+export const STOPS_MOST_OFTEN_LATE_LABEL = 'The stops most often late';
+export const HOUR_COLUMN = 'Hour';
+export const STARTS_AT_COLUMN = 'Starts at';
+export const SCHEDULED_COLUMN = 'Scheduled';
+export const USUALLY_COLUMN = 'Usually';
+export const TRIPS_COLUMN = 'Trips';

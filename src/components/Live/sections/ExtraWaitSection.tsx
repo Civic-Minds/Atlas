@@ -8,7 +8,7 @@ import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
 import { headwayExactAmount } from '../../../utils/headwayText';
 import { dirsOf, mins } from './figures';
-import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP } from '../../../content/noticeCopy';
+import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP, GAPS_COLUMN, SCHEDULED_EVERY_COLUMN, STOP_COLUMN } from '../../../content/noticeCopy';
 import { countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 
@@ -84,11 +84,11 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
           rows={worst}
           rowKey={s => `${s.stopId}-${s.directionId}`}
           columns={[
-            { key: 'stop', header: 'Stop', rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
+            { key: 'stop', header: STOP_COLUMN, rowHeader: true, className: full ? 'font-normal break-words' : 'font-normal', cell: s => (full ? <span title={s.name}>{s.name}</span> : s.name) },
             ...(dir == null ? [{ key: 'dir', header: DIRECTION_LABEL, align: 'left' as const, cell: (s: (typeof worst)[number]) => v3.directionLabels[String(s.directionId)] }] : []),
             { key: 'extra', header: EXTRA_WAIT_LABEL, worst: s => s.extraWaitMin, cell: s => mins(s.extraWaitMin) },
-            { key: 'sched', header: 'Scheduled every', narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
-            { key: 'n', header: 'Gaps', narrowHide: true, cell: s => countText(s.gaps) },
+            { key: 'sched', header: SCHEDULED_EVERY_COLUMN, narrowHide: true, cell: s => headwayExactAmount(s.scheduledGapMin) },
+            { key: 'n', header: GAPS_COLUMN, narrowHide: true, cell: s => countText(s.gaps) },
           ]}
         />
       </PageTable>

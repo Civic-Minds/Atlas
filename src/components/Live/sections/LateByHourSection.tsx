@@ -14,7 +14,7 @@ import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
 import { DAYS } from './figures';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays } from '../../../content/noticeCopy';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays, BY_HOUR_HEADING } from '../../../content/noticeCopy';
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 
@@ -176,7 +176,7 @@ function BarsAll({ v3, data, dir }: { v3: LiveV3; data: DashboardBandData; dir: 
             : <Tile key={k} label={label} value={MISSING_VALUE} sub={LIVE_TOO_FEW_DEPARTURES} />;
         })}
       </div>
-      <SubsectionTitle className="mt-6">By Hour of the Day</SubsectionTitle>
+      <SubsectionTitle className="mt-6">{BY_HOUR_HEADING}</SubsectionTitle>
       <ChartRow cols={cols} withLabels={false} showNote />
     </>
   );

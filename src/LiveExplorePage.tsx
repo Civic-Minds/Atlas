@@ -42,7 +42,7 @@ import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
 import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
-import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText } from './content/noticeCopy';
+import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
 
@@ -263,7 +263,7 @@ export default function LiveExplorePage() {
 
       <ErrorBoundary label={BOUNDARY(WEEK_COMPARE_TITLE)}><KpiRow v3={v3} /></ErrorBoundary>
 
-      <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label="Filters">
+      <div className={`mt-6 ${PILL_ROW}`} role="group" aria-label={FILTERS_LABEL}>
         <Group label={DIRECTION_LABEL} value={dir == null ? 'both' : String(dir)} onChange={v => setDir(v === 'both' ? null : Number(v))}
           options={[['both', BOTH_DIRECTIONS_LABEL], ...dirsOf(v3, null).map(d => [String(d), v3.directionLabels[String(d)]] as const)]} />
         <Group label={TIME_OF_DAY_LABEL} value={band} onChange={v => setBand(v as DashboardBand)} options={PERIOD_BANDS_ONLY} />
@@ -274,7 +274,7 @@ export default function LiveExplorePage() {
       </ErrorBoundary>
 
       <LateByHourSection chart="bars" id="x-late" shrink title={LATE_BY_HOUR_TITLE} v3={v3} data={bandData} band={band} dir={dir} day={day} boundary={BOUNDARY(LATE_BY_HOUR_TITLE)}
-        before={<div className="mt-3"><Group label="Day" value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
+        before={<div className="mt-3"><Group label={DAY_LABEL} value={day} onChange={v => setDay(v as Day)} options={DAYS} /></div>} />
       <RunTimeSection v3={v3} band={band} dir={dir} detail="compact" id="x-runtime" shrink boundary={BOUNDARY(TRIP_TIME_LABEL)} />
       <BuildupSection v3={v3} data={bandData} dir={dir} uncertain={uncertain} detail="compact" boundary={BOUNDARY(DELAY_STARTS_TITLE)} />
       <ExtraWaitSection v3={v3} band={band} dir={dir} detail="compact" boundary={BOUNDARY(EXTRA_WAIT_LABEL)} />

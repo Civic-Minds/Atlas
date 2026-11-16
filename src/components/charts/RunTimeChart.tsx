@@ -6,6 +6,7 @@ import { liveChartHours } from '../../utils/sparklinePeriods';
 import DataTable from '../ui/DataTable';
 import { runTimeAmount } from '../../utils/headwayText';
 import { countText } from '../../../shared/numberText';
+import { SCHEDULED_COLUMN, STARTS_AT_COLUMN, TRIPS_COLUMN, USUALLY_COLUMN } from '../../content/noticeCopy';
 
 export interface RunTimeHour {
   /** Hour of day the trips start, 0-23. */
@@ -154,11 +155,11 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
             rows={pts}
             rowKey={p => p.hour}
             columns={[
-              { key: 'hour', header: 'Starts at', rowHeader: true, className: 'font-normal', cell: p => clock(p.hour) },
-              { key: 'sched', header: 'Scheduled', cell: p => runTimeAmount(p.scheduledMin) },
-              { key: 'usual', header: 'Usually', cell: p => runTimeAmount(p.typicalMin) },
+              { key: 'hour', header: STARTS_AT_COLUMN, rowHeader: true, className: 'font-normal', cell: p => clock(p.hour) },
+              { key: 'sched', header: SCHEDULED_COLUMN, cell: p => runTimeAmount(p.scheduledMin) },
+              { key: 'usual', header: USUALLY_COLUMN, cell: p => runTimeAmount(p.typicalMin) },
               { key: 'p90', header: '1 in 10 over', cell: p => runTimeAmount(p.p90Min) },
-              { key: 'n', header: 'Trips', cell: p => countText(p.n) },
+              { key: 'n', header: TRIPS_COLUMN, cell: p => countText(p.n) },
             ]}
           />
       </div>
