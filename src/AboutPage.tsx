@@ -11,7 +11,7 @@ import { SURFACE } from './styles';
 import { newestResearch, type ResearchEntry } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
+import { MAP_LINK, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -74,7 +74,7 @@ export default function AboutPage() {
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ArrowLink href="/">{MAP_LINK}</ArrowLink>
-              {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
+              {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{EXPLORE_RESEARCH_LABEL}</a>}
             </div>
           </div>
           <ThemedPicture base="/assets/about/atlas-routes-toronto" ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
@@ -100,7 +100,7 @@ export default function AboutPage() {
           </div>
         </section>}
 
-        <section className="py-16 sm:py-20" aria-label="What Atlas shows">
+        <section className="py-16 sm:py-20" aria-label={WHAT_ATLAS_SHOWS_LABEL}>
           <h2 id="questions-heading" className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Understand the network beyond the route map.</h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-3">
             {QUESTIONS.map(({ title, body, Icon }, i) => {

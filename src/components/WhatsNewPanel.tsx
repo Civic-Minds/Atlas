@@ -4,7 +4,7 @@ import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
 import PanelHeader from './ui/PanelHeader';
 import { WhatsNewItemText } from './WhatsNewItemText';
-import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, WHATS_NEW_TITLE, SEE_ALL_CHANGES_LABEL } from '../content/noticeCopy';
 import { shortVersion, visibleWhatsNew, type WhatsNewRelease } from '../data/whatsNew';
 import { CHANGELOG_PATH } from '../../shared/pagePaths';
 
@@ -58,7 +58,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
               </ul>
             </section>
           ))}
-          <a href={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">See all changes</a>
+          <a href={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">{SEE_ALL_CHANGES_LABEL}</a>
         </div>
       </Panel>
     </div>

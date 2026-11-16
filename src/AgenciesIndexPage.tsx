@@ -23,6 +23,7 @@ import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { countText } from '../shared/numberText';
 import { PAGE_NAMES } from '../shared/pageNames';
+import { AREAS_HEADING, LIVE_TAG } from './content/noticeCopy';
 
 /** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -34,7 +35,7 @@ const HISTORY_SLUGS: ReadonlySet<string> = new Set((historyAgencies as HistoryAg
 function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
-      {live && <Tag size="inline" className="ml-1.5">Live</Tag>}
+      {live && <Tag size="inline" className="ml-1.5">{LIVE_TAG}</Tag>}
       {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>History</Tag>}
     </>
   );
@@ -79,7 +80,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
 
           {areas.length > 0 && (
             <section className="mt-12" aria-labelledby="index-regions">
-              <SectionTitle id="index-regions">Areas</SectionTitle>
+              <SectionTitle id="index-regions">{AREAS_HEADING}</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
                 {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
               </ul>

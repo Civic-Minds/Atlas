@@ -6,6 +6,7 @@ import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import { RESEARCH } from '../data/research';
 import { RESEARCH_DRAFTS } from './researchDrafts';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { DRAFT_TAG } from '../content/noticeCopy';
 
 /** Published research, then stories still being built where they will go once published (dev server only; CIV-1550). */
 const CARDS: ReadonlyArray<{ href: string; Icon: (typeof RESEARCH)[number]['Icon']; kind: string; title: string; body?: string; linkText?: string; draft?: boolean }> = [
@@ -26,7 +27,7 @@ export default function ResearchPage() {
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
                     <span className="flex items-center gap-2">
-                      {import.meta.env.DEV && draft && <Tag tone="accent" className="text-xs">Draft</Tag>}
+                      {import.meta.env.DEV && draft && <Tag tone="accent" className="text-xs">{DRAFT_TAG}</Tag>}
                       <Tag>{kind}</Tag>
                     </span>
                   </div>

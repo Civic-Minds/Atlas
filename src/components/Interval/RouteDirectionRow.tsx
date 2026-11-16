@@ -6,7 +6,7 @@ import { headwayRangeShown } from '../../utils/headwayText';
 import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
-import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT } from '../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT, FIRST_LAST_TRIP_ALLOWANCE_LABEL } from '../../content/noticeCopy';
 
 interface Props {
   label: string;
@@ -152,7 +152,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
               }}
               className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
               title={FIRST_LAST_TRIP_ALLOWANCE_HINT}
-              aria-label="About the first-or-last-trip allowance"
+              aria-label={FIRST_LAST_TRIP_ALLOWANCE_LABEL}
             >
               <Info aria-hidden="true" className="w-3 h-3" />
             </button>

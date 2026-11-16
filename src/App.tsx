@@ -59,7 +59,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS } from './content/noticeCopy';
+import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
@@ -728,7 +728,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               navigate('/');
             }
           }}
-          ariaLabel="Atlas home"
+          ariaLabel={ATLAS_HOME_LABEL}
         />
 
         {!inResearch && <div className="flex items-center gap-2 flex-1 min-w-0 lg:flex-initial">
@@ -778,7 +778,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {showLiveControl && (
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
-            label="Live" extra={liveAgencyCount} ariaLabel={LIVE_VEHICLES_TITLE}
+            label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_VEHICLES_TITLE}
             active={liveTabOn}
             onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
           />
@@ -787,7 +787,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         {showHistoryControl && (
           <ModeTab
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
-            label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+            label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
             ariaLabel={inHistory ? HISTORY_BUTTON_ACTIVE_LABEL : HISTORY_BUTTON_LABEL}
             active={inHistory}
             onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
@@ -817,7 +817,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               <ModeTab
                 variant="menu-trigger"
                 label={liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}
-                ariaLabel="More Atlas views"
+                ariaLabel={MORE_VIEWS_LABEL}
                 expanded={appLinksOpen}
                 active={appLinksOpen || inHistory || inLive || compareActive}
                 onClick={() => setAppLinksOpen(open => !open)}
@@ -828,7 +828,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   {showLiveControl && (
                     <ModeTab
                       variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
-                      label="Live" extra={liveAgencyCount} active={liveTabOn}
+                      label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn}
                       onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
                     />
                   )}
@@ -836,7 +836,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     <ModeTab
                       onWarm={preloadHistory}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
-                      label="History" extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
+                      label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
                       active={inHistory}
                       onClick={() => { setActiveApp(inHistory ? 'frequency' : 'history'); setAppLinksOpen(false); }}
                     />

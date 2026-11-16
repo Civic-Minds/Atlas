@@ -22,7 +22,7 @@ import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { SEARCH_FEEDS_PLACEHOLDER, SEARCH_HIDDEN_ROUTES_PLACEHOLDER, CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP } from '../../content/noticeCopy';
+import { SEARCH_FEEDS_PLACEHOLDER, SEARCH_HIDDEN_ROUTES_PLACEHOLDER, CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP, FILTERS_LABEL, TOGGLE_DARK_MODE_LABEL, TOGGLE_DATA_SAVER_LABEL, TOGGLE_HIGH_CONTRAST_LABEL, TOGGLE_LEGEND_LABEL } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
@@ -353,7 +353,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           <button
             onClick={() => setOpen(v => !v)}
             className={`relative sm:hidden ${TOP_BAR_ICON_BTN}`}
-            aria-label="Filters"
+            aria-label={FILTERS_LABEL}
           >
             <SlidersHorizontal className="w-4 h-4" />
             {activeFilterCount > 0 && (
@@ -367,7 +367,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         <button
           onClick={() => setOpen(v => !v)}
           className={`relative ${TOP_BAR_ICON_BTN}`}
-          aria-label="Settings"
+          aria-label={BACK_PLACES.settings}
         >
           <Settings className="w-4 h-4" />
           {hasActiveFilters && (
@@ -533,7 +533,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses a dark colour theme across Atlas.</p>
                     </div>
                   </div>
-                  <Toggle on={!lightMode} onToggle={() => setLightMode(v => !v)} label="Toggle light/dark mode" />
+                  <Toggle on={!lightMode} onToggle={() => setLightMode(v => !v)} label={TOGGLE_DARK_MODE_LABEL} />
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2">
                   <div className="flex items-center min-w-0">
@@ -542,7 +542,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Uses stronger colours and thicker lines for easier route distinction.</p>
                     </div>
                   </div>
-                  <Toggle on={colorVisionFriendly} onToggle={() => setColorVisionFriendly(v => !v)} label="Toggle high contrast mode" />
+                  <Toggle on={colorVisionFriendly} onToggle={() => setColorVisionFriendly(v => !v)} label={TOGGLE_HIGH_CONTRAST_LABEL} />
                 </div>
               </div>
 
@@ -559,7 +559,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Keeps the map legend visible while you explore.</p>
                         </div>
                       </div>
-                      <Toggle on={showMapLegend} onToggle={() => setShowMapLegend(v => !v)} label="Toggle persistent legend" className="mt-0.5 shrink-0" />
+                      <Toggle on={showMapLegend} onToggle={() => setShowMapLegend(v => !v)} label={TOGGLE_LEGEND_LABEL} className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>
@@ -598,7 +598,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                           <p className="text-xs text-[var(--text-muted)] mt-1 leading-relaxed">Loads fewer networks at once to reduce data use on slower connections.</p>
                         </div>
                       </div>
-                      <Toggle on={dataSaver} onToggle={() => setDataSaver(v => !v)} label="Toggle data saver" className="mt-0.5 shrink-0" />
+                      <Toggle on={dataSaver} onToggle={() => setDataSaver(v => !v)} label={TOGGLE_DATA_SAVER_LABEL} className="mt-0.5 shrink-0" />
                     </div>
                   </div>
                 </>

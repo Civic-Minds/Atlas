@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { ATLAS_BYLINE } from './content/noticeCopy';
+import { ATLAS_BYLINE, MAP_COLOURS_LABEL } from './content/noticeCopy';
 import AtlasLogo from './components/AtlasLogo';
 import RouteRowName from './components/RouteRowName';
 import MapKey from './components/ui/MapKey';
@@ -149,7 +149,7 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
 function StudioMapKey() {
   const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{T[k]}</span> }));
   return (
-    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
+    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
       <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{T.keyTitle}<span className="font-normal text-[var(--text-muted)]"> · {T.dashed}</span></span>
       <MapKey steps={steps} />
     </div>

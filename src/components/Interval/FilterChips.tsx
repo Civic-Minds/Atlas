@@ -29,7 +29,7 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
-import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL } from '../../content/noticeCopy';
+import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 
@@ -201,7 +201,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           disabled={allOn}
           className="flex-1"
         >
-          All
+          {SELECT_ALL_LABEL}
         </Pill>
         <Pill
           tone="outline"
@@ -209,7 +209,7 @@ function AgenciesPanel({ agencies, selectedAgencies, setSelectedAgencies, bounds
           disabled={allOff}
           className="flex-1"
         >
-          None
+          {SELECT_NONE_LABEL}
         </Pill>
       </div>
       <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-0.5">
@@ -345,11 +345,11 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => { setDay(dayType); setOpenChip(null); }} className={rowBtn(day === dayType)}>{dayType}</button>)}
           </div>}
         </div>
-        <PillGroup outlined label="Wait" value={String(c.wait)} onChange={v => c.setWait(Number(v))}
+        <PillGroup outlined label={WAIT_LABEL} value={String(c.wait)} onChange={v => c.setWait(Number(v))}
           options={CONNECTION_WINDOWS.map(value => [String(value), headwayAmount(value)] as const)} />
-        <PillGroup outlined label="Walk" value={String(c.distance)} onChange={v => c.setDistance(Number(v))}
+        <PillGroup outlined label={WALK_LABEL} value={String(c.distance)} onChange={v => c.setDistance(Number(v))}
           options={c.distances.map(m => [String(m), metresText(m)] as const)} />
-        <PillGroup outlined label="Side" value={c.side} onChange={v => c.setSide(v as 'after' | 'before')} options={CONNECTION_SIDE_LABELS} />
+        <PillGroup outlined label={SIDE_LABEL} value={c.side} onChange={v => c.setSide(v as 'after' | 'before')} options={CONNECTION_SIDE_LABELS} />
         {pickedLabel && (
           <div className="relative">
             <button onClick={() => toggle('trip')} className={chipClass(true)}>{pickedLabel}<Dot show /></button>
@@ -370,7 +370,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   if (nightServiceMode && setNightServiceFrequency) {
     return (
       <div ref={rowRef} className="flex items-center gap-2">
-        <PillGroup outlined label="Overnight frequency" value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as NightServiceFrequency)}
+        <PillGroup outlined label={OVERNIGHT_FREQUENCY_LABEL} value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as NightServiceFrequency)}
           options={([30, 60, 90] as const).map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
@@ -394,7 +394,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         </div>
         <PillGroup outlined label={FREQUENCY_LABEL} value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
           options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
-        <PillGroup outlined label="Time window" value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
+        <PillGroup outlined label={TIME_WINDOW_LABEL} value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
           options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
           <button onClick={() => toggle('mode')} className={chipClass(selectedModes.size > 0)}>{MODE_LABEL}<Dot show={selectedModes.size > 0} /></button>
@@ -487,7 +487,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         const allOn = selectedAgencies.size >= agencies.length;
         return (
           <button onClick={() => toggle('agencies')} className={chipClass(!allOn)}>
-            Agencies
+            {AGENCIES_FILTER_LABEL}
             <Dot show={!allOn} />
           </button>
         );
@@ -622,7 +622,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   if (variant === 'shared') {
     return (
-      <div ref={rowRef} className={COMPARE_GROUP} role="group" aria-label="Filters for both maps">
+      <div ref={rowRef} className={COMPARE_GROUP} role="group" aria-label={FILTERS_BOTH_MAPS_LABEL}>
         <span title={compactTopBar ? 'Both maps' : undefined} className="flex items-center gap-1.5 pl-1.5 pr-0.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap cursor-default select-none">
           <SideBadge side="A+B" />
           {!compactTopBar && 'Both maps'}
