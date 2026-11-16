@@ -14,6 +14,7 @@ describe('For Transit Planners page (CIV-1320)', () => {
       'A Map Instead of a Long Report',
       'Live Vehicles',
       'Where the Data Comes From',
+      'Request a Demo',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
 
@@ -42,6 +43,8 @@ describe('For Transit Planners page (CIV-1320)', () => {
     const demo = screen.getAllByRole('link', { name: 'Request a demo' });
     expect(demo).toHaveLength(1);
     expect(demo[0]).toHaveAttribute('href', 'mailto:hey@ryanisnota.pro?subject=Request%20a%20demo');
+    // Ryan, 2026-11-16: the button sits in the shared Request a demo feature card, the last card on the page.
+    expect(demo[0].closest('section')).toContainElement(screen.getByRole('heading', { level: 2, name: 'Request a Demo' }));
   });
 
   it('links its Live card to Live only when the Live flag is on (CIV-1705)', () => {
