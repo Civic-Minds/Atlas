@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes run in two legs on some days are read whole**: Barrie 8A and 8B on Sundays run as two hourly legs that meet downtown, and only one leg was read, so their Sunday rows were missing ([#1546](https://github.com/Civic-Minds/Atlas/issues/1546))
 - **A route's daytime or evening pattern is no longer hidden by another that runs at other hours**: OC Transpo 24 on Sundays showed only its late "Blair" trips, and 35 on weekdays lost its peak trips to Avalon ([#1549](https://github.com/Civic-Minds/Atlas/issues/1549))
 - **Routes keep a day whose trips run a different pattern from the rest of the week**: Medicine Hat 30 on weekdays, DRT 407 to Raleigh on weekends, GRT 203 to Cambridge Centre on weekdays, Kingston 6 and Space Coast 29 on weekends had no row for that day, because the shapes were chosen from the whole week's trips and that day's own pattern lost ([#1543](https://github.com/Civic-Minds/Atlas/issues/1543))
 - **Loop routes in feeds without directions get their frequency back**: Kingston 2 and 19, Cornwall 1 and 4 and Medicine Hat 30 on weekends had no figure on the map, because a loop the feed also runs in two halves was split into two fake directions ([#1542](https://github.com/Civic-Minds/Atlas/issues/1542), [#1539](https://github.com/Civic-Minds/Atlas/issues/1539))
