@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   blockPieces,
+  concurrentAt,
   cycleSamples,
   maxConcurrent,
   routePeriodVehicles,
@@ -157,7 +158,9 @@ describe('frequencies.txt trips', () => {
     expect(midday.cycleMin).toBe(40);
     expect(midday.layoverIncluded).toBe(false);
     expect(midday.oneWay).toBe(true);
-    expect(midday.scheduledVehicles).toBe(4);
+    // At noon the 11:20 run has just ended (12:00): 3 on the road; the peak inside the period is 4.
+    expect(midday.scheduledVehicles).toBe(3);
+    expect(midday.peakScheduledVehicles).toBe(4);
   });
 });
 
@@ -170,6 +173,24 @@ describe('periods with no service and inactive days', () => {
 
   it('leaves out trips whose service does not run that day', () => {
     expect(tripRunsForDay(feed(outAndBack('P', 2, 30, 600, 700), 'SAT'), new Set(['WK']))).toEqual([]);
+  });
+});
+
+describe('scheduled now is read at the period midpoint', () => {
+  it('leaves out buses still finishing the previous period at the window edge', () => {
+    // Midday 9-15: four AM peak blocks finish just after 9:00; two blocks run all day.
+    const runs: TripRun[] = [
+      ...[0, 1, 2, 3].map(i => ({ tripId: `am${i}`, routeId: 'R', directionId: '0', blockId: `am${i}`, firstStop: 'A', lastStop: 'B', start: 500, end: 560 })),
+      ...[0, 1].map(i => ({ tripId: `all${i}`, routeId: 'R', directionId: '0', blockId: `all${i}`, firstStop: 'A', lastStop: 'B', start: 480 + i * 30, end: 1000 })),
+    ];
+    const [midday] = routePeriodVehicles(runs, blockPieces(runs), MIDDAY);
+    expect(midday.scheduledVehicles).toBe(2);
+    expect(midday.peakScheduledVehicles).toBe(6);
+  });
+
+  it('counts an interval open at t (start <= t < end)', () => {
+    expect(concurrentAt([[0, 100], [100, 200], [50, 150]], 100)).toBe(2);
+    expect(concurrentAt([[0, 100]], 100)).toBe(0);
   });
 });
 

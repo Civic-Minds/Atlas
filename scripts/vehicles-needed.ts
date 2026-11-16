@@ -20,7 +20,7 @@ import { processGtfsBuffer, type ProcessOptions } from '../pipeline/process-core
 import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { pickRepresentativeWeekday } from '../pipeline/representativeWeekday.js';
 import { tripRunsForDay, vehiclesByRoute, vehiclesForHeadway, type RoutePeriodVehicles } from '../pipeline/vehiclesNeeded.js';
-import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_LABELS, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
 import { WEEKDAYS, type DayName, type GtfsData } from '../types/gtfs.js';
 
 const args = process.argv.slice(2);
@@ -99,7 +99,7 @@ const vehiclesOn = (day: DayName) => {
 
 const shortNameOf = new Map((gtfs.routes ?? []).map(r => [r.route_id, r.route_short_name || r.route_long_name || r.route_id]));
 const rows: string[][] = [];
-const header = ['route', 'day', 'period', 'current hw', 'cycle min', 'layover', 'scheduled now', 'implied at current', 'all-trip hw', 'implied at all-trip', ...(targetHeadway != null ? [`at ${targetHeadway} min`] : []), 'notes'];
+const header = ['route', 'day', 'period', 'current hw', 'cycle min', 'layover', 'scheduled now (midpoint)', 'peak in period', 'implied at current', ...(targetHeadway != null ? [`at ${targetHeadway} min`] : []), 'notes'];
 const routeIds = [...countsByRoute.keys()].sort((a, b) => (shortNameOf.get(a) ?? a).localeCompare(shortNameOf.get(b) ?? b, undefined, { numeric: true }));
 for (const routeId of routeIds) {
   const shortName = shortNameOf.get(routeId) ?? routeId;
@@ -110,13 +110,8 @@ for (const routeId of routeIds) {
   const map = mapHeadway.get(routeId);
   for (const v of vehiclesOn(day).get(routeId) ?? []) {
     if (!periods.includes(v.period)) continue;
-    if (v.departures === 0 && v.scheduledVehicles === 0) continue;
+    if (v.departures === 0 && v.peakScheduledVehicles === 0) continue;
     const current = map?.byPeriod[v.period] ?? null;
-    // Diagnostic only, not a map number: the period's length over its departures per direction,
-    // so a branched route (whose map value is its slowest pattern) can be checked against all its trips.
-    const { start, end } = PERIOD_MINUTES[v.period];
-    const perDirection = v.oneWay ? v.departures : v.departures / 2;
-    const allTripHw = perDirection > 0 ? (end - start) / perDirection : null;
     const notes = [
       map == null ? 'not on map' : '',
       map && map.patterns.size > 2 ? `${map.patterns.size} patterns` : '',
@@ -131,9 +126,8 @@ for (const routeId of routeIds) {
       v.cycleMin != null ? String(Math.round(v.cycleMin)) : '-',
       v.cycleMin == null ? '-' : v.layoverIncluded ? 'incl' : 'excl',
       `${v.scheduledVehicles}${v.scheduledBasis === 'trips' ? ' (trips)' : ''}`,
+      String(v.peakScheduledVehicles),
       String(vehiclesForHeadway(v.cycleMin, current) ?? '-'),
-      allTripHw != null ? allTripHw.toFixed(1) : '-',
-      String(vehiclesForHeadway(v.cycleMin, allTripHw) ?? '-'),
       ...(targetHeadway != null ? [String(vehiclesForHeadway(v.cycleMin, targetHeadway) ?? '-')] : []),
       notes,
     ]);
@@ -143,7 +137,6 @@ for (const routeId of routeIds) {
 const widths = header.map((h, i) => Math.max(h.length, ...rows.map(r => r[i].length)));
 const line = (cells: string[]) => cells.map((c, i) => c.padEnd(widths[i])).join(' | ');
 console.log(`Feed ${zipPath}${slug ? ` (${slug})` : ''}, reference date ${referenceDate}${result.serviceWeekStart ? `, week of ${result.serviceWeekStart}` : ''}`);
-console.log('"all-trip hw" is a diagnostic (period length / departures per direction), not a map value');
 console.log('cycle "incl" = from block_id chains (layover included); "excl" = run times only, layover excluded');
 console.log(line(header));
 console.log(widths.map(w => '-'.repeat(w)).join('-|-'));

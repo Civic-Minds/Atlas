@@ -9,8 +9,9 @@
  * - Fallback (no block_id, or no repeat in the period): the median run time of each direction,
  *   added up, flagged layoverIncluded: false. No recovery percentage is invented.
  *
- * "Buses scheduled now" is the most blocks (or trips, without blocks) on the route at once inside
- * the period. Pure: every input is one calendar day's trips.
+ * "Buses scheduled now" is the blocks (or trips, without blocks) on the route at the period's
+ * midpoint, so buses still finishing the previous period's trips at its edges are not counted; the
+ * most at any moment in the period is kept beside it as peakScheduledVehicles. Pure: every input is one calendar day's trips.
  */
 import { PERIOD_MINUTES, type PeriodKey } from '../shared/config.js';
 import { expandTripFrequencyWindows, parseFrequencyWindow, t2m, type FrequencyWindow } from './transit-utils.js';
@@ -205,6 +206,13 @@ export function maxConcurrent(intervals: ReadonlyArray<[number, number]>, window
   return best;
 }
 
+/** Intervals open at minute t: start <= t < end. */
+export function concurrentAt(intervals: ReadonlyArray<[number, number]>, t: number): number {
+  let open = 0;
+  for (const [s, e] of intervals) if (s <= t && t < e) open++;
+  return open;
+}
+
 /** Buses to run a cycle at a headway: ceil(cycle / headway); null when either is missing. */
 export function vehiclesForHeadway(cycleMin: number | null | undefined, headwayMin: number | null | undefined): number | null {
   if (cycleMin == null || headwayMin == null || !(cycleMin > 0) || !(headwayMin > 0)) return null;
@@ -223,8 +231,10 @@ export interface RoutePeriodVehicles {
   cycleSamples: number;
   /** The fallback read one direction only (a one-way route, or the other direction does not run then). */
   oneWay: boolean;
-  /** Most blocks (or trips) on the route at once in the period. */
+  /** Blocks (or trips) on the route at the period's midpoint. */
   scheduledVehicles: number;
+  /** Most blocks (or trips) on the route at once anywhere in the period. */
+  peakScheduledVehicles: number;
   scheduledBasis: 'blocks' | 'trips';
 }
 
@@ -249,13 +259,14 @@ export function routePeriodVehicles(
     const w = periods[period];
     const inPeriod = routeRuns.filter(r => inWindow(r.start, w));
     const blockCycles = samples.filter(([t]) => inWindow(t, w)).map(([, c]) => c);
-    const scheduledVehicles = maxConcurrent(intervals, w);
+    const scheduledVehicles = concurrentAt(intervals, (w.start + w.end) / 2);
+    const peakScheduledVehicles = maxConcurrent(intervals, w);
     if (inPeriod.length === 0) {
-      out.push({ period, departures: 0, cycleMin: null, layoverIncluded: false, cycleSamples: 0, oneWay: false, scheduledVehicles, scheduledBasis });
+      out.push({ period, departures: 0, cycleMin: null, layoverIncluded: false, cycleSamples: 0, oneWay: false, scheduledVehicles, peakScheduledVehicles, scheduledBasis });
       continue;
     }
     if (blockCycles.length > 0) {
-      out.push({ period, departures: inPeriod.length, cycleMin: median(blockCycles), layoverIncluded: true, cycleSamples: blockCycles.length, oneWay: false, scheduledVehicles, scheduledBasis });
+      out.push({ period, departures: inPeriod.length, cycleMin: median(blockCycles), layoverIncluded: true, cycleSamples: blockCycles.length, oneWay: false, scheduledVehicles, peakScheduledVehicles, scheduledBasis });
       continue;
     }
     const fallback = runTimeCycle(inPeriod);
@@ -267,6 +278,7 @@ export function routePeriodVehicles(
       cycleSamples: 0,
       oneWay: fallback?.oneWay ?? false,
       scheduledVehicles,
+      peakScheduledVehicles,
       scheduledBasis,
     });
   }
