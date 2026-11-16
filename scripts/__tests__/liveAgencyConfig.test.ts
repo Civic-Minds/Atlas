@@ -40,7 +40,9 @@ describe('local time in the agency zone', () => {
   it('finds the service-day end in summer and winter time', () => {
     expect(localServiceStart('2026-10-16', 'America/Toronto', 4)).toBe(Date.parse('2026-10-16T08:00:00Z') / 1000);
     expect(localServiceStart('2026-12-01', 'America/Toronto', 4)).toBe(Date.parse('2026-12-01T09:00:00Z') / 1000);
-    expect(localServiceStart('2026-12-01', 'America/Vancouver', 3)).toBe(Date.parse('2026-12-01T11:00:00Z') / 1000);
+    // A fixed UTC-8 zone (Etc/GMT+8 is UTC-8): a real zone's future offset changes with the runner's time zone data,
+    // e.g. America/Vancouver in December 2026 read UTC-8 on one Node and UTC-7 on CI's.
+    expect(localServiceStart('2026-12-01', 'Etc/GMT+8', 3)).toBe(Date.parse('2026-12-01T11:00:00Z') / 1000);
     expect(localServiceStart('2026-12-01', 'America/St_Johns', 4)).toBe(Date.parse('2026-12-01T07:30:00Z') / 1000); // half-hour zone
   });
   it('matches the TTC helper it replaces', () => {
@@ -52,7 +54,7 @@ describe('local time in the agency zone', () => {
   });
   it('cuts today\'s archive folder at the agency\'s own day end', () => {
     const now = Date.parse('2026-12-01T15:00:00Z');
-    const f = serviceWindowFolders(1, now, { timeZone: 'America/Vancouver', serviceDayEndHour: 3 });
+    const f = serviceWindowFolders(1, now, { timeZone: 'Etc/GMT+8', serviceDayEndHour: 3 });
     expect(f.map(x => x.day)).toEqual(['2026-11-30', '2026-12-01']);
     expect(f[1].cutBefore).toBe(Date.parse('2026-12-01T11:00:00Z') / 1000);
   });
