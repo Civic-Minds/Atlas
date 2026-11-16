@@ -106,7 +106,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1168.0",
-    "@aws-sdk/lib-storage": "^3.1163.0",
+    "@aws-sdk/lib-storage": "^3.1168.0",
     "@deck.gl/core": "^9.4.1",
     "@deck.gl/layers": "^9.4.1",
     "@deck.gl/mapbox": "^9.4.1",
