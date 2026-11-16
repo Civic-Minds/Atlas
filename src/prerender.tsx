@@ -11,6 +11,7 @@ import type { AgencyPageData } from '../shared/agencyPages';
 import type { SeoFlags } from '../shared/seo';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
+import PlannersPage from './PlannersPage';
 import LegalPage from './LegalPage';
 import ResearchPage from './apps/ResearchPage';
 import FreeChildFaresPage from './apps/FreeChildFaresPage';
@@ -22,12 +23,13 @@ import type { RegionPageData } from '../shared/regionPages';
 import AgenciesIndexPage from './AgenciesIndexPage';
 import { agencyNames } from './utils/agencyName';
 import type { AgencyIndexData } from '../shared/agencyIndex';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, DOCS_PATH, PRIVACY_PATH, regionPagePath, TERMS_PATH } from '../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, agencyPagePath, areaPagePath, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, regionPagePath, TERMS_PATH } from '../shared/pagePaths';
 import HomeStatic from './HomeStatic';
 
 const PAGES: Record<string, () => ReactElement> = {
   [ABOUT_PATH]: () => <AboutPage />,
   [DOCS_PATH]: () => <AboutDocsPage />,
+  [PLANNERS_PATH]: () => <PlannersPage />,
   [PRIVACY_PATH]: () => <LegalPage document="privacy" />,
   [TERMS_PATH]: () => <LegalPage document="terms" />,
   [FEATURE_ROUTES.research]: () => <ResearchPage />,

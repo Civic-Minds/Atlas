@@ -4,7 +4,7 @@ import AtlasLogo from './AtlasLogo';
 import { ATLAS_BYLINE } from '../content/noticeCopy';
 import { PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 type FooterLink = { href: string; label: string };
 
@@ -25,6 +25,8 @@ function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: DOCS_PATH, label: PAGE_NAMES.docs },
         ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research }] : []),
+        // CIV-1320: beta only for now (Ryan: "The beta can").
+        ...(FEATURES.plannersLink ? [{ href: PLANNERS_PATH, label: PAGE_NAMES.plannersLink }] : []),
       ],
     },
     {
