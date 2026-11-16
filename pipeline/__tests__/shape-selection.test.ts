@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GtfsData, GtfsRoute } from '../../types/gtfs.js';
 import type { GeoJsonFeature } from '../geojson-types.js';
-import { buildShapeSelectionContext, annotateShortTurnVariants } from '../shape-selection.js';
+import { buildShapeSelectionContext, annotateShortTurnVariants, joinsAsLeg } from '../shape-selection.js';
 import { resolveDisplayHeadsign } from '../../shared/headsignDisplay.js';
 
 function shape(id: string): { id: string; points: [number, number][] } {
@@ -81,9 +81,38 @@ describe('phase 1 shape filter by day type (CIV-1718, #1543)', () => {
     expect(ctx.dayPickShapes.has('r30::0::Loop')).toBe(false);
   });
 
+  it('reads both legs of a route run in two legs that meet at one stop (Barrie 8A Sunday, CIV-1719)', () => {
+    const all = [...trips(20, 'wd', 'main'), ...trips(13, 'sun', 'leg-a'), ...trips(13, 'sun', 'leg-b'), ...trips(13, 'sun', 'short')];
+    const stopsOf: Record<string, string[]> = {
+      main: ['s1', 's2', 's3', 'hub', 's5', 's6', 's7'],
+      'leg-a': ['s1', 's2', 's3', 'hub'], 'leg-b': ['hub', 's5', 's6', 's7'], short: ['s1', 's2', 's3'],
+    };
+    const stopTimes = (keep: string[]) => all.filter(t => keep.includes(t.shape_id)).flatMap(t => stopsOf[t.shape_id].map((stop_id, i) => ({ trip_id: t.trip_id, stop_id, stop_sequence: String(i + 1) })));
+    const ctxOf = (sunday: string[]) => buildShapeSelectionContext(
+      { agencies: [], routes: [route], trips: all.filter(t => t.service_id === 'wd' || sunday.includes(t.shape_id)), stops: [], stopTimes: stopTimes(['main', ...sunday]), calendar: [], calendarDates: [],
+        shapes: [line('main', 30), line('leg-a', 20), line('leg-b', 10), line('short', 10)] } as unknown as GtfsData,
+      new Map([['r30', route]]), new Set(['wd', 'sat', 'sun']), byDay,
+    );
+    expect(ctxOf(['leg-a', 'leg-b']).shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main', 'leg-a', 'leg-b']));
+    // A short turn is not a leg: it shares the main pattern's stops.
+    expect(ctxOf(['leg-a', 'short']).shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
+  });
+
   it('still drops a short turn on a day the main shape serves', () => {
     const ctx = build([...trips(20, 'wd', 'main'), ...trips(5, 'wd', 'short'), ...trips(10, 'sat', 'main')], [line('main', 10), line('short', 5)]);
     expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
+  });
+});
+
+describe('joinsAsLeg (CIV-1719)', () => {
+  it('joins two shapes that meet at one stop, in either order', () => {
+    expect(joinsAsLeg(['a', 'b', 'hub'], ['hub', 'c', 'd'])).toBe(true);
+    expect(joinsAsLeg(['hub', 'c', 'd'], ['a', 'b', 'hub'])).toBe(true);
+  });
+  it('refuses a short turn, an out-and-back and shapes that share a stretch', () => {
+    expect(joinsAsLeg(['a', 'b', 'c', 'd'], ['a', 'b', 'c'])).toBe(false);
+    expect(joinsAsLeg(['a', 'b', 'c'], ['c', 'x', 'a'])).toBe(false);
+    expect(joinsAsLeg(['a', 'b', 'c', 'hub'], ['hub', 'b', 'c', 'e'])).toBe(false);
   });
 });
 
