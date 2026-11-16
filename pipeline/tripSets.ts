@@ -29,6 +29,7 @@ import {
   computePeriodCoverageHeadways,
   computePeriodMaxGaps,
   computePeriodHeadways,
+  isSteadyPeriodGaps,
   BOUNDARY_DOMINANT_RATIO,
   computePeriodSustained,
   computeResearchFrequentService,
@@ -607,6 +608,12 @@ export function directionStretches(
 export interface StretchPeriod {
   /** Whether the stretch speaks for its direction in the period. */
   counts: boolean;
+  /**
+   * Whether it would count by the settled steadiness test alone, without CIV-1156's two-gap check on
+   * tails. The all-day branch test reads this, so a branch that runs all day keeps deciding the
+   * all-day value and Frequent Service (SEPTA T3 Saturday's 12-trip Darby branch: 91).
+   */
+  countsSettled: boolean;
   /** Steady: the period headway; not steady: the full-window wait (as tileEffectiveHeadwayExpr reads it). */
   value: number | null;
   headway: number | null;
@@ -976,9 +983,22 @@ export function stretchPeriods(s: Stretch): Record<PeriodKey, StretchPeriod> {
       : steady && !uneven ? (headways[key] ?? null)
       : uneven ? unevenWait(times, start, end, coverage[key] ?? null)
       : coverage[key] ?? null;
+    // CIV-1156 (#1533): a tail with three departures in the period (two gaps) is steady only when its
+    // gaps are even (isSteadyPeriodGaps, #1432). computePeriodSustained tests the longer gap against
+    // their mean, which takes in the long gap itself: SEPTA 67's Philadelphia Mills tail, weekday
+    // evening gaps 52 and 169, passed and set the direction to 169 while the main stretch runs every 25.
+    // Settled rule 3: a tail that does not run steadily is left out. Only whether the tail counts for
+    // the period changes here; its own value, the main stretch, the published steady flag and the
+    // all-day branch test (countsSettled) are unchanged.
+    const ordered = [...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b);
+    const inWindow = ordered.filter(t => t >= start && t <= end);
+    const windowGaps = inWindow.slice(1).map((t, i) => t - inWindow[i]);
+    const tailSteady = steady && (windowGaps.length !== 2 || isSteadyPeriodGaps(windowGaps, headways[key] ?? 0));
+    const countsSettled = runs && (s.kind === 'main' || (steady && sustainedWithMidpoint(ordered, sustained[key], start, end) === true));
     out[key] = {
       // A tail speaks for the direction only where it runs steadily through the period.
-      counts: runs && (s.kind === 'main' || (steady && sustainedWithMidpoint([...new Set(forCrossMidnightWindow(times, end))].sort((a, b) => a - b), sustained[key], start, end) === true)),
+      counts: countsSettled && (s.kind === 'main' || tailSteady),
+      countsSettled,
       value,
       headway: headways[key] ?? null,
       coverage: coverage[key] ?? null,
@@ -1593,8 +1613,8 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     return t.length >= 2 && (Math.max(...t) - Math.min(...t)) / (grading.end - grading.start) >= ALL_DAY_MIN_COVERAGE;
   };
   const allDayTails = d.tails.filter((t, i) => (overnightFallback
-    ? tails[i].overnight.counts
-    : tails[i].midday.counts && spansWindow(t)));
+    ? tails[i].overnight.countsSettled
+    : tails[i].midday.countsSettled && spansWindow(t)));
   const allDayOf = (st: Stretch) => {
     // Phase 2's overnight fallback: with fewer than two departures in the window (a night route),
     // the stretch reads all of its departures.

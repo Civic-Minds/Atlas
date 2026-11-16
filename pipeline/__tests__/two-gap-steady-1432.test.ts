@@ -19,10 +19,11 @@ describe('two-gap periods (#1432)', () => {
     expect(pm.sustained).toBe(true);
   });
 
-  it('a tail with the same two gaps still counts for its direction, at its longest wait', () => {
+  it('a tail with the same two gaps reads its longest wait, and no longer counts for its direction (CIV-1156)', () => {
     const times = ['15:40', '18:18', '18:58'].map(m);
     const pm = stretchPeriods({ ...stretch(times), kind: 'tail' }).pmPeak;
     expect(pm.value).toBe(158);
+    expect(pm.counts).toBe(false);
   });
 
   it('two near gaps stay steady (TTC 300 Victoria Park short turn: 15 and 4; even 60s)', () => {

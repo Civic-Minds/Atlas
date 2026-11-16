@@ -1,0 +1,121 @@
+route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+55,10,885503,Cross Keys via Doylestown,,0,3501,317626,1,1
+55,10,885561,Street Rd-Easton,,0,3502,317630,1,1
+55,10,885558,Street Rd-Easton,,0,3503,317630,1,1
+55,10,885560,Cross Keys via Doylestown,,0,3505,317626,1,1
+55,10,885557,Street Rd-Easton,,0,3506,317630,1,1
+55,10,885559,Cross Keys via Doylestown,,0,3507,317626,1,1
+55,10,885535,Street Rd-Easton,,0,3504,317630,1,1
+55,10,885533,Willow Grove Commons,,0,3502,317631,1,1
+55,10,885532,Cross Keys via Doylestown,,0,3508,317626,1,1
+55,10,885534,Street Rd-Easton,,0,3501,317630,1,1
+55,10,885531,Willow Grove,,0,3503,317628,1,1
+55,10,885524,Cross Keys via Doylestown,,0,3506,317626,1,1
+55,10,885530,Street Rd-Easton,,0,3505,317630,1,1
+55,10,885529,Willow Grove,,0,3502,317628,1,1
+55,10,885522,Cross Keys via Doylestown,,0,3504,317626,1,1
+55,10,885523,Willow Grove,,0,3509,317628,1,1
+55,10,885521,Street Rd-Easton,,0,3507,317630,1,1
+55,10,885518,Willow Grove,,0,3501,317628,1,1
+55,10,885520,Cross Keys via Doylestown,,0,3502,317626,1,1
+55,10,885517,Willow Grove Commons,,0,3508,317629,1,1
+55,10,885516,Cross Keys via Doylestown,,0,3510,317626,1,1
+55,10,885519,Willow Grove,,0,3511,317628,1,1
+55,10,885514,Cross Keys via Doylestown,,0,3509,317626,1,1
+55,10,885515,Willow Grove,,0,3506,317628,1,1
+55,10,885513,Street Rd-Easton,,0,3507,317630,1,1
+55,10,885511,Cross Keys via Doylestown,,0,3508,317626,1,1
+55,10,885512,Willow Grove,,0,3504,317628,1,1
+55,10,885510,Street Rd-Easton,,0,3511,317630,1,1
+55,10,885527,Cross Keys via Doylestown,,0,3512,317626,1,1
+55,10,885508,Willow Grove,,0,3513,317628,1,1
+55,10,885509,Street Rd-Easton,,0,3514,317630,1,1
+55,10,885505,Willow Grove,,0,3510,317628,1,1
+55,10,885507,Cross Keys via Doylestown,,0,3515,317626,1,1
+55,10,885526,Willow Grove,,0,3516,317628,1,1
+55,10,885506,Street Rd-Easton,,0,3507,317630,1,1
+55,10,885504,Willow Grove,,0,3509,317628,1,1
+55,10,885555,Cross Keys via Doylestown,,0,3513,317626,1,1
+55,33710,885554,Willow Grove,,0,3402,317628,1,1
+55,10,885525,Willow Grove,,0,3508,317628,1,1
+55,10,885553,Street Rd-Easton,,0,3510,317630,1,1
+55,10,885552,Willow Grove,,0,3514,317628,1,1
+55,10,885549,Cross Keys via Doylestown,,0,3516,317626,1,1
+55,10,885562,Willow Grove,,0,3509,317628,1,1
+55,10,885550,Cross Keys via Doylestown,,0,3402,317626,1,1
+55,10,885551,Willow Grove,,0,3517,317628,1,1
+55,10,885548,Willow Grove,,0,3514,317628,1,1
+55,10,885547,Cross Keys via Doylestown,,0,3518,317626,1,1
+55,10,885546,Willow Grove,,0,3519,317628,1,1
+55,10,885545,Willow Grove,,0,3517,317628,1,1
+55,10,885544,Cross Keys via Doylestown,,0,3514,317626,1,1
+55,10,885542,Willow Grove,,0,3516,317628,1,1
+55,10,885543,Cross Keys via Doylestown,,0,3519,317626,1,1
+55,10,885541,Willow Grove,,0,3517,317628,1,1
+55,10,885540,Cross Keys via Doylestown,,0,3518,317626,1,1
+55,10,885528,Willow Grove,,0,3516,317628,1,1
+55,10,885538,Willow Grove,,0,3517,317628,1,1
+55,10,885537,Cross Keys via Doylestown,,0,3519,317626,1,1
+55,10,885556,Willow Grove,,0,3517,317628,1,1
+55,10,885536,Willow Grove,,0,3518,317628,1,1
+55,10,885539,Willow Grove UPS,,0,3518,317627,1,1
+55,10,885606,Olney Transit Center,,1,3504,317636,1,1
+55,10,885605,Olney Transit Center,,1,3502,317638,1,1
+55,10,885604,Olney Transit Center,,1,3501,317633,1,1
+55,10,885621,Olney Transit Center,,1,3503,317638,1,1
+55,10,885602,Olney Transit Center,,1,3506,317638,1,1
+55,10,885603,Olney Transit Center,,1,3505,317633,1,1
+55,10,885570,Olney Transit Center,,1,3502,317636,1,1
+55,10,885569,Olney Transit Center,,1,3504,317638,1,1
+55,10,885567,Olney Transit Center,,1,3503,317636,1,1
+55,10,885568,Olney Transit Center,,1,3507,317633,1,1
+55,10,885566,Olney Transit Center,,1,3501,317638,1,1
+55,10,885600,Olney Transit Center,,1,3502,317636,1,1
+55,10,885601,Olney Transit Center,,1,3508,317633,1,1
+55,10,885597,Olney Transit Center,,1,3505,317638,1,1
+55,10,885598,Olney Transit Center,,1,3509,317636,1,1
+55,10,885595,Olney Transit Center,,1,3506,317633,1,1
+55,10,885596,Olney Transit Center,,1,3501,317636,1,1
+55,10,885594,Olney Transit Center,,1,3507,317638,1,1
+55,10,885593,Olney Transit Center,,1,3508,317636,1,1
+55,10,885592,Olney Transit Center,,1,3504,317633,1,1
+55,10,885591,Olney Transit Center,,1,3511,317636,1,1
+55,10,885590,Olney Transit Center,,1,3501,317636,1,1
+55,10,885589,Olney Transit Center,,1,3502,317633,1,1
+55,10,885617,Olney Transit Center,,1,3506,317636,1,1
+55,10,885565,Olney Transit Center,,1,3510,317633,1,1
+55,10,885622,Olney Transit Center,,1,3504,317636,1,1
+55,10,885564,Olney Transit Center,,1,3507,317638,1,1
+55,10,885563,Olney Transit Center,,1,3509,317633,1,1
+55,10,885620,Olney Transit Center,,1,3513,317636,1,1
+55,10,885619,Olney Transit Center,,1,3511,317638,1,1
+55,10,885618,Olney Transit Center,,1,3508,317634,1,1
+55,10,885616,Olney Transit Center,,1,3510,317636,1,1
+55,10,885614,Olney Transit Center,,1,3514,317638,1,1
+55,10,885615,Olney Transit Center,,1,3516,317635,1,1
+55,10,885612,Olney Transit Center,,1,3512,317633,1,1
+55,10,885611,Olney Transit Center,,1,3509,317636,1,1
+55,10,885610,Olney Transit Center,,1,3402,317636,1,1
+55,10,885613,Olney Transit Center,,1,3507,317638,1,1
+55,10,885609,Olney Transit Center,,1,3508,317635,1,1
+55,10,885608,Olney Transit Center,,1,3514,317636,1,1
+55,10,885607,Olney Transit Center,,1,3515,317633,1,1
+55,10,885587,Olney Transit Center,,1,3510,317638,1,1
+55,10,885588,Olney Transit Center,,1,3513,317633,1,1
+55,10,885586,Olney Transit Center,,1,3517,317636,1,1
+55,10,885599,Olney Transit Center,,1,3514,317636,1,1
+55,10,885585,Olney Transit Center,,1,3516,317633,1,1
+55,10,885583,Olney Transit Center,,1,3519,317636,1,1
+55,10,885584,Olney Transit Center,,1,3402,317633,1,1
+55,10,885582,Olney Transit Center,,1,3517,317636,1,1
+55,10,885581,Olney Transit Center,,1,3518,317633,1,1
+55,10,885580,Olney Transit Center,,1,3516,317636,1,1
+55,10,885578,Olney Transit Center,,1,3514,317633,1,1
+55,10,885579,Olney Transit Center,,1,3517,317636,1,1
+55,10,885576,Olney Transit Center,,1,3519,317633,1,1
+55,10,885577,Olney Transit Center,,1,3516,317636,1,1
+55,10,885575,Olney Transit Center,,1,3517,317636,1,1
+55,10,885573,Olney Transit Center,,1,3518,317633,1,1
+55,10,885574,Olney Transit Center,,1,3517,317636,1,1
+55,10,885572,Olney Transit Center,,1,3519,317633,1,1
+55,10,885571,Olney Transit Center,,1,3518,317637,1,1

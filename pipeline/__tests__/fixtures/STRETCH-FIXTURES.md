@@ -66,6 +66,8 @@ whole Saturday too (2026-10-24, merged).
 | nyct-subway-night-weekday | `_feeds/nyct-subway/20261031-fresh.zip` (re-cut from the archive zip 20261031-2c9e69b82ac596a2, same services) | 2026-10-21 + 2026-10-18 (Sunday, merged; CIV-1348) | 3, 5, M, N, R |
 | nyct-subway-s-weekday | `_feeds/nyct-subway/20261031-fresh.zip` | 2026-10-21 | S (FS, GS, H) |
 | septa-66-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-10-21 | 66 |
+| septa-67-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-11-18 | 67 |
+| septa-55-weekday | `_feeds/septa/20270220-fresh.zip` | 2026-11-18 | 55 |
 | translink-044-weekday | `_feeds/translink/20270103-fresh.zip` | 2026-10-21 | 044 |
 | ttc-63-saturday | same | 2026-10-17 | 63 |
 | ttc-301-weekday-night | same | 2026-10-21 | 301 |
