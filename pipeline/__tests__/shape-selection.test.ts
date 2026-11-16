@@ -69,14 +69,16 @@ describe('phase 1 shape filter by day type (CIV-1718, #1543)', () => {
     expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
   });
 
-  it('adds no second line to a direction another headsign already draws that day (CIV-1720)', () => {
+  it('lists the shapes a headsign gets only from a day pick (CIV-1720)', () => {
     const hs = (n: number, service: string, shapeId: string, headsign: string) => trips(n, service, shapeId)
       .map(t => ({ ...t, trip_id: `${t.trip_id}-${headsign}`, trip_headsign: headsign }));
     const ctx = build(
       [...hs(20, 'wd', 'main', 'Loop'), ...hs(10, 'sun', 'main', 'Loop'), ...hs(10, 'wd', 'b-main', 'Branch'), ...hs(5, 'sun', 'b-short', 'Branch')],
       [line('main', 10), line('b-main', 10), line('b-short', 4)],
     );
-    expect(ctx.shapeFilterForPhase1.get('r30::0::Branch')).toEqual(new Set(['b-main']));
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Branch')).toEqual(new Set(['b-main', 'b-short']));
+    expect(ctx.dayPickShapes.get('r30::0::Branch')).toEqual(new Set(['b-short']));
+    expect(ctx.dayPickShapes.has('r30::0::Loop')).toBe(false);
   });
 
   it('still drops a short turn on a day the main shape serves', () => {

@@ -34,6 +34,8 @@ export interface ShapeSelectionContext {
   routeDirToDisplayShape: Map<string, string>;
   routeDirToAnalysisShapes: Map<string, Set<string>>;
   shapeFilterForPhase1: Map<string, Set<string>>;
+  /** CIV-1720: per headsign key, the shapes in shapeFilterForPhase1 that only a day's pick added. */
+  dayPickShapes: Map<string, Set<string>>;
   lastStopByTrip: Map<string, string>;
   stopNameById: Map<string, string>;
 }
@@ -88,28 +90,28 @@ function busAnalysisShapeIds(shapeEntries: { sid: string; trips: number; len: nu
  * runs two hourly legs that meet at the downtown terminal, and the pick would keep one of them
  * on a 13-13 tie. In the 530-agency dry run, picks covered all or at least 80% of their day
  * (Space Coast 29 Saturday: 8 of 10, the other 2 on a 2-stop piece), or 74% and under.
- * CIV-1720 (#1547): a headsign's own pick is added only when no other headsign of its direction
- * is drawn that day, so it fills a missing direction and never adds a second line beside one:
- * LeeTran 595 Sunday's "SB" trips in the northbound direction, Beeline 4's "Getty Square" beside
+ * CIV-1720 (#1547): the shapes a headsign gets only from a day's pick are listed in dayPickShapes,
+ * and phase 1 keeps their trips only on a day when no other pattern of the direction makes a
+ * row, so the pick fills a missing direction and never adds a second line beside one: LeeTran
+ * 595 Sunday's "SB" trips in the northbound direction, Beeline 4's "Getty Square" beside
  * "Yonkers Getty Square", TTC 329's Wilson short trips (46 such lines in the dry run).
  */
 const DAY_PICK_MIN_SHARE = 0.8;
 
 function withEachDaysPattern(
   selected: Set<string>,
-  countsByDay: Iterable<[DayType, Map<string, number>]>,
+  countsByDay: Iterable<Map<string, number>>,
   shapeLen: (sid: string) => number,
-  drawnElsewhere: (dayType: DayType) => boolean = () => false,
 ): Set<string> {
   let result = selected;
-  for (const [dayType, counts] of countsByDay) {
+  for (const counts of countsByDay) {
     let total = 0;
     let covered = 0;
     for (const [sid, n] of counts) {
       total += n;
       if (selected.has(sid)) covered += n;
     }
-    if (total === 0 || covered > 0 || drawnElsewhere(dayType)) continue;
+    if (total === 0 || covered > 0) continue;
     const dayPick = busAnalysisShapeIds([...counts].map(([sid, trips]) => ({ sid, trips, len: shapeLen(sid) })));
     let picked = 0;
     for (const [sid, n] of counts) if (dayPick.has(sid)) picked += n;
@@ -270,12 +272,10 @@ export function buildShapeSelectionContext(
     const routeId = key.split('::')[0];
     const route = routeById.get(routeId);
     const isRail = isRailRoute(route, agencySlug);
-    if (!isRail) shapeFilterForPhase1.set(key, withEachDaysPattern(shapeIds, shapeCountsByDay.get(key) ?? [], shapeLen));
+    if (!isRail) shapeFilterForPhase1.set(key, withEachDaysPattern(shapeIds, shapeCountsByDay.get(key)?.values() ?? [], shapeLen));
   }
 
-  const headsignAnalysisShapes = new Map<string, Set<string>>();
-  /** CIV-1720: route directions with a headsign drawn on a day by the week's own pick. */
-  const drawnDirectionDays = new Set<string>();
+  const dayPickShapes = new Map<string, Set<string>>();
   for (const [hKey, hShapeCounts] of headsignShapeCounts) {
     const routeId = hKey.split('::')[0];
     const route = routeById.get(routeId);
@@ -286,19 +286,12 @@ export function buildShapeSelectionContext(
     if (shapeEntries.length === 0) continue;
     const analysisShapes = busAnalysisShapeIds(shapeEntries);
     if (analysisShapes.size === 0) continue;
-    headsignAnalysisShapes.set(hKey, analysisShapes);
-    const dirKey = hKey.split('::').slice(0, 2).join('::');
-    for (const dayType of activeServiceIdsByDay.keys()) {
-      const counts = headsignShapeCountsByDay.get(`${hKey}::${dayType}`);
-      if (counts && [...counts.keys()].some(sid => analysisShapes.has(sid))) drawnDirectionDays.add(`${dirKey}::${dayType}`);
-    }
-  }
-  for (const [hKey, analysisShapes] of headsignAnalysisShapes) {
-    const dirKey = hKey.split('::').slice(0, 2).join('::');
     const countsByDay = [...activeServiceIdsByDay.keys()]
-      .map(dayType => [dayType, headsignShapeCountsByDay.get(`${hKey}::${dayType}`)] as const)
-      .filter((e): e is readonly [DayType, Map<string, number>] => !!e[1]) as [DayType, Map<string, number>][];
-    shapeFilterForPhase1.set(hKey, withEachDaysPattern(analysisShapes, countsByDay, shapeLen, dayType => drawnDirectionDays.has(`${dirKey}::${dayType}`)));
+      .map(dayType => headsignShapeCountsByDay.get(`${hKey}::${dayType}`))
+      .filter((m): m is Map<string, number> => !!m);
+    const withDays = withEachDaysPattern(analysisShapes, countsByDay, shapeLen);
+    shapeFilterForPhase1.set(hKey, withDays);
+    if (withDays !== analysisShapes) dayPickShapes.set(hKey, new Set([...withDays].filter(sid => !analysisShapes.has(sid))));
   }
 
   return {
@@ -311,6 +304,7 @@ export function buildShapeSelectionContext(
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,
     shapeFilterForPhase1,
+    dayPickShapes,
     lastStopByTrip,
     stopNameById,
   };
