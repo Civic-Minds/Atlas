@@ -7,10 +7,15 @@ describe('SiteHeader on phones (CIV-1301)', () => {
     render(<SiteHeader />);
     const docs = screen.getByRole('link', { name: 'Docs' });
     expect(docs.className.split(/\s+/)).toEqual(expect.arrayContaining(['hidden', 'sm:inline']));
-    for (const name of [/Agencies/, /Research/, /Studio/, /Go to Atlas/]) {
+    for (const name of [/Research/, /Studio/, /Go to Atlas/]) {
       const link = screen.queryByRole('link', { name });
       if (link) expect(link.className.split(/\s+/), String(name)).not.toContain('hidden');
     }
     expect(screen.getByRole('link', { name: /Go to Atlas/ })).toHaveAttribute('href', '/');
+  });
+
+  it('has no Agencies link; Agencies is in the footer (CIV-1771)', () => {
+    render(<SiteHeader />);
+    expect(screen.queryByRole('link', { name: /Agencies/ })).toBeNull();
   });
 });
