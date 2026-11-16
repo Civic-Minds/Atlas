@@ -15,7 +15,7 @@ import { countryForRegion } from './regionCountry';
 import { BETA_BUILD } from './config';
 import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
-import { AGENCY_PATH_PREFIX, agencyIndexHeadingHref, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath } from './pagePaths';
+import { AGENCY_PATH_PREFIX, agencyIndexHeadingHref, agencyPagePath, areaPagePath, parentAgencyPagePath, regionPagePath, AGENCY_CARD_PARAM } from './pagePaths';
 import { PARENT_AGENCIES, parentAgency } from './parentAgencyList';
 import { agencyInSentence, agencySentenceStart } from './agencyArticle';
 import { parentMembers, parentRoutes, parentSummary } from './parentSummary';
@@ -666,9 +666,10 @@ export function agencyShortLabel(a: Pick<AgencyPageSummary, 'displayName'>): str
   return splitBracketedPlace(a.displayName)?.[0] ?? a.displayName;
 }
 
-/** The map link for the big button: the agency's area, with only that agency on. */
+/** The map link for the big button: the agency's area, with only that agency on and its card open (#1570). A parent page's link turns its members on together and opens no card, as there is no one card for them. */
 export function agencyMapHref(a: AgencyPageIdentity, /** CIV-1277: a parent's members, all on together. */ slugs: readonly string[] = [a.slug]): string {
   const params = new URLSearchParams({ agencies: slugs.join(',') });
+  if (slugs.length === 1) params.set(AGENCY_CARD_PARAM, slugs[0]);
   if (a.center) {
     const [lat, lon] = a.center;
     params.set('lat', lat.toFixed(4));

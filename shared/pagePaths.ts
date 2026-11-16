@@ -59,3 +59,6 @@ export const STUDIO_PATH = '/studio';
 export const STUDIO_VEHICLES_PATH = '/studio/vehicles';
 /** CIV-1715: Studio's before/after schedule comparison. */
 export const STUDIO_CHANGES_PATH = '/studio/changes';
+
+/** The map's address parameter that opens an agency card (`/?operator=<slug>`); shareUrlState.ts re-exports it (CIV-1783). */
+export const AGENCY_CARD_PARAM = 'operator';
