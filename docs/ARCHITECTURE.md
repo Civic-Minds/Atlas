@@ -49,23 +49,31 @@ Read by: `pipeline/refresh.ts` (history and stop baselines), `pipeline/build-his
 
 ### atlas-live (private)
 
-Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are still
-recorded every minute by the ttc-positions Worker's cron, which is set in Cloudflare:
-the repo's Worker config has had no `[triggers]` block since the 2026-09-02 pause, but
-redeploying did not clear the existing schedule (CIV-317). Whether the other shards
-still write is unverified. Objects are retained until the bucket’s 30-day lifecycle
-removes them. Snapshot/replay for Live UI needs a
+Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are
+recorded every minute by the ttc-positions Worker (cron `* * * * *`, in
+`workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689) and kept 30 days. The other four
+Workers (ttc-trips, Hamilton, STM, Burlington/Halifax) are paused with no cron, and their
+data has expired: checked 2026-11-15, the bucket holds only `positions/ttc/`. Objects are
+retained until the bucket’s 30-day lifecycle removes them (a 90-day rule also exists).
+`npm run audit-live-state` shows the live crons, newest snapshots and lifecycle rules. Snapshot/replay for Live UI needs a
 restored provider contract before Live can be re-enabled.
 
-- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples for the five archive agencies, every minute
-- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries for the five archive agencies, every 5 minutes
+- `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — vehicle-position samples, every minute; only `ttc` is recorded now
+- `{slug}/{YYYY-MM-DD}/{unix-seconds}.json` — trip-update delay summaries, every 5 minutes; none recorded now (the shards are paused)
 - The archived formats use the `atlas.live.v1` normalized envelope where snapshots exist.
 
-Previously written by five small Cloudflare Workers sharing `workers/gtfs-rt-archiver/src/index.ts`.
+Written by small Cloudflare Workers (only ttc-positions runs now) sharing `workers/gtfs-rt-archiver/src/index.ts`.
 The local-only `history-adherence` handler (`local-api/`, never deployed) can read the archive; the former live snapshot/replay routes
 are no longer in the repository.
 
 30-day retention enforced by the bucket's R2 lifecycle rules.
+
+### atlas-live-kingston (private)
+
+Kingston Transit's GTFS-RT snapshots for the Atlas Studio demo (CIV-1682), written every minute by
+the `atlas-gtfs-rt-archiver-kingston` Worker (`wrangler.kingston.toml`): `positions/kingston/...` each
+run, `kingston/...` trip updates every 5th run, same key layout as atlas-live. Kept 60 days by the
+bucket's lifecycle rule. Kingston is archive-only, not a Live agency.
 
 
 ## Live polling: current and planned surfaces

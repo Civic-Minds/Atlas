@@ -8,7 +8,7 @@ Engineering direction for Atlas infrastructure and the live data layer.
 
 The goal is to make Atlas a stable live-data provider for multiple products without
 forcing each consumer to poll GTFS-RT or access private R2. The previous hosted live
-collection path is paused (status: [Feature flags](../FEATURE_FLAGS.md)); local fixtures and local polling are development tools,
+collection path is paused except TTC vehicle positions (every minute, kept 30 days) and the Kingston demo archive (status: [Live polling](../operations/LIVE_POLLING.md)); local fixtures and local polling are development tools,
 not the final deployment decision. Replay is the validation surface; derived
 operational semantics remain in consumers unless broadly reusable.
 
