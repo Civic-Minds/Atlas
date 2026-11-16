@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  compareFeedSides, comparisonMarkdown, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, readFeedSide, servicesListedOn,
+  compareFeedSides, comparisonMarkdown, dateInWeek, dateReadProblem, dayCoverage, DateNotReadError, headwayText, readFeedSide, routeLines, servicesListedOn,
 } from '../feedCompare';
 
 // CIV-1684: a before/after schedule comparison. Before: A every 30, B, D taking 20 min.
@@ -73,6 +73,11 @@ describe('compare two schedule versions (CIV-1684)', () => {
     expect(Object.values(d.before!.runMinutes)).toEqual([20]);
     expect(Object.values(d.after!.runMinutes)).toEqual([30]);
 
+    // CIV-1731: each side keeps its routes' drawn lines for the Studio map; they are not compared.
+    expect(before.routes.A.days.Weekday!.lines!.length).toBeGreaterThan(0);
+    expect(after.routes.C.days.Weekday!.lines!.length).toBeGreaterThan(0);
+    expect(after.routes.B).toBeUndefined();
+
     const md = comparisonMarkdown(cmp);
     expect(md).toContain('| 30/30/30/30 → 15/15/15/15 | 33 → 65 |');
     expect(md).toContain('| 20 → 30 |');
@@ -118,5 +123,15 @@ describe('date checks', () => {
   it('writes headways as AM peak/midday/PM peak/evening with late and overnight only when present', () => {
     expect(headwayText({ amPeak: 30, midday: 60, pmPeak: 60, evening: 60, late: null })).toBe('30/60/60/60');
     expect(headwayText({ amPeak: null, midday: 30, late: 75 })).toBe('–/30/–/– (late 75)');
+  });
+});
+
+describe('route lines for the Studio map (CIV-1731)', () => {
+  it('rounds to five decimals, drops points rounding merges, and keeps each part of a multi-line', () => {
+    expect(routeLines({ type: 'LineString', coordinates: [[-76.4812345, 44.2312345], [-76.4812349, 44.2312341], [-76.49, 44.24]] }))
+      .toEqual([[[-76.48123, 44.23123], [-76.49, 44.24]]]);
+    expect(routeLines({ type: 'MultiLineString', coordinates: [[[0, 0], [1, 1]], [[2, 2], [3, 3]]] })).toHaveLength(2);
+    expect(routeLines({ type: 'Point', coordinates: [0, 0] })).toEqual([]);
+    expect(routeLines(null)).toEqual([]);
   });
 });

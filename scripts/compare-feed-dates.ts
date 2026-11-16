@@ -57,7 +57,7 @@ try {
   const studioOut = option('--json');
   if (studioOut) {
     mkdirSync(dirname(resolve(studioOut)), { recursive: true });
-    writeFileSync(resolve(studioOut), `${JSON.stringify(studioBeforeAfterFile(cmp), null, 1)}\n`);
+    writeFileSync(resolve(studioOut), `${JSON.stringify(studioBeforeAfterFile(cmp, { before: b, after: a }), null, 1)}\n`);
     console.log(`Wrote ${studioOut}`);
   }
 } catch (err) {

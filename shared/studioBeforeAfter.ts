@@ -51,7 +51,15 @@ export interface StudioBeforeAfterFile {
   /** Changed, added and removed routes, in route order. */
   changes: StudioRouteChange[];
   unchanged: string[];
+  /**
+   * Every route's drawn lines on the compared day, by side and route name (CIV-1731's map), changed or not. Missing in
+   * files built before CIV-1731; a route that doesn't run on a side has no entry there.
+   */
+  lines?: { before: Record<string, StudioRouteLine[]>; after: Record<string, StudioRouteLine[]> };
 }
+
+/** One drawn line as [lng, lat] pairs (pipeline/feedCompare.ts's RouteLine). */
+export type StudioRouteLine = Array<[number, number]>;
 
 /** Where the Vite dev server serves an agency's file (tmp/studio/<slug>-before-after.json). */
 export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-before-after.json`;
@@ -73,6 +81,8 @@ export interface StudioComparisonInput {
   changed: Array<{ route: string; longName: string | null; days: Partial<Record<DayType, { before: InputDay | null; after: InputDay | null }>> }>;
   unchanged: string[];
 }
+/** The parts of pipeline/feedCompare.ts's FeedSide the lines come from. */
+export interface StudioSideInput { routes: Record<string, { days: Partial<Record<DayType, { lines?: StudioRouteLine[] }>> }> }
 
 const slim = (d: InputDay | null | undefined): StudioRouteDay | null => d ? {
   headway: Object.fromEntries(PERIOD_KEYS.filter(k => d.headway[k] != null).map(k => [k, d.headway[k]])),
@@ -103,7 +113,14 @@ export function changeSize(before: StudioRouteDay | null, after: StudioRouteDay 
 
 const byRoute = (a: { route: string }, b: { route: string }) => a.route.localeCompare(b.route, undefined, { numeric: true });
 
-export function studioBeforeAfterFile(cmp: StudioComparisonInput): StudioBeforeAfterFile {
+const sideLines = (side: StudioSideInput, day: DayType): Record<string, StudioRouteLine[]> => Object.fromEntries(
+  Object.entries(side.routes)
+    .map(([name, r]) => [name, r.days[day]?.lines ?? []] as const)
+    .filter(([, lines]) => lines.length > 0)
+    .sort((a, b) => byRoute({ route: a[0] }, { route: b[0] })));
+
+/** The page's file. With both sides, it also carries every route's lines on the compared day. */
+export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { before: StudioSideInput; after: StudioSideInput }): StudioBeforeAfterFile {
   const day = cmp.comparedDays.includes('Weekday') ? 'Weekday' : (cmp.comparedDays[0] ?? null);
   const changes: StudioRouteChange[] = [];
   if (day) {
@@ -129,5 +146,6 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput): StudioBeforeA
     leftOut,
     changes,
     unchanged: cmp.unchanged,
+    ...(sides && day ? { lines: { before: sideLines(sides.before, day), after: sideLines(sides.after, day) } } : {}),
   };
 }

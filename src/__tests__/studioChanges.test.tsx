@@ -57,6 +57,17 @@ describe('Studio before/after file (CIV-1715)', () => {
     expect(changeSize(base, { ...base, last: 1240 })).toBe('hours');
     expect(changeSize(base, { ...base, runMinutes: [36] })).toBe('hours');
   });
+
+  it('carries every route\'s lines on the compared day, changed or not, when given both sides (CIV-1731)', () => {
+    const line: Array<[number, number]> = [[0, 0], [1, 1]];
+    const side = (names: string[]) => ({ routes: Object.fromEntries(names.map(n => [n, { days: { Weekday: { lines: [line] }, Saturday: { lines: [line, line] } } }])) });
+    const file = studioBeforeAfterFile(CMP, { before: side(['1', '10', '2']), after: side(['2', '1']) });
+    expect(Object.keys(file.lines!.before)).toEqual(['1', '2', '10']);
+    expect(file.lines!.after['2']).toEqual([line]);
+    expect(file.lines!.after['10']).toBeUndefined();
+    expect(file.changes).toEqual(FILE.changes);
+    expect(FILE.lines).toBeUndefined();
+  });
 });
 
 describe('Studio Schedule Changes page (CIV-1715)', () => {
