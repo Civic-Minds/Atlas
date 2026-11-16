@@ -146,3 +146,37 @@ describe('ended zones on every surface', () => {
     expect(after.features.some(f => (f.properties as { areaName?: string }).areaName === 'Glenora East')).toBe(false);
   });
 });
+
+describe('zones that start on a later date (CIV-1753)', () => {
+  // Chandler Flex: 'Southwest Chandler' runs until 2026-12-31, the 2027 area from 2027-01-01.
+  const NOW = 'Southwest Chandler';
+  const NEXT = 'Southwest Chandler, 2027 area';
+  const built = (at: string) => {
+    const release = buildOnDemandRelease('beta', 't', undefined, undefined, new Date(at));
+    const files = releaseFiles(release);
+    const index = JSON.parse(files.get(`v/${release.manifest.version}/index.json`)!);
+    const geometries = new Map<string, OnDemandGeometry>([['chandler-flex', JSON.parse(files.get(`v/${release.manifest.version}/agencies/chandler-flex.json`)!)]]);
+    return { index, geometries };
+  };
+  const names = (area: { features: readonly { properties?: unknown }[] }) => area.features.map(f => (f.properties as { areaName: string }).areaName);
+
+  it('keeps the later zone in a release built before its first day, so no republish is needed', () => {
+    const { geometries } = built('2026-11-16T12:00:00Z');
+    expect(names(geometries.get('chandler-flex')!)).toEqual([NOW, NEXT]);
+  });
+
+  it('shows exactly one area on every day around the switch, by the agency\'s local date', () => {
+    const { index, geometries } = built('2026-11-16T12:00:00Z');
+    const area = (at: string) => applyOnDemand([], index, geometries, new Date(at)).find(a => a.slug === 'chandler-flex')!.onDemandServiceArea!;
+    expect(names(area('2026-11-16T19:00:00Z'))).toEqual([NOW]);
+    expect(names(area('2027-01-01T06:59:00Z'))).toEqual([NOW]); // 11:59 PM Dec 31 in Phoenix
+    expect(names(area('2027-01-01T07:00:00Z'))).toEqual([NEXT]); // midnight Jan 1 in Phoenix
+    expect(Object.keys(area('2027-01-01T07:00:00Z').zoneMetadata ?? {})).toEqual([NEXT]);
+    expect(names(area('2027-01-02T19:00:00Z'))).toEqual([NEXT]);
+  });
+
+  it('still drops the ended area from a release built after the switch', () => {
+    const { geometries } = built('2027-01-02T19:00:00Z');
+    expect(names(geometries.get('chandler-flex')!)).toEqual([NEXT]);
+  });
+});

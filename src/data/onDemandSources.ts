@@ -10,6 +10,10 @@
  *     "serviceHours"?, "availability"?, "hoursNote"?, "eligibility"?, "bookingInfo"?, "bookingUrl"?,
  *     "pickup"?, "tripRules"?, "zoneMetadata"?
  *   },
+ *   // A zone that changes on a known date (CIV-1753): give the outgoing zone zoneMetadata[name].validUntil
+ *   // (its last day) and the incoming one validFrom (its first day), both YYYY-MM-DD. Publish both now:
+ *   // the release keeps the later zone, and the app shows each only on its days, in the agency's local
+ *   // date (set agency.timezone or config/agencies/<slug>.json), so no republish is needed on the day.
  *   "features": [ ...GeoJSON Polygon/MultiPolygon zones, each with properties.areaName ],
  *   "stopFeatures"?: [ ...GeoJSON Point stops or destination points ],
  *   "notes"?: "anything for the next person, e.g. a re-check reason"
@@ -57,8 +61,12 @@ export function sourceProblems(source: OnDemandSource, fileName?: string): strin
   const missingSource = [...(source.features ?? []), ...(source.stopFeatures ?? [])]
     .filter(f => !(f.properties as { sourceUrl?: string } | null)?.sourceUrl).length;
   if (missingSource > 0) problems.push(`${where}: ${missingSource} zones/stops have no properties.sourceUrl (the map-data URL)`);
-  for (const name of Object.keys(source.area?.zoneMetadata ?? {})) {
+  for (const [name, zone] of Object.entries(source.area?.zoneMetadata ?? {})) {
     if (!zoneNames.has(name)) problems.push(`${where}: zoneMetadata "${name}" matches no zone's or stop's areaName`);
+    for (const field of ['validFrom', 'validUntil'] as const) {
+      if (zone?.[field] !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(zone[field] ?? '')) problems.push(`${where}: zoneMetadata "${name}".${field} must be YYYY-MM-DD`);
+    }
+    if (zone?.validFrom && zone.validUntil && zone.validFrom > zone.validUntil) problems.push(`${where}: zoneMetadata "${name}" starts after its last day`);
   }
   if (source.agency && source.agency.slug !== source.slug) problems.push(`${where}: agency.slug must equal slug`);
   return problems;
