@@ -1,8 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { liveVehiclesEqual } from '../utils/liveVehiclesFingerprint';
 
 const POLL_INTERVAL_MS = 15_000;
+
+/** The entries of a per-agency record for the agencies in `keep`; the same object when nothing goes. */
+export function keepSlugs<T>(prev: Record<string, T>, keep: ReadonlySet<string>): Record<string, T> {
+  const gone = Object.keys(prev).filter(s => !keep.has(s));
+  if (gone.length === 0) return prev;
+  const next: Record<string, T> = {};
+  for (const [s, v] of Object.entries(prev)) if (keep.has(s)) next[s] = v;
+  return next;
+}
 
 /**
  * Polls the live vehicle feed for every agency in view, every 15 s while Live is open,
@@ -19,7 +28,9 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
   // once a feed has clearly been down for a while, not just a blip.
   const [failCountBySlug, setFailCountBySlug] = useState<Record<string, number>>({});
   const [degradedBySlug, setDegradedBySlug] = useState<Record<string, string | null>>({});
-
+  // #1568: the agencies in view now. A reply for an agency that has left the view is dropped, so
+  // it can't put back an error (or vehicles) the view no longer has.
+  const inView = useRef<ReadonlySet<string>>(new Set());
 
   const fetchForSlug = useCallback(async (slug: string) => {
     try {
@@ -29,6 +40,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
         throw new Error(errData.error || "Can’t reach this feed right now.");
       }
       const data = await res.json();
+      if (!inView.current.has(slug)) return;
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
       // Skip React updates when poll returns the same map-relevant vehicle state
       // (avoids full Live + deck rebuild every 15s while buses idle).
@@ -43,6 +55,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
       const degradedMsg = data.degraded ? (data.degradedReason ?? 'Some data unavailable') : null;
       setDegradedBySlug(prev => (prev[slug] === degradedMsg ? prev : { ...prev, [slug]: degradedMsg }));
     } catch (err: any) {
+      if (!inView.current.has(slug)) return;
       setErrorBySlug(prev => ({ ...prev, [slug]: err.message || 'Feed unavailable' }));
       setFailCountBySlug(prev => ({ ...prev, [slug]: (prev[slug] ?? 0) + 1 }));
     }
@@ -50,6 +63,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
 
   // Start/stop polling when visible slugs change
   useEffect(() => {
+    inView.current = new Set(active ? visibleSlugs : []);
     if (!active || visibleSlugs.length === 0) {
       setVehiclesBySlug({});
       setHeadwaysBySlug({});
@@ -59,6 +73,16 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
       setDegradedBySlug({});
       return;
     }
+
+    // #1568: an agency that left the view drops out of every per-agency record, its error and
+    // failure count too, so the "can't be shown" notice names only agencies in view (it had named
+    // York Region Transit after the map moved away from it).
+    const keep = inView.current;
+    setVehiclesBySlug(prev => keepSlugs(prev, keep));
+    setHeadwaysBySlug(prev => keepSlugs(prev, keep));
+    setErrorBySlug(prev => keepSlugs(prev, keep));
+    setFailCountBySlug(prev => keepSlugs(prev, keep));
+    setDegradedBySlug(prev => keepSlugs(prev, keep));
 
     // Initial fetch
     const loading: Record<string, boolean> = {};
@@ -73,18 +97,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
     );
 
     const pollId = setInterval(() => visibleSlugs.forEach(fetchForSlug), POLL_INTERVAL_MS);
-    return () => {
-      clearInterval(pollId);
-      // Clear stale data for slugs that left the viewport
-      setVehiclesBySlug(prev => {
-        const keep = new Set(visibleSlugs);
-        const next: typeof prev = {};
-        for (const [s, v] of Object.entries(prev)) {
-          if (keep.has(s)) next[s] = v;
-        }
-        return next;
-      });
-    };
+    return () => clearInterval(pollId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, visibleSlugKey, fetchForSlug]);
 
