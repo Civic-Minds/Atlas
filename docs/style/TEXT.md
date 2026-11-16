@@ -8,6 +8,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
   - A text link shows it after the arrow ("← Back to map", "← Back to TTC", "← Back to agencies").
   - An arrow-only control or the logo says the same words to screen readers ("Back to About Atlas").
   - Common places are lower case after "Back to"; agency, route and page names keep theirs (Ryan, 2026-11-14: History's link reads "Back to agencies").
+- No "[Placeholder" text can reach a public or beta build. It is a stand-in for wording Ryan has not given yet, so it may only sit behind a dev-only flag (true only on the Vite dev server), and each file is listed with its flag in the test. CIV-1775. (checked: `placeholderGuard.test.ts`)
 - A close X says "Close " + what it closes to screen readers ("Close filters"; `closeLabel`). CIV-1569. (checked)
 
 ## Frequencies
