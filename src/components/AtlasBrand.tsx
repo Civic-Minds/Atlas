@@ -1,3 +1,9 @@
+import { ATLAS_MODE } from '../../shared/config';
+import { headerModeTag } from '../content/noticeCopy';
+import Tag from './ui/Tag';
+
+const MODE_TAG = headerModeTag(ATLAS_MODE);
+
 /** Wordmark only; use AtlasLogo for the logo. Same look at every width. page: the larger wordmark used in the content-page header, sized against its nav links. */
 export default function AtlasBrand({ size = 'compact', hideByline = false }: { size?: 'compact' | 'page'; hideByline?: boolean }) {
   const page = size === 'page';
@@ -8,6 +14,8 @@ export default function AtlasBrand({ size = 'compact', hideByline = false }: { s
         <span className={`${page ? 'text-lg' : 'text-sm'} leading-none font-black text-[var(--text-primary)]`}>Atlas</span>
         <span className={`${page ? 'text-[13px] leading-none text-[var(--text-muted)]' : 'text-2xs leading-none text-[var(--text-dim)]'} ${hideByline ? 'hidden sm:block' : ''}`}>by Civic Minds</span>
       </span>
+      {/* CIV-1692: beside the two lines, not in the byline, so it still shows on phones where the byline is hidden. */}
+      {MODE_TAG && <Tag size="inline">{MODE_TAG}</Tag>}
     </span>
   );
 }
