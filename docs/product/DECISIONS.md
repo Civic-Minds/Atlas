@@ -113,6 +113,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: new information on a published or persisted field goes in a new same-named field; the original's value type never changes.
   - Why: a file can declare its own copy of the type, so `tsc` misses it, and persisted snapshots cannot be fixed afterwards.
   - Source: [decision log](#decision-log) (2026-07-25), [#281](https://github.com/Civic-Minds/Atlas/issues/281)
+- **Atlas Studio is a section of Atlas, local only**
+  - What: Studio lives in the Atlas code as its own section behind its own feature flag, on only in local dev until the demo is ready.
+  - Why: one codebase shares the map's data and rules; the agency tier isn't ready to show.
+  - Source: [decision log](#decision-log) (2026-11-15), Linear CIV-1680
 
 ### Data and pipeline fixes
 
@@ -252,6 +256,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-15 — Atlas Studio is a section of Atlas, local only for now
+Ryan, 2026-11-15 ("Yes local only", CIV-1680): Atlas Studio, the paid agency tier in [STRATEGY.md](STRATEGY.md), lives in the same Atlas code as its own section behind its own feature flag, following [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). The flag is off on public and beta and on only in local dev until the demo is ready. Studio tools (the before/after report, the vehicles calculator) get their UI there. The shell (sign-in, private per-agency views) waits until an agency says yes.
 
 ### 2026-11-15 — Live report pages stay local
 Ryan, 2026-11-15: the Live report pages (`/apps/live/:agency` and below) stay local only until the GTFS-RT archive restarts and the page design is approved. Their data is not being refreshed (the `live-report-refresh.yml` schedule is commented out and the archive is paused), so `VITE_LIVE_REPORTS_ENABLED` was removed from Beta's Vercel settings; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md).
