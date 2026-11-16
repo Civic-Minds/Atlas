@@ -20,7 +20,10 @@ export const PHONE_MEDIA_QUERY = '(max-width: 639px)';
 /** Tailwind's md and up: wide enough for the on-demand failed notice in the map's footer row (CIV-1057). */
 export const FOOTER_NOTICE_MEDIA_QUERY = '(min-width: 768px)';
 
-/** History and Compare are desktop/tablet only: below sm they are switched off everywhere. */
-export function phoneModeFlags(isPhone: boolean): { history: boolean; compareMode: boolean } {
-  return { history: !isPhone, compareMode: !isPhone };
+/**
+ * History, Compare and the map-and-sidebar pages (Live's tool page, Studio; CIV-1732) are desktop/tablet only: below sm
+ * they are switched off everywhere and their addresses fall back to the map.
+ */
+export function phoneModeFlags(isPhone: boolean): { history: boolean; compareMode: boolean; mapApps: boolean } {
+  return { history: !isPhone, compareMode: !isPhone, mapApps: !isPhone };
 }

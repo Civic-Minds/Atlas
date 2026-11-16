@@ -10,7 +10,6 @@ import { FEATURES } from '../shared/config';
 import type { AgencySummary } from '../shared/liveAgency';
 import { NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../shared/liveDashboard';
 import { liveAgencyPath, useLiveDashboard } from './hooks/useLiveDashboard';
-import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLiveAgency } from './LiveAgencyPage';
 import { devOnly, liveReportTitle } from './lib/liveReportData';
 import { applySeoToDocument } from './lib/seoDom';
@@ -22,14 +21,13 @@ import { excludingDays, kpiTiles } from './utils/liveKpi';
 import { DIRECTION_LABEL, GROWS_LABEL, LATE_STOPS_TITLE, TIME_OF_DAY_LABEL, excludingText } from '../shared/liveWording';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
-import RouteMap, { type MapPick } from './components/Live/RouteMap';
+import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, MapPillGroup, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { TYPICAL_ADDED } from '../shared/liveWording';
 import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
 import { MapCard } from './components/Live/MapCard';
-import { BasemapCredit } from './components/BasemapCredit';
 import { type RouteStripStop } from './components/Live/routeStripModel';
 import Widget from './components/Live/tool/Widget';
 import WidgetPanel, { type PanelWidget } from './components/Live/tool/WidgetPanel';
@@ -44,11 +42,10 @@ import { WeekTable } from './LiveDashboardView';
 import { PERIOD_BANDS_ONLY, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
-import { PILL_ROW } from './components/ui/PillGroup';
 import Pill from './components/ui/Pill';
 import LiveMapKey from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
-import { MAP_BADGE, PHONE_TAP_AREA } from './styles';
+import { PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 import { percentText, countText } from '../shared/numberText';
 
@@ -57,48 +54,15 @@ import { percentText, countText } from '../shared/numberText';
 /** The stop card's line for that figure (wording to confirm). */
 const DELAY_STAYS = 'Added and kept';
 
-/** The measures, on the map at the top right: they change only the map and the route list, so they sit with them. "Delays start" (the CIV-942 heatmap) is one of the set. */
+/** The measures, in the top bar with the other switchers (CIV-1732, Ryan's option A). "Delays start" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
-  return (
-    <div role="group" aria-label="Measure" className="pointer-events-auto absolute right-0 top-0 z-10 flex flex-wrap justify-end gap-1.5">
-      {MAP_MEASURES.map(([k, text]) => <Pill key={k} size="segment" tone="glass" selected={measure === k} onClick={() => setMeasure(k)}>{text}</Pill>)}
-    </div>
-  );
+  return <MapPillGroup label="Measure" options={MAP_MEASURES} value={measure} onChange={setMeasure} />;
 }
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
 function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
   return <PillMenu label={TIME_OF_DAY_LABEL} value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
-}
-
-/** One pill showing the current choice; a click opens the choices under it (the time of day and route menus). */
-function PillMenu({ label, value, options, onPick, alignRight = false }: { label: string; value: string; /** key, what the row shows and its plain-text name when what it shows is not plain text. */ options: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>; onPick: (k: string) => void; alignRight?: boolean }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: Event) => { if (e instanceof KeyboardEvent ? e.key === 'Escape' : !ref.current?.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('pointerdown', close);
-    document.addEventListener('keydown', close);
-    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', close); };
-  }, [open]);
-  return (
-    <div ref={ref} className="relative">
-      <Pill size="segment" selected className={PHONE_TAP_AREA} aria-haspopup="menu" aria-expanded={open} aria-label={label} onClick={() => setOpen(o => !o)}>
-        {options.find(([k]) => k === value)?.[1]}<span aria-hidden="true" className="ml-1">▾</span>
-      </Pill>
-      {open && (
-        <div role="menu" aria-label={label} className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 mt-1 flex min-w-full flex-col gap-0.5 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-header)] p-1`}>
-          {options.map(([k, text, plain]) => (
-            <button key={k} type="button" role="menuitemradio" aria-checked={k === value} aria-label={plain} onClick={() => { onPick(k); setOpen(false); }}
-              // A finger-sized row on phones (44px), the compact row with a pointer (#1151).
-              className={`whitespace-nowrap rounded-lg px-2.5 py-1 text-left text-xs font-bold max-sm:min-h-[44px] ${k === value ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>{text}</button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }
 
 
@@ -124,9 +88,6 @@ function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string
   return p ? [`${DELAY_STAYS} ${mins(p.addedMin)}`] : [];
 }
 
-const PANEL_PAD = { top: 56, bottom: 24, left: 410, right: 24 };
-// On a phone the measure pills take two rows, so the route and the stop card start below them.
-const NARROW_PAD = { top: 76, bottom: 24, left: 24, right: 24 };
 /** What the route's week figures cover (the Run time tile's own scope wording). */
 const BOTH_DIRECTIONS = 'both directions';
 /**
@@ -183,14 +144,14 @@ function LoadingWidget() {
 }
 
 /** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
-  agency: string; /** The agency's short name, for the back link. */ agencyName: string; pickSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+  agency: string; /** The agency's short name, for the back link. */ agencyName: string; pickSlot: HTMLElement | null; measureSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }) {
-  const wide = useMediaQuery('(min-width: 1024px)');
+  const wide = useMapAppWide();
   // On a phone the map sits above the widgets: a stop or stretch picked lower down (a "Stops most often late" row)
   // brings the map back into view so its card shows (#1151).
   const narrowScroll = useRef<HTMLDivElement | null>(null);
-  const pickKey = pick ? (pick.kind === 'stop' ? pick.stopId : `${pick.fromStopId}>${pick.toStopId}`) : null;
+  const pickKey = pick ? (pick.kind === 'stop' ? pick.stopId : pick.kind === 'segment' ? `${pick.fromStopId}>${pick.toStopId}` : pick.id) : null;
   useEffect(() => { if (!wide && pickKey) narrowScroll.current?.scrollTo({ top: 0, behavior: 'smooth' }); }, [pickKey, wide]);
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes, route);
@@ -240,32 +201,14 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
-  const [noteEl, setNoteEl] = useState<HTMLElement | null>(null);
   const [noteH, setNoteH] = useState(0);
-  useEffect(() => {
-    if (!noteEl) { if (!ready?.note) setNoteH(0); return; }
-    const read = () => setNoteH(Math.ceil(noteEl.getBoundingClientRect().height));
-    read();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(read);
-    ro.observe(noteEl);
-    return () => ro.disconnect();
-  }, [noteEl]); // eslint-disable-line react-hooks/exhaustive-deps
-  const framePad = (pad: typeof PANEL_PAD) => ({ ...pad, bottom: Math.max(pad.bottom, noteH ? noteH + 12 + 12 : 0) });
   // The note is about delay at the first stops: it shows in the delay-based views (Late, Run time), not for the gap-based ones (Extra wait, Bunching).
   const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // The bottom of the map: the note (when it applies) above the key's row of pills. The route is framed above both.
-  const note = (
-    <div ref={setNoteEl} className="pointer-events-none absolute bottom-0 left-0 right-12 flex flex-col items-end gap-2 max-sm:right-0">
-      {showNote && <p className="m-0 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-header)] px-3 py-1.5 text-xs text-[var(--text-muted)]">{ready!.note}</p>}
-      <LiveMapKey measure={measure} />
-      {/* The basemap's credit, in the regular map's footer pill. */}
-      <div className={`${MAP_BADGE} pointer-events-auto h-8`}><BasemapCredit /></div>
-    </div>
-  );
+  const note = <MapAppFooter note={showNote ? ready!.note : undefined}  onHeight={setNoteH} />;
   const mapEl = (
-    <RouteMap
-      model={model} measure={measure} heat={heat} selected={pick} anchor={anchor} card={card} padding={framePad(wide ? PANEL_PAD : NARROW_PAD)}
+    <MapAppMap
+      layer={{ kind: 'segments', model, measure, heat }} selected={pick} anchor={anchor} card={card} padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, noteH)}
       controlsRight={12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
       frameKey={ready && route ? `route-${ready.route}-${noteH}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
@@ -284,39 +227,24 @@ function Body({ agency, agencyName, pickSlot, s, route, setRoute, dir, setDir, d
   const routeMenu = pickSlot ? createPortal(<PillMenu label="Route" alignRight value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
-  if (!wide) {
-    // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
-    return (
-      <div className="relative min-h-0 flex-1">
-        {direction}{upTo}{routeMenu}
-        <div ref={narrowScroll} className="absolute inset-0 overflow-y-auto">
-          <div className="relative h-[55vh] min-h-[22rem]">
-            <div className="absolute inset-0">{mapEl}</div>
-            <div className="pointer-events-none absolute inset-3"><MeasurePills measure={measure} setMeasure={setMeasure} />{note}</div>
-          </div>
-          <WidgetPanel className="p-3" widgets={routePanel ?? summary} />
-          {!routePanel && <div className="flex p-3 pt-0"><OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} /></div>}
-        </div>
-      </div>
-    );
-  }
+  const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />;
+  // The measures sit in the top bar with the other switchers; the map key is one pill at the map's top left (CIV-1732).
+  const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} />, measureSlot) : null;
+  const mapOverlay = <><div className="pointer-events-auto absolute left-0 top-0 max-w-full"><LiveMapKey measure={measure} variant="one" /></div>{note}</>;
+  // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
   return (
-    <div className="relative min-h-0 flex-1">
-      {direction}{upTo}{routeMenu}
-      <div className="absolute inset-0">{mapEl}</div>
-      <div className="pointer-events-none absolute inset-3 flex gap-3">
-        <div className="pointer-events-auto flex w-[24.5rem] shrink-0 flex-col gap-2">
-          {routePanel ? <WidgetPanel widgets={routePanel} /> : <>
-            <WidgetPanel widgets={summary} />
-            <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />
-          </>}
-        </div>
-        <div className="relative min-w-0 flex-1">
-          <MeasurePills measure={measure} setMeasure={setMeasure} />
-          {note}
-        </div>
-      </div>
-    </div>
+    <MapAppLayout
+      wide={wide}
+      portals={<>{direction}{upTo}{routeMenu}{measureBar}</>}
+      narrowScrollRef={narrowScroll}
+      map={mapEl}
+      overlay={mapOverlay}
+      sidebar={routePanel ? <WidgetPanel widgets={routePanel} /> : <><WidgetPanel widgets={summary} />{overview}</>}
+      narrowPanels={<>
+        <WidgetPanel className="p-3" widgets={routePanel ?? summary} />
+        {!routePanel && <div className="flex p-3 pt-0">{overview}</div>}
+      </>}
+    />
   );
 }
 
@@ -334,6 +262,7 @@ export default function LiveToolPage() {
   const [dirSlot, setDirSlot] = useState<HTMLElement | null>(null);
   const [dataSlot, setDataSlot] = useState<HTMLElement | null>(null);
   const [pickSlot, setPickSlot] = useState<HTMLElement | null>(null);
+  const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
   const [pick, setPick] = useState<MapPick | null>(() => {
     if (link.stop) return { kind: 'stop', stopId: link.stop };
     const [f, t] = (link.segment ?? '').split('>');
@@ -347,11 +276,11 @@ export default function LiveToolPage() {
   }, [route, dir, band, measure, pick]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
   if (!FEATURES.liveReports) return <LiveOffNotice />;
-  const shell = (body: ReactNode) => <main className="relative flex h-screen min-h-0 flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">{body}</main>;
+  const shell = (body: ReactNode) => <MapAppShell>{body}</MapAppShell>;
   // CIV-1413 C: a page without figures keeps the top bar's Atlas logo and the "← agency" link every Live page has in all states (CIV-1446).
   const bare = (line: ReactNode, busy = false) => shell(
     <>
-      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2`}><AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} /></header>
+      <MapAppHeader><AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} /></MapAppHeader>
       <div className="p-6">
         <LiveBackLink agencyName={agencyName} href={liveAgencyPath(agency)} />
         <p className="mt-3 text-sm text-[var(--text-muted)]" aria-busy={busy || undefined}>{line}</p>
@@ -364,16 +293,16 @@ export default function LiveToolPage() {
   const s = state.data.summary;
   return shell(
     <>
-      {/* On phones the bar's pills take two rows: 20px between rows and 10px below, so each pill's 44px tap area (PHONE_TAP_AREA) is its own. */}
-      <header className={`${PILL_ROW} border-b border-[var(--border-primary)] bg-[var(--bg-header)] px-4 py-2 max-sm:gap-y-[20px] max-sm:pb-[10px]`}>
+      <MapAppHeader>
         <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
         <button type="button" onClick={() => { setRoute(null); setDir(null); setPick(null); }} className="text-sm font-bold hover:underline">{agencyName}</button>
         <div ref={setDirSlot} className="contents" />
-        <div ref={setDataSlot} className="contents" />
-        {/* Time of day at the right end of the top bar (Ryan, 2026-10-26). */}
-        <div className="ml-auto flex items-center gap-2"><div ref={setPickSlot} className="contents" /><PeriodMenu band={band} setBand={setBand} /></div>
-      </header>
-      <Body agency={agency} agencyName={agencyName} pickSlot={pickSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
+        <span aria-hidden className="mx-1 h-5 w-px bg-[var(--border-primary)]" />
+        <div ref={setMeasureSlot} className="contents" />
+        {/* The data date, the route menu and the time of day at the right end of the top bar (Ryan, 2026-10-26). */}
+        <div className="ml-auto flex items-center gap-3"><div ref={setDataSlot} className="contents" /><div ref={setPickSlot} className="contents" /><PeriodMenu band={band} setBand={setBand} /></div>
+      </MapAppHeader>
+      <Body agency={agency} agencyName={agencyName} pickSlot={pickSlot} measureSlot={measureSlot} dirSlot={dirSlot} dataSlot={dataSlot} s={s} route={route} setRoute={setRoute} dir={dir} setDir={setDir} band={band} measure={measure} setMeasure={setMeasure} pick={pick} setPick={setPick} />
     </>,
   );
 }

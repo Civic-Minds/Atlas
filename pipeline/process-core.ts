@@ -37,7 +37,7 @@ import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
 import { clipLineBetweenPositions, clipLineBetweenStops, projectStopsOntoShape, simplifyLine } from './geometry.js';
 import { computeLivePollingOffsets, computeLiveTripStopTimes } from './live-polling-offsets.js';
-import { annotateShortTurnVariants, buildShapeSelectionContext } from './shape-selection.js';
+import { annotateShortTurnVariants, buildShapeSelectionContext, joinsAsLeg } from './shape-selection.js';
 import { stampWorstDirectionHeadways, stampRouteIrregularDirection } from './worst-direction.js';
 import type { GeoJsonFeature, StopEntry } from './geojson-types.js';
 import { assessFeedQuality, type FeedQuality } from '../shared/feedQuality.js';
@@ -939,12 +939,13 @@ export async function processGtfsBuffer(
     routeDirToDisplayShape,
     routeDirToAnalysisShapes,
     shapeFilterForPhase1,
+    dayPickShapes,
     lastStopByTrip,
     stopNameById,
   } = shapes;
 
   onStatus?.('Running phase 1...');
-  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways });
+  const raw = computeRawDepartures(gtfs, refDate, shapeFilterForPhase1, options?.slug, { skipBlockTripHeadways: options?.skipBlockTripHeadways, dayPickShapes });
   onStatus?.('Running phase 2...');
   // Same tail days phase 2 uses (#718), so the part-week decision (phase 2) and the stop-level
   // full-week check below both skip a weekday that only carries the previous night's tail.
@@ -1392,6 +1393,8 @@ export async function processGtfsBuffer(
     return hit;
   };
   const dedupeKeyRoute = new Map<string, { routeId: string; dir: string | number }>();
+  /** CIV-1719: the shape drawing each dedupe slot, to tell two legs of one route apart. */
+  const dedupedShapeId = new Map<string, string>();
   for (const result of results) {
     const key = `${result.route}::${result.dir}`;
     // Use the headsign-specific shape so each pattern (e.g. Bramalea GO vs Kitchener GO, or 
@@ -1472,7 +1475,20 @@ export async function processGtfsBuffer(
       fullLineCandidates.set(dedupeKey, list);
       dedupeKeyRoute.set(dedupeKey, { routeId: result.route, dir: result.dir });
     }
-    if (decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
+    // CIV-1719 (#1546): of two legs of one route that a day's own pick joined (one ends where the
+    // other starts, joinsAsLeg), the slot is drawn by the leg that goes on, so the row reads arrivals where the route ends,
+    // not at the stop where the legs meet and the next leg's departures leave (Barrie 8B Sunday:
+    // 725 to 9012, then 9012 to Georgian College, hourly each, read "every 30" at 9012).
+    const incumbentShapeId = dedupedShapeId.get(dedupeKey);
+    let legOrder: 'incumbent' | 'candidate' | null = null;
+    const dayPicked = result.headsign ? dayPickShapes.get(`${result.route}::${result.dir}::${result.headsign}`) : undefined;
+    if (existing && incumbentShapeId && shapeId && incumbentShapeId !== shapeId && dayPicked?.has(incumbentShapeId) && dayPicked.has(shapeId)) {
+      const before = stopSequenceOfShape(result.route, result.dir, incumbentShapeId);
+      const after = stopSequenceOfShape(result.route, result.dir, shapeId);
+      if (joinsAsLeg(before, after)) legOrder = before[before.length - 1] === after[0] ? 'candidate' : after[after.length - 1] === before[0] ? 'incumbent' : null;
+    }
+    if (legOrder === 'incumbent') continue;
+    if (legOrder !== 'candidate' && decideDedupe(incumbent, candidate, repWeekday) === 'keep') continue;
 
     const newFeature: GeoJsonFeature = {
       type: 'Feature',
@@ -1528,6 +1544,8 @@ export async function processGtfsBuffer(
     if (existing) maplessStopSequence.delete(existing);
     dedupedFeatures.set(dedupeKey, newFeature);
     dedupedPattern.set(dedupeKey, candidate);
+    if (shapeId) dedupedShapeId.set(dedupeKey, shapeId);
+    else dedupedShapeId.delete(dedupeKey);
     if (!hasRouteShape) maplessStopSequence.set(newFeature, maplessSequence);
     if (hasRouteShape && shapeId) featureShapeId.set(newFeature, shapeId);
     const branchSparseOvernight = sparseOvernightHeadway(result.times);

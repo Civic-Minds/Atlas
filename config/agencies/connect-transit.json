@@ -8,7 +8,7 @@
     -88.99
   ],
   "feedUrl": "https://rideconnecttransit.com/gtfs",
-  "lastFeedExpiry": "20281115",
+  "lastFeedExpiry": "20281116",
   "lastFeedVersion": "Sapphire Change 9/14/2026",
   "lastRefreshedAt": "2026-11-02",
   "region": "Illinois",
@@ -37,7 +37,7 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 98,
-      "feedExpiry": "20281115",
+      "feedExpiry": "20281116",
       "routeCount": 18,
       "problemShapes": 0,
       "problemShapeRoutes": 0,

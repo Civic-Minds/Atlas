@@ -8,6 +8,10 @@ import { t2m, getModeName, expandTripFrequencyWindows, parseFrequencyWindow, typ
 import { getActiveServiceIds } from './transit-calendar';
 import { readWeekOf } from './readWeek';
 import { isRailRoute } from './routeMode';
+import { TIME_PERIODS } from '../shared/config.js';
+
+/** CIV-1722: departures a day-pick pattern needs in a period to count as that period's service (MIN_SCHEDULE_DEPARTURES). */
+const MIN_DAY_PICK_PERIOD_DEPARTURES = 3;
 
 /**
  * Expand frequency-based trips into individual departure times.
@@ -215,7 +219,11 @@ export function computeRawDepartures(
     referenceDate?: string,
     shapeFilter?: Map<string, Set<string>>,
     agencySlug?: string,
-    options?: { skipBlockTripHeadways?: boolean },
+    options?: {
+        skipBlockTripHeadways?: boolean;
+        /** CIV-1720: per headsign key, shapes the filter holds only from a day's own pick. */
+        dayPickShapes?: Map<string, Set<string>>;
+    },
 ): RawRouteDepartures[] {
     const { routes } = gtfs;
     if (!routes || !gtfs.trips || !gtfs.stops || !gtfs.stopTimes) return [];
@@ -236,6 +244,7 @@ export function computeRawDepartures(
         const grouped = new Map<string, {
             routeId: string; dirId: string; headsign?: string; shapeId?: string; routeVariant?: string;
             times: number[]; serviceIds: Set<string>; missingDir: boolean; allBlockTrips: boolean;
+            dayPick: boolean;
         }>();
 
         for (const [, data] of tripData) {
@@ -256,6 +265,7 @@ export function computeRawDepartures(
                     : shapeFilter.get(baseKey);
                 if (expected && !expected.has(data.shapeId as string)) continue;
             }
+            const dayPick = !!data.headsign && !!options?.dayPickShapes?.get(`${baseKey}::${data.headsign}`)?.has(data.shapeId as string);
             if (!grouped.has(key)) grouped.set(key, {
                 routeId: data.routeId,
                 dirId: data.dirId,
@@ -266,6 +276,7 @@ export function computeRawDepartures(
                 serviceIds: new Set(),
                 missingDir: false,
                 allBlockTrips: true,
+                dayPick,
             });
             const group = grouped.get(key)!;
             if (!data.blockTrip) group.allBlockTrips = false;
@@ -274,6 +285,8 @@ export function computeRawDepartures(
             if (data.missingDir) group.missingDir = true;
         }
 
+        const dayStart = results.length;
+        const fromDayPick = new Set<RawRouteDepartures>();
         for (const [, group] of grouped) {
             const { routeId, dirId, headsign, shapeId, routeVariant } = group;
             let departureTimes = deduplicateDepartures(group.times);
@@ -316,6 +329,30 @@ export function computeRawDepartures(
                 serviceIds: Array.from(group.serviceIds),
                 warnings,
             });
+            if (group.dayPick) fromDayPick.add(results[results.length - 1]);
+        }
+        // CIV-1720: a pattern kept only by a day's own shape pick is dropped on a day when another
+        // pattern of its direction has a timetable (two or more departures, as #720 reads it below).
+        // CIV-1722: unless it has MIN_SCHEDULE_DEPARTURES in a period where none of those patterns
+        // runs: it is then that period's service, not a second line beside it. OC Transpo 24 on
+        // Sundays runs a short "St-Laurent" pattern 9:23-17:53 and "Blair" only from 21:13; 35's
+        // weekday "Avalon" runs its long pattern in the peaks and its short one between them.
+        if (fromDayPick.size > 0) {
+            const drawnTimes = new Map<string, number[]>();
+            for (const r of results.slice(dayStart)) {
+                if (fromDayPick.has(r) || r.departureTimes.length < 2) continue;
+                const k = `${r.route}::${r.dir}`;
+                drawnTimes.set(k, [...(drawnTimes.get(k) ?? []), ...r.departureTimes]);
+            }
+            const inPeriod = (times: readonly number[], start: number, end: number) => times.filter(t => t >= start && t < end).length;
+            const fillsAPeriod = (r: RawRouteDepartures, drawn: readonly number[]) => TIME_PERIODS.some(({ startHour, endHour }) =>
+                inPeriod(r.departureTimes, startHour * 60, endHour * 60) >= MIN_DAY_PICK_PERIOD_DEPARTURES && inPeriod(drawn, startHour * 60, endHour * 60) === 0);
+            const kept = results.slice(dayStart).filter(r => {
+                if (!fromDayPick.has(r)) return true;
+                const drawn = drawnTimes.get(`${r.route}::${r.dir}`);
+                return !drawn || fillsAPeriod(r, drawn);
+            });
+            results.splice(dayStart, results.length - dayStart, ...kept);
         }
     }
 

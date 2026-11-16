@@ -1,20 +1,48 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { FloatingMapCard, MapHoverTip, type MapCardAt } from './MapCard';
+import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../Live/MapCard';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
 import { getMapStyle } from '../../lib/mapStyle';
 import { stopDotPaint } from '../Interval/map/stopStyle';
-import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from './routeMapModel';
-import type { HeatPoint } from './delayHeatModel';
+import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from '../Live/routeMapModel';
+import type { HeatPoint } from '../Live/delayHeatModel';
 import { frameRoute } from '../Interval/map/routeFraming';
 import { FOCUS_DIM_OPACITY } from '../../utils/routeFocus';
 
-export type MapPick = { kind: 'segment'; fromStopId: string; toStopId: string; route?: string } | { kind: 'stop'; stopId: string };
+export type MapPick =
+  | { kind: 'segment'; fromStopId: string; toStopId: string; route?: string }
+  | { kind: 'stop'; stopId: string }
+  /** A static route line (a `lines` layer), by its id. */
+  | { kind: 'line'; id: string; route?: string };
+
+/** A route drawn as one plain line: Studio's before and after shapes, and changed, added and removed routes. */
+export interface MapLine {
+  id: string;
+  coordinates: [number, number][];
+  /** Any CSS colour; a `var(--…)` token is read from the page. */
+  color: string;
+  /** Line width at zoom 15, px (default 6); it narrows with the zoom as Live's segments do. */
+  width?: number;
+  /** Drawn dashed (a removed route, a before shape). */
+  dashed?: boolean;
+  /** 0 to 1 (default 1). */
+  opacity?: number;
+  /** The hover text. */
+  label?: string;
+  route?: string;
+}
+
+/**
+ * What the map draws. `segments`: Live's stop-to-stop segments and stop dots, coloured by a measure (with Delay starts'
+ * heat). `lines`: plain route lines, each in its own colour and style.
+ */
+export type MapLayer =
+  | { kind: 'segments'; model: RouteMapModel; measure: MapMeasure; heat?: HeatPoint[] | null }
+  | { kind: 'lines'; lines: readonly MapLine[] };
 
 interface Props {
-  model: RouteMapModel;
-  measure: MapMeasure;
+  layer: MapLayer;
   /** The picked segment or stop: drawn marked. */
   selected: MapPick | null;
   /** A click on a segment or stop, with where it landed; a click on empty map gives null. */
@@ -32,12 +60,16 @@ interface Props {
   padding?: { top: number; bottom: number; left: number; right: number };
   /** Distance of the zoom buttons from the right edge, px: the main map's 12, more where a panel floats over the map's right side. */
   controlsRight?: number | string;
-  /** Where delay starts (the CIV-942 prototype): a soft dot per stop, with a sharp centre where no stops are drawn already. */
-  heat?: HeatPoint[] | null;
   className?: string;
+  /** The map's accessible name. */
+  ariaLabel?: string;
 }
 
+const EMPTY_MODEL: RouteMapModel = { directionId: 0, segments: [], stops: [] };
+
 const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#9ca3af';
+/** A line's colour: a `var(--token)` is read from the page, anything else is used as given. */
+const lineColor = (c: string) => { const m = c.match(/^var\((--[^)]+)\)$/); return m ? css(m[1]) : c; };
 /** The colour of a step: delay colours for the time-based measures, the bunching purples for bunching, grey when not measured. */
 function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
   if (step == null) return css('--strip-delay-0');
@@ -45,18 +77,24 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
 }
 
 /**
- * The route on the Atlas basemap: each segment between stops drawn along its line and coloured by the chosen measure,
- * with a dot at each stop in the same colour. Segments and stops can be clicked; the picked one is marked. A segment or
- * stop with no value is drawn grey. Frames the route whenever `frameKey` changes.
+ * The map of a map-and-sidebar page (Live's tool page, Studio), on the Atlas basemap. With a `segments` layer: each
+ * segment between stops drawn along its line and coloured by the chosen measure, with a dot at each stop in the same
+ * colour; segments and stops can be clicked and the picked one is marked; one with no value is drawn grey. With a `lines`
+ * layer: each line in its own colour, dashed where asked; a line can be clicked. Frames what it draws whenever `frameKey`
+ * changes.
  */
-export default function RouteMap({ model, measure, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, heat = null, className = '' }: Props) {
+export default function MapAppMap({ layer, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, className = '', ariaLabel = 'Map of the route, coloured by the chosen measure' }: Props) {
+  const model = layer.kind === 'segments' ? layer.model : EMPTY_MODEL;
+  const measure: MapMeasure = layer.kind === 'segments' ? layer.measure : 'late';
+  const heat = layer.kind === 'segments' ? layer.heat ?? null : null;
+  const lines = layer.kind === 'lines' ? layer.lines : null;
   const box = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const ready = useRef(false);
   const pick = useRef(onPick);
   pick.current = onPick;
-  const latest = useRef({ model, measure, selected, frameKey, padding, heat });
-  latest.current = { model, measure, selected, frameKey, padding, heat };
+  const latest = useRef({ model, measure, selected, frameKey, padding, heat, lines });
+  latest.current = { model, measure, selected, frameKey, padding, heat, lines };
   const framed = useRef<string | null>(null);
   const [at, setAt] = useState<MapCardAt | null>(null);
   const anchorRef = useRef(anchor);
@@ -75,11 +113,20 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     const map = mapRef.current;
     if (!map || !ready.current) return;
     // The load handler calls an older draw: everything it frames with is read from the latest props.
-    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad, heat: hp } = latest.current;
+    const { model: m, measure: me, selected: sel, frameKey: key, padding: pad, heat: hp, lines: ln } = latest.current;
     const seg = map.getSource('segments') as maplibregl.GeoJSONSource | undefined;
     const stp = map.getSource('stops') as maplibregl.GeoJSONSource | undefined;
     const hs = map.getSource('heat') as maplibregl.GeoJSONSource | undefined;
-    if (!seg || !stp || !hs) return;
+    const ls = map.getSource('lines') as maplibregl.GeoJSONSource | undefined;
+    if (!seg || !stp || !hs || !ls) return;
+    ls.setData({
+      type: 'FeatureCollection',
+      features: (ln ?? []).map(l => ({
+        type: 'Feature' as const,
+        properties: { id: l.id, label: l.label ?? '', route: l.route ?? '', color: lineColor(l.color), w: l.width ?? 6, op: (l.opacity ?? 1) * (latestHl.current && l.route !== latestHl.current ? FOCUS_DIM_OPACITY : 1), dashed: l.dashed ? 1 : 0, sel: sel?.kind === 'line' && sel.id === l.id ? 1 : 0 },
+        geometry: { type: 'LineString' as const, coordinates: l.coordinates },
+      })),
+    });
     hs.setData({
       type: 'FeatureCollection',
       features: (hp ?? []).map(p => ({
@@ -106,9 +153,9 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
         geometry: { type: 'Point' as const, coordinates: s.lonLat },
       })),
     });
-    if (framed.current !== key && (m.stops.length || m.segments.length)) {
+    if (framed.current !== key && (m.stops.length || m.segments.length || ln?.length)) {
       framed.current = key;
-      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates)];
+      const points = [...m.stops.map(s => s.lonLat), ...m.segments.flatMap(s => s.coordinates), ...(ln ?? []).flatMap(l => l.coordinates)];
       // The map sits in a flex layout whose size can change after the first paint: measure it again before framing.
       map.resize();
       frameRoute(map, points, { padding: pad ?? { top: 72, bottom: 72, left: 72, right: 72 }, maxZoom: 15, duration: 0 });
@@ -123,6 +170,13 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     if (import.meta.env.DEV) (window as unknown as { __routeMap?: maplibregl.Map }).__routeMap = map;
     map.on('load', () => {
       const halo = light ? '#ffffff' : '#111827';
+      // Static route lines (a `lines` layer), under everything else.
+      map.addSource('lines', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      const lineWidth = (k: number) => ['interpolate', ['linear'], ['zoom'], 10, ['*', ['get', 'w'], 0.4 * k], 15, ['*', ['get', 'w'], k]] as unknown as maplibregl.ExpressionSpecification;
+      map.addLayer({ id: 'line-halo', type: 'line', source: 'lines', filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-width': lineWidth(1.5), 'line-opacity': ['get', 'op'] } });
+      map.addLayer({ id: 'line', type: 'line', source: 'lines', filter: ['==', ['get', 'dashed'], 0], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(1), 'line-opacity': ['get', 'op'] } });
+      map.addLayer({ id: 'line-dash', type: 'line', source: 'lines', filter: ['==', ['get', 'dashed'], 1], layout: { 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(1), 'line-opacity': ['get', 'op'], 'line-dasharray': [1.5, 1.5] } });
+      map.addLayer({ id: 'line-sel', type: 'line', source: 'lines', filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(2.2), 'line-opacity': 0.35 } });
       map.addSource('segments', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addSource('stops', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'seg-halo', type: 'line', source: 'segments', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
@@ -150,11 +204,13 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
       const stop = hit(['stp'])[0];
       if (stop) { pick.current({ kind: 'stop', stopId: String(stop.properties?.id) }, (stop.geometry as unknown as { coordinates: [number, number] }).coordinates); return; }
       const seg = hit(['seg'])[0];
-      if (seg) pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to), route: seg.properties?.route ? String(seg.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]);
+      if (seg) { pick.current({ kind: 'segment', fromStopId: String(seg.properties?.from), toStopId: String(seg.properties?.to), route: seg.properties?.route ? String(seg.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]); return; }
+      const line = hit(['line', 'line-dash'])[0];
+      if (line) pick.current({ kind: 'line', id: String(line.properties?.id), route: line.properties?.route ? String(line.properties.route) : undefined }, [e.lngLat.lng, e.lngLat.lat]);
       else pick.current(null, null);
     });
     map.on('mousemove', e => {
-      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'heat-dot', 'heat', 'seg'] })[0];
+      const hit = map.queryRenderedFeatures([[e.point.x - 6, e.point.y - 6], [e.point.x + 6, e.point.y + 6]], { layers: ['stp', 'heat-dot', 'heat', 'seg', 'line', 'line-dash'] })[0];
       map.getCanvas().style.cursor = hit ? 'pointer' : '';
       const text = hit ? String(hit.properties?.name ?? hit.properties?.label ?? '') : '';
       setTip(text ? { x: e.point.x, y: e.point.y, text } : null);
@@ -167,14 +223,14 @@ export default function RouteMap({ model, measure, selected, onPick, anchor = nu
     return () => { ro.disconnect(); ready.current = false; map.remove(); mapRef.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(draw, [model, measure, selected, frameKey, heat]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(draw, [model, measure, selected, frameKey, heat, lines]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(place, [anchor]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(draw, [highlightRoute]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (centerOn && mapRef.current) mapRef.current.easeTo({ center: centerOn.lonLat, duration: 300 }); }, [centerOn?.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
-      <div ref={box} className="h-full w-full" role="img" aria-label="Map of the route, coloured by the chosen measure" />
+      <div ref={box} className="h-full w-full" role="img" aria-label={ariaLabel} />
       {/* Phones zoom by pinching, so the + and − buttons show only from sm up, as on the regular map. */}
       <div className="pointer-events-auto absolute bottom-6 z-20 max-sm:hidden" style={{ right: controlsRight }}>
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
