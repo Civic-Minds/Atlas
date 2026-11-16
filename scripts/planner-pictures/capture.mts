@@ -4,7 +4,9 @@
 // Usage: run a dev server in public mode, then
 //   CHROME_PATH=<optional browser> ATLAS_URL=http://localhost:5300 CARTO_BASEMAP_API_KEY=... npx tsx scripts/planner-pictures/capture.mts <work-dir>
 // CHROME_PATH points at a Playwright browser when the installed one doesn't match. ONLY=panels or ONLY=compose reruns
-// just that step from the captures already in <work-dir>.
+// just that step from the captures already in <work-dir>. CARDS=demo,agency remakes only those cards' pictures and leaves the
+// rest as they are. The Request a demo card's panel comes from the local Studio page (dev server only): STUDIO_URL points at a
+// dev server that has it and tmp/studio/kingston-before-after.json (defaults to ATLAS_URL).
 // Writes the raw captures to <work-dir> and the finished webp files to public/assets/planners/ (needs cwebp).
 import { chromium, type Browser, type Page } from 'playwright';
 import { execFileSync } from 'node:child_process';
@@ -13,6 +15,7 @@ import { resolve } from 'node:path';
 import { handleCartoTiles } from '../../local-api/carto-tiles';
 
 const BASE = process.env.ATLAS_URL ?? 'http://localhost:5300';
+const STUDIO_BASE = process.env.STUDIO_URL ?? BASE;
 const WORK = resolve(process.argv[2] ?? 'tmp-planner-pictures');
 const ASSETS = resolve('public/assets/planners');
 mkdirSync(WORK, { recursive: true });
@@ -100,6 +103,40 @@ async function panelShot(name: string, view: Record<string, string | number>, op
   await ctx.close();
   return box;
 }
+/**
+ * The Request a demo card's control: the local Studio page's changes list for Kingston (CIV-1715), cut like the others at
+ * PANEL_W. Studio's map isn't the frequency map, so this waits for the list's text instead of the map.
+ */
+async function studioPanelShot(name: string, needle: string, theme: Theme) {
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 3, colorScheme: theme });
+  await ctx.addInitScript((t: string) => { try { localStorage.setItem('theme', t); } catch { /* private mode */ } }, theme);
+  const p = await ctx.newPage();
+  await p.goto(`${STUDIO_BASE}/studio`);
+  await p.waitForFunction((n: string) => document.body.innerText.includes(n), needle, { timeout: 60000 });
+  await p.waitForTimeout(1500);
+  const box = await p.evaluate(({ needle, width }) => {
+    const e = ([...document.querySelectorAll('section')] as HTMLElement[]).find(e => e.innerText?.includes(needle));
+    if (!e) return null;
+    e.style.width = `${width}px`; e.style.minWidth = `${width}px`; e.style.maxWidth = `${width}px`;
+    // At PANEL_W a route's name leaves no room for its change ("60 min → 30 min"), so the shot drops the names, and the
+    // list's own "Routes" title row, so its top rows are the heading and a changed route.
+    (e.firstElementChild as HTMLElement).style.display = 'none';
+    for (const btn of e.querySelectorAll<HTMLElement>('li button')) {
+      btn.style.gridTemplateColumns = '0.5rem auto minmax(0,1fr)';
+      (btn.children[2] as HTMLElement).style.display = 'none';
+      (btn.children[3] as HTMLElement).style.justifySelf = 'end';
+    }
+    const first = e.querySelector<HTMLElement>('h3')?.parentElement;
+    if (first) first.style.marginTop = '0';
+    const r = e.getBoundingClientRect();
+    return { x: r.x, y: r.y, width: r.width, height: r.height };
+  }, { needle, width: PANEL_W });
+  if (!box) throw new Error(`no panel for ${name}`);
+  await p.waitForTimeout(300);
+  await p.screenshot({ path: `${WORK}/${name}-${theme}.png`, clip: box, omitBackground: true });
+  await ctx.close();
+  return box;
+}
 const click = (button: string) => async (p: Page) => { await p.getByRole('button', { name: button }).first().click(); };
 const rightClick = async (p: Page) => { await p.mouse.click(640, 500, { button: 'right' }); };
 
@@ -110,18 +147,22 @@ const VIEWS = {
   dayweek: { lat: 41.8835, lon: -87.6528, z: 12, ...DAY, h: 60 },    // Chicago, every tier
   agency: { lat: 37.4135, lon: -121.8935, z: 12, ...DAY, h: 60 },    // Milpitas, where BART, VTA and others meet
   export: { lat: 43.6700, lon: -79.4100, z: 12, ...DAY, h: 60 },     // Toronto west of downtown
+  demo: { lat: 44.2312, lon: -76.4860, z: 12, ...DAY, h: 60 },       // Kingston, the Studio demo agency (CIV-1680)
 };
+const CARDS = process.env.CARDS ? process.env.CARDS.split(',') : Object.keys(VIEWS);
+const want = (card: string) => CARDS.includes(card);
 
 // ONLY=panels or ONLY=compose reruns just that step from earlier captures in <work-dir>.
 const ONLY = process.env.ONLY;
 const panels: Record<string, { width: number; height: number }> = ONLY ? JSON.parse(readFileSync(`${WORK}/panels.json`, 'utf8')) : {};
 for (const theme of THEMES) {
-  if (!ONLY) for (const size of Object.keys(SIZES) as Size[]) for (const [card, view] of Object.entries(VIEWS)) await mapShot(`map-${card}`, view, size, theme);
+  if (!ONLY) for (const size of Object.keys(SIZES) as Size[]) for (const [card, view] of Object.entries(VIEWS)) if (want(card)) await mapShot(`map-${card}`, view, size, theme);
   if (ONLY === 'compose') continue;
-  panels.frequency = await panelShot('panel-frequency', VIEWS.frequency, click('Frequency'), '≤60 min', theme);
-  panels.dayweek = await panelShot('panel-dayweek', VIEWS.dayweek, click('Time'), 'Overnight', theme);
-  panels.agency = await panelShot('panel-agency', VIEWS.agency, click('Agencies'), 'All agencies (', theme, true);
-  panels.export = await panelShot('panel-export', VIEWS.export, rightClick, 'Copy URL for here', theme);
+  if (want('frequency')) panels.frequency = await panelShot('panel-frequency', VIEWS.frequency, click('Frequency'), '≤60 min', theme);
+  if (want('dayweek')) panels.dayweek = await panelShot('panel-dayweek', VIEWS.dayweek, click('Time'), 'Overnight', theme);
+  if (want('agency')) panels.agency = await panelShot('panel-agency', VIEWS.agency, click('Agencies'), 'All agencies (', theme, true);
+  if (want('export')) panels.export = await panelShot('panel-export', VIEWS.export, rightClick, 'Copy URL for here', theme);
+  if (want('demo')) panels.demo = await studioPanelShot('panel-demo', 'Frequency or Trips Changed', theme);
 }
 await b.close();
 writeFileSync(`${WORK}/panels.json`, JSON.stringify(panels));
@@ -146,7 +187,7 @@ for (const size of Object.keys(SIZES) as Size[]) {
   const { w, h } = SIZES[size];
   const ctx = await b2.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: size === 'phone' ? 3 : 2 });
   const p = await ctx.newPage();
-  for (const name of Object.keys(VIEWS)) for (const t of THEMES) {
+  for (const name of Object.keys(VIEWS).filter(want)) for (const t of THEMES) {
     const html = `${WORK}/scene.html`;
     writeFileSync(html, `<html><body style="margin:0;background:${pal(t).bg}"><div style="position:relative;width:${w}px;height:${h}px;overflow:hidden">${scene(name, t, size, h)}</div></body></html>`);
     await p.goto(`file://${html}`); await p.waitForLoadState('load'); await p.waitForTimeout(150);

@@ -14,8 +14,9 @@ import FeatureCard from './components/FeatureCard';
 import RequestDemoCard from './components/RequestDemoCard';
 
 /**
- * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft, word for word ("wording is ok until i see the actual
- * built draft", 2026-11-06). Layout follows the About page: the wide column, the hero beside the map picture, and pale
+ * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft ("wording is ok until i see the actual built draft",
+ * 2026-11-06), trimmed to two sentences per feature card so every card carries about the same text (CIV-1767, waiting on
+ * Ryan's OK). Layout follows the About page: the wide column, the hero beside the map picture, and pale
  * frequency-colour tints for the feature cards.
  */
 
@@ -85,24 +86,16 @@ export default function PlannersPage() {
 
       <div className="grid gap-5 py-16 sm:py-20">
         <Feature title="See Frequency, Not Just Routes" color={color(0)} pictures={<CardPicture name="frequency" />}>
-          <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map takes one click. The tiers make it quick to check a network against your own service frequency standards.</p>
+          <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map, or a check against your own frequency standards, takes one click.</p>
         </Feature>
         <Feature title="See How Service Changes Over the Day and Week" color={color(1)} pictures={<CardPicture name="dayweek" />}>
-          <p>Frequency on a map is only half the story. Switch between weekday, Saturday and Sunday, then pick a time of day: AM peak, midday, PM peak, evening, late night or overnight (2 to 6 AM), so peak, off-peak and owl service each get their own map.</p>
-          <p>Weekday midday and Sunday evening are often very different networks. Atlas shows both, and Compare puts two of them side by side on desktop.</p>
-          <p>Open any route to see an hourly chart of its headways, which also shows its span of service.</p>
+          <p>Switch between weekday, Saturday and Sunday, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.</p>
         </Feature>
         <Feature title="Every Agency in a Region, on One Map" color={color(2)} pictures={<CardPicture name="agency" />}>
-          <p>Riders don’t care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don’t. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
-          <p>This helps you spot weak connections between agencies: a hub where one agency runs {headwayEvery(10)} and the other once an hour, or a town where an intercity route stops but no local bus runs in the evening.</p>
-          <p>Each agency also has its own page with a summary of its routes and the agencies nearby.</p>
+          <p>Atlas puts every agency it covers on the same map, so you can spot weak connections, like a hub where one agency runs {headwayEvery(10)} and the other once an hour. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
         </Feature>
         <Feature title="A Map Instead of a Long Report" color={color(3)} pictures={<CardPicture name="export" />}>
-          <p>Existing-conditions work often ends up as a long report with a few static maps. Atlas gives you a map people can explore.</p>
-          <ul className="list-disc space-y-2 pl-5">
-            <li><strong className={STRONG}>Share links</strong> keep the view: the place, frequency tier, day, time of day, agencies and any open route or stop.</li>
-            <li><strong className={STRONG}>Map images</strong> export with a source line, ready for a slide deck or a report.</li>
-          </ul>
+          <p>Existing-conditions work often ends up as a long report with a few static maps, but Atlas gives you a map people can explore. Share links keep the place, frequency tier, day, time of day, agencies and any open route or stop, and map images export with a source line, ready for a slide deck or a report.</p>
         </Feature>
         {/* CIV-1705: the Live card. No picture yet; its text is a placeholder until Ryan gives the words. */}
         <Feature title={titleCase(LIVE_VEHICLES_TITLE)} color={color(4)} pictures={null}>
