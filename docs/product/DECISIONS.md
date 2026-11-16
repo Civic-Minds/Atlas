@@ -257,6 +257,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-15 — The For Transit Planners page is local only
+Ryan, 2026-11-15 (CIV-1704): asked "should we make a card for live mode too on the for transit plannres", heard that Live is local only, then: "then make the for planners page local only". The page, its footer link and its prerendered page are on only on the local dev server, off on beta and public; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). It gets a Live card (CIV-1705).
+
 ### 2026-11-15 — Atlas Studio is a section of Atlas, local only for now
 Ryan, 2026-11-15 ("Yes local only", CIV-1680): Atlas Studio, the paid agency tier in [STRATEGY.md](STRATEGY.md), lives in the same Atlas code as its own section behind its own feature flag, following [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). The flag is off on public and beta and on only in local dev until the demo is ready. Studio tools (the before/after report, the vehicles calculator) get their UI there. The shell (sign-in, private per-agency views) waits until an agency says yes.
 

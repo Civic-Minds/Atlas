@@ -139,8 +139,10 @@ export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
 export const RUNNING_TIMES_ENABLED = BETA_BUILD;
 // The expand control on the route card's frequency chart.
 export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
-// The footer link to the "For Transit Planners" page (CIV-1320).
-export const PLANNERS_LINK_ENABLED = BETA_BUILD;
+// The "For Transit Planners" page (CIV-1320): its route, footer link, prerendered page and link preview. Local only
+// (Ryan, 2026-11-15, CIV-1704: "then make the for planners page local only"): on the Vite dev server, as the connections
+// bar is, never on beta or public builds.
+export const PLANNERS_LINK_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
@@ -198,6 +200,7 @@ export function seoFlags() {
     researchApps: FEATURES.researchApps,
     live: FEATURES.live,
     history: FEATURES.history,
+    planners: FEATURES.plannersLink,
   };
 }
 
