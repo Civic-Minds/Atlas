@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **Agencies is only in the footer now**: the page header keeps Research, Docs and Go to Atlas, so the menu bar is shorter
+- **The For Transit Planners page gives the exact number of agencies Atlas covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
 - **A search box's clear × stays inside the box**: in the Agencies filter, typing a long name pushed the × past the panel's edge ([#1563](https://github.com/Civic-Minds/Atlas/issues/1563))
 - **On-demand zones can start on a set date (beta)**: a service that changes its area on a known day, like Chandler Flex in January 2027, shows the new area from that day without anyone republishing the data
 - **Live's map page has one top bar and one map key (local only)**: the measures sit with the other switchers, the key is a single pill with its definition, the route list no longer stretches to the bottom, and the page is desktop only, falling back to the map on phones like History and Compare

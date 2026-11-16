@@ -7,11 +7,12 @@ import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { FEATURES } from '../shared/config';
 import { LIVE_VEHICLES_TITLE, OPEN_LIVE_LABEL } from '../shared/liveWording';
-import { LIVE_PATH } from '../shared/pagePaths';
+import { DOCS_PATH, LIVE_PATH } from '../shared/pagePaths';
 import { titleCase } from '../shared/titleCase';
-import { MAP_LINK } from './content/noticeCopy';
+import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 import FeatureCard from './components/FeatureCard';
 import RequestDemoCard from './components/RequestDemoCard';
+import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCoverage';
 
 /**
  * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft ("wording is ok until i see the actual built draft",
@@ -105,7 +106,9 @@ export default function PlannersPage() {
       </div>
 
       <TextSection title="Where the Data Comes From">
-        <p>Atlas covers about 700 transit agencies in Canada and the US. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
+        <p>Atlas covers {coverageAgenciesText()} transit agencies in {coverageCountriesText()}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
+        {/* CIV-1724: About's Docs link, to the Docs section on where the data comes from and how it's checked. */}
+        <ArrowLink href={`${DOCS_PATH}#data-flow`}>{READ_HOW_ATLAS_WORKS}</ArrowLink>
       </TextSection>
 
       {/* CIV-1706 (Ryan, 2026-11-15): the page ends with one ask, this button, with no line above it. It replaces the

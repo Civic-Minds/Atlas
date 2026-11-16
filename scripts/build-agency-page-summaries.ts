@@ -43,11 +43,14 @@ import { agencyNames } from '../src/utils/agencyName';
 import { compareRouteNumber } from '../shared/sortCompare';
 import { areasForStops, type AreaBoundaries } from '../shared/areaBoundaries';
 import { writeAreaPageList } from './build-area-page-list';
+import { atlasCoverageBySite } from '../shared/agencyIndex';
 
 const OUT = 'shared/data/agency-pages.json';
 // Slugs with a page, small enough for the map bundle (the agency card links only to real pages).
 const SLUGS_OUT = 'shared/data/agency-page-slugs.json';
 const PAGE_RENAMES_OUT = 'shared/data/agency-page-renames.json';
+// CIV-1724: how many agencies and which countries Atlas covers, for prose (shared/atlasCoverage.ts).
+const COVERAGE_OUT = 'shared/data/atlas-coverage.json';
 // CIV-274: official boundaries of the paged areas (scripts/build-area-boundaries.ts).
 const BOUNDARIES = 'shared/data/area-boundaries.json';
 // #1283: official boundaries of the states and provinces (scripts/build-region-boundaries.ts).
@@ -367,6 +370,7 @@ function writeOutputs(out: AgencyPageSummaries): void {
   writeAtomic(SLUGS_OUT, JSON.stringify(out.agencies.map(a => a.slug)) + '\n');
   // CIV-1277: members whose page moved off their slug, for every agency page link (shared/pagePaths.ts).
   writeAtomic(PAGE_RENAMES_OUT, JSON.stringify(Object.fromEntries(out.agencies.filter(a => a.pageSlug).map(a => [a.slug, a.pageSlug]).sort(([x], [y]) => x!.localeCompare(y!)))) + '\n');
+  writeAtomic(COVERAGE_OUT, JSON.stringify(atlasCoverageBySite(out.agencies)) + '\n');
   // Which areas have a page follows from the agencies (two or more): the map card's list and the vercel.json redirects.
   writeAreaPageList(out);
 }

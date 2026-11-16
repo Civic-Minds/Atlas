@@ -100,6 +100,23 @@ export function buildAgencyIndexData(
   return { areas: areaList, groups, agencyCount: rows, releaseDate };
 }
 
+/**
+ * CIV-1724: what Atlas covers, for prose such as the For Planners page. The count is the index list's own count (a parent
+ * agency once, an agency under two states once), and the countries are the index's country headings, A to Z.
+ * build-agency-page-summaries writes it to shared/data/atlas-coverage.json, small enough for the page bundle.
+ */
+export interface AtlasCoverage { agencies: number; countries: string[] }
+
+export function atlasCoverage(agencies: readonly AgencyPageSummary[]): AtlasCoverage {
+  const data = buildAgencyIndexData(agencies, [], null);
+  return { agencies: data.agencyCount, countries: data.groups.map(g => g.country).filter(c => c !== OTHER) };
+}
+
+/** The public site's coverage (beta-only agencies left out) and the beta site's, as the pages filter them (agencyPagesData). */
+export function atlasCoverageBySite(agencies: readonly AgencyPageSummary[]): { public: AtlasCoverage; beta: AtlasCoverage } {
+  return { public: atlasCoverage(agencies.filter(a => !a.betaOnly)), beta: atlasCoverage(agencies) };
+}
+
 export function agencyIndexTitle(): string {
   return tabTitle(PAGE_NAMES.agencyIndex);
 }
