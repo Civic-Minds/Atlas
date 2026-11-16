@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
 - **Rebuilds keep the fares Atlas sets by hand**: a full rebuild published STM, exo and TransLink routes with no fare instead of their set fares ([#1535](https://github.com/Civic-Minds/Atlas/issues/1535))
 - **The data pipeline stops instead of publishing old fares when it can't read the [fare list](https://github.com/Civic-Minds/Atlas/issues/1367)**: a blocked read had quietly fallen back to each agency's older fare
 - **A branch with a few scattered trips no longer sets a whole route's frequency**: [SEPTA 67](https://github.com/Civic-Minds/Atlas/issues/1533) northbound read every 169 on weekday evenings, from three trips to Philadelphia Mills, while buses on the main part of the route run every 25

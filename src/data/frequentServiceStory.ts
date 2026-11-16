@@ -3,6 +3,7 @@ import definitions from './frequent-definitions-by-agency.json';
 import coverageMetros from './frequent-coverage-metros.json';
 import weekendCounts from './frequent-weekend-counts.json';
 import { headwayEvery, headwayEveryRange } from '../../shared/headwayText';
+import { decimalText } from '../../shared/numberText';
 
 const storyCountries = new Set(['Canada', 'United States']);
 /**
@@ -97,21 +98,46 @@ export const frequentWeekendCities = weekendCounts.cities.map(({ city, counts })
 }));
 
 /**
- * CIV-1179 / CIV-1182: the coverage cloud runs of 2026-11-14 (43665829588, with 43671044866 redoing the refused
- * downloads; code 0f7c33a47): the map's own frequency filter (a route counts at 15 or 30 when the map draws it at that
- * setting on weekdays in AM peak, midday and PM peak), public-map agencies only, a 10-minute walk, the 15-minute share
- * on the 30-minute population base. Checked in editorial/research/civ1179-coverage-summary-rerun-2026-11-14/sanity-check.md.
+ * CIV-1179 / CIV-1579: the coverage cloud run of 2026-11-15 (43775315209, rule map-filter-trunk; Ryan approved its
+ * numbers 2026-11-15): the map's own frequency test (a route counts at 15 or 30 when it passes at that setting on
+ * weekdays in AM peak, midday and PM peak), reading a branched route by its shared middle, with only the middle's stops
+ * counting when only the middle passes; public-map agencies only, a 10-minute walk, the 15-minute share on the 30-minute
+ * population base. Every figure comes from frequent-coverage-metros.json (built from the run's files by
+ * scripts/build-frequent-coverage-metros.ts), so the table, ratios and chart can't drift apart.
  */
+const coverageCountry = (country: 'canada' | 'us') => {
+  const row = coverageMetros.countries.find(c => c.country === country);
+  if (!row) throw new Error(`frequent-coverage-metros.json has no ${country}`);
+  return row;
+};
+const coveragePercent = (share: number) => `${decimalText(share * 100, 2)}%`;
+const coverageTableRow = (country: 'canada' | 'us', label: string, metroWord: string) => {
+  const row = coverageCountry(country);
+  return {
+    country: label,
+    populationBase: `${decimalText(row.populationBase / 1_000_000, 2)}M`,
+    fifteenMinute: coveragePercent(row.fifteenMinute),
+    thirtyMinute: coveragePercent(row.thirtyMinute),
+    metros: `${row.metroCount} ${metroWord}`,
+    fifteenMinuteMetros: String(row.fifteenMinuteMetroCount),
+  };
+};
+
 export const frequentServiceCoverageStats = [
-  { country: 'Canada', populationBase: '27.15M', fifteenMinute: '26.27%', thirtyMinute: '60.53%', metros: '48 CMAs', fifteenMinuteMetros: '16' },
-  { country: 'United States', populationBase: '232.79M', fifteenMinute: '11.87%', thirtyMinute: '25.62%', metros: '166 metros', fifteenMinuteMetros: '74' },
+  coverageTableRow('canada', 'Canada', 'CMAs'),
+  coverageTableRow('us', 'United States', 'metros'),
 ] as const;
 
-export const frequentServiceCoverageUpdated = '2026-11-14';
+export const frequentServiceCoverageUpdated = '2026-11-15';
+
+const thirtyToFifteenRatio = (country: 'canada' | 'us') => {
+  const row = coverageCountry(country);
+  return decimalText(row.thirtyMinute / row.fifteenMinute, 1);
+};
 
 export const frequentServiceCoverageInterpretation = {
-  canadaThirtyToFifteenRatio: '2.3',
-  unitedStatesThirtyToFifteenRatio: '2.2',
+  canadaThirtyToFifteenRatio: thirtyToFifteenRatio('canada'),
+  unitedStatesThirtyToFifteenRatio: thirtyToFifteenRatio('us'),
 };
 
 /**

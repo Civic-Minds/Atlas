@@ -5,8 +5,8 @@ import coverageMetros from '../frequent-coverage-metros.json';
 import { LARGEST_COUNT, metroDisplayName, selectCoverageMetros, WIPED_OUT_MIN_POPULATION, WIPED_OUT_MIN_THIRTY } from '../frequentCoverageMetrosRule';
 import { frequentCoverageCountries, frequentServiceCoverageStats } from '../frequentServiceStory';
 
-// The corrected CIV-1179 run, in the main checkout's git-excluded editorial folder; only on Ryan's Macs.
-const ARTIFACT = '/Users/ryan/Developer/Code/Platforms/Atlas/editorial/research/civ1179-coverage-summary-rerun-2026-11-14';
+// The CIV-1579 trunk-rule run, in the main checkout's git-excluded editorial folder; only on Ryan's Macs.
+const ARTIFACT = '/Users/ryan/Developer/Code/Platforms/Atlas/editorial/research/civ1579-coverage-summary-trunk-2026-11-15';
 
 describe('the coverage city chart (CIV-1577)', () => {
   it('matches the coverage run it was built from', () => {
