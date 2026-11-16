@@ -8,6 +8,7 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { PAGE_NAMES } from '../../shared/pageNames';
+import type { AtlasMode } from '../../shared/config';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
@@ -326,6 +327,15 @@ export const WEEKDAY_HOURS_LABEL = 'Weekday hours';
 export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
+/** CIV-1692 (Ryan, option 1): the tag beside the wordmark says which Atlas this is. Beta on beta, Internal on the local dev server, none on public. */
+export const HEADER_TAG_BETA = 'Beta';
+export const HEADER_TAG_INTERNAL = 'Internal';
+/** The wordmark's tag for a mode, or null for none. Preview builds from the Beta project in beta mode, so it reads Beta too. */
+export function headerModeTag(mode: AtlasMode): string | null {
+  if (mode === 'beta') return HEADER_TAG_BETA;
+  if (mode === 'dev') return HEADER_TAG_INTERNAL;
+  return null;
+}
 /** The Docs page's one name, on its links, heading and tab (Ryan, page-names refactor; CIV-1697 set it back to "Docs"). */
 export const DOCS_PAGE_TITLE = PAGE_NAMES.docs;
 export const EXPORT_MAP_TITLE = 'Export map image';
