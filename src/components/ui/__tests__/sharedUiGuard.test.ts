@@ -45,6 +45,9 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled arrow link', pattern: /<ArrowRight\b/, use: 'ArrowLink' },
   { name: 'arrow link style constants', pattern: /\b(PAGE_ACTION|TAG|CHIP|CARD_NOTICE_ACTION)\b/, use: 'ArrowLink, Tag' },
   { name: 'hand-rolled page frame', pattern: /<main className="min-h-screen bg-\[var\(--bg-app\)\] px-/, use: 'PageShell' },
+  // CIV-1708 (Ryan, 2026-11-15: "should we refactor that"): every standalone page gets the site header from PageShell,
+  // which pins it to the top, so the header behaves the same on every page.
+  { name: 'site header outside the page shell', pattern: /import SiteHeader\b|<SiteHeader\b/, use: 'PageShell (or DocsPageLayout, EmptyPage)' },
   // Card pieces (CIV-395, after the card refactor CIV-929…CIV-1000): a card uses the shared badge, back link, title,
   // facts line and report details, so a fix to one (#1128, #1102) reaches every card.
   { name: 'hand-drawn frequency dot', pattern: /w-2 h-2 rounded-full shrink-0" style=\{\{ background/, use: 'HeadwayBadge or LimitedBadge (Interval/cardUi.tsx)' },

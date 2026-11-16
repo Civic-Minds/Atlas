@@ -155,7 +155,7 @@ export default function AirportStory() {
   );
 
   return (
-    <PageShell stickyHeader method={method}>
+    <PageShell method={method}>
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"

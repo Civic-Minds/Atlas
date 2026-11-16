@@ -124,7 +124,6 @@ export default function PlannersPage() {
         <ul className="list-disc space-y-3 pl-5">
           <li><strong className={STRONG}>It shows the published schedule, not what actually ran.</strong> Delays, detours and cancellations aren’t included.</li>
           <li><strong className={STRONG}>It only covers agencies that publish GTFS.</strong> Some smaller agencies don’t.</li>
-          <li><strong className={STRONG}>It can be wrong.</strong> Schedule data has errors, and so can Atlas. If something looks off for an agency you know, use the report button or email <Email />.</li>
           <li><strong className={STRONG}>It isn’t a trip planner.</strong> It shows the network, not how to get from A to B.</li>
         </ul>
       </TextSection>
