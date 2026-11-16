@@ -33,6 +33,7 @@ import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, rel
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 import { loadLiveAgencyConfig } from './live-agency-config.js';
+import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 
 const args: Record<string, string> = {};
@@ -128,7 +129,14 @@ const allRouteTrips: Record<string, string>[] = [];
 const excludedTripIds = new Set<string>();
 for (const feed of FEEDS) {
   const pre = (id: string) => prefixedId(FEEDS, feed, id);
-  const feedTrips = readCsv(join(feed.dir, 'trips.txt'), r => r.route_id === ROUTE);
+  let feedTrips = readCsv(join(feed.dir, 'trips.txt'), r => r.route_id === ROUTE);
+  // A timetable without direction_id (Kingston): the pipeline's own direction fill, so directions match the map.
+  if (feedTrips.some(t => (t.direction_id ?? '').trim() === '')) {
+    const ids = new Set(feedTrips.map(t => t.trip_id));
+    const fill = fillMissingDirections(feedTrips, readCsv(stopTimesFileOf(feed.dir), r => ids.has(r.trip_id)) as { trip_id: string; stop_id: string; stop_sequence: string }[], readCsv(join(feed.dir, 'stops.txt')) as { stop_id: string }[]);
+    feedTrips = fill.trips;
+    console.log(`directions: no direction_id in ${feed.dir}; ${fill.inferred ? 'read from stop order' : fill.synthesized ? 'guessed from shapes and headsigns' : 'left as given'} (pipeline synthesizeMissingDirections)`);
+  }
   for (const t of feedTrips) if (EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)) excludedTripIds.add(pre(t.trip_id));
   if (SEPARATE_SERVICE != null) {
     const named = feedTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
