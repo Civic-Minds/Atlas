@@ -141,7 +141,7 @@ exports[`processed fixture output is pinned > matches the recorded hash for ever
   "ttc-506-thanksgiving": "15 features fbe6240aa5f6",
   "ttc-507-weekday": "70 features 5dc9bcd7fff5",
   "ttc-63-saturday": "72 features bf7cae487fe6",
-  "ttc-63-weekday": "74 features 83ca1af05b36",
+  "ttc-63-weekday": "74 features 1b43040ee359",
   "ttc-76-weekday": "55 features 5fe5f297d4d6",
   "ttc-86-saturday": "98 features 3ccff5cf8a3c",
   "ttc-900-weekday": "9 features fcd5023dc512",
