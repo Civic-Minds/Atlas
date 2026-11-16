@@ -13,7 +13,6 @@ describe('For Transit Planners page (CIV-1320)', () => {
       'A Map Instead of a Long Report',
       'Where the Data Comes From',
       "What Atlas Doesn’t Do",
-      'Get in Touch',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
 
@@ -28,10 +27,14 @@ describe('For Transit Planners page (CIV-1320)', () => {
     for (const img of container.querySelectorAll('img')) expect(img).toHaveAttribute('alt', '');
   });
 
-  it('opens the map from the top and the bottom, and gives the contact email', () => {
+  it('opens the map from the top, gives the contact email, and ends with one Request a demo button (CIV-1706)', () => {
     render(<PlannersPage />);
     const open = screen.getAllByRole('link', { name: 'Try Atlas' });
-    expect(open.map(a => a.getAttribute('href'))).toEqual(['/', '/']);
+    expect(open.map(a => a.getAttribute('href'))).toEqual(['/']);
     for (const a of screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })) expect(a).toHaveAttribute('href', 'mailto:hey@ryanisnota.pro');
+    expect(screen.queryByRole('heading', { name: 'Get in Touch' })).not.toBeInTheDocument();
+    const demo = screen.getAllByRole('link', { name: 'Request a demo' });
+    expect(demo).toHaveLength(1);
+    expect(demo[0]).toHaveAttribute('href', 'mailto:hey@ryanisnota.pro?subject=Request%20a%20demo');
   });
 });

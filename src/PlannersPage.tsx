@@ -5,7 +5,7 @@ import { PageTitle } from './components/ui/PageTitle';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
-import { MAP_LINK } from './content/noticeCopy';
+import { MAP_LINK, REQUEST_DEMO_LABEL } from './content/noticeCopy';
 
 /**
  * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft, word for word ("wording is ok until i see the actual
@@ -132,10 +132,11 @@ export default function PlannersPage() {
         </ul>
       </TextSection>
 
-      <TextSection title="Get in Touch">
-        <p>Atlas is free to use. If you’re a planner and want to talk about how it could help with a study, or you’ve found something wrong in your region, email <Email />.</p>
-        <ArrowLink href="/">{MAP_LINK}</ArrowLink>
-      </TextSection>
+      {/* CIV-1706 (Ryan, 2026-11-15): the page ends with one ask, this button, with no line above it. It replaces the
+          "Get in Touch" section. The pill copies About's "Explore research" button. */}
+      <div className="flex flex-wrap gap-3 pb-16 sm:pb-20">
+        <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(REQUEST_DEMO_LABEL)}`} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{REQUEST_DEMO_LABEL}</a>
+      </div>
 
     </PageShell>
   );
