@@ -100,6 +100,21 @@ describe('block chains', () => {
     expect(samples).toEqual([[600, 140], [645, 70]]);
   });
 
+  it('handles branches: a block alternating A-B and A-C branches pairs departures by origin', () => {
+    // A->B (30), B->A (30), A->C (20), C->A (20), A->B again.
+    const runs = tripRunsForDay(feed([
+      ['1', 'R', '0', 'K', 'A', 'B', 600, 630], ['2', 'R', '1', 'K', 'B', 'A', 635, 665],
+      ['3', 'R', '0', 'K', 'A', 'C', 670, 690], ['4', 'R', '1', 'K', 'C', 'A', 695, 715],
+      ['5', 'R', '0', 'K', 'A', 'B', 720, 750],
+    ]), new Set(['WK']));
+    // A dir 0 leaves at 600, 670 and 720: the B round trip took 70, the C round trip 50.
+    // The inbound legs start at different stops (B, C), so they pair with nothing.
+    expect(cycleSamples(blockPieces(runs)[0])).toEqual([[600, 70], [670, 50]]);
+    const [midday] = routePeriodVehicles(runs, blockPieces(runs), MIDDAY);
+    expect(midday.cycleMin).toBe(60);
+    expect(midday.scheduledVehicles).toBe(1);
+  });
+
   it('works with no direction_id: the origin stop alone pairs departures', () => {
     const rows = outAndBack('N', 3, 20, 540, 900).map(r => [r[0], r[1], null, r[3], r[4], r[5], r[6], r[7]] as typeof r);
     const [midday] = vehiclesByRoute(tripRunsForDay(feed(rows), new Set(['WK'])), MIDDAY).get('N')!;
