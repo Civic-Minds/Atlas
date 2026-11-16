@@ -321,12 +321,12 @@
       "destination": "/about/docs/index.html"
     },
     {
-      "source": "/about/planners",
-      "destination": "/about/planners/index.html"
+      "source": "/planners",
+      "destination": "/planners/index.html"
     },
     {
-      "source": "/about/planners/",
-      "destination": "/about/planners/index.html"
+      "source": "/planners/",
+      "destination": "/planners/index.html"
     },
     {
       "source": "/privacy",
