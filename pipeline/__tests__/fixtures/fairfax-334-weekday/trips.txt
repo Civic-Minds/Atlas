@@ -1,0 +1,18 @@
+trip_id,route_id,service_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed
+7565020,334,4,"334 Dla-Newington",,1,3405340,shp-334-07,1,2
+6376020,334,4,"334 Dla-Newington",,1,3401340,shp-334-07,1,2
+6618020,334,4,"334 Dla-Newington",,1,3405340,shp-334-06,1,2
+3409020,334,4,"334 Dla-Newington",,1,3407340,shp-334-07,1,2
+7310020,334,4,"334 Dla-Newington",,1,3402340,shp-334-07,1,2
+6889020,334,4,"334 Dla-Newington",,1,3405340,shp-334-06,1,2
+5698020,334,4,"334 Dla-Newington",,1,3401340,shp-334-07,1,2
+5623020,334,4,"334 Dla-Newington",,1,3404340,shp-334-07,1,2
+1707020,334,4,"334 Dla-Newington",,1,3405340,shp-334-07,1,2
+3396020,334,4,"334 Dla-Newington",,1,3403340,shp-334-06,1,2
+9431020,334,4,"334 Dla-Newington",,1,3405340,shp-334-06,1,2
+6371020,334,4,"334 Dla-Newington",,1,3403340,shp-334-06,1,2
+9472020,334,4,"334 Dla-Newington",,1,3407340,shp-334-06,1,2
+6928020,334,4,"334 Dla-Newington",,1,3408340,shp-334-06,1,2
+3695020,334,4,"334 Dla-Newington",,1,3407340,shp-334-06,1,2
+5281020,334,4,"334 Dla-Newington",,1,3407340,shp-334-06,1,2
+2783020,334,4,"334 Dla-Newington",,1,3403340,shp-334-07,1,2

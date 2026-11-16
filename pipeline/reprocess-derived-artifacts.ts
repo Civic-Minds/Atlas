@@ -59,6 +59,7 @@ import { resolve } from 'node:path';
 import './loadEnv.js';
 import { type GtfsPreprocess } from './process-core.js';
 import { downloadFeedBuffer, loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem } from './agencyFeeds.js';
+import { loadFareOverrides, manualBaseFareFor, type FareOverrides } from './fareOverrides.js';
 import { r2Get, r2GetArchiveBuffer, r2ListArchiveObjects, r2Put } from './r2.js';
 import { feedPeriodStart, recordedFeedExpiry, stampReprocessedFeedExpiry } from './refreshMeta.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
@@ -102,7 +103,7 @@ import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { assessByCounts, type FeedQuality } from '../shared/feedQuality.js';
 import { agencyTodayYmd } from '../shared/feedAvailability.js';
 import { COUNTRY_LAUNCH_FLAG, assertCountryMayWriteToR2, resolveAgencyCountry, type AgencyCountrySource } from './countryLaunchGate.js';
-import { runNow } from '../shared/runClock.js';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 
 interface Agency {
   slug: string;
@@ -187,7 +188,7 @@ const writeToR2 = process.argv.includes('--write');
 // and leaves the top-level files alone; promote-run-artifacts copies them up once the release is public.
 const runPrefix = parseRunPrefixArg(process.argv.slice(2), '--run-prefix');
 const overrides = parseGateOverrides(process.argv.slice(2));
-const todayYmd = runNow().toISOString().slice(0, 10).replace(/-/g, ''); // #1523: ATLAS_RUN_AT pins it
+const todayYmd = pipelineRunDateYmd(); // #1523/#1537: the run's one Toronto date (ATLAS_RUN_AT pins it), not UTC
 const onlySlugs = process.argv.flatMap((arg, i, all) => (arg === '--only-slug' && all[i + 1] ? [all[i + 1]] : []));
 const concurrency = Math.max(1, Number(process.env.REPROCESS_CONCURRENCY ?? 2));
 const includeHidden = process.argv.includes('--include-hidden');
@@ -272,7 +273,7 @@ async function pinnedExpiredFeed(agency: Agency): Promise<Buffer | null> {
   return matchesExpiredFeedPin(agency.expiredFeedPin, { feedVersion, feedExpiry }) ? buf : null;
 }
 
-async function processAgency(agency: Agency): Promise<ReportRow> {
+async function processAgency(agency: Agency, fareOverrides: FareOverrides): Promise<ReportRow> {
   const row: ReportRow = { slug: agency.slug, status: 'failed', liveFeedExpiry: agency.lastFeedExpiry ?? null };
   try {
     const localPath = localArchivePath(agency.slug);
@@ -303,7 +304,11 @@ async function processAgency(agency: Agency): Promise<ReportRow> {
     // The safeguard's file date: the archive upload, or for a pinned or local file the agency's record,
     // else the zip's own date (#1253), never the last refresh.
     const fileDate = selected?.uploaded ?? agency.feedObtainedAt ?? await zipFileDate(body, todayYmd) ?? null;
-    const result = await processAgencyFeeds(body, supplementalFeeds, agency, { fileDate }, message => process.stdout.write(`  ${message}`));
+    const result = await processAgencyFeeds(body, supplementalFeeds, agency, {
+      fileDate,
+      // Same rule as refresh (#1535): an override only fills routes whose feed has no fare.
+      manualBaseFare: manualBaseFareFor(fareOverrides, agency.slug, agency.fare),
+    }, message => process.stdout.write(`  ${message}`));
     for (const supp of result.supplementalFeatureCounts) console.log(`  + supplemental ${supp.url}: ${supp.featureCount} features`);
     if (result.featureCount === 0) throw new Error('processed feed produced 0 route features');
 
@@ -431,10 +436,13 @@ async function main(): Promise<void> {
     return reason ? [[agency.slug, reason] as const] : [];
   }));
   const targets = selected.filter(agency => shouldProcess(agency) && !countrySkips.has(agency.slug));
+  // Fare overrides, read once and the same way as refresh: a failed read stops the run instead of
+  // publishing routes with no fare (#1535). A shard merge reprocesses nothing, so it skips the read.
+  const fareOverrides = mergeShards ? {} : await loadFareOverrides();
   if (shard) {
     const mine = shardTargets(targets, shard);
     console.log(`Shard ${shard.index}/${shard.count}: reprocessing ${mine.length} of ${targets.length} ${includeHidden ? 'named (hidden included)' : 'production-visible'} agencies from archived GTFS (concurrency ${concurrency}).`);
-    const shardRows = await runWithConcurrency(mine.map(agency => () => processAgency(agency)), concurrency);
+    const shardRows = await runWithConcurrency(mine.map(agency => () => processAgency(agency, fareOverrides)), concurrency);
     const result: ShardResult<ReportRow, unknown, unknown> = {
       shard,
       slugs: mine.map(agency => agency.slug),
@@ -465,7 +473,7 @@ async function main(): Promise<void> {
     for (const [slug, dates] of merged.processedExpiries) processedExpiries.set(slug, dates);
     rows.push(...merged.rows);
   } else {
-    const tasks = targets.map(agency => () => processAgency(agency));
+    const tasks = targets.map(agency => () => processAgency(agency, fareOverrides));
     rows.push(...await runWithConcurrency(tasks, concurrency));
   }
 

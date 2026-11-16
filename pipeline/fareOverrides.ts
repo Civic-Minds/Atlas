@@ -23,6 +23,15 @@ export interface FareOverridesDeps {
   log?: (message: string) => void;
 }
 
+/**
+ * The fare that fills routes whose feed has no fare (computeRouteBaseFares never overrides a
+ * feed fare): the override's adult fare, else the legacy index.json fare. Refresh, process-gtfs and
+ * the rebuild path (reprocess-derived-artifacts, #1535) all resolve it here so they agree.
+ */
+export function manualBaseFareFor(overrides: FareOverrides, slug: string, legacyFare?: number | null): number | undefined {
+  return overrides[slug]?.adult ?? legacyFare ?? undefined;
+}
+
 export function parseFareOverrides(raw: string, source: string): FareOverrides {
   let parsed: unknown;
   try {

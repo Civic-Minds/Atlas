@@ -2,7 +2,7 @@
  * Shared processing core: GTFS zip buffer → GeoJSON string + computed center.
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
-import './pipelineTimeZone.js';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
@@ -56,7 +56,7 @@ import { noOwnServicePeriods } from './noOwnService.js';
 import { laterServiceByRoute } from './seasonalPause.js';
 import { nearDuplicateTripIds } from './nearDuplicateTrips.js';
 import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js';
-import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
+import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, ownStepOneHeadway, pooledDaytimeWindow, pooledMiddayWorstWait, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
@@ -2899,13 +2899,27 @@ export async function processGtfsBuffer(
       const pool = branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId, true);
       const n = new Set(pool).size;
       if (n < MIN_POOLED_TIER_DEPARTURES || n <= own) return null;
-      // The pool must be all-day service with daytime departures of its own (the same guard as
-      // the thin-shape rescue), so a night route's pre-dawn pieces never pool into a headline.
       const sorted = [...pool].sort((a, b) => a - b);
+      const ownTimes = [...(metricStopMap.get(terminalId) ?? [])];
+      // #1534: a pool qualifies with an even midday or PM-peak reading of its own, the same window
+      // order a single shape gets, so a midday hole no longer hands the headline to the drawn
+      // shape's thin two-gap mean (fairfax 334: 180 for a pool every 30 at PM peak). The pool must
+      // run through that window by the settled period checks (#567-#571), so a few trips at one
+      // end of it (ttc 504 to Broadview and Queen: five trips 09:08-11:29, then 19:56) or a
+      // night route's pre-dawn pieces never pool into a headline.
+      const runsThrough = (pk: 'midday' | 'pmPeak') => runsThroughPeriod(sorted, PERIODS[pk].start, PERIODS[pk].end, computePeriodSustained(sorted)[pk]);
+      const daytimeWindow = pooledDaytimeWindow(sorted, ownTimes);
+      if (daytimeWindow && runsThrough(daytimeWindow)) return sorted;
+      // So does an uneven midday run through by the pool whose longest wait beats the own midday
+      // (lacmta 108: the pool alternates 10, 10, 20 against the drawn shape's own 40;
+      // terminalReading reads that wait).
+      if (pooledMiddayWorstWait(sorted, terminalReadTimes(terminalId) ?? []) != null && runsThrough('midday')) return sorted;
+      // Otherwise the pool must be all-day service with daytime departures of its own (the same
+      // guard as the thin-shape rescue), and even enough to read as one service
+      // (pooledHeadwayInWindow's guard): two branches bunched 3 minutes apart keep the own
+      // pattern's headline.
       if (!scopedTerminalHeadline(sorted, day as DayType, featureRoute?.route_type ?? '', railFeature)) return null;
-      // And even enough to read as one service (pooledHeadwayInWindow's guard): two branches
-      // bunched 3 minutes apart keep the own pattern's headline.
-      return pooledStepOneHeadway(sorted, [...(metricStopMap.get(terminalId) ?? [])]) != null ? sorted : null;
+      return pooledStepOneHeadway(sorted, ownTimes) != null ? sorted : null;
     };
     // #771: the drawn non-terminal stops served by fewer distinct departures than the destination
     // pool: stops some variants skip (MTA Silver's Morgan State stops, a branch's own tail). A
@@ -4244,7 +4258,7 @@ export async function processGtfsBuffer(
     resumesOn: routeFeatures.length === 0 ? resumeDates[0] ?? null : null,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
-    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, runNow().toISOString().slice(0, 10), calendarOnlyEnd),
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, pipelineRunDateYmd(), calendarOnlyEnd), // #1537: the run's Toronto date, not UTC
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
