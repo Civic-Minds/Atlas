@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
 - **Rebuilds keep the fares Atlas sets by hand**: a full rebuild published STM, exo and TransLink routes with no fare instead of their set fares ([#1535](https://github.com/Civic-Minds/Atlas/issues/1535))
 - **The data pipeline stops instead of publishing old fares when it can't read the [fare list](https://github.com/Civic-Minds/Atlas/issues/1367)**: a blocked read had quietly fallen back to each agency's older fare
 - **A branch with a few scattered trips no longer sets a whole route's frequency**: [SEPTA 67](https://github.com/Civic-Minds/Atlas/issues/1533) northbound read every 169 on weekday evenings, from three trips to Philadelphia Mills, while buses on the main part of the route run every 25
@@ -33,6 +34,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Numbers use the font's normal digits everywhere**: charts and tables no longer switch to fixed-width digits
 - **"Learn more" explains a route that misses the filter while every row meets it**: a part of the route runs less often than the rest, and the new Route rating panel says how the shared stretch and each branch are checked
 - **A selected line's ends stay clear of the [route card](https://github.com/Civic-Minds/Atlas/issues/1516) on wide screens**: CTA Green's Harlem end sat under the card
+- **The Frequent Service story counts coverage with the frequent part of each route (beta)**: a counting mistake had left out routes such as Toronto's streetcars, and the old test asked for frequent service in every hour from 7 AM to 7 PM
 - **The frequency bar's last group reads "Irregular or no trips"**: "Irregular or none" read oddly
 - **No "all day" left anywhere**: notices, map exports and Live say "across the day" when no time of day is chosen, since the map has no All day option
 - **Area and region pages say "schedules" when they cover several agencies**: a one-agency region now reads "the agency’s published schedule"

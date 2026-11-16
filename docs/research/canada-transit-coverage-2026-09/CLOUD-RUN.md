@@ -7,9 +7,12 @@ The September 19 figures depend on Atlas's `headwayByPeriodSustained` flag, and 
 
 | rule | What it does |
 |---|---|
-| `study` (default) | The September 2026 rule, so the published figures can be reproduced on today's data. |
+| `map-filter` (workflow default; the story's numbers) | The map's own frequency filter, run through the map's own code (`shared/routeHeadwayFilter.ts`, loaded with tsx, so the jobs that read Atlas data run `npm ci` first). A route qualifies at 15 or 30 when the map draws it at that setting on weekdays in AM peak, midday and PM peak; its stops are the rows the map draws. Routes are grouped as the map's lists group them (short name, else route_id). |
+| `map-filter-trunk` (CIV-1579) | The map-filter rule read on each route's trunk, its frequent shared middle (`routeTrunkHeadwayByPeriod`), instead of the value its slowest branch sets. A route that passes on its own value counts every stop the map draws, as `map-filter` does. A route that passes only on its trunk counts only its trunk stops (`trunkStopMask` = 1), so a slower branch's stops never count at the trunk's frequency. Each agency's `trunk` diagnostics in provenance say how many rows carried the trunk fields and how many trunk-only rows were skipped for a missing or misaligned mask. |
+| `study` (default without the input) | The September 2026 rule, so the published figures can be reproduced on today's data. |
 | `no-sustained` | The same rule without the sustained flag, as a sensitivity check. |
-| `map-filter` | The map's own frequency filter. Not built: it waits for Ryan's pick (CIV-1179). Choosing it stops the run straight away with that message. |
+
+For `study` and `no-sustained`, a row with no weekday times (a "Not in service" pattern) is skipped rather than read as a gap (CIV-1179).
 
 ## Inputs
 
@@ -51,6 +54,8 @@ The workflow tries StatCan first. If StatCan refuses, it reads the archive copy.
 
 ## Runner size, time and cost
 - **Runner:** ubuntu-latest, 4 vCPU, 16 GB RAM, about 14 GB free disk, plus about 25 GB once the workflow deletes the preinstalled toolchains. Node gets a 12 GB heap. The biggest jobs are Ontario, Quebec and BC, and the California, Texas, Florida and New York bundles. Clipping the network to qualifying stops keeps them inside 16 GB. If one runs out of memory, rerun only that job (`bundles` or `provinces` input) on a larger runner.
+- **Rerunning only failed jobs:** dispatch again with `provinces` and/or `bundles` set to the failed ones and `reuse_run` set to the earlier run's id (same `rule`). The summary then merges this run's reports with the earlier run's for everything not redone.
+- **OSM downloads:** Geofabrik first, then the openstreetmap.fr mirror (a US state's own file, else its Census-region file; Alaska and Hawaii have no mirror). Each source retries with backoff, one state at a time.
 - **Time (estimate):**
   - Small provinces and bundles: 10–30 minutes each.
   - The big ones: 1–3 hours each.

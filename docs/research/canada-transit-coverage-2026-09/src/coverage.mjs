@@ -93,21 +93,61 @@ export function metros(collection) {
 }
 
 /**
- * Which frequency rule decides a qualifying route (CIV-1182). Set with COVERAGE_RULE:
- * - "study" (default): the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
- *   headwayByPeriodSustained flag, which drops some very frequent lines (CIV-1179).
+ * Which frequency rule decides a qualifying route (CIV-1182, CIV-1179). Set with COVERAGE_RULE:
+ * - "map-filter" (the story's numbers): the map's own frequency filter, run through the map's own code
+ *   (shared/routeHeadwayFilter.ts, the same expression the PMTiles layer filter uses). A route qualifies at N when
+ *   the map draws it at "every N min or less" on weekdays in each of AM peak, midday and PM peak; its stops are the
+ *   stops of the rows the map draws in those periods (a route can be drawn by different rows in different periods: TTC 167).
+ * - "study": the September 2026 rule, kept so the published figures can be reproduced. It needs Atlas's
+ *   headwayByPeriodSustained flag, which drops some very frequent lines.
  * - "no-sustained": the same rule without that flag (a sensitivity check).
- * - "map-filter": the map's own frequency filter. Not built: it waits for Ryan's pick of the rule.
+ * - "map-filter-trunk" (CIV-1579, Ryan's option 1 on the slowest-branch study): the map-filter rule read on the
+ *   route's trunk (routeTrunkHeadwayByPeriod, the frequent shared middle; tiles carry it as tv_) instead of its D1
+ *   value. A route that passes on its own D1 value counts every stop the map draws, as map-filter does. A route that
+ *   passes only on its trunk counts only its trunk stops (trunkStopMask = 1), so a slower branch's stops are never
+ *   counted at the trunk's frequency. Branch stops are left out, never counted at a branch's own value.
  */
-export const RULES = ['study', 'no-sustained', 'map-filter'];
+export const RULES = ['study', 'no-sustained', 'map-filter', 'map-filter-trunk'];
 export function coverageRule() {
   const rule = process.env.COVERAGE_RULE || 'study';
   if (!RULES.includes(rule)) throw new Error(`COVERAGE_RULE must be one of ${RULES.join(', ')}`);
-  if (rule === 'map-filter') throw new Error('COVERAGE_RULE=map-filter is not built yet: the rule waits for Ryan (CIV-1179)');
   return rule;
 }
 
+export const MAP_FILTER_PERIODS = PERIODS;
+
+// The map's own code (TypeScript, loaded through tsx from the repository's node_modules), so this study and the map
+// make one decision per route (CIV-1179): the frequency filter and the route grouping the map's lists use.
+const SHARED = new URL('../../../../shared/', import.meta.url);
+let mapCode = null;
+export async function loadMapCode() {
+  if (!mapCode) {
+    const { tsImport } = await import('tsx/esm/api');
+    const [filter, group, runs] = await Promise.all(['routeHeadwayFilter.ts', 'routeGroupKey.ts', 'stopRuns.ts'].map(file => tsImport(new URL(file, SHARED).href, import.meta.url)));
+    mapCode = {
+      normalizeRouteFilterFeatures: filter.normalizeRouteFilterFeatures,
+      routePassesHeadwayFilter: filter.routePassesHeadwayFilter,
+      featurePassesHeadwayFilter: filter.featurePassesHeadwayFilter,
+      routeGroupKey: group.routeGroupKey,
+      decodeStopRuns: runs.decodeStopRuns,
+    };
+  }
+  return mapCode;
+}
+function requireMapCode() {
+  if (!mapCode) throw new Error('call loadMapCode() before qualifyingRoutes()');
+  return mapCode;
+}
+
+// A row with no weekday times at all (a "Not in service" or deadhead pattern, a span row with no trips in the day's
+// hours) is not service: it never sets a gap (CIV-1179: Windsor 1C, VTA Rapid 500, TTC 504 were rejected on these).
+export function hasServiceTimes(properties) {
+  const periods = properties.headwayByPeriod ?? {}; const hourly = properties.headwayByHour ?? {};
+  return PERIODS.some(period => num(periods[period]) != null) || HOURS.some(hour => num(hourly[hour]) != null);
+}
+
 export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  if (rule.startsWith('map-filter')) throw new Error('map-filter decides whole routes: use qualifyingRoutes()');
   if (properties.day !== 'Weekday') return false;
   const headways = properties.headwayByPeriod; const sustained = properties.headwayByPeriodSustained;
   if (!headways || (rule === 'study' && !sustained)) return false;
@@ -116,12 +156,79 @@ export function qualifies(properties, maxHeadwayMinutes = 15, rule = coverageRul
   return !hourly || HOURS.every(hour => (num(hourly[hour]) ?? Infinity) <= maxHeadwayMinutes);
 }
 
-export function qualifyingRoutes(features, maxHeadwayMinutes = 15) {
+/**
+ * The weekday rows of the routes that qualify. Routes are grouped as the map's lists group them (routeGroupKey: the
+ * short name, else the route_id, so unnamed routes such as TriMet's MAX lines stay separate).
+ */
+export function qualifyingRoutes(features, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  return qualifyingRows(features, maxHeadwayMinutes, rule).rows;
+}
+
+/** The map-filter rule's verdict on grouped weekday rows: the qualifying routes' drawn rows. */
+function mapFilterRoutes(weekday, maxHeadwayMinutes, readValue) {
+  const code = requireMapCode();
+  // Copies: the map's normalization stamps route-wide values onto the rows it is given.
+  const rows = weekday.map(feature => {
+    const properties = { ...feature.properties };
+    if (readValue && readValue(properties) != null) properties.routeFilterHeadwayByPeriod = readValue(properties);
+    return { ...feature, properties };
+  });
+  code.normalizeRouteFilterFeatures(rows);
+  const routes = new Map();
+  rows.forEach((row, index) => {
+    const key = code.routeGroupKey(row.properties.routeShortName, row.properties.routeId);
+    (routes.get(key) ?? routes.set(key, []).get(key)).push({ row, original: weekday[index] });
+  });
+  const result = new Map();
+  for (const [key, route] of routes) {
+    const props = route.map(({ row }) => row.properties);
+    if (!PERIODS.every(period => code.routePassesHeadwayFilter(props, period, 'Weekday', maxHeadwayMinutes))) continue;
+    result.set(key, route.filter(({ row }) => PERIODS.some(period => code.featurePassesHeadwayFilter(row.properties, period, maxHeadwayMinutes))).map(({ original }) => original));
+  }
+  return result;
+}
+
+/**
+ * The qualifying weekday rows, and for map-filter-trunk the stops each may count. stopsFor(row) is the row's
+ * stopOrder, or only its trunk stops for a route that qualifies on its trunk alone; diagnostics count what was read.
+ */
+export function qualifyingRows(features, maxHeadwayMinutes = 15, rule = coverageRule()) {
+  const code = requireMapCode();
+  const weekday = features.filter(feature => feature.properties?.day === 'Weekday');
+  const allStops = row => (Array.isArray(row.properties?.stopOrder) ? row.properties.stopOrder.map(String) : []);
+  if (rule === 'map-filter') {
+    const rows = [...mapFilterRoutes(weekday, maxHeadwayMinutes).values()].flat();
+    return { rows, stopsFor: allStops, diagnostics: null };
+  }
+  if (rule === 'map-filter-trunk') {
+    const diagnostics = { weekdayRows: weekday.length, rowsWithTrunkValue: 0, trunkOnlyRoutes: 0, trunkOnlyRows: 0, rowsSkippedNoMask: 0, rowsSkippedMaskMismatch: 0 };
+    for (const row of weekday) if (row.properties.routeTrunkHeadwayByPeriod != null) diagnostics.rowsWithTrunkValue++;
+    const whole = mapFilterRoutes(weekday, maxHeadwayMinutes);
+    // A row without the trunk field (an older release) keeps its own D1 value.
+    const trunk = mapFilterRoutes(weekday, maxHeadwayMinutes, p => p.routeTrunkHeadwayByPeriod);
+    const trunkStops = new Map();
+    const rows = [...whole.values()].flat();
+    for (const [key, route] of trunk) {
+      if (whole.has(key)) continue;
+      diagnostics.trunkOnlyRoutes++;
+      for (const row of route) {
+        const stops = allStops(row);
+        const mask = row.properties.trunkStopMask;
+        if (mask == null) { diagnostics.rowsSkippedNoMask++; continue; }
+        const decoded = code.decodeStopRuns(mask);
+        if (decoded.length !== stops.length) { diagnostics.rowsSkippedMaskMismatch++; continue; }
+        diagnostics.trunkOnlyRows++;
+        trunkStops.set(row, stops.filter((_, i) => decoded[i] === 1));
+        rows.push(row);
+      }
+    }
+    return { rows, stopsFor: row => trunkStops.get(row) ?? allStops(row), diagnostics };
+  }
   const groups = new Map();
-  for (const feature of features) {
-    const p = feature.properties ?? {};
-    if (p.day !== 'Weekday') continue;
-    const group = `${p.routeShortName ?? ''}::${p.routeBranch ?? ''}`;
+  for (const feature of weekday) {
+    const p = feature.properties;
+    if (!hasServiceTimes(p)) continue;
+    const group = `${code.routeGroupKey(p.routeShortName, p.routeId)}::${p.routeBranch ?? ''}`;
     const direction = String(p.directionId ?? p.headsign ?? 'unknown');
     const directions = groups.get(group) ?? new Map();
     const rows = directions.get(direction) ?? [];
@@ -129,11 +236,11 @@ export function qualifyingRoutes(features, maxHeadwayMinutes = 15) {
   }
   const result = [];
   for (const directions of groups.values()) {
-    if ([...directions.values()].every(rows => rows.every(feature => qualifies(feature.properties ?? {}, maxHeadwayMinutes)))) {
+    if ([...directions.values()].every(rows => rows.every(feature => qualifies(feature.properties ?? {}, maxHeadwayMinutes, rule)))) {
       for (const rows of directions.values()) result.push(...rows);
     }
   }
-  return result;
+  return { rows: result, stopsFor: row => (Array.isArray(row.properties?.stopOrder) ? row.properties.stopOrder.map(String) : []), diagnostics: null };
 }
 
 // #1367: Atlas's published files. Reads from GitHub runners to data.transitatlas.fyi hit Cloudflare
@@ -169,6 +276,12 @@ export async function json(url, { tries = 5, delayMs = 10000, headers = ATLAS_FE
     if (attempt < tries - 1) await sleep(delayMs * 2 ** attempt * (1 + Math.random() * 0.25));
   }
   throw lastError;
+}
+
+// CIV-1179: count only agencies the public map shows. Hidden, beta-only and staged agencies aren't on the
+// public map (some have no published files at all, and their 404s drew Cloudflare challenges on runners).
+export function publicMapAgencies(agencies) {
+  return agencies.filter(agency => !agency.hiddenInProduction && !agency.betaOnly && !agency.staged);
 }
 
 const sha256 = data => createHash('sha256').update(data).digest('hex');
@@ -213,7 +326,9 @@ export async function atlasJson(key, baseUrl = DEFAULT_ATLAS_BASE_URL, { r2 = at
   return json(`https://${host}${path}`, { ...options, label: `r2://${r2.bucket}/${key}`, headers: () => ({ Accept: 'application/json', ...signS3Get({ host, path, accessKeyId: r2.accessKeyId, secretAccessKey: r2.secretAccessKey }) }) });
 }
 
-export async function coverageForAgencies(agencies, baseUrl = DEFAULT_ATLAS_BASE_URL, maxHeadwayMinutes = 15) {
+export async function coverageForAgencies(allAgencies, baseUrl = DEFAULT_ATLAS_BASE_URL, maxHeadwayMinutes = 15) {
+  const agencies = publicMapAgencies(allAgencies);
+  await loadMapCode();
   const result = [];
   for (let start = 0; start < agencies.length; start += 6) {
     const batch = agencies.slice(start, start + 6);
@@ -222,12 +337,12 @@ export async function coverageForAgencies(agencies, baseUrl = DEFAULT_ATLAS_BASE
         atlasJson(`atlas/${agency.slug}.json`, baseUrl),
         atlasJson(`atlas/${agency.slug}-stops-meta.json`, baseUrl),
       ]);
-      const good = qualifyingRoutes(routes.features, maxHeadwayMinutes);
-      const ids = new Set(good.flatMap(feature => Array.isArray(feature.properties?.stopOrder) ? feature.properties.stopOrder.map(String) : []));
+      const { rows: good, stopsFor, diagnostics } = qualifyingRows(routes.features, maxHeadwayMinutes);
+      const ids = new Set(good.flatMap(stopsFor));
       const stops = (stopMeta.stops ?? []).filter(stop => ids.has(String(stop.id)) && num(stop.lat) != null && num(stop.lon) != null).map(stop => ({
         id: String(stop.id), lat: num(stop.lat), lon: num(stop.lon), agency: agency.slug,
       }));
-      return { slug: agency.slug, name: agency.name, lastRefreshedAt: agency.lastRefreshedAt, routes: routes.features.length, qualifyingRoutes: good.length, stops };
+      return { slug: agency.slug, name: agency.name, lastRefreshedAt: agency.lastRefreshedAt, routes: routes.features.length, qualifyingRoutes: good.length, stops, ...(diagnostics ? { trunk: diagnostics } : {}) };
     })));
   }
   return { agencies, coverage: result };
@@ -252,12 +367,15 @@ function geometryBounds(geometry) {
   visit(geometry.coordinates); return bounds;
 }
 
-function graph(network, bounds) {
-  const nodes = []; const byKey = new Map(); const cells = new Map(); let edges = 0;
+export function graph(network, bounds) {
+  // Points are indexed per 0.01-degree cell (cell -> point key -> node id) rather than in one
+  // map of every point: a single Map holds at most 2^24 entries, and California's walking
+  // network has more nodes than that ("Map maximum size exceeded", CIV-1179).
+  const nodes = []; const cells = new Map(); let edges = 0;
   const add = (point) => {
-    const k = key(point[0], point[1]); const found = byKey.get(k); if (found != null) return found;
-    const id = nodes.length; nodes.push({ point, edges: [] }); byKey.set(k, id);
-    const bucket = cells.get(cell(...point)) ?? []; bucket.push(id); cells.set(cell(...point), bucket); return id;
+    const c = cell(...point); let bucket = cells.get(c); if (!bucket) { bucket = new Map(); cells.set(c, bucket); }
+    const k = key(point[0], point[1]); const found = bucket.get(k); if (found != null) return found;
+    const id = nodes.length; nodes.push({ point, edges: [] }); bucket.set(k, id); return id;
   };
   for (const feature of network.features) {
     if (feature.geometry.type !== 'LineString') continue;
@@ -278,7 +396,7 @@ function nearest(g, point) {
   let best = null; const cx = Math.floor(point[0] / 0.01); const cy = Math.floor(point[1] / 0.01);
   for (let radius = 0; radius <= 100; radius++) {
     for (let x = cx - radius; x <= cx + radius; x++) for (let y = cy - radius; y <= cy + radius; y++) {
-      for (const id of g.cells.get(`${x},${y}`) ?? []) {
+      for (const id of g.cells.get(`${x},${y}`)?.values() ?? []) {
         const metres = distance(point, g.nodes[id].point); if (!best || metres < best.metres) best = { id, metres };
       }
     }

@@ -1,13 +1,13 @@
 import { execFile } from 'node:child_process';
 import { createReadStream } from 'node:fs';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
-import { pipeline } from 'node:stream/promises';
-import { Readable } from 'node:stream';
 import { resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { calculateReport, coverageForAgencies, metros, populationAreas, pointInGeometry, readJson } from './coverage.mjs';
 import { writeCoverageReport } from './report.mjs';
+import { downloadFirst, saveJson } from './io.mjs';
+import { stateSources } from './osmSources.mjs';
 
 const run = promisify(execFile);
 const arg = name => { const i = process.argv.indexOf(`--${name}`); return i < 0 ? undefined : process.argv[i + 1]; };
@@ -27,8 +27,6 @@ const outputRoot = resolve(arg('out-root') ?? resolve('output/us-bundles', bundl
 const censusRoot = resolve(arg('census-root') ?? 'data/derived/us-census');
 const osmium = arg('osmium') ?? 'osmium';
 
-const stateSlug = name => name.toLowerCase().replaceAll('district of columbia', 'district-of-columbia').replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-|-$/g, '');
-const stateSourceUrl = name => `https://download.geofabrik.de/north-america/us/${stateSlug(name)}-latest.osm.pbf`;
 const censusUrl = (service, layer, params) => {
   const url = new URL(`https://tigerweb.geo.census.gov/arcgis/rest/services/Census2020/${service}/MapServer/${layer}/query`);
   url.search = new URLSearchParams({ ...params, outSR: '4326', f: 'geojson' });
@@ -50,27 +48,14 @@ const fetchJson = async url => {
   throw lastError;
 };
 
-async function saveJson(path, value) {
-  await mkdir(resolve(path, '..'), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
-}
-
-async function download(path, url) {
-  try { const info = await stat(path); if (info.size > 100_000) return; } catch {}
-  await mkdir(resolve(path, '..'), { recursive: true });
-  const response = await fetch(url);
-  if (!response.ok || !response.body) throw new Error(`${response.status} ${url}`);
-  await pipeline(Readable.fromWeb(response.body), (await import('node:fs')).createWriteStream(path));
-}
-
 async function command(args) {
   await run(osmium, args, { maxBuffer: 1024 * 1024 * 10 });
 }
 
 async function ensureHighways(stateName) {
-  const source = resolve(sourceRoot, `${stateSlug(stateName)}-latest.osm.pbf`);
-  const highways = resolve(root, 'data/derived/us-osm-highways', `${stateSlug(stateName)}.osm.pbf`);
-  await download(source, stateSourceUrl(stateName));
+  // Geofabrik first, then the openstreetmap.fr mirror (its state file, else its region file).
+  const { path: source } = await downloadFirst(stateSources(stateName, sourceRoot));
+  const highways = resolve(root, 'data/derived/us-osm-highways', source.split('/').pop().replace(/-latest\.osm\.pbf$/, '.osm.pbf'));
   try { await stat(highways); return highways; } catch {}
   await mkdir(resolve(highways, '..'), { recursive: true });
   await command(['tags-filter', source, 'w/highway', '-o', highways]);
@@ -156,9 +141,11 @@ if (!metro.features.length) {
   process.exit(0);
 }
 const metroPath = resolve(dataRoot, 'metros.geojson'); await saveJson(metroPath, metro);
-const highways = await Promise.all(stateNames.map(ensureHighways));
+// One state at a time: Geofabrik limits parallel downloads from one address.
+const highways = [];
+for (const name of stateNames) { const file = await ensureHighways(name); if (!highways.includes(file)) highways.push(file); }
 const walking = await network(qualifying, highways);
 const report = calculateReport({ agencies: atlas.agencies, coverage: atlas.coverage, population: populationAreas(population, 'POP100'), metroBoundaries: metros(metro), network: walking, walkMinutes, maxHeadwayMinutes: headway, populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point' });
 await writeCoverageReport(report, outputRoot);
-await saveJson(resolve(outputRoot, 'provenance.json'), { generatedAt: new Date().toISOString(), bundle: bundleId, definition: { headwayMinutes: headway, walkMinutes, day: 'Weekday', window: '07:00–19:00' }, atlas: { baseUrl, agencies: atlas.agencies.map(({ slug, name, lastRefreshedAt }) => ({ slug, name, lastRefreshedAt })) }, census: { populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point', service: 'Census2020/TIGERweb' }, network: { source: 'Geofabrik US state extracts', states: stateNames, agencyBufferDegrees: networkBufferDegrees } });
+await saveJson(resolve(outputRoot, 'provenance.json'), { generatedAt: new Date().toISOString(), bundle: bundleId, definition: { headwayMinutes: headway, walkMinutes, day: 'Weekday', window: '07:00–19:00' }, atlas: { baseUrl, agencies: atlas.agencies.map(({ slug, name, lastRefreshedAt }) => ({ slug, name, lastRefreshedAt })), coverage: atlas.coverage.map(({ slug, routes, qualifyingRoutes, trunk }) => ({ slug, routes, qualifyingRoutes, ...(trunk ? { trunk } : {}) })) }, census: { populationVintage: '2020', populationGeography: 'US Census block groups', populationAssignment: 'Block-group representative point', service: 'Census2020/TIGERweb' }, network: { source: 'Geofabrik US state extracts', states: stateNames, agencyBufferDegrees: networkBufferDegrees } });
 console.log(JSON.stringify({ bundle: bundleId, status: 'complete', output: outputRoot, agencies: report.scope.agencyCount, cmas: report.scope.selectedCmaCount, population: report.scope.atlasCoveragePopulation, coveredPopulation: report.scope.coveredPopulation, coveredPercent: Number(report.scope.coveredPercent.toFixed(2)) }, null, 2));

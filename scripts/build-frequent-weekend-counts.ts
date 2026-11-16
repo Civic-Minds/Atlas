@@ -21,13 +21,13 @@ const BASE = 'https://data.transitatlas.fyi';
 const OUT = 'src/data/frequent-weekend-counts.json';
 
 /**
- * Toronto (the story's own city) and the largest metros Atlas covers in Canada (Montreal, Vancouver) and the US (New York,
+ * Toronto (the story's own city) and the largest metros Atlas covers in Canada (Montréal, Vancouver) and the US (New York,
  * Los Angeles, Chicago), plus Washington, DC, which the story already names. Each city is its main local transit agency;
  * New York's buses and subway are split across several feeds, so all of them count together.
  */
 export const WEEKEND_CITIES: ReadonlyArray<{ city: string; agencies: readonly string[] }> = [
   { city: 'Toronto', agencies: ['ttc'] },
-  { city: 'Montreal', agencies: ['stm'] },
+  { city: 'Montréal', agencies: ['stm'] },
   { city: 'Vancouver', agencies: ['translink'] },
   { city: 'New York', agencies: ['nyct-subway', 'nyct-bus-bronx', 'nyct-bus-brooklyn', 'nyct-bus-manhattan', 'nyct-bus-queens', 'nyct-bus-si', 'mta-bus-company'] },
   { city: 'Los Angeles', agencies: ['lacmta'] },
