@@ -14,7 +14,6 @@ describe('For Transit Planners page (CIV-1320)', () => {
       'A Map Instead of a Long Report',
       'Live Vehicles',
       'Where the Data Comes From',
-      "What Atlas Doesn’t Do",
       'Request a Demo',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
   });
@@ -34,11 +33,12 @@ describe('For Transit Planners page (CIV-1320)', () => {
     for (const img of container.querySelectorAll('picture img')) expect(img.className).toContain('aspect-[4/3]');
   });
 
-  it('opens the map from the top, gives the contact email, and ends with one Request a demo button (CIV-1706)', () => {
+  it('opens the map from the top and ends with one Request a demo button, its only email link (CIV-1706, CIV-1751)', () => {
     render(<PlannersPage />);
     const open = screen.getAllByRole('link', { name: 'Try Atlas' });
     expect(open.map(a => a.getAttribute('href'))).toEqual(['/']);
-    for (const a of screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })) expect(a).toHaveAttribute('href', 'mailto:hey@ryanisnota.pro');
+    expect(screen.queryByRole('link', { name: 'hey@ryanisnota.pro' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'What Atlas Doesn’t Do' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Get in Touch' })).not.toBeInTheDocument();
     const demo = screen.getAllByRole('link', { name: 'Request a demo' });
     expect(demo).toHaveLength(1);

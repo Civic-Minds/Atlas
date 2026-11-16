@@ -19,7 +19,6 @@ import RequestDemoCard from './components/RequestDemoCard';
  * frequency-colour tints for the feature cards.
  */
 
-const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 
 /** A map picture with a light and a dark version, as on About (index.css, .theme-light-only). Decorative: the text says what it shows. */
 function ThemedPicture({ base, ext, className }: { base: string; ext: string; className: string }) {
@@ -29,10 +28,6 @@ function ThemedPicture({ base, ext, className }: { base: string; ext: string; cl
       <img src={`${base}-dark.${ext}`} alt="" className={`theme-dark-only ${className}`} />
     </>
   );
-}
-
-function Email() {
-  return <a href={`mailto:${CONTACT_EMAIL}`} className="text-[var(--accent)] hover:underline">{CONTACT_EMAIL}</a>;
 }
 
 const Feature = FeatureCard;
@@ -118,14 +113,6 @@ export default function PlannersPage() {
 
       <TextSection title="Where the Data Comes From">
         <p>Atlas covers about 700 transit agencies in Canada and the US. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
-      </TextSection>
-
-      <TextSection title="What Atlas Doesn’t Do">
-        <ul className="list-disc space-y-3 pl-5">
-          <li><strong className={STRONG}>It shows the published schedule, not what actually ran.</strong> Delays, detours and cancellations aren’t included.</li>
-          <li><strong className={STRONG}>It only covers agencies that publish GTFS.</strong> Some smaller agencies don’t.</li>
-          <li><strong className={STRONG}>It isn’t a trip planner.</strong> It shows the network, not how to get from A to B.</li>
-        </ul>
       </TextSection>
 
       {/* CIV-1706 (Ryan, 2026-11-15): the page ends with one ask, this button, with no line above it. It replaces the
