@@ -251,6 +251,7 @@ jobs:
           add-paths: |
             shared/data/agency-pages.json
             shared/data/agency-page-slugs.json
+            shared/data/atlas-coverage.json
           commit-message: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
           title: "Regenerate agency pages for release-${{ steps.agency-pages-release.outputs.id }}"
           body: |

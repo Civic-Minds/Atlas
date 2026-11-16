@@ -8,7 +8,7 @@
 export const REGENERATE_HELP = [
   'Regenerate the summaries from the public release (read-only, about 1.5 GB of downloads, run throttled):',
   '  nice -n 15 npx tsx scripts/build-agency-page-summaries.ts',
-  'then commit shared/data/agency-pages.json and shared/data/agency-page-slugs.json.',
+  'then commit shared/data/agency-pages.json, shared/data/agency-page-slugs.json and shared/data/atlas-coverage.json.',
   'publish-data-release runs it after each publish and opens the agency-pages pull request; merging that pull request does the same.',
 ].join('\n');
 
