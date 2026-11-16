@@ -117,7 +117,9 @@ describe('one line written under two identical shape ids (#1446)', () => {
     expect(status.some(line => line.includes('Identical shapes'))).toBe(false);
     const toAirport = pick(rows, '39', 1);
     expect(toAirport).toHaveLength(1);
-    // Pinned to what main reads for this feed today (two patterns every 30 under one headsign).
+    // Pinned to what main reads for this feed today: two patterns under one headsign, each every
+    // 30, read as one service every 15 since #1534 lets an even midday pool set the headline
+    // (the per-pattern PM-peak filter still reads 30).
     expect(reads(toAirport[0])).toMatchInlineSnapshot(`
       {
         "directionFilterHeadwayByPeriod": {
@@ -128,7 +130,7 @@ describe('one line written under two identical shape ids (#1446)', () => {
           "overnight": null,
           "pmPeak": 30,
         },
-        "headway": 30,
+        "headway": 15,
         "headwayByPeriod": {
           "amPeak": 17,
           "evening": 30,
