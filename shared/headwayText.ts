@@ -157,6 +157,17 @@ export function headwayPeriodShape(shape: { from?: string; until?: string; every
   ].filter((part): part is string => part != null).join(' ');
 }
 
+/**
+ * CIV-1772: a period's text split into its frequency and the note after it, so a table can put the note on a second
+ * line: "every 20 min, with one 37 min gap" is "every 20 min" and "with one 37 min gap"; "every 30 min from 7:05 AM" is
+ * "every 30 min" and "from 7:05 AM". Text with no note ("every 20 min", "20–30 min", "Irregular") has none. The inverse
+ * of headwayPeriodShape, which writes the text the agency summaries store.
+ */
+export function periodShapeParts(text: string): { main: string; note: string | null } {
+  const m = /^(.*?)(?:, (with .*)| ((?:from|until) .*))$/.exec(text);
+  return m ? { main: m[1], note: m[2] ?? m[3] } : { main: text, note: null };
+}
+
 export function capitalizeFirst(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
