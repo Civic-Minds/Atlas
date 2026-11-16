@@ -8,7 +8,8 @@ import { rankRoutes, routeBars } from '../overviewListModel';
 
 /**
  * The agency overview: every route with its figure for the chosen measure, worst first; a click selects the route. The
- * header is the measure's own label. Routes with no figure sit at the end.
+ * header is the measure's own label. Routes with no figure sit at the end. The card ends after its last row (CIV-1732)
+ * and is clipped only when the column is shorter than the list.
  */
 export default function OverviewList({ s, measure, band = 'all', route, network, onPick }: { s: AgencySummary; measure: MapMeasure; band?: DashboardBand; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
   const rows = useMemo(() => rankRoutes(s, network, measure, band), [s, measure, band, network]);
@@ -16,7 +17,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
   const shown = rows;
   const bars = useMemo(() => routeBars(rows, measure), [rows, measure]);
   return (
-    <section aria-label="Routes" className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur">
+    <section aria-label="Routes" className={`flex min-h-0 flex-initial flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur`}>
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
         <span>Routes</span>
         <span>{measureLabel(measure)}</span>

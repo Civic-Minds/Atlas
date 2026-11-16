@@ -5,9 +5,9 @@ import { phoneModeFlags } from '../../hooks/useMediaQuery';
 const on = { live: true, history: true, researchApps: true };
 
 describe('phone mode gating', () => {
-  it('switches History and Compare off below sm only', () => {
-    expect(phoneModeFlags(true)).toEqual({ history: false, compareMode: false });
-    expect(phoneModeFlags(false)).toEqual({ history: true, compareMode: true });
+  it('switches History, Compare and the map-and-sidebar pages off below sm only', () => {
+    expect(phoneModeFlags(true)).toEqual({ history: false, compareMode: false, mapApps: false });
+    expect(phoneModeFlags(false)).toEqual({ history: true, compareMode: true, mapApps: true });
   });
 
   it('sends a phone deep link to /apps/history back to the map, and leaves desktop alone', () => {
