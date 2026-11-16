@@ -45,8 +45,26 @@ function Feature({ title, color, pictures, children }: { title: string; color: s
   );
 }
 
-const PICTURE = 'block w-full rounded-xl border border-[var(--border-primary)] object-cover';
+const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
 const pic = (name: string) => `/assets/planners/${name}`;
+
+/**
+ * A feature card's picture (CIV-1701): a faded real map with the card's own app control, trimmed to a couple of rows.
+ * Every card's picture is 4:3, so the cards line up; phones get their own smaller version so the control's rows still
+ * read. Made by scripts/planner-pictures/capture.mts.
+ */
+function CardPicture({ name }: { name: string }) {
+  return (
+    <>
+      {(['light', 'dark'] as const).map(theme => (
+        <picture key={theme} className={`block ${theme === 'light' ? 'theme-light-only' : 'theme-dark-only'}`}>
+          <source media="(max-width: 639px)" srcSet={pic(`card-${name}-phone-${theme}.webp`)} />
+          <img src={pic(`card-${name}-desktop-${theme}.webp`)} alt="" className={PICTURE} />
+        </picture>
+      ))}
+    </>
+  );
+}
 
 /** A text section beside its heading, like About's "Built for looking closer." */
 function TextSection({ title, children }: { title: string; children: ReactNode }) {
@@ -79,38 +97,20 @@ export default function PlannersPage() {
       </section>
 
       <div className="grid gap-5 py-16 sm:py-20">
-        <Feature title="See Frequency, Not Just Routes" color={color(0)} pictures={
-          <div className="grid grid-cols-2 gap-3">
-            <ThemedPicture base={pic('tiers-all')} ext="webp" className={`${PICTURE} aspect-square`} />
-            <ThemedPicture base={pic('tiers-10')} ext="webp" className={`${PICTURE} aspect-square`} />
-          </div>
-        }>
+        <Feature title="See Frequency, Not Just Routes" color={color(0)} pictures={<CardPicture name="frequency" />}>
           <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map takes one click. The tiers make it quick to check a network against your own service frequency standards.</p>
         </Feature>
-        <Feature title="See How Service Changes Over the Day and Week" color={color(1)} pictures={
-          <div className="space-y-3">
-            <ThemedPicture base={pic('compare')} ext="webp" className={`${PICTURE} aspect-[1440/730]`} />
-            <div className="grid grid-cols-2 items-start gap-3">
-              <ThemedPicture base={pic('chicago')} ext="webp" className={`${PICTURE} aspect-[700/740]`} />
-              <ThemedPicture base={pic('routecard')} ext="webp" className={`${PICTURE} aspect-[700/1078]`} />
-            </div>
-          </div>
-        }>
+        <Feature title="See How Service Changes Over the Day and Week" color={color(1)} pictures={<CardPicture name="dayweek" />}>
           <p>Frequency on a map is only half the story. Switch between weekday, Saturday and Sunday, then pick a time of day: AM peak, midday, PM peak, evening, late night or overnight (2 to 6 AM), so peak, off-peak and owl service each get their own map.</p>
           <p>Weekday midday and Sunday evening are often very different networks. Atlas shows both, and Compare puts two of them side by side on desktop.</p>
           <p>Open any route to see an hourly chart of its headways, which also shows its span of service.</p>
         </Feature>
-        <Feature title="Every Agency in a Region, on One Map" color={color(2)} pictures={
-          <ThemedPicture base={pic('bayarea')} ext="webp" className={`${PICTURE} aspect-[740/700]`} />
-        }>
+        <Feature title="Every Agency in a Region, on One Map" color={color(2)} pictures={<CardPicture name="agency" />}>
           <p>Riders don’t care which agency runs the bus. Atlas puts every agency it covers on the same map, so you can see where local, regional and intercity services meet, and where they don’t. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
           <p>This helps you spot weak connections between agencies: a hub where one agency runs {headwayEvery(10)} and the other once an hour, or a town where an intercity route stops but no local bus runs in the evening.</p>
           <p>Each agency also has its own page with a summary of its routes and the agencies nearby.</p>
         </Feature>
-        <Feature title="A Map Instead of a Long Report" color={color(3)} pictures={
-          // The exported image looks the same in either theme.
-          <img src={pic('export.webp')} alt="" className={`${PICTURE} aspect-[40/21]`} />
-        }>
+        <Feature title="A Map Instead of a Long Report" color={color(3)} pictures={<CardPicture name="export" />}>
           <p>Existing-conditions work often ends up as a long report with a few static maps. Atlas gives you a map people can explore.</p>
           <ul className="list-disc space-y-2 pl-5">
             <li><strong className={STRONG}>Share links</strong> keep the view: the place, frequency tier, day, time of day, agencies and any open route or stop.</li>
