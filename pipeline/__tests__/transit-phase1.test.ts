@@ -57,6 +57,13 @@ describe('computeRawDepartures', () => {
       expect(monday(feed(4))).toEqual(['Schuylkill Ave.']);
     });
 
+    it('keeps them in a period the timetabled pattern does not run (OC Transpo 24 Sunday, CIV-1722)', () => {
+      const gtfs = feed(0);
+      gtfs.trips.push(...[0, 1, 2].map(i => ({ route_id: '18', service_id: 'wd', trip_id: `e${i}`, trip_headsign: 'Schuylkill Ave.', direction_id: '1', shape_id: 'main' })));
+      gtfs.stopTimes.push(...[0, 1, 2].map(i => ({ trip_id: `e${i}`, arrival_time: gtfsTime(1270 + i * 60), departure_time: gtfsTime(1270 + i * 60), stop_id: 'origin', stop_sequence: '1' })));
+      expect(monday(gtfs)).toEqual(['BTC', 'Schuylkill Ave.']);
+    });
+
     it('keeps them when the direction\'s other pattern is one stray trip (BARTA 18 Sunday)', () => {
       expect(monday(feed(1))).toEqual(['BTC']);
     });
