@@ -35,7 +35,8 @@ const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentService
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
-const StudioVehiclesPage = React.lazy(() => import('./StudioVehiclesPage'));
+// Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
+const StudioVehiclesPage = import.meta.env.DEV ? React.lazy(() => import('./StudioVehiclesPage')) : () => null;
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
