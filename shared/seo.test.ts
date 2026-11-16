@@ -196,7 +196,7 @@ describe('head tag rewriting', () => {
   it('prerenders only pages that exist in the build', () => {
     expect(prerenderRoutes({}).map(r => r.path)).toEqual(['/about', '/about/docs', '/privacy', '/terms']);
     // CIV-1704: the For Transit Planners page is local only, so no deployed build writes it.
-    expect(prerenderRoutes({ planners: true }).map(r => r.path)).toContain('/about/planners');
+    expect(prerenderRoutes({ planners: true }).map(r => r.path)).toContain('/planners');
     expect(prerenderRoutes({ researchApps: true }).map(r => r.path)).toContain('/research');
   });
 });

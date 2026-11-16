@@ -48,7 +48,7 @@ export function agencyIndexHeadingHref(country: string, region?: string): string
 export const ABOUT_PATH = '/about';
 export const DOCS_PATH = '/about/docs';
 /** The For Transit Planners page (CIV-1320). */
-export const PLANNERS_PATH = '/about/planners';
+export const PLANNERS_PATH = '/planners';
 export const TERMS_PATH = '/terms';
 export const PRIVACY_PATH = '/privacy';
 export const CHANGELOG_PATH = '/changelog';
