@@ -170,8 +170,8 @@ export const SEARCH_PILL = 'flex items-center h-8 bg-[var(--bg-panel)] border bo
 /** The magnifier in every search field, the top search bar included. */
 export const SEARCH_ICON = 'w-3.5 h-3.5 text-[var(--text-dim)] shrink-0';
 
-/** Search input text field (inside SEARCH_PILL) */
-export const SEARCH_FIELD = 'flex-1 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';
+/** Search input text field (inside SEARCH_PILL). `min-w-0` lets it shrink below its default width, so in a narrow pill the clear X stays inside (#1563). */
+export const SEARCH_FIELD = 'flex-1 min-w-0 bg-transparent text-xs font-bold text-[var(--text-primary)] placeholder:text-[var(--text-dim)] focus:outline-none';
 
 // Z-index stack — use these everywhere instead of inline z-[NNN] magic numbers
 export const Z_MAP_OVERLAY = 'z-[500]';   // App-level opacity wrappers (Corridors, Live mounts)
