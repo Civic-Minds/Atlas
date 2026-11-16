@@ -28,6 +28,8 @@ export interface TripRun {
   /** Minutes after midnight of the service day (may pass 1440). */
   start: number;
   end: number;
+  /** The trip's stops in order; only when tripRunsForDay was asked for them. Equal sequences share one array. */
+  stopIds?: readonly string[];
 }
 
 type TripRow = { trip_id: string; route_id: string; service_id: string; direction_id?: string; block_id?: string };
@@ -42,16 +44,23 @@ type FrequencyRow = { trip_id: string; start_time: string; end_time: string; hea
 export function tripRunsForDay(
   feed: { trips: readonly TripRow[]; stopTimes: readonly StopTimeRow[]; frequencies?: readonly FrequencyRow[] },
   activeServiceIds: ReadonlySet<string>,
+  options: { withStops?: boolean } = {},
 ): TripRun[] {
   const tripsById = new Map<string, TripRow>();
   for (const trip of feed.trips) if (activeServiceIds.has(trip.service_id)) tripsById.set(trip.trip_id, trip);
 
   type Ends = { firstSeq: number; firstStop: string; start: number | null; lastSeq: number; lastStop: string; end: number | null };
   const ends = new Map<string, Ends>();
+  const stopsByTrip = options.withStops ? new Map<string, Array<[number, string]>>() : null;
   for (const st of feed.stopTimes) {
     if (!tripsById.has(st.trip_id)) continue;
     const seq = Number(st.stop_sequence);
     if (!Number.isFinite(seq)) continue;
+    if (stopsByTrip) {
+      const list = stopsByTrip.get(st.trip_id) ?? [];
+      list.push([seq, st.stop_id]);
+      stopsByTrip.set(st.trip_id, list);
+    }
     const dep = t2m(st.departure_time || st.arrival_time || '');
     const arr = t2m(st.arrival_time || st.departure_time || '');
     const e = ends.get(st.trip_id);
@@ -73,6 +82,16 @@ export function tripRunsForDay(
     windowsByTrip.set(f.trip_id, list);
   }
 
+  const interned = new Map<string, readonly string[]>();
+  const stopIdsOf = (tripId: string): { stopIds?: readonly string[] } => {
+    const list = stopsByTrip?.get(tripId);
+    if (!list) return {};
+    const ids = list.sort((a, b) => a[0] - b[0]).map(([, id]) => id);
+    const key = ids.join('\u0000');
+    if (!interned.has(key)) interned.set(key, ids);
+    return { stopIds: interned.get(key)! };
+  };
+
   const runs: TripRun[] = [];
   for (const [tripId, e] of ends) {
     if (e.start == null || e.end == null || e.end < e.start) continue;
@@ -82,6 +101,7 @@ export function tripRunsForDay(
       directionId: trip.direction_id != null && trip.direction_id !== '' ? String(trip.direction_id) : null,
       firstStop: e.firstStop,
       lastStop: e.lastStop,
+      ...stopIdsOf(tripId),
     };
     const windows = windowsByTrip.get(tripId);
     if (windows) {

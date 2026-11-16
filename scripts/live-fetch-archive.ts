@@ -1,5 +1,6 @@
 /**
- * Copy archived vehicle positions from R2 (atlas-live) into the local Live data folder, one file per route and day,
+ * Copy archived vehicle positions from R2 (atlas-live, or the agency's own bucket in LIVE_ARCHIVE_BUCKET_BY_SLUG) into the
+ * local Live data folder (archive/ for the TTC, archive-<slug>/ for any other agency), one file per route and day,
  * for every route at once. Each snapshot holds the whole network, so keeping every route costs the same download as
  * keeping one (the old one-route fetcher in ../_live-data/fetch-archive.mts dropped the rest).
  *
@@ -7,6 +8,7 @@
  *   npx tsx scripts/live-fetch-archive.ts --from 2026-09-30 --to 2026-10-14
  *   npx tsx scripts/live-fetch-archive.ts --days 8 --out <dir> [--routes 501,503] [--prune]
  *
+ * Timezone and service-day end come from the agency (shared/liveAgencyConfig.ts); the TTC's are used below as the example.
  * --days N (a bare number) means the last N Toronto service dates before today. Archive folders are UTC dates and a
  * service date runs to 4 a.m. Toronto the next morning (past midnight UTC), so this fetches the UTC folders from N
  * days ago up to today; today's folder is cut at the end of yesterday's service and never marked done, so the next
@@ -27,43 +29,42 @@ import { resolve } from 'path';
 import { createHash } from 'crypto';
 import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { liveArchiveClient } from '../shared/liveArchive';
+import { localDate, localServiceStart } from '../shared/liveAgencyConfig';
+import { loadLiveAgencyConfig } from './live-agency-config';
 import { mapWithConcurrency } from '../local-api/concurrency';
 
-const BUCKET = 'atlas-live';
-
-/** Toronto calendar date (YYYY-MM-DD) at an instant. */
+/** Toronto calendar date (YYYY-MM-DD) at an instant (the TTC default of localDate). */
 export function torontoDate(ms: number): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
+  return localDate(ms, 'America/Toronto');
 }
 
 const addDays = (day: string, n: number) => new Date(Date.parse(`${day}T12:00:00Z`) + n * 86400_000).toISOString().slice(0, 10);
 
 /** Epoch seconds of 4 a.m. Toronto on a date, the end of the previous service date (the analysis's day boundary). */
 export function torontoServiceStart(day: string): number {
-  // 4 a.m. Toronto is 08:00 or 09:00 UTC; find the hour whose Toronto wall clock reads 04 on that date.
-  for (const utcHour of [8, 9]) {
-    const t = Date.parse(`${day}T0${utcHour}:00:00Z`);
-    const hour = new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Toronto', hour: '2-digit', hourCycle: 'h23' }).format(t);
-    if (hour === '04' && torontoDate(t) === day) return t / 1000;
-  }
-  throw new Error(`no 4 a.m. Toronto on ${day}`);
+  return localServiceStart(day, 'America/Toronto', 4);
 }
 
+/** Where a service date ends, in the agency's own time (TTC: 4 a.m. Toronto). */
+export interface ServiceClock { timeZone: string; serviceDayEndHour: number }
+const TORONTO_CLOCK: ServiceClock = { timeZone: 'America/Toronto', serviceDayEndHour: 4 };
+
 /**
- * The UTC archive folders that cover the last `n` Toronto service dates before the Toronto date of `nowMs`: from n days
- * back to today. The last one (today) is still filling, so it carries a cut: keep snapshots before 4 a.m. Toronto today.
+ * The UTC archive folders that cover the last `n` local service dates before the local date of `nowMs`: from n days
+ * back to today. The last one (today) is still filling, so it carries a cut: keep snapshots before the end of
+ * yesterday's service (4 a.m. Toronto for the TTC).
  */
-export function serviceWindowFolders(n: number, nowMs: number): { day: string; cutBefore: number | null }[] {
-  const today = torontoDate(nowMs);
+export function serviceWindowFolders(n: number, nowMs: number, clock: ServiceClock = TORONTO_CLOCK): { day: string; cutBefore: number | null }[] {
+  const today = localDate(nowMs, clock.timeZone);
   const out: { day: string; cutBefore: number | null }[] = [];
   for (let i = n; i >= 1; i--) out.push({ day: addDays(today, -i), cutBefore: null });
-  out.push({ day: today, cutBefore: torontoServiceStart(today) });
+  out.push({ day: today, cutBefore: localServiceStart(today, clock.timeZone, clock.serviceDayEndHour) });
   return out;
 }
 
 /** Dates from --days, or every date from --from to --to (inclusive). */
-export function datesFromArgs(args: Record<string, string | undefined>): string[] {
-  if (args.days && /^\d+$/.test(args.days)) return serviceWindowFolders(Number(args.days), Date.now()).map(f => f.day);
+export function datesFromArgs(args: Record<string, string | undefined>, clock: ServiceClock = TORONTO_CLOCK): string[] {
+  if (args.days && /^\d+$/.test(args.days)) return serviceWindowFolders(Number(args.days), Date.now(), clock).map(f => f.day);
   if (args.days) return args.days.split(',').map(d => d.trim()).filter(Boolean);
   if (!args.from || !args.to) return [];
   const out: string[] = [];
@@ -125,9 +126,11 @@ async function main() {
   const args: Record<string, string | undefined> = {};
   for (let i = 0; i < argv.length; i++) if (argv[i].startsWith('--')) args[argv[i].slice(2)] = argv[i + 1]?.startsWith('--') || argv[i + 1] == null ? 'true' : argv[++i];
   const agency = args.agency ?? 'ttc';
+  const live = loadLiveAgencyConfig(agency);
+  const BUCKET = live.bucket;
   const now = Date.now();
   const windowed = !!args.days && /^\d+$/.test(args.days);
-  const folders = windowed ? serviceWindowFolders(Number(args.days), now) : datesFromArgs(args).map(day => ({ day, cutBefore: null as number | null }));
+  const folders = windowed ? serviceWindowFolders(Number(args.days), now, live) : datesFromArgs(args, live).map(day => ({ day, cutBefore: null as number | null }));
   const days = folders.map(f => f.day);
   if (!days.length) { console.error('live-fetch-archive: give --days d1,d2 or --from d --to d'); process.exit(1); }
   const only = !args.routes || args.routes === 'all' ? null : new Set(args.routes.split(','));
@@ -135,7 +138,9 @@ async function main() {
   const concurrency = Number(args.concurrency ?? 12);
   const client = liveArchiveClient();
   if (!client) { console.error('live-fetch-archive: no R2 keys in .env.local'); process.exit(1); }
-  const dir = args.out ? resolve(args.out) : resolve(process.env.LIVE_DATA ?? '../_live-data', 'archive');
+  // Each agency gets its own folder: route numbers repeat across agencies (Kingston has a 501 too), and the analysis reads
+  // every file in the folder to find feed outages. The TTC keeps the folder it always used.
+  const dir = args.out ? resolve(args.out) : resolve(process.env.LIVE_DATA ?? '../_live-data', agency === 'ttc' ? 'archive' : `archive-${agency}`);
   mkdirSync(dir, { recursive: true });
   const routeSetTag = only ? createHash('sha1').update([...only].sort().join(',')).digest('hex').slice(0, 8) : 'all';
   const todayUtc = new Date(now).toISOString().slice(0, 10);
@@ -161,7 +166,7 @@ async function main() {
     const keys: string[] = [];
     let token: string | undefined;
     do {
-      const r = await client.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: `positions/${agency}/${day}/`, ContinuationToken: token }));
+      const r = await client.send(new ListObjectsV2Command({ Bucket: BUCKET, Prefix: live.positionsPrefix(day), ContinuationToken: token }));
       for (const o of r.Contents ?? []) keys.push(o.Key!);
       token = r.IsTruncated ? r.NextContinuationToken : undefined;
     } while (token);
@@ -186,7 +191,7 @@ async function main() {
     // Only a finished UTC day is marked done; a cut or still-filling folder is fetched again next time.
     const complete = cutBefore == null && day < todayUtc && failed === 0;
     if (complete) writeFileSync(marker, new Date().toISOString());
-    const note = failed ? `, ${failed} snapshots failed (day not marked done)` : cutBefore != null ? ' (cut at 4 a.m. Toronto, not marked done)' : '';
+    const note = failed ? `, ${failed} snapshots failed (day not marked done)` : cutBefore != null ? ` (cut at ${live.serviceDayEndHour}:00 ${live.timeZone}, not marked done)` : '';
     console.log(day, keys.length, 'snapshots,', lines.size, 'routes', note, `${Math.round((Date.now() - started) / 1000)}s`);
     report.push({ day, snapshots: keys.length, failed, skipped: false, cut: cutBefore != null });
   }

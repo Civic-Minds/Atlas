@@ -6,6 +6,9 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route's daytime or evening pattern is no longer hidden by another that runs at other hours**: OC Transpo 24 on Sundays showed only its late "Blair" trips, and 35 on weekdays lost its peak trips to Avalon ([#1549](https://github.com/Civic-Minds/Atlas/issues/1549))
+- **Routes keep a day whose trips run a different pattern from the rest of the week**: Medicine Hat 30 on weekdays, DRT 407 to Raleigh on weekends, GRT 203 to Cambridge Centre on weekdays, Kingston 6 and Space Coast 29 on weekends had no row for that day, because the shapes were chosen from the whole week's trips and that day's own pattern lost ([#1543](https://github.com/Civic-Minds/Atlas/issues/1543))
+- **Loop routes in feeds without directions get their frequency back**: Kingston 2 and 19, Cornwall 1 and 4 and Medicine Hat 30 on weekends had no figure on the map, because a loop the feed also runs in two halves was split into two fake directions ([#1542](https://github.com/Civic-Minds/Atlas/issues/1542), [#1539](https://github.com/Civic-Minds/Atlas/issues/1539))
 - **Links to the map on pages now read "Try Atlas"**: the For Transit Planners and not-found pages had said "Open the map" or "Open the Atlas map"
 - **The For Transit Planners page ends with one Request a demo button** that emails us, in place of the Get in Touch section, so planners have one clear next step
 - **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
@@ -29,7 +32,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Trains that run in pairs read the real wait at every stop**: when one train of a pair fell just past a time-of-day edge, a stop read the lone in-between gap instead of the long wait between pairs ([#1515](https://github.com/Civic-Minds/Atlas/issues/1515))
 - **Every page has one name, and titles are in title case**: "Docs" and "What’s New" read the same on every link, heading and browser tab; page and section headings and tabs use title case; tabs share one "Page | Transit Atlas" format; link previews say "Transit Atlas"; and the map’s What’s New button shows a dot until the newest release is opened
 - **Research pages open with their title**: the tiny "Atlas research" line above it is gone
-- **A "For Transit Planners" page explains what Atlas shows planners and where its data comes from**: so planners and agency staff get one page to start from
+- **A "For Transit Planners" page explains what Atlas shows planners and where its data comes from (local only for now)**: so planners and agency staff get one page to start from
 - **Your location stays private after "locate me"**: the map address keeps only as much position as the zoom needs (about 1 km to 11 m instead of 1 m), and page analytics, the feedback email and issue reports leave the map position out entirely ([#1519](https://github.com/Civic-Minds/Atlas/issues/1519))
 - **No more Google Fonts**: Atlas serves its Inter font itself, so loading a page no longer sends your address to Google ([#1520](https://github.com/Civic-Minds/Atlas/issues/1520))
 - **Agency and area pages say "area" for a metro area**: an agency page reads "Calgary, Alberta" with both linked, an area page links its states or provinces, and "region" now means only a state or province

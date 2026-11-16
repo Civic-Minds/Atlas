@@ -42,6 +42,51 @@ describe('buildShapeSelectionContext', () => {
   });
 });
 
+describe('phase 1 shape filter by day type (CIV-1718, #1543)', () => {
+  const line = (id: string, km: number) => ({ id, points: [[43, -79], [43 + km / 111, -79]] as [number, number][] });
+  const route: GtfsRoute = { route_id: 'r30', route_short_name: '30', route_type: '3' };
+  const byDay = new Map([
+    ['Weekday', new Set(['wd'])], ['Saturday', new Set(['sat'])], ['Sunday', new Set(['sun'])],
+  ] as const);
+  const build = (trips: object[], shapes: { id: string; points: [number, number][] }[]) => buildShapeSelectionContext(
+    { agencies: [], routes: [route], trips, stops: [], stopTimes: [], calendar: [], calendarDates: [], shapes } as unknown as GtfsData,
+    new Map([['r30', route]]), new Set(['wd', 'sat', 'sun']), byDay,
+  );
+  const trips = (n: number, service: string, shapeId: string) => Array.from({ length: n }, (_, i) => (
+    { route_id: 'r30', service_id: service, trip_id: `${service}-${shapeId}-${i}`, trip_headsign: 'Loop', direction_id: '0', shape_id: shapeId }));
+
+  it("keeps a weekday-only loop that loses the all-days count to a weekend half (Medicine Hat 30)", () => {
+    const ctx = build([...trips(8, 'wd', 'loop'), ...trips(15, 'sat', 'half'), ...trips(15, 'sun', 'half')], [line('loop', 10), line('half', 5)]);
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['half', 'loop']));
+    expect(ctx.shapeFilterForPhase1.get('r30::0')).toEqual(new Set(['half', 'loop']));
+  });
+
+  it('leaves a day split between two legs as before (Barrie 8A Sunday)', () => {
+    const ctx = build(
+      [...trips(20, 'wd', 'main'), ...trips(13, 'sun', 'leg-a'), ...trips(13, 'sun', 'leg-b')],
+      [line('main', 30), line('leg-a', 10), line('leg-b', 20)],
+    );
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
+  });
+
+  it('lists the shapes a headsign gets only from a day pick (CIV-1720)', () => {
+    const hs = (n: number, service: string, shapeId: string, headsign: string) => trips(n, service, shapeId)
+      .map(t => ({ ...t, trip_id: `${t.trip_id}-${headsign}`, trip_headsign: headsign }));
+    const ctx = build(
+      [...hs(20, 'wd', 'main', 'Loop'), ...hs(10, 'sun', 'main', 'Loop'), ...hs(10, 'wd', 'b-main', 'Branch'), ...hs(5, 'sun', 'b-short', 'Branch')],
+      [line('main', 10), line('b-main', 10), line('b-short', 4)],
+    );
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Branch')).toEqual(new Set(['b-main', 'b-short']));
+    expect(ctx.dayPickShapes.get('r30::0::Branch')).toEqual(new Set(['b-short']));
+    expect(ctx.dayPickShapes.has('r30::0::Loop')).toBe(false);
+  });
+
+  it('still drops a short turn on a day the main shape serves', () => {
+    const ctx = build([...trips(20, 'wd', 'main'), ...trips(5, 'wd', 'short'), ...trips(10, 'sat', 'main')], [line('main', 10), line('short', 5)]);
+    expect(ctx.shapeFilterForPhase1.get('r30::0::Loop')).toEqual(new Set(['main']));
+  });
+});
+
 describe('annotateShortTurnVariants', () => {
   it('surfaces short-turn variants for direction 1, not just direction 0 (#470)', () => {
     // Both directions have the same shape: a dominant 80-trip shape plus a

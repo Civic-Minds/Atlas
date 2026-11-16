@@ -101,7 +101,8 @@ ReactDOM.createRoot(rootElement).render(
           <Route path={TERMS_PATH} element={<LegalPage document="terms" />} />
           <Route path={PRIVACY_PATH} element={<LegalPage document="privacy" />} />
           <Route path={DOCS_PATH} element={<AboutDocsPage />} />
-          <Route path={PLANNERS_PATH} element={<PlannersPage />} />
+          {/* Local only (CIV-1704): FEATURES.plannersLink, docs/FEATURE_FLAGS.md. */}
+          {FEATURES.plannersLink && <Route path={PLANNERS_PATH} element={<PlannersPage />} />}
           <Route path={ABOUT_PATH} element={<AboutPage />} />
           {/* On in every build; beta-tagged entries still show only on beta. */}
           <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />

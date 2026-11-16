@@ -22,7 +22,7 @@ export { SITE_NAME } from './pageNames';
 /** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
 export const HOME_TITLE = `${SITE_NAME}: Scheduled Frequency Map`;
 
-export type SeoGate = 'researchApps' | 'live' | 'history';
+export type SeoGate = 'researchApps' | 'live' | 'history' | 'planners';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 
 /**
@@ -98,13 +98,13 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    // CIV-1320: title and description are the page's own words.
+    // CIV-1320: title and description are the page's own words. Local only (CIV-1704): not indexed or in the sitemap.
     path: PLANNERS_PATH,
     title: tabTitle(PAGE_NAMES.planners),
     description: 'Atlas shows how often transit really runs, across every agency in a region, on one map.',
-    indexable: true,
+    indexable: false,
+    gate: 'planners',
     prerender: true,
-    includeInSitemap: true,
   },
   {
     path: PRIVACY_PATH,

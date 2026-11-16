@@ -5,6 +5,10 @@ import { PageTitle } from './components/ui/PageTitle';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
+import { FEATURES } from '../shared/config';
+import { LIVE_VEHICLES_TITLE, OPEN_LIVE_LABEL } from '../shared/liveWording';
+import { LIVE_PATH } from '../shared/pagePaths';
+import { titleCase } from '../shared/titleCase';
 import { MAP_LINK, REQUEST_DEMO_LABEL } from './content/noticeCopy';
 
 /**
@@ -116,6 +120,11 @@ export default function PlannersPage() {
             <li><strong className={STRONG}>Share links</strong> keep the view: the place, frequency tier, day, time of day, agencies and any open route or stop.</li>
             <li><strong className={STRONG}>Map images</strong> export with a source line, ready for a slide deck or a report.</li>
           </ul>
+        </Feature>
+        {/* CIV-1705: the Live card. No picture yet; its text is a placeholder until Ryan gives the words. */}
+        <Feature title={titleCase(LIVE_VEHICLES_TITLE)} color={color(4)} pictures={null}>
+          <p>[Placeholder, CIV-1705: Ryan’s words for the Live card]</p>
+          {FEATURES.live && <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink>}
         </Feature>
       </div>
 

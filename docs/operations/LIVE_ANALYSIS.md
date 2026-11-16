@@ -30,6 +30,13 @@ every stored surface zip the window needs into `gtfs/candidates/surface-feeds/`)
 its timetable below 90%, when another stored timetable matches a day better than the one chosen, or when the fetch could not
 read more than 2% of a day's snapshots.
 
+Atlas Studio agencies (Kingston, CIV-1686) have their own job in the same workflow, `studio-build`, which is off (`if: ${{ false }}`)
+until about 2026-12-28, when Kingston has enough recorded days. It never publishes: Studio is local only (DECISIONS, 2026-11-15).
+It fetches the agency's positions (`live-fetch-archive.ts --agency`), takes each service date's timetable from the agency's own
+archived static GTFS (`live-gtfs-for-window.ts --agency`, `gtfs/archive/<slug>/`), analyses every route in its archive
+(`live-analyze.sh all --agency <slug>`) and writes a time-loss report per route. The same steps run locally with those flags.
+Before it is switched on, decide where its output may go: this repository is public, so run artifacts and logs are not private.
+
 The weekly schedule is in the file, off. Before it is turned on (a scheduled run publishes with nobody looking):
 
 - an upload that fails part-way should put the saved files back by itself, or upload to a new prefix and switch once;
