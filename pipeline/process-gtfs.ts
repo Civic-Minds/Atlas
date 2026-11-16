@@ -25,7 +25,7 @@ import { resolve, dirname } from 'path';
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
-import { loadFareOverrides } from './fareOverrides.js';
+import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { bumpPublicDataVersion } from './dataVersion.js';
 import {
   formatOverrideResolvedLog,
@@ -199,7 +199,7 @@ async function main() {
   // fare-overrides.json takes precedence over legacy index.json fare field; a failed read
   // throws instead of silently publishing the legacy fare (#1367).
   const fareOverrides = await loadFareOverrides();
-  if (fareOverrides[slug]?.adult != null) manualBaseFare = fareOverrides[slug].adult;
+  manualBaseFare = manualBaseFareFor(fareOverrides, slug, manualBaseFare);
 
   // Supplemental feeds (e.g. a separate rail zip) always come from the agency's
   // configured URLs; any failure aborts rather than publishing a main-only artifact.

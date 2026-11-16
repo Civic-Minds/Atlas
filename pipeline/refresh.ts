@@ -34,7 +34,7 @@ import { serviceWeekKey } from './serviceWeekKey.js';
 import { buildAgencyIndex } from './agencyIndex.js';
 import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
-import { loadFareOverrides } from './fareOverrides.js';
+import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
 import { downloadFeed, feedSetSha256, peekFeedInfo, pickFeedSource, zipContentKey } from './feedPeek.js';
 import { runWithConcurrency, todayUtcYmd } from './utils.js';
@@ -773,7 +773,7 @@ async function main() {
           return;
         }
       }
-      const result = await refreshAgency(agency, fareOverrides[agency.slug]?.adult ?? agency.fare, logger, allNightServiceRoutes);
+      const result = await refreshAgency(agency, manualBaseFareFor(fareOverrides, agency.slug, agency.fare), logger, allNightServiceRoutes);
       const summary = result.summary;
       if (result.processed) refreshedNightServiceAgencySlugs.add(agency.slug);
       if (result.stale) stale++;
