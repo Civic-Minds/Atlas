@@ -42,7 +42,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 
 - Every count, percent and decimal figure is written by `shared/numberText.ts`. CIV-1587. (checked)
 - Counts have a comma every three digits, the same in every browser language: "1,234 trips" (`countText`).
-- A count in prose that says "about" is rounded down to the nearest 10, never up: "about 530 transit agencies" for 532 (`aboutCountText`).
+- How many agencies Atlas covers is the exact count, never "about" (Ryan, CIV-1724: "it is exactly that many"): "Atlas covers 532 transit agencies".
   - How many agencies and which countries Atlas covers come from `shared/atlasCoverage.ts`, never typed by hand. CIV-1724. (checked)
 - A share is a whole percent: "12%" (`percentText`). (checked)
 - Service delivered is to a tenth of a percent, rounded down, always one decimal: "99.0%", "100%" (`percentTenthText`, #1472).
