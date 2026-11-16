@@ -1,14 +1,11 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('live report refresh workflow contract', () => {
   const workflow = readFileSync(resolve('.github/workflows/live-report-refresh.yml'), 'utf8');
   const buildJob = workflow.slice(workflow.indexOf('\n  build:'), workflow.indexOf('\n  publish:'));
-  // The publish job ends where the Studio job's banner starts.
-  const studioStart = workflow.lastIndexOf('\n  # ---', workflow.indexOf('\n  # Atlas Studio agencies'));
-  const publishJob = workflow.slice(workflow.indexOf('\n  publish:'), studioStart);
-  const studioJob = workflow.slice(workflow.indexOf('\n  studio-build:'));
+  const publishJob = workflow.slice(workflow.indexOf('\n  publish:'));
 
   it('runs daily off the hour (CIV-1690), and a manual run does not publish unless asked', () => {
     expect(workflow).toContain('  workflow_dispatch:');
@@ -92,31 +89,24 @@ describe('live report refresh workflow contract', () => {
     }
   });
 
-  it('keeps Studio agencies (Kingston, CIV-1686) off, build-only and away from the public bucket', () => {
-    expect(workflow.indexOf('\n  studio-build:')).toBeGreaterThan(workflow.indexOf('\n  publish:'));
-    // Off: one literal switch, flipped by hand once there is enough data and a private destination.
-    expect(studioJob).toMatch(/^\n  studio-build:\n(\s+#.*\n)+    if: \$\{\{ false \}\}\n/);
-    expect(studioJob).toContain('agency: [kingston]');
-    expect(studioJob).not.toContain('needs:');
-    // Never published: no publish step, no write keys, no upload flag, no public files.
-    expect(studioJob).not.toContain('live-publish');
-    expect(studioJob).not.toContain('secrets.R2_ACCESS_KEY_ID');
-    expect(studioJob).not.toContain('secrets.R2_SECRET_ACCESS_KEY');
-    expect(studioJob).not.toMatch(/--upload/);
-    expect(studioJob).not.toContain('atlas/live/');
-    expect(studioJob).toContain('R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}');
-    expect(studioJob.match(/uses: actions\/checkout@/g)).toHaveLength(1);
-    expect(studioJob).toMatch(/uses: actions\/checkout@v\d+\n\s+with:\n\s+persist-credentials: false/);
-    // The agency's own folders and timetable, every route, then the time-loss report.
-    const fetch = studioJob.indexOf('scripts/live-fetch-archive.ts --agency "$AGENCY" --days 15');
-    const gtfs = studioJob.indexOf('scripts/live-gtfs-for-window.ts --agency "$AGENCY" --days 15');
-    const analyse = studioJob.indexOf('bash scripts/live-analyze.sh all --agency "$AGENCY" --days 15');
-    const timeLoss = studioJob.indexOf('scripts/live-time-loss-report.ts');
+  it('builds no Studio agency: Kingston’s report refreshes on Ryan’s Mac only (CIV-1716)', () => {
+    // The repository is public, so a GitHub run's files and logs would make the Studio report public.
+    const dir = resolve('.github/workflows');
+    for (const name of readdirSync(dir)) {
+      const text = readFileSync(join(dir, name), 'utf8');
+      expect([name, /--agency|kingston|studio-build/i.test(text.replace(/^\s*#.*$/gm, ''))]).toEqual([name, false]);
+    }
+    const local = readFileSync(resolve('scripts/studio-report.sh'), 'utf8');
+    expect(JSON.parse(readFileSync(resolve('package.json'), 'utf8')).scripts['studio:report']).toBe('bash scripts/studio-report.sh');
+    // Read only: no publish step, no upload flag, no public files.
+    expect(local).not.toMatch(/live-publish|--upload|atlas\/live\//);
+    const fetch = local.indexOf('scripts/live-fetch-archive.ts --agency');
+    const gtfs = local.indexOf('scripts/live-gtfs-for-window.ts --agency');
+    const analyse = local.indexOf('scripts/live-analyze.sh all --agency');
+    const timeLoss = local.indexOf('scripts/live-time-loss-report.ts');
     expect(fetch).toBeGreaterThan(0);
     expect(gtfs).toBeGreaterThan(fetch);
     expect(analyse).toBeGreaterThan(gtfs);
     expect(timeLoss).toBeGreaterThan(analyse);
-    // Its own cache, so the TTC cache key never holds another agency's positions.
-    expect(studioJob).toContain('key: live-studio-archive-${{ matrix.agency }}-');
   });
 });

@@ -24,6 +24,11 @@ describe('About page (CIV-1206 D)', () => {
     for (const img of map) expect(img).toHaveAttribute('alt', '');
   });
 
+  it.runIf(FEATURES.researchApps)('links to the research as “Explore Research” (CIV-1780)', () => {
+    render(<AboutPage />);
+    expect(screen.getByRole('link', { name: 'Explore Research' })).toBeInTheDocument();
+  });
+
   it.runIf(FEATURES.researchApps)('lists the newest research as story tiles in a region named by its heading', () => {
     render(<AboutPage />);
     const row = screen.getByRole('region', { name: 'Explore Our Research' });
