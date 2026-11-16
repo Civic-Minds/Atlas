@@ -10,5 +10,11 @@ ARCHIVE_SHARD = "ttc-positions"
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
+# TTC vehicle positions every minute, kept 30 days by atlas-live's lifecycle rule (Ryan, 2026-11-15).
+# This cron has run in Cloudflare since 2026-08-17; restored here so the repo matches it (CIV-1689).
+# The other four shards (ttc-trips, hamilton, stm, burlington-halifax) are paused: no [triggers].
+[triggers]
+crons = ["* * * * *"]
+
 [observability]
 enabled = true

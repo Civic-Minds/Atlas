@@ -23,7 +23,7 @@ import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
 import { PageTitle } from './components/ui/PageTitle';
 import EmptyPage from './components/ui/EmptyPage';
-import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, OPEN_MAP_LINK, VIEW_ON_MAP } from './content/noticeCopy';
+import { AREA_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, MAP_LINK, VIEW_ON_MAP } from './content/noticeCopy';
 import { agencyArticle } from '../shared/agencyArticle';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
@@ -55,7 +55,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
 
   if (!data) {
     return (
-      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{OPEN_MAP_LINK}</ArrowLink>} />
+      <EmptyPage title={AREA_PAGE_NOT_FOUND_TITLE} body={NO_FREQUENCY_PAGE_BODY} action={<ArrowLink href="/">{MAP_LINK}</ArrowLink>} />
     );
   }
 

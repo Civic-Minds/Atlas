@@ -9,6 +9,7 @@ import { FEATURES } from '../shared/config';
 import { LIVE_VEHICLES_TITLE, OPEN_LIVE_LABEL } from '../shared/liveWording';
 import { LIVE_PATH } from '../shared/pagePaths';
 import { titleCase } from '../shared/titleCase';
+import { MAP_LINK } from './content/noticeCopy';
 
 /**
  * "For Transit Planners" (CIV-1320). Titles are title case (DECISIONS.md, 2026-11-15); the rest is sentence case. Text is Ryan's OK'd draft, word for word ("wording is ok until i see the actual
@@ -75,7 +76,7 @@ export default function PlannersPage() {
           <p className={`mt-8 max-w-2xl text-lg leading-8 ${STRONG}`}>Atlas shows how often transit really runs, across every agency in a region, on one map.</p>
           <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Most transit maps show where routes go. Atlas shows headways and span of service: how often routes run, and when. It’s built for agency planners, consultants and city and regional staff who need to see service across a whole region, not one agency at a time.</p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <ArrowLink href="/">Open the map</ArrowLink>
+            <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           </div>
         </div>
         <ThemedPicture base={pic('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
@@ -142,7 +143,7 @@ export default function PlannersPage() {
 
       <TextSection title="Get in Touch">
         <p>Atlas is free to use. If you’re a planner and want to talk about how it could help with a study, or you’ve found something wrong in your region, email <Email />.</p>
-        <ArrowLink href="/">Open the map</ArrowLink>
+        <ArrowLink href="/">{MAP_LINK}</ArrowLink>
       </TextSection>
 
     </PageShell>

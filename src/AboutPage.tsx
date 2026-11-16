@@ -9,7 +9,7 @@ import { SURFACE } from './styles';
 import { newestResearch, type ResearchEntry } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
+import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -84,7 +84,7 @@ export default function AboutPage() {
             <PageTitle level="hero">Find the transit service that actually runs.</PageTitle>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <ArrowLink href="/">Try Atlas</ArrowLink>
+              <ArrowLink href="/">{MAP_LINK}</ArrowLink>
               {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">Explore research</a>}
             </div>
           </div>
