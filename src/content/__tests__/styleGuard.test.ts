@@ -61,8 +61,8 @@ const RULES: Rule[] = [
   { name: 'US spelling (write analysed, coloured, labelled, cancelled, neighbour, favourite, catalogue)', doc: 'TEXT.md', pattern: /\b(analyz(ed|es|ing)|[Cc]olored|[Cc]oloring|[Ll]abeled|[Ll]abeling|[Cc]anceled|[Nn]eighbors?|[Nn]eighborhoods?|[Ff]avorites?)\b|(?<=[a-z] )catalogs?(?= [a-z]|[.,])/, slip: "'Routes are analyzed by period'" },
   // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list.
   { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and/ },
-  // CIV-1610 (Ryan): "Docs" on links, "Documentation" as the title, each from one constant.
-  { name: 'the Docs page named by hand (use DOCS_PAGE_TITLE, from PAGE_NAMES)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Documentation</a>' },
+  // CIV-1697 (Ryan): "Docs" on links, heading and tab, from one constant.
+  { name: 'the Docs page named by hand (use DOCS_PAGE_TITLE, from PAGE_NAMES)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Docs</a>' },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
   // CIV-1613: lowercase and "all-day" too ("or else all day" slipped through); the Docs page says "across the day" (Ryan, CIV-1610).
   { name: '"All day" (the map has no All day option)', doc: 'TEXT.md', pattern: /\b[Aa]ll[-  ][Dd]ay\b(?![s-])/, slip: "'borrow an all-day average'" },

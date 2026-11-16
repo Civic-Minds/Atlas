@@ -60,11 +60,11 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
 - No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
 - Every page has one name, in `shared/pageNames.ts` (`PAGE_NAMES`): its heading, the header and footer links to it, back and close links, and the start of its browser tab all read it. Ryan, 2026-11-15. (checked)
-  - "Documentation" on every link to the Docs page and as its title (`DOCS_PAGE_TITLE`); it replaced CIV-1610's "Docs" link label. The URL stays /about/docs.
+  - "Docs" on every link to the Docs page, as its heading and in its tab (`DOCS_PAGE_TITLE`). CIV-1697 (Ryan, 2026-11-15: "Should we rename Documentation page back to Docs", then option 1, everywhere) reversed the page-names refactor's "Documentation". The URL stays /about/docs.
   - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.
   - The footer's Atlas column links "About" (link names are one word); the page is "About Atlas", as are the map's About panel and its buttons. The legal links read "Terms" and "Privacy"; the pages are "Terms of Service" and "Privacy Policy".
   - A research story's words (card title, text and link, page heading and intro, tab, preview description, share image alt) are one entry in `shared/researchStories.ts`; nothing else types them. Ryan, CIV-1629. (checked: `researchStories.test.ts`)
-  - Browser tabs: "<page name> | Transit Atlas", with an optional detail after the name ("Documentation: Data, Frequency and Methods | Transit Atlas"), at most 60 characters: the detail goes first, then the brand (`tabTitle`). Only the home page leads with the brand ("Transit Atlas: Scheduled Frequency Map"). Link previews name the site "Transit Atlas".
+  - Browser tabs: "<page name> | Transit Atlas", with an optional detail after the name ("Docs: Data, Frequency and Methods | Transit Atlas"), at most 60 characters: the detail goes first, then the brand (`tabTitle`). Only the home page leads with the brand ("Transit Atlas: Scheduled Frequency Map"). Link previews name the site "Transit Atlas".
 - No transit or technical jargon in labels, buttons or statuses.
 - "Part-time", not "Time-limited", for service that runs part of the day. CIV-211, #933. (checked)
 - "Irregular" for a period with no regular cadence where the route still runs. CIV-1238.

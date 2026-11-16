@@ -13,7 +13,7 @@ describe('applySeoToDocument', () => {
 
   it('writes title, description, canonical and og:url for a route', () => {
     applySeoToDocument(document, resolveSeo('/about/docs', PUBLIC));
-    expect(document.title).toBe('Documentation: Data, Frequency and Methods | Transit Atlas');
+    expect(document.title).toBe('Docs: Data, Frequency and Methods | Transit Atlas');
     expect(document.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe('https://www.transitatlas.fyi/about/docs');
     expect(document.querySelector('meta[property="og:url"]')?.getAttribute('content')).toBe('https://www.transitatlas.fyi/about/docs');
     expect(document.querySelector('meta[name="description"]')?.getAttribute('content')).toContain('frequency maps');

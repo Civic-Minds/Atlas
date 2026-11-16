@@ -52,7 +52,7 @@ describe('titles are title case', () => {
       expect(route.title.endsWith(` | ${SITE_NAME}`), route.title).toBe(true);
       expect(isTitleCase(route.title), route.title).toBe(true);
     }
-    expect(tabTitle('Documentation', 'Data, Frequency and Methods')).toBe('Documentation: Data, Frequency and Methods | Transit Atlas');
+    expect(tabTitle('Docs', 'Data, Frequency and Methods')).toBe('Docs: Data, Frequency and Methods | Transit Atlas');
     expect(tabTitle('A'.repeat(55))).toBe('A'.repeat(55));
   });
 

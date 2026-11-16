@@ -13,8 +13,8 @@ export const PAGE_NAMES = {
   /** The all-agencies page's heading and tab (CIV-1614: "area", not "region"). */
   agencyIndex: 'All Agencies and Areas',
   research: 'Research',
-  /** Ryan: "Documentation" on links too (it replaced CIV-1610's "Docs" link label). */
-  docs: 'Documentation',
+  /** CIV-1697 (Ryan, 2026-11-15): "Docs" on links, heading and tab, back from the page-names refactor's "Documentation". */
+  docs: 'Docs',
   /** The footer's one-word link to the About page (Ryan: link names are one word). */
   about: 'About',
   aboutPage: 'About Atlas',
@@ -35,7 +35,7 @@ export const TAB_TITLE_MAX = 60;
 
 /**
  * The one browser tab format: "<page name> | Transit Atlas", with an optional detail after the name
- * ("Documentation: Data, Frequency and Methods | Transit Atlas"). A title that would pass TAB_TITLE_MAX drops the detail,
+ * ("Docs: Data, Frequency and Methods | Transit Atlas"). A title that would pass TAB_TITLE_MAX drops the detail,
  * then the brand, never the page name. Only the home page leads with the brand.
  */
 export function tabTitle(name: string, detail?: string): string {
