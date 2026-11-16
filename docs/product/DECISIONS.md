@@ -409,6 +409,8 @@ that a search provider does not reorder its canonical results for every client.
 
 ### 2026-07-15 — Operational consumers own operational decisions
 
+Under review: Ryan, 2026-11-15, may be outdated ("'Atlas's decision log already says advice on day-to-day operations belongs in Bridge' is outdated" / "Potentially at least").
+
 Atlas provides live and historical transit context but does not own product-specific
 decisions such as dispatch recommendations, rider reroute choices, trip-prediction
 UX, or research instrumentation. Those belong to Bridge, Reroute, Transit Stats,
