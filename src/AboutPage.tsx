@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { featureTint } from './components/FeatureCard';
+import ThemedPicture from './components/ui/ThemedPicture';
 import { Clock, MapPin, Repeat } from 'lucide-react';
 import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
@@ -23,19 +25,6 @@ const QUESTIONS = [
   { title: 'When', body: 'See what still runs in the morning, evening or overnight.', Icon: Clock },
   { title: 'How often', body: 'Compare scheduled frequency without opening a schedule.', Icon: Repeat },
 ];
-
-/** A pale tint of a frequency colour on the page background: never a dark fill (docs/style/VISUAL.md). */
-const tint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
-
-/** A picture with a light and a dark version; CSS shows the current theme's (index.css, .theme-light-only). */
-function ThemedPicture({ base, ext, className }: { base: string; ext: string; className: string }) {
-  return (
-    <>
-      <img src={`${base}-light.${ext}`} alt="" className={`theme-light-only ${className}`} />
-      <img src={`${base}-dark.${ext}`} alt="" className={`theme-dark-only ${className}`} />
-    </>
-  );
-}
 
 /** A story tile: its share picture on top, then the research card's tag, title, description and link (as on /research). */
 function StoryTile({ entry, tilt }: { entry: ResearchEntry; tilt: number }) {
@@ -117,7 +106,7 @@ export default function AboutPage() {
             {QUESTIONS.map(({ title, body, Icon }, i) => {
               const color = tiers[i].color;
               return (
-                <div key={title} className="rounded-2xl p-6" style={{ background: tint(color) }}>
+                <div key={title} className="rounded-2xl p-6" style={{ background: featureTint(color) }}>
                   <Icon className="h-7 w-7" style={{ color }} aria-hidden="true" />
                   <h3 className="mt-5 text-2xl font-black tracking-tight">{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{body}</p>
