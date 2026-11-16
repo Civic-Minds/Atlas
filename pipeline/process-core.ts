@@ -1812,8 +1812,12 @@ export async function processGtfsBuffer(
   // so a variant that reaches the terminal by another road never lifts the tier for riders on
   // the outer stops it skips (camtran 13: 4 of 11 pooled trips skipped outer stops, outer third
   // 180 minutes between buses).
-  const branchPoolTrips = (hsKey: string, shapeStopIds: readonly string[], fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }): Map<string, Map<string, number>> => {
-    const cacheKey = `${hsKey}|${weekday ? `${weekday.name}|` : ''}${fullOuterThird ? 'outer|' : ''}${shapeStopIds.join(',')}`;
+  // #771: with skippable, a trip may also miss one stop of the last third when that stop is in
+  // the set (Pace 530 to Galena/Constitution: 8 of 15 weekday trips skip only Constitution
+  // House). The caller passes only stops the skipped-stop floor reads, so the skipped stop's
+  // own service still bounds the line.
+  const branchPoolTrips = (hsKey: string, shapeStopIds: readonly string[], fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }, skippable?: ReadonlySet<string>): Map<string, Map<string, number>> => {
+    const cacheKey = `${hsKey}|${weekday ? `${weekday.name}|` : ''}${fullOuterThird ? 'outer|' : ''}${skippable?.size ? `skip:${[...skippable].sort().join(',')}|` : ''}${shapeStopIds.join(',')}`;
     const hit = branchPoolCache.get(cacheKey);
     if (hit) return hit;
     if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
@@ -1841,23 +1845,26 @@ export async function processGtfsBuffer(
     const trips = new Map<string, Map<string, number>>();
     for (const [tid, byStop] of served) {
       if (byStop.size * 3 < shapeStops.size * 2) continue;
-      if (fullOuterThird && !outerThird.every(id => byStop.has(id))) continue;
+      if (fullOuterThird) {
+        const missed = outerThird.filter(id => !byStop.has(id));
+        if (missed.length > 1 || (missed.length === 1 && !skippable?.has(missed[0]))) continue;
+      }
       trips.set(tid, new Map([...byStop].map(([id, v]) => [id, v.mins])));
     }
     branchPoolCache.set(cacheKey, trips);
     return trips;
   };
   /** The pool's departure times at one drawn stop (one per trip that serves it). */
-  const branchPoolTimesAt = (hsKey: string, shapeStopIds: readonly string[], stopId: string, fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }): number[] => {
+  const branchPoolTimesAt = (hsKey: string, shapeStopIds: readonly string[], stopId: string, fullOuterThird = false, weekday?: { name: DayName; tripIds: Set<string> }, skippable?: ReadonlySet<string>): number[] => {
     const times: number[] = [];
-    for (const byStop of branchPoolTrips(hsKey, shapeStopIds, fullOuterThird, weekday).values()) {
+    for (const byStop of branchPoolTrips(hsKey, shapeStopIds, fullOuterThird, weekday, skippable).values()) {
       const mins = byStop.get(stopId);
       if (mins != null) times.push(mins);
     }
     return times;
   };
-  const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false): number[] =>
-    branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird);
+  const branchTerminalTimes = (hsKey: string, shapeStopIds: readonly string[], terminalId: string, fullOuterThird = false, skippable?: ReadonlySet<string>): number[] =>
+    branchPoolTimesAt(hsKey, shapeStopIds, terminalId, fullOuterThird, undefined, skippable);
 
   const pushUnique = (map: Map<string, Map<string, number[]>>, key: string, stopId: string, mins: number) => {
     let stopMap = map.get(key);
@@ -2896,7 +2903,40 @@ export async function processGtfsBuffer(
       if (railFeature || !featureHeadsign || !terminalId || coverageStops.length < 2) return null;
       if (feature.properties.serviceClass === 'irregular' || feature.properties.tier === 'span') return null;
       const own = new Set(metricStopMap.get(terminalId) ?? []).size;
-      const pool = branchTerminalTimes(`${shortName}::${dirId}::${day}::${featureHeadsign}`, coverageStops.map(p => p.stopId), terminalId, true);
+      const hsKey = `${shortName}::${dirId}::${day}::${featureHeadsign}`;
+      const coverageIds = coverageStops.map(p => p.stopId);
+      // #771: a trip that skips one last-third stop also counts when the skipped-stop floor
+      // (worstDrawnStopHw and the period floor) reads that stop: a drawn stop before the
+      // terminal and its drop-off-only tail, with an all-day reading of its own service. The
+      // line then never reads better than the skipped stop. Used only when every stop a pool
+      // trip skips is one the floor counts (served by fewer departures than the pool).
+      const floorStops = new Set(drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
+        .filter(id => id !== terminalId && stopHasReading(id) && !ownFallbackHw.has(id) && allStopHw[id] != null));
+      const strictPool = branchTerminalTimes(hsKey, coverageIds, terminalId, true);
+      let pool = strictPool;
+      if (floorStops.size > 0) {
+        const loose = branchPoolTrips(hsKey, coverageIds, true, undefined, floorStops);
+        const strict = branchPoolTrips(hsKey, coverageIds, true);
+        if (loose.size > strict.size) {
+          const loosePool = branchTerminalTimes(hsKey, coverageIds, terminalId, true, floorStops);
+          const outerThird = coverageIds.slice(Math.floor(coverageIds.length * 2 / 3));
+          const skipped = new Set<string>();
+          for (const [tid, byStop] of loose) {
+            if (strict.has(tid)) continue;
+            for (const id of outerThird) if (!byStop.has(id)) skipped.add(id);
+          }
+          const floored = new Set(servedByFewerTrips(loosePool));
+          // The period floor must read each skipped stop in every period the pool reads, or the
+          // pool's value would stand alone there (pace 241 to Cumberland, AM peak: the pool runs
+          // every 40 while Dee/Talcott, which two of its trips skip, waits 118 with no AM value).
+          const poolPeriods = computePeriodHeadways([...loosePool].sort((a, b) => a - b));
+          const periodCovered = (id: string, pk: PeriodKey) => thinPoolFallbackPeriodHw.get(id)?.get(pk) != null
+            || (!ownFallbackPeriodHw.get(id)?.has(pk) && allStopPeriodHw[id]?.[pk] != null);
+          const covered = (id: string) => floored.has(id)
+            && (Object.keys(PERIODS) as PeriodKey[]).every(pk => poolPeriods[pk] == null || periodCovered(id, pk));
+          if ([...skipped].every(covered)) pool = loosePool;
+        }
+      }
       const n = new Set(pool).size;
       if (n < MIN_POOLED_TIER_DEPARTURES || n <= own) return null;
       const sorted = [...pool].sort((a, b) => a - b);

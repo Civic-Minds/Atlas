@@ -1,0 +1,2 @@
+agency_id,route_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+50113,530,530,West Galena - Naperville,,3,https://www.pacebus.com/route/530,00539F,FFFFFF

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Routes whose trips skip one stop near the end no longer overstate their times of day**: [Pace 530](https://github.com/Civic-Minds/Atlas/issues/771) to Galena/Constitution read every 30 at midday and the evening rush, while Constitution House, which most trips skip, gets a bus about every 75
 - **The data pipeline stops instead of publishing old fares when it can't read the [fare list](https://github.com/Civic-Minds/Atlas/issues/1367)**: a blocked read had quietly fallen back to each agency's older fare
 - **A branch with a few scattered trips no longer sets a whole route's frequency**: [SEPTA 67](https://github.com/Civic-Minds/Atlas/issues/1533) northbound read every 169 on weekday evenings, from three trips to Philadelphia Mills, while buses on the main part of the route run every 25
 - **Routes with a [midday gap](https://github.com/Civic-Minds/Atlas/issues/1534) no longer read far slower than they run**: Fairfax 334 read every 180 for a bus every 30 at the evening rush, and LA Metro 108 to Mesmer / Major read every 40 where buses come at least every 21 at midday
