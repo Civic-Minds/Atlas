@@ -17,7 +17,7 @@ describe('headerModeTag', () => {
     const brand = readFileSync(resolve(__dirname, '../components/AtlasBrand.tsx'), 'utf8');
     expect(brand).not.toMatch(/import Tag\b/);
     expect(brand).not.toMatch(/<Tag\b/);
-    expect(brand).toMatch(/\{MODE_TAG && <span className=\{bylineText\}>\{MODE_TAG\}<\/span>\}/);
-    expect(brand).toMatch(/<span className=\{`\$\{bylineText\} [^`]*`\}>by Civic Minds<\/span>/);
+    // CIV-1692 v3: ?tag=1..5 picks one of five looks on the dev server while Ryan chooses; the pill stays gone.
+    expect(brand).toMatch(/by Civic Minds/);
   });
 });
