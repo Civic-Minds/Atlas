@@ -120,6 +120,11 @@ export interface Leg {
   departures: number;
   /** Departure times in the period, sorted. */
   starts: number[];
+  /**
+   * Departures per minute the schedule runs this leg at in the middle half of the period (where
+   * "scheduled now" is read), so a few trips at the period's edges add no bus. Set by periodPatterns.
+   */
+  ratePerMin: number;
   runningMin: number;
   /** Median scheduled layover after the leg; null when no run of it has a block link. */
   layoverMin: number | null;
@@ -159,6 +164,7 @@ function legsOf(runs: readonly TripRun[], links: ReadonlyMap<TripRun, RunLink>):
       variants: seqCount.size,
       departures: list.length,
       starts,
+      ratePerMin: 0,
       runningMin: median(list.map(r => r.end - r.start))!,
       layoverMin: median(layovers),
       layoverSamples: layovers.length,
@@ -424,6 +430,11 @@ export function periodPatterns(
   const mid = (window.start + window.end) / 2;
 
   const central = { start: window.start + minutes / 4, end: window.end - minutes / 4 };
+  const centralMinutes = central.end - central.start;
+  for (const leg of legs) {
+    const n = leg.starts.filter(t => t >= central.start && t < central.end).length;
+    leg.ratePerMin = n / centralMinutes;
+  }
   const centralHeadway = (pl: Leg[]): number | null => {
     const n = Math.max(...pl.map(l => l.starts.filter(t => t >= central.start && t < central.end).length));
     return n >= 2 ? (central.end - central.start) / n : null;
@@ -513,7 +524,7 @@ export function periodPatterns(
       scheduledVehicles: patterns.filter(p => routes.has(p.routeId)).reduce((s, p) => s + p.scheduledVehicles, 0),
       impliedVehicles: Math.ceil(patterns
         .filter(p => routes.has(p.routeId) && p.role !== 'partial')
-        .reduce((s, p) => s + cycleMin(p, { kind: 'schedule' }) / p.headwayMin, 0) - 1e-9),
+        .reduce((s, p) => s + needVehicles(p, { kind: 'schedule' }), 0) - 1e-9),
     };
   });
   for (const g of interlines) {
@@ -543,6 +554,25 @@ export function recoveryMin(p: Pattern, rule: Recovery): number | null {
 /** Cycle under a recovery rule; with no schedule layover the running time alone (a floor). */
 export function cycleMin(p: Pattern, rule: Recovery): number {
   return p.runningMin + (recoveryMin(p, rule) ?? 0);
+}
+
+/**
+ * Buses the pattern needs at the schedule's own frequency on each leg: the sum over legs of
+ * (running + recovery) x departures per minute. Equal to cycle / headway when both legs run equally
+ * often; lower when one leg runs less often because other routes' buses cover some return trips
+ * (Kingston 501/502: every 15 one way, every 30 back).
+ */
+export function needVehicles(p: Pattern, rule: Recovery): number {
+  return p.legs.reduce((sum, l) => {
+    const recovery = rule.kind === 'percent' ? (l.runningMin * rule.value) / 100 : rule.kind === 'minutes' ? rule.value : l.layoverMin ?? 0;
+    return sum + (l.runningMin + recovery) * l.ratePerMin;
+  }, 0);
+}
+
+/** Legs that run at different frequencies (more than 25% apart). */
+export function unevenLegs(p: Pattern): boolean {
+  const rates = p.legs.map(l => l.ratePerMin);
+  return rates.length > 1 && Math.min(...rates) < 0.75 * Math.max(...rates);
 }
 
 export interface TargetOptions {

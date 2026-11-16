@@ -30,8 +30,8 @@ import { resolve } from 'node:path';
 import { processGtfsBuffer, type ProcessOptions } from '../pipeline/process-core.js';
 import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { pickRepresentativeWeekday } from '../pipeline/representativeWeekday.js';
-import { tripRunsForDay, vehiclesForHeadway } from '../pipeline/vehiclesNeeded.js';
-import { cycleMin, parseRecovery, periodPatterns, recoveryMin, targetVehicles, type Places, type TargetOptions } from '../pipeline/vehiclePatterns.js';
+import { tripRunsForDay } from '../pipeline/vehiclesNeeded.js';
+import { cycleMin, needVehicles, unevenLegs, parseRecovery, periodPatterns, recoveryMin, targetVehicles, type Places, type TargetOptions } from '../pipeline/vehiclePatterns.js';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
 import { WEEKDAYS, type DayName, type GtfsData } from '../types/gtfs.js';
 
@@ -160,14 +160,15 @@ for (const period of periods) {
     let targetSum = 0;
     for (const p of patterns) {
       const cycle = cycleMin(p, recovery);
-      const at = vehiclesForHeadway(cycle, p.headwayMin);
+      const need = needVehicles(p, recovery);
+      const at = need > 0 ? Math.ceil(need - 1e-9) : null;
       const leg = p.legs[0];
       const ends = `${stopName.get(leg.firstStop) ?? leg.firstStop} - ${stopName.get(leg.lastStop) ?? leg.lastStop}`;
       const role = p.role + (p.relatedTo.length ? ` (${p.role === 'short turn' ? 'of' : 'with'} ${p.relatedTo.map(id => labelOf.get(id)).join(',')})` : '');
       const t = targets.find(x => x.id === p.id);
       sched += p.scheduledVehicles;
       if (p.role !== 'partial') {
-        implied += cycle / p.headwayMin;
+        implied += need;
         targetSum += t?.vehicles ?? 0;
       }
       patternRows.push([
@@ -185,7 +186,7 @@ for (const period of periods) {
         `${p.scheduledVehicles}${p.scheduledBasis === 'trips' ? ' (trips)' : ''}`,
         p.role === 'partial' ? '-' : String(at ?? '-'),
         ...(targetHeadway != null ? [t?.vehicles != null ? `${t.vehicles} @${fmt(t.headwayMin)}` : '-'] : []),
-        [...p.notes, ...(p.interlinedWith.length ? [`interlined with ${p.interlinedWith.map(nameOf).join('+')}`] : [])].join('; '),
+        [...p.notes, ...(unevenLegs(p) ? [`legs run at different frequencies (${p.legs.map(l => Math.round(l.ratePerMin * 60 * 10) / 10).join(' vs ')} per hour)`] : []), ...(p.interlinedWith.length ? [`interlined with ${p.interlinedWith.map(nameOf).join('+')}`] : [])].join('; '),
       ]);
     }
     const map = mapHeadway.get(routeId);
@@ -208,8 +209,8 @@ for (const period of periods) {
     for (const r of rows) console.log(line(r));
   };
   console.log(`\n${PERIOD_LABELS[period]}: patterns`);
-  print(['pattern', 'day', 'ends', 'role', 'paired by', 'round trips', 'hw', 'running', 'sched layover', 'recovery', 'cycle', 'scheduled now', 'implied at hw', ...(targetHeadway != null ? [`at target ${targetHeadway}`] : []), 'notes'], patternRows);
-  console.log(`\n${PERIOD_LABELS[period]}: routes (implied = sum of cycle / headway over regular patterns, rounded up once; pattern rows round each pattern up; partial trips counted in scheduled only)`);
+  print(['pattern', 'day', 'ends', 'role', 'paired by', 'round trips', 'hw', 'running', 'sched layover', 'recovery', 'cycle', 'scheduled now', 'implied at schedule', ...(targetHeadway != null ? [`at target ${targetHeadway}`] : []), 'notes'], patternRows);
+  console.log(`\n${PERIOD_LABELS[period]}: routes (implied = sum over regular patterns of each leg's (running + recovery) x its departures per minute, rounded up once; pattern rows round each pattern up; partial trips counted in scheduled only)`);
   print(['route', 'day', 'map hw', 'patterns', 'scheduled now', 'implied', ...(targetHeadway != null ? [`at target ${targetHeadway}`] : [])], routeRows);
   if (extra.length) console.log(`\n${extra.join('\n')}`);
 }

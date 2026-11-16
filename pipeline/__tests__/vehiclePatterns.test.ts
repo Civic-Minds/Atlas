@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { TripRun } from '../vehiclesNeeded.js';
-import { cycleMin, isInside, linkRuns, parseRecovery, periodPatterns, targetVehicles, type Places, type TargetOptions } from '../vehiclePatterns.js';
+import { cycleMin, isInside, needVehicles, unevenLegs, linkRuns, parseRecovery, periodPatterns, targetVehicles, type Places, type TargetOptions } from '../vehiclePatterns.js';
 
 const MIDDAY = { start: 9 * 60, end: 15 * 60 };
 
@@ -198,5 +198,30 @@ describe('interlined routes', () => {
     const r2 = result.patterns.find(p => p.routeId === '2')!;
     expect(cycleMin(r1, { kind: 'schedule' }) + cycleMin(r2, { kind: 'schedule' })).toBe(90);
     expect(r1.interlinedWith).toEqual(['2']);
+  });
+});
+
+describe('need at the schedule\'s own leg frequencies', () => {
+  it('counts a leg that runs half as often (others cover its return trips) at its own rate', () => {
+    // Out every 15 (25 min + 5 layover), back every 30 (25 min + 5 layover).
+    const runs: TripRun[] = [];
+    for (let t = 8 * 60, i = 0; t < 16 * 60; t += 15, i++) {
+      runs.push({ tripId: `o${i}`, routeId: 'R', directionId: '0', blockId: `k${i}`, firstStop: 'A', lastStop: 'B', start: t, end: t + 25 });
+      if (i % 2 === 0) runs.push({ tripId: `b${i}`, routeId: 'R', directionId: '1', blockId: `k${i}`, firstStop: 'B', lastStop: 'A', start: t + 30, end: t + 55 });
+      runs.push({ tripId: `x${i}`, routeId: 'X', directionId: '0', blockId: `k${i}`, firstStop: 'B', lastStop: 'A', start: t + (i % 2 ? 30 : 60), end: t + (i % 2 ? 55 : 85) });
+    }
+    const p = periodPatterns(runs, MIDDAY).patterns.find(q => q.routeId === 'R')!;
+    expect(cycleMin(p, { kind: 'schedule' }) / p.headwayMin).toBe(4);
+    expect(needVehicles(p, { kind: 'schedule' })).toBe(3);
+    expect(unevenLegs(p)).toBe(true);
+  });
+
+  it('adds nothing for a pattern with no departures in the middle of the period', () => {
+    const runs: TripRun[] = [
+      { tripId: '1', routeId: 'R', directionId: '0', blockId: 'K', firstStop: 'A', lastStop: 'B', start: 9 * 60 + 5, end: 9 * 60 + 30 },
+      { tripId: '2', routeId: 'R', directionId: '1', blockId: 'K', firstStop: 'B', lastStop: 'A', start: 9 * 60 + 35, end: 10 * 60 },
+    ];
+    const [p] = periodPatterns(runs, MIDDAY).patterns;
+    expect(needVehicles(p, { kind: 'schedule' })).toBe(0);
   });
 });
