@@ -113,7 +113,7 @@ export default function PlannersPage() {
       </div>
 
       <TextSection title="Where the Data Comes From">
-        <p>Atlas covers about {coverageAgenciesText()} transit agencies in {coverageCountriesText()}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
+        <p>Atlas covers {coverageAgenciesText()} transit agencies in {coverageCountriesText()}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.</p>
         {/* CIV-1724: About's Docs link, to the Docs section on where the data comes from and how it's checked. */}
         <ArrowLink href={`${DOCS_PATH}#data-flow`}>{READ_HOW_ATLAS_WORKS}</ArrowLink>
       </TextSection>

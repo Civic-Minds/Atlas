@@ -5,7 +5,6 @@ import summaries from './data/agency-pages.json';
 import coverage from './data/atlas-coverage.json';
 import { atlasCoverageBySite, buildAgencyIndexData } from './agencyIndex';
 import { coverageAgenciesText, coverageCountriesText } from './atlasCoverage';
-import { aboutCountText } from './numberText';
 import type { AgencyPageSummary } from './agencyPages';
 
 const agencies = (summaries as unknown as { agencies: AgencyPageSummary[] }).agencies;
@@ -22,10 +21,8 @@ describe('what Atlas covers (CIV-1724)', () => {
   });
 
   it('reads as prose', () => {
-    expect(aboutCountText(532)).toBe('530');
-    expect(aboutCountText(1238)).toBe('1,230');
-    expect(aboutCountText(7)).toBe('7');
-    expect(coverageAgenciesText({ agencies: 532, countries: [] })).toBe('530');
+    expect(coverageAgenciesText({ agencies: 532, countries: [] })).toBe('532');
+    expect(coverageAgenciesText({ agencies: 1238, countries: [] })).toBe('1,238');
     expect(coverageCountriesText({ agencies: 1, countries: ['Canada', 'United States'] })).toBe('Canada and the US');
     expect(coverageCountriesText({ agencies: 1, countries: ['Canada', 'France', 'United States'] })).toBe('Canada, France and the US');
   });
@@ -37,7 +34,7 @@ describe('what Atlas covers (CIV-1724)', () => {
       return /\.(tsx?|mjs|html)$/.test(e.name) && !/\.test\.tsx?$/.test(e.name) ? [p] : [];
     });
     const typed = [...files(join(ROOT, 'src')), ...files(join(ROOT, 'shared')), ...files(join(ROOT, 'api'))]
-      .filter(f => /\b(about|over|nearly|almost|more than) [0-9][0-9,]* (transit )?agencies\b/i.test(readFileSync(f, 'utf8')))
+      .filter(f => /\b(covers|about|over|nearly|almost|more than) [0-9][0-9,]* (transit )?agencies\b/i.test(readFileSync(f, 'utf8')))
       .map(f => relative(ROOT, f));
     expect(typed, 'use coverageAgenciesText() from shared/atlasCoverage.ts').toEqual([]);
   });

@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FEATURES } from '../../shared/config';
 import PlannersPage from '../PlannersPage';
+import coverage from '../../shared/data/atlas-coverage.json';
 
 describe('For Transit Planners page (CIV-1320)', () => {
   it('has the approved title and section headings', () => {
@@ -16,6 +17,12 @@ describe('For Transit Planners page (CIV-1320)', () => {
       'Where the Data Comes From',
       'Request a Demo',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
+  });
+
+  it('says exactly how many agencies Atlas covers, from the published data, and links to the Docs on it (CIV-1724)', () => {
+    render(<PlannersPage />);
+    expect(screen.getByText(new RegExp(`^Atlas covers ${coverage.public.agencies} transit agencies in Canada and the US\\.`))).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
   it('shows the map pictures from its own folder: the hero, then one 4:3 picture per feature card, light and dark, desktop and phone (CIV-1701)', () => {
