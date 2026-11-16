@@ -19,8 +19,7 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import type { LiveYesterday } from '../shared/liveYesterday';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, NOT_ENOUGH_YESTERDAY, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, againstLastWeekday, dayText } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE } from '../shared/liveWording';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, LIVE_WEEK_NOT_IN_FILE, liveDrawError } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
@@ -41,21 +40,6 @@ function Delta({ k }: { k: Kpi }) {
     </span>
   );
 }
-
-/** The Yesterday tiles: the same five figures for one day, against the same weekday a week before (CIV-278). */
-export function YesterdayTiles({ y }: { y: LiveYesterday }) {
-  if (!y.weekly.thisWeek.healthyDates.length) return <p className="mt-5 text-sm text-[var(--text-muted)]">{NOT_ENOUGH_YESTERDAY}</p>;
-  const ks = kpiTiles(y.weekly, y.daily).map(k => (k.delta ? { ...k, delta: { ...k.delta, text: againstLastWeekday(k.delta.text, y.compareDate), spoken: againstLastWeekday(k.delta.spoken, y.compareDate) } } : k));
-  // The comparison is named in the page subtitle ("Thursday, Oct 15, compared with Thursday, Oct 8"), not under the tiles.
-  return <KpiTiles tiles={ks} caption={y.weekly.comparable ? '' : NOT_ENOUGH_YESTERDAY} />;
-}
-
-/** The Yesterday view's late-by-hour, for Days. */
-export const yesterdayHours = (y: LiveYesterday) => ({
-  label: dayText(y.date),
-  late: y.weekly.thisWeek.late ? { ...y.weekly.thisWeek.late, days: 1 } : null,
-  hours: y.lateByHour.filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
-});
 
 /** The week tiles, shared with the full analysis page (LiveRoutePage) so both say the same thing the same way. */
 export function KpiRow({ v3 }: { v3: LiveV3 }) {
@@ -200,23 +184,21 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   );
 }
 
-export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false, yesterday = null }: {
+export default function LiveDashboardView({ v3, data, band, dir, uncertain, filters, toFull, lite = false }: {
   v3: LiveV3; data: DashboardBandData; band: DashboardBand; dir: number | null; uncertain: UncertainStart[];
   /** The direction and time-of-day pills: they sit below the week figures, above the parts they change. */
   filters: ReactNode;
   toFull: (hash: string) => void;
   /** The lite view: tiles, strip, late by hour and the Full analysis link only. */
   lite?: boolean;
-  /** The lite view's Yesterday figures, when the Yesterday pill is on. */
-  yesterday?: LiveYesterday | null;
 }) {
   const bad = liveDrawError;
   // The lite view (?view=lite), made to share: the week's tiles, the route strip, late by hour and a way into the rest.
   if (lite) return (
     <>
-      <ErrorBoundary label={bad('The week comparison')}>{yesterday ? <YesterdayTiles y={yesterday} /> : <KpiRow v3={v3} />}</ErrorBoundary>
+      <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={null} uncertain={uncertain} /></ErrorBoundary>
-      <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly oneDay={yesterday ? yesterdayHours(yesterday) : undefined} /></ErrorBoundary>
+      <ErrorBoundary label={bad(LATE_BY_HOUR_TITLE)}><LateByHourSection chart="spark" title={LATE_BY_HOUR_TITLE} v3={v3} data={data} band={band} dir={null} allOnly /></ErrorBoundary>
       <p className="mt-8"><ArrowLink href="?view=analysis" onClick={(e: React.MouseEvent) => { e.preventDefault(); toFull(''); }}>Full analysis</ArrowLink></p>
     </>
   );
