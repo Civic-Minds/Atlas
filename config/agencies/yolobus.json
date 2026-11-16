@@ -50,8 +50,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-16",
-    "scoredAt": "2026-11-16"
+    "checkedAt": "2026-11-16"
   },
   "feedRefreshStatus": "stale",
   "feedRefreshError": "all available feeds expired (latest 20260201)",

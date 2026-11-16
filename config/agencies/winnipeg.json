@@ -37,7 +37,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 1,
-      "featureCount": 329,
+      "featureCount": 332,
       "feedExpiry": "20261212",
       "routeCount": 72,
       "problemShapes": 0,
@@ -45,8 +45,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-16",
-    "scoredAt": "2026-11-16"
+    "checkedAt": "2026-11-16"
   },
   "timezone": "America/Winnipeg",
   "lastFeedSourceKind": "configured",
