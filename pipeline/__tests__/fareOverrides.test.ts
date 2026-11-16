@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { describe, expect, it } from 'vitest';
-import { FARE_OVERRIDES_KEY, loadFareOverrides } from '../fareOverrides.js';
+import { FARE_OVERRIDES_KEY, loadFareOverrides, manualBaseFareFor } from '../fareOverrides.js';
 
 const quiet = () => {};
 const reply = (status: number, body: string, headers: Record<string, string> = {}) =>
@@ -59,11 +59,32 @@ describe('loadFareOverrides (#1367)', () => {
     });
   });
 
-  it('refresh and process-gtfs no longer fetch the fare file from the public domain', () => {
-    for (const file of ['pipeline/refresh.ts', 'pipeline/process-gtfs.ts']) {
+  it('refresh, process-gtfs and the rebuild path read overrides the same way (#1535)', () => {
+    for (const file of ['pipeline/refresh.ts', 'pipeline/process-gtfs.ts', 'pipeline/reprocess-derived-artifacts.ts']) {
       const source = readFileSync(resolve(file), 'utf8');
       expect(source).not.toContain('/atlas/fare-overrides.json');
       expect(source).toContain('loadFareOverrides()');
+      expect(source).toContain('manualBaseFareFor(');
     }
+  });
+});
+
+describe('manualBaseFareFor (#1535)', () => {
+  const overrides = { stm: { adult: 3.75 }, translink: { adult: 2.85 }, empty: {} };
+
+  it('uses the override adult fare ahead of the legacy fare', () => {
+    expect(manualBaseFareFor(overrides, 'stm', undefined)).toBe(3.75);
+    expect(manualBaseFareFor(overrides, 'translink', 9)).toBe(2.85);
+  });
+
+  it('falls back to the legacy fare, then to no fare', () => {
+    expect(manualBaseFareFor(overrides, 'ttc', 3.3)).toBe(3.3);
+    expect(manualBaseFareFor(overrides, 'empty', 2)).toBe(2);
+    expect(manualBaseFareFor(overrides, 'ttc', null)).toBeUndefined();
+    expect(manualBaseFareFor({}, 'ttc')).toBeUndefined();
+  });
+
+  it('keeps a zero override (free agencies)', () => {
+    expect(manualBaseFareFor({ free: { adult: 0 } }, 'free', 2)).toBe(0);
   });
 });
