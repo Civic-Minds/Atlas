@@ -947,7 +947,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -1230,7 +1231,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -6854,7 +6856,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -7409,7 +7412,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7721,7 +7725,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -8435,7 +8440,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
@@ -9167,7 +9173,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -9642,7 +9649,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -15546,7 +15554,8 @@
           "mismatchRoutes": 3,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -21585,7 +21594,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -22785,12 +22795,13 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "feedRefreshStatus": "stale",
       "feedRefreshError": "GTFS validation failed (1 error(s))",
       "feedRefreshErrorAt": "20261116",
-      "feedRefreshRetryCount": 3,
+      "feedRefreshRetryCount": 4,
       "lastServiceWeek": "d4970b0b6d8e0112",
       "feedObtainedAt": "20260805",
       "lastFeedStart": "20260607"
@@ -23085,7 +23096,8 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -25427,7 +25439,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/Toronto",
       "feedRefreshStatus": "current",
@@ -25435,7 +25448,7 @@
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-737/latest.zip",
+      "lastFeedSourceUrl": "https://www.greatersudbury.ca/image/opendata/gtfs.zip",
       "lastPeekedExpiry": "20270416",
       "lastServiceWeek": "9f02cde3cc7bc895",
       "feedObtainedAt": "20261114",
@@ -27349,7 +27362,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-16"
+        "checkedAt": "2026-11-16",
+        "scoredAt": "2026-11-16"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",

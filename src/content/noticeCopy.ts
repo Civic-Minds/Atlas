@@ -215,9 +215,9 @@ export const SHARED_STRETCH_LABEL = 'Shared stretch';
 export const FREQUENCY_LABEL = 'Frequency';
 // The button at the end of the For Transit Planners page that emails us (CIV-1706); also the email's subject.
 export const REQUEST_DEMO_LABEL = 'Request a demo';
-// The Request a demo card's sentence (CIV-1706). [Placeholder: option 1 of the options for Ryan, built from the Studio
-// plan (CIV-1680); not his words yet.]
-export const REQUEST_DEMO_TEXT = '[Placeholder, CIV-1706] See your own agency’s schedule changes, where your routes lose time, and how many buses a frequency needs.';
+// The Request a demo card's text (CIV-1706). Ryan picked option 1 on 2026-11-16; split into two sentences so it matches the
+// other feature cards (CIV-1767, waiting on Ryan's OK).
+export const REQUEST_DEMO_TEXT = 'A demo uses your own agency’s schedules to show what changed and where your routes lose time. It also shows how many buses a frequency needs.';
 /**
  * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
  * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160

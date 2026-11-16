@@ -18,6 +18,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The footer has a Product column for For Planners (beta)**: the planners page no longer sits among Learn's reading links, and Studio will join it later
 - **The header says Beta on the beta site and Internal on a local copy**: so a screenshot or tab shows at a glance which Atlas it came from; the public site is unchanged
 - **The For Transit Planners page ends with a Request a demo card** that emails us, in place of the Get in Touch section, so planners have one clear next step
+- **The site header stays at the top while scrolling on every page**: the About, For Transit Planners and not-found pages had let it scroll away, unlike Docs and the research pages
+- **The footer has a Product column for For Planners (beta)**: the planners page no longer sits among Learn's reading links, and Studio will join it later
 - **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
 - **Rebuilds keep the fares Atlas sets by hand**: a full rebuild published STM, exo and TransLink routes with no fare instead of their set fares ([#1535](https://github.com/Civic-Minds/Atlas/issues/1535))
 - **Routes whose trips skip one stop near the end no longer overstate their times of day**: [Pace 530](https://github.com/Civic-Minds/Atlas/issues/771) to Galena/Constitution read every 30 at midday and the evening rush, while Constitution House, which most trips skip, gets a bus about every 75
