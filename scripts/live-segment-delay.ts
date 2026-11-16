@@ -1,10 +1,14 @@
 /**
- * Local-only: "where vehicles lose time" and headway adherence for one TTC
- * route, from archived vehicle positions (one JSONL per UTC day, see
- * Atlas-worktrees/_live-data) and the TTC "Surface Routes and Schedules for
- * BusTime" GTFS, whose trip IDs match the live feed.
+ * Local-only: "where vehicles lose time" and headway adherence for one route
+ * of an archived agency (TTC by default), from archived vehicle positions (one
+ * JSONL per UTC day, see Atlas-worktrees/_live-data) and a GTFS whose trip IDs
+ * match the live feed (for the TTC, the "Surface Routes and Schedules for
+ * BusTime" GTFS).
  *
- *   npx tsx scripts/live-segment-delay.ts --gtfs <dir> --archive <dir> --route 504 --out <file> [--days 7] [--obs-out <file>]
+ *   npx tsx scripts/live-segment-delay.ts [--agency ttc] --gtfs <dir> --archive <dir> --route 504 --out <file> [--days 7] [--obs-out <file>]
+ *
+ * --agency picks the timezone (config/agencies/<slug>.json), the service-day end and any agency-only places such as
+ * the TTC's carhouses (shared/liveAgencyConfig.ts). Keep each agency's archive in its own folder.
  *
  * Schema v3 (the `v3` block) adds the dashboard analysis over the last --days service dates (default 7): adherence, stops with
  * the most delay, where delays start, and where and why bunching forms. See docs/operations/LIVE_ANALYSIS.md.
@@ -28,6 +32,8 @@ import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCoun
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from '../pipeline/sharedStretch.js';
 import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
+import { loadLiveAgencyConfig } from './live-agency-config.js';
+import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 
 const args: Record<string, string> = {};
@@ -37,7 +43,9 @@ const FEED_ARG = String(args.gtfs ?? '').split(',').map(x => x.trim()).filter(Bo
 const ARCHIVE = args.archive;
 const ROUTE = args.route ?? '504';
 const OUT = args.out;
-const TZ = 'America/Toronto';
+const AGENCY = args.agency ?? 'ttc';
+const LIVE = loadLiveAgencyConfig(AGENCY);
+const TZ = LIVE.timeZone;
 const DAYS = Number(args.days ?? 7);
 const OBS_OUT = args['obs-out'];
 /** Optional: a folder to write the string-line data into, one file per service day (the last 3), <route>-<date>.json. */
@@ -65,7 +73,7 @@ function readCsv(path: string, keep?: (row: Record<string, string>) => boolean):
   const rows: Record<string, string>[] = [];
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i]) continue;
-    // TTC files quote some fields but never embed commas in them.
+    // TTC and Kingston files quote some fields but never embed commas in them.
     const cells = lines[i].split(',').map(c => c.replace(/^"|"$/g, ''));
     const row: Record<string, string> = {};
     header.forEach((h, j) => { row[h] = cells[j] ?? ''; });
@@ -75,15 +83,15 @@ function readCsv(path: string, keep?: (row: Record<string, string>) => boolean):
 }
 const gtfsSec = (s: string) => { const [h, m, x] = s.split(':').map(Number); return h * 3600 + m * 60 + x; };
 
-// --- time helpers (America/Toronto) ---
+// --- time helpers (the agency's timezone) ---
 const partsFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', hourCycle: 'h23' });
 const localCache = new Map<number, { date: string; hour: number }>();
 function local(epochSec: number): { date: string; hour: number } {
-  // Toronto offsets are whole hours, so local date/hour is constant within a UTC hour.
-  const key = Math.floor(epochSec / 3600);
+  // Offsets are whole quarter hours, so local date/hour is constant within a UTC quarter hour.
+  const key = Math.floor(epochSec / 900);
   const hit = localCache.get(key);
   if (hit) return hit;
-  const v = localUncached(key * 3600);
+  const v = localUncached(key * 900);
   localCache.set(key, v);
   return v;
 }
@@ -121,7 +129,14 @@ const allRouteTrips: Record<string, string>[] = [];
 const excludedTripIds = new Set<string>();
 for (const feed of FEEDS) {
   const pre = (id: string) => prefixedId(FEEDS, feed, id);
-  const feedTrips = readCsv(join(feed.dir, 'trips.txt'), r => r.route_id === ROUTE);
+  let feedTrips = readCsv(join(feed.dir, 'trips.txt'), r => r.route_id === ROUTE);
+  // A timetable without direction_id (Kingston): the pipeline's own direction fill, so directions match the map.
+  if (feedTrips.some(t => (t.direction_id ?? '').trim() === '')) {
+    const ids = new Set(feedTrips.map(t => t.trip_id));
+    const fill = fillMissingDirections(feedTrips, readCsv(stopTimesFileOf(feed.dir), r => ids.has(r.trip_id)) as { trip_id: string; stop_id: string; stop_sequence: string }[], readCsv(join(feed.dir, 'stops.txt')) as { stop_id: string }[]);
+    feedTrips = fill.trips;
+    console.log(`directions: no direction_id in ${feed.dir}; ${fill.inferred ? 'read from stop order' : fill.synthesized ? 'guessed from shapes and headsigns' : 'left as given'} (pipeline synthesizeMissingDirections)`);
+  }
   for (const t of feedTrips) if (EXCLUDE_HEADSIGN != null && (t.trip_headsign ?? '').toLowerCase().includes(EXCLUDE_HEADSIGN)) excludedTripIds.add(pre(t.trip_id));
   if (SEPARATE_SERVICE != null) {
     const named = feedTrips.filter(t => (t.trip_headsign ?? '').toLowerCase().split(/\s+/).includes(SEPARATE_SERVICE));
@@ -209,18 +224,19 @@ function patternFor(shapeId: string): Pattern | null {
   return pattern;
 }
 
-// Direction labels from headsigns ("East - 504A King towards ...").
-// The most common headsign word per direction: a few short turns are signed the other way.
+// Direction labels from headsigns. TTC: the most common first word per direction plus "bound" ("East - 504A King
+// towards ..." gives "Eastbound"); a few short turns are signed the other way. Other agencies: the most common headsign.
 const directionLabels: Record<string, string> = {};
 {
   const words = new Map<string, Map<string, number>>();
+  const firstWord = LIVE.directionLabels === 'headsignFirstWordBound';
   for (const t of trips) {
     const m = words.get(t.direction_id) ?? new Map<string, number>();
-    const w = t.trip_headsign.split(' ')[0];
+    const w = firstWord ? t.trip_headsign.split(' ')[0] : (t.trip_headsign ?? '').trim();
     m.set(w, (m.get(w) ?? 0) + 1);
     words.set(t.direction_id, m);
   }
-  for (const [dir, m] of words) directionLabels[dir] = `${[...m].sort((a, b) => b[1] - a[1])[0][0]}bound`;
+  for (const [dir, m] of words) { const top = [...m].sort((a, b) => b[1] - a[1])[0][0]; directionLabels[dir] = firstWord ? `${top}bound` : `To ${top}`; }
 }
 
 // --- calendar ---
@@ -228,8 +244,9 @@ const directionLabels: Record<string, string> = {};
 const calendar: Record<string, string>[] = [];
 const calDates: Record<string, string>[] = [];
 for (const feed of FEEDS) {
-  for (const c of readCsv(join(feed.dir, 'calendar.txt'))) calendar.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
-  for (const c of readCsv(join(feed.dir, 'calendar_dates.txt'))) calDates.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
+  // calendar.txt is optional in GTFS (Kingston has only calendar_dates.txt).
+  for (const c of existsSync(join(feed.dir, 'calendar.txt')) ? readCsv(join(feed.dir, 'calendar.txt')) : []) calendar.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
+  for (const c of existsSync(join(feed.dir, 'calendar_dates.txt')) ? readCsv(join(feed.dir, 'calendar_dates.txt')) : []) calDates.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
 }
 const routeServices = new Set(trips.map(t => t.service_id));
 const DOW = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -326,8 +343,8 @@ function scheduleKeyForDate(date: string): string | null {
   return dateOk.get(date)!;
 }
 
-/** GTFS service date: trips after midnight (before 4 a.m.) belong to the previous day. */
-const serviceDateOf = (t: number) => { const l = local(t); return l.hour < 4 ? prevDate(l.date) : l.date; };
+/** GTFS service date: trips after midnight (before the agency's service-day end, 4 a.m. for the TTC) belong to the previous day. */
+const serviceDateOf = (t: number) => { const l = local(t); return l.hour < LIVE.serviceDayEndHour ? prevDate(l.date) : l.date; };
 
 let runsTotal = 0, runsMatched = 0, runsUnmatched = 0;
 const observations: SegmentObservation[] = [];
@@ -355,15 +372,11 @@ const vehicleRuns = new Map<string, { tripId: string; first: PositionSample; las
 const tripPings = new Map<string, TripPing[]>(); // per trip number: reports, with position along its route
 const unlistedRuns: [number, number][] = []; // when cars on trip numbers missing from the timetable were running
 const tripOffRoute = new Map<string, [number, number, number][]>(); // [start, end, pings]
-// TTC streetcar carhouses: cars entering or leaving service stand still nearby.
-const CARHOUSES: [number, number][] = [
-  [43.6400, -79.4477], // Roncesvalles
-  [43.6655, -79.3205], // Russell
-  [43.6620, -79.3300], // Leslie Barns
-];
+// Carhouses (the TTC's streetcar carhouses; none for other agencies): cars entering or leaving service stand still nearby.
+const CARHOUSES = LIVE.carhouses;
 const nearCarhouse = (lat: number, lon: number) => CARHOUSES.some(([a, b]) => haversineM(lat, lon, a, b) <= 400);
-// Places where off-shape positions are terminal-loop or yard geometry, not diversions.
-const NOT_DIVERSIONS: [number, number][] = [...CARHOUSES, [43.6337, -79.4246] /* Dufferin Gate loop */];
+// Places where off-shape positions are terminal-loop or yard geometry, not diversions (carhouses, the TTC's Dufferin Gate loop).
+const NOT_DIVERSIONS = LIVE.notDiversions;
 const notDiversion = (lat: number, lon: number) => NOT_DIVERSIONS.some(([a, b]) => haversineM(lat, lon, a, b) <= 400);
 for (const [key, samples] of runs) {
   const rawTripId = key.split('|')[1];
@@ -1078,7 +1091,7 @@ for (const d of [...new Set(stretchRuns.map(r => r.directionId))].sort()) {
   // Coverage on good days only (CIV-318): a recording gap must not move the stretch that run time is measured over.
   const runs = stretchRuns.filter(r => r.directionId === d && inGoodDays.has(r.date));
   // The first stops of the route that are known to be measured poorly (the 510's tunnel) never end a stretch.
-  const poorFirst = LIVE_DASHBOARD_UNCERTAIN_START[`ttc::${ROUTE}`]?.find(u => u.directionId === d)?.stops ?? 0;
+  const poorFirst = LIVE_DASHBOARD_UNCERTAIN_START[`${AGENCY}::${ROUTE}`]?.find(u => u.directionId === d)?.stops ?? 0;
   const coverage = (stopId: string) => {
     if (orderIndex(d, stopId) >= 0 && orderIndex(d, stopId) < poorFirst) return 0;
     const due = runs.filter(r => r.sched.has(stopId));
@@ -1318,7 +1331,7 @@ const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS, goodDates: goodWindowDates },
   thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
-  method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the TTC feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
+  method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the ' + LIVE.shortName + ' feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {
     /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */
     noTimetableTrip: windowLimits.noTimetableTrip,
@@ -1369,7 +1382,7 @@ if (STRINGS_DIR) {
     })).filter(t => t.s.length > 1);
     const dirs = [...stopOrder.keys()].sort((a, b) => a - b);
     writeFileSync(join(STRINGS_DIR, `${ROUTE}-${date}.json`), JSON.stringify({
-      schema: 1, agency: 'ttc', route: ROUTE, date, base, timeZone: TZ, directionLabels,
+      schema: 1, agency: AGENCY, route: ROUTE, date, base, timeZone: TZ, directionLabels,
       stops: Object.fromEntries(dirs.map(d => [String(d), stopOrder.get(d)!.map(stopInfo).map(x => ({ stopId: x.stopId, name: x.name }))])),
       trips,
     }));
@@ -1381,7 +1394,7 @@ console.log(`v3: window ${windowDates.length} days (${windowDates[0]}..${windowD
 
 const usedDates = dates;
 const result = {
-  agency: 'ttc',
+  agency: AGENCY,
   route: ROUTE,
   generatedAt: new Date().toISOString(),
   gtfs: MULTI ? FEEDS.map(f => f.version ?? f.key).join('+') : existsSync(join(GTFS, 'feed_info.txt')) ? readCsv(join(GTFS, 'feed_info.txt'))[0]?.feed_version ?? null : null,
@@ -1432,7 +1445,7 @@ for (const [key, m] of headwayByStop) {
   const row = stopGapsRow(m.get('all') ?? [], inGoodDays, serviceDayStart);
   if (row) (gapsOut[dir] ??= {})[stopId] = row;
 }
-writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: 'ttc', route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
+writeFileSync(OUT.replace(/-segments\.json$/, '-gaps.json'), JSON.stringify({ schema: 1, agency: AGENCY, route: ROUTE, dates: goodWindowDates, directions: gapsOut }));
 console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.length - 1]}), runs matched ${runsMatched}/${runsTotal} (no timetable trip: ${runsUnmatched}), passes ${observations.length}, segments ${stats.length}, headway windows ${windowsKept}/${windowsTotal}, outages ${outages.length}`);
 
 // The agency page reads one summary of every route's analysis. Any run of this script rebuilds it, and drops it if the
@@ -1441,9 +1454,9 @@ console.log(`dates ${usedDates.length} (${usedDates[0]}..${usedDates[usedDates.l
   const dir = dirname(OUT);
   try {
     const { writeAgencySummary } = await import('./live-agency-summary');
-    console.log(writeAgencySummary('ttc', GTFS, dir));
+    console.log(writeAgencySummary(AGENCY, GTFS, dir));
   } catch (e) {
-    rmSync(join(dir, 'ttc-agency.json'), { force: true });
-    console.error(`live-segment-delay: could not rebuild the agency summary (${(e as Error).message}); removed the old one so it cannot go stale. Run "npx tsx scripts/live-agency-summary.ts ttc".`);
+    rmSync(join(dir, `${AGENCY}-agency.json`), { force: true });
+    console.error(`live-segment-delay: could not rebuild the agency summary (${(e as Error).message}); removed the old one so it cannot go stale. Run "npx tsx scripts/live-agency-summary.ts ${AGENCY}".`);
   }
 }
