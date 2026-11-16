@@ -5,8 +5,10 @@
  * Nothing goes to R2.
  *
  * Usage:
- *   npx tsx scripts/compare-feed-dates.ts --slug <slug> --before <zip>@<YYYY-MM-DD> --after <zip>@<YYYY-MM-DD>
+ *   npx tsx scripts/compare-feed-dates.ts --slug <slug> --before <zip>@<YYYY-MM-DD> --after <zip>@<YYYY-MM-DD> [--json <out.json>]
  *
+ * --json also writes the Studio "Schedule Changes" page's file (shared/studioBeforeAfter.ts, CIV-1715), e.g.
+ * tmp/studio/<slug>-before-after.json, which only the Vite dev server serves.
  * --slug reads config/agencies/<slug>.json (when present) so preprocess and excludes match the map.
  * A date whose service the pipeline does not read (see dateReadProblem in pipeline/feedCompare.ts)
  * stops the run with a message instead of reporting zeros.
@@ -16,10 +18,12 @@ import { basename, resolve } from 'node:path';
 import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { compareFeedSides, comparisonMarkdown, DateNotReadError, readFeedSide } from '../pipeline/feedCompare.js';
 import type { ProcessOptions } from '../pipeline/process-core.js';
+import { studioBeforeAfterFile } from '../shared/studioBeforeAfter.js';
+import { dirname } from 'node:path';
 
 const args = process.argv.slice(2);
 const option = (name: string) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
-const usage = 'Usage: npx tsx scripts/compare-feed-dates.ts --slug <slug> --before <zip>@<YYYY-MM-DD> --after <zip>@<YYYY-MM-DD>';
+const usage = 'Usage: npx tsx scripts/compare-feed-dates.ts --slug <slug> --before <zip>@<YYYY-MM-DD> --after <zip>@<YYYY-MM-DD> [--json <out.json>]';
 
 function side(value: string | undefined): { zip: string; date: string } {
   const at = value?.lastIndexOf('@') ?? -1;
@@ -50,6 +54,12 @@ try {
   writeFileSync(resolve(dir, `${slug}.md`), `${md}\n`);
   console.log(md);
   console.log(`\nWrote tmp/feed-compare/${slug}.json and .md`);
+  const studioOut = option('--json');
+  if (studioOut) {
+    mkdirSync(dirname(resolve(studioOut)), { recursive: true });
+    writeFileSync(resolve(studioOut), `${JSON.stringify(studioBeforeAfterFile(cmp, { before: b, after: a }), null, 1)}\n`);
+    console.log(`Wrote ${studioOut}`);
+  }
 } catch (err) {
   if (err instanceof DateNotReadError) { console.error(err.message); process.exit(2); }
   throw err;

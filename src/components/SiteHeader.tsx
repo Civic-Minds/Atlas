@@ -23,6 +23,7 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
         {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</a>}
         {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
         <a href={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</a>
+        {FEATURES.studio && <a href={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</a>}
         <ArrowLink tone="quiet" href="/">Go to Atlas</ArrowLink>
       </nav>
     </header>

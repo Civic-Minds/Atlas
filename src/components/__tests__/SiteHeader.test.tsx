@@ -7,7 +7,7 @@ describe('SiteHeader on phones (CIV-1301)', () => {
     render(<SiteHeader />);
     const docs = screen.getByRole('link', { name: 'Docs' });
     expect(docs.className.split(/\s+/)).toEqual(expect.arrayContaining(['hidden', 'sm:inline']));
-    for (const name of [/Agencies/, /Research/, /Go to Atlas/]) {
+    for (const name of [/Agencies/, /Research/, /Studio/, /Go to Atlas/]) {
       const link = screen.queryByRole('link', { name });
       if (link) expect(link.className.split(/\s+/), String(name)).not.toContain('hidden');
     }
