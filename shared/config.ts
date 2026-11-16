@@ -1,6 +1,6 @@
 import { headwayTierLabel } from './headwayText';
 import { hourRange, hourTime } from './timeText';
-import { RESEARCH_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
+import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
  * Shared configuration constants
  */
@@ -214,6 +214,7 @@ export const FEATURE_ROUTES = {
   /** CIV-1693: Atlas Studio, local only (FEATURES.studio). */
   studio: STUDIO_PATH,
   studioVehicles: STUDIO_VEHICLES_PATH,
+  studioChanges: STUDIO_CHANGES_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

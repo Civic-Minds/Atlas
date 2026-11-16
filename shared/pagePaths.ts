@@ -57,3 +57,5 @@ export const RESEARCH_PATH = '/research';
 /** Atlas Studio (CIV-1693), local only: the section opens its first page, the buses-needed calculator. */
 export const STUDIO_PATH = '/studio';
 export const STUDIO_VEHICLES_PATH = '/studio/vehicles';
+/** CIV-1715: Studio's before/after schedule comparison. */
+export const STUDIO_CHANGES_PATH = '/studio/changes';

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import PageShell from './components/ui/PageShell';
+import StudioNav from './components/StudioNav';
 import { PageTitle } from './components/ui/PageTitle';
 import { PAGE_SECTION_NOTE, PageTable } from './components/ui/PageSection';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
@@ -87,6 +88,7 @@ export default function StudioVehiclesPage() {
   return (
     <PageShell>
       <div className="mt-10">
+        <StudioNav current="studioVehicles" />
         <PageTitle>{PAGE_NAMES.studioVehicles}</PageTitle>
         {file === 'missing' && <p className={PAGE_SECTION_NOTE}>{T.noData}</p>}
         {file && file !== 'missing' && (

@@ -173,13 +173,15 @@ export default defineConfig(({ mode, command, isPreview }) => {
   // Dev-only (configureServer never runs in a build): serve tmp/studio/<slug>-vehicles.json at
   // /dev-studio/<slug>-vehicles.json for Atlas Studio's buses-needed page (CIV-1693). Written by
   // `scripts/vehicles-needed.ts <feed.zip> --slug <slug> --json tmp/studio/<slug>-vehicles.json`; never on R2.
+  // Also tmp/studio/<slug>-before-after.json for the Schedule Changes page (CIV-1715), written by
+  // `scripts/compare-feed-dates.ts ... --json tmp/studio/<slug>-before-after.json`.
   const STUDIO_DIR = resolve('tmp/studio');
   const studioFixtures: Plugin = {
     name: 'studio-fixtures',
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        const m = /^\/dev-studio\/([\w-]+-vehicles\.json)$/.exec((req.url ?? '').split('?')[0]);
+        const m = /^\/dev-studio\/([\w-]+-(?:vehicles|before-after)\.json)$/.exec((req.url ?? '').split('?')[0]);
         if (!m) return next();
         const file = resolve(STUDIO_DIR, m[1]);
         if (!file.startsWith(STUDIO_DIR) || !existsSync(file)) return next();

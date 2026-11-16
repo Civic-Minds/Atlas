@@ -35,6 +35,8 @@ export const PAGE_NAMES = {
   studio: 'Studio',
   /** CIV-1693: Studio's buses-needed calculator. Proposed, waiting on Ryan's OK. */
   studioVehicles: 'Buses Needed',
+  /** CIV-1715: Studio's before/after schedule comparison. Proposed, waiting on Ryan's OK. */
+  studioChanges: 'Schedule Changes',
 } as const;
 
 /** Browser tab titles stay within this many characters (search results cut the rest). */
