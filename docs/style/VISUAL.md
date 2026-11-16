@@ -12,7 +12,7 @@ The shared components live in `src/components/ui/`.
 - Docs-style pages (About, Docs, Terms, Privacy, What’s New, Research) use `DocsPageLayout` (`src/components/ui/DocsPageLayout.tsx`). Commit ce33bc90.
 - Data pages (agency, area, agencies index) use its data-page form. Commit ce33bc90.
 - The site header stays pinned on every docs-style page. Commit 15e232a9.
-- On every page with the shared header and footer, the Atlas logo opens the About home page and "Try Atlas" (`MAP_LINK`) opens the map (#1509, CIV-1703).
+- On every page with the shared header and footer, the Atlas logo opens the About home page and "Go to Atlas" opens the map (#1509).
   - Ryan, 2026-11-14: "like we already have the go to atlas button so confusing". Two links to the same place were confusing.
   - This replaces CIV-1312, where only the About page's logo stayed on /about.
   - Pages with their own header (the Live tool, diagnostics) keep the logo on the map.

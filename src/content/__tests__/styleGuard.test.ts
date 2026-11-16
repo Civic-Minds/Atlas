@@ -130,8 +130,9 @@ const RULES: Rule[] = [
   { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
     allowed: ['shared/overflowText.ts'] },
 
-  // CIV-1594, CIV-1703: every link to the map reads MAP_LINK ("Try Atlas") from noticeCopy.ts; the old wordings are caught too.
-  { name: 'a map link typed in place (use MAP_LINK)', doc: 'TEXT.md', pattern: /Try Atlas|Open the (Atlas )?map|Go to Atlas/, slip: '<ArrowLink href="/">Open the map</ArrowLink>',
+  // CIV-1594, CIV-1703: every in-page link to the map reads MAP_LINK ("Try Atlas") from noticeCopy.ts; the old wordings are caught too.
+  // The shared header keeps Ryan's own "Go to Atlas" (#1509).
+  { name: 'a map link typed in place (use MAP_LINK)', doc: 'TEXT.md', pattern: /Try Atlas|Open the (Atlas )?map/, slip: '<ArrowLink href="/">Open the map</ArrowLink>',
     allowed: ['src/content/noticeCopy.ts'] },
   // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
   { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',

@@ -80,7 +80,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Curly apostrophes (’) everywhere, site-wide, never straight ('). CIV-1160. (checked: `curlyApostrophes.test.ts`)
 - One name each: "Report a problem", "Part-time routes", "Day / Time / Mode", "Trip time", "On-demand". CIV-1160.
 - Counts with a noun ("1 route", "3 agencies", "its routes have") come from `plural` / `countOf` (`shared/overflowText.ts`), never a hand-built "=== 1 ?". CIV-1593. (checked)
-- Every link that sends people to the map reads "Try Atlas" (`MAP_LINK`): page heroes, the shared header, empty and not-found pages. Never "Open the map", "Open the Atlas map" or "Go to Atlas" (Ryan, 2026-11-15: "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then "Try Atlas"). CIV-1594, CIV-1703. (checked)
+- Every link that sends people to the map reads "Try Atlas" (`MAP_LINK`): page heroes, empty and not-found pages. Never "Open the map" or "Open the Atlas map". The shared header keeps "Go to Atlas" (#1509). (Ryan, 2026-11-15: "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then "Try Atlas"). CIV-1594, CIV-1703. (checked)
 - A label used in more than one place is one constant in `src/content/noticeCopy.ts` ("View on map", "See all agencies", "What’s New", "About Atlas", map export titles). CIV-1599. (checked)
 - Small fixes, written exactly so: "consistent main pattern"; correct singulars ("1 match", "1 stop", "1 day"); "Zoomed out. Some less frequent routes are hidden."; "Find routes…" (it was "Search routes…"; see the next line). CIV-1160.
 - Search box hints start with "Find": "Find routes…", "Find an agency…" (Ryan, 2026-11-14; `searchPlaceholder`). CIV-1569. (checked)

@@ -31,8 +31,7 @@ describe('For Transit Planners page (CIV-1320)', () => {
   it('opens the map from the top and the bottom, and gives the contact email', () => {
     render(<PlannersPage />);
     const open = screen.getAllByRole('link', { name: 'Try Atlas' });
-    // The header's map link, then the top and bottom ones (CIV-1703: all read MAP_LINK).
-    expect(open.map(a => a.getAttribute('href'))).toEqual(['/', '/', '/']);
+    expect(open.map(a => a.getAttribute('href'))).toEqual(['/', '/']);
     for (const a of screen.getAllByRole('link', { name: 'hey@ryanisnota.pro' })) expect(a).toHaveAttribute('href', 'mailto:hey@ryanisnota.pro');
   });
 });

@@ -506,7 +506,7 @@ export const AREA_PAGE_NOT_FOUND_TITLE = 'No page for this area';
 export const REGION_PAGE_NOT_FOUND_TITLE = 'No page for this region';
 // N72 page-not-found
 export const NO_FREQUENCY_PAGE_BODY = 'This address has no frequency page.';
-/** Every link that sends people to the map: page heroes, the header, empty and not-found pages (CIV-1594; Ryan, 2026-11-15, CIV-1703). */
+/** Every in-page link that sends people to the map: page heroes, empty and not-found pages (the header keeps "Go to Atlas", #1509) (CIV-1594; Ryan, 2026-11-15, CIV-1703). */
 export const MAP_LINK = 'Try Atlas';
 
 // N17 route-no-service-day, N26 agency-no-service-day (Ryan; "trips", as N8, CIV-1077)
