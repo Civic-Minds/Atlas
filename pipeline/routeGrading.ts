@@ -27,7 +27,7 @@ import { SURFACE_TIER_MAXES } from '../shared/config.js';
 import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineDeparturesInWindow, headlineWindowValue, headwayToTier, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 
 const { midday: MIDDAY, pmPeak: PM_PEAK, allDay: ALL_DAY } = HEADLINE_WINDOWS;
-import { pooledHeadwayInWindow } from './stopPools.js';
+import { pooledHeadwayInWindow, pooledReadingInWindow } from './stopPools.js';
 import type { DayName, DayType } from '../types/gtfs.js';
 
 const rank = (tier: string | null | undefined): number => (tier == null ? 99 : (TIER_RANK[tier] ?? 99));
@@ -56,6 +56,32 @@ export function pooledStepOneHeadway(times: readonly number[], own?: readonly nu
   const ownSorted = own ? [...new Set(own)].sort((a, b) => a - b) : [];
   const ownAllDay = ownSorted.length ? sustainedMedianHeadwayInWindow(ownSorted, ALL_DAY.start, ALL_DAY.end, HEADLINE_MIN_DEPARTURES, undefined, true) : null;
   return ownAllDay != null ? Math.min(allDay, ownAllDay) : allDay;
+}
+
+/**
+ * #1534: the window the pool's daytime reading comes from, midday then PM peak, with the
+ * evenness guards: the same window order a single shape's headline gets. A pool with a midday
+ * hole (fairfax 334: 150 and 210 minutes) still reads its PM peak. Undefined when neither reads.
+ */
+export function pooledDaytimeWindow(times: readonly number[], own?: readonly number[]): 'midday' | 'pmPeak' | undefined {
+  if (pooledHeadwayInWindow(times, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, own) != null) return 'midday';
+  if (pooledHeadwayInWindow(times, PM_PEAK.start, PM_PEAK.end, 4, false, own) != null) return 'pmPeak';
+  return undefined;
+}
+
+/**
+ * #1534 (CIV-1072's rule on the headline): a pool whose midday the evenness guard refuses reads
+ * its longest midday wait, but only where that is shorter than the drawn pattern's own midday
+ * reading. lacmta 108 to Mesmer / Major: the pool alternates 10, 10, 20 (longest 21) while the
+ * drawn shape alone runs every 40. A longer wait than the own reading (ttc 129: a 30-minute hole
+ * against an own 20) changes nothing.
+ */
+export function pooledMiddayWorstWait(times: readonly number[], own: readonly number[]): number | undefined {
+  const ownSorted = [...own].sort((a, b) => a - b);
+  const ownMidday = medianHeadwayInWindow(ownSorted, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, true);
+  if (ownMidday == null) return undefined;
+  const reading = pooledReadingInWindow(times, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, ownSorted);
+  return reading.value == null && reading.worstWait != null && reading.worstWait < ownMidday ? reading.worstWait : undefined;
 }
 
 export interface TerminalReading {
@@ -93,7 +119,10 @@ export function terminalReading(args: {
   // midday reading to the pool's PM or all-day value (ttc 129 weekday: own midday 20, pool
   // all-day 28); a pool with no midday reading still speaks for a terminal the own pattern
   // cannot read at midday (freedom M: a 3-trip shape of a 10-trip branch).
-  const pooledMiddayHw = terminalId && pool ? (pooledHeadwayInWindow(pool, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, ownSorted) ?? undefined) : undefined;
+  // An uneven pool midday reads its longest wait where that beats the own midday (#1534).
+  const pooledMiddayHw = terminalId && pool
+    ? (pooledHeadwayInWindow(pool, MIDDAY.start, MIDDAY.end, HEADLINE_MIN_DEPARTURES, false, ownSorted) ?? pooledMiddayWorstWait(pool, ownSorted))
+    : undefined;
   const pooledStepOne = terminalId && pool ? pooledStepOneHeadway(pool, ownSorted) : undefined;
   const ownStepOne = terminalId ? ownStepOneHeadway(ownTerminalTimes) : undefined;
   const poolUsed = pooledMiddayHw != null || (ownTerminalMiddayHw == null && pooledStepOne != null);
