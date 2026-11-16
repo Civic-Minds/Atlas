@@ -570,6 +570,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
   onAnalysisResults?: (results: readonly AnalysisResult[]) => void;
   /** Tests only (frequency focus step 3): the stretch selector's output beside stopDepsByGroup, for the trip-membership check. */
   onStretches?: (input: { stretches: ReadonlyMap<string, DirectionStretches>; stopDepsByGroup: ReadonlyMap<string, ReadonlyMap<string, readonly number[]>> }) => void;
+  /**
+   * Read-only view of the feed and the service ids active on each calendar day of the read week,
+   * after the near-duplicate drop, for local tools (CIV-1685 vehicles-needed script). Does not change the output.
+   */
+  onServiceDays?: (input: { gtfs: GtfsData; referenceDate: string; activeServiceIdsByCalendarDay: ReadonlyMap<DayName, ReadonlySet<string>> }) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -911,6 +916,7 @@ export async function processGtfsBuffer(
   // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
+  options?.onServiceDays?.({ gtfs, referenceDate: refDate, activeServiceIdsByCalendarDay });
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
