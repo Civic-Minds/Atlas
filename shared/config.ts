@@ -155,6 +155,12 @@ export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!i
 // local for now"): on the Vite dev server, as the connections bar is, never on beta or public builds.
 export const AGENCY_HOURS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
+// The "Live" pill beside agencies being recorded right now, in the agency list (CIV-1691; recording agencies are
+// LIVE_RECORDING_AGENCY_SLUGS in shared/liveArchiveFeeds.ts). Local only (Ryan, 2026-11-15: "on local only in the
+// agencies list should we add a Live pill beside live agencies"): on the Vite dev server, as the connections bar is,
+// never on beta or public builds.
+export const LIVE_RECORDING_PILL_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
+
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
  * routes, data, and controls instead of checking environment flags independently.
@@ -190,6 +196,7 @@ export const FEATURES = {
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
+  liveRecordingPill: LIVE_RECORDING_PILL_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */

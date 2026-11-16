@@ -4,7 +4,11 @@ import {
   LIVE_ARCHIVE_POSITION_FEEDS,
   LIVE_ARCHIVE_TRIP_FEEDS,
   LIVE_ARCHIVE_BUCKET_BY_SLUG,
+  LIVE_RECORDING_AGENCY_SLUGS,
 } from '../liveArchiveFeeds';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   LIVE_TRIP_UPDATES_FEEDS,
   LIVE_VEHICLE_POSITIONS_FEEDS,
@@ -50,5 +54,13 @@ describe('liveArchiveFeeds', () => {
     expect(pos!.apiKeyHeader).toBeUndefined();
     expect(trip!.url).toContain('gtfs.halifax.ca');
     expect(pos!.url).toContain('gtfs.halifax.ca');
+  });
+
+  it('marks only the shards with a cron on as recording: TTC and Kingston (CIV-1691)', () => {
+    expect([...LIVE_RECORDING_AGENCY_SLUGS].sort()).toEqual(['kingston', 'ttc']);
+    const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+    for (const slug of LIVE_RECORDING_AGENCY_SLUGS) {
+      expect(existsSync(path.join(root, 'config', 'agencies', `${slug}.json`)), slug).toBe(true);
+    }
   });
 });
