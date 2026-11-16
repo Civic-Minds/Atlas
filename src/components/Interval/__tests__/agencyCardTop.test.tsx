@@ -28,8 +28,8 @@ describe('AgencyCardTop', () => {
   });
 
   it('shows one facts line and the report control beside the top', () => {
-    render(<AgencyCardTop name="TTC" back={noop} facts="230 routes · 172 match filters" report={<button type="button">Report</button>} />);
-    expect(screen.getByText('230 routes · 172 match filters')).toBeTruthy();
+    render(<AgencyCardTop name="TTC" back={noop} facts="230 routes" report={<button type="button">Report</button>} />);
+    expect(screen.getByText('230 routes')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Report' })).toBeTruthy();
   });
 });
@@ -40,14 +40,14 @@ describe('AgencyCardTop links line', () => {
       <AgencyCardTop
         name="CapMetro"
         back={noop}
-        facts="12 routes · 2 match filters"
+        facts="12 routes"
         links={[<a key="area" href="/areas/austin">Austin area</a>, <a key="about" href="/agencies/capmetro">About</a>]}
       />,
     );
     const line = screen.getByRole('link', { name: 'Austin area' }).closest('p')!;
     expect(line.textContent).toBe('Austin area·About');
     expect(line.className).toContain('whitespace-nowrap');
-    expect(line.compareDocumentPosition(screen.getByText('12 routes · 2 match filters')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(line.compareDocumentPosition(screen.getByText('12 routes')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.querySelectorAll('p').length).toBe(3);
   });
 

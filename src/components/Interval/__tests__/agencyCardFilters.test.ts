@@ -36,16 +36,9 @@ describe('agency card filters', () => {
     ]);
   });
 
-  it('summarizes matching routes for active frequency filter', () => {
-    expect(buildHeaderSummary(routes, 60)).toBe('4 routes · 3 match filters');
-    expect(buildHeaderSummary(routes, Infinity)).toBe('4 routes');
-  });
-
-  it('uses the singular verb for exactly one matching route (CIV-1471)', () => {
-    const only = (n: number) => routes.map((route, i) => ({ ...route, matchesFilter: i < n }));
-    expect(buildHeaderSummary(only(1), 60)).toBe('4 routes · 1 matches filters');
-    expect(buildHeaderSummary(only(0), 60)).toBe('4 routes · 0 match filters');
-    expect(buildHeaderSummary(only(3), 60)).toBe('4 routes · 3 match filters');
+  it('counts the routes only; the note under the list says how many are outside the filters (CIV-1785)', () => {
+    expect(buildHeaderSummary(routes)).toBe('4 routes');
+    expect(buildHeaderSummary(routes.slice(0, 1))).toBe('1 route');
   });
 
   it('keeps routes outside the frequency filter collapsed when nothing matches', () => {
