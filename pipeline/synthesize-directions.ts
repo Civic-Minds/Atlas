@@ -87,11 +87,8 @@ function sharedOrder(a: readonly string[], b: readonly string[]): number[] {
   return order;
 }
 
-function relation(a: readonly string[], b: readonly string[]): Relation {
-  // A trip back from where the other ends, to where it starts, is the other direction, whatever stops they share on
-  // the way (Kingston 2 and 10 both run one loop the same way round: 2020 feed).
-  const [a0, a1, b0, b1] = [a[0], a[a.length - 1], b[0], b[b.length - 1]];
-  if (a0 !== a1 && b0 === a1 && b1 === a0) return 'opposite';
+/** How two patterns' shared stops run: in the same order, reversed, or too few or too mixed to say. */
+function orderRelation(a: readonly string[], b: readonly string[]): Relation {
   const order = sharedOrder(a, b);
   if (order.length < MIN_SHARED_STOPS) return null;
   let up = 0, down = 0;
@@ -100,6 +97,33 @@ function relation(a: readonly string[], b: readonly string[]): Relation {
   if (up / steps >= MIN_ORDER_AGREEMENT) return 'same';
   if (down / steps >= MIN_ORDER_AGREEMENT) return 'opposite';
   return null;
+}
+
+/** Whether `whole` runs from where `first` starts, through where it meets `second`, on to where `second` ends, each
+ *  stretch sharing that half's stops in its order. */
+function runsThrough(whole: readonly string[], first: readonly string[], second: readonly string[]): boolean {
+  const start = whole.indexOf(first[0]);
+  const meet = start < 0 ? -1 : whole.indexOf(first[first.length - 1], start + 1);
+  const end = meet < 0 ? -1 : whole.indexOf(second[second.length - 1], meet + 1);
+  return end >= 0
+    && orderRelation(whole.slice(start, meet + 1), first) === 'same'
+    && orderRelation(whole.slice(meet, end + 1), second) === 'same';
+}
+
+/** CIV-1717: a and b are one trip cut in two where they meet (another pattern runs one, then the other, as one trip). */
+function halvesOfOneTrip(a: readonly string[], b: readonly string[], all: readonly (readonly string[])[]): boolean {
+  // Two halves sharing their stops reversed are a trip out and back, whatever runs them as one.
+  if (orderRelation(a, b) === 'opposite') return false;
+  return all.some(w => w !== a && w !== b && (runsThrough(w, a, b) || runsThrough(w, b, a)));
+}
+
+function relation(a: readonly string[], b: readonly string[], all: readonly (readonly string[])[] = []): Relation {
+  // A trip back from where the other ends, to where it starts, is the other direction, whatever stops they share on
+  // the way (Kingston 2 and 10 both run one loop the same way round: 2020 feed). Not when another pattern runs the
+  // two straight on as one trip: they are a one-way loop cut in two (Kingston 19, 2027 feed: CIV-1717).
+  const [a0, a1, b0, b1] = [a[0], a[a.length - 1], b[0], b[b.length - 1]];
+  if (a0 !== a1 && b0 === a1 && b1 === a0) return halvesOfOneTrip(a, b, all) ? 'same' : 'opposite';
+  return orderRelation(a, b);
 }
 
 /** The place a headsign names, without its "via …" part: "Express - Cataraqui Centre via Downtown" → "express - cataraqui centre". */
@@ -114,12 +138,17 @@ function destinationOf(headsign: string | null | undefined): string {
  * first as direction 0:
  * 1. A pattern running back from where a placed one ends to where it starts takes the other direction; one sharing at
  *    least three stops with a placed one, in the same order or the reverse, takes its direction or the other one.
+ *    A pattern ending where a placed one starts and starting where it ends is the same direction, not the other, when
+ *    a third pattern runs the two straight on as one trip (a one-way loop the feed also cuts in two: Kingston 19).
  * 2. Otherwise a pattern whose headsign names the same place as a placed one ("… via …" left off) takes its direction
- *    (the two halves of a 701 trip both read "Express - Cataraqui Centre via …").
+ *    (the two halves of a 701 trip both read "Express - Cataraqui Centre via …"). A name only counts from a placed
+ *    pattern whose stops say nothing about this one: when the stops place it, a name matching a different placed
+ *    pattern doesn't (Kingston 2's short trips to the Bus Terminal come from both ends of the route: CIV-1717).
  * 3. Otherwise, once, the busiest pattern sharing fewer than three stops with every direction-0 pattern and naming a
  *    different place starts direction 1 (opposite directions usually stop on opposite sides of the street).
  *
- * Returns each trip's direction, or null when a trip can't be placed or the evidence disagrees. The route then keeps
+ * Returns each trip's direction, or null when a trip can't be placed or the evidence disagrees (the stops placing it
+ * both ways, or one placed pattern's stops and headsign disagreeing about it). The route then keeps
  * the old shape-and-headsign guess and stays marked synthesized, which withholds its stretch values.
  */
 export function inferDirectionsFromStopOrder(
@@ -141,6 +170,7 @@ export function inferDirectionsFromStopOrder(
   for (const p of patterns.values()) p.destination = [...p.headsigns].sort((a, b) => b[1] - a[1])[0][0];
   const list = [...patterns.values()].sort((a, b) => b.trips.length - a.trips.length || b.stops.length - a.stops.length);
   if (list.length === 0) return null;
+  const allStops = list.map(p => p.stops);
   const dirOf = new Map<Pattern, '0' | '1'>([[list[0], '0']]);
   const flip = (d: '0' | '1'): '0' | '1' => (d === '0' ? '1' : '0');
   let seededOne = false;
@@ -151,12 +181,16 @@ export function inferDirectionsFromStopOrder(
       const byOrder = new Set<'0' | '1'>();
       const byName = new Set<'0' | '1'>();
       for (const [q, d] of dirOf) {
-        const r = relation(q.stops, p.stops);
-        if (r) byOrder.add(r === 'same' ? d : flip(d));
-        if (p.destination && p.destination === q.destination) byName.add(d);
+        const r = relation(q.stops, p.stops, allStops);
+        const sameName = !!p.destination && p.destination === q.destination;
+        if (r) {
+          const byStops = r === 'same' ? d : flip(d);
+          if (sameName && byStops !== d) return null;
+          byOrder.add(byStops);
+        } else if (sameName) byName.add(d);
       }
-      if (byOrder.size > 1 || byName.size > 1) return null;
-      if (byOrder.size === 1 && byName.size === 1 && [...byOrder][0] !== [...byName][0]) return null;
+      if (byOrder.size > 1) return null;
+      if (byOrder.size === 0 && byName.size > 1) return null;
       const d = [...byOrder][0] ?? [...byName][0];
       if (d) { dirOf.set(p, d); progress = true; }
     }

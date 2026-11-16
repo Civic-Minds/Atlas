@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Loop routes in feeds without directions get their frequency back**: Kingston 2 and 19, Cornwall 1 and 4 and Medicine Hat 30 on weekends had no figure on the map, because a loop the feed also runs in two halves was split into two fake directions ([#1542](https://github.com/Civic-Minds/Atlas/issues/1542), [#1539](https://github.com/Civic-Minds/Atlas/issues/1539))
 - **Links to the map on pages now read "Try Atlas"**: the For Transit Planners and not-found pages had said "Open the map" or "Open the Atlas map"
 - **The Frequent Service story's coverage figures count a branched route's frequent middle (beta)**: about 29% of Canadians and 14% of Americans now live near a bus every 15 minutes, up from 26% and 12%, because a slower branch no longer hides a frequent shared stretch such as Oshawa's Pulse 900 and 901
 - **Rebuilds keep the fares Atlas sets by hand**: a full rebuild published STM, exo and TransLink routes with no fare instead of their set fares ([#1535](https://github.com/Civic-Minds/Atlas/issues/1535))
