@@ -37,7 +37,7 @@
       "validationWarnings": 1,
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
-      "featureCount": 24,
+      "featureCount": 22,
       "feedExpiry": "20271231",
       "routeCount": 11,
       "problemShapes": 0,
@@ -53,7 +53,7 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "b24e418fab89e110",
   "feedObtainedAt": "20261102",
-  "lastFeedStart": "20261114",
+  "lastFeedStart": "20261017",
   "lastRawArchiveKey": "20261215-cd7b5cf3bd78d12a",
   "lastFeedContentKey": "8ba7dca7f32883f6"
 }

@@ -36,7 +36,7 @@
       "validationWarnings": 0,
       "shapeAnomalies": 5,
       "routeHeadwayMismatches": 1,
-      "featureCount": 95,
+      "featureCount": 96,
       "feedExpiry": "20270109",
       "routeCount": 22,
       "problemShapes": 0,
@@ -44,8 +44,7 @@
       "mismatchRoutes": 1,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-16",
-    "scoredAt": "2026-11-16"
+    "checkedAt": "2026-11-16"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
