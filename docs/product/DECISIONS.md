@@ -257,6 +257,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-15 — The For Transit Planners page is local only
+Ryan, 2026-11-15 (CIV-1704): asked "should we make a card for live mode too on the for transit plannres", heard that Live is local only, then: "then make the for planners page local only". The page, its footer link and its prerendered page are on only on the local dev server, off on beta and public; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). It gets a Live card (CIV-1705).
+
 ### 2026-11-15 — Links to the map on pages read "Try Atlas"
 Ryan, 2026-11-15 (CIV-1703): "'Open the map' needs to be fixed too we need to refactor this bc this isnt good term", then option 2, "Try Atlas". One constant (`MAP_LINK` in `src/content/noticeCopy.ts`) is the text of every link that sends people to the map: page heroes, empty and not-found pages. It replaces "Open the Atlas map" and "Open the map"; the style guard catches any of them typed by hand. The shared header keeps Ryan's own "Go to Atlas" (#1509, 2026-11-14).
 
