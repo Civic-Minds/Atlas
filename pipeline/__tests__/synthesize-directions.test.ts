@@ -112,6 +112,33 @@ describe('inferDirectionsFromStopOrder: routes with no direction_id (CIV-1500, K
     ]))).toEqual({ first: '0', second: '0' });
   });
 
+  it('keeps a one-way loop the feed also cuts in two at the far end as one direction (Kingston 19, 2027 feed: CIV-1717)', () => {
+    // The two halves end where the other starts, but the full loop runs one, then the other, as one trip.
+    expect(dirs(run([
+      ['loop1', 'Cataraqui Centre', ['cc', 'a', 'b', 'wh', 'c', 'd', 'cc']], ['loop2', 'Cataraqui Centre', ['cc', 'a', 'b', 'wh', 'c', 'd', 'cc']],
+      ['back', 'Cataraqui Centre', ['wh', 'c', 'd', 'e', 'cc']],
+      ['out', 'Woodhaven', ['cc', 'a', 'b', 'wh']],
+    ]))).toEqual({ loop1: '0', loop2: '0', back: '0', out: '0' });
+  });
+
+  it('still reads an out-and-back on the same stops as two directions when one trip runs both ways', () => {
+    expect(dirs(run([
+      ['out1', 'North', ['s', 'a', 'b', 'c', 'n']], ['out2', 'North', ['s', 'a', 'b', 'c', 'n']],
+      ['back', 'South', ['n', 'c', 'b', 'a', 's']],
+      ['round', 'Round Trip', ['s', 'a', 'b', 'c', 'n', 'c', 'b', 'a', 's']],
+    ]))).toEqual({ out1: '0', out2: '0', back: '1', round: '0' });
+  });
+
+  it('places a short trip by its stops when its headsign names the end of a trip the other way (Kingston 2, 2027 feed: CIV-1717)', () => {
+    // Short trips to the Bus Terminal start from both ends of the route.
+    expect(dirs(run([
+      ['out1', 'Division Street', ['a', 'b', 'c', 'd', 'e']], ['out2', 'Division Street', ['a', 'b', 'c', 'd', 'e']],
+      ['in1', 'Train Station', ['e', 'd2', 'c2', 'b2', 'a']], ['in2', 'Train Station', ['e', 'd2', 'c2', 'b2', 'a']],
+      ['inShort1', 'Bus Terminal', ['e', 'd2', 'c2', 't']], ['inShort2', 'Bus Terminal', ['e', 'd2', 'c2', 't']],
+      ['outShort', 'Bus Terminal', ['b', 'c', 'd', 't']],
+    ]))).toEqual({ out1: '0', out2: '0', in1: '1', in2: '1', inShort1: '1', inShort2: '1', outShort: '0' });
+  });
+
   it('places a short trip by the stops it shares, in order or reversed', () => {
     expect(dirs(run([
       ['east', 'East', ['a', 'b', 'c', 'd', 'e']], ['east2', 'East', ['a', 'b', 'c', 'd', 'e']],
