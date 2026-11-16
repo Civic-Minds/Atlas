@@ -212,6 +212,8 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
+// The button at the end of the For Transit Planners page that emails us (CIV-1706); also the email's subject.
+export const REQUEST_DEMO_LABEL = 'Request a demo';
 /**
  * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
  * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160
