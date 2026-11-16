@@ -2,7 +2,8 @@
  * Cloudflare Worker archiver canary feeds (atlas-live).
  *
  * Subset of LIVE_POLLING agencies — URLs must match shared/livePollingConfig.ts
- * (enforced by shared/__tests__/liveArchiveFeeds.test.ts). Keep route filters
+ * (enforced by shared/__tests__/liveArchiveFeeds.test.ts), except feeds marked
+ * `archiveOnly`, which are recorded without being a Live agency. Keep route filters
  * and archive membership decisions here; not every Live UI agency is archived.
  */
 
@@ -12,6 +13,8 @@ export interface LiveArchiveTripFeed {
   url: string;
   /** Env binding name for `apikey` header when the feed requires a secret. */
   apiKeyHeader?: 'STM_API_KEY';
+  /** Recorded for analysis only (not in LIVE_POLLING_ROUTES, so it never shows in Live). */
+  archiveOnly?: true;
 }
 
 export interface LiveArchivePositionFeed {
@@ -25,6 +28,8 @@ export interface LiveArchivePositionFeed {
    */
   routeFilterSource: string;
   apiKeyHeader?: 'STM_API_KEY';
+  /** Recorded for analysis only (not in LIVE_POLLING_ROUTES, so it never shows in Live). */
+  archiveOnly?: true;
 }
 
 /**
@@ -42,7 +47,12 @@ export const LIVE_ARCHIVE_SHARDS = [
     positionSlugs: ['burlington', 'halifax'],
     tripSlugs: ['burlington', 'halifax'],
   },
+  // Atlas Studio demo agency (CIV-1682). Its worker writes to its own bucket, atlas-live-kingston, kept 60 days.
+  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'] },
 ] as const;
+
+/** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30). */
+export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { kingston: 'atlas-live-kingston' };
 
 /** Trip-update archives → atlas-live/{slug}/{date}/{ts}.json (every ~5 min). */
 export const LIVE_ARCHIVE_TRIP_FEEDS: readonly LiveArchiveTripFeed[] = [
@@ -55,6 +65,7 @@ export const LIVE_ARCHIVE_TRIP_FEEDS: readonly LiveArchiveTripFeed[] = [
     url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/tripUpdates',
     apiKeyHeader: 'STM_API_KEY',
   },
+  { slug: 'kingston', url: 'https://api.cityofkingston.ca/gtfs-realtime/tripupdates.pb', archiveOnly: true },
 ] as const;
 
 /** Vehicle-position archives → atlas-live/positions/{slug}/{date}/{ts}.json (every 1 min). */
@@ -85,5 +96,11 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     url: 'https://api.stm.info/pub/od/gtfs-rt/ic/v2/vehiclePositions',
     routeFilterSource: '.+',
     apiKeyHeader: 'STM_API_KEY',
+  },
+  {
+    slug: 'kingston',
+    url: 'https://api.cityofkingston.ca/gtfs-realtime/vehicleupdates.pb',
+    routeFilterSource: '.+',
+    archiveOnly: true,
   },
 ] as const;

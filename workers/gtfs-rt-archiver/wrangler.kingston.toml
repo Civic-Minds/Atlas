@@ -1,0 +1,20 @@
+# Kingston Transit only: the Atlas Studio demo agency (CIV-1682, approved by Ryan 2026-11-15).
+# Writes to its own bucket, atlas-live-kingston, whose lifecycle rule keeps snapshots 60 days
+# (atlas-live's rules delete after 30). Every minute: positions each run, trip updates every 5th.
+name = "atlas-gtfs-rt-archiver-kingston"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ARCHIVE_SHARD = "kingston"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "atlas-live-kingston"
+
+[triggers]
+crons = ["* * * * *"]
+
+[observability]
+enabled = true
