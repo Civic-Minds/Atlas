@@ -2,7 +2,7 @@
  * Shared processing core: GTFS zip buffer → GeoJSON string + computed center.
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
-import './pipelineTimeZone.js';
+import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
@@ -4258,7 +4258,7 @@ export async function processGtfsBuffer(
     resumesOn: routeFeatures.length === 0 ? resumeDates[0] ?? null : null,
     // Same rule as the registry's lastFeedExpiry, so a stale feed_info end date
     // does not mark a feed whose calendar runs on as expired (#687).
-    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, runNow().toISOString().slice(0, 10), calendarOnlyEnd),
+    feedExpiry: recordedFeedExpiry(feedInfo?.feed_end_date ?? null, calendarExpiry, pipelineRunDateYmd(), calendarOnlyEnd), // #1537: the run's Toronto date, not UTC
   });
 
   let livePollingSidecar: Record<string, any> | undefined;
