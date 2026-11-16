@@ -6,8 +6,11 @@ import {
 } from '../shared/livePollingConfig.js';
 import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
 import { delayStatus } from '../shared/liveDelayStatus.js';
+import { MovementSpeeds } from './movementSpeed.js';
 
 const FEED_TIMEOUT_MS = 15_000;
+/** CIV-1770: speeds from movement between polls, across requests. */
+const movementSpeeds = new MovementSpeeds();
 const USER_AGENT = 'atlas-local-live/1.0 (https://transitatlas.fyi)';
 
 type FeedResult =
@@ -200,7 +203,9 @@ async function fetchHandler(request: Request): Promise<Response> {
       lat,
       lon,
       bearing: vehicle.position?.bearing == null ? null : Number(vehicle.position.bearing),
-      speedKmh: vehicle.position?.speed == null ? null : Math.round(Number(vehicle.position.speed) * 3.6),
+      // CIV-1770: from movement between reports, not the feed's momentary speed (TTC's read 0 for moving buses).
+      speedKmh: movementSpeeds.speedFor(agency, String(vehicle.vehicle?.id ?? tripId ?? `${lat},${lon}`), lat, lon,
+        vehicle.timestamp == null ? null : Number(vehicle.timestamp), Date.now() / 1000),
       tsEpoch: vehicle.timestamp == null ? null : Number(vehicle.timestamp),
       delayMin,
       headsign,
