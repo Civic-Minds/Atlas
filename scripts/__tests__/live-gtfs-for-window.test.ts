@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { torontoServiceStart } from '../live-fetch-archive';
 import { surfaceKeyForDate } from '../live-gtfs-for-date';
 import type { FeedCoverage } from '../live-gtfs-feeds';
-import { dayMatch, serviceDateTripIds, windowServiceDates } from '../live-gtfs-for-window';
+import { agencyFeedsForWindow, dayMatch, serviceDateTripIds, windowServiceDates } from '../live-gtfs-for-window';
 
 const snap = (ts: number, ...trips: (string | null)[]) => JSON.stringify({ ts, v: trips.map((t, i) => [`car${i}`, t, 0, 0, ts]) });
 
@@ -59,5 +59,52 @@ describe('live-gtfs-for-window', () => {
     const right = dayMatch('2026-11-01', live, newFeed, timetables, 0.9);
     expect(right.problem).toBeNull();
     expect(right.others).toEqual([{ feed: 'OLD', matched: 19, share: 0.95 }]);
+  });
+
+  it('uses the agency clock when given one (CIV-1686), and the Toronto one without', () => {
+    const now = Date.parse('2026-11-12T03:00:00Z');
+    expect(windowServiceDates(2, now, { timeZone: 'America/Toronto', serviceDayEndHour: 4 })).toEqual(windowServiceDates(2, now));
+    // 03:00 UTC on the 12th is already the 12th in London.
+    expect(windowServiceDates(2, now, { timeZone: 'Europe/London', serviceDayEndHour: 4 })).toEqual(['2026-11-10', '2026-11-11']);
+    // A 3 a.m. day end moves the boundary: a snapshot at 3:30 a.m. Toronto belongs to the new service date.
+    const t = Date.parse('2026-11-02T08:30:00Z') / 1000; // 03:30 EST on 2 Nov
+    const files = { '1-2026-11-02.jsonl': snap(t, 'early') };
+    const read = (f: string) => files[f as keyof typeof files];
+    expect([...serviceDateTripIds(Object.keys(files), read, '2026-11-01')]).toEqual(['early']);
+    expect([...serviceDateTripIds(Object.keys(files), read, '2026-11-02', { timeZone: 'America/Toronto', serviceDayEndHour: 3 })]).toEqual(['early']);
+  });
+
+  it('reads an agency\'s archived zips newest first, keeps the ones that cover new dates, and stops when all are covered', async () => {
+    const cov = (key: string, start: string, end: string): FeedCoverage => ({ key, dir: `/feeds/${key}`, version: null, start, end });
+    const coverage: Record<string, FeedCoverage> = {
+      'gtfs/archive/kingston/20271101-c.zip': cov('c', '20261110', '20271101'),
+      'gtfs/archive/kingston/20271028-b.zip': cov('b', '20261028', '20271028'),
+      'gtfs/archive/kingston/20271020-a.zip': cov('a', '20261020', '20271020'),
+      'gtfs/archive/kingston/20260101-old.zip': cov('old', '20250101', '20260101'),
+    };
+    const at = (d: string) => new Date(`${d}T00:00:00Z`);
+    const zips = [
+      { key: 'gtfs/archive/kingston/20271020-a.zip', lastModified: at('2026-10-20') },
+      { key: 'gtfs/archive/kingston/20271101-c.zip', lastModified: at('2026-11-10') },
+      { key: 'gtfs/archive/kingston/notes.txt', lastModified: at('2026-11-12') },
+      { key: 'gtfs/archive/kingston/20271028-b.zip', lastModified: at('2026-10-28') },
+      { key: 'gtfs/archive/kingston/20260101-old.zip', lastModified: null },
+    ];
+    const loaded: string[] = [], discarded: string[] = [];
+    const load = async (key: string) => { loaded.push(key); return coverage[key]; };
+    const dates = ['2026-11-08', '2026-11-09', '2026-11-10', '2026-11-11'];
+    const out = await agencyFeedsForWindow(zips, dates, load, f => discarded.push(f.key));
+    // c covers the 10th and 11th, b the 8th and 9th; a is never read.
+    expect(out.feeds.map(f => f.key)).toEqual(['c', 'b']);
+    expect(loaded).toEqual(['gtfs/archive/kingston/20271101-c.zip', 'gtfs/archive/kingston/20271028-b.zip']);
+    expect(out.uncovered).toEqual([]);
+    expect(discarded).toEqual([]);
+
+    // A zip that covers nothing new is discarded; maxZips caps the reads and reports what is still uncovered.
+    const early = await agencyFeedsForWindow(zips, ['2026-10-01'], load, f => discarded.push(f.key), 3);
+    expect(early.feeds).toEqual([]);
+    expect(early.read).toBe(3);
+    expect(early.uncovered).toEqual(['2026-10-01']);
+    expect(discarded).toEqual(['c', 'b', 'a']);
   });
 });
