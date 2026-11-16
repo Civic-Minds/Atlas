@@ -263,6 +263,9 @@ Ryan, 2026-11-15 ("Yes local only", CIV-1680): Atlas Studio, the paid agency tie
 ### 2026-11-15 — Live report pages stay local
 Ryan, 2026-11-15: the Live report pages (`/apps/live/:agency` and below) stay local only until the GTFS-RT archive restarts and the page design is approved. Their data is not being refreshed (the `live-report-refresh.yml` schedule is commented out and the archive is paused), so `VITE_LIVE_REPORTS_ENABLED` was removed from Beta's Vercel settings; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md).
 
+### 2026-11-15 — The Docs page is "Docs" again
+Ryan, 2026-11-15 (CIV-1697): "Should we rename Documentation page back to Docs", then option 1, back everywhere. The page's one shared name (`PAGE_NAMES.docs`) is "Docs" on its links, heading and browser tab; this reverses the "Documentation" part of the entry below. The URL stays /about/docs.
+
 ### 2026-11-15 — One name per page, and title case for titles
 Ryan, 2026-11-15, after a page-name audit: every page has one shared name (`shared/pageNames.ts`) that its heading, links, back and close links and browser tab use. "Documentation" replaces "Docs" on links (CIV-1610's split is retired); "What’s New" is the one name for the release notes (the /changelog URL stays), and the map's What’s New button shows a dot until the current release is opened; the footer's "About" column is "Atlas", with an "About" link. Titles (page and section headings, header and footer links, footer columns, browser tabs) are title case, replacing CIV-1160's sentence case for them; everything else stays sentence case. Tabs use one format, "<page name> | Transit Atlas", within 60 characters, and link previews say "Transit Atlas".
 

@@ -25,6 +25,6 @@ describe('the Docs page reads shared text', () => {
   });
 
   it('names itself from the shared constants', () => {
-    expect(source).not.toMatch(/>Documentation<|title: 'Documentation'/);
+    expect(source).not.toMatch(/>(Docs|Documentation)<|title: '(Docs|Documentation)'/);
   });
 });

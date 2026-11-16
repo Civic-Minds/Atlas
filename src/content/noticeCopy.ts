@@ -321,7 +321,7 @@ export const WEEKDAY_HOURS_LABEL = 'Weekday hours';
 export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
 export const ON_DEMAND_SERVICE_LABEL = 'On-demand service';
 export const ATLAS_BYLINE = 'Atlas by Civic Minds';
-/** The Docs page's one name, on its links, heading and tab (Ryan, page-names refactor; it replaced CIV-1610's "Docs" link label). */
+/** The Docs page's one name, on its links, heading and tab (Ryan, page-names refactor; CIV-1697 set it back to "Docs"). */
 export const DOCS_PAGE_TITLE = PAGE_NAMES.docs;
 export const EXPORT_MAP_TITLE = 'Export map image';
 /** The locate button's name; Interval.tsx also finds the button by it, so both read this constant. */
