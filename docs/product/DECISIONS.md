@@ -172,6 +172,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: the Live report pages are on only on the local dev server, not on Beta or Public, until the GTFS-RT archive restarts and the page design is approved.
   - Why: their data is not being refreshed, and the design is still in progress.
   - Source: [decision log](#decision-log) (2026-11-15)
+- **Desktop only, one top bar**
+  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar, with the map key as one pill at the map's top left.
+  - Why: the panels need a desktop's room, and controls in two places read as clutter.
+  - Source: [decision log](#decision-log) (2026-11-16)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
@@ -256,6 +260,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-16 — Live and Studio are desktop only, with one top bar for every switcher
+Ryan, 2026-11-16 (CIV-1732, through the manager, answering "1" twice): Live and Studio are desktop only and hidden on phones, the same way as History and Compare; a phone visiting one falls back to the map. Of three redesign options for the shared map-and-sidebar layout, he picked A, "one bar": the measures join the other switchers in the top bar, the map key is one pill at the map's top left with its definition, and the route list ends after its last row. Live's tool page and Studio share this layout (`src/components/MapApp/`).
 
 ### 2026-11-15 — The For Transit Planners page is local only
 Ryan, 2026-11-15 (CIV-1704): asked "should we make a card for live mode too on the for transit plannres", heard that Live is local only, then: "then make the for planners page local only". The page, its footer link and its prerendered page are on only on the local dev server, off on beta and public; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). It gets a Live card (CIV-1705).

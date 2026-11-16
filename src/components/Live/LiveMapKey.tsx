@@ -25,8 +25,18 @@ const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min la
  * The Live map's key, as a row of pills (the regular map's legend pills): the measure's definition, then its three colour
  * steps. Shared by the Live map and the "Stops most often late" map (CIV-1405); the caller places it.
  */
-export default function LiveMapKey({ measure, notMeasured = true }: { measure: MapMeasure; /** Whether the key lists NOT_MEASURED_LABEL (a map whose every mark is measured leaves it out). */ notMeasured?: boolean }) {
+export default function LiveMapKey({ measure, notMeasured = true, variant = 'pills' }: { measure: MapMeasure; /** Whether the key lists NOT_MEASURED_LABEL (a map whose every mark is measured leaves it out). */ notMeasured?: boolean; /** `one`: the definition and the steps in one pill (the Live tool's map, CIV-1732); `pills`: two pills. */ variant?: 'pills' | 'one' }) {
   const labels = stepLabels(measure);
+  const steps = [
+    ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
+    ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
+  ];
+  if (variant === 'one') return (
+    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label="Map colours">
+      <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}{KEY_DEFINITION[measure] && <span className="font-normal text-[var(--text-muted)]"> · {KEY_DEFINITION[measure]}</span>}</span>
+      <MapKey steps={steps} />
+    </div>
+  );
   return (
     // On a phone the pills wrap inside the map's width; each label keeps its words on one line (#1151).
     <div className="flex max-w-full flex-wrap items-center justify-end gap-2">

@@ -8,7 +8,7 @@ vi.mock('../../shared/config', async importOriginal => {
 });
 
 // The map needs a browser with WebGL; this test is about the page around it.
-vi.mock('../components/Live/RouteMap', () => ({ default: () => null }));
+vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
 
 import LiveToolPage from '../LiveToolPage';
 
