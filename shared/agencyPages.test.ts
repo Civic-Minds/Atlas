@@ -58,6 +58,10 @@ describe('agency page text', () => {
     const q = new URLSearchParams(href.slice(2));
     expect(href.startsWith('/?')).toBe(true);
     expect(q.get('agencies')).toBe('ttc');
+    // #1570: the map opens with the agency's card.
+    expect(q.get('operator')).toBe('ttc');
+    // A parent page turns its members on together and opens no card.
+    expect(new URLSearchParams(agencyMapHref(TTC, ['ttc', 'go']).slice(2)).get('operator')).toBeNull();
     expect(q.get('lat')).toBe('43.7187');
     expect(Number(q.get('z'))).toBeGreaterThanOrEqual(7);
   });
