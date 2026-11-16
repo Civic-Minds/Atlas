@@ -12,7 +12,8 @@ vehicle positions and the timetable.
 ## Refresh the published report files (cloud)
 
 The report pages on beta read `atlas/live/ttc/<route>.json`, `agency.json` and `manifest.json` from the public bucket. The
-`live-report-refresh.yml` workflow rebuilds them from the last 15 service dates:
+`live-report-refresh.yml` workflow rebuilds them from the last 15 service dates. It runs and publishes every day at 09:17 UTC
+(CIV-1690), for TTC only, and can also be run by hand:
 
 - `gh workflow run live-report-refresh.yml` (mode `no-publish`, the default) builds everything with the read-only R2 keys and
   writes nothing. The run artifact `live-report-files-<run id>` holds the files and `review/summary.md`: the weeks covered, the
