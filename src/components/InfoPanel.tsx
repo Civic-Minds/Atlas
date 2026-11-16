@@ -9,6 +9,7 @@ import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
 import AgencyName from './ui/AgencyName';
 import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
+import { LIVE_RECORDING_AGENCY_SLUGS } from '../../shared/liveArchiveFeeds';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { nameCase, routeShortLabel } from '../utils/format';
@@ -489,6 +490,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
+                          // Local only (CIV-1691): this agency's realtime feed is being recorded right now.
+                          const showRecordingBadge = FEATURES.liveRecordingPill && LIVE_RECORDING_AGENCY_SLUGS.has(a.slug);
                           const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -498,13 +501,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               secondary={secondary}
                               title={listLabel}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                              tags={(showLiveBadge || showHistoryBadge) ? (
+                              tags={(showLiveBadge || showHistoryBadge || showRecordingBadge) ? (
                                 <>
                                   {showLiveBadge && (
                                     <Tag title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}>
                                       {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
                                     </Tag>
                                   )}
+                                  {showRecordingBadge && <Tag>Live</Tag>}
                                   {showHistoryBadge && <Tag>History</Tag>}
                                 </>
                               ) : undefined}
