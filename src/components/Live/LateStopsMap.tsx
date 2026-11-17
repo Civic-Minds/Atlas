@@ -1,3 +1,4 @@
+import { FALLBACK_GREY } from '../../../shared/rules/colours';
 import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -17,7 +18,7 @@ import { type LateStopSpot } from './lateStopsMapModel';
 
 const isLight = () => document.documentElement.getAttribute('data-theme') !== 'dark';
 /** A colour the map can draw: a CSS variable read for the current theme. */
-const resolve = (c: string) => c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1)).trim() || '#9ca3af' : c;
+const resolve = (c: string) => c.startsWith('var(') ? getComputedStyle(document.documentElement).getPropertyValue(c.slice(4, -1)).trim() || FALLBACK_GREY : c;
 const stopsData = (ss: readonly LateStopSpot[]) => ({ type: 'FeatureCollection' as const, features: ss.map(s => ({ type: 'Feature' as const, properties: { key: s.key, name: s.name, color: resolve(lateShareColor(s.lateShare)) }, geometry: { type: 'Point' as const, coordinates: s.lonLat } })) });
 
 /**

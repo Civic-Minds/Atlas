@@ -5,6 +5,7 @@ import { tileEffectiveHeadwayExpr, tileRouteKeyExpr } from '../../../../shared/t
 import { splitRouteKey } from '../../../utils/routeKey';
 import { buildPartialMatchFilterExpression, type computeFrequencySegmentOverlay } from '../../../utils/frequencySegments';
 import { buildFocusedRoutePaint } from '../../../utils/routeFocus';
+import { CONTEXT_LINE_COLOUR } from '../../../../shared/rules/colours';
 
 /** Base route line width by zoom, shared by the regular map and the Live context lines. */
 export const ROUTE_LINE_WIDTH_STOPS = [8, 1.5, 11, 2, 14, 2.5, 17, 3.5] as const;
@@ -12,7 +13,7 @@ export const ROUTE_LINE_WIDTH_BY_ZOOM = ['interpolate', ['linear'], ['zoom'], ..
 
 /** The Live map's grey context lines (CIV-326), shared with the Live report maps (CIV-1405). */
 export const contextLinePaint = (opacity: number) => ({
-  'line-color': '#6b7280',
+  'line-color': CONTEXT_LINE_COLOUR,
   'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, ...ROUTE_LINE_WIDTH_STOPS],
   'line-opacity': opacity,
 } as const);

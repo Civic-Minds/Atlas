@@ -112,3 +112,11 @@ describe('getVehicleRgb (Live dots)', () => {
     expect(getVehicleRgb('on_time', 'friendly')).toEqual([0, 158, 115]);
   });
 });
+
+describe('the palettes keep their colours after the move to shared/rules/colours.ts (rules audit move 8)', () => {
+  it('gives each tier, in both modes, the colour it had', async () => {
+    const { getHeadwayTiers } = await import('../colors');
+    expect(getHeadwayTiers('default').map(t => [t.max, t.color])).toEqual([[10, '#22863a'], [15, '#3da44d'], [20, '#f59e0b'], [30, '#e07b2a'], [60, '#92400e'], [Infinity, '#6b7280']]);
+    expect(getHeadwayTiers('friendly').map(t => [t.max, t.color, t.label])).toEqual(getHeadwayTiers('default').map((t, i) => [t.max, ['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7', '#4d4d4d'][i], t.label]));
+  });
+});

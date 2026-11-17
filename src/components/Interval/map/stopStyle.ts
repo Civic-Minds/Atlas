@@ -1,3 +1,4 @@
+import { MAP_HALO } from '../../../../shared/rules/colours';
 /**
  * How the map draws a stop: the regular map's stop dot (its `stops-layer`). Shared so every map that shows stops draws
  * them the same (CIV-1405); change it here and every map follows.
@@ -39,7 +40,7 @@ export function lateStopDotPaint(lightMode: boolean) {
     ...stopDotPaint(lightMode),
     'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 12, 3, 16, 6],
     'circle-color': ['get', 'color'],
-    'circle-stroke-color': lightMode ? '#ffffff' : '#111827',
+    'circle-stroke-color': lightMode ? MAP_HALO.light : MAP_HALO.dark,
     'circle-opacity': 1,
     'circle-stroke-opacity': 1,
   } as const;

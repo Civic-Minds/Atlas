@@ -6,6 +6,7 @@ import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH }
  */
 
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './rules/paths';
+import { TIER_COLOURS } from './rules/colours';
 // The bucket origins are in shared/rules/paths.ts (rules audit, move 6). The beta bucket holds staged artifacts used by
 // beta-only agencies while a country rollout is being validated.
 export { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL };
@@ -365,13 +366,14 @@ export interface HeadwayTier {
   label: string;
 }
 
+/** The frequency tiers, best first, in their colours (shared/rules/colours.ts). */
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#22863a', label: headwayTierLabel(10) },
-  { max: 15, color: '#3da44d', label: headwayTierLabel(15) },
-  { max: 20, color: '#f59e0b', label: headwayTierLabel(20) },
-  { max: 30, color: '#e07b2a', label: headwayTierLabel(30) },
-  { max: 60, color: '#92400e', label: headwayTierLabel(60) },
-  { max: Infinity, color: '#6b7280', label: 'Infrequent' },
+  { max: 10, color: TIER_COLOURS[0], label: headwayTierLabel(10) },
+  { max: 15, color: TIER_COLOURS[1], label: headwayTierLabel(15) },
+  { max: 20, color: TIER_COLOURS[2], label: headwayTierLabel(20) },
+  { max: 30, color: TIER_COLOURS[3], label: headwayTierLabel(30) },
+  { max: 60, color: TIER_COLOURS[4], label: headwayTierLabel(60) },
+  { max: Infinity, color: TIER_COLOURS[5], label: 'Infrequent' },
 ];
 
 /** Finite headway tier breakpoints derived from HEADWAY_TIERS (pipeline analysis). */
