@@ -52,13 +52,26 @@ interface ContextValue {
 
 const LiveVehiclesMapOverlayContext = createContext<ContextValue | null>(null);
 
+/**
+ * CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): when every Live feed in view
+ * has failed, the time of Live's next try (epoch ms), for the map's loading pill. Its own context, so a
+ * tick doesn't redraw the vehicle layer.
+ */
+interface LiveFeedsDownValue { retryAt: number | null; setRetryAt: (at: number | null) => void }
+const LiveFeedsDownContext = createContext<LiveFeedsDownValue>({ retryAt: null, setRetryAt: () => {} });
+export const useLiveFeedsDown = () => useContext(LiveFeedsDownContext);
+
 export function LiveVehiclesMapOverlayProvider({ children }: { children: React.ReactNode }) {
   const [overlay, setOverlayState] = useState<LiveVehiclesMapOverlay | null>(null);
   const setOverlay = useCallback((o: LiveVehiclesMapOverlay | null) => setOverlayState(o), []);
   const value = useMemo(() => ({ overlay, setOverlay }), [overlay, setOverlay]);
+  const [retryAt, setRetryAt] = useState<number | null>(null);
+  const feedsDown = useMemo(() => ({ retryAt, setRetryAt }), [retryAt]);
   return (
     <LiveVehiclesMapOverlayContext.Provider value={value}>
-      {children}
+      <LiveFeedsDownContext.Provider value={feedsDown}>
+        {children}
+      </LiveFeedsDownContext.Provider>
     </LiveVehiclesMapOverlayContext.Provider>
   );
 }
