@@ -2,6 +2,7 @@ import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import Tag from '../components/ui/Tag';
 import Card from '../components/ui/Card';
+import ResearchTile from '../components/ResearchTile';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import { RESEARCH } from '../data/research';
 import { RESEARCH_DRAFTS } from './researchDrafts';
@@ -9,10 +10,8 @@ import { PAGE_NAMES } from '../../shared/pageNames';
 import { DRAFT_TAG } from '../content/noticeCopy';
 
 /** Published research, then stories still being built where they will go once published (dev server only; CIV-1550). */
-const CARDS: ReadonlyArray<{ href: string; Icon: (typeof RESEARCH)[number]['Icon']; kind: string; title: string; body?: string; linkText?: string; draft?: boolean }> = [
-  ...RESEARCH,
-  ...RESEARCH_DRAFTS.map(({ href, Icon, kind, title }) => ({ href, Icon, kind, title, draft: true })),
-];
+const DRAFT_CARDS: ReadonlyArray<{ href: string; Icon: (typeof RESEARCH)[number]['Icon']; kind: string; title: string; body?: string; linkText?: string; draft?: boolean }> =
+  RESEARCH_DRAFTS.map(({ href, Icon, kind, title }) => ({ href, Icon, kind, title, draft: true }));
 
 export default function ResearchPage() {
   return (
@@ -22,7 +21,10 @@ export default function ResearchPage() {
               <p className="mt-3">Maps, stories and data that look closer at transit service.</p>
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
-              {CARDS.map(({ href, Icon, kind, title, body, linkText, draft }) => (
+              {/* CIV-1789 (Ryan's pick): published research shows About's tile, picture on top, kept straight. A draft has no
+                  picture yet and keeps the plain card. */}
+              {RESEARCH.map(entry => <ResearchTile key={entry.href} entry={entry} />)}
+              {DRAFT_CARDS.map(({ href, Icon, kind, title, body, linkText, draft }) => (
                 <Card as="a" key={href} href={href} tone="surface" padding="compact" className="group flex flex-col transition-colors hover:border-[var(--accent-border)]">
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />

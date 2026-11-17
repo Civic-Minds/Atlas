@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import Card, { CARD_TITLE, cardTint } from './ui/Card';
 
-/** The card tint, under its older name (CIV-1789: it lives in the base Card). */
+/** @public The card tint, under its older name (CIV-1789: it lives in the base Card). Kept while open branches
+ * (civ-1709, civ-1721, civ-1768) still import it from here; remove once they merge. */
 export const featureTint = cardTint;
 
 const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
