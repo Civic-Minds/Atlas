@@ -112,8 +112,13 @@ export const LIVE_VEHICLES_TITLE = 'Live vehicles';
 export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
   const d = o.dates ?? [];
   const days = d.length ? `, ${dateRange(d[0], d[d.length - 1])}` : '';
-  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ' (stops with 30+ departures)'}.`;
+  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ` ${RANKED_STOPS_NOTE}`}.`;
 };
+
+/** Which stops a route's late-stops list ranks, after the sentence it ends. */
+const RANKED_STOPS_NOTE = '(stops with 30+ departures)';
+/** The route's late-stops intro when no map is shown. */
+export const STOPS_RANKED_LATE_TEXT = `Stops ranked by how often vehicles leave ${LATE_THRESHOLD} ${RANKED_STOPS_NOTE}.`;
 
 /** The faded-mark note under a chart, one sentence everywhere (CIV-1448): "Paler bars rest on fewer than 30 trips." */
 export const fadedNoteText = (minN: number, unit: string, marks: 'bars' | 'dots' = 'bars'): string => `Paler ${marks} rest on fewer than ${minN} ${unit}.`;

@@ -220,8 +220,10 @@ export const REQUEST_DEMO_LABEL = 'Request a demo';
 export type FeatureCardCopy = { title: string; text: string; /** Shows the Beta tag beside the title. */ beta?: boolean };
 /** The About page's headline (CIV-1206 D), a sentence, so it stays sentence case. */
 export const ABOUT_HEADLINE = 'Find the transit service that actually runs.';
-/** What Atlas is, in one line: the About page's hero. */
-export const ATLAS_MAP_SUMMARY = 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.';
+/** What Atlas is, in one line: the About page's hero. Its home is shared/pageNames, so the search descriptions use it too. */
+export { ATLAS_MAP_SUMMARY } from '../../shared/pageNames';
+/** The About page's closing section heading, above ATLAS_INTRO_TEXT (CIV-1733). */
+export const ABOUT_CLOSER_HEADING = 'Built for looking closer.';
 /** The "Where the Data Comes From" section on the For Transit Planners and For Researchers pages (CIV-1724). */
 export const DATA_SOURCE_TITLE = 'Where the Data Comes From';
 export const dataSourceText = (agencies: string, countries: string) =>

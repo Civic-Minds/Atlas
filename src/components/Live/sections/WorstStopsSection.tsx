@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, LATE_THRESHOLD, P90_LATER_LABEL, lateStopsIntro, p90LateText } from '../../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, P90_LATER_LABEL, STOPS_RANKED_LATE_TEXT, lateStopsIntro, p90LateText } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -90,7 +90,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   })() : null;
   const introLine = intro && <p className="mt-2 text-sm text-[var(--text-muted)]">{map
     ? `${lateStopsIntro(top.length, { scope: 'route' })} ${LATE_MAP_HINT}`
-    : <>Stops ranked by how often vehicles leave {LATE_THRESHOLD} (stops with 30+ departures).</>}</p>;
+    : STOPS_RANKED_LATE_TEXT}</p>;
   const note = notRanked && hidden.length > 0 && (
     <p className="mt-2 max-w-2xl text-xs text-[var(--text-dim)]">
       Not ranked: the first {countOf(hidden[0].stops, 'stop')} {hidden.length === 1 ? directionLabels[String(hidden[0].directionId)].toLowerCase() : 'in some directions'}, where delay is less exact (see the note above).

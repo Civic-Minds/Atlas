@@ -7,7 +7,7 @@
  */
 
 import { LIVE_VEHICLES_TITLE } from './liveWording';
-import { PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
+import { ATLAS_MAP_CLAUSE, ATLAS_MAP_SUMMARY, PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
 import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
 import { siteModeLabel } from './siteMode';
@@ -83,8 +83,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     path: ABOUT_PATH,
     title: tabTitle(PAGE_NAMES.aboutPage, 'Frequency Maps for Planners'),
-    description:
-      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place, for planners and researchers.',
+    description: `${ATLAS_MAP_CLAUSE}, for planners and researchers.`,
     indexable: true,
     prerender: true,
     includeInSitemap: true,
@@ -111,7 +110,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     // CIV-1709: the hero's own words. Local only, like the planners page: not indexed or in the sitemap.
     path: RESEARCHERS_PATH,
     title: tabTitle(PAGE_NAMES.researchers),
-    description: 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.',
+    description: ATLAS_MAP_SUMMARY,
     indexable: false,
     gate: 'researchers',
     prerender: true,

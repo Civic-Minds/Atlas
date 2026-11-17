@@ -9,7 +9,7 @@ import { PageHero } from './components/FeaturePageSections';
 import { newestResearch } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
+import { ABOUT_CLOSER_HEADING, ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -98,7 +98,7 @@ export default function AboutPage() {
         </section>
 
         <section className="grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
-          <h2 className="max-w-xs text-2xl font-black tracking-tight">Built for looking closer.</h2>
+          <h2 className="max-w-xs text-2xl font-black tracking-tight">{ABOUT_CLOSER_HEADING}</h2>
           <div className="space-y-5 text-base leading-7 text-[var(--text-muted)]">
             <p>{ATLAS_INTRO_TEXT}</p>
             <ArrowLink href={DOCS_PATH}>{READ_HOW_ATLAS_WORKS}</ArrowLink>
