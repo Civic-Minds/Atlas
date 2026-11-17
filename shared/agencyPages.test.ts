@@ -130,7 +130,7 @@ describe('trimRedundantCity', () => {
 
 describe('dates', () => {
   it('names each date for what it is', () => {
-    const lead = "Based on the agency’s published schedule, not live arrivals.";
+    const lead = "Based on the agency’s published schedule.";
     expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z', '20261013'))
       .toBe(`${lead} This schedule was published Aug 27, 2026 and covers service until Oct 31, 2026. This page was last updated Oct 13, 2026.`);
     expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null, '20261013')).toBe(lead);
@@ -140,7 +140,7 @@ describe('dates', () => {
 
   it('says plainly when the timetable has ended', () => {
     expect(agencyDatesText({ lastRefreshedAt: '2026-01-05', validThrough: '20260901' }, '2026-10-13T00:00:00Z', '20261013'))
-      .toBe("Based on the agency’s published schedule, not live arrivals. This schedule ended on Sep 1, 2026; the agency hasn’t published a newer one yet. This page was last updated Oct 13, 2026.");
+      .toBe("Based on the agency’s published schedule. This schedule ended on Sep 1, 2026; the agency hasn’t published a newer one yet. This page was last updated Oct 13, 2026.");
   });
 
   it('ends on the map’s date: the day after the last day, in the agency’s own time zone (#1229)', () => {
@@ -163,7 +163,7 @@ describe('dates', () => {
     const dutchess = { lastRefreshedAt: '2026-08-07', validThrough: '20270131', listingEndedOn: '20261028' };
     // Ryan: "ended is past but ends is upcoming".
     expect(agencyDatesText(dutchess, '2026-10-27', '20261027'))
-      .toBe("Based on the agency’s published schedule, not live arrivals. This schedule covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. This page was last updated Oct 27, 2026.");
+      .toBe("Based on the agency’s published schedule. This schedule covers service until Jan 31, 2027, but most of its routes end Oct 28, 2026. This page was last updated Oct 27, 2026.");
     expect(agencyDatesText(dutchess, '2026-10-27', '20261028')).toContain('This schedule covers service until Jan 31, 2027, but most of its routes ended Oct 28, 2026.');
     expect(agencyDatesText(dutchess, '2026-10-27', '20261103')).toContain('but most of its routes ended Oct 28, 2026.');
     // No through date: N25 as on the cards.

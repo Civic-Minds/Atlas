@@ -167,7 +167,7 @@ describe('AgencyPage intro place, notes and headings', () => {
     expect(screen.queryByRole('link', { name: 'Toronto' })).toBeNull();
     expect(screen.getByRole('link', { name: 'University of Michigan Transit Services' }).getAttribute('href')).toBe('https://example.org');
     expect(screen.getByText(/Agency website:/)).toBeTruthy();
-    expect(screen.getByText(/Based on the agency’s published schedule, not live arrivals\./)).toBeTruthy();
+    expect(screen.getByText(/Based on the agency’s published schedule\./)).toBeTruthy();
   });
 
   it('has the bar note and counts without brackets', () => {
