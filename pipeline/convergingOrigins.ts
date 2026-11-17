@@ -23,6 +23,7 @@ import type { DayName, DayType, GtfsData } from '../types/gtfs.js';
 import { ALL_DAYS, WEEKDAYS } from '../shared/dayTypes.js';
 import { getActiveServiceIds } from './transit-calendar.js';
 import { readWeekOf } from './readWeek.js';
+import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 
 /**
  * Both origins must run on the same calendar day the pipeline draws: on at least one of the
@@ -109,7 +110,7 @@ function metersBetween(a: { lat: number; lon: number }, b: { lat: number; lon: n
   const toRad = (d: number) => d * Math.PI / 180;
   const dLat = toRad(b.lat - a.lat); const dLon = toRad(b.lon - a.lon);
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLon / 2) ** 2;
-  return 2 * 6371000 * Math.asin(Math.sqrt(h));
+  return 2 * EARTH_RADIUS_M * Math.asin(Math.sqrt(h));
 }
 
 /** How many stops a pattern runs on its own before its first stop shared with the other. */

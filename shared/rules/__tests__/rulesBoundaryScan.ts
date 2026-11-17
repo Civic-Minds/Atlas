@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 /**
  * The scan behind rulesBoundary.test.ts (rules audit 4.2): where a rule value (a frequency scale, a period window, a
- * day list, an origin, a colour, a minimum sample) is defined or typed outside shared/rules/. Comments don't count,
+ * day list, an origin, a colour, a minimum sample, a limit, the earth's radius) is defined or typed outside shared/rules/. Comments don't count,
  * so a comment may quote an old value.
  */
 export const ROOT = join(import.meta.dirname, '..', '..', '..');
@@ -15,9 +15,9 @@ const PLAIN = ['vercel.json', 'index.html'];
 const SCALE_VALUES = new Set([5, 8, 10, 15, 20, 30, 60, 90]);
 const ORIGINS = /data\.transitatlas\.fyi|pub-5f1c48f86b024c42a8d174a4a5dd69ca\.r2\.dev|(www|beta|preview)\.transitatlas\.fyi|atlas-gamma-two\.vercel\.app/;
 
-export type RuleKind = 'definition' | 'scale-array' | 'grace-formula' | 'period-minutes' | 'route-type-digit' | 'origin' | 'colour' | 'min-sample';
+export type RuleKind = 'definition' | 'scale-array' | 'grace-formula' | 'period-minutes' | 'route-type-digit' | 'origin' | 'colour' | 'min-sample' | 'earth-radius';
 
-const RULE_NAME = /^(\w*_TIER_MAXES|TIER_RANK|TIME_PERIODS|PERIOD_(KEYS|MINUTES|LABELS)|DAY_TYPES|ALL_DAYS|WEEKDAYS|\w*_THRESHOLD|\w*MIN_SAMPLE\w*|\w*_ROUTE_TYPES|\w*R2_PUBLIC_URL|\w*SITE_URL|EARTH_RADIUS\w*)$/;
+const RULE_NAME = /^(\w*_TIER_MAXES|TIER_RANK|TIME_PERIODS|PERIOD_(KEYS|MINUTES|LABELS)|DAY_TYPES|ALL_DAYS|WEEKDAYS|\w*_THRESHOLD|\w*MIN_SAMPLE\w*|\w*_ROUTE_TYPES|\w*R2_PUBLIC_URL|\w*SITE_URL|EARTH_RADIUS\w*|DEFAULT_RATE_\w+|(TAB_)?TITLE_MAX|DESCRIPTION_M(AX|IN)|DEFAULT_MAP_(CENTER|ZOOM)|\w*_BBOX_PAD|AGENCY_CHIP_PAD|MAP_ZOOM_\w+|DETAIL_GEOJSON_MIN_ZOOM)$/;
 
 /** One line's breaks of each kind. */
 export function lineKinds(line: string): RuleKind[] {
@@ -34,6 +34,7 @@ export function lineKinds(line: string): RuleKind[] {
   if (ORIGINS.test(line)) out.push('origin');
   if (/(['"`]|:\s*)#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b|rgba?\(/.test(line)) out.push('colour');
   if (/(>=|<|>)\s*30\b/.test(line) && /\b(samples?|n|count|trips|days)\b/.test(line)) out.push('min-sample');
+  if (/(?<![\w.])6_?371(?:_?000|e3)?(?![\w.])/.test(line)) out.push('earth-radius');
   return out;
 }
 

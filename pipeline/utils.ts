@@ -1,8 +1,9 @@
 /**
  * Calculates the Haversine distance between two points in meters.
  */
+import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 export function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371e3; // Earth's radius in meters
+    const R = EARTH_RADIUS_M;
     const phi1 = (lat1 * Math.PI) / 180;
     const phi2 = (lat2 * Math.PI) / 180;
     const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;

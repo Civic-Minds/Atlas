@@ -49,8 +49,11 @@ describe('rule values live in shared/rules/ (rules audit 4.2)', () => {
       origin: "const base = 'https://www.transitatlas.fyi';",
       colour: "const red = '#c0392b';",
       'min-sample': 'if (s.n >= 30) keep(s);',
+      'earth-radius': 'const R = 6371e3;',
     };
+    expect(lineKinds('const TAB_TITLE_MAX = 60;')).toContain('definition');
+    expect(lineKinds('return 6_371_000 * d;')).toContain('earth-radius');
     for (const [kind, line] of Object.entries(slips) as [RuleKind, string][]) expect([kind, lineKinds(line).includes(kind)]).toEqual([kind, true]);
-    for (const fine of ["bookingInfo: 'Call 540-343-1721'", 'const sizes = [12, 24];', 'const issue = 1563;', "const n = 3;", "title: 'Phase 30'"]) expect([fine, lineKinds(fine)]).toEqual([fine, []]);
+    for (const fine of ["bookingInfo: 'Call 540-343-1721'", 'const sizes = [12, 24];', 'const issue = 1563;', "const n = 3;", "title: 'Phase 30'", 'const DEFAULT_MAP_EXPORT_SIZE = 2;', '[-78.1701997, 43.9637125]']) expect([fine, lineKinds(fine)]).toEqual([fine, []]);
   });
 });

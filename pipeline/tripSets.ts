@@ -48,6 +48,7 @@ import {
 import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
+import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
@@ -182,7 +183,7 @@ function km(a: Coord, b: Coord): number {
   const p = Math.PI / 180;
   const x = (b[1] - a[1]) * p * Math.cos(((a[0] + b[0]) / 2) * p);
   const y = (b[0] - a[0]) * p;
-  return 6371 * Math.hypot(x, y);
+  return EARTH_RADIUS_KM * Math.hypot(x, y);
 }
 
 function runKm(stops: readonly string[], stopCoord: (stopId: string) => Coord | undefined): number | null {

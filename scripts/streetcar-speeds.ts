@@ -11,6 +11,7 @@
  */
 import { S3Client, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getR2Client } from '../pipeline/r2.js';
+import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 
 const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live';
 const MAX_PAIR_GAP_SEC = 180;   // ignore pairs across archiver outages
@@ -22,7 +23,7 @@ interface Snapshot {
 }
 
 function haversineM(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371000;
+  const R = EARTH_RADIUS_M;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) ** 2 +

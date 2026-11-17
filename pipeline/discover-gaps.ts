@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import Papa from 'papaparse';
+import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
 
 const FEEDS_CSV = 'https://files.mobilitydatabase.org/feeds_v2.csv';
 const DEFAULT_RADIUS_KM = 25;
@@ -81,7 +82,7 @@ interface Candidate {
 }
 
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371;
+  const R = EARTH_RADIUS_KM;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) ** 2 +

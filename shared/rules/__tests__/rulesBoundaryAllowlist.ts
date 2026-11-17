@@ -15,6 +15,7 @@ export const KIND_REASONS: Record<RuleKind, string> = {
   'origin': "a site or R2 origin typed by hand (step 6, paths)",
   'colour': "a colour typed by hand (step 8, colours)",
   'min-sample': "a minimum sample of 30 typed by hand (step 2, Live thresholds)",
+  'earth-radius': "the earth's radius typed by hand (step 7, limits)",
 };
 
 export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
@@ -54,7 +55,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'shared/connections.ts': { 'scale-array': 1 },
   'shared/dayTypes.ts': { 'definition': 4 },
   'shared/frequencyRules.ts': { 'definition': 1, 'period-minutes': 1, 'scale-array': 1 },
-  'shared/geoDistance.ts': { 'definition': 1 },
   'shared/liveDashboard.ts': { 'min-sample': 5 },
   'shared/liveWording.ts': { 'definition': 1 },
   'shared/modes.ts': { 'route-type-digit': 1 },

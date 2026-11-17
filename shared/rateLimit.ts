@@ -1,8 +1,9 @@
+import { DEFAULT_RATE_LIMIT, DEFAULT_RATE_WINDOW_MS } from './rules/limits';
+
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-/** Default public API budget. In-memory only — resets per Vercel isolate. */
-export const DEFAULT_RATE_LIMIT = 60;
-export const DEFAULT_RATE_WINDOW_MS = 60_000;
+/** Default public API budget (shared/rules/limits.ts). */
+export { DEFAULT_RATE_LIMIT, DEFAULT_RATE_WINDOW_MS };
 
 function cleanupExpired() {
   const now = Date.now();
