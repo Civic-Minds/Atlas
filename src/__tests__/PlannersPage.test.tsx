@@ -37,7 +37,7 @@ describe('For Transit Planners page (CIV-1320)', () => {
     const phone = [...container.querySelectorAll('source')].map(s => s.getAttribute('srcset'));
     for (const theme of ['light', 'dark']) {
       expect(srcs).toContain(`/assets/planners/hero-${theme}.webp`);
-      for (const card of ['frequency', 'dayweek', 'agency', 'export', 'demo']) {
+      for (const card of ['frequency', 'dayweek', 'agency', 'export']) {
         expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
         expect(phone).toContain(`/assets/planners/card-${card}-phone-${theme}.webp`);
       }

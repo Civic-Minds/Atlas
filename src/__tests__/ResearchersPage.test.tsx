@@ -36,12 +36,12 @@ describe('For Researchers page (CIV-1709)', () => {
   it('alternates the picture side of the cards with pictures, and reuses the planners pictures', () => {
     const { container } = render(<ResearchersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    // Compare Cities (flipped), Maps You Can Cite, then the Request a demo card; History has no picture yet.
-    expect(sides).toEqual(['left', 'right', 'right']);
+    // Compare Cities (flipped), then Maps You Can Cite; History and the Request a demo card have no picture.
+    expect(sides).toEqual(['left', 'right']);
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
     for (const theme of ['light', 'dark']) {
       expect(srcs).toContain(`/assets/planners/hero-${theme}.webp`);
-      for (const card of ['agency', 'export', 'demo']) expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
+      for (const card of ['agency', 'export']) expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
     }
   });
 
