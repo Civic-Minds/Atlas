@@ -1,5 +1,5 @@
 import { withoutMapPosition } from '../lib/analytics';
-const ATLAS_FEEDBACK_EMAIL = 'hey@ryanisnota.pro';
+import { mailto } from '../../shared/contact';
 const ATLAS_ISSUE_URL = 'https://github.com/Civic-Minds/Atlas/issues/new';
 const MAX_MAILTO_LENGTH = 18_000;
 
@@ -36,19 +36,18 @@ export function reportDetails(lines: readonly ReportDetailLine[], url: string = 
 }
 
 export function openAtlasFeedbackEmail(subject: string, body: string): void {
-  const encodedSubject = encodeURIComponent(subject);
-  const fullMailto = `mailto:${ATLAS_FEEDBACK_EMAIL}?subject=${encodedSubject}&body=${encodeURIComponent(body)}`;
-  let mailto = fullMailto;
+  const fullMailto = mailto(subject, body);
+  let draft = fullMailto;
 
   // Email clients and browsers impose URI-length limits. Keep the draft usable while
   // preserving the complete captured details on the clipboard when the report is large.
   if (fullMailto.length > MAX_MAILTO_LENGTH) {
     void navigator.clipboard?.writeText(body);
     const shortenedBody = `${body.slice(0, 10_000)}\n\n[The full captured details were copied to your clipboard because this email draft was too large.]`;
-    mailto = `mailto:${ATLAS_FEEDBACK_EMAIL}?subject=${encodedSubject}&body=${encodeURIComponent(shortenedBody)}`;
+    draft = mailto(subject, shortenedBody);
   }
 
-  window.location.href = mailto;
+  window.location.href = draft;
 }
 
 export function openAtlasProblemDestination(subject: string, body: string): void {

@@ -13,6 +13,7 @@ import { OutboundLink } from '../OutboundLink';
 import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
+import { mailto } from '../../../shared/contact';
 import { markWhatsNewSeen, whatsNewUnseen } from '../../utils/whatsNewSeen';
 
 /** A small dot on What's New while this release hasn't been opened here (light, no fill around it; VISUAL.md). */
@@ -52,7 +53,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
       document.removeEventListener('keydown', onKey);
     };
   }, [aboutOpen]);
-  const feedbackHref = `mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback&body=${encodeURIComponent(`Feedback:\n\n\nPage: ${withoutMapPosition(window.location.href)}\n`)}`;
+  const feedbackHref = mailto('Atlas Feedback', `Feedback:\n\n\nPage: ${withoutMapPosition(window.location.href)}\n`);
 
   return (
     <>
