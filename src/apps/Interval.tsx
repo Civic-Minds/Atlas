@@ -83,6 +83,7 @@ export interface ConnectionsBarState {
 }
 import type { StopCardExtraInput } from '../components/Interval/SidebarControls';
 import { percentText } from '../../shared/numberText';
+import { DEFAULT_MAX_HEADWAY } from '../../shared/rules/limits';
 
 // Versioned because the original preference could accidentally persist only
 // agencies in the current viewport when the bulk "All" action was used.
@@ -264,7 +265,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     const fromLink = readUrlParam(searchParams, MAP_URL.headway);
     if (fromLink != null) return fromLink;
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
-    return 60;
+    return DEFAULT_MAX_HEADWAY;
   });
   const [selectedRoute, setSelectedRoute] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.route) ?? null);
   const [selectedStop, setSelectedStop] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.stop) ?? null);

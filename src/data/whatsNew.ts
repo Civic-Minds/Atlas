@@ -38,7 +38,7 @@ export const WHATS_NEW: WhatsNewRelease[] = [
     items: [
       { lead: 'Compare mode', text: 'now on the public map on desktop and tablet, each map with its own place, day and time', isNew: true },
       { lead: 'Route cards on phones', text: 'slide up from the bottom, with the route shown above', isNew: true },
-      { lead: 'Agency and area pages', text: 'every agency, metro area, state and province has its own frequency page', isNew: true },
+      { lead: 'Agency and area pages', text: 'agencies, metro areas, states and provinces have their own frequency pages', isNew: true },
       { lead: 'Simpler route filters', text: 'two switches hide occasional and part-time routes' },
     ],
   },

@@ -5,7 +5,7 @@ import { headwayAmount } from '../../../shared/headwayText';
 import { MAX_CONNECTION_WINDOW } from '../../../shared/connections';
 import { FREQUENT_GRADES } from '../../../shared/frequentService';
 import { NIGHT_GRADES } from '../../../shared/nightService';
-import { MAP_ZOOM_HEADWAY_STEPS, NEARBY_ROUTES_RADIUS_M, NO_HEADWAY_LIMIT } from '../../../shared/rules/limits';
+import { DEFAULT_MAX_HEADWAY, MAP_ZOOM_HEADWAY_STEPS, NEARBY_ROUTES_RADIUS_M, NO_HEADWAY_LIMIT } from '../../../shared/rules/limits';
 
 /**
  * CIV-1814: text and numbers that were typed by hand now come from one home each. Every value here is the text the
@@ -30,5 +30,7 @@ describe('shared copy keeps the text the screens showed (CIV-1814)', () => {
     expect(FREQUENT_GRADES).toEqual([15, 30]);
     expect(MAP_ZOOM_HEADWAY_STEPS.at(-1)).toEqual([9, NO_HEADWAY_LIMIT]);
     expect(NO_HEADWAY_LIMIT).toBe(9999);
+    // CIV-1812 item 8: the map opens on every 60 min, and the phone Filters count leaves that default out.
+    expect(DEFAULT_MAX_HEADWAY).toBe(60);
   });
 });

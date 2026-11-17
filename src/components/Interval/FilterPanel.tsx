@@ -33,6 +33,7 @@ import type { ContextMetric } from '../../utils/contextLayer';
 import { ContextKey } from './ContextLegend';
 import { countText } from '../../../shared/numberText';
 import SearchBox from '../ui/SearchBox';
+import { DEFAULT_MAX_HEADWAY } from '../../../shared/rules/limits';
 
 const CONTEXT_OPTIONS = [
   { key: 'off', label: CONTEXT_OPTION_OFF },
@@ -312,7 +313,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const hasActiveCoreFilter = maxHeadway !== undefined && (maxHeadway !== Infinity || period !== 'all' || (selectedModes && selectedModes.size > 0));
   // Day is not counted: it defaults to today, so it is never "unset".
-  const activeFilterCount = (maxHeadway !== undefined && maxHeadway !== 60 ? 1 : 0)
+  const activeFilterCount = (maxHeadway !== undefined && maxHeadway !== DEFAULT_MAX_HEADWAY ? 1 : 0)
     + (period !== undefined && period !== 'all' ? 1 : 0)
     + (selectedModes && selectedModes.size > 0 ? 1 : 0)
     + (compare?.side ? 1 : 0);
