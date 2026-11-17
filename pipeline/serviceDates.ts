@@ -27,9 +27,8 @@
  * not affected.
  */
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST, WEEKDAY_CALENDAR_FIELDS, dayTypeOfDow, type DayType } from '../shared/rules/days.js';
 
-const DOW_FIELDS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
-const WEEKDAY_FIELDS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
 /** Days after the run date looked at for the typical date of each kind. */
 const WINDOW_DAYS = 14;
 /** Weeks to look forward when the window has no service of a kind (a gap in the feed). */
@@ -63,8 +62,8 @@ export function nextDateWithDow(from: string, dow: number): string {
  */
 export function servicesRunningOn(calendar: readonly GtfsCalendar[], calendarDates: readonly GtfsCalendarDate[], date: string): Set<string> {
   const dow = ymdToDate(date).getDay();
-  const field = DOW_FIELDS[dow];
-  const kindFields: readonly (keyof GtfsCalendar)[] = dow === 0 ? ['sunday'] : dow === 6 ? ['saturday'] : WEEKDAY_FIELDS;
+  const field = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[dow];
+  const kindFields: readonly (keyof GtfsCalendar)[] = dow === 0 ? ['sunday'] : dow === 6 ? ['saturday'] : WEEKDAY_CALENDAR_FIELDS;
   const running = new Set<string>();
   const rowsById = new Map<string, GtfsCalendar[]>();
   for (const c of calendar) {
@@ -78,16 +77,16 @@ export function servicesRunningOn(calendar: readonly GtfsCalendar[], calendarDat
   for (const cd of calendarDates) {
     if (cd.date !== date || cd.exception_type !== '1') continue;
     const rows = rowsById.get(cd.service_id) ?? [];
-    const hasPattern = rows.some(r => DOW_FIELDS.some(f => r[f] === '1'));
+    const hasPattern = rows.some(r => CALENDAR_DAY_FIELDS_SUNDAY_FIRST.some(f => r[f] === '1'));
     if (!hasPattern || rows.some(r => kindFields.some(f => r[f] === '1'))) running.add(cd.service_id);
   }
   return running;
 }
 
 /** Day kind of a date: 'Weekday', 'Saturday' or 'Sunday'. */
-function dayKind(date: string): 'Weekday' | 'Saturday' | 'Sunday' {
+function dayKind(date: string): DayType {
   const dow = ymdToDate(date).getDay();
-  return dow === 0 ? 'Sunday' : dow === 6 ? 'Saturday' : 'Weekday';
+  return dayTypeOfDow(dow);
 }
 
 /**

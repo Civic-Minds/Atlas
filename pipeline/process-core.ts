@@ -63,6 +63,7 @@ import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection }
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
 import { runNow } from '../shared/runClock.js';
+import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
 export type { GtfsPreprocess };
 export type { HeadwayByPeriod };
@@ -693,12 +694,11 @@ export function weekdayServiceDaysByRouteDir(
   const removed = new Set<string>();
   for (const cd of gtfs.calendarDates ?? []) if (cd.exception_type === '2') removed.add(`${cd.service_id}|${cd.date}`);
   const regular = new Map<string, boolean[]>();
-  const WEEKDAY_FIELDS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const;
   for (const cal of gtfs.calendar ?? []) {
     if (cal.start_date > referenceDate || cal.end_date < referenceDate) continue;
     const from = Math.max(ymd(cal.start_date).getTime(), reference - 90 * DAY);
     const to = Math.min(ymd(cal.end_date).getTime(), reference + 90 * DAY);
-    const flags = WEEKDAY_FIELDS.map((field, index) => {
+    const flags = WEEKDAY_CALENDAR_FIELDS.map((field, index) => {
       if (cal[field] !== '1') return false;
       let total = 0;
       let kept = 0;

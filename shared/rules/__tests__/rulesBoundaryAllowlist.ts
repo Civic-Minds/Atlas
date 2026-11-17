@@ -20,7 +20,6 @@ export const KIND_REASONS: Record<RuleKind, string> = {
 
 export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'index.html': { 'origin': 9 },
-  'pipeline/branchReadCorrections.ts': { 'definition': 1 },
   'pipeline/defaults.ts': { 'period-minutes': 1 },
   'pipeline/discover-gaps.ts': { 'period-minutes': 2 },
   'pipeline/feedReview.ts': { 'definition': 1 },
@@ -29,8 +28,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'pipeline/preprocess/merge-equivalent-shapes.ts': { 'route-type-digit': 1 },
   'pipeline/process-core.ts': { 'period-minutes': 1 },
   'pipeline/route-report.ts': { 'definition': 1 },
-  'pipeline/runningTime.ts': { 'definition': 1 },
-  'pipeline/serviceDates.ts': { 'definition': 1 },
   'pipeline/tripSets.ts': { 'definition': 1, 'period-minutes': 1 },
   'scripts/audit-edge-gap-amounts.ts': { 'grace-formula': 2, 'period-minutes': 1 },
   'scripts/audit-edge-gap-impact.ts': { 'grace-formula': 1, 'period-minutes': 1 },
@@ -40,7 +37,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'scripts/audit-frequency-candidates.ts': { 'grace-formula': 1, 'period-minutes': 1 },
   'scripts/audit-frequency.ts': { 'period-minutes': 1 },
   'scripts/audit-shape-share.ts': { 'definition': 1 },
-  'scripts/build-bustang-connections.ts': { 'definition': 1 },
   'scripts/build-frequent-weekend-counts.ts': { 'scale-array': 1 },
   'scripts/build-share-maps.ts': { 'colour': 2 },
   'scripts/check-logo-icon.mjs': { 'colour': 1, 'scale-array': 1 },
@@ -52,7 +48,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'scripts/verify-deployments.mjs': { 'origin': 3 },
   'shared/config.ts': { 'definition': 6 },
   'shared/connections.ts': { 'scale-array': 1 },
-  'shared/dayTypes.ts': { 'definition': 4 },
   // CIV-1814: the night and frequent-service grades' one home each, replacing four typed copies; they move with step 1.
   'shared/frequentService.ts': { 'scale-array': 1 },
   'shared/frequencyRules.ts': { 'definition': 2, 'period-minutes': 1, 'scale-array': 2 },
@@ -77,7 +72,7 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'src/components/ModeTransition.tsx': { 'colour': 1 },
   'src/components/PageContents.tsx': { 'colour': 1 },
   'src/data/freeChildFares.ts': { 'scale-array': 2 },
-  'src/hooks/useIntervalStats.ts': { 'definition': 2 },
+  'src/hooks/useIntervalStats.ts': { 'definition': 1 },
   'src/utils/contextLayer.ts': { 'colour': 3 },
   'src/utils/mapExport.ts': { 'colour': 2 },
   'src/utils/mapExportDetails.ts': { 'colour': 1 },

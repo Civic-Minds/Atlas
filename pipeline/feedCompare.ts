@@ -14,6 +14,7 @@ import { processGtfsBuffer, type ProcessOptions } from './process-core.js';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../shared/dayTypes.js';
 import type { GtfsData } from '../types/gtfs.js';
+import { ALL_DAYS, DAYS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 export type PeriodFigures = Partial<Record<PeriodKey, number | null>>;
 /** A drawn line as [lng, lat] pairs, rounded to ROUTE_LINE_DECIMALS. */
@@ -74,7 +75,6 @@ export class DateNotReadError extends Error {
 }
 
 const fmtDate = (ymd: string) => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
-const DAY_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DOW_FIELD: Record<DayName, 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'> = {
   Monday: 'monday', Tuesday: 'tuesday', Wednesday: 'wednesday', Thursday: 'thursday', Friday: 'friday', Saturday: 'saturday', Sunday: 'sunday',
 };
@@ -90,7 +90,7 @@ export function normalizeYmd(date: string): string {
 export function dateInWeek(ymd: string, day: DayName): string {
   const d = new Date(Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8)));
   const mondayOffset = (d.getUTCDay() + 6) % 7;
-  const target = (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as DayName[]).indexOf(day);
+  const target = ALL_DAYS.indexOf(day);
   d.setUTCDate(d.getUTCDate() - mondayOffset + target);
   return d.toISOString().slice(0, 10).replace(/-/g, '');
 }
@@ -107,7 +107,7 @@ export function dayCoverage(listed: ReadonlySet<string>, read: ReadonlySet<strin
 }
 
 export function dayNameOf(ymd: string): DayName {
-  return DAY_NAMES[new Date(Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8))).getUTCDay()];
+  return DAYS_SUNDAY_FIRST[new Date(Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8))).getUTCDay()];
 }
 
 /**

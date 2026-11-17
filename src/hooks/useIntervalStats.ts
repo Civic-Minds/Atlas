@@ -9,8 +9,9 @@ import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
+import { type DayType } from '../../shared/rules/days';
 
-export type DayType = 'Weekday' | 'Saturday' | 'Sunday';
+export type { DayType };
 
 export type AgencyLayers = BaseAgencyLayers;
 

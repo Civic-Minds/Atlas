@@ -54,6 +54,7 @@ import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
  */
 const GATE_TIERS = new Set([...TIER_MAXES.map(String), 'infrequent']);
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
+import { DAY_TYPES } from '../shared/rules/days.js';
 
 export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
 export type GateFlagName = typeof GATE_FLAGS[number];
@@ -101,7 +102,7 @@ const routeIdOfSignature = (sig: string): string => sig.slice(0, sig.lastIndexOf
 export const HEADWAY_LOST_RED_SHARE = 0.75;
 export const HEADWAY_LOST_RED_MIN = 3;
 /** Day types compared by day-lost / day-shrunk, as route lines label them. */
-export const GATE_DAYS = ['Weekday', 'Saturday', 'Sunday'] as const;
+export const GATE_DAYS = DAY_TYPES;
 /** Periods headway-shift compares: All day and each named period, as the map's period picker offers them. */
 export const GATE_PERIODS = ['all', ...PERIOD_KEYS] as const;
 /**

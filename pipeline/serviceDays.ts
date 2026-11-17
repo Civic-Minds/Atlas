@@ -16,9 +16,10 @@
  */
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
+import { ALL_DAYS, CALENDAR_DAY_FIELDS, type DayName } from '../shared/rules/days.js';
 
-export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
-export type DayName = (typeof DAY_NAMES)[number];
+export const DAY_NAMES: readonly DayName[] = ALL_DAYS;
+export type { DayName };
 
 /** Days before the anchor the table starts (so the anchor's own week is always whole). */
 export const WINDOW_DAYS_BEFORE = 7;
@@ -45,7 +46,6 @@ export const MIN_CYCLE_WEEKS_EACH = 2;
 /** Weeks looked at on each side of a possible period change. */
 const PERIOD_LOOK_WEEKS = 4;
 
-const DOW_FIELDS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 
 // Date math in UTC epoch days, so the result does not depend on the machine's time zone.
 function dayNumber(ymd: string): number {
@@ -172,7 +172,7 @@ export function buildServiceDayTable(input: ServiceDayTableInput): ServiceDayTab
   }
   const rows = calendar
     .filter(c => isYmd(c.start_date) && isYmd(c.end_date))
-    .map(c => ({ id: c.service_id, start: dayNumber(c.start_date), end: dayNumber(c.end_date), flags: DOW_FIELDS.map(f => c[f] === '1') }));
+    .map(c => ({ id: c.service_id, start: dayNumber(c.start_date), end: dayNumber(c.end_date), flags: CALENDAR_DAY_FIELDS.map(f => c[f] === '1') }));
   const changesByDay = new Map<number, Array<{ id: string; add: boolean }>>();
   for (const cd of calendarDates) {
     if (!isYmd(cd.date) || (cd.exception_type !== '1' && cd.exception_type !== '2')) continue;
@@ -707,7 +707,7 @@ interface ServiceCalendar {
 function serviceCalendar(calendar: readonly GtfsCalendar[], calendarDates: readonly GtfsCalendarDate[]): ServiceCalendar {
   const rows = calendar
     .filter(c => isYmd(c.start_date) && isYmd(c.end_date))
-    .map(c => ({ id: c.service_id, start: dayNumber(c.start_date), end: dayNumber(c.end_date), flags: DOW_FIELDS.map(f => c[f] === '1') }));
+    .map(c => ({ id: c.service_id, start: dayNumber(c.start_date), end: dayNumber(c.end_date), flags: CALENDAR_DAY_FIELDS.map(f => c[f] === '1') }));
   const changesByDay = new Map<number, Array<{ id: string; add: boolean }>>();
   const removed = new Set<string>();
   const lastAdded = new Map<string, number>();
