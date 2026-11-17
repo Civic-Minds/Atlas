@@ -225,14 +225,15 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, className: 'font-normal', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
-                      // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours".
-                      ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 12, cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
-                      { key: 'am', header: PERIOD_LABELS.amPeak, cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
-                      { key: 'midday', header: PERIOD_LABELS.midday, cell: r => <PeriodCell text={cell('midday', r, !!hoursAxis)} /> },
-                      { key: 'pm', header: PERIOD_LABELS.pmPeak, cell: r => <PeriodCell text={cell('pm', r, !!hoursAxis)} /> },
-                      { key: 'evening', header: PERIOD_LABELS.evening, cell: r => <PeriodCell text={cell('evening', r, !!hoursAxis)} /> },
-                      { key: 'overnight', header: PERIOD_LABELS.overnight, cell: r => <PeriodCell text={cell('overnight', r, !!hoursAxis)} /> },
+                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, className: 'font-normal align-top', cell: r => <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} /> },
+                      // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours". Every cell is top-aligned (CIV-1787), so
+                      // the main values share one line and a grey note hangs below.
+                      ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 14, className: 'align-top', cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      { key: 'am', header: PERIOD_LABELS.amPeak, className: 'align-top', cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
+                      { key: 'midday', header: PERIOD_LABELS.midday, className: 'align-top', cell: r => <PeriodCell text={cell('midday', r, !!hoursAxis)} /> },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, className: 'align-top', cell: r => <PeriodCell text={cell('pm', r, !!hoursAxis)} /> },
+                      { key: 'evening', header: PERIOD_LABELS.evening, className: 'align-top', cell: r => <PeriodCell text={cell('evening', r, !!hoursAxis)} /> },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, className: 'align-top', cell: r => <PeriodCell text={cell('overnight', r, !!hoursAxis)} /> },
                     ]}
                   />
                 </ScrollX>
