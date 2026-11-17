@@ -3,11 +3,11 @@
  * like the area pages (shared/areaPages.ts) with the place swapped. Every number is added up from the per-agency
  * summaries; nothing new is measured.
  */
-import { agencyPlaces, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { agencyPlaces, agencyStats, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
 import { AREA_INDEX } from './areaIndex';
 import { areaRegionName } from './areaRegions';
 import { countryForRegion } from './regionCountry';
-import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
+import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData, type AreaAgencyRow } from './areaPages';
 import { agencyIndexHeadingHref, regionPagePath, regionSlug } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
@@ -134,6 +134,22 @@ export function regionAreasSentence(d: Pick<RegionPageData, 'areas'>): string {
   return p ? `${p.lead}${p.named.map((a, i) => a.name + p.separators[i]).join('')}${p.tail}` : '';
 }
 
+/**
+ * CIV-1786 (Ryan picked 1): an agency that only partly serves the state or province keeps its whole route count beside
+ * the count here ("1 route in West Virginia · 68 total"). A parent agency's row is left as it is.
+ */
+function withAllRoutes<T extends { agencies: AreaAgencyRow[] }>(group: T, all: readonly AgencyPageSummary[]): T {
+  const bySlug = new Map(all.map(a => [a.slug, a]));
+  return {
+    ...group,
+    agencies: group.agencies.map(row => {
+      const full = row.parent ? undefined : bySlug.get(row.slug);
+      const total = full ? agencyStats(full).totalRoutes : 0;
+      return total > row.totalRoutes ? { ...row, allRoutes: total } : row;
+    }),
+  };
+}
+
 export function buildRegionPageData(region: RegionRef, all: readonly AgencyPageSummary[], releaseDate: string | null): RegionPageData {
   const members = regionMembers(region.country, region.name, all);
   const boxes = members.map(a => a.bbox).filter((b): b is [number, number, number, number] => !!b);
@@ -144,7 +160,7 @@ export function buildRegionPageData(region: RegionRef, all: readonly AgencyPageS
     region: { ...region, kind: regionKind(region.country, region.name) },
     areas: regionAreas(region, all),
     bbox,
-    ...agencyGroupData(members, new Map(all.map(a => [a.slug, a])), releaseDate),
+    ...withAllRoutes(agencyGroupData(members, new Map(all.map(a => [a.slug, a])), releaseDate), all),
   };
 }
 
