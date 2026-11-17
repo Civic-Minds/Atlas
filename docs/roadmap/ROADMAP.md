@@ -9,6 +9,12 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 - **[Technical](./TECHNICAL.md)**: Future engineering direction for live data, rendering, and analysis infrastructure.
 
+### Future (not now)
+
+Both depend on a licence decision for Atlas's data (Ryan, 2026-11-17).
+- **Open data**: publish route, stop, map and freshness data that other transit tools can build on, with a licence to match.
+- **Atlas MCP server**: lets AI assistants query Atlas frequency data.
+
 ---
 
 ### Status

@@ -194,7 +194,6 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs and known limitations.</li>
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> an overnight-service view and a frequent-service story, which sit under Research.</li>}
-              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish route, stop, map and freshness data that other transit tools can build on.</li>
             </ul>
             <p>Some surfaces are public, some are in beta and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
             {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates and selected observed headways. Coverage is route-specific, may be partial and is never treated as proof that the scheduled frequency calculation is current.</p>}
