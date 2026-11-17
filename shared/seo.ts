@@ -10,6 +10,7 @@ import { LIVE_VEHICLES_TITLE } from './liveWording';
 import { PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
 import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
+import { siteModeLabel } from './siteMode';
 import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, RESEARCHERS_PATH, TERMS_PATH } from './pagePaths';
 import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
@@ -214,9 +215,11 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
 /** Routes the router knows but that are never reachable by URL (they redirect to the map). */
 export const UNREACHABLE_APP_PATHS: readonly string[] = ['/apps/fares'];
 
-/** The title's build tag: none on public, "[Preview] " on preview, "[Beta] " on beta and dev builds. */
+/** The title's build tag: "[Preview] " on preview, otherwise the mode word in brackets ("[Beta] ", "[Internal] "), none on public. */
 export function seoTitlePrefix(mode: SeoMode): string {
-  return mode === 'preview' ? '[Preview] ' : mode === 'public' ? '' : '[Beta] ';
+  if (mode === 'preview') return '[Preview] ';
+  const word = siteModeLabel(mode);
+  return word ? `[${word}] ` : '';
 }
 
 export interface SeoContext {

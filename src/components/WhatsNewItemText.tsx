@@ -1,7 +1,8 @@
 import type { WhatsNewItem } from '../data/whatsNew';
 
 import Tag from './ui/Tag';
-import { BETA_TAG, NEW_TAG } from '../content/noticeCopy';
+import { NEW_TAG } from '../content/noticeCopy';
+import { BETA_TAG } from '../../shared/siteMode';
 
 /** One what's-new bullet: bold lead, colon, short clause, then "New" / "Beta" tags with a real space before them. */
 export function WhatsNewItemText({ item, tagClass = 'text-xs', leadClass = 'font-black', hideNew = false }: { item: WhatsNewItem; tagClass?: string; /** Weight of the lead; the what's-new panel uses a regular weight so its version heading stands out. */ leadClass?: string; /** The what's-new panel's name already says it, so it drops the New pills. */ hideNew?: boolean }) {
