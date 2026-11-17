@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
+import Card, { CARD_TITLE, cardTint } from './ui/Card';
 
-/** A pale tint of a frequency colour on the page background: never a dark fill (STYLE.md), as on About. */
-export const featureTint = (color: string) => `color-mix(in srgb, ${color} 11%, var(--bg-app))`;
+/** The card tint, under its older name (CIV-1789: it lives in the base Card). */
+export const featureTint = cardTint;
 
 const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
 
@@ -39,16 +40,18 @@ export default function FeatureCard({ title, color, picture, flip = false, child
   children: ReactNode;
 }) {
   return (
-    <section
-      className={`grid gap-8 rounded-2xl p-6 sm:p-8 lg:items-start lg:gap-10 ${flip ? 'lg:grid-cols-[1.1fr_0.9fr]' : 'lg:grid-cols-[0.9fr_1.1fr]'}`}
-      style={{ background: featureTint(color) }}
+    <Card
+      as="section"
+      tone={{ tint: color }}
+      padding="roomy"
+      className={`grid gap-8 lg:items-start lg:gap-10 ${flip ? 'lg:grid-cols-[1.1fr_0.9fr]' : 'lg:grid-cols-[0.9fr_1.1fr]'}`}
       data-picture-side={picture ? (flip ? 'left' : 'right') : undefined}
     >
       <div className={flip ? 'lg:order-2' : undefined}>
-        <h2 className="text-2xl font-black tracking-tight">{title}</h2>
+        <h2 className={CARD_TITLE}>{title}</h2>
         <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
       </div>
       <div className={flip ? 'lg:order-1' : undefined}>{picture && <FeatureCardPicture base={picture} />}</div>
-    </section>
+    </Card>
   );
 }

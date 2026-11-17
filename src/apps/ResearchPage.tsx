@@ -1,7 +1,7 @@
 import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import Tag from '../components/ui/Tag';
-import { SURFACE } from '../styles';
+import Card from '../components/ui/Card';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import { RESEARCH } from '../data/research';
 import { RESEARCH_DRAFTS } from './researchDrafts';
@@ -23,7 +23,7 @@ export default function ResearchPage() {
             </header>
             <div className="grid gap-4 sm:grid-cols-2">
               {CARDS.map(({ href, Icon, kind, title, body, linkText, draft }) => (
-                <a key={href} href={href} className={`${SURFACE} group flex flex-col rounded-2xl p-5 transition-colors hover:border-[var(--accent-border)]`}>
+                <Card as="a" key={href} href={href} tone="surface" padding="compact" className="group flex flex-col transition-colors hover:border-[var(--accent-border)]">
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
                     <span className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export default function ResearchPage() {
                   {body && <p className="mt-2">{body}</p>}
                   {/* Pinned to the bottom so the links line up across a row. */}
                   {linkText && <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">{linkText}</ArrowLink>}
-                </a>
+                </Card>
               ))}
             </div>
     </DocsPageLayout>
