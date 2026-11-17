@@ -8,7 +8,7 @@ import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
-import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
+import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { nameCase, routeShortLabel } from '../utils/format';
@@ -21,7 +21,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -224,29 +224,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
   }, [view]);
 
-  const liveBySlug = useMemo(() => {
-    const map = new Map<string, typeof LIVE_POLLING_ROUTES>();
-    for (const r of LIVE_POLLING_ROUTES) {
-      if ((r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && !r.active) continue;
-      if (!map.has(r.slug)) map.set(r.slug, []);
-      map.get(r.slug)!.push(r);
-    }
-    return map;
-  }, []);
-
-  const liveCoverageBySlug = useMemo(() => {
-    const map = new Map<string, LiveCoverage>();
-    for (const [slug, layer] of Object.entries(layers ?? {})) {
-      const routeNames = new Set<string>();
-      for (const feature of layer.features) {
-        const properties = feature.properties as { routeId?: string; routeShortName?: string | null } | null;
-        if (properties?.routeId && properties.routeShortName) routeNames.add(properties.routeShortName);
-      }
-      const coverage = liveCoverageForRouteNames(slug, routeNames);
-      if (coverage) map.set(slug, coverage);
-    }
-    return map;
-  }, [layers]);
+  // CIV-1691: the agencies with live buses, from the one list in livePollingConfig.
+  const liveBySlug = useMemo(() => new Set(LIVE_AGENCY_SLUGS), []);
 
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
@@ -313,13 +292,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const totalLiveAgencies = liveBySlug.size;
   const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
     ['all', 'All'],
-    ['live', 'Live'],
+    ...(FEATURES.live ? [['live', LIVE_TAG] as [AgencyListFilter, string]] : []),
     ...(FEATURES.history ? [['history', 'History'] as [AgencyListFilter, string]] : []),
     ...(FEATURES.outdatedFilter ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
-  const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
+  const selectedLiveRoutes = selectedSlug && liveBySlug.has(selectedSlug) ? LIVE_POLLING_ROUTES.filter(r => r.slug === selectedSlug) : [];
   const selectedHistory = selectedSlug ? historyBySlug.get(selectedSlug) : null;
 
   const historyYearsText = useMemo(() => {
@@ -500,11 +479,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
                               tags={(showLiveBadge || showHistoryBadge) ? (
                                 <>
-                                  {showLiveBadge && (
-                                    <Tag title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}>
-                                      {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
-                                    </Tag>
-                                  )}
+                                  {/* CIV-1691 (Ryan): one plain "Live" tag; no "Full live" / "Partial live" wording. */}
+                                  {showLiveBadge && <Tag>{LIVE_TAG}</Tag>}
                                   {showHistoryBadge && <Tag>{HISTORY_TAG}</Tag>}
                                 </>
                               ) : undefined}
