@@ -10,6 +10,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **On-demand services no longer link to the agency's booking site**: Atlas is for planners, not trip planning, and fixed routes have no such link
 - **The agency card's link to its agency page reads "Details"**, as on the stop card: it said "About", the same word as the About page link
 - **An agency page's map link [opens the agency's card](https://github.com/Civic-Minds/Atlas/issues/1570)**: it showed only that agency's routes, with no card
+- **A "For Researchers" page shows what Atlas offers researchers (local only for now)**: History, comparing cities, map images to cite and the research stories, on one page that launches with History
 - **Agencies is only in the footer now**: the page header keeps Research, Docs and Go to Atlas, so the menu bar is shorter
 - **The For Transit Planners page gives the exact number of agencies Atlas covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
 - **A search box's clear × stays inside the box**: in the Agencies filter, typing a long name pushed the × past the panel's edge ([#1563](https://github.com/Civic-Minds/Atlas/issues/1563))
