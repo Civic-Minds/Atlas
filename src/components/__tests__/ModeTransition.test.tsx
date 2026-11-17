@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeCrossFadeText, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
+import { COUNT_MAX_WAIT_MS, LABEL_MAX_WAIT_MS, MODE_ENTER_MAX_WAIT_MS, ModeCollapse, ModeCrossFadeText, ModeEnter, MODE_EASE_MS, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useModeLeaving, useShownWhenDrawn, useShownWithCount } from '../ModeTransition';
 
 /**
  * A stand-in map. `fireIdle` plays MapLibre's idle event (everything loaded and drawn); `fireRender` plays one
@@ -136,6 +136,33 @@ describe('useModeEasing (CIV-1567)', () => {
     rerender({ active: true });
     expect(result.current).toBe(false);
     vi.unstubAllGlobals();
+  });
+});
+
+describe('useModeLeaving and the closing slide (CIV-1567)', () => {
+  beforeEach(() => { vi.useFakeTimers(); });
+  afterEach(() => { vi.useRealTimers(); });
+
+  it('is true from the mode turning off until the ease has run backwards; never with the switch off', () => {
+    const { result, rerender } = renderHook(({ active }) => useModeLeaving(active, true), { initialProps: { active: true } });
+    expect(result.current).toBe(false);
+    rerender({ active: false });
+    expect(result.current).toBe(true);
+    act(() => { vi.advanceTimersByTime(MODE_EASE_MS); });
+    expect(result.current).toBe(false);
+    const off = renderHook(({ active }) => useModeLeaving(active, false), { initialProps: { active: true } });
+    off.rerender({ active: false });
+    expect(off.result.current).toBe(false);
+  });
+
+  it('closing, the new pane is an empty panel ending past the right edge, and the old pane ends whole', () => {
+    const { container } = render(<ModeSplitPane enabled anchor="left" easing={false} entering={false} leaving divider="4px" className="relative flex-1"><p>map</p></ModeSplitPane>);
+    const panel = container.firstElementChild as HTMLElement;
+    expect(panel.dataset.modeEnter).toBe('sliding');
+    expect(panel.style.transform).toBe('translateX(100%)');
+    expect(screen.queryByText('map')).toBeNull();
+    const old = render(<ModeSplitPane enabled anchor="center" easing={false} entering={false} leaving divider="4px" className="relative flex-1"><p>a</p></ModeSplitPane>);
+    expect((old.getByText('a').parentElement as HTMLElement).style.transform).toBe('translateX(0px)');
   });
 });
 
@@ -280,11 +307,15 @@ describe('useChangedSince (CIV-1567)', () => {
 });
 
 describe('ModeCrossFadeText (CIV-1567)', () => {
-  it('keeps the old words while the new ones fade in, then drops them; plain words with the switch off', () => {
+  it('fades the old words out before the new ones come in, then drops them; plain words with the switch off', () => {
     vi.useFakeTimers();
     const { container, rerender } = render(<ModeCrossFadeText text="Find routes…" enabled />);
     rerender(<ModeCrossFadeText text="Find an agency…" enabled />);
     expect(container.textContent).toBe('Find routes…Find an agency…');
+    // The new words wait for the old ones to go (a delay as long as the fade out), so the two are never seen together.
+    const [old, next] = [...container.querySelectorAll('span span')] as HTMLElement[];
+    expect(old.className).toContain('[transition:opacity_150ms_ease-out]');
+    expect(next.className).toContain('[transition:opacity_150ms_ease-out_150ms]');
     act(() => { vi.advanceTimersByTime(400); });
     expect(container.textContent).toBe('Find an agency…');
     vi.useRealTimers();

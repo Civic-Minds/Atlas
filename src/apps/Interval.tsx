@@ -32,7 +32,7 @@ import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';
 import { compareSideBView, linkCompareMaps } from '../utils/compareMapSync';
-import { ModeCollapse, ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
+import { ModeCollapse, ModeEnter, ModeLoadingLabel, ModeSplitPane, modeFadeIn, modeFadeWhen, useChangedSince, useMapDrawn, useReadyOrTimeout, useModeEasing, useModeEntering, useModeLeaving, useShownWhenDrawn, useShownWithCount } from '../components/ModeTransition';
 import { COMPARE_PATH, compareStepForPathChange } from '../utils/appGate';
 import { DAY_TYPES, type DayType as DayTypeName } from '../../shared/dayTypes';
 import { splitRouteKey } from '../utils/routeKey';
@@ -856,6 +856,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // The first frame of Compare: map B's half starts at zero width and its controls transparent, then ease in.
   const compareEntering = useModeEntering(compareActive, FEATURES.modeTransitions);
   const compareEasing = useModeEasing(compareActive, FEATURES.modeTransitions, compareEntering);
+  // CIV-1567: closing Compare runs the split's slide backwards.
+  const compareLeaving = useModeLeaving(compareActive, FEATURES.modeTransitions);
   const compareFadeIn = modeFadeIn(compareTransitions, compareEntering);
   const compareBDrawn = useMapDrawn(mapB, compareTransitions);
   const compareLabelA = useShownWhenDrawn(compareA, mapA, compareTransitions);
@@ -1318,7 +1320,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
 
       <div className={`absolute inset-0 flex ${compareActive ? 'flex-col sm:flex-row gap-1 bg-[var(--text-primary)]' : ''}`}>
         {/* Map A: while Compare's split eases in, it glides to the centre of its half and resizes once at the end. */}
-        <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
+        <ModeSplitPane enabled={FEATURES.modeTransitions} anchor="center" entering={compareEntering} easing={compareEasing} leaving={compareLeaving} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
           overlay={compareActive && (
             <CompareSideSlot side="A" className={modeFadeWhen(compareTransitions, compareSideAShown)}>
               <CompareSideBar
@@ -1407,9 +1409,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
           />
         </ModeSplitPane>
-        {compareActive && (
+        {(compareActive || compareLeaving) && (
           // Map B's half: slides in as a plain panel already showing "Loading map…"; map B is set up once it has arrived.
-          <ModeSplitPane enabled={compareTransitions} anchor="left" entering={compareEntering} easing={compareEasing} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
+          // Closing, map B goes at once and its half slides back out as a plain panel (CIV-1567).
+          <ModeSplitPane enabled={compareTransitions || compareLeaving} anchor="left" entering={compareEntering} easing={compareEasing} leaving={compareLeaving} divider={COMPARE_DIVIDER} className="relative flex-1 min-h-0 min-w-0"
             placeholder={<ModeLoadingLabel label={loadingText('map')} />}>
             <ModeEnter enabled={compareTransitions} ready={compareBDrawn} label={loadingText('map')}>
               <MapCanvas

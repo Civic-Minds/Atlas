@@ -97,11 +97,13 @@ function useSlide(ref: RefObject<HTMLDivElement | null>, start: boolean, from: s
  * For `anchor="center"` keep `enabled` steady (the beta switch, not "mode is on"): turning it changes the elements
  * around the content and would remount a map inside.
  */
-export function ModeSplitPane({ enabled, anchor, entering, easing, divider, className, overlay, placeholder, children }: {
+export function ModeSplitPane({ enabled, anchor, entering, easing, leaving = false, divider, className, overlay, placeholder, children }: {
   enabled: boolean;
   anchor: 'left' | 'center';
   entering: boolean;
   easing: boolean;
+  /** The mode is closing (`useModeLeaving`): the same slide run backwards, the new pane out to the right edge as a plain panel. */
+  leaving?: boolean;
   /** The width of the divider between the two halves (the split's gap), a CSS length. */
   divider: string;
   className: string;
@@ -116,15 +118,17 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
   const offset = anchor === 'left' ? 'translateX(100%)' : 'translateX(0px)';
   const settled = anchor === 'left' ? 'translateX(0px)' : `translateX(calc(-25% - ${divider} / 4))`;
   useSlide(slideRef, sliding, offset, settled);
+  // Closing (CIV-1567): the same slide backwards, from the split to the whole screen.
+  useSlide(slideRef, enabled && leaving, settled, offset);
   // The placeholder moves back by half the panel's travel, so it stays centred in the part of the panel already on
   // screen, and fades in while that part is still too narrow to show it whole. The panel clips it, and it is
   // transparent before the slide starts, so it never shows outside the panel.
   const placeholderRef = useRef<HTMLDivElement>(null);
   useSlide(placeholderRef, sliding && anchor === 'left', 'translateX(-50%)', 'translateX(0px)', true);
   if (!enabled) return <div className={className}>{children}{overlay}</div>;
-  const transform = entering ? offset : settled;
+  const transform = entering || leaving ? offset : settled;
   if (anchor === 'left') {
-    if (easing) {
+    if (easing || leaving) {
       return (
         <div
           ref={slideRef}
@@ -132,7 +136,7 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
           style={{ width: `calc(50% + ${divider} / 2)`, borderLeft: `${divider} solid var(--text-primary)`, boxSizing: 'border-box', transform }}
           data-mode-enter="sliding"
         >
-          {placeholder != null && (
+          {placeholder != null && !leaving && (
             <div ref={placeholderRef} className="absolute inset-0 flex items-center justify-center pointer-events-none will-change-transform" style={entering ? { transform: 'translateX(-50%)', opacity: 0 } : { transform: 'translateX(0px)' }}>
               {placeholder}
             </div>
@@ -142,9 +146,10 @@ export function ModeSplitPane({ enabled, anchor, entering, easing, divider, clas
     }
     return <div className={className} data-mode-enter="pane">{children}{overlay}</div>;
   }
+  const moving = easing || leaving;
   return (
-    <div className={`${className} ${easing ? 'overflow-hidden bg-[var(--bg-app)]' : ''}`} data-mode-enter="pane">
-      <div ref={slideRef} className={`absolute inset-0 ${easing ? 'will-change-transform' : ''}`} style={easing ? { transform } : undefined}>
+    <div className={`${className} ${moving ? 'overflow-hidden bg-[var(--bg-app)]' : ''}`} data-mode-enter="pane">
+      <div ref={slideRef} className={`absolute inset-0 ${moving ? 'will-change-transform' : ''}`} style={moving ? { transform } : undefined}>
         {children}
       </div>
       {overlay != null && overlay !== false && (
@@ -244,6 +249,25 @@ export function useModeEasing(active: boolean, enabled: boolean, entering: boole
     return () => window.clearTimeout(timer);
   }, [easing, entering]);
   return enabled && easing;
+}
+
+/**
+ * True from the render where `active` turns off until the same 300 ms ease has run backwards (never with reduced
+ * motion): a mode leaves the way it came in (CIV-1567; Ryan: "we forgot to do the transition when closing").
+ */
+export function useModeLeaving(active: boolean, enabled: boolean): boolean {
+  const [seenActive, setSeenActive] = useState(active);
+  const [leaving, setLeaving] = useState(false);
+  if (seenActive !== active) {
+    setSeenActive(active);
+    setLeaving(enabled && !active && !prefersReducedMotion());
+  }
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = window.setTimeout(() => setLeaving(false), MODE_EASE_MS);
+    return () => window.clearTimeout(timer);
+  }, [leaving]);
+  return enabled && leaving;
 }
 
 /** The app's loading label, as a view's cover shows it. `ModeSplitPane`'s sliding panel shows the same one in the same place. */
@@ -481,8 +505,8 @@ export function useMapHold(mapRef: RefObject<HoldMap | null>, mapLoaded: boolean
 }
 
 /**
- * Words that cross-fade when they change (a mode's search hint): the old words fade out where they were while the new
- * ones fade in over them (CIV-1567). Off: just the words.
+ * Words that swap when they change (a mode's search hint): the old words fade out where they were, then the new ones fade
+ * in (CIV-1567). They never show together (Ryan: "the words both appear for a second"). Off: just the words.
  */
 export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: boolean }) {
   const [shown, setShown] = useState(text);
@@ -501,11 +525,15 @@ export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: bo
     return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); window.clearTimeout(timer); };
   }, [old]);
   if (!enabled) return <>{text}</>;
-  const fade = 'transition-opacity duration-300 ease-out motion-reduce:transition-none';
+  // The old words go in 150 ms; the new ones wait those 150 ms, then come in, as FOLD_SHUT / FOLD_OPEN do for a fold.
+  const out = '[transition:opacity_150ms_ease-out] motion-reduce:[transition:none]';
+  const into = '[transition:opacity_150ms_ease-out_150ms] motion-reduce:[transition:none]';
   return (
     <span className="inline-grid">
-      {old != null && <span aria-hidden="true" className={`[grid-area:1/1] ${fade} ${fading ? 'opacity-0' : 'opacity-100'}`}>{old}</span>}
-      <span className={`[grid-area:1/1] ${old != null ? `${fade} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
+      {old != null && <span aria-hidden="true" className={`[grid-area:1/1] ${out} ${fading ? 'opacity-0' : 'opacity-100'}`}>{old}</span>}
+      {/* Keyed by its words: a new element starts transparent. Reusing the old one made it fade from fully shown, so
+          both hints showed together for the length of the delay. */}
+      <span key={shown} className={`[grid-area:1/1] ${old != null ? `${into} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
     </span>
   );
 }
