@@ -179,6 +179,12 @@ const RULES: Rule[] = [
     pattern: /<(button|a|ArrowLink|Pill|Tag|SectionTitle|SubsectionTitle)\b[^>{]*>\s*[A-Z][^<{}]*<\/|\b(label|aria-label|ariaLabel|linkLabel|title)=["'][A-Z]|\bheader: ['"][A-Z]/,
     slip: '<ArrowLink href="/">Go to Atlas</ArrowLink>',
     only: /^src\/(?!.*(Diagnostics|FrequentService|FreeChildFares|AirportStory|AboutDocsPage)).*\.tsx$/ },
+  // CIV-1789: every card is the base Card (components/ui/Card.tsx): its corners with padding, the panel surface or a card
+  // tint. Map overlays, the contents list, a dialog and the shared style constants are panels, not cards.
+  { name: 'a card built by hand (use Card in components/ui/Card.tsx)', doc: 'VISUAL.md',
+    pattern: /rounded-2xl[^"'`]*\b(p|px|py)-\d|\b(p|px|py)-\d[^"'`]*rounded-2xl|\$\{SURFACE\}[^"'`]*rounded-2xl|rounded-2xl[^"'`]*\$\{SURFACE\}|featureTint\(|cardTint\(/,
+    slip: '<div className="rounded-2xl p-6" style={{ background: featureTint(color) }}>',
+    allowed: ['src/components/ui/Card.tsx', 'src/styles.ts', 'src/pageStyles.ts', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];
