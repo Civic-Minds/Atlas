@@ -26,6 +26,7 @@ The shared components live in `src/components/ui/`.
 
 - Digits are the font's normal (proportional) digits everywhere, charts and tables included. No fixed-width digits (`tabular-nums`, `font-variant-numeric`). Ryan, 2026-11-15: "1". (checked)
 - Tables use `DataTable` (`src/components/ui/DataTable.tsx`) with one of its variants (compact, ruled, card). (checked: no `<table>` outside `DataTable`)
+- Every card is `Card` (`src/components/ui/Card.tsx`): its corners, a pale frequency-colour tint or the panel surface, and one of its paddings; each card type keeps its own layout inside it. CIV-1789. (checked: no `rounded-2xl` with padding, surface or tint outside `Card`)
 - Page tables (area and agency pages) keep their columns in place. CIV-958, CIV-973.
   - Every area page shows the same mode columns in the shared mode order (Subway/Metro, Light rail, Streetcar, Commuter rail, Bus, Ferry), with a dash where a mode is missing.
   - Monorail counts in Subway/Metro and trolleybus in Bus.
