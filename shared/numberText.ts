@@ -12,6 +12,10 @@ const minus = (text: string): string => text.replace('-', '−');
 /** "1,234": a count, rounded to a whole number, with a comma every three digits, the same in every browser language. */
 export const countText = (n: number): string => minus(grouped.format(Math.round(n) || 0));
 
+const SMALL_NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+/** "five": a small count (up to ten) written as a word, as in a caption; larger counts as countText. */
+export const countWord = (n: number): string => SMALL_NUMBER_WORDS[n] ?? countText(n);
+
 /** "5.3": a figure to a fixed number of decimals, keeping a trailing zero ("5.0") so a column reads at one precision. */
 export const decimalText = (x: number, digits: number): string => minus(x.toFixed(digits));
 /** A machine value (a map view in the address bar) rounded to `places` decimals, as a number: Number(x.toFixed(places)). */

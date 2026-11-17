@@ -8,7 +8,7 @@ import { nameCase } from '../../utils/format';
 import { minutesText, tenth } from '../../../shared/liveFormat';
 import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STARTS_LABEL, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy, BUNCHING_FORMS_LABEL } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
-import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
+import { DEPARTURES_COLUMN, LIVE_LESS_EXACT_HERE, STOP_COLUMN } from '../../content/noticeCopy';
 import { percentText } from '../../../shared/numberText';
 
 export type RouteStripMode = 'delay' | 'bunching';
@@ -57,7 +57,7 @@ export const MIN_N = 30;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
   delay: DELAY_STEP_LABELS,
-  bunching: ['Under 15%', '15–25%', '25% or more'],
+  bunching: [`Under ${percentText(BUNCHING_STEP_LIMITS[0])}`, `${Math.round(BUNCHING_STEP_LIMITS[0] * 100)}–${percentText(BUNCHING_STEP_LIMITS[1])}`, `${percentText(BUNCHING_STEP_LIMITS[1])} or more`],
 };
 export const LEGEND_TITLE: Record<RouteStripMode, string> = {
   delay: DELAY_LEGEND_TITLE,
@@ -69,7 +69,7 @@ export const TRACK_NAME: Record<RouteStripMode, string> = { delay: 'Delay', bunc
 /** The screen-reader table's caption: "Eastbound: delay and bunching at each stop". */
 export const stripTableCaption = (label: string): string => `${label}: delay and bunching at each stop`;
 /** The screen-reader table's column headers. */
-export const STRIP_COLUMNS = { stop: 'Stop', delay: DELAY_LEGEND_TITLE, late: LATE_LABEL, bunch: 'Gaps off', n: 'Departures' } as const;
+export const STRIP_COLUMNS = { stop: STOP_COLUMN, delay: DELAY_LEGEND_TITLE, late: LATE_LABEL, bunch: 'Gaps off', n: DEPARTURES_COLUMN } as const;
 /** A table cell or hover value with nothing measured. */
 export const NOT_MEASURED_CELL = NOT_MEASURED_VALUE;
 /** The phone list's switch between key stops and every stop. */
@@ -229,7 +229,7 @@ export function stripSummary(stops: readonly RouteStripStop[], mode: RouteStripM
   }
   const what = mode === 'delay' ? DELAY_LEGEND_TITLE : 'Share of gaps too short or too long';
   const steps = legendSteps(mode).filter(st => st !== 'early' || counts.has('early')).map(st => `${counts.get(st) ?? 0} ${stepLabel(mode, st).toLowerCase()}`).join(', ');
-  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${countOf(stops.length, 'stop')}: ${steps}${missing ? `, ${missing} not measured` : ''}.`];
+  const parts = [`${what}, ${directionLabel.toLowerCase()} from ${stops[0].name} to ${stops[stops.length - 1].name}, ${countOf(stops.length, 'stop')}: ${steps}${missing ? `, ${missing} ${NOT_MEASURED_VALUE}` : ''}.`];
   if (stretch) parts.push(`${stretch.label} between ${stops[stretch.from].name} and ${stops[stretch.to].name}.`);
   parts.push('Use the left and right arrow keys to hear each stop.');
   return parts.join(' ');
