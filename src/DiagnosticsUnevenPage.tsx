@@ -1,6 +1,6 @@
 import { BACK_PLACES, backLinkLabel } from './content/backLinks';
 import { MISSING_VALUE } from '../shared/missingValue';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUpDown } from 'lucide-react';
 import AtlasLogo from './components/AtlasLogo';
 import { useAgencies } from './hooks/useAgencies';

@@ -28,7 +28,7 @@ import { KpiRow } from './LiveDashboardView';
 import ArrowLink from './components/ui/ArrowLink';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { PageTitle } from './components/ui/PageTitle';
-import { BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, METHOD_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
+import { BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE, excludingText, liveSubtitle } from '../shared/liveWording';
 import Section from './components/Live/sections/Section';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateByHourSection, { routeLeftOut } from './components/Live/sections/LateByHourSection';

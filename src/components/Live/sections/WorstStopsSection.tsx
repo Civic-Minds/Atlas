@@ -1,5 +1,5 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
-import { rankStops, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
+import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
 import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, LATE_THRESHOLD, P90_LATER_LABEL, lateStopsIntro } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';

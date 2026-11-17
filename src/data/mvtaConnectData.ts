@@ -1,5 +1,4 @@
 // Generated from the MVTA Connect GTFS-Flex export MVTA emailed (2026-10-10): locations.geojson zones and location-group stops.
-import type { GeoJSON } from 'geojson';
 
 const SOURCE_URL = 'https://www.mvta.com/new-riders/mvta-connect/';
 const SOURCE_LABEL = 'MVTA Connect GTFS-Flex export (agency-supplied)';

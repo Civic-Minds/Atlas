@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   collectStopHubSiblings,
-  STOP_HUB_PROXIMITY_M,
 } from '../stopHub';
 
 describe('collectStopHubSiblings', () => {

@@ -1,5 +1,3 @@
-import type { GeoJSON } from 'geojson';
-
 /** LT-Go on-demand stop locations from the Town of Leamington's Google My Maps layer (retrieved 2026-10-10). */
 export const LEAMINGTON_LT_GO_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
   { type: 'Feature', properties: { stopName: "Elliot and St Michael's Church", agencySlug: 'leamington', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-82.606272, 42.053312] } },

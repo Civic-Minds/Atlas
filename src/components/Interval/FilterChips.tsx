@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { HEADWAY_TIERS, getTierColor } from '../../utils/colors';
 import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
@@ -28,7 +27,7 @@ import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOp
 import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { capitalizeFirst, headwayAmount, headwayBandLabel, headwayOrBetter, headwayTierLabel } from '../../utils/headwayText';
+import { capitalizeFirst, headwayAmount, headwayOrBetter } from '../../utils/headwayText';
 import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
@@ -276,7 +275,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   connectionsBar = null,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
-  const colorMode = useColorMode();
+  useColorMode();
   const [openChip, setOpenChip] = useState<ChipId | null>(null);
   const [agencyQuery, setAgencyQuery] = useState('');
   const agencySearchRef = useRef<HTMLInputElement>(null);
@@ -303,12 +302,6 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
 
   // An empty set means no mode restriction, so every mode is active by default.
   const modeIsActive = (id: number) => selectedModes.size === 0 || selectedModes.has(id);
-
-  const toggleAgency = (slug: string) => {
-    const next = new Set(selectedAgencies);
-    if (next.has(slug)) next.delete(slug); else next.add(slug);
-    setSelectedAgencies(next);
-  };
 
   // CIV-1567 (beta): the selected fill is a layer that fades (a background image cannot ease), and the dot fades too,
   // so a chip whose value a mode changes cross-fades instead of switching in one frame.

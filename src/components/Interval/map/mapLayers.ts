@@ -3,7 +3,7 @@ import { nightServiceTierColorExpression, type ColorVisionMode } from '../../../
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
-import { ROUTE_LINE_WIDTH_BY_ZOOM, ROUTE_LINE_WIDTH_STOPS, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 import { stopDotPaint } from './stopStyle';
 

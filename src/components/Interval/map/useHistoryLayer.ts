@@ -82,7 +82,6 @@ export function useHistoryLayer(
     // For an agency selection, fit the complete set of historical routes rather
     // than flying to the catalog centre, which can land on a single suburb.
     const routeGeometry = isDrawableLineCoordinates(historyOverlay.routeGeometry) ? historyOverlay.routeGeometry : undefined;
-    const hasRouteGeometry = Boolean(routeGeometry);
     const ownShapes = (historyOverlay.yearRoutes ?? []).filter(r => isDrawableLineCoordinates(r.coordinates));
     const hasHistoricalRouteGeometry = ownShapes.length > 0;
     const rsn = historyOverlay.routeShortName;

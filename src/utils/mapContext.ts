@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import type { Agency } from '../App';
 import type { DayType } from '../../shared/dayTypes';
 import type { ViewportBounds } from '../hooks/useIntervalStats';

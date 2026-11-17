@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import PeriodBand, { bandLabelFits } from '../components/charts/PeriodBand';
 import HourSpark from '../components/charts/HourSpark';
 import { LATE_SHARE_LIMITS, lateShareColor } from '../components/Live/lateShare';

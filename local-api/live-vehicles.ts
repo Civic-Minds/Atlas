@@ -1,6 +1,5 @@
 import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
-  LIVE_AGENCY_TIMEZONES,
   LIVE_POLLING_ROUTES,
   isLiveApiServable,
 } from '../shared/livePollingConfig.js';

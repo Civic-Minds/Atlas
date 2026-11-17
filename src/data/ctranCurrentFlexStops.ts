@@ -1,5 +1,4 @@
 /* Reproduced with permission granted by C-TRAN under its GTFS data license. */
-import type { GeoJSON } from 'geojson';
 
 export const C_TRAN_CURRENT_FLEX_STOPS: GeoJSON.Feature<GeoJSON.Point>[] = [
   {

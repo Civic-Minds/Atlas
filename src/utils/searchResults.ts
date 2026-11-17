@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';

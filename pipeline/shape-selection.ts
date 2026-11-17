@@ -298,7 +298,6 @@ export function buildShapeSelectionContext(
 
   for (const [key, counts] of shapeCounts) {
     const routeId = key.split('::')[0];
-    const routeType = routeById.get(routeId)?.route_type;
     const route = routeById.get(routeId);
     const isRail = isRailRoute(route, agencySlug);
 

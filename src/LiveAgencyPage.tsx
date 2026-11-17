@@ -34,8 +34,6 @@ import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LAB
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
-import LegendItem from './components/ui/LegendItem';
-import { lateShareColor } from './components/Live/lateShare';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
 import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';

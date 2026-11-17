@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { MapContextAgency, MapContextRoute } from '../../utils/mapContext';
-import { AGENCY_LIST_FILTERS, FLOATING_CARD, LIST_ROW_PRIMARY, PANEL_TITLE, PILL_SCROLL_ROW, SIDEBAR_PANEL_WIDTH, PANEL_SIDEBAR, sidebarFrameStyle } from '../../styles';
+import { AGENCY_LIST_FILTERS, LIST_ROW_PRIMARY, PANEL_TITLE, PILL_SCROLL_ROW, sidebarFrameStyle } from '../../styles';
 import RouteListRow from '../RouteListRow';
 import RegionFilterPills from '../RegionFilterPills';
 import Panel, { PanelBody, PanelTitleBar } from '../ui/Panel';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { dateRange } from '../../../../shared/dateText';
-import { goodDayCounts, goodDayLimits, type LiveV3 } from '../../../../shared/liveDashboard';
+import { goodDayCounts, goodDayLimits } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { joinList } from '../../../../shared/overflowText';
 import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, builtText, coveredRoutesText } from '../../../../shared/liveWording';

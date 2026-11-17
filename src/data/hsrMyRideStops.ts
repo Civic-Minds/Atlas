@@ -1,5 +1,3 @@
-import type { GeoJSON } from 'geojson';
-
 /** HSR myRide virtual/on-demand stop locations from the agency GTFS-Flex export. */
 export const HSR_MY_RIDE_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
   { type: 'Feature', properties: { stopId: "stop_id__72dcfc6f-3a6a-4a29-9368-75406a2614fd", stopName: "Harry Howell Twin-Pad Arena", agencySlug: 'hamilton', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-79.92247582, 43.3126114] } },

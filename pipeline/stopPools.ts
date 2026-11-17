@@ -25,7 +25,7 @@
  */
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { forCrossMidnightWindow, headwayToTier, medianHeadwayInWindow, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;

@@ -6,7 +6,7 @@ export { headwayToTierColor };
 import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { clockTime } from '../../../shared/timeText';
-import type { PeriodKey, TimePeriod } from '../../hooks/useIntervalStats';
+import type { PeriodKey } from '../../hooks/useIntervalStats';
 import type { HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';

@@ -11,7 +11,7 @@ import { AVAILABLE_FILTER_MODES } from '../../utils/shareUrlState';
 import type { DayType } from '../../../shared/dayTypes';
 import type { TimePeriod } from '../../hooks/useIntervalStats';
 import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection } from './pickers';
-import { ATLAS_MODE, FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
+import { FEATURES, R2_PUBLIC_URL } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { routeLabels } from '../../utils/format';
@@ -157,7 +157,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 }) => {
   const { colorVisionFriendly, setColorVisionFriendly } = useColorVision();
   const isFilters = mode === 'filters';
-  const colorMode = useColorMode();
+  useColorMode();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [view, setView] = useState<'settings' | 'hidden-routes' | 'limited-routes' | 'degraded-feeds'>('settings');

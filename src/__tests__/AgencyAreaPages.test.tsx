@@ -234,7 +234,6 @@ describe('AreaPage', () => {
     expect(screen.getByTitle('Bus and trolleybus routes').textContent).toBe('Bus');
     const table = within(screen.getByRole('table'));
     expect(table.getByRole('link', { name: 'Toronto Transit Commission' }).getAttribute('href')).toBe('/agency/ttc');
-    const ttcRow = table.getByRole('link', { name: 'Toronto Transit Commission' }).closest('tr')!;
     const hsrRow = table.getByRole('link', { name: 'Hamilton Street Railway' }).closest('tr')!;
     expect(hsrRow.textContent).toContain(MISSING_VALUE); // no subway routes
   });

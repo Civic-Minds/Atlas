@@ -40,7 +40,7 @@ export function dropMnrExpressBusPairs(gtfs: GtfsData): { gtfs: GtfsData; droppe
   for (const tripIds of slots.values()) {
     if (tripIds.length !== 2) continue;
     const [a, b] = tripIds.map(id => new Set((stopsByTrip.get(id) ?? []).map(s => s.stopId)));
-    const [short, long] = a.size <= b.size ? [0, 1] : [1, 0];
+    const [short] = a.size <= b.size ? [0, 1] : [1, 0];
     const shortStops = short === 0 ? a : b;
     const longStops = short === 0 ? b : a;
     if (shortStops.size < longStops.size && [...shortStops].every(id => longStops.has(id))) drop.add(tripIds[short]);

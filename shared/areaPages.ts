@@ -8,7 +8,6 @@ import {
   bandCounts,
   bestRoute,
   formatIso,
-  hasMiddayService,
   agencyTitle,
   regionPageHref,
   sharedOfficialNames,
@@ -17,7 +16,6 @@ import {
 } from './agencyPages';
 import { shortDate } from './dateText';
 import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabelSortIndex } from './modes';
-import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
 import { areaPagePath, type AreaConfig } from './areas';
 import { agencyIndexHeadingHref, agencyPagePath, parentAgencyPagePath } from './pagePaths';

@@ -5,7 +5,6 @@ import React, { useMemo, useRef, useEffect, useCallback, useState } from 'react'
 import { useColorMode } from '../../hooks/useColorMode';
 import type { ShapeProperties, TimePeriod, DayType, HoveredBranch, ViewportBounds } from '../../hooks/useIntervalStats';
 import type { Agency } from '../../App';
-import { findVariantFamily } from '../../utils/routeVariants';
 import { buildCurrentRoute, routeVariantFamily } from '../../utils/routeCardRoute';
 import { routeLabels, searchOverlayHidesPanel, comparePanelTop, COMPARE_PANEL_LEFT } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
@@ -17,7 +16,6 @@ import {
   splitAgencyGroups,
   splitRouteResults,
   splitStopResults,
-  filterRouteResultsForDisplay,
   prepareRouteResultsForDisplay,
   SEARCH_ROUTE_DISPLAY_LIMIT,
   resolveSearchEnterAction,
@@ -25,7 +23,7 @@ import {
   type RouteSearchResult,
   type StopSearchResult,
 } from '../../utils/searchResults';
-import { FLOATING_CARD, TRANSITION_BASE, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, sidebarCardFrame } from '../../styles';
+import { TRANSITION_BASE, Z_PANEL, Z_DROPDOWN, sidebarFrameStyle, sidebarCardFrame } from '../../styles';
 import { compareSearchMaxWidth } from '../../mapOverlayLayout';
 import { DisambiguationPanel } from './panels/DisambiguationPanel';
 import { StopCard } from './panels/StopCard';
@@ -34,7 +32,7 @@ import { RouteCardHeadway } from './panels/RouteCardHeadway';
 import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
-import { branchDisplayPeriodHeadway, buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
+import { buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
 import { collectStopHubSiblings, nearbyRouteClosestStops } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';

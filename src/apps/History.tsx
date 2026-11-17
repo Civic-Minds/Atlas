@@ -4,9 +4,7 @@ import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyCo
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
 import { type HeadwayByPeriod } from '../../shared/config';
-import type { HistorySnapshotV2 } from '../../shared/historyV2';
 import { countOf } from '../../shared/overflowText';
-import { isDrawableLineCoordinates } from '../../shared/routeGeometry';
 import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels } from '../utils/format';
 import { RouteTitleName } from '../components/RouteRowName';
@@ -26,22 +24,17 @@ import { snapshotsNewestFirst, usableSnapshots } from '../utils/historySnapshots
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey } from '../utils/routeModeFilters';
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
-import { routesForYear, snapshotValue, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
+import { routesForYear, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
 import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
 import RegionFilterPills from '../components/RegionFilterPills';
-import {
-  agencyHistoryTier,
-  agencyQualifiesForHistory,
-  type HistoryTier,
-} from '../../shared/historyEligibility';
+import { agencyQualifiesForHistory } from '../../shared/historyEligibility';
 import { headwayEvery, headwayEveryRange, headwayExactAmount, headwayRangeShown, runTimeAmount } from '../utils/headwayText';
 import { historyChartPoints, historyDotPriority, historyYearTicks, placeHistoryDots, snapshotMonth } from '../utils/historyChart';
 import ExpandDialog, { ExpandButton } from '../components/ui/ExpandDialog';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
-import ListRow from '../components/ui/ListRow';
 import Pill from '../components/ui/Pill';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from '../components/ui/AgencyList';
 import ArrowLink from '../components/ui/ArrowLink';
@@ -481,7 +474,7 @@ function RouteHistoryChart({ snaps, minutes, lineColor, gradientId, hoveredSnap,
   wide?: boolean;
 }) {
   const frame = wide ? { width: 760, height: 120, paddingX: 20, paddingY: 22 } : { width: 220, height: 75, paddingX: 20, paddingY: 22 };
-  const { width, height, paddingX } = frame;
+  const { width, height } = frame;
   // The drawn width, so the 24 px dot spacing is measured on screen.
   const ref = useRef<HTMLDivElement>(null);
   const [drawnWidth, setDrawnWidth] = useState(wide ? 860 : 300);
@@ -645,7 +638,6 @@ function HistoryAgencyPanel({
   /** The slider's year: the list shows that year's routes and values, as the map does (CIV-457). */
   selectedYear: number;
 }) {
-  const tier = agencyHistoryTier(agencyHistory) ?? 'recent';
   // The year's routes, each with its one snapshot that year (routesForYear, the map's source).
   const yearRoutes = useMemo(
     () => (selectedYear > 0 ? routesForYear<RouteSnapshot, RouteHistoryEntry>(agencyHistory, selectedYear) : []),

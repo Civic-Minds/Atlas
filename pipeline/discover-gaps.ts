@@ -183,7 +183,6 @@ async function main() {
     const bbox = feedBbox(f);
     if (!bbox) continue;
 
-    const [minLat, minLon, maxLat, maxLon] = bbox;
     const municipality = f['location.municipality'] || '';
     const pop = estPop(f.provider, municipality);
     if (minPop > 0 && (pop ?? 0) < minPop) continue;

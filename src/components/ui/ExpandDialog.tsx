@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2 } from 'lucide-react';
 import { CARD_NOTE } from '../../styles';
-import RoundIconButton from './RoundIconButton';
 import { PanelCloseButton } from './PanelHeader';
 
 /**

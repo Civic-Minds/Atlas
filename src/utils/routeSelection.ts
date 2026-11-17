@@ -1,5 +1,3 @@
-import type { GeoJSON } from 'geojson';
-
 interface RouteSelectionProperties {
   routeId?: string;
   routeShortName?: string | null;
