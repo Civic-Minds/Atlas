@@ -1,5 +1,5 @@
 import { SURFACE_TIER_MAXES } from '../../shared/config';
-import { RAIL_TIER_MAXES } from '../../shared/frequencyRules';
+import { STUDIO_TARGETS } from '../../shared/studioVehicles';
 import { describe, expect, it } from 'vitest';
 import type { TripRun } from '../vehiclesNeeded.js';
 import { needVehicles, periodPatterns, type Places } from '../vehiclePatterns.js';
@@ -69,14 +69,9 @@ describe('Studio route groups (CIV-1693)', () => {
     expect(c.scheduled).toBe(1);
   });
 
-  it('gives each group its routes’ own frequency scale as targets, no typed list (rail gets 5 and 8)', () => {
-    expect(rows.map(r => r.targets)).toEqual([SURFACE_TIER_MAXES, SURFACE_TIER_MAXES]);
-    for (const row of rows) expect(Object.keys(row.atTarget).map(Number)).toEqual(row.targets);
-    const rail = vehicleGroupRows(['C'].map(routeId => ({ routeId, analysis })), id => id, () => '1');
-    expect(rail[0].targets).toEqual(RAIL_TIER_MAXES);
-    // Routes of different scales sharing vehicles take the surface tiers.
-    const mixed = vehicleGroupRows(['A', 'B'].map(routeId => ({ routeId, analysis })), id => id, id => (id === 'A' ? '1' : '3'));
-    expect(mixed[0].targets).toEqual(SURFACE_TIER_MAXES);
+  it('gives every group the map’s public scale as targets, no typed list and no internal 5 or 8', () => {
+    for (const row of rows) expect(Object.keys(row.atTarget).map(Number)).toEqual(SURFACE_TIER_MAXES);
+    expect(STUDIO_TARGETS).toBe(SURFACE_TIER_MAXES);
   });
 
   it('lists each route once even when every member is passed in', () => {

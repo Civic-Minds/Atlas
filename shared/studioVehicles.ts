@@ -6,12 +6,11 @@
 import { SURFACE_TIER_MAXES, type PeriodKey } from './config';
 
 /**
- * A group's target headways (minutes): its routes' own frequency scale, the one the map and the pipeline grade them on
- * (pipeline/defaults.ts modeTierOverrides: the surface tiers, 10 to 60, or rail's 5-8-10-15-30-60), never a copy of it
- * (Ryan: "why does Studio have different ones than the rest of the app"). A file written before groups carried their
- * own (`targets`) reads the surface tiers.
+ * Studio's target headways (minutes): the map's public scale, the same for every group, rail included, never a copy of
+ * it (Ryan: "why does Studio have different ones than the rest of the app"; "having 10/15/20/30/60 is already a bit and
+ * doubling that list would be chaotic"). Internal grades such as rail's 5 and 8 are never shown.
  */
-export const studioGroupTargets = (g: Pick<StudioVehicleGroup, 'targets'>): readonly number[] => g.targets ?? SURFACE_TIER_MAXES;
+export const STUDIO_TARGETS: readonly number[] = SURFACE_TIER_MAXES;
 
 /** Routes that share buses (an interlined group), or one route on its own. */
 export interface StudioVehicleGroup {
@@ -28,10 +27,8 @@ export interface StudioVehicleGroup {
    */
   runningMin: number;
   layoverMin: number | null;
-  /** The group's target headways, its routes' own frequency scale (studioGroupTargets). */
-  targets?: number[];
   /**
-   * Vehicles needed at each of the group's targets (key: minutes), rounded up once for the group. Where branches share
+   * Vehicles needed at each of STUDIO_TARGETS (key: minutes), rounded up once for the group. Where branches share
    * a middle section, the target is for that middle, and its trips go to the branches in their current shares.
    */
   atTarget: Partial<Record<number, number>>;

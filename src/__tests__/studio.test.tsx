@@ -54,16 +54,20 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     expect(cells('Layover')).toEqual(['Layover', '29 min']);
   });
 
-  it('offers the group’s own targets: the map’s tiers to 60 by default, rail’s 5 and 8 when the file says so', () => {
+  it('offers the map’s public scale, 10 to 60, for every group', () => {
     render(<StudioGroupFigures group={GROUPS[0]} periodLabel="Midday" />);
+    const targets = screen.getAllByRole('rowheader').map(c => c.textContent).filter(t => t?.startsWith('Needed every'));
+    expect(targets).toEqual([10, 15, 20, 30, 60].map(m => `Needed every ${m} min`));
     expect(cells('Needed every 60 min')).toEqual(['Needed every 60 min', '—']);
-    expect(screen.queryByRole('rowheader', { name: 'Needed every 5 min' })).toBeNull();
   });
 
-  it('reads a rail group’s targets from its file', () => {
-    render(<StudioGroupFigures group={{ ...GROUPS[1], targets: [5, 8, 10, 15, 30, 60], atTarget: { 5: 20, 8: 13 } }} periodLabel="Midday" />);
-    expect(cells('Needed every 5 min')).toEqual(['Needed every 5 min', '20']);
-    expect(screen.queryByRole('rowheader', { name: 'Needed every 20 min' })).toBeNull();
+  it('never shows rail’s internal 5 or 8, even from an older file that has them', () => {
+    const old = { ...GROUPS[1], targets: [5, 8, 10, 15, 30, 60], atTarget: { 5: 20, 8: 13, 10: 12 } } as StudioVehicleGroup;
+    render(<StudioGroupFigures group={old} periodLabel="Midday" />);
+    expect(screen.queryByRole('rowheader', { name: 'Needed every 5 min' })).toBeNull();
+    expect(screen.queryByRole('rowheader', { name: 'Needed every 8 min' })).toBeNull();
+    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '12']);
+    expect(cells('Needed every 20 min')).toEqual(['Needed every 20 min', '—']);
   });
 
   it('shows a dash for layover where the feed has no blocks', () => {

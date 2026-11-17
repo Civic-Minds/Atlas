@@ -10,9 +10,7 @@
  */
 import type { PeriodPatterns, Pattern } from './vehiclePatterns.js';
 import { cycleMin, needVehicles, targetVehicles } from './vehiclePatterns.js';
-import type { StudioBranchSplit, StudioVehicleGroup } from '../shared/studioVehicles.js';
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
+import { STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles.js';
 
 const SCHEDULE = { kind: 'schedule' } as const;
 const up = (v: number) => Math.ceil(v - 1e-9);
@@ -24,8 +22,6 @@ const up = (v: number) => Math.ceil(v - 1e-9);
 export function vehicleGroupRows(
   routes: ReadonlyArray<{ routeId: string; analysis: PeriodPatterns }>,
   nameOf: (routeId: string) => string,
-  /** A route's GTFS route_type, so its targets are its own frequency scale (rail gets 5 and 8). */
-  routeTypeOf: (routeId: string) => string = () => '3',
 ): StudioVehicleGroup[] {
   const rows: StudioVehicleGroup[] = [];
   const seen = new Set<string>();
@@ -37,7 +33,6 @@ export function vehicleGroupRows(
     if (seen.has(routeId)) continue;
     for (const id of memberIds) seen.add(id);
     const patterns = a.patterns.filter(p => memberIds.includes(p.routeId));
-    const targets = groupTargets(memberIds, routeTypeOf);
     const regular = patterns.filter(p => p.role !== 'partial');
     const layovers = regular.map(p => p.layoverMin).filter((v): v is number => v != null);
     rows.push({
@@ -46,11 +41,10 @@ export function vehicleGroupRows(
       implied: group ? group.impliedVehicles : up(regular.reduce((s, p) => s + needVehicles(p, SCHEDULE), 0)),
       runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),
       layoverMin: layovers.length ? Math.round(layovers.reduce((s, v) => s + v, 0)) : null,
-      targets,
-      atTarget: Object.fromEntries(targets.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'current')])),
+      atTarget: Object.fromEntries(STUDIO_TARGETS.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'current')])),
       // CIV-1712: the even split too, for the planner's choice, where the group has branches sharing a middle.
       ...(a.trunks.some(t => memberIds.includes(t.routeId))
-        ? { atTargetEven: Object.fromEntries(targets.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'even')])) }
+        ? { atTargetEven: Object.fromEntries(STUDIO_TARGETS.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'even')])) }
         : {}),
     });
   }
@@ -68,14 +62,4 @@ function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a:
     }
   }
   return up(buses);
-}
-
-/**
- * A group's targets: its routes' own frequency scale, read where the pipeline reads it (getTiersForCriteria with
- * DEFAULT_CRITERIA's mode overrides). Routes of different scales sharing vehicles (rare) take the surface tiers.
- */
-function groupTargets(memberIds: readonly string[], routeTypeOf: (routeId: string) => string): number[] {
-  const scales = memberIds.map(id => getTiersForCriteria(routeTypeOf(id), SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides));
-  const first = scales[0];
-  return scales.every(s => s.join() === first.join()) ? [...first] : [...SURFACE_TIER_MAXES];
 }
