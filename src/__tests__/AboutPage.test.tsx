@@ -41,6 +41,12 @@ describe('About page (CIV-1206 D)', () => {
     }
   });
 
+  it("says what Atlas is in Ryan's words, with no trip planner or live alerts line (CIV-1733)", () => {
+    const { container } = render(<AboutPage />);
+    expect(screen.getByText('Atlas gathers published agency schedules in one place. Planners, researchers and advocates can compare routes across cities, time periods and modes, and see the patterns in scheduled service.')).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/trip plan|live alerts|does not replace/i);
+  });
+
   it('keeps Where, When and How often', () => {
     render(<AboutPage />);
     for (const name of ['Where', 'When', 'How often']) expect(screen.getByRole('heading', { level: 3, name })).toBeInTheDocument();
