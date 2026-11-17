@@ -30,10 +30,10 @@ export default function ResearchersPage() {
         <FeatureCard title={cards.history.title} color={color(0)} picture={null} beta={cards.history.beta}>
           <p>{cards.history.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.compareCities.title} color={color(1)} picture={featureCardAsset('card-agency')} flip>
+        <FeatureCard title={cards.compareCities.title} color={color(1)} picture={featureCardAsset('card-compare')} flip>
           <p>{cards.compareCities.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.cite.title} color={color(2)} picture={featureCardAsset('card-export')}>
+        <FeatureCard title={cards.cite.title} color={color(2)} picture={featureCardAsset('card-cite')}>
           <p>{cards.cite.text}</p>
         </FeatureCard>
       </div>

@@ -34,7 +34,7 @@ describe('For Researchers page (CIV-1709)', () => {
     expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
-  it('alternates the picture side of the cards with pictures, and reuses the planners pictures', () => {
+  it('alternates the picture side of the cards with pictures, each its own (CIV-1794)', () => {
     const { container } = render(<ResearchersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
     // Compare Cities (flipped), then Maps You Can Cite; History and the Request a demo card have no picture.
@@ -42,7 +42,7 @@ describe('For Researchers page (CIV-1709)', () => {
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
     for (const theme of ['light', 'dark']) {
       expect(srcs).toContain(`/assets/planners/hero-${theme}.webp`);
-      for (const card of ['agency', 'export']) expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
+      for (const card of ['compare', 'cite']) expect(srcs).toContain(`/assets/planners/card-${card}-desktop-${theme}.webp`);
     }
   });
 
