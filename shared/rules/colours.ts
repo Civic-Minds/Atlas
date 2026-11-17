@@ -23,10 +23,14 @@ export interface StatusColor {
 }
 type VehicleStatus = 'early' | 'late' | 'on_time' | 'no_data';
 
+/** Live's late red: the --strip-delay-2 token's light value (src/styles/index.css), for the map's vehicle dots. */
+export const LATE_RED = '#dc2626';
+
 /** A vehicle's on-time status colours. */
 export const STATUS_COLORS: Record<VehicleStatus, StatusColor> = {
   early: { bg: '#3182ce', border: '#2b6cb0', text: '#2b6cb0' },
-  late: { bg: '#e53e3e', border: '#9b2c2c', text: '#9b2c2c' },
+  // CIV-1812: late is the Live strip's late red (--strip-delay-2, docs/style/VISUAL.md Live), one red for late on every Live view.
+  late: { bg: LATE_RED, border: '#9b2c2c', text: '#9b2c2c' },
   on_time: { bg: '#38a169', border: '#276749', text: '#276749' },
   no_data: { bg: '#718096', border: '#4a5568', text: '#718096' },
 };
