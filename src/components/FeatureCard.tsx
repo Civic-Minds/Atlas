@@ -28,7 +28,8 @@ export function FeatureCardPicture({ base }: { base: string }) {
  * The one feature card (CIV-1754): a tinted card, its heading and text beside its picture, stacked on phones with the
  * picture under the text. Made for the For Transit Planners page (CIV-1320) and shared by the Request a demo card
  * (CIV-1706). In a run of cards the picture side alternates on desktop, right then left (Ryan, 2026-11-16): the page
- * passes `flip` on every second card.
+ * passes `flip` on every second card. A card with no picture has no picture column: its text runs across the card at a
+ * readable width (CIV-1709, Ryan: "half of this is empty").
  */
 export default function FeatureCard({ title, color, picture, flip = false, children }: {
   title: string;
@@ -44,14 +45,14 @@ export default function FeatureCard({ title, color, picture, flip = false, child
       as="section"
       tone={{ tint: color }}
       padding="roomy"
-      className={`grid gap-8 lg:items-start lg:gap-10 ${flip ? 'lg:grid-cols-[1.1fr_0.9fr]' : 'lg:grid-cols-[0.9fr_1.1fr]'}`}
+      className={picture ? `grid gap-8 lg:items-start lg:gap-10 ${flip ? 'lg:grid-cols-[1.1fr_0.9fr]' : 'lg:grid-cols-[0.9fr_1.1fr]'}` : undefined}
       data-picture-side={picture ? (flip ? 'left' : 'right') : undefined}
     >
-      <div className={flip ? 'lg:order-2' : undefined}>
+      <div className={picture && flip ? 'lg:order-2' : undefined}>
         <h2 className={CARD_TITLE}>{title}</h2>
-        <div className="mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]">{children}</div>
+        <div className={`mt-3 space-y-3 text-base leading-7 text-[var(--text-muted)]${picture ? '' : ' max-w-2xl'}`}>{children}</div>
       </div>
-      <div className={flip ? 'lg:order-1' : undefined}>{picture && <FeatureCardPicture base={picture} />}</div>
+      {picture && <div className={flip ? 'lg:order-1' : undefined}><FeatureCardPicture base={picture} /></div>}
     </Card>
   );
 }
