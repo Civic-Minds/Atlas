@@ -23,7 +23,7 @@ import PageShell from './components/ui/PageShell';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { countText } from '../shared/numberText';
 import { PAGE_NAMES } from '../shared/pageNames';
-import { AREAS_HEADING, LIVE_TAG } from './content/noticeCopy';
+import { AREAS_HEADING, HISTORY_TAG, LIVE_TAG } from './content/noticeCopy';
 
 /** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -36,7 +36,7 @@ function AgencyTags({ live, history }: { live: boolean; history: boolean }) {
   return (
     <>
       {live && <Tag size="inline" className="ml-1.5">{LIVE_TAG}</Tag>}
-      {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>History</Tag>}
+      {history && <Tag size="inline" className={live ? 'ml-1' : 'ml-1.5'}>{HISTORY_TAG}</Tag>}
     </>
   );
 }

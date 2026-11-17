@@ -396,7 +396,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                   ? PART_TIME_ROUTES_TITLE
                 : view === 'degraded-feeds'
                   ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
-                  : isFilters ? 'Filters' : 'Settings'}
+                  : isFilters ? FILTERS_LABEL : 'Settings'}
               onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
               backLabel={backLinkLabel(BACK_PLACES.settings)}
               onClose={close}

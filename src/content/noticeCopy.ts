@@ -12,6 +12,7 @@ import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
+import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { countText } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
@@ -154,7 +155,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = `No routes within ${metresText(500)}.`;
+export const NO_ROUTES_NEARBY = `No routes within ${metresText(NEARBY_ROUTES_RADIUS_M)}.`;
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -892,6 +893,8 @@ export const AGENCIES_IN_VIEW_LABEL = 'Agencies in view';
 /** The top bar's logo and views menu. */
 export const ATLAS_HOME_LABEL = 'Atlas home';
 export const MORE_VIEWS_LABEL = 'More Atlas views';
+/** The phone views menu's name when no named view is on. */
+export const MORE_LABEL = 'More';
 export const LIVE_TAB_LABEL = 'Live';
 /** Tags beside an agency or a What's New item. */
 export const LIVE_TAG = 'Live';
@@ -907,6 +910,9 @@ export const SOURCES_FALLBACK = 'When we can’t rely on an agency’s own copy,
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
+/** Bustang's card where no local route connects within its widest window (60 min). */
+export const noLocalRouteWithinText = (window: string) => `No local route within ${window}.`;
+export const notWithinLead = (window: string) => `Not within ${window}: `;
 /** The analytics prompt. */
 export const TOGGLE_ANALYTICS_LABEL = 'Toggle Google Analytics';
 export const ANALYTICS_CONSENT_LABEL = 'Analytics consent';

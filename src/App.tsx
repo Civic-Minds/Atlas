@@ -59,7 +59,7 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
-import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL } from './content/noticeCopy';
+import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
@@ -811,7 +811,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <div ref={appLinksRef} className="relative flex sm:hidden">
               <ModeTab
                 variant="menu-trigger"
-                label={liveTabOn ? 'Live' : inHistory ? 'History' : compareActive ? 'Compare' : 'More'}
+                label={liveTabOn ? LIVE_TAB_LABEL : inHistory ? HISTORY_BUTTON_LABEL : compareActive ? COMPARE_LABEL : MORE_LABEL}
                 ariaLabel={MORE_VIEWS_LABEL}
                 expanded={appLinksOpen}
                 active={appLinksOpen || inHistory || inLive || compareActive}

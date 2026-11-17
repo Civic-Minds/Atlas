@@ -5,7 +5,9 @@ import { hourRange } from './timeText';
 export const FREQUENT_SERVICE_TITLE = 'Frequent service';
 
 export type FrequentServiceWindow = 'daytime' | 'extended';
-export type FrequentServiceFrequency = 15 | 30;
+/** The frequent-service view's grades: every 15 or 30 minutes or better. */
+export const FREQUENT_GRADES = [15, 30] as const;
+export type FrequentServiceFrequency = (typeof FREQUENT_GRADES)[number];
 
 /** Each window's hours (GTFS hours) and its label in the app's one time format (CIV-1095): "7 AM–7 PM". */
 export const FREQUENT_WINDOW_HOURS: Record<FrequentServiceWindow, { start: number; end: number }> = {

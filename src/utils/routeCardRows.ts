@@ -14,7 +14,7 @@ import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { headwayAbout, headwayAboutRange, headwayRangeShown } from './headwayText';
 import { LIMITED_SERVICE_LABEL, noNumberRowLabel, SHARED_STRETCH_LABEL } from '../content/noticeCopy';
 import { buildDirectionGroups, type RouteCardDirectionGroup } from './routeCardDirectionGroups';
-import { rowNightGrade } from '../../shared/nightService';
+import { rowNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 
 /**
  * The route card's rows, built once (CIV-987). Every part of the card (rows, Shared stretch / Combined row, hover and the
@@ -38,7 +38,7 @@ export interface CardRow {
   /** What hovering the row sends (none for a row without a destination). */
   hover: HoveredBranch | null;
   /** The Night view's grade (CIV-934): 30, 60, or none. */
-  night?: { grade: 30 | 60 | 90 | null; partOfRoute: boolean };
+  night?: { grade: NightServiceFrequency | null; partOfRoute: boolean };
   /** The daytime row's number, words, colour and layout, for the chart hour under the pointer (null: none). */
   display: (hoveredHour: number | null) => CardRowDisplay;
 }

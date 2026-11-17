@@ -1,5 +1,6 @@
 import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, type HeadwayTier } from '../../shared/config';
 import { headwayTierLabel } from './headwayText';
+import type { NightServiceFrequency } from '../../shared/nightService';
 export { HEADWAY_TIERS };
 
 export interface StatusColor {
@@ -135,12 +136,12 @@ export function getNightServiceColor(mode: ColorVisionMode = 'default'): string 
  * CIV-1329 (Ryan, 2026-11-03): Night Service in three shades of the night colour, darker = more frequent. 60 keeps
  * the night colour; 30 is darker and 90 lighter.
  */
-export const NIGHT_SERVICE_TIER_COLORS: Record<'default' | 'friendly', Record<30 | 60 | 90, string>> = {
+export const NIGHT_SERVICE_TIER_COLORS: Record<'default' | 'friendly', Record<NightServiceFrequency, string>> = {
   default: { 30: '#4f46e5', 60: NIGHT_SERVICE_COLOR, 90: '#c7d2fe' },
   friendly: { 30: '#004a75', 60: COLOR_VISION_NIGHT_SERVICE_COLOR, 90: '#56b4e9' },
 };
 
-export function getNightServiceTierColor(grade: 30 | 60 | 90, mode: ColorVisionMode = 'default'): string {
+export function getNightServiceTierColor(grade: NightServiceFrequency, mode: ColorVisionMode = 'default'): string {
   return NIGHT_SERVICE_TIER_COLORS[mode === 'friendly' ? 'friendly' : 'default'][grade];
 }
 

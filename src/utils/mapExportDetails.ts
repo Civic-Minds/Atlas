@@ -8,12 +8,13 @@ import { FILTER_MODES } from '../../shared/modes';
 import { joinList } from '../../shared/overflowText';
 import { regionSlug } from '../../shared/pagePaths';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
-import type { NightServiceFrequency } from '../../shared/nightService';
+import { NIGHT_GRADES, type NightServiceFrequency } from '../../shared/nightService';
 import { withRouteWord } from './format';
 import { agencyNames } from './agencyName';
 import { agencyInSentence } from '../../shared/agencyArticle';
 import { getHeadwayTiers, getNightServiceTierColor, getTierColor, headwayThresholdForZoom, type ColorVisionMode } from './colors';
 import { headwayBandLabel, headwayFilterLabel, headwayOrBetter, headwayTierLabel } from './headwayText';
+import { NO_HEADWAY_LIMIT } from '../../shared/rules/limits';
 
 /** One entry in the exported image's colour key. */
 export interface MapExportKeyItem {
@@ -100,7 +101,7 @@ export function describeDayAndPeriod(day: DayType, period: TimePeriod): string {
 /** The highest headway tier the map draws at this zoom (the app hides less frequent routes when zoomed out). */
 function zoomCeiling(zoom: number): number {
   const ceiling = headwayThresholdForZoom(zoom);
-  return ceiling >= 9999 ? Infinity : ceiling;
+  return ceiling >= NO_HEADWAY_LIMIT ? Infinity : ceiling;
 }
 
 function filterLine(state: MapExportState): string | null {
@@ -144,7 +145,7 @@ export function keyCandidates(state: Pick<MapExportState, 'view' | 'colorMode' |
         ];
     case 'night':
       // CIV-1329: one shade per night grade up to the one selected (30 darker, 90 lighter); only the drawn ones are kept.
-      return ([30, 60, 90] as const)
+      return NIGHT_GRADES
         .filter(grade => grade <= (state.nightServiceFrequency ?? 60))
         .map(grade => ({ color: getNightServiceTierColor(grade, state.colorMode), label: headwayTierLabel(grade) }));
     default:

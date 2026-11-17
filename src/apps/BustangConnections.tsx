@@ -67,7 +67,7 @@ export default function BustangConnections({ active, data, day, setDay, within, 
                 options={DAY_TYPES.map(d => [d, d] as const)} />
             </div>
             <div>
-              <CardSectionLabel>Local stop within</CardSectionLabel>
+              <CardSectionLabel>{LOCAL_STOP_WITHIN_LABEL}</CardSectionLabel>
               <PillGroup label={LOCAL_STOP_WITHIN_LABEL} value={String(within)} onChange={v => setWithin(parseNearbyChoice(v))}
                 options={LIST_DISTANCE_CHOICES.map(m => [String(m), metresText(m)] as const)} />
             </div>

@@ -4,7 +4,7 @@ import { headwayBandLabel, headwayTierLabel } from '../../utils/headwayText';
 import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
 import MapKey from '../ui/MapKey';
 import type { FrequentServiceFrequency } from '../../../shared/frequentService';
-import type { NightServiceFrequency } from '../../../shared/nightService';
+import { NIGHT_GRADES, type NightServiceFrequency } from '../../../shared/nightService';
 import { MAP_COLOURS_LABEL } from '../../content/noticeCopy';
 
 /**
@@ -18,7 +18,7 @@ export default function ResearchLegend({ view, frequentFrequency, nightFrequency
     <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} role="group" aria-label={MAP_COLOURS_LABEL}>
       <MapKey steps={view === 'night'
         // CIV-1329: one shade per night grade up to the one selected (30 darker, 90 lighter).
-        ? ([30, 60, 90] as const).filter(grade => grade <= nightFrequency)
+        ? NIGHT_GRADES.filter(grade => grade <= nightFrequency)
           .map(grade => ({ color: getNightServiceTierColor(grade, mode), label: <span className={MAP_BADGE_LABEL}>{headwayTierLabel(grade)}</span> }))
         : [
           { color: getTierColor('15', mode), label: <span className={MAP_BADGE_LABEL}>{headwayTierLabel(15)}</span> },

@@ -26,12 +26,17 @@ export const VIEWPORT_BBOX_PAD = { lat: 0.5, lon: 0.6 } as const;
 /** Agency chip visibility check padding. */
 export const AGENCY_CHIP_PAD = 0.5;
 
+/** A zoom step's max headway that means "no limit": every route shows. */
+export const NO_HEADWAY_LIMIT = 9999;
 /** Runtime map zoom gate: [zoom threshold, max headway] steps after the sub-zoom-7 default (10 min). */
 export const MAP_ZOOM_HEADWAY_STEPS: ReadonlyArray<readonly [zoom: number, maxHeadway: number]> = [
   [7, 20],
-  [9, 9999],
+  [9, NO_HEADWAY_LIMIT],
 ];
 export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
+
+/** How far the map's Nearby panel looks for routes from a point, in metres (its "No routes within 500 m" too). */
+export const NEARBY_ROUTES_RADIUS_M = 500;
 
 /** The zoom from which an agency's detailed GeoJSON loads. */
 export const DETAIL_GEOJSON_MIN_ZOOM = 8;
