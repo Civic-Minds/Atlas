@@ -10,7 +10,7 @@ import { LIVE_VEHICLES_TITLE } from './liveWording';
 import { PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
 import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
-import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, TERMS_PATH } from './pagePaths';
+import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, RESEARCHERS_PATH, TERMS_PATH } from './pagePaths';
 import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
 export const SITE_URL = 'https://www.transitatlas.fyi';
@@ -22,7 +22,7 @@ export { SITE_NAME } from './pageNames';
 /** The home page's tab: the only one that leads with the brand (shared/pageNames.ts tabTitle). */
 export const HOME_TITLE = `${SITE_NAME}: Scheduled Frequency Map`;
 
-export type SeoGate = 'researchApps' | 'live' | 'history' | 'planners';
+export type SeoGate = 'researchApps' | 'live' | 'history' | 'planners' | 'researchers';
 export type SeoMode = 'public' | 'preview' | 'beta' | 'dev';
 
 /**
@@ -104,6 +104,15 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     description: 'Atlas shows how often transit really runs, across every agency in a region, on one map.',
     indexable: false,
     gate: 'planners',
+    prerender: true,
+  },
+  {
+    // CIV-1709: the hero's own words. Local only, like the planners page: not indexed or in the sitemap.
+    path: RESEARCHERS_PATH,
+    title: tabTitle(PAGE_NAMES.researchers),
+    description: 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.',
+    indexable: false,
+    gate: 'researchers',
     prerender: true,
   },
   {
