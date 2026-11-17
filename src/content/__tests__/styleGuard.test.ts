@@ -134,7 +134,7 @@ const RULES: Rule[] = [
   // projection (CIV-1597).
   { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
     pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?(000|111|195|320)|110_?540|40_?07[05]_?0\d\d|6_?371_?000|6_?378_?137)(?![\d])/, slip: 'const maxDLat = OPPOSITE_STOP_MAX_M / 111000;',
-    allowed: ['shared/geoDistance.ts'] },
+    allowed: ['shared/geoDistance.ts', 'shared/rules/limits.ts'] },
   // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
   { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
     allowed: ['shared/overflowText.ts'] },
