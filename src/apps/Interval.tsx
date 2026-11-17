@@ -1509,13 +1509,6 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
       <div className={MAP_FOOTER_RIGHT_SLOT}>
-      {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): every Live feed in view is down.
-          A notice, so it never fades with the counts, which Live hides (CIV-50). */}
-      {liveRetrySeconds != null && (
-        <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`} role="status">
-          <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{liveUnableToLoadPill(liveRetrySeconds)}</span></div>
-        </div>
-      )}
       {onDemandFailedInFooter && (
         <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
