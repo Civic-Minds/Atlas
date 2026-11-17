@@ -39,7 +39,7 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
   const last = runs.last != null ? clockTime(runs.last) : null;
   const text = first && last ? timeRange(runs.first!, runs.last!) : first ?? last;
   return (
-    <div className="min-w-[12rem]" role="img" aria-label={label}>
+    <div className="min-w-[10rem]" role="img" aria-label={label}>
       <div className="h-4 text-xs leading-4 text-[var(--text-muted)] whitespace-nowrap">{text}</div>
       <div className="relative mt-0.5 h-2 overflow-hidden rounded-full" style={{ background: TRACK }}>
         {drawn.map(([a, b]) => (
