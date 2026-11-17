@@ -126,6 +126,14 @@ function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number
  * map list says so (#1249, CIV-1238), else a dash.
  */
 /**
+ * CIV-1787 (Ryan: "omg u have to scroll here that is not acceptable", "we changed it bc the bar was too slim"): with the
+ * hours bar, the routes table never scrolls sideways. From lg up the frequency columns take their content's width, the
+ * route names wrap in a narrower column, and the hours bar takes the rest (at least 10rem, HoursBar); below lg the hours
+ * column is hidden (DataTable `grow`).
+ */
+const HOURS_TABLE_ROUTE_REM = 9;
+
+/**
  * CIV-1772 (Ryan, option 1): the frequency stays on one line and a gap, start or end note is a small grey second line,
  * the same in every cell, so rows read evenly.
  */
@@ -225,7 +233,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, className: 'font-normal align-top', cell: r => {
+                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, ...(hoursAxis ? { width: HOURS_TABLE_ROUTE_REM } : {}), className: 'font-normal align-top', cell: r => {
                         const name = <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} />;
                         // CIV-1787 (Ryan: "different spacing between rows"): with the hours bar, every row is two lines tall, room
                         // for a two-line name or a value with its note, so the bars sit evenly apart.
@@ -233,12 +241,12 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                       } },
                       // CIV-1605 (local only): the weekday hours bar, under Ryan's "Weekday hours". Every cell is top-aligned (CIV-1787), so
                       // the main values share one line and a grey note hangs below.
-                      ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, width: 14, className: 'align-top', cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
-                      { key: 'am', header: PERIOD_LABELS.amPeak, className: 'align-top', cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
-                      { key: 'midday', header: PERIOD_LABELS.midday, className: 'align-top', cell: r => <PeriodCell text={cell('midday', r, !!hoursAxis)} /> },
-                      { key: 'pm', header: PERIOD_LABELS.pmPeak, className: 'align-top', cell: r => <PeriodCell text={cell('pm', r, !!hoursAxis)} /> },
-                      { key: 'evening', header: PERIOD_LABELS.evening, className: 'align-top', cell: r => <PeriodCell text={cell('evening', r, !!hoursAxis)} /> },
-                      { key: 'overnight', header: PERIOD_LABELS.overnight, className: 'align-top', cell: r => <PeriodCell text={cell('overnight', r, !!hoursAxis)} /> },
+                      ...(hoursAxis ? [{ key: 'hours', header: WEEKDAY_HOURS_LABEL, align: 'left' as const, grow: true, className: 'align-top', cell: (r: AgencyPageRoute) => r.runs ? <HoursBar runs={r.runs} axis={hoursAxis} /> : MISSING_VALUE }] : []),
+                      { key: 'am', header: PERIOD_LABELS.amPeak, className: hoursAxis ? 'align-top whitespace-nowrap' : 'align-top', cell: r => <PeriodCell text={cell('am', r, !!hoursAxis)} /> },
+                      { key: 'midday', header: PERIOD_LABELS.midday, className: hoursAxis ? 'align-top whitespace-nowrap' : 'align-top', cell: r => <PeriodCell text={cell('midday', r, !!hoursAxis)} /> },
+                      { key: 'pm', header: PERIOD_LABELS.pmPeak, className: hoursAxis ? 'align-top whitespace-nowrap' : 'align-top', cell: r => <PeriodCell text={cell('pm', r, !!hoursAxis)} /> },
+                      { key: 'evening', header: PERIOD_LABELS.evening, className: hoursAxis ? 'align-top whitespace-nowrap' : 'align-top', cell: r => <PeriodCell text={cell('evening', r, !!hoursAxis)} /> },
+                      { key: 'overnight', header: PERIOD_LABELS.overnight, className: hoursAxis ? 'align-top whitespace-nowrap' : 'align-top', cell: r => <PeriodCell text={cell('overnight', r, !!hoursAxis)} /> },
                     ]}
                   />
                 </ScrollX>
