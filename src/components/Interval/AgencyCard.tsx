@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, forwardRef } from 'react';
 import { BETA_SITE_URL } from '../../../shared/seo';
-import { LIVE_POLLING_ROUTES } from '../../../shared/livePollingConfig';
+import { liveEligibleRoutes } from '../../../shared/livePollingConfig';
 import { ATLAS_MODE, FEATURES } from '../../../shared/config';
 import { plural } from '../../../shared/overflowText';
 import { agencyPagePath } from '../../../shared/agencyPages';
@@ -468,7 +468,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
   const activeFilterLabel = routeFilters.find(f => f.key === activeFilter)?.label;
 
   const liveRoutes = useMemo(
-    () => LIVE_POLLING_ROUTES.filter(r => r.slug === agency.slug && (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar || r.active)),
+    () => liveEligibleRoutes(agency.slug),
     [agency.slug]
   );
   const liveShortNames = useMemo(() => new Set(liveRoutes.map(r => r.displayRouteShortName)), [liveRoutes]);

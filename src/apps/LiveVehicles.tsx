@@ -4,7 +4,7 @@ import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
 import { useLiveFeedsDown, useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
-import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
+import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
@@ -78,12 +78,8 @@ interface RouteGroup {
 }
 
 
-// Eligible slugs: no API key required, or explicitly marked active
-const ELIGIBLE_SLUGS = new Set(
-  LIVE_POLLING_ROUTES
-    .filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active)
-    .map(r => r.slug)
-);
+// Eligible slugs: the one list of live agencies (CIV-1691, CIV-1797).
+const ELIGIBLE_SLUGS = new Set(LIVE_AGENCY_SLUGS);
 
 /** One-line summary of a destination's vehicles: "10 vehicles · 2 late" (a streetcar route), "3 buses". */
 function directionSummary(vehicles: LiveVehicle[], modeWord: string): string {
