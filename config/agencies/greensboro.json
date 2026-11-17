@@ -8,7 +8,7 @@
   "feedUrl": "https://trackmygta.com/gtfs",
   "region": "North Carolina",
   "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-615/latest.zip",
-  "lastFeedExpiry": "20281116",
+  "lastFeedExpiry": "20281117",
   "lastFeedVersion": "Route 11 Updates",
   "lastRefreshedAt": "2026-11-16",
   "websiteUrl": "http://www.greensboro-nc.gov/index.aspx?page=2180",
@@ -32,14 +32,14 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 110,
-      "feedExpiry": "20281116",
+      "feedExpiry": "20281117",
       "routeCount": 17,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-16"
+    "checkedAt": "2026-11-17"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
