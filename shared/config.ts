@@ -163,11 +163,6 @@ export const AGENCY_HOURS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!
 // Atlas Studio, the agency tools section (CIV-1693; DECISIONS.md 2026-11-15, Ryan: "Yes local only"): its pages and the
 // header's Studio link. Local only until the demo is ready: on the Vite dev server, never on beta or public builds.
 export const STUDIO_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-// The "Live" pill beside agencies being recorded right now, in the agency list (CIV-1691; recording agencies are
-// LIVE_RECORDING_AGENCY_SLUGS in shared/liveArchiveFeeds.ts). Local only (Ryan, 2026-11-15: "on local only in the
-// agencies list should we add a Live pill beside live agencies"): on the Vite dev server, as the connections bar is,
-// never on beta or public builds.
-export const LIVE_RECORDING_PILL_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 
 /**
  * Single source of truth for feature exposure. Consumers should use this registry for navigation,
@@ -206,7 +201,6 @@ export const FEATURES = {
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
   studio: STUDIO_ENABLED,
-  liveRecordingPill: LIVE_RECORDING_PILL_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */

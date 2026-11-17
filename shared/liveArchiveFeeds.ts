@@ -38,11 +38,7 @@ export interface LiveArchivePositionFeed {
  * preserving one-minute positions and five-minute trip-update archives.
  */
 export const LIVE_ARCHIVE_SHARDS = [
-  // `recording: true` marks the shards whose Worker has a cron trigger switched on in Cloudflare, so they are
-  // being recorded right now. The repo can't see Cloudflare's schedules, so this list is kept by hand: change it
-  // when a shard's cron is turned on or off (CIV-1691). Today: ttc-positions and kingston. The other shards have
-  // no cron (stopped 2026-10-14, see docs/FEATURE_FLAGS.md).
-  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
+  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [] },
   { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'] },
   { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'] },
   { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'] },
@@ -52,15 +48,8 @@ export const LIVE_ARCHIVE_SHARDS = [
     tripSlugs: ['burlington', 'halifax'],
   },
   // Atlas Studio demo agency (CIV-1682). Its worker writes to its own bucket, atlas-live-kingston, kept 60 days.
-  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
+  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'] },
 ] as const;
-
-/** Agencies being recorded right now: every agency in a shard marked `recording` above (CIV-1691). */
-export const LIVE_RECORDING_AGENCY_SLUGS: ReadonlySet<string> = new Set(
-  LIVE_ARCHIVE_SHARDS.flatMap(shard =>
-    'recording' in shard && shard.recording ? [...shard.positionSlugs, ...shard.tripSlugs] : [],
-  ),
-);
 
 /** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30). */
 export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { kingston: 'atlas-live-kingston' };

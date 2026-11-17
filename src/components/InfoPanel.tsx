@@ -8,8 +8,7 @@ import Pill from './ui/Pill';
 import LinkCard from './ui/LinkCard';
 import Tag from './ui/Tag';
 import PanelEmpty from './ui/PanelEmpty';
-import { LIVE_POLLING_ROUTES, liveCoverageForRouteNames, type LiveCoverage } from '../../shared/livePollingConfig';
-import { LIVE_RECORDING_AGENCY_SLUGS } from '../../shared/liveArchiveFeeds';
+import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../../shared/livePollingConfig';
 import { R2_PUBLIC_URL, FEATURES as BASE_FEATURES } from '../../shared/config';
 import { PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
 import { nameCase, routeShortLabel } from '../utils/format';
@@ -225,29 +224,8 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
   }, [view]);
 
-  const liveBySlug = useMemo(() => {
-    const map = new Map<string, typeof LIVE_POLLING_ROUTES>();
-    for (const r of LIVE_POLLING_ROUTES) {
-      if ((r.apiKeyParamEnvVar || r.apiKeyHeaderEnvVar) && !r.active) continue;
-      if (!map.has(r.slug)) map.set(r.slug, []);
-      map.get(r.slug)!.push(r);
-    }
-    return map;
-  }, []);
-
-  const liveCoverageBySlug = useMemo(() => {
-    const map = new Map<string, LiveCoverage>();
-    for (const [slug, layer] of Object.entries(layers ?? {})) {
-      const routeNames = new Set<string>();
-      for (const feature of layer.features) {
-        const properties = feature.properties as { routeId?: string; routeShortName?: string | null } | null;
-        if (properties?.routeId && properties.routeShortName) routeNames.add(properties.routeShortName);
-      }
-      const coverage = liveCoverageForRouteNames(slug, routeNames);
-      if (coverage) map.set(slug, coverage);
-    }
-    return map;
-  }, [layers]);
+  // CIV-1691: the agencies with live buses, from the one list in livePollingConfig.
+  const liveBySlug = useMemo(() => new Set(LIVE_AGENCY_SLUGS), []);
 
   const historyBySlug = useMemo(() => {
     const map = new Map<string, HistoryAgencySummary>();
@@ -314,13 +292,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const totalLiveAgencies = liveBySlug.size;
   const agencyFilterOptions: Array<[AgencyListFilter, string]> = [
     ['all', 'All'],
-    ['live', 'Live'],
+    ...(FEATURES.live ? [['live', LIVE_TAG] as [AgencyListFilter, string]] : []),
     ...(FEATURES.history ? [['history', 'History'] as [AgencyListFilter, string]] : []),
     ...(FEATURES.outdatedFilter ? [['outdated', 'Outdated'] as [AgencyListFilter, string]] : []),
   ];
 
   const selectedAgency = selectedSlug ? agencies.find(a => a.slug === selectedSlug) : null;
-  const selectedLiveRoutes = selectedSlug ? (liveBySlug.get(selectedSlug) ?? []) : [];
+  const selectedLiveRoutes = selectedSlug && liveBySlug.has(selectedSlug) ? LIVE_POLLING_ROUTES.filter(r => r.slug === selectedSlug) : [];
   const selectedHistory = selectedSlug ? historyBySlug.get(selectedSlug) : null;
 
   const historyYearsText = useMemo(() => {
@@ -490,8 +468,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          // Local only (CIV-1691): this agency's realtime feed is being recorded right now.
-                          const showRecordingBadge = FEATURES.liveRecordingPill && LIVE_RECORDING_AGENCY_SLUGS.has(a.slug);
                           const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
@@ -501,14 +477,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                               secondary={secondary}
                               title={listLabel}
                               onClick={() => { onAgencySelect?.(a.slug); onClose(); }}
-                              tags={(showLiveBadge || showHistoryBadge || showRecordingBadge) ? (
+                              tags={(showLiveBadge || showHistoryBadge) ? (
                                 <>
-                                  {showLiveBadge && (
-                                    <Tag title={liveCoverageBySlug.has(a.slug) ? undefined : 'Live route coverage is still loading.'}>
-                                      {liveCoverageBySlug.get(a.slug) === 'full' ? 'Full live' : liveCoverageBySlug.get(a.slug) === 'partial' ? 'Partial live' : 'Live routes'}
-                                    </Tag>
-                                  )}
-                                  {showRecordingBadge && <Tag>{LIVE_TAG}</Tag>}
+                                  {/* CIV-1691 (Ryan): one plain "Live" tag; no "Full live" / "Partial live" wording. */}
+                                  {showLiveBadge && <Tag>{LIVE_TAG}</Tag>}
                                   {showHistoryBadge && <Tag>{HISTORY_TAG}</Tag>}
                                 </>
                               ) : undefined}

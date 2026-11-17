@@ -384,34 +384,14 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
   },
 ];
 
-export type LiveCoverage = 'full' | 'partial';
-
 /**
- * Compare the routes present in an agency's schedule artifact with the routes
- * Atlas can currently monitor through GTFS-RT.
- *
- * A null result means the schedule route set has not loaded yet (or the
- * agency has no live configuration). Extra configured routes do not prevent a
- * full result: the question is whether every scheduled route is covered.
+ * CIV-1691 (Ryan: "Do we need to refactor this shit", then "1"): the one list of agencies with live buses, the
+ * agencies whose live feeds are usable (no API key needed, or marked active). The agency list's "Live" tag and
+ * filter read it; nothing else keeps its own list (oneLiveAgencyList.test.ts).
  */
-export function liveCoverageForRouteNames(
-  slug: string,
-  scheduledRouteNames: Iterable<string>,
-): LiveCoverage | null {
-  const scheduled = new Set(
-    [...scheduledRouteNames].map(name => name.trim()).filter(Boolean),
-  );
-  if (scheduled.size === 0) return null;
-
-  const tracked = new Set(
-    LIVE_POLLING_ROUTES
-      .filter(route => route.slug === slug && ((!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar) || route.active))
-      .map(route => route.displayRouteShortName),
-  );
-  if (tracked.size === 0) return null;
-
-  return [...scheduled].every(routeName => tracked.has(routeName)) ? 'full' : 'partial';
-}
+export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set(
+  LIVE_POLLING_ROUTES.filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active).map(r => r.slug),
+)];
 
 /** True when an agency's live feeds are usable in the UI (no API key needed, or marked active). */
 export function isLiveEligibleSlug(slug: string): boolean {
