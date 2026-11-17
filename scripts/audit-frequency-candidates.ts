@@ -18,6 +18,7 @@ import {
   HardGapPolicy,
   determineCandidateTier,
 } from './frequency-candidate-rules';
+import { ALL_TIER_MAXES } from '../shared/frequencyRules';
 
 type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence' | 'q2Internal';
 type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup; targetTier?: number };
@@ -76,7 +77,7 @@ for (const internal of INTERNAL_CANDIDATES) {
 // Q2 study candidates. These compare tier-specific percentage allowances against
 // a strict zero-exception reference. The current 30% rule is intentionally not
 // used as the reference or treated as a recommendation.
-const q2Tiers = [5, 8, 10, 15, 20, 30, 60];
+const q2Tiers = ALL_TIER_MAXES;
 const q2Percentages = [0.05, 0.10, 0.15, 0.20, 0.25];
 const q2Floors = [0, 1];
 const q2Caps: Array<number | undefined> = [undefined, 3, 5];

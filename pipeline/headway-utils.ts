@@ -1,7 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { RAIL_TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
+import { ALL_TIER_MAXES, RAIL_TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
 
 
 /**
@@ -11,7 +11,7 @@ import { RAIL_TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
  * graded 8 ranked as unknown (worst), so TTC 504 read tier 8 beside 16 stops graded 15 (CIV-152).
  */
 export { RAIL_TIER_MAXES };
-const NUMERIC_TIERS = [...new Set([...HEADWAY_TIERS.map(t => t.max).filter(m => m !== Infinity), ...RAIL_TIER_MAXES])].sort((a, b) => a - b);
+const NUMERIC_TIERS = ALL_TIER_MAXES;
 export const TIER_RANK: Record<string, number> = Object.fromEntries([
   ...NUMERIC_TIERS.map((max, i) => [String(max), i]),
   ['infrequent', NUMERIC_TIERS.length],

@@ -37,6 +37,22 @@ Route-days without stretch data (no direction_id in the feed, partial-weekday ro
 
 The map reads PMTiles. A change to these rules reaches the live map only after a PMTiles rebuild. Changes to how processing measures headways also need a reprocess of every agency first.
 
+## Where the scales live
+
+Every frequency scale is defined once, in `shared/frequencyRules.ts` (Ryan, 2026-11-17: "we have some internally frequencies and some externally which is fine but like we need to keep this info centralized"). Everything else reads it, and `shared/__tests__/frequencyScales.test.ts` fails on a hand-typed tier list anywhere else.
+
+| Scale | Shown or internal | Constant | Values |
+| --- | --- | --- | --- |
+| Map tiers (line colours, legend, filter) | Shown | `SURFACE_TIER_MAXES`; `HEADWAY_TIERS` adds the colours (`shared/config.ts`) | 10, 15, 20, 30, 60, then Infrequent |
+| Rail grading | Internal | `RAIL_TIER_MAXES` (rail's extra 5 and 8; no 20, which is Ryan's open call) | 5, 8, 10, 15, 30, 60 |
+| Grading scale per mode | Internal | `MODE_TIER_SCALES` (read by `modeTierOverrides`, `pipeline/defaults.ts`) | surface, rail |
+| Every tier any scale uses | Internal | `ALL_TIER_MAXES` (release gate, `TIER_RANK`, near-miss shares, audits) | 5, 8, 10, 15, 20, 30, 60 |
+| Short tier names | Internal | `TIER_LABELS` (pipeline reports, criteria editor) | Rapid, Freq++, Freq+, Freq, Good, Basic, Infreq |
+| Near-miss share per tier | Internal | `VIOLATION_PERCENT_BY_TIER` (10% up to 15 min, 5% above) | table A below |
+| Near-miss allowance | Internal | `nearMissGrace`, `EDGE_GAP_ALLOWANCE_MINUTES`, `GRACE_FLOOR_MIN_GAPS` | table A below |
+
+"Shown" means riders see the numbers on the map or a page; "internal" means only the pipeline grades with them.
+
 ## Thresholds and where they were decided
 
 These are settled; don't change them without a new decision (Ryan, 2026-10-15).

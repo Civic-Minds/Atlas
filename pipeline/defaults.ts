@@ -1,6 +1,5 @@
 import { AnalysisCriteria } from '../types/gtfs';
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
-import { GRACE_MINUTES, GRACE_PERCENT, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
+import { GRACE_MINUTES, GRACE_PERCENT, MODE_TIER_SCALES, SURFACE_TIER_MAXES, TIER_LABELS, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
 
 const SURFACE_TIERS = SURFACE_TIER_MAXES;
 
@@ -35,7 +34,7 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     violationPercent: VIOLATION_PERCENT,
     violationPercentByTier: { ...VIOLATION_PERCENT_BY_TIER },
     modeTierOverrides: {
-        rail: [...RAIL_TIER_MAXES],
+        rail: [...MODE_TIER_SCALES.rail],
         surface: SURFACE_TIERS,
     },
     isDefault: true,
@@ -81,12 +80,7 @@ export function getTiersForCriteria(
     return modeTierOverrides[category] || dayTiers;
 }
 
-/** Tier label lookup */
-const TIER_LABELS: Record<number, string> = {
-    5: 'Rapid', 8: 'Freq++', 10: 'Freq+', 15: 'Freq',
-    20: 'Good', 30: 'Basic', 60: 'Infreq',
-};
-
+/** Tier label lookup: TIER_LABELS in shared/frequencyRules.ts. */
 export function getTierLabel(threshold: number): string {
     return TIER_LABELS[threshold] || `${threshold}m`;
 }

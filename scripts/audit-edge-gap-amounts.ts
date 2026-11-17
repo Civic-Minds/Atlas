@@ -6,6 +6,7 @@ import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
+import { ALL_TIER_MAXES } from '../shared/frequencyRules';
 
 const parse = (text: string) => Papa.parse(text, {
   header: true,
@@ -49,7 +50,7 @@ type EdgeStats = {
 };
 
 const stats = new Map<number, EdgeStats>();
-for (const tier of [5, 8, 10, 15, 20, 30, 60]) {
+for (const tier of ALL_TIER_MAXES) {
   stats.set(tier, {
     periods: 0,
     opening: 0,

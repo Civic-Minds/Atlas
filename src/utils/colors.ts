@@ -1,5 +1,4 @@
-import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, type HeadwayTier } from '../../shared/config';
-import { headwayTierLabel } from './headwayText';
+import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, tiersWithColours, type HeadwayTier } from '../../shared/config';
 export { HEADWAY_TIERS };
 
 export interface StatusColor {
@@ -15,14 +14,7 @@ export type ColorVisionMode = 'default' | 'friendly';
  * Frequency order is carried by the legend and line weight as well as colour;
  * the palette is not intended to be the only cue.
  */
-export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#0072b2', label: headwayTierLabel(10) },
-  { max: 15, color: '#009e73', label: headwayTierLabel(15) },
-  { max: 20, color: '#56b4e9', label: headwayTierLabel(20) },
-  { max: 30, color: '#e69f00', label: headwayTierLabel(30) },
-  { max: 60, color: '#cc79a7', label: headwayTierLabel(60) },
-  { max: Infinity, color: '#4d4d4d', label: 'Infrequent' },
-];
+export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = tiersWithColours(['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7'], '#4d4d4d');
 
 export const COLOR_VISION_STATUS_COLORS: Record<'early' | 'late' | 'on_time' | 'no_data', StatusColor> = {
   early: { bg: '#0072b2', border: '#005a8d', text: '#005a8d' },

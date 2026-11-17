@@ -42,8 +42,9 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
-import { RAIL_TIER_MAXES, TIER_RANK } from './headway-utils.js';
-import { PERIOD_KEYS, SURFACE_TIER_MAXES } from '../shared/config.js';
+import { TIER_RANK } from './headway-utils.js';
+import { PERIOD_KEYS } from '../shared/config.js';
+import { ALL_TIER_MAXES } from '../shared/frequencyRules.js';
 import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
 
 /**
@@ -51,7 +52,7 @@ import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
  * moving two steps on its own scale (5 -> 10, 8 -> 15) is a route shift like a bus moving
  * 10 -> 20 (#871). Only 'span' is left out: it is no service, not a tier.
  */
-const GATE_TIERS = new Set([...SURFACE_TIER_MAXES.map(String), ...RAIL_TIER_MAXES.map(String), 'infrequent']);
+const GATE_TIERS = new Set([...ALL_TIER_MAXES.map(String), 'infrequent']);
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
 export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;

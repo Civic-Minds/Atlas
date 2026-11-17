@@ -3,7 +3,8 @@
  * `scripts/vehicles-needed.ts --json tmp/studio/<slug>-vehicles.json` and served only by the Vite dev
  * server at STUDIO_VEHICLES_DEV_URL (vite.config.ts); never uploaded to R2 or built into a deployment.
  */
-import { SURFACE_TIER_MAXES, type PeriodKey } from './config';
+import { type PeriodKey } from './config';
+import { SURFACE_TIER_MAXES } from './frequencyRules';
 
 /**
  * A group's target headways (minutes): its routes' own frequency scale, the one the map and the pipeline grade them on

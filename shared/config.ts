@@ -1,4 +1,5 @@
 import { headwayTierLabel } from './headwayText';
+import { SURFACE_TIER_MAXES } from './frequencyRules';
 import { hourRange, hourTime } from './timeText';
 import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
@@ -364,19 +365,22 @@ export interface HeadwayTier {
   label: string;
 }
 
-export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#22863a', label: headwayTierLabel(10) },
-  { max: 15, color: '#3da44d', label: headwayTierLabel(15) },
-  { max: 20, color: '#f59e0b', label: headwayTierLabel(20) },
-  { max: 30, color: '#e07b2a', label: headwayTierLabel(30) },
-  { max: 60, color: '#92400e', label: headwayTierLabel(60) },
-  { max: Infinity, color: '#6b7280', label: 'Infrequent' },
-];
+/**
+ * The map's tiers with their colours: one colour per SURFACE_TIER_MAXES step (shared/frequencyRules.ts, the scales'
+ * one home), then Infrequent.
+ */
+export function tiersWithColours(colours: readonly string[], infrequentColour: string): HeadwayTier[] {
+  if (colours.length !== SURFACE_TIER_MAXES.length) throw new Error('one colour per surface tier');
+  return [
+    ...SURFACE_TIER_MAXES.map((max, i) => ({ max, color: colours[i], label: headwayTierLabel(max) })),
+    { max: Infinity, color: infrequentColour, label: 'Infrequent' },
+  ];
+}
 
-/** Finite headway tier breakpoints derived from HEADWAY_TIERS (pipeline analysis). */
-export const SURFACE_TIER_MAXES: number[] = HEADWAY_TIERS
-  .filter(t => t.max !== Infinity)
-  .map(t => t.max);
+export const HEADWAY_TIERS: HeadwayTier[] = tiersWithColours(['#22863a', '#3da44d', '#f59e0b', '#e07b2a', '#92400e'], '#6b7280');
+
+/** The surface scale, re-exported here for its many readers; defined in shared/frequencyRules.ts. */
+export { SURFACE_TIER_MAXES };
 
 /** Default map center when no saved view (GTHA). */
 export const DEFAULT_MAP_CENTER: [number, number] = [43.65, -79.45];

@@ -15,6 +15,7 @@ import { parseGtfsZip } from '../pipeline/parseGtfs.js';
 import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { TIME_PERIODS } from '../shared/config.js';
+import { SURFACE_TIER_MAXES } from '../shared/frequencyRules';
 
 const SEED = Number(process.argv.find(a => a.startsWith('--seed='))?.slice(7) ?? '20260926');
 const OUTPUT = resolve(process.argv.find(a => a.startsWith('--out='))?.slice(6) ?? 'docs/audits/route-accuracy-spot-check-2026-09.md');
@@ -73,11 +74,14 @@ function hasBranchEvidence(group: RouteGroup, all: RouteGroup[]): boolean {
   return variants.size >= 2 || headsigns.size >= 2 || namedSiblings;
 }
 
+/** Headways that divide the hour evenly: the map's tiers plus this study's extra 5, 6 and 12 (the scales live in shared/frequencyRules.ts). */
+const CLOCK_FACE_HEADWAYS = new Set([...SURFACE_TIER_MAXES, 5, 6, 12]);
+
 function category(group: RouteGroup, all: RouteGroup[]): 'branch' | 'rail' | 'sparse' | 'clock-face' | 'other' {
   if (hasBranchEvidence(group, all)) return 'branch';
   if (group.routeType === 2 || group.routeType === 0) return 'rail';
   if (group.features.some(p => p.serviceClass !== 'regular' || p.tier === 'span' || p.tier === 'infrequent')) return 'sparse';
-  if (group.features.some(p => [5, 6, 10, 12, 15, 20, 30, 60].includes(Number(p.headway)))) return 'clock-face';
+  if (group.features.some(p => CLOCK_FACE_HEADWAYS.has(Number(p.headway)))) return 'clock-face';
   return 'other';
 }
 
