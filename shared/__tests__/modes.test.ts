@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   effectiveMode,
+  getGtfsModeName,
   isRailReplacementBus,
   normalizeRouteType,
   VIRTUAL_LRT_MODE,
@@ -64,5 +65,16 @@ describe('isRailReplacementBus', () => {
   it('recognizes explicitly named rail replacement buses', () => {
     expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line Replacement Bus' })).toBe(true);
     expect(isRailReplacementBus({ routeType: 3, routeLongName: 'Blue Line' })).toBe(false);
+  });
+});
+
+describe('getGtfsModeName extended codes (CIV-1812)', () => {
+  it('names each extended range as the GTFS extended route types list does', () => {
+    const names = Object.fromEntries([100, 200, 400, 401, 402, 405, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1700].map(c => [c, getGtfsModeName(c)]));
+    expect(names).toEqual({
+      100: 'Commuter Rail', 200: 'Bus', 400: 'Tram/Light Rail', 401: 'Subway/Metro', 402: 'Subway/Metro', 405: 'Tram/Light Rail',
+      500: 'Subway/Metro', 600: 'Subway/Metro', 700: 'Bus', 800: 'Bus', 900: 'Tram/Light Rail',
+      1000: 'Ferry', 1100: 'Transit', 1200: 'Ferry', 1300: 'Gondola', 1400: 'Funicular', 1500: 'Transit', 1700: 'Transit',
+    });
   });
 });
