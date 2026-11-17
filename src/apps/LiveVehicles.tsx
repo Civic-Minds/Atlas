@@ -22,6 +22,7 @@ import RouteListRow from '../components/RouteListRow';
 import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
+import { effectiveMode, type EffectiveModeInput } from '../../shared/modes';
 import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
@@ -482,7 +483,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   // Vehicle word for the selected route's mode ("Streetcar 4508", not "Bus 4508")
   const modeWordFor = useCallback(
-    (agencySlug: string, routeShortName: string) => vehicleModeWord((routeFeature(agencySlug, routeShortName)?.properties as { routeType?: number | null } | null)?.routeType),
+    (agencySlug: string, routeShortName: string) => {
+      // The route's mode as the map reads it (CIV-1812): an LRT line or a monorail is a train, even when its feed type is tram.
+      const props = routeFeature(agencySlug, routeShortName)?.properties as EffectiveModeInput | null | undefined;
+      return vehicleModeWord(props?.routeType == null ? null : effectiveMode({ ...props, agencySlug }));
+    },
     [routeFeature],
   );
   const selectedRouteModeWord = useMemo(
