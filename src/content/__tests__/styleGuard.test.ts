@@ -172,7 +172,7 @@ const RULES: Rule[] = [
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },
   // CIV-1596, CIV-1601: Live's measure and section names, and its words used in more than one place, are written once, in shared/liveWording.ts.
   { name: 'a Live measure or section name typed by hand (use its constant in shared/liveWording.ts)', doc: 'TEXT.md',
-    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Typical added|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|How this is measured|On time|Not measured|not measured|Delay not measured|Less exact|1 in 10 later than|Open Live|View on Live map|Both directions|Direction|Time of day|Linked to|Linked|Not linked|Short turn|Too close together|Too far apart|Gaps off the schedule)\1/,
+    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|1 in 10 leave|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
     slip: '<Section title="Stops most often late">', only: /(^|\/)[Ll]ive[^/]*$|\/Live\//, allowed: ['shared/liveWording.ts'] },
   // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and "Live vehicles" (never "Live transit"), written once in shared/liveWording.ts.
   { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_VEHICLES_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
@@ -231,7 +231,7 @@ const APPROVED_TEXT: Record<string, string[]> = {
   'src/components/Live/sections/MethodSection.tsx': ['(about 1 km)'],
   'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
   // Live's notices, word for word (CIV-1045); Ryan's CIV-1160 answer 7 keeps "Live has no route 109 for MiWay."
-  'src/content/noticeCopy.ts': ['`Live has no route ${route} for ${agency}.`', "It follows ${agencyName} routes ${followed.join(', ')}."],
+  'src/content/noticeCopy.ts': ['`Live has no route ${route} for ${agency}.`', 'It covers ${agencyName} routes ${joinList(followed)}.'],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.

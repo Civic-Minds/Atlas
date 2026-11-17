@@ -9,7 +9,7 @@ import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min } from './liveFormat.js';
 import { hourTime } from './timeText.js';
 import { runTimeAmount } from './headwayText.js';
-import { NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
+import { NO_DATA_YET, NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
 
@@ -313,7 +313,7 @@ export interface Freshness {
 /** "Data up to <date>", and a warning when it is more than two days old. `route` is for the developer rebuild command (`devHint`). */
 export function freshness(v3: LiveV3, route: string, now: number): Freshness {
   const upTo = v3.window.dates[v3.window.dates.length - 1] ?? null;
-  if (!upTo) return { upTo: null, daysOld: null, stale: true, text: 'This analysis has no days in it.', devHint: `npm run live:analyze -- ${route}` };
+  if (!upTo) return { upTo: null, daysOld: null, stale: true, text: NO_DATA_YET, devHint: `npm run live:analyze -- ${route}` };
   const daysOld = Math.floor((now - Date.parse(`${upTo}T12:00:00Z`)) / 86_400_000);
   const stale = daysOld > STALE_AFTER_DAYS;
   return {

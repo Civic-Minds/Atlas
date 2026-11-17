@@ -6,7 +6,7 @@ export interface MethodGroup { label: string; items: ReactNode[] }
 
 /**
  * A glossary line: the term in bold, then its definition as the rest of the sentence ("**Late** is …"), no colon (Ryan, CIV-1075).
- * `colon` for the lines Ryan wrote with one ("**Near a limit**: …", "**Routes covered**: …").
+ * `colon` for the lines Ryan wrote with one ("**Close to the cutoff**: …", "**Routes covered**: …").
  */
 export function Term({ t, colon = false, children }: { t: string; colon?: boolean; children: ReactNode }) {
   return <><strong className="font-semibold text-[var(--text-secondary)]">{t}</strong>{colon ? ':' : ''} {children}</>;

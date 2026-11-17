@@ -41,7 +41,7 @@ describe('CIV-1160: same words after moving Live copy to shared definitions', ()
     expect(SHOW_KEY_STOPS).toBe('Show key stops only');
     expect(showAllStopsText(24)).toBe('Show all 24 stops');
     expect(STRIP_ROLE).toBe('route strip');
-    expect(LESS_EXACT).toBe('Less exact');
+    expect(LESS_EXACT).toBe('Fewer location reports');
     expect(fewerThanText(30)).toBe('Fewer than 30 departures or gaps');
     expect(NOT_MEASURED_KEY).toBe('Not measured');
     expect(gapsOffText('12%')).toBe('12% of gaps off');

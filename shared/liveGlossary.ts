@@ -3,7 +3,7 @@
  * The Docs page's Glossary shows them. `text` is the rest of the sentence after the bold term, no colon (CIV-1075).
  */
 import { COLOURED_CHANGES } from './liveDashboard.js';
-import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
+import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STEP_LABELS, DELIVERED_LABEL, EARLY_STEP_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from './liveWording.js';
 
 /** `legend`: a chart key rather than a definition, shown as "**Term**: …" (E22) and not on the agency page. */
 export interface LiveTerm { term: string; text: string; legend?: boolean }
@@ -16,7 +16,7 @@ export const LIVE_GLOSSARY: readonly LiveTerm[] = [
   { term: DELIVERED_LABEL, text: 'is the share of scheduled trips that actually ran.' },
   { term: 'Vehicle positions', text: 'are recorded once a minute for each vehicle. The time it left each stop is estimated from those and compared with the schedule.' },
   { term: 'Trip matching', text: 'links each vehicle to its scheduled trip by trip number.' },
-  { term: 'Network figures', text: 'combine every trip on every covered route. A route with more trips has more effect on the total.' },
+  { term: AGENCY_FIGURES_TERM, text: 'combine every trip on every covered route. A route with more trips has more effect on the total.' },
   { term: 'Stops', text: 'are listed once they have 30 or more departures, with up to 3 per route direction.' },
   { term: 'Coloured changes', text: COLOURED_CHANGES },
   { term: 'Recording gaps', text: RECORDING_GAPS },
