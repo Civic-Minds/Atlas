@@ -10,10 +10,12 @@ describe('For Transit Planners page (CIV-1320)', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'For Transit Planners' })).toBeInTheDocument();
     for (const name of [
       'See Frequency, Not Just Routes',
-      'See How Service Changes Over the Day and Week',
-      'Every Agency in a Region, on One Map',
-      'A Map Instead of a Long Report',
-      'Live Vehicles',
+      'Service by Day, Time and Span',
+      'Every Agency on One Map',
+      'Before and After a Schedule Change',
+      'Vehicles Needed at Every Frequency',
+      'Where Delays Build Up',
+      'Share What You Find',
       'Where the Data Comes From',
       'Request a Demo',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
@@ -25,10 +27,29 @@ describe('For Transit Planners page (CIV-1320)', () => {
     expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
-  it('alternates the picture side of the feature cards on desktop, right then left (CIV-1754)', () => {
+  it('alternates the picture side of the feature cards on desktop by card position, right then left (CIV-1754)', () => {
     const { container } = render(<PlannersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    expect(sides.slice(0, 4)).toEqual(['right', 'left', 'right', 'left']);
+    // Frequency, Day and Time, Agencies, then Share (the seventh card, so right); cards 4-6 have no picture.
+    expect(sides).toEqual(['right', 'left', 'right', 'right']);
+  });
+
+  it('marks the before and after, vehicles needed and delay cards Beta, with the shared tag beside the title (CIV-1793)', () => {
+    const { container } = render(<PlannersPage />);
+    const beta = [...container.querySelectorAll('section')].filter(s => s.querySelector('h2') && [...s.querySelectorAll('span')].some(t => t.textContent === 'Beta'));
+    expect(beta.map(s => s.querySelector('h2')!.textContent)).toEqual(['Before and After a Schedule Change', 'Vehicles Needed at Every Frequency', 'Where Delays Build Up']);
+  });
+
+  it('gives every feature card exactly two sentences, and its own Request a demo text (CIV-1793)', () => {
+    const { container } = render(<PlannersPage />);
+    const cards = [...container.querySelectorAll('section')].filter(s => s.querySelector('h2') && s.style.background);
+    const features = cards.filter(c => c.querySelector('h2')!.textContent !== 'Request a Demo');
+    expect(features).toHaveLength(7);
+    for (const card of features) {
+      const text = card.querySelector('p')!.textContent!;
+      expect([card.querySelector('h2')!.textContent, text.split(/(?<=\.)\s+/).length]).toEqual([card.querySelector('h2')!.textContent, 2]);
+    }
+    expect(screen.getByText('We’ll explore your network with you and show how the map can back up your next service review.')).toBeInTheDocument();
   });
 
   it('shows the map pictures from its own folder: the hero, then one 4:3 picture per feature card, light and dark, desktop and phone (CIV-1701)', () => {
@@ -60,7 +81,7 @@ describe('For Transit Planners page (CIV-1320)', () => {
     expect(demo[0].closest('section')).toContainElement(screen.getByRole('heading', { level: 2, name: 'Request a Demo' }));
   });
 
-  it('links its Live card to Live only when the Live flag is on (CIV-1705)', () => {
+  it('links its delay card to Live only when the Live flag is on (CIV-1705)', () => {
     render(<PlannersPage />);
     const open = screen.queryByRole('link', { name: 'Open Live' });
     if (FEATURES.live) expect(open).toHaveAttribute('href', '/apps/live');

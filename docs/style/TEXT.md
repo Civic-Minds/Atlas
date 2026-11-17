@@ -63,6 +63,9 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
 - No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
 - No "what Atlas isn't" disclaimers (not a trip planner, live alerts, doesn't replace, can be wrong): say what Atlas does. Legal pages excepted. Ryan, CIV-1733, CIV-1792. (checked)
+- Feature card titles are about the same length, about five words (Ryan, CIV-1793: "The titles should be relatively the same amount of words"). (checked: at most 7, `featureCardCopy.test.tsx`)
+- No "Atlas" in feature card body text (Ryan, CIV-1793). (checked: `featureCardCopy.test.tsx`)
+- "Vehicles", not "buses", in page and card copy: the About, For Transit Planners and For Researchers pages and their cards (Ryan, CIV-1793: "it's not just buses"). (checked)
 - Every page has one name, in `shared/pageNames.ts` (`PAGE_NAMES`): its heading, the header and footer links to it, back and close links, and the start of its browser tab all read it. Ryan, 2026-11-15. (checked)
   - "Docs" on every link to the Docs page, as its heading and in its tab (`DOCS_PAGE_TITLE`). CIV-1697 (Ryan, 2026-11-15: "Should we rename Documentation page back to Docs", then option 1, everywhere) reversed the page-names refactor's "Documentation". The URL stays /about/docs.
   - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.

@@ -13,7 +13,6 @@ const MARKER = '[Placeholder';
 /** Each file allowed to hold the marker, the FEATURES key that gates it, and why. */
 const DEV_ONLY: Array<{ file: string; flag: string; why: string }> = [
   { file: 'src/components/Interval/FilterChips.tsx', flag: 'connectionsBar', why: 'connections bar side labels (CIV-1766); App.tsx only builds the bar when the flag is on' },
-  { file: 'src/PlannersPage.tsx', flag: 'plannersLink', why: 'planners Live card (CIV-1705); the route, footer link and prerender page all need the flag' },
 ];
 
 function files(dir: string): string[] {
