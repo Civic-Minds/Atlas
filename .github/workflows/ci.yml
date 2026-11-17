@@ -39,6 +39,11 @@ jobs:
       - name: Type Check Workers
         run: npm run typecheck:workers
 
+      # CIV-1776: no unused file or export (knip.json lists the entry points: the app, api, local-api, workers, scripts and
+      # pipeline; tests count as users). Pinned, run with npx so it adds no dependency.
+      - name: Check for unused files and exports
+        run: npm run check:unused
+
       - name: Validate index.json
         run: npm run validate-index
 

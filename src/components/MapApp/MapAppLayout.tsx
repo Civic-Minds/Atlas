@@ -14,8 +14,6 @@ export const MAP_APP_PADDING = {
   narrow: { top: 76, bottom: 24, left: 24, right: 24 },
 } as const;
 
-export type MapAppPadding = { top: number; bottom: number; left: number; right: number };
-
 interface Props {
   wide: boolean;
   /** The map (MapAppMap), filling the body on wide screens, the top of the page on narrow ones. */

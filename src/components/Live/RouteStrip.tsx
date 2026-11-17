@@ -7,7 +7,6 @@ import { percentText, countText } from '../../../shared/numberText';
 import { NOTE_COLUMN } from '../../content/noticeCopy';
 
 export type { RouteStripMode, RouteStripStop, RouteStripStretch } from './routeStripModel';
-export { routeStripFromV3 } from './routeStripModel';
 
 export interface RouteStripProps {
   /** The direction's stops in route order. */

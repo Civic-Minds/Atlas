@@ -2,10 +2,10 @@
  * The /agencies index: every area and agency page in one place. Built from the same summaries as the pages
  * themselves; nothing new is measured.
  */
-import { agencyMention, agencyPagePath, agencyPlaces, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
+import { agencyMention, agencyPlaces, agencyTitle, areaPageStatus, regionPageHref, sharedOfficialNames, type AgencyPageSummary } from './agencyPages';
 import { countryForRegion } from './regionCountry';
 import { areaRegionTitle, areaShortName } from './areaRegions';
-import { areaPagePath, type AreaConfig } from './areas';
+import { type AreaConfig } from './areas';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { plural } from './overflowText';
 import { compareAgencyName, compareText } from './sortCompare';
@@ -140,4 +140,3 @@ export function resolveAgencyIndexSeo(
   };
 }
 
-export { agencyPagePath, areaPagePath };

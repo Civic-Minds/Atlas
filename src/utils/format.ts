@@ -1,13 +1,13 @@
 import { cleanHeadsign } from '../../shared/cleanHeadsign';
-import { formatRemDisplay, getRouteLabel } from '../../shared/routeDisplay';
+import { getRouteLabel } from '../../shared/routeDisplay';
 import { routeDisplay, shouldHideNumericRouteShortName } from '../../shared/routeDisplay';
 import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/headsignDisplay';
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 import { countOf } from '../../shared/overflowText';
 import { feedPlaceName, nameCase } from './nameCase';
-export { cleanHeadsign, formatRemDisplay, getRouteLabel };
+export { cleanHeadsign, getRouteLabel };
 // Name casing lives in nameCase.ts (CIV-1001); these keep the older import path working.
-export { nameCase, ROUTE_NAME_ACRONYMS, writtenInCapitals, type NameCaseMode } from './nameCase';
+export { nameCase, ROUTE_NAME_ACRONYMS } from './nameCase';
 
 /**
  * Single source of truth for "an active search should hide this sidebar overlay panel".

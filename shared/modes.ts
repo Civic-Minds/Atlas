@@ -302,4 +302,3 @@ export function buildEffectiveModeExpression(): unknown[] {
 }
 
 /** MapLibre layer filter clause for selected mode chip ids (null = no filter). */
-export { buildModeFilterClause } from './tileFilterExprs.js';

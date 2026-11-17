@@ -8,12 +8,12 @@ import { AREA_INDEX } from './areaIndex';
 import { areaRegionName } from './areaRegions';
 import { countryForRegion } from './regionCountry';
 import { agencyGroupData, groupIntroParts, groupPageDescription, groupPageTitle, type AgencyGroupData } from './areaPages';
-import { agencyIndexHeadingHref, REGION_PATH_PREFIX, regionPagePath, regionSlug } from './pagePaths';
+import { agencyIndexHeadingHref, regionPagePath, regionSlug } from './pagePaths';
 import { zoomForSpan } from './mapZoom';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
 import { SITE_NAME } from './pageNames';
 
-export { REGION_PATH_PREFIX, regionPagePath, regionSlug };
+export { regionPagePath, regionSlug };
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const REGION_DATA_SCRIPT_ID = 'region-page-data';

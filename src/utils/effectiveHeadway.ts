@@ -7,7 +7,7 @@ import { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor'
 import { headwayEvery, headwayEveryRange, headwayPeriodShape, headwayRangeShown } from './headwayText';
 import { routeFilterAllDayContract, routeFilterContract, routeValueIsOneGap, tailNotThroughPeriod } from './stretchCard';
 import { clockTime } from '../../shared/timeText';
-import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, ON_PART_OF_ROUTE } from '../content/noticeCopy';
 import { routeCardLowestHeadway, routeCardRange } from './routeListRange';
 
 export { pairedTripPeriodFloor, pairedTripSafeHeadway } from './pairedTripFloor';
@@ -388,7 +388,7 @@ export function routeListDisplayLimited(features: readonly ShapeProperties[], pe
 }
 
 /** The words every card and list shows where the filter says a route has no regular cadence in the period (D2, D3 in noticeCopy). */
-export { IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL };
+export { IRREGULAR_PERIOD_SHORT_LABEL };
 
 /** The filter says the route has no regular cadence in this period: lists say IRREGULAR_PERIOD_LABEL, never a number. */
 export function routeListNoRegularService(features: readonly ShapeProperties[], period: TimePeriod): boolean {

@@ -20,10 +20,10 @@
  * Forward compatible: unknown extra fields are ignored and kept as they are. Validation never throws;
  * it returns a typed error. A newer sidecar `version` is reported as 'unsupported-version', not guessed at.
  */
-import type { HistoryDayValue, HistoryFlag, HistoryRep, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar } from './historyV2.js';
+import type { HistoryDayValue, HistoryFlag, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar } from './historyV2.js';
 import { yearOfRefDate } from './historyV2.js';
 
-export type { HistoryDayValue, HistoryFlag, HistoryRep, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar };
+export type { HistoryFlag, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar };
 
 export type HistoryV2ErrorCode =
   | 'not-object'

@@ -53,8 +53,6 @@ export function buildRouteModeFilters(routes: RouteModeFilterRoute[]): RouteMode
   return filters;
 }
 
-/** History's name for the chip. */
-export type HistoryRouteFilter = RouteModeFilter;
 
 export function routeMatchesModeFilter(route: RouteModeFilterRoute, filter: RouteModeFilterKey): boolean {
   if (filter.startsWith('mode:')) return effectiveMode(route) === Number(filter.slice(5));

@@ -147,7 +147,6 @@ export const frequentServiceCoverageInterpretation = {
  * at 15 min (src/data/frequentCoverageMetrosRule.ts). Shares are 0–1; each country's cities run from the highest 30-minute
  * share down, with the cities at 0% at 15 min after the rest.
  */
-export const frequentCoverageMetrosSource = coverageMetros.source;
 export const frequentCoverageCountries = coverageMetros.countries.map(country => ({
   ...country,
   label: country.country === 'canada' ? 'Canada' : 'United States',

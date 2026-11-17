@@ -12,7 +12,7 @@ import { plural } from '../../../shared/overflowText';
 import { DAY_LABEL, FREQUENCY_LABEL, TIME_LABEL, COMPARE_ARIA_LABEL, COMPARE_LABEL } from '../../content/noticeCopy';
 
 export { SideBadge } from '../ui/SideBadge';
-export { compareSideLabel, defaultCompareSide, type CompareSide } from '../../utils/compareSides';
+export { defaultCompareSide, type CompareSide } from '../../utils/compareSides';
 
 /** Frequency, day and time buttons for one compare side (the phone filter panel uses this for B). */
 export function CompareSidePicker({ side, onChange }: { side: CompareSide; onChange: (side: CompareSide) => void }) {

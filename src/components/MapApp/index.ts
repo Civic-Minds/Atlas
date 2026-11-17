@@ -12,10 +12,9 @@
  * (`layer: { kind: 'lines', lines }`, each with its own colour, width, dash and opacity).
  */
 export { MapAppShell, MapAppHeader } from './MapAppShell';
-export { MapAppLayout, MAP_APP_PADDING, MAP_APP_WIDE_QUERY, useMapAppWide, type MapAppPadding } from './MapAppLayout';
-export { default as MapAppMap, type MapLayer, type MapLine, type MapPick } from './MapAppMap';
+export { MapAppLayout, MAP_APP_PADDING, useMapAppWide } from './MapAppLayout';
+export { default as MapAppMap, type MapLine, type MapPick } from './MapAppMap';
 export { MapAppFooter, framePadding } from './MapAppFooter';
-export { PillMenu, MapPillGroup, type PillMenuOption } from './PillMenu';
+export { PillMenu, MapPillGroup } from './PillMenu';
 export { default as SidebarPanel, type PanelWidget } from '../Live/tool/WidgetPanel';
-export { default as SidebarWidget, type WidgetSize } from '../Live/tool/Widget';
-export { MapCard } from '../Live/MapCard';
+export { default as SidebarWidget } from '../Live/tool/Widget';

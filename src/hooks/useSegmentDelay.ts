@@ -38,7 +38,3 @@ export function useSegmentDelayStatus(slug: string | null | undefined, routeShor
   return loaded?.key === key ? { data: loaded.data, settled: true } : { data: null, settled: false };
 }
 
-/** Archived "where vehicles lose time" stats for a live route (Live mode only). */
-export function useSegmentDelay(slug: string | null | undefined, routeShortName: string | null | undefined) {
-  return useSegmentDelayStatus(slug, routeShortName).data;
-}

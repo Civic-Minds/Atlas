@@ -139,12 +139,6 @@ export function labelLines(text: string, maxPx = 120): number {
   return Math.max(1, Math.ceil((Math.ceil(text.length * 6.4) + 4) / (maxPx - 12)));
 }
 
-export interface LabelCandidate {
-  index: number;
-  /** Centre of the stop, px from the strip's left edge. */
-  x: number;
-  width: number;
-}
 
 /**
  * Which stops get a label: the two terminals, then the ends of the marked stretches, then `majors` evenly spaced
