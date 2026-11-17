@@ -128,11 +128,9 @@ function edgeWithoutBarEnds(edge: { from?: number; until?: number; every: number
 /**
  * CIV-1787 (Ryan: "omg u have to scroll here that is not acceptable", "we changed it bc the bar was too slim"): with the
  * hours bar, the routes table never scrolls sideways. From lg up the frequency columns take their content's width, the
- * route names wrap in a narrower column, and the hours bar takes the rest (at least 10rem, HoursBar); below lg the hours
+ * route names wrap in a column at least 10rem wide, and the hours bar takes the rest (at least 10rem, HoursBar); below lg the hours
  * column is hidden (DataTable `grow`).
  */
-const HOURS_TABLE_ROUTE_REM = 9;
-
 /**
  * CIV-1772 (Ryan, option 1): the frequency stays on one line and a gap, start or end note is a small grey second line,
  * the same in every cell, so rows read evenly.
@@ -233,7 +231,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
                     rows={group.routes}
                     rowKey={r => `${r.name}-${r.longName ?? ''}`}
                     columns={[
-                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, ...(hoursAxis ? { width: HOURS_TABLE_ROUTE_REM } : {}), className: 'font-normal align-top', cell: r => {
+                      { key: 'route', header: ROUTE_COLUMN, rowHeader: true, className: hoursAxis ? 'font-normal align-top lg:min-w-[10rem]' : 'font-normal align-top', cell: r => {
                         const name = <RouteNameCell shortName={r.name} feedShortName={r.shortName} longName={r.longName} mode={r.mode} agencyName={agency.name} />;
                         // CIV-1787 (Ryan: "different spacing between rows"): with the hours bar, every row is two lines tall, room
                         // for a two-line name or a value with its note, so the bars sit evenly apart.

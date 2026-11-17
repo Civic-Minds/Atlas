@@ -153,7 +153,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const pageGap = (i: number) => (fit
     ? `${i === lastNarrow ? '' : ' max-sm:pr-3'}${i < columns.length - 1 && words(i) ? ' sm:pr-4' : ''}`
     : i < columns.length - 1 ? (words(i) ? ' pr-4' : ' pr-4 sm:pr-0') : '');
-  const cellPad = (i: number) => (end ? (i === 0 ? (fit ? ' max-sm:pr-3 sm:pr-6' : ' pr-6') : `${pageGap(i)}${words(i) ? '' : ' sm:pl-2 sm:text-right'}`) : pad(i));
+  const cellPad = (i: number) => (end ? (i === 0 ? (fit ? ' max-sm:pr-3 sm:pr-6' : ' pr-6') : `${pageGap(i)}${words(i) ? '' : ` sm:pl-2 sm:text-right${grows ? ' lg:pl-6' : ''}`}`) : pad(i));
   // The right-aligned figure columns of a `page` table.
   const figure = (i: number) => end && i > 0 && !words(i);
   // Phones: the default fixed widths, whatever the columns ask for from sm up.
