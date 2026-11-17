@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { trackEvent } from '../lib/analytics';
 import ArrowLink from './ui/ArrowLink';
 import { mailto } from '../../shared/contact';
-import { PageTitle, SectionTitle } from './ui/PageTitle';
+import { SectionTitle } from './ui/PageTitle';
 
 export default function SiteContact({
   id,

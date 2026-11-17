@@ -44,8 +44,8 @@ import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
 import { FrequencyBar, RouteNameCell } from './pageParts';
-import { AGENCY_PAGE_NOT_FOUND_TITLE, LIMITED_SERVICE_LABEL, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL, ROUTES_FREQUENCY_HEADING, ROUTE_COLUMN, SERVICES_HEADING } from './content/noticeCopy';
-import { capitalizeFirst, periodShapeParts } from './utils/headwayText';
+import { AGENCY_PAGE_NOT_FOUND_TITLE, NO_FREQUENCY_PAGE_BODY, IRREGULAR_PERIOD_SHORT_LABEL, MAP_LINK, VIEW_ON_MAP, SEE_ALL_AGENCIES, WEEKDAY_HOURS_LABEL, ROUTES_FREQUENCY_HEADING, ROUTE_COLUMN, SERVICES_HEADING } from './content/noticeCopy';
+import { periodShapeParts } from './utils/headwayText';
 
 /** Read this page's numbers from the JSON the prerender embedded next to the app root. */
 function readEmbeddedData(slug: string | undefined): AgencyPageData | null {

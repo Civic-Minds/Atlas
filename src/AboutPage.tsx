@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { featureTint } from './components/FeatureCard';
+import Card, { CARD_TITLE } from './components/ui/Card';
 import ThemedPicture from './components/ui/ThemedPicture';
 import { Clock, MapPin, Repeat } from 'lucide-react';
 import { FEATURE_ROUTES, FEATURES } from '../shared/config';
@@ -7,7 +7,6 @@ import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
 import Tag from './components/ui/Tag';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { SURFACE } from './styles';
 import { newestResearch, type ResearchEntry } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
@@ -29,7 +28,7 @@ const QUESTIONS = [
 /** A story tile: its share picture on top, then the research card's tag, title, description and link (as on /research). */
 function StoryTile({ entry, tilt }: { entry: ResearchEntry; tilt: number }) {
   return (
-    <a href={entry.href} className={`${SURFACE} group flex w-full flex-col overflow-hidden rounded-2xl transition-[rotate] [rotate:var(--tilt)] hover:rotate-0 focus-visible:rotate-0`} style={{ '--tilt': `${tilt}deg` } as CSSProperties}>
+    <Card as="a" tone="surface" href={entry.href} className="group flex w-full flex-col overflow-hidden transition-[rotate] [rotate:var(--tilt)] hover:rotate-0 focus-visible:rotate-0" style={{ '--tilt': `${tilt}deg` } as CSSProperties}>
       <ThemedPicture base={entry.picture} ext={entry.pictureExt ?? 'svg'} className="block aspect-[1200/630] w-full object-cover" />
       <div className="flex flex-1 flex-col p-5">
         <Tag className="self-start">{entry.kind}</Tag>
@@ -38,7 +37,7 @@ function StoryTile({ entry, tilt }: { entry: ResearchEntry; tilt: number }) {
         {/* Pinned to the bottom so the links line up across the row, as on /research. */}
         <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">{entry.linkText}</ArrowLink>
       </div>
-    </a>
+    </Card>
   );
 }
 
@@ -106,11 +105,11 @@ export default function AboutPage() {
             {QUESTIONS.map(({ title, body, Icon }, i) => {
               const color = tiers[i].color;
               return (
-                <div key={title} className="rounded-2xl p-6" style={{ background: featureTint(color) }}>
+                <Card key={title} tone={{ tint: color }} padding="regular">
                   <Icon className="h-7 w-7" style={{ color }} aria-hidden="true" />
-                  <h3 className="mt-5 text-2xl font-black tracking-tight">{title}</h3>
+                  <h3 className={`mt-5 ${CARD_TITLE}`}>{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{body}</p>
-                </div>
+                </Card>
               );
             })}
           </div>

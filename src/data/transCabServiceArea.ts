@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import type { OnDemandAvailability } from '../../shared/onDemandAvailability';
 
 const SOURCE_URL = 'https://www.hamilton.ca/home-neighbourhood/hsr/schedule-route-tools/trans-cab';

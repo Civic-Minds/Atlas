@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';

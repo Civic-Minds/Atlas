@@ -5,7 +5,7 @@ import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useR
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
-import { agencyNames, distinctAgencyNames } from '../utils/agencyName';
+import { distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
 import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
@@ -27,7 +27,7 @@ import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
-import { ATLAS_MODE, FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
 import type * as maplibregl from 'maplibre-gl';
 import { CompareSideBar, CompareLinkToggle, CompareTab, CompareMenuItem, defaultCompareSide, type CompareSide } from '../components/Interval/CompareControl';

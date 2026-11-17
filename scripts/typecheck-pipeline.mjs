@@ -4,9 +4,9 @@
 // file that other files import). It is empty: featureDedupe.ts, routeGrading.ts and
 // transit-phase2.ts typecheck now (CIV-1004). Add an entry only with an issue number.
 //
-// TODO(#719): pipeline/catalog.ts and pipeline/population.ts (import the nonexistent
-// types/catalog) and pipeline/restore-active-feeds.ts (imports r2 helpers that do not exist) are
-// excluded in tsconfig.pipeline.json. They are not imported by anything else; fix or delete them.
+// TODO(#719): pipeline/restore-active-feeds.ts (imports r2 helpers that do not exist) is excluded
+// in tsconfig.pipeline.json. It is not imported by anything else; fix or delete it. (catalog.ts and
+// population.ts were deleted in CIV-1776.)
 import { spawnSync } from 'node:child_process';
 
 const SKIPPED_FILES = [];

@@ -16,6 +16,7 @@ import type { DataTableColumn } from '../components/ui/DataTable';
 import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COUNTRY, FREE_CHILD_OTHER_POLICIES, FREE_CHILD_REGIONS, freeChildAgeBars, freeChildFareStats, type FreeChildFareBar } from '../data/freeChildFares';
 import { countOf } from '../../shared/overflowText';
 import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
+import Card from '../components/ui/Card';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
@@ -136,10 +137,10 @@ export default function FreeChildFaresPage() {
             </p>
             <dl className="mt-8 grid grid-cols-3 gap-3">
               {keyFigures.map(figure => (
-                <div key={figure.label} className="rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-panel)] p-4">
+                <Card key={figure.label} tone="surface" padding="tight">
                   <dt className="text-xs font-bold leading-5 text-[var(--text-muted)]">{figure.label}</dt>
                   <dd className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{figure.value}</dd>
-                </div>
+                </Card>
               ))}
             </dl>
             <div className="mt-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">

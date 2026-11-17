@@ -85,12 +85,6 @@ export interface StopCardProps {
   extra?: React.ReactNode;
 }
 
-/** The chosen period's hours, "9 AM–3 PM" (the stop card's notices name it). */
-const periodRange = (period: TimePeriod): string => {
-  const p = TIME_PERIODS.find(t => t.key === period);
-  return p ? formatPeriodRangeLong(p.startHour, p.endHour) : '';
-};
-
 export const StopCard: React.FC<StopCardProps> = ({
   currentStop,
   back,

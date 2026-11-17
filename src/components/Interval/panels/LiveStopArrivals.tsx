@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { isLiveEligibleSlug } from '../../../../shared/livePollingConfig';
 import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';

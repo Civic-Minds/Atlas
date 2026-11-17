@@ -20,7 +20,7 @@
  * those countries hard-refuses — see AGENTS.md § Production Data Rules.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { resolve, dirname } from 'path';
+import { resolve } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
 import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
@@ -275,7 +275,7 @@ async function main() {
   if (livePollingSidecar) {
     uploads.push(r2Put(`atlas/live-polling/${slug}.json`, JSON.stringify(livePollingSidecar, null, 2)));
   }
-  const [url, stopsUrl, corridorsUrl] = await Promise.all(uploads);
+  const [url] = await Promise.all(uploads);
   console.log(`  Uploaded → ${url}`);
   await bumpPublicDataVersion(`process ${slug}`);
 

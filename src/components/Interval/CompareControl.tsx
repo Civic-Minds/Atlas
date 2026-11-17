@@ -2,7 +2,6 @@ import type { WheelEvent as ReactWheelEvent } from 'react';
 import ModeTab from '../ModeTab';
 import { Columns2, Lock, LockOpen } from 'lucide-react';
 import { COMPARE_SIDE_GROUP, MAP_BADGE_COUNT, MAP_BADGE_LABEL } from '../../styles';
-import Pill from '../ui/Pill';
 import RoundIconButton from '../ui/RoundIconButton';
 import { FilterChips } from './FilterChips';
 import { SideBadge } from '../ui/SideBadge';

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Moon } from 'lucide-react';
 import { useViewport } from '../context/ViewportContext';
 import { useColorMode } from '../hooks/useColorMode';

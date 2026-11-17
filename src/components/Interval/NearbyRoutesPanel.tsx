@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { nameCase } from '../../utils/format';
 import { CardReportButton, HeadwayBadge, LimitedBadge, REPORT_REASON } from './cardUi';
 import { reportDetails } from '../../utils/reportIssue';

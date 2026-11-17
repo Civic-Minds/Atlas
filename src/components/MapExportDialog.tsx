@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Download, Share2 } from 'lucide-react';
 import { PanelCloseButton } from './ui/PanelHeader';
 import { FLOATING_CARD, Z_MODAL_BG, Z_MODAL_TOP, CARD_NOTE } from '../styles';
-import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSize, type MapExportSizeId } from '../utils/mapExport';
+import { canShareMapExport, createMapExport, DEFAULT_MAP_EXPORT_SIZE, downloadMapExport, getMapExportLayout, MAP_EXPORT_SIZES, MapExportBlockedError, shareMapExport, type MapExportSizeId } from '../utils/mapExport';
 import type { MapExportBox, MapExportDetails } from '../utils/mapExportDetails';
 import { trackEvent } from '../lib/analytics';
 import { CLOSE_PLACES, closeLabel, MAP_EXPORT_NOT_READY, MAP_EXPORT_WAITING, EXPORT_MAP_TITLE } from '../content/noticeCopy';

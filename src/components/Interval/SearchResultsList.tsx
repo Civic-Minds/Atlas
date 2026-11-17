@@ -1,5 +1,5 @@
 import React from 'react';
-import { HEADING_GAP, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE, SELECTION_ACTIVE_TEXT } from '../../styles';
+import { HEADING_GAP, PANEL_SECTION_HEAD, LIST_ROW_PRIMARY, LIST_ROW_DIM, SELECTION_ACTIVE_TEXT } from '../../styles';
 import type { AgencySearchGroup } from '../../utils/agencySearch';
 import type { RouteSearchResult, StopSearchResult } from '../../utils/searchResults';
 import RouteListRow from '../RouteListRow';

@@ -146,13 +146,6 @@ export function dateReadProblem(listedTrips: number, readListedTrips: number, ym
 
 type Props = Record<string, any>;
 
-function median(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const s = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(s.length / 2);
-  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
-}
-
 /** Midday median run time, else the first period with one. `p` is { period: [median, min, max] }. */
 function runMinutesOf(entry: { p?: Partial<Record<PeriodKey, [number, number, number]>> } | undefined): number | null {
   if (!entry?.p) return null;

@@ -1,11 +1,11 @@
 import { useMemo, useCallback, useDeferredValue } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
-import { matchesRouteQuery, searchRouteResults, searchStopResults, type StopSearchResult } from '../utils/searchResults';
+import { matchesRouteQuery, searchRouteResults, searchStopResults } from '../utils/searchResults';
 import { isLivePollingRoute } from '../utils/livePolling';
 import { PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildRouteTileFilter, routeFeaturePassesMapFilter } from '../../shared/routeTileFilter';
 import { effectiveMode } from '../../shared/modes';
-import { featurePassesHeadwayFilter, headwayFilterApplies } from '../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
 import { collectStopHubSiblings } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';

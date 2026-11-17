@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { buildFeedCandidates, mobilityDatabaseLatestUrl, type FeedCandidate } from './feedSourceCandidates.js';
+import { type FeedCandidate } from './feedSourceCandidates.js';
 
 export { buildFeedCandidates, mobilityDatabaseLatestUrl } from './feedSourceCandidates.js';
 export type { FeedCandidate } from './feedSourceCandidates.js';

@@ -1,5 +1,4 @@
 import React from 'react';
-import type { Agency } from '../../App';
 import {
   PANEL_SECTION_HEAD,
   LIST_ROW_DIM,

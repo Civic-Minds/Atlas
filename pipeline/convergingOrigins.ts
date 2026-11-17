@@ -222,7 +222,7 @@ export function labelConvergingOrigins(gtfs: GtfsData, activeByDay: Map<DayName,
       return (p.tripsByDay = m);
     };
     const qualifying = new Map<DayType, Set<Pattern>>();
-    for (const { day, active } of days) {
+    for (const { day } of days) {
       let total = 0;
       for (const p of slot.values()) total += tripsByDay(p).get(day)?.length ?? 0;
       const ok = new Set<Pattern>();

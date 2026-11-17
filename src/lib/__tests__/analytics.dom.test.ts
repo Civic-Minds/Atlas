@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FEATURES } from '../../../shared/config';
 import { parseAgencyUrlRule, parseModesParam } from '../../utils/shareUrlState';
-import { trackLandingPageView, withShareTags } from '../analytics';
+import { withShareTags } from '../analytics';
 
 describe('analytics startup queue', () => {
   beforeEach(() => {

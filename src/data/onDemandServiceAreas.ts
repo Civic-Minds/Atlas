@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { GeoJSON } from 'geojson';
 import { HSR_MY_RIDE_STOP_FEATURES } from './hsrMyRideStops';
 import { LEAMINGTON_LT_GO_STOP_FEATURES } from './leamingtonLtGoStops';
 import { COBOURG_ON_DEMAND_STOP_FEATURES } from './cobourgOnDemandStops';

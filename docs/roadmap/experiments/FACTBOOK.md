@@ -55,7 +55,7 @@ This keeps outputs trustworthy while scaling the storytelling.
 
 ### Exploration (now)
 - This document
-- Prototyping fact computation scripts (modeled on existing `scripts/stress-test-tiers.ts`, history builders, etc.)
+- Prototyping fact computation scripts (modeled on the existing history builders)
 - Manual or semi-manual examples to validate value
 
 ### Phase 1: Foundations

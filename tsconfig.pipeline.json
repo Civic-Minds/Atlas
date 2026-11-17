@@ -6,8 +6,6 @@
   "include": ["pipeline", "shared", "src/vite-env.d.ts"],
   "exclude": [
     "pipeline/__tests__",
-    "pipeline/catalog.ts",
-    "pipeline/population.ts",
     "pipeline/restore-active-feeds.ts"
   ]
 }

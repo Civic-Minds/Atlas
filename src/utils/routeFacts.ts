@@ -1,4 +1,3 @@
-import type { GeoJSON } from 'geojson';
 import type { ShapeProperties } from '../hooks/useAgencyData';
 import { PERIOD_KEYS, TIME_PERIODS, periodKeyForHour, type PeriodKey } from '../../shared/config';
 import { getPooledStop, type SharedStopIndex } from '../../shared/sharedStops';

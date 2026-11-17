@@ -2,11 +2,8 @@
  * Types and small helpers for the Live route analysis (local proof of concept):
  * the analysis output's shape, time bands, sample minimums, rounding and stop names.
  */
-import { TIME_PERIODS } from '../../shared/config';
 
 export type SegmentBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
-
-const periodLabel = (key: SegmentBand) => TIME_PERIODS.find(p => p.key === key)?.label ?? key;
 
 /** A stop pair needs at least this many observed trips, over this many days, to be shown. */
 export const MIN_SEGMENT_TRIPS = 30;

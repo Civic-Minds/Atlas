@@ -1,5 +1,3 @@
-import type { GeoJSON } from 'geojson';
-
 /** Cobourg Transit On Demand stops from the Town's public Google My Maps layer (retrieved 2026-10-10). */
 export const COBOURG_ON_DEMAND_STOP_FEATURES: GeoJSON.Feature<GeoJSON.Point>[] = [
   { type: 'Feature', properties: { stopName: "716 Ewing St", agencySlug: 'cobourg', serviceType: 'on-demand' }, geometry: { type: 'Point', coordinates: [-78.197721, 43.9647912] } },

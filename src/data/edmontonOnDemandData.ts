@@ -1,6 +1,5 @@
 // Generated from the City of Edmonton's "On Demand Service (Aug 30, 2026)" Google My Maps layer (linked from edmonton.ca),
 // shared by the City's Open Data team on 2026-10-10 as the interim source. Hours by area type from edmonton.ca/ets/on-demand-transit.
-import type { GeoJSON } from 'geojson';
 import type { OnDemandZoneDetails } from '../../shared/onDemandAvailability';
 
 const SOURCE_URL = 'https://www.edmonton.ca/ets/on-demand-transit';

@@ -32,7 +32,7 @@ import { GtfsValidationError, type GtfsPreprocess } from './process-core.js';
 import { loadSupplementalFeeds, processAgencyFeeds, supplementalArchiveStem, type SupplementalFeed } from './agencyFeeds.js';
 import { serviceWeekKey } from './serviceWeekKey.js';
 import { buildAgencyIndex } from './agencyIndex.js';
-import { buildNightServiceIndex, extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
+import { extractNightServiceRoutes, mergeNightServiceIndex, type NightServiceIndexFile, type NightServiceRouteEntry } from './nightServiceIndex.js';
 import type { HeadwayByPeriod } from '../shared/config.js';
 import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
 import { configFromIndexEntry } from '../shared/agencyRegistryName.js';
@@ -62,7 +62,7 @@ import { historyRouteKey } from './historyRouteKey.js';
 import { baselineFingerprint, buildV2Routes, fingerprintChanged, fingerprintOf, historyV2Enabled, r2ArchiveSink, historyListLowEnd, historyListLowEndByPeriod, type LatestRouteEntry } from './historyV2.js';
 import { historyV2InputFor, writeRefreshSidecar, type HistoryV2Input } from './historyRefreshSidecar.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
-import { agencyTodayYmd, isActiveProductionFeed, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
+import { agencyTodayYmd, type SupplementalFeedMeta } from '../shared/feedAvailability.js';
 import { recordFeedCheck, type FeedCheckFields } from './feedCheckTracking.js';
 import { buildFeedCandidates, type FeedCandidate } from './feedSourceCandidates.js';
 import { resolveFeedUrl } from './feedUrl.js';
@@ -75,7 +75,6 @@ import {
   applyOverrides,
   blockReason,
   buildGateReport,
-  cachedSummaryReader,
   evaluateRun,
   formatGateSummary,
   gateRunId,
