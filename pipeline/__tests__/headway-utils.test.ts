@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, departuresInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, departuresInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -441,59 +441,20 @@ describe('computePeriodHeadways — cross-midnight (#297)', () => {
 });
 
 // Window defaults to GTFS minutes 1560-1800 (2am-6am), maxGap defaults to 60.
-describe('hasSustainedNightService', () => {
-  it('is true when every gap, including both boundaries, is exactly 60 minutes', () => {
-    expect(hasSustainedNightService([1560, 1620, 1680, 1740, 1800])).toBe(true);
-  });
-
-  it('is false when an internal gap exceeds 60 minutes', () => {
-    expect(hasSustainedNightService([1560, 1620, 1740, 1800])).toBe(false);
-  });
-
-  it('is false when the first departure leaves the start boundary uncovered', () => {
-    expect(hasSustainedNightService([1670, 1720, 1770, 1800])).toBe(false);
-  });
-
-  it('is false when the last departure leaves the end boundary uncovered', () => {
-    expect(hasSustainedNightService([1560, 1620, 1680, 1700])).toBe(false);
-  });
-
-  it('does not qualify service that ends before the core overnight window begins', () => {
-    expect(hasSustainedNightService([1440, 1500, 1560])).toBe(false);
-  });
-
-  it('is false with no departures in the window', () => {
-    expect(hasSustainedNightService([])).toBe(false);
-  });
-
-  it('ignores departures outside the window and dedupes exact duplicates', () => {
-    expect(
-      hasSustainedNightService([1200, 1440, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1900]),
-    ).toBe(true);
-  });
-
-  it('respects custom window and gap parameters', () => {
-    expect(hasSustainedNightService([1440, 1470, 1500], 1440, 1500, 30)).toBe(true);
-    expect(hasSustainedNightService([1440, 1500], 1440, 1500, 30)).toBe(false);
-  });
-});
-
 describe('nightServiceDepartureTimes', () => {
   it('shifts plain midnight-to-6am departures into the Night Service window', () => {
     const times = [120, 180, 240, 300, 360];
     expect(nightServiceDepartureTimes(times)).toEqual([120, 180, 240, 300, 360, 1560, 1620, 1680, 1740, 1800]);
-    expect(hasSustainedNightService(nightServiceDepartureTimes(times))).toBe(true);
   });
 
   it('keeps already-shifted overnight-only departures in the same window', () => {
     const times = [1560, 1620, 1680, 1740, 1800];
     expect(nightServiceDepartureTimes(undefined, times)).toEqual(times);
-    expect(hasSustainedNightService(nightServiceDepartureTimes(undefined, times))).toBe(true);
   });
 });
 
 // Window defaults to GTFS minutes 420-1140 (7am-7pm), maxGap defaults to 15. Same boundary-gap
-// logic as hasSustainedNightService (shared helper), just a different window/threshold -- see
+// logic as the night check (shared helper), just a different window/threshold -- see
 // docs/research/frequent-service-research-2026-09/CRITERIA.md for why 7am-7pm/15min was chosen.
 describe('hasSustainedFrequentService', () => {
   it('is true when every gap, including both boundaries, is exactly 15 minutes', () => {

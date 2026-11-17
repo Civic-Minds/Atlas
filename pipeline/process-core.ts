@@ -32,7 +32,7 @@ import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.j
 import { ALL_DAYS } from '../shared/dayTypes.js';
 import { buildStopRoutePeriodBits } from './stopRoutePeriods.js';
 import { expandFrequencyWindow, expandTripFrequencyWindows, isSingleTripFrequencyWindow, parseFrequencyWindow, SINGLE_TRIP_WINDOW_MAX_DEPARTURES, SINGLE_TRIP_WINDOW_SPAN_TOLERANCE_MIN, t2m, type FrequencyWindow } from './transit-utils.js';
-import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, NIGHT_SERVICE_WINDOW_END_MIN, periodHeadwayInWindow, RAIL_TIER_WINDOW, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
+import { computeHourHeadways, computeHourMaxGaps, computeHourDepartureCounts, computeDepartureSpan, departureBoundsInHour, type DepartureSpan, hasDepartureInClockHour, computePeriodHeadways, computePeriodHeadwayRanges, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, headsignOverlapMinHeadway, headwayToTier, headwayToTierOn, isSparseOvernightWindow, isThinAllDayTerminalSample, isUnevenTwoGapMiddayTerminalSample, medianHeadwayInWindow, MIN_ALL_DAY_TERMINAL_DEPARTURES, nightServiceDepartureTimes, periodHeadwayInWindow, RAIL_TIER_WINDOW, sparseOvernightHeadway, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 import { computeRouteBaseFares, detectBusSubType } from './route-metadata.js';
 import { buildStopsMeta } from './stopsMeta.js';
 import { haversineDistance } from './utils.js';
@@ -1085,7 +1085,7 @@ export async function processGtfsBuffer(
   // Max raw stop_time minute seen anywhere for each service_id. Needed below: a service_id
   // qualifies as a genuine overnight-only block (#297; e.g. CTA Red Line's 00:10-02:45 under
   // its own dedicated service_id, day-type-pooled at the wrong end of the array, invisible to
-  // hasSustainedNightService's [1560,1800] window) only if its OWN entire trip set sits below
+  // the overnight window [1560,1800]) only if its OWN entire trip set sits below
   // the early-morning cutoff -- NOT merely "has no extended trips". A service_id whose early
   // trip is just that day's own normal start (e.g. CTA's daytime service_id, first trip 03:00,
   // last trip 23:52 -- no extended notation either, but clearly not overnight-only) must NOT
@@ -1145,7 +1145,7 @@ export async function processGtfsBuffer(
   };
   // Night-service-only mirrors of stopDepsByGroup/stopDepsByHeadsignGroup (#297): an early
   // (pre-6am) departure on a genuinely overnight-only service_id (see serviceIdMaxMinute above)
-  // is shifted +1440 and pushed here instead, so it lands inside hasSustainedNightService's
+  // is shifted +1440 and pushed here instead, so it lands inside the overnight
   // [1560,1800] window without altering the times every other consumer (headway, tier,
   // sparkline, ...) reads from stopDepsByGroup/stopDepsByHeadsignGroup. Deliberately no
   // shape-scoped mirror -- the Step 5 terminalRawTimes fallback bottoms out at stopDepsByGroup
@@ -1667,9 +1667,10 @@ export async function processGtfsBuffer(
     if (stop.parent_station) childToParent.set(stop.stop_id, stop.parent_station);
   }
 
-  // A trip's own minute must be below this to be eligible for the night-service shift, AND
-  // its service_id's max (serviceIdMaxMinute) must also be below it -- see that map's comment.
-  const NIGHT_SHIFT_EARLY_CUTOFF = NIGHT_SERVICE_WINDOW_END_MIN - 1440;
+  // CIV-1812: the service-day cutoff, 06:00: a trip before it can belong to the previous day's night (its own
+  // minute AND its service_id's max, serviceIdMaxMinute, must be below it -- see that map's comment). Not the
+  // Night Service window, which is 2-5 AM (FREQUENCY_RULES.md rule 10).
+  const SERVICE_DAY_CUTOFF_MIN = 6 * 60;
 
   // A trip with usable frequencies.txt rows is a template: GTFS reads its
   // stop_times only as offsets from each generated start, and the expansion
@@ -1734,7 +1735,7 @@ export async function processGtfsBuffer(
             if (!arr) { arr = []; map.set(stopId, arr); }
             arr.push(mins);
           };
-          const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
+          const night = mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN;
           const pushAll = (stopId: string) => {
             const pooledOk = chainedEnd === undefined;
             const headsignOk = chainedEnd !== true;
@@ -1958,7 +1959,7 @@ export async function processGtfsBuffer(
     if (smKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsBySharedMember, smKey, stopId, mins);
     const rushKey = rushMemberKey(grp);
     if (rushKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsByRushMember, rushKey, stopId, mins);
-    if (mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF) {
+    if (mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN) {
       const shifted = mins + 1440;
       if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
       if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroupNight, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, shifted);
@@ -2068,7 +2069,7 @@ export async function processGtfsBuffer(
             const pickupAllowed = boardsAt(st);
             addFrequencyDeparture(grp, st.stop_id, mins, pickupAllowed);
             if (grp.inGroup) {
-              const night = mins < NIGHT_SHIFT_EARLY_CUTOFF && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < NIGHT_SHIFT_EARLY_CUTOFF;
+              const night = mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN;
               addStretchVisit(`${grp.shortName}::${grp.dirId}::${grp.dayType}`, `${tripId}@${offset}`, { stopId: st.stop_id, minutes: mins, seq: Number(st.stop_sequence), overnightOnly: night || undefined, final: isTripFinalStop(tripId, st.stop_sequence) || undefined });
             }
             if (countParent) addFrequencyDeparture(grp, parentId!, mins, pickupAllowed);

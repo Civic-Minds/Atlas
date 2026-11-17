@@ -547,7 +547,7 @@ export function isSteadyPeriodGaps(gaps: readonly number[], typical: number): bo
 }
 
 /**
- * Shared by hasSustainedNightService and hasSustainedFrequentService below -- only the window
+ * Shared by the frequent-service check (hasSustainedFrequentService) below -- only the window
  * and threshold differ between them. At least one departure every maxGapMinutes across the whole
  * [start, end] window, with no gap -- including the boundary gaps from window start to the first
  * departure and from the last departure to window end -- exceeding that. A route whose first
@@ -595,24 +595,6 @@ export function nightServiceDepartureTimes(
   );
 }
 
-/**
- * Does this route have sustained overnight service: at least one departure every
- * maxGapMinutes across the whole [start, end] window, with no gap at either edge. See
- * hasSustainedServiceInWindow above for the shared boundary-gap logic.
- */
-// CIV-1331: no longer a Night Service decider. Every night flag comes from tripSets nightServicePasses (stretch rows
-// and rows without stretch data alike); this stays only as the 2-6 AM window helper its tests pin.
-export function hasSustainedNightService(
-  departureTimes: number[],
-  start: number = NIGHT_SERVICE_WINDOW_START_MIN,
-  end: number = NIGHT_SERVICE_WINDOW_END_MIN,
-  maxGapMinutes: number = NIGHT_SERVICE_MAX_GAP_MINUTES,
-): boolean {
-  // CIV-1329: the 90 grade loosens the gaps between buses, never the edges: a first trip more than an hour into
-  // the window (day service from 3:30) is not night service at any grade.
-  return hasSustainedServiceInWindow(departureTimes, start, end, maxGapMinutes, Math.min(maxGapMinutes, NIGHT_SERVICE_MAX_GAP_MINUTES));
-}
-
 // Frequent Network window: 7am-7pm, matching Victoria (BC Transit)'s own "Frequent" product
 // definition exactly (see docs/research/frequent-service-research-2026-09/CRITERIA.md for the full cross-agency survey this
 // was decided from). Weekday only -- process-core.ts only computes this for the Weekday day-type,
@@ -645,7 +627,7 @@ export function computeResearchFrequentService(departureTimes: number[]): Resear
 /**
  * Does this route have sustained frequent service: at least one departure every
  * maxGapMinutes across the whole 7am-7pm window, with no gap at either edge -- same boundary
- * rule as hasSustainedNightService. Weekday only (see docs/research/frequent-service-research-2026-09/CRITERIA.md).
+ * rule as the night window once did. Weekday only (see docs/research/frequent-service-research-2026-09/CRITERIA.md).
  */
 export function hasSustainedFrequentService(
   departureTimes: number[],
