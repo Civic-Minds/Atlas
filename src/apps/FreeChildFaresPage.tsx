@@ -17,6 +17,7 @@ import { FREE_CHILD_AGE_COUNTS, FREE_CHILD_AGE_LABEL, FREE_CHILD_AGENCIES_BY_COU
 import { countOf } from '../../shared/overflowText';
 import { FREE_CHILD_FARES_STORY } from '../../shared/researchStories';
 import Card from '../components/ui/Card';
+import { STORY_CHART_PANEL } from '../pageStyles';
 
 /** The day the fare snapshot was taken (shared/dateText.ts writes it). */
 const FREE_CHILD_FARES_SNAPSHOT = '2026-10-11';
@@ -143,7 +144,7 @@ export default function FreeChildFaresPage() {
                 </Card>
               ))}
             </dl>
-            <div className="mt-8 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
+            <div className={`mt-8 ${STORY_CHART_PANEL} p-5 sm:p-8`}>
               <h2 id="free-child-age-chart" className="text-xs font-black text-[var(--text-primary)]">Free Up to a Set Age</h2>
               {/* keepEmpty: the ages run as a continuous scale, so an age no agency uses (15, 16) keeps its place and the gap shows. */}
               <CategorySpark columns={ageColumns} keepEmpty label={AGE_CHART_ARIA} ticks={chartTicks} defaultKey={peakAge[0]} details={tableId} />
@@ -152,7 +153,7 @@ export default function FreeChildFaresPage() {
           </section>
 
           <section aria-labelledby="free-child-age-map">
-            <div className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 sm:p-8">
+            <div className={`${STORY_CHART_PANEL} p-5 sm:p-8`}>
               <h2 id="free-child-age-map" className="text-xs font-black text-[var(--text-primary)]">{MAP_TITLE}</h2>
               <p className="mt-1 text-xs text-[var(--text-muted)]">Each square is one state or province: its most common free age, and its number of agencies.</p>
               <TileMap tiles={regionTiles} label={`${MAP_TITLE}, for ${regionTiles.length} states and provinces.`} details={mapTableId} />
