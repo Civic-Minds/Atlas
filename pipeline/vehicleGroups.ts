@@ -10,7 +10,7 @@
  */
 import type { PeriodPatterns, Pattern } from './vehiclePatterns.js';
 import { cycleMin, needVehicles, targetVehicles } from './vehiclePatterns.js';
-import { STUDIO_TARGET_HEADWAYS, type StudioVehicleGroup } from '../shared/studioVehicles.js';
+import { STUDIO_TARGET_HEADWAYS, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles.js';
 
 const SCHEDULE = { kind: 'schedule' } as const;
 const up = (v: number) => Math.ceil(v - 1e-9);
@@ -41,17 +41,21 @@ export function vehicleGroupRows(
       implied: group ? group.impliedVehicles : up(regular.reduce((s, p) => s + needVehicles(p, SCHEDULE), 0)),
       runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),
       layoverMin: layovers.length ? Math.round(layovers.reduce((s, v) => s + v, 0)) : null,
-      atTarget: Object.fromEntries(STUDIO_TARGET_HEADWAYS.map(hw => [hw, atTarget(memberIds, patterns, a, hw)])),
+      atTarget: Object.fromEntries(STUDIO_TARGET_HEADWAYS.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'current')])),
+      // CIV-1712: the even split too, for the planner's choice, where the group has branches sharing a middle.
+      ...(a.trunks.some(t => memberIds.includes(t.routeId))
+        ? { atTargetEven: Object.fromEntries(STUDIO_TARGET_HEADWAYS.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'even')])) }
+        : {}),
     });
   }
   return rows;
 }
 
-function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a: PeriodPatterns, headwayMin: number): number {
+function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a: PeriodPatterns, headwayMin: number, branchSplit: StudioBranchSplit): number {
   let buses = 0;
   for (const routeId of memberIds) {
     const own = patterns.filter(p => p.routeId === routeId);
-    const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit: 'current', shortTurnHeadwayMin: null, recovery: SCHEDULE });
+    const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit, shortTurnHeadwayMin: null, recovery: SCHEDULE });
     for (const t of targets) {
       if (t.headwayMin == null || t.vehicles == null) continue;
       buses += cycleMin(own.find(p => p.id === t.id)!, SCHEDULE) / t.headwayMin;
