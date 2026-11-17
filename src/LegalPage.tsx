@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { mailto } from '../shared/contact';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
@@ -14,7 +15,7 @@ export const LEGAL_DOCS: Record<LegalDocument, LegalDoc> = {
   terms: parseLegalMarkdown(termsSource),
 };
 
-const CONTACT_PREFIX = 'mailto:hey@ryanisnota.pro?subject=';
+const CONTACT_PREFIX = mailto('');
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return <section id={id} className="scroll-mt-24"><SectionTitle level="item" className="mb-2">{title}</SectionTitle><div className="space-y-2">{children}</div></section>;

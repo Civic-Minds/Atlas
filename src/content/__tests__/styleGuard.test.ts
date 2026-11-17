@@ -139,6 +139,9 @@ const RULES: Rule[] = [
     pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
     slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts', 'shared/pageNames.ts'] },
 
+  // CIV-1790 (Ryan: "Did we refactor our contact info"): one address, one mailto builder.
+  { name: 'the contact address typed by hand (use CONTACT_EMAIL or mailto from shared/contact.ts)', doc: 'TEXT.md', pattern: /ryanisnota\.pro/, slip: "href=\"mailto:hey@ryanisnota.pro\"",
+    allowed: ['shared/contact.ts'] },
   // CIV-1615: each fixed page's path is one constant in shared/pagePaths.ts, read by its route, prerender, SEO entry and links.
   { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',
     pattern: /['"`](\/about|\/about\/docs|\/agencies|\/changelog|\/terms|\/privacy|\/apps\/live|\/research)['"`]/, slip: '<a href="/about/docs">',
