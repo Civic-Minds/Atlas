@@ -6,31 +6,13 @@
  * `npm run build:agency-index`), never guessed. See docs/product/DECISIONS.md.
  */
 import modeOverrideData from './data/mode-overrides.json';
+import {
+  EXTENDED_BUS_RANGE, FILTER_MODE_IDS, GTFS_BASE_MODE_LABELS, GTFS_EXTENDED_EXACT_MODE_LABELS, GTFS_EXTENDED_MODE_LABELS,
+  GTFS_OTHER_MODE_LABEL, MODE_DEFINITIONS, ON_DEMAND_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE, VIRTUAL_LRT_MODE,
+} from './rules/modes';
 
-/** Virtual mode ID for LRT routes that share route_type=0 with streetcars. */
-export const VIRTUAL_LRT_MODE = 100;
-
-/** Automated people movers (WVU PRT, Detroit People Mover, AirTrain JFK, Metromover), which feeds publish as streetcars (#1119). A label only: no filter chip of its own. */
-export const PEOPLE_MOVER_MODE = 101;
-
-/** One mode, one label and one place in every list that shows modes (menu, pages, sentences, counters). */
-export const ON_DEMAND_MODE = -1;
-
-export const MODE_DEFINITIONS = [
-  { id: 1, label: 'Subway/Metro' },
-  { id: VIRTUAL_LRT_MODE, label: 'Light rail' },
-  { id: 0, label: 'Streetcar' },
-  { id: 2, label: 'Commuter rail' },
-  { id: 12, label: 'Monorail' },
-  { id: PEOPLE_MOVER_MODE, label: 'People mover' },
-  { id: 3, label: 'Bus' },
-  { id: 11, label: 'Trolleybus' },
-  { id: 4, label: 'Ferry' },
-  { id: 5, label: 'Cable car' },
-  { id: 6, label: 'Gondola/aerial tram' },
-  { id: 7, label: 'Funicular' },
-  { id: ON_DEMAND_MODE, label: 'On-demand' },
-] as const;
+// The tables moved to shared/rules/modes.ts (rules audit 4.1, move 9); these re-exports stay until no file imports them here.
+export { GTFS_BASE_MODE_LABELS, MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE };
 
 /** Display name for an effective mode id ("Other" for an id with no definition). */
 export function modeLabel(mode: number): string {
@@ -153,20 +135,19 @@ function isLightRailRegionalName(longName: string): boolean {
 
 /** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
 export function normalizeRouteType(routeType: unknown): number {
-  if (routeType === undefined || routeType === null || routeType === '') return 3;
+  if (routeType === undefined || routeType === null || routeType === '') return ROUTE_TYPE.BUS;
   const n = typeof routeType === 'number' ? routeType : parseInt(String(routeType), 10);
-  if (!Number.isFinite(n)) return 3;
-  // HVT extended bus types (700–799) still belong under Atlas's Bus mode.
-  if (n >= 700 && n < 800) return 3;
+  if (!Number.isFinite(n)) return ROUTE_TYPE.BUS;
+  if (n >= EXTENDED_BUS_RANGE[0] && n < EXTENDED_BUS_RANGE[1]) return ROUTE_TYPE.BUS;
   return n;
 }
 
 export function isVirtualLrt(p: EffectiveModeInput): boolean {
   const rt = normalizeRouteType(p.routeType);
   const longName = p.routeLongName ?? '';
-  if (rt === 0 && VIRTUAL_LRT_AGENCIES.includes(p.agencySlug as typeof VIRTUAL_LRT_AGENCIES[number])) return true;
-  if (rt === 0 && isLightRailName(longName)) return true;
-  if (rt === 2 && isLightRailRegionalName(longName)) return true;
+  if (rt === ROUTE_TYPE.TRAM && VIRTUAL_LRT_AGENCIES.includes(p.agencySlug as typeof VIRTUAL_LRT_AGENCIES[number])) return true;
+  if (rt === ROUTE_TYPE.TRAM && isLightRailName(longName)) return true;
+  if (rt === ROUTE_TYPE.RAIL && isLightRailRegionalName(longName)) return true;
   return false;
 }
 
@@ -174,7 +155,7 @@ export function isVirtualLrt(p: EffectiveModeInput): boolean {
 export function isRailLikeRoute(p: EffectiveModeInput): boolean {
   // Rail-like decides pipeline processing only, so a label-only correction is skipped here.
   const mode = findModeOverride(p)?.labelOnly ? publishedMode(p) : effectiveMode(p);
-  return mode === 1 || mode === 2 || mode === 12 || mode === VIRTUAL_LRT_MODE;
+  return RAIL_LIKE_ROUTE_TYPES.includes(mode);
 }
 
 export function effectiveMode(p: EffectiveModeInput): number {
@@ -192,11 +173,10 @@ function publishedMode(p: EffectiveModeInput): number {
 
 /** True when a bus route is explicitly published as replacing rail service. */
 export function isRailReplacementBus(p: EffectiveModeInput): boolean {
-  return normalizeRouteType(p.routeType) === 3 && /replacement\s+bus/i.test(p.routeLongName ?? '');
+  return normalizeRouteType(p.routeType) === ROUTE_TYPE.BUS && /replacement\s+bus/i.test(p.routeLongName ?? '');
 }
 
 /** Mode filter chip options (Frequency Map), in the shared order. On-demand is added by the menus that offer it. */
-const FILTER_MODE_IDS: readonly number[] = [1, VIRTUAL_LRT_MODE, 0, 2, 3, 4, 6];
 export const FILTER_MODES = MODE_DEFINITIONS.filter(m => FILTER_MODE_IDS.includes(m.id));
 
 /** The menu's mode options with On-demand last, when the on-demand feature is on. */
@@ -204,39 +184,14 @@ export function filterModeOptions(includeOnDemand: boolean): ReadonlyArray<{ id:
   return includeOnDemand ? MODE_DEFINITIONS.filter(m => FILTER_MODE_IDS.includes(m.id) || m.id === ON_DEMAND_MODE) : FILTER_MODES;
 }
 
-/** GTFS base route_type → display name (pipeline catalog, agency blurbs). */
-export const GTFS_BASE_MODE_LABELS: Record<number, string> = {
-  0: 'Tram/Light Rail',
-  1: 'Subway/Metro',
-  2: 'Commuter Rail',
-  3: 'Bus',
-  4: 'Ferry',
-  5: 'Cable Tram',
-  6: 'Gondola',
-  7: 'Funicular',
-  11: 'Trolleybus',
-  12: 'Monorail',
-};
-
 export function getGtfsModeName(routeType: string | number): string {
   const n = typeof routeType === 'number' ? routeType : parseInt(String(routeType));
   if (!Number.isNaN(n) && GTFS_BASE_MODE_LABELS[n] != null) {
     return GTFS_BASE_MODE_LABELS[n];
   }
-  if (Number.isNaN(n)) return 'Transit';
-  if (n >= 100 && n < 200) return 'Commuter Rail';
-  if (n >= 200 && n < 400) return 'Bus';
-  // Extended codes (Google's list, plus the HVT 500 Metro and 600 Underground ranges it leaves out).
-  if (n === 401 || n === 402) return 'Subway/Metro'; // Metro, Underground
-  if (n >= 400 && n < 500) return 'Tram/Light Rail';
-  if (n >= 500 && n < 700) return 'Subway/Metro';
-  if (n >= 700 && n < 900) return 'Bus';
-  if (n >= 900 && n < 1000) return 'Tram/Light Rail';
-  if (n >= 1000 && n < 1100) return 'Ferry'; // 1000 Water Transport
-  if (n >= 1200 && n < 1300) return 'Ferry';
-  if (n >= 1300 && n < 1400) return 'Gondola'; // Aerial Lift
-  if (n >= 1400 && n < 1500) return 'Funicular';
-  return 'Transit'; // 1100 Air, 1500 Taxi, 1700 Miscellaneous and unknown codes
+  if (Number.isNaN(n)) return GTFS_OTHER_MODE_LABEL;
+  if (GTFS_EXTENDED_EXACT_MODE_LABELS[n] != null) return GTFS_EXTENDED_EXACT_MODE_LABELS[n];
+  return GTFS_EXTENDED_MODE_LABELS.find(([from, to]) => n >= from && n < to)?.[2] ?? GTFS_OTHER_MODE_LABEL;
 }
 
 const startsWith = (s: unknown[], prefix: string): unknown[] => ['==', ['slice', s, 0, prefix.length], prefix];
@@ -265,9 +220,9 @@ function lightRailRegionalNameExpression(n: unknown[]): unknown[] {
 
 /** MapLibre expression: compute effective mode from feature properties. */
 export function buildEffectiveModeExpression(): unknown[] {
-  const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], 3]];
+  const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], ROUTE_TYPE.BUS]];
   const normalizedRouteType: unknown[] = ['case',
-    ['all', ['>=', routeType, 700], ['<', routeType, 800]], 3,
+    ['all', ['>=', routeType, EXTENDED_BUS_RANGE[0]], ['<', routeType, EXTENDED_BUS_RANGE[1]]], ROUTE_TYPE.BUS,
     routeType,
   ];
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
@@ -296,9 +251,9 @@ export function buildEffectiveModeExpression(): unknown[] {
     ['==', ['get', 'bookingRequired'], true], ON_DEMAND_MODE,
     ...overrideBranches,
     ['any',
-      ['all', ['==', routeType, 0], ['any', ...VIRTUAL_LRT_AGENCIES.map(slug => ['==', agency, slug])]],
-      ['all', ['==', routeType, 0], lightRailNameExpression(lowerName)],
-      ['all', ['==', routeType, 2], lightRailRegionalNameExpression(lowerName)],
+      ['all', ['==', routeType, ROUTE_TYPE.TRAM], ['any', ...VIRTUAL_LRT_AGENCIES.map(slug => ['==', agency, slug])]],
+      ['all', ['==', routeType, ROUTE_TYPE.TRAM], lightRailNameExpression(lowerName)],
+      ['all', ['==', routeType, ROUTE_TYPE.RAIL], lightRailRegionalNameExpression(lowerName)],
     ],
     VIRTUAL_LRT_MODE,
     normalizedRouteType,
