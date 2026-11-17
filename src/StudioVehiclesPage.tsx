@@ -1,28 +1,20 @@
 import DataTable from './components/ui/DataTable';
 import { PageTable } from './components/ui/PageSection';
 import { PAGE_NAMES } from '../shared/pageNames';
-import { headwayEvery, runTimeAmount } from '../shared/headwayText';
+import { runTimeAmount } from '../shared/headwayText';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { STUDIO_TARGET_HEADWAYS, type StudioVehicleGroup } from '../shared/studioVehicles';
+import { STUDIO_VEHICLES_TEXT } from '../shared/studioWording';
 
 /**
  * Atlas Studio's buses-needed figures (CIV-1693), now a sidebar panel on the Studio map (CIV-1731): the picked route's
  * group of routes that share buses (Kingston runs each direction as its own route, so one route alone overstates), at
  * the top bar's time of day. The numbers come from `scripts/vehicles-needed.ts --json`, served by the Vite dev server;
- * see shared/studioVehicles.ts. Every string here is proposed and waiting on Ryan's word-for-word OK.
+ * see shared/studioVehicles.ts. Its words are in shared/studioWording.ts.
  */
 
 export const STUDIO_DEFAULT_AGENCY = 'kingston';
 
-export const STUDIO_VEHICLES_TEXT = {
-  routes: 'Routes',
-  scheduled: 'Scheduled now',
-  needed: 'Needed',
-  neededAt: (hw: number) => `Needed ${headwayEvery(hw)}`,
-  running: 'Running time',
-  layover: 'Layover',
-  noService: 'No buses at this time of day.',
-} as const;
 
 const T = STUDIO_VEHICLES_TEXT;
 

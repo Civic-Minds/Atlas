@@ -5,6 +5,9 @@ import Card, { CARD_TITLE, cardTint } from './ui/Card';
  * (civ-1709, civ-1721, civ-1768) still import it from here; remove once they merge. */
 export const featureTint = cardTint;
 
+/** A picture in the feature cards' folder (CIV-1801: one helper for the planners and researchers pages). */
+export const featureCardAsset = (name: string) => `/assets/planners/${name}`;
+
 const PICTURE = 'block aspect-[4/3] w-full rounded-xl border border-[var(--border-primary)] object-cover';
 
 /**

@@ -18,28 +18,18 @@ import { MISSING_VALUE } from '../shared/missingValue';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, StudioRouteTable, routeTitle } from './StudioChangesPage';
+import { StudioRouteTable, routeTitle } from './StudioChangesPage';
 import { STUDIO_DEFAULT_AGENCY, StudioGroupFigures } from './StudioVehiclesPage';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
 /**
  * Atlas Studio (CIV-1731): one map-and-sidebar page on the shared layout Live uses (CIV-1732), desktop only. The map draws
  * every route of the newer schedule, coloured by how its frequency changed at the top bar's time of day; the sidebar
  * lists the changes (CIV-1715) and, for a picked route, its before/after figures and the buses its group needs (CIV-1693).
  * Local only (FEATURES.studio): both files come from scripts run on this Mac and are served by the Vite dev server.
- * Every string here is proposed and waiting on Ryan's word-for-word OK.
+ * Its words are in shared/studioWording.ts.
  */
 
-export const STUDIO_MAP_TEXT = {
-  route: 'Route',
-  allRoutes: 'All routes',
-  routes: 'Routes',
-  keyTitle: 'Frequency change',
-  more: 'More often',
-  less: 'Less often',
-  same: 'No change',
-  none: 'No frequency',
-  dashed: 'Dashed: before the change',
-} as const;
 const T = STUDIO_MAP_TEXT;
 const C = STUDIO_CHANGES_TEXT;
 
