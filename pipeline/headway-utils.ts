@@ -701,11 +701,20 @@ export function sparseOvernightHeadway(departureTimes: readonly number[]): numbe
   return medianHeadwayInWindow(sparseTestTimes(departureTimes)!, start, end, 3, true);
 }
 
+/**
+ * CIV-1799: one period's median from a departure list, before the #897 sparse-overnight rule withholds it.
+ * periodHeadwayInWindow reads it, and so do the readers that keep the withheld value themselves (process-core's
+ * per-stop values, which hand a sparse window's value to Step 5 as sparseOvernightStopHw).
+ */
+export function periodMedianHeadway(departureTimes: readonly number[], key: PeriodKey, typical = true): number | null {
+  const { start, end } = PERIODS[key];
+  return medianHeadwayInWindow(forCrossMidnightWindow([...departureTimes], end), start, end, 3, typical);
+}
+
 /** One period's value from a departure list: computePeriodHeadways for a single period. */
 export function periodHeadwayInWindow(departureTimes: number[], key: PeriodKey, typical = true): number | null {
   if (key === 'overnight' && isSparseOvernightWindow(departureTimes)) return null;
-  const { start, end } = PERIODS[key];
-  return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3, typical);
+  return periodMedianHeadway(departureTimes, key, typical);
 }
 
 // The median deliberately stays based on departures inside the period. A separate max-gap value
