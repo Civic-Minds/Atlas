@@ -758,21 +758,40 @@ export function computePeriodCoverageHeadways(departureTimes: number[]): Headway
  * the wait inside the period. This keeps the value useful to riders while ensuring the gap is not
  * silently dropped from both adjacent periods (#281).
  */
+/**
+ * Merged departures this close together are one bus to a rider: two every-10 patterns one
+ * minute apart are a bus every 10, not every 9 or 5 (Ryan's IndyGo point). GTFS times are
+ * whole minutes, so one minute is the smallest offset two trips can have without being the
+ * same time; two minutes apart is kept, since subway trunks really run every 2.
+ */
+export const BUNCHED_DEPARTURE_MINUTES = 1;
+
 export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodMaxGap {
   const result: HeadwayByPeriodMaxGap = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
       .sort((a, b) => a - b);
     let maxGap: number | null = null;
+    let gaps = 0;
+    let onlyGapInside = false;
+    let pairGap = 0;
     for (let i = 1; i < times.length; i++) {
       const overlapStart = Math.max(start, times[i - 1]);
       const overlapEnd = Math.min(end, times[i]);
       if (overlapEnd > overlapStart) {
         const gap = overlapEnd - overlapStart;
         maxGap = maxGap == null ? gap : Math.max(maxGap, gap);
+        gaps++;
+        onlyGapInside = times[i - 1] >= start && times[i] <= end;
+        pairGap = times[i] - times[i - 1];
       }
     }
-    result[key] = maxGap;
+    // CIV-1721 (#1548): a period whose only gap lies between two departures both inside it, at most
+    // BUNCHED_DEPARTURE_MINUTES apart, has one bus to a rider, so no gap: LA Metro 217's doubled school
+    // trip to Washington Fairfax Hub (15:32 and 15:33) read a PM peak longest gap of 1. A pair further
+    // apart keeps its gap, a real wait (St-Lévis 200 at 14:22 and 14:51 keeps 29). Coverage still shows
+    // the wait across the period.
+    result[key] = gaps === 1 && onlyGapInside && pairGap <= BUNCHED_DEPARTURE_MINUTES ? null : maxGap;
   }
   return result;
 }
