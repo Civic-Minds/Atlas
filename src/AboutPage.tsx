@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Card, { CARD_TITLE } from './components/ui/Card';
+import ResearchTile from './components/ResearchTile';
 import ThemedPicture from './components/ui/ThemedPicture';
 import { Clock, MapPin, Repeat } from 'lucide-react';
 import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
-import Tag from './components/ui/Tag';
-import { PageTitle, SectionTitle } from './components/ui/PageTitle';
-import { newestResearch, type ResearchEntry } from './data/research';
+import { PageTitle } from './components/ui/PageTitle';
+import { newestResearch } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
 import { MAP_LINK, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
@@ -17,6 +17,8 @@ const KEEP_LOOKING_COUNT = 3;
 
 /** The stories sit slightly tilted, like stickers (CIV-1206 D); each straightens on hover or keyboard focus. */
 const STORY_TILT = [-1.5, 1, -0.75];
+/** Which frequency colour each of Where / When / How often takes (CIV-1789): the first, third and fourth tiers. */
+const QUESTION_TIERS = [0, 2, 3];
 
 /** Where / When / How often, each on a pale tint of one frequency colour with its icon in that colour (CIV-1206 D). */
 const QUESTIONS = [
@@ -25,21 +27,6 @@ const QUESTIONS = [
   { title: 'How often', body: 'Compare scheduled frequency without opening a schedule.', Icon: Repeat },
 ];
 
-/** A story tile: its share picture on top, then the research card's tag, title, description and link (as on /research). */
-function StoryTile({ entry, tilt }: { entry: ResearchEntry; tilt: number }) {
-  return (
-    <Card as="a" tone="surface" href={entry.href} className="group flex w-full flex-col overflow-hidden transition-[rotate] [rotate:var(--tilt)] hover:rotate-0 focus-visible:rotate-0" style={{ '--tilt': `${tilt}deg` } as CSSProperties}>
-      <ThemedPicture base={entry.picture} ext={entry.pictureExt ?? 'svg'} className="block aspect-[1200/630] w-full object-cover" />
-      <div className="flex flex-1 flex-col p-5">
-        <Tag className="self-start">{entry.kind}</Tag>
-        <SectionTitle level="item" className="mt-3">{entry.title}</SectionTitle>
-        <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{entry.body}</p>
-        {/* Pinned to the bottom so the links line up across the row, as on /research. */}
-        <ArrowLink as="span" tone="inline" size="xs" nudge className="mt-auto self-start pt-4">{entry.linkText}</ArrowLink>
-      </div>
-    </Card>
-  );
-}
 
 /** True while the box is wider inside than out: only then is the story row a scroller worth a keyboard stop. */
 function useOverflows<T extends HTMLElement>() {
@@ -93,22 +80,23 @@ export default function AboutPage() {
           >
             {newestResearch(KEEP_LOOKING_COUNT).map((entry, i) => (
               <div key={entry.href} className="flex w-[80%] shrink-0 snap-start sm:w-auto">
-                <StoryTile entry={entry} tilt={STORY_TILT[i % STORY_TILT.length]} />
+                <ResearchTile entry={entry} tilt={STORY_TILT[i % STORY_TILT.length]} />
               </div>
             ))}
           </div>
         </section>}
 
         <section className="py-16 sm:py-20" aria-label={WHAT_ATLAS_SHOWS_LABEL}>
-          <h2 id="questions-heading" className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Understand the network beyond the route map.</h2>
+          <h2 id="questions-heading" className="max-w-2xl text-balance text-3xl font-black tracking-tight sm:text-4xl">Understand the network beyond the route map.</h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-3">
             {QUESTIONS.map(({ title, body, Icon }, i) => {
-              const color = tiers[i].color;
+              // CIV-1789 (Ryan's pick): three frequency colours in order, as on the planners cards.
+              const color = tiers[QUESTION_TIERS[i]].color;
               return (
                 <Card key={title} tone={{ tint: color }} padding="regular">
-                  <Icon className="h-7 w-7" style={{ color }} aria-hidden="true" />
-                  <h3 className={`mt-5 ${CARD_TITLE}`}>{title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{body}</p>
+                  <Icon className="h-9 w-9" strokeWidth={2.25} style={{ color }} aria-hidden="true" />
+                  <h3 className={`mt-4 ${CARD_TITLE}`}>{title}</h3>
+                  <p className="mt-2 text-base leading-7 text-[var(--text-secondary)]">{body}</p>
                 </Card>
               );
             })}
