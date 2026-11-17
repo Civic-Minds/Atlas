@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react';
 import { trackEvent } from '../lib/analytics';
 import ArrowLink from './ui/ArrowLink';
+import { mailto } from '../../shared/contact';
 import { PageTitle, SectionTitle } from './ui/PageTitle';
-
-const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 
 export default function SiteContact({
   id,
@@ -25,7 +24,7 @@ export default function SiteContact({
         <p>{children}</p>
         <ArrowLink
           external
-          href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`}
+          href={mailto(subject)}
           onClick={() => trackEvent('feedback_opened', { source: 'site_contact' })}
         >
           {linkLabel}

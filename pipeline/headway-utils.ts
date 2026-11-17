@@ -655,14 +655,28 @@ export function hasSustainedFrequentService(
  * Park (04:38, 04:53, 04:57: gaps 15 and 4) is steady under the same test and keeps its 10.
  */
 export function isSparseOvernightWindow(departureTimes: readonly number[]): boolean {
+  const times = sparseTestTimes(departureTimes);
+  if (times == null) return false;
+  const gaps = [times[1] - times[0], times[2] - times[1]];
+  // The rounded value, as computePeriodSustained reads it, so the two never disagree.
+  return !isSustainedHeadway(gaps, Math.round((gaps[0] + gaps[1]) / 2));
+}
+
+/**
+ * The three overnight departures the #897 test reads, null when the window has another count.
+ * CIV-1746: a fourth departure at exactly 06:00 is the next morning's first trip, not the night's,
+ * so three night departures plus a 06:00 are tested on the three. TTC 63 Saturday at Liberty Village
+ * (02:04, 02:19, the day's own 05:48 and 06:00) read every 15 with the 06:00 counted. Only this
+ * test leaves it out: every other window, and every value reader, is unchanged.
+ */
+function sparseTestTimes(departureTimes: readonly number[]): number[] | null {
   const { start, end } = PERIODS.overnight;
   const times = [...new Set(forCrossMidnightWindow([...departureTimes], end))]
     .filter(t => t >= start && t <= end)
     .sort((a, b) => a - b);
-  if (times.length !== 3) return false;
-  const gaps = [times[1] - times[0], times[2] - times[1]];
-  // The rounded value, as computePeriodSustained reads it, so the two never disagree.
-  return !isSustainedHeadway(gaps, Math.round((gaps[0] + gaps[1]) / 2));
+  if (times.length === 3) return times;
+  if (times.length === 4 && times[3] === end) return times.slice(0, 3);
+  return null;
 }
 
 /**
@@ -673,7 +687,8 @@ export function isSparseOvernightWindow(departureTimes: readonly number[]): bool
 export function sparseOvernightHeadway(departureTimes: readonly number[]): number | null {
   if (!isSparseOvernightWindow(departureTimes)) return null;
   const { start, end } = PERIODS.overnight;
-  return medianHeadwayInWindow(forCrossMidnightWindow([...departureTimes], end), start, end, 3, true);
+  // The same three departures the test read (CIV-1746).
+  return medianHeadwayInWindow(sparseTestTimes(departureTimes)!, start, end, 3, true);
 }
 
 /** One period's value from a departure list: computePeriodHeadways for a single period. */

@@ -184,3 +184,4 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 ## Docs
 
 - Markdown docs use plain text: no emoji, no all-caps headings. (checked)
+- The contact address is typed once, in `shared/contact.ts`; links use `mailto()`. CIV-1790. (checked)

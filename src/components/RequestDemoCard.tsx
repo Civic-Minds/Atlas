@@ -1,8 +1,8 @@
 import FeatureCard from './FeatureCard';
 import { titleCase } from '../../shared/titleCase';
+import { mailto } from '../../shared/contact';
 import { REQUEST_DEMO_LABEL, REQUEST_DEMO_TEXT } from '../content/noticeCopy';
 
-const CONTACT_EMAIL = 'hey@ryanisnota.pro';
 const pic = (name: string) => `/assets/planners/${name}`;
 
 /**
@@ -18,7 +18,7 @@ export default function RequestDemoCard({ color }: { color: string }) {
     <FeatureCard title={titleCase(REQUEST_DEMO_LABEL)} color={color} picture={pic('card-demo')}>
       <p>{REQUEST_DEMO_TEXT}</p>
       <div className="flex flex-wrap gap-3 pt-2">
-        <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(REQUEST_DEMO_LABEL)}`} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{REQUEST_DEMO_LABEL}</a>
+        <a href={mailto(REQUEST_DEMO_LABEL)} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{REQUEST_DEMO_LABEL}</a>
       </div>
     </FeatureCard>
   );

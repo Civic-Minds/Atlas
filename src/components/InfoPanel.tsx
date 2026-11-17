@@ -1,5 +1,6 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
 import { shortDate } from '../../shared/dateText';
+import { mailto } from '../../shared/contact';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Radio } from 'lucide-react';
 import { DROPDOWN_PANEL, dropdownAnim, AGENCY_LIST_FILTERS, PILL_SCROLL_ROW, Z_MODAL_BG, AGENCY_LIST_PRIMARY } from '../styles';
@@ -127,7 +128,7 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
     });
     const data = kind === 'report-data';
     return (
-      <LinkCard key={kind} href={`mailto:hey@ryanisnota.pro?subject=Atlas%20${data ? 'data' : 'schedule'}%20feedback`}
+      <LinkCard key={kind} href={mailto(`Atlas ${data ? 'data' : 'schedule'} feedback`)}
         onClick={() => trackEvent('feedback_opened', { source: data ? 'info_panel_data' : 'info_panel_schedule' })} icon="mail">{REPORT_A_PROBLEM}</LinkCard>
     );
   };
@@ -415,7 +416,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Feedback</p>
-                <LinkCard href="mailto:hey@ryanisnota.pro?subject=Atlas%20Feedback"
+                <LinkCard href={mailto('Atlas Feedback')}
                   onClick={() => { trackEvent('contact_opened'); trackEvent('feedback_opened', { source: 'info_panel' }); }} icon="mail">Contact us</LinkCard>
               </div>
 
