@@ -25,7 +25,7 @@
  */
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
+import { departuresInWindow, forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -102,7 +102,7 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
  * whenever value is set or the list is too short to read.
  */
 export function pooledReadingInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): { value: number | null; worstWait: number | null } {
-  const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
+  const inWindow = collapseBunched(departuresInWindow(times, start, end, true));
   if (inWindow.length < minDeps) return { value: null, worstWait: null };
   const typical = allDay
     ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)
@@ -112,7 +112,7 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
   let longest = 0;
   for (let i = 1; i < inWindow.length; i++) longest = Math.max(longest, inWindow[i] - inWindow[i - 1]);
   // Never worse than the own pattern's reading of the same window.
-  const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
+  const ownSorted = own ? departuresInWindow(own, start, end, true) : [];
   const ownValue = ownSorted.length >= minDeps
     ? (allDay ? sustainedMedianHeadwayInWindow(ownSorted, start, end, minDeps, undefined, true) : medianHeadwayInWindow(ownSorted, start, end, minDeps, true))
     : null;
