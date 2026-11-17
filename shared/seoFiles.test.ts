@@ -65,7 +65,7 @@ describe('vercel.json routing', () => {
   });
 
   it('serves the prerendered pages from their own file', () => {
-    for (const path of ['/about', '/about/docs', '/planners', '/privacy', '/terms']) {
+    for (const path of ['/about', '/about/docs', '/planners', '/researchers', '/privacy', '/terms']) {
       expect(vercel.rewrites.find(r => r.source === path)?.destination).toBe(`${path}/index.html`);
     }
   });

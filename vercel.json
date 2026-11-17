@@ -329,6 +329,14 @@
       "destination": "/planners/index.html"
     },
     {
+      "source": "/researchers",
+      "destination": "/researchers/index.html"
+    },
+    {
+      "source": "/researchers/",
+      "destination": "/researchers/index.html"
+    },
+    {
       "source": "/privacy",
       "destination": "/privacy/index.html"
     },
