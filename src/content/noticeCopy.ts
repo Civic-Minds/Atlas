@@ -239,7 +239,7 @@ export const PLANNERS_COPY = {
     agencies: { title: 'Every Agency on One Map', text: 'Transit doesn’t stop at an agency’s border, and neither does the map. See every agency’s routes together, or filter to just one.' },
     beforeAfter: { title: 'Before and After a Schedule Change', text: 'Compare two versions of a schedule route by route: frequency, trips, span and trip time. Routes are grouped by how much they changed.', beta: true },
     vehiclesNeeded: { title: 'Vehicles Needed at Every Frequency', text: 'Pick a route and a time of day to see how many vehicles it runs now, and how many it would need for more frequent service. Routes that share vehicles are counted together.', beta: true },
-    delays: { title: 'Where Delays Build Up', text: 'Every TTC vehicle’s position is recorded each minute and checked against the schedule. Each route’s page shows where delays start, which stops run late most often and how this week compares with last.', beta: true },
+    delays: { title: 'Where Delays Build Up', text: 'Every TTC streetcar’s position is recorded each minute and checked against the schedule. Each route’s page shows where delays start, which stops run late most often and how this week compares with last.', beta: true },
     share: { title: 'Share What You Find', text: 'Send a link that opens the same place and settings, with the latest schedules. Or export a map image with a dated source line, ready for a slide deck or a report.' },
   } satisfies Record<string, FeatureCardCopy>,
   demo: 'We’ll explore your network with you and show how the map can back up your next service review.',
