@@ -103,7 +103,7 @@ describe('getVehicleRgb (Live dots)', () => {
   it('is the cards\' status fill, unchanged in the default palette', () => {
     expect(getVehicleRgb('on_time')).toEqual([56, 161, 105]);
     expect(getVehicleRgb('early')).toEqual([49, 130, 206]);
-    expect(getVehicleRgb('late')).toEqual([229, 62, 62]);
+    expect(getVehicleRgb('late')).toEqual([220, 38, 38]);
     expect(getVehicleRgb('no_data')).toEqual([113, 128, 150]);
   });
 

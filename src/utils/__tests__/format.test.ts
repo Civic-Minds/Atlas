@@ -383,3 +383,10 @@ describe('names in capitals with lower-case connectors (CIV-1166)', () => {
     expect(stopNameCase('54B')).toBe('54B');
   });
 });
+
+describe('vehicleModeWord (CIV-1812)', () => {
+  it('calls LRT and monorail vehicles trains, not buses', () => {
+    expect([1, 2, 12, 100].map(vehicleModeWord)).toEqual(['Train', 'Train', 'Train', 'Train']);
+    expect([3, 4, 0, null].map(vehicleModeWord)).toEqual(['Bus', 'Ferry', 'Vehicle', 'Bus']);
+  });
+});
