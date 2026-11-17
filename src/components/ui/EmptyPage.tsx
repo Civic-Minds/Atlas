@@ -6,8 +6,8 @@ import { titleCase } from '../../../shared/titleCase';
 /** A whole page that says "nothing here" (no such agency, no such region, no such address) with one way out. */
 export default function EmptyPage({ title, body, action, footer = true, maxWidth, above }: {
   title: ReactNode;
-  /** Text, or text with inline parts (a command in `code`). */
-  body: ReactNode;
+  /** Text, or text with inline parts (a command in `code`). Left out when the title says it all. */
+  body?: ReactNode;
   /** Usually an ArrowLink. Left out when there is nowhere to send people. */
   action?: ReactNode;
   footer?: boolean;
@@ -21,7 +21,7 @@ export default function EmptyPage({ title, body, action, footer = true, maxWidth
       {above && <div className="mt-24">{above}</div>}
       {/* A page title, in title case (VISUAL.md): these are fixed words, never an agency's own name. */}
       <PageTitle className={above ? 'mt-2' : 'mt-24'}>{typeof title === 'string' ? titleCase(title) : title}</PageTitle>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{body}</p>
+      {body != null && <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{body}</p>}
       {action && <div className="mt-6">{action}</div>}
     </PageShell>
   );

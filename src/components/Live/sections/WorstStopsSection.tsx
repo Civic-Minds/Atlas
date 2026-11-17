@@ -1,6 +1,6 @@
 import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { rankStops, type DashboardBandData, type LiveV3, type UncertainStart } from '../../../../shared/liveDashboard';
-import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, LATE_THRESHOLD, P90_LATER_LABEL, lateStopsIntro } from '../../../../shared/liveWording';
+import { DELAY_LEGEND_TITLE, DIRECTION_LABEL, LATE_LABEL, LATE_THRESHOLD, P90_LATER_LABEL, lateStopsIntro, p90LateText } from '../../../../shared/liveWording';
 import { liveStopName } from '../../../utils/stopLabel';
 import ErrorBoundary from '../../ErrorBoundary';
 import ArrowLink from '../../ui/ArrowLink';
@@ -77,7 +77,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
             : { key: 'late', header: LATE_LABEL, width: FIGURE, worst: (s: (typeof top)[number]) => s.lateShare, cell: (s: (typeof top)[number]) => <span title={`${countText(s.n)} departures`}>{percentText(s.lateShare)}</span> },
           ...(full ? [
             { key: 'median', header: DELAY_LEGEND_TITLE, width: FIGURE, worst: (s: (typeof top)[number]) => s.medianMin, cell: (s: (typeof top)[number]) => mins(s.medianMin) },
-            { key: 'p90', header: P90_LATER_LABEL, narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => mins(s.p90Min) },
+            { key: 'p90', header: P90_LATER_LABEL, narrowHide: true, width: p90Width ?? FIGURE, worst: (s: (typeof top)[number]) => s.p90Min, cell: (s: (typeof top)[number]) => p90LateText(s.p90Min) },
             { key: 'n', header: DEPARTURES_COLUMN, narrowHide: true, width: FIGURE, cell: (s: (typeof top)[number]) => countText(s.n) },
           ] : []),
         ]}

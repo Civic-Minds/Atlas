@@ -88,9 +88,9 @@ describe('Live route dashboard', () => {
     expect(within(b2).getByText(/Click or tap a stop for its figures\./)).toBeTruthy();
     // B4: forms sentence, every link with its number, linked wording.
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
-    // Four compact chips per direction (the thing, then Linked or Not linked with its number); the caveat is said once, in the method.
-    expect(screen.getAllByText('Vehicles standing still in this stretch: Linked (0.6 a day)').length).toBe(2);
-    expect(screen.getAllByText('Uneven departures at the terminal: Not linked (5% of gaps off)').length).toBe(2);
+    // Four compact chips per direction (the thing, then High or Low with its number, CIV-1795); the caveat is said once, in the method.
+    expect(screen.getAllByText('Vehicles standing still in this stretch: High (0.6 a day)').length).toBe(2);
+    expect(screen.getAllByText('Uneven departures at the terminal: Low (5% of gaps off)').length).toBe(2);
     // The caveat is said once, in the method (not again under the chips).
     expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
     expect(document.body.textContent).toMatch(/shows what was measured in the same stretch\. It is not the cause\./);
@@ -146,7 +146,7 @@ describe('Live route dashboard', () => {
     const text = document.body.textContent ?? '';
     expect(text).toMatch(/We left out 60 of them \(2% of trips seen\)/);
     expect(text).toMatch(/ran far from the time their trip number is scheduled for \(2% of trips\)\. We matched 3 to the trip they fit and left out 4\./);
-    expect(text).toMatch(/Near a limit: 8% of trips left their first stop within 45 seconds of the late or ahead cutoff\./);
+    expect(text).toMatch(/Close to the cutoff: 8% of trips left their first stop within 45 seconds of the late or ahead cutoff\./);
     expect(text).not.toMatch(/300 of them|10% of trips seen|\(4% of trips\)|12% of trips left/);
     unmount();
     clearLiveDashboardCache();

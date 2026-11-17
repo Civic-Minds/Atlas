@@ -19,7 +19,7 @@ export interface HeatPoint {
   lonLat: [number, number];
   /** Typical minutes added since the previous stop that stay over the next stops, never below 0 (the most of the routes that share the stop). Unrounded. */
   addedMin: number;
-  /** The typical minutes added since the previous stop, made back later or not (the segment card's "Typical added"). */
+  /** The typical minutes added since the previous stop, made back later or not (the segment card's "Usually adds"). */
   rawAddedMin: number;
   /** The stretch into this stop, and the route and direction the figure comes from (the one that adds the most). */
   fromStopId: string;

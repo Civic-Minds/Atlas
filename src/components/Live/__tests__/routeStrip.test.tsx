@@ -132,9 +132,9 @@ describe('RouteStrip', () => {
     const { rerender } = render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('On time')).toBeTruthy();
     expect(screen.queryByText('1+ min ahead')).toBeNull(); // no dot here is early
-    expect(screen.queryByText('Less exact')).toBeNull();
+    expect(screen.queryByText('Fewer location reports')).toBeNull();
     rerender(<RouteStrip stops={[stop(0, { uncertain: true }), stop(1, { n: 12 }), ...STOPS.slice(2)]} modes={["delay"]} directionLabel="Southbound" />);
-    expect(screen.getByText('Less exact')).toBeTruthy();
+    expect(screen.getByText('Fewer location reports')).toBeTruthy();
     expect(screen.getByText('Fewer than 30 departures or gaps')).toBeTruthy();
     rerender(<RouteStrip stops={[stop(0, { delayMin: -2, timepoint: true }), ...STOPS.slice(1)]} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('1+ min ahead')).toBeTruthy();

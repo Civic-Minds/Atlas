@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText } from './noticeCopy';
+import { listingEndedPanelLead, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
+import { P90_LATER_LABEL, p90LateText, timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -124,5 +125,28 @@ describe('E1, N25 version (CIV-1051)', () => {
   it('names the agency and switches tense', () => {
     expect(listingEndedPanelLead('Dutchess Transit', 'Oct 28, 2026', false)).toBe("Dutchess Transit’s scheduled service for most routes ends Oct 28, 2026, and they have not released updated data. The map shows the last full week in their schedule, for every route.");
     expect(listingEndedPanelLead('Dutchess Transit', 'Oct 28, 2026', true)).toContain('most routes ended Oct 28, 2026,');
+  });
+});
+
+// CIV-1795: plain words for the agency list and Live, as Ryan picked them.
+describe('CIV-1795 plain words', () => {
+  it('names the filter pills the All pill clears', () => {
+    expect(clearAgencyFiltersTitle(['Live', 'History'])).toBe('Clear the Live and History filters');
+    expect(clearAgencyFiltersTitle(['Live', 'History', 'Outdated'])).toBe('Clear the Live, History and Outdated filters');
+  });
+  it('says what Live covers, with no comma before the last "and" and no "checks again" line', () => {
+    expect(liveRouteEmptyNotice('TTC', '512', false, ['501', '504', '505'])).toBe('Live doesn’t cover TTC 512. It covers TTC routes 501, 504 and 505.');
+    expect(liveRouteEmptyNotice('MiWay', '109', false, [])).toBe('Live doesn’t cover any MiWay routes.');
+    expect(liveRouteEmptyNotice('TTC', '504', true, [])).toBe('No TTC 504 vehicles are running right now.');
+  });
+  it('titles a Live report flag by the card’s names', () => {
+    expect(liveReportFlagTitle('TTC', true, '504', 'Bus 8123')).toBe('TTC 504 · Bus 8123');
+    expect(liveReportFlagTitle('TTC', true, '504')).toBe('TTC 504');
+    expect(liveReportFlagTitle(null, false, '504', 'Bus 8123')).toBe('Loading…');
+    expect(liveReportFlagTitle(null, true, '504')).toBe('This agency couldn’t be found.');
+  });
+  it('writes the 1-in-10 and time-lost figures', () => {
+    expect(`${P90_LATER_LABEL}: ${p90LateText(6)}`).toBe('1 in 10 leave: 6+ min late');
+    expect(timeLostLine(2)).toBe('Time lost: 2 min');
   });
 });

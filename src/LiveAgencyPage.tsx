@@ -35,7 +35,7 @@ import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
-import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_WEEK_NOT_IN_FILES, liveNoAgencyAnalysis, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN } from './content/noticeCopy';
+import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_NO_WEEK_COMPARISON, liveNoAgencyAnalysis, LIVE_AGENCY_ROUTES_INTRO, LIVE_DELAY_STARTS_INTRO, LIVE_BUNCHING_FORMS_INTRO, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';
 import { percentTenthText, percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -181,7 +181,7 @@ export default function LiveAgencyPage() {
     if (!agency) return;
     applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: `${ATLAS_MODE === 'public' ? SITE_URL : window.location.origin}${window.location.pathname}`, noindex: true, matchedPath: window.location.pathname });
   }, [agency, agencyName]);
-  if (!FEATURES.liveReports) return <LiveOffNotice />;
+  if (!FEATURES.liveReports) return <LiveOffNotice report />;
   // The page title is the agency's full name, as on the map's agency page; the short name stays in the subtitle and tab title (CIV-1448).
   const name = agencyTitle;
   const back = FEATURES.live ? <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink> : null;
@@ -209,10 +209,10 @@ export default function LiveAgencyPage() {
         <ErrorBoundary>
           {w && tiles.length
             ? <KpiTiles tiles={tiles} caption={weekNotComparableLine({ ...w, health: [] })} />
-            : <><p className="mt-5 text-sm text-[var(--text-muted)]">{LIVE_WEEK_NOT_IN_FILES}</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
+            : <><p className="mt-5 text-sm text-[var(--text-muted)]">{LIVE_NO_WEEK_COMPARISON}</p><DevHint hint={ANALYZE_DEV_HINT} /></>}
         </ErrorBoundary>
 
-        <Section id="agency-routes" title={ROUTES_HEADING} intro="Every analysed route, worst first.">
+        <Section id="agency-routes" title={ROUTES_HEADING} intro={LIVE_AGENCY_ROUTES_INTRO}>
           <RoutesTable s={s} />
         </Section>
 
@@ -220,11 +220,11 @@ export default function LiveAgencyPage() {
           <LateStops s={s} rows={s.worstStops.slice(0, LATE_MAP_STOPS)} />
         </Section>
 
-        <Section id="agency-delay" title={DELAY_STARTS_TITLE} intro="Route directions where delay jumps on one stretch and stays up, and the typical minutes it adds there.">
+        <Section id="agency-delay" title={DELAY_STARTS_TITLE} intro={LIVE_DELAY_STARTS_INTRO}>
           <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader={TYPICAL_ADDED} format={mins} />
         </Section>
 
-        <Section id="agency-bunching" title={BUNCHING_FORMS_TITLE} intro="Route directions where the share of gaps that are too short or too long steps up on one stretch and stays up.">
+        <Section id="agency-bunching" title={BUNCHING_FORMS_TITLE} intro={LIVE_BUNCHING_FORMS_INTRO}>
           <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Increase" format={risePointsText} />
         </Section>
 

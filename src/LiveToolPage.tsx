@@ -23,7 +23,7 @@ import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, MapPillGroup, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
 import { directionStopsById } from './components/Live/DirectionStrip';
-import { TYPICAL_ADDED } from '../shared/liveWording';
+import { TYPICAL_ADDED, timeLostLine } from '../shared/liveWording';
 import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
@@ -51,9 +51,6 @@ import { percentText, countText } from '../shared/numberText';
 
 
 
-/** The stop card's line for that figure (wording to confirm). */
-const DELAY_STAYS = 'Added and kept';
-
 /** The measures, in the top bar with the other switchers (CIV-1732, Ryan's option A). "Delays start" (the CIV-942 heatmap) is one of the set. */
 const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
 function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
@@ -73,7 +70,7 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
   // a stop the map measures (never a terminal stretch or one with too few trips).
   const heat = measure === 'delayStarts' ? delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(p => p.stopId === stop.stopId) : undefined;
   // Two labelled groups (CIV-946): vehicles against their timetable, then a rider's wait against the scheduled gaps.
-  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [`${DELAY_STAYS} ${mins(heat.addedMin)}`, ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
+  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [timeLostLine(heat.addedMin), ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
@@ -82,10 +79,10 @@ function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, 
   return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `${GROWS_LABEL} ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
 }
 
-/** Delay starts: a segment card's "Added and kept" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
+/** Delay starts: a segment card's "Time lost" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
 function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string, fromStopId: string, uncertain: readonly UncertainStart[]): string[] {
   const p = delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(x => x.stopId === toStopId && x.fromStopId === fromStopId);
-  return p ? [`${DELAY_STAYS} ${mins(p.addedMin)}`] : [];
+  return p ? [timeLostLine(p.addedMin)] : [];
 }
 
 /** What the route's week figures cover (the Run time tile's own scope wording). */
@@ -275,7 +272,7 @@ export default function LiveToolPage() {
     }));
   }, [route, dir, band, measure, pick]);
   useEffect(() => { applySeoToDocument(document, { title: liveReportTitle(agencyName), description: '', canonicalUrl: window.location.href, noindex: true, matchedPath: window.location.pathname }); }, [agencyName]);
-  if (!FEATURES.liveReports) return <LiveOffNotice />;
+  if (!FEATURES.liveReports) return <LiveOffNotice report />;
   const shell = (body: ReactNode) => <MapAppShell>{body}</MapAppShell>;
   // CIV-1413 C: a page without figures keeps the top bar's Atlas logo and the "← agency" link every Live page has in all states (CIV-1446).
   const bare = (line: ReactNode, busy = false) => shell(

@@ -3,7 +3,7 @@
  * way everywhere. Page-only lines are written next to their page.
  */
 import { COLOURED_CHANGES } from '../../../shared/liveDashboard';
-import { BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
+import { AGENCY_FIGURES_TERM, BUNCHING_LABEL, DELIVERED_LABEL, EXTRA_WAIT_LABEL, LATE_DEFINITION, LATE_LABEL, RECORDING_GAPS, TRIP_TIME_LABEL } from '../../../shared/liveWording';
 import { Term } from './MethodFootnote';
 
 // E9–E23 as Ryan approved them (CIV-1075): each line is the bold term, then the rest of its sentence, no colon.
@@ -34,5 +34,5 @@ export const colourLine = <Term t="Coloured changes">{COLOURED_CHANGES}</Term>;
 export const recordingGapsLine = <Term t="Recording gaps">{RECORDING_GAPS}</Term>;
 
 /** The agency page's own lines, here so the Docs glossary can be checked against them. */
-export const networkFiguresLine = <Term t="Network figures">combine every trip on every covered route. A route with more trips has more effect on the total.</Term>;
+export const networkFiguresLine = <Term t={AGENCY_FIGURES_TERM}>combine every trip on every covered route. A route with more trips has more effect on the total.</Term>;
 export const stopsLine = <Term t="Stops">are listed once they have 30 or more departures, with up to 3 per route direction.</Term>;

@@ -5,7 +5,7 @@ vi.mock('../useAgencies', () => ({
   useAgencies: () => ({ agencies: [{ slug: 'ttc', name: 'Toronto Transit Commission' }, { slug: 'capmetro', name: 'Capital Metropolitan Transportation Authority' }], agenciesLoadState: 'ready' }),
 }));
 
-import { useLiveAgencyName } from '../useLiveAgencyName';
+import { useLiveAgencyName, useLiveAgencyNames } from '../useLiveAgencyName';
 import { agencyNames } from '../../utils/agencyName';
 
 // CIV-1117: Live titles and back links name the agency as the map's cards do, never an upper-cased slug.
@@ -16,5 +16,8 @@ describe('useLiveAgencyName', () => {
   });
   it('falls back to the slug as written, not upper-cased', () => {
     expect(renderHook(() => useLiveAgencyName('zzz')).result.current).toBe('zzz');
+  });
+  it('titles an agency the registry does not list with the not-found line, never the slug (CIV-1795)', () => {
+    expect(renderHook(() => useLiveAgencyNames('zzz')).result.current.title).toBe('This agency couldn’t be found.');
   });
 });
