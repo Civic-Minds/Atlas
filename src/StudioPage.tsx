@@ -17,7 +17,7 @@ import { joinList } from '../shared/overflowText';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
-import { studioVehiclesDevUrl, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
+import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, StudioRouteTable, routeTitle } from './StudioChangesPage';
 import { STUDIO_DEFAULT_AGENCY, StudioGroupFigures } from './StudioVehiclesPage';
 
@@ -182,6 +182,8 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
 }) {
   const wide = useMapAppWide();
   const [footH, setFootH] = useState(0);
+  // CIV-1712: the planner's branch split, the current mix until changed.
+  const [split, setSplit] = useState<StudioBranchSplit>('current');
   const lines = useMemo(() => studioMapLines(file, period, route), [file, period, route]);
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;
   const intro = file.day ? C.intro(agency, dayInSentence(file.day), shortDate(file.before.date) ?? file.before.date, shortDate(file.after.date) ?? file.after.date) : C.noDay;
@@ -202,7 +204,7 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
     { key: 'vehicles', size: 'medium', node: (
       <SidebarWidget title={PAGE_NAMES.studioVehicles}>
         {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-          : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} periodLabel={PERIOD_LABELS[period]} /> : null}
+          : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} periodLabel={PERIOD_LABELS[period]} split={split} onSplit={setSplit} /> : null}
       </SidebarWidget>
     ) },
   ] : null;

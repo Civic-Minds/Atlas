@@ -59,6 +59,24 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     expect(cells('Layover')).toEqual(['Layover', '—']);
   });
 
+  it('lets the planner split a shared middle’s trips evenly among branches, the current mix first (CIV-1712)', () => {
+    const branched = { ...GROUPS[0], atTargetEven: { 10: 17, 15: 11, 20: 9, 30: 6 } };
+    const onSplit = vi.fn();
+    const { rerender } = render(<StudioGroupFigures group={branched} periodLabel="Midday" onSplit={onSplit} />);
+    const choice = screen.getByRole('group', { name: 'Trips on branches' });
+    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '15']);
+    screen.getByRole('button', { name: 'Split evenly' }).click();
+    expect(onSplit).toHaveBeenCalledWith('even');
+    rerender(<StudioGroupFigures group={branched} periodLabel="Midday" split="even" onSplit={onSplit} />);
+    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '17']);
+    expect(choice).toBeTruthy();
+  });
+
+  it('offers no choice for a group without branches', () => {
+    render(<StudioGroupFigures group={GROUPS[1]} periodLabel="Midday" onSplit={() => {}} />);
+    expect(screen.queryByRole('group', { name: 'Trips on branches' })).toBeNull();
+  });
+
   it('says so when a time of day has no buses', () => {
     render(<StudioGroupFigures group={null} periodLabel="Midday" />);
     expect(screen.getByText('No buses at this time of day.')).toBeTruthy();

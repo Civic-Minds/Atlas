@@ -24,8 +24,24 @@ export interface StudioVehicleGroup {
    */
   runningMin: number;
   layoverMin: number | null;
-  /** Buses needed at each STUDIO_TARGET_HEADWAYS value (key: minutes), rounded up once for the group. */
+  /**
+   * Buses needed at each STUDIO_TARGET_HEADWAYS value (key: minutes), rounded up once for the group. Where branches share
+   * a middle section, the target is for that middle, and its trips go to the branches in their current shares.
+   */
   atTarget: Partial<Record<StudioTargetHeadway, number>>;
+  /**
+   * CIV-1712 (Ryan: the planner's choice, not ours): the same, with the middle's trips split evenly among the branches.
+   * Only on a group with branches that share a middle (and absent from files written before it).
+   */
+  atTargetEven?: Partial<Record<StudioTargetHeadway, number>>;
+}
+
+/** How a target for the shared middle is shared among the branches: their current shares of trips, or evenly. */
+export type StudioBranchSplit = 'current' | 'even';
+
+/** The group's buses at a target, for a branch split; a file without the even figures keeps the current split. */
+export function groupAtTarget(g: StudioVehicleGroup, split: StudioBranchSplit): StudioVehicleGroup['atTarget'] {
+  return split === 'even' && g.atTargetEven ? g.atTargetEven : g.atTarget;
 }
 
 export interface StudioVehiclesFile {
