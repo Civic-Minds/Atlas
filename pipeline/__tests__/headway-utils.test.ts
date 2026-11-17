@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adaptiveMedianHeadwayInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
+import { adaptiveMedianHeadwayInWindow, departuresInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, hasSustainedNightService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
 describe('computePeriodCoverageHeadways', () => {
@@ -662,5 +662,15 @@ describe('computeHourDepartureCounts (CIV-1010)', () => {
     const times = [1080, 1098, 1140, 1158, 1200, 1218, 1260, 1278, 1320, 1338, 1338];
     expect(computeHourDepartureCounts(times, [17, 18, 19, 20, 21, 22, 23])).toEqual({ 18: 2, 19: 2, 20: 2, 21: 2, 22: 2 });
     expect(computeHourMaxGaps(times, [22])[22]).toBe(18);
+  });
+});
+
+describe('departuresInWindow: the one reader of a window\'s departures (CIV-1798)', () => {
+  it('folds plain post-midnight times, dedupes, sorts, and keeps or drops the end as asked', () => {
+    // 02:04 written plain reads as 26:04; 06:00 is the overnight window's end.
+    const times = [360, 124, 124, 1579];
+    expect(departuresInWindow(times, 1560, 1800, true)).toEqual([1564, 1579, 1800]);
+    expect(departuresInWindow(times, 1560, 1800, false)).toEqual([1564, 1579]);
+    expect(departuresInWindow([600, 540, 900], 540, 900, true)).toEqual([540, 600, 900]);
   });
 });

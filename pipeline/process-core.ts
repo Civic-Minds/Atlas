@@ -46,7 +46,7 @@ import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailRoute } from './routeMode.js';
-import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { computePeriodCoverageHeadways, departuresInWindow } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
@@ -3786,7 +3786,7 @@ export async function processGtfsBuffer(
       // end may really be served that rarely); the card row reads Irregular for these periods.
       if (headsignTerminalPeriodHw && period.headway != null && hsSparseH == null) {
         const { start, end } = PERIODS[pk];
-        const own = new Set(forCrossMidnightWindow(terminalScopedTimes ?? [], end).filter(t => t >= start && t <= end)).size;
+        const own = departuresInWindow(terminalScopedTimes ?? [], start, end, true).length;
         if (own < 3) noOwnService.push(pk);
       }
       if (period.withheld != null) sparseOvernightDecided = period.withheld;
