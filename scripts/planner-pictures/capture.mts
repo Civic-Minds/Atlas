@@ -7,7 +7,8 @@
 // just that step from the captures already in <work-dir>. CARDS=agency,export remakes only those cards' pictures and leaves the
 // rest as they are.
 // Writes the raw captures to <work-dir> and the finished webp files to public/assets/planners/ (needs cwebp).
-import { chromium, type Browser, type Page } from 'playwright';
+import type { Page } from 'playwright';
+import { launchBrowser, openPage, waitForMap } from '../lib/headless.mjs';
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -23,38 +24,18 @@ type Theme = (typeof THEMES)[number];
 const SIZES = { desktop: { w: 443, h: 332, zoom: 0 }, phone: { w: 306, h: 230, zoom: -0.5 } };
 type Size = keyof typeof SIZES;
 
-const b: Browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH });
+const b = await launchBrowser();
 
-async function settle(p: Page, inflight: () => number, hold = 1500) {
-  let quiet = 0; const t0 = Date.now();
-  while (Date.now() - t0 < 90000) {
-    const ok = await p.evaluate(() => { const m = (window as any).__map; return !!(m && m.loaded() && m.areTilesLoaded()) && !document.body.innerText.includes('Loading'); });
-    if (ok && inflight() === 0) { if (!quiet) quiet = Date.now(); if (Date.now() - quiet > hold) return; } else quiet = 0;
-    await p.waitForTimeout(250);
-  }
-  console.warn('settle timeout');
-}
-
-/** Opens the map. Basemap tiles are served without place names, so no name is cut off at a picture's edge. */
+/**
+ * Opens the map: basemap tiles without place names (no name cut off at a picture's edge), waits for it to draw, and
+ * hands back a settle for later changes. The browser, request counting and wait are the shared helper (CIV-1802).
+ */
 async function openMap(url: string, o: { w: number; h: number; theme: Theme; dpr?: number }) {
-  const ctx = await b.newContext({ viewport: { width: o.w, height: o.h }, deviceScaleFactor: o.dpr ?? 2, colorScheme: o.theme });
-  await ctx.addInitScript((t: string) => { try { localStorage.setItem('theme', t); } catch { /* private mode */ } }, o.theme);
-  const p = await ctx.newPage();
-  let inflight = 0;
-  const counted = (r: { url(): string }) => !/\/node_modules\/|\/@fs\/|\/@vite\/|\.pmtiles/.test(r.url());
-  p.on('request', r => { if (counted(r)) inflight++; });
-  const done = (r: { url(): string }) => { if (counted(r)) inflight = Math.max(0, inflight - 1); };
-  p.on('requestfinished', done); p.on('requestfailed', done);
-  await p.route('**/api/carto-tiles**', async route => {
-    const u = new URL(route.request().url());
-    u.searchParams.set('style', (u.searchParams.get('style') ?? 'light_all').replace(/_all$/, '_nolabels'));
-    const res = await handleCartoTiles(new Request(u.toString()));
-    await route.fulfill({ status: res.status, headers: Object.fromEntries(res.headers), body: Buffer.from(await res.arrayBuffer()) });
-  });
+  const { ctx, page: p, state } = await openPage(b, { width: o.w, height: o.h, dpr: o.dpr ?? 2, theme: o.theme, saveTheme: true, cartoTiles: handleCartoTiles });
   await p.goto(url);
-  await p.waitForFunction(() => Boolean((window as any).__map), null, { timeout: 60000 });
-  await settle(p, () => inflight);
-  return { ctx, p, settle: (hold = 1500) => settle(p, () => inflight, hold) };
+  const settle = (hold = 1500) => waitForMap(p, state, { hold, loadingText: true, onTimeout: 'warn' });
+  await settle();
+  return { ctx, p, settle };
 }
 
 const q = (o: Record<string, string | number>) => `${BASE}/?${new URLSearchParams(Object.entries(o).map(([k, v]) => [k, String(v)]))}`;
@@ -144,11 +125,10 @@ const scene = (card: string, t: Theme, size: Size, h: number) => {
     + `<div style="position:absolute;right:${MARGIN(size)}px;top:${h - show}px;width:${w}px;height:${show}px;overflow:hidden;border-radius:12px 12px 0 0;box-shadow:${SHADOW}"><img src="${f(`panel-${card}-${t}`)}" style="display:block;width:${w}px"></div>`;
 };
 
-const b2 = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH });
+const b2 = await launchBrowser();
 for (const size of Object.keys(SIZES) as Size[]) {
   const { w, h } = SIZES[size];
-  const ctx = await b2.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: size === 'phone' ? 3 : 2 });
-  const p = await ctx.newPage();
+  const { ctx, page: p } = await openPage(b2, { width: w, height: h, dpr: size === 'phone' ? 3 : 2 });
   for (const name of Object.keys(VIEWS).filter(want)) for (const t of THEMES) {
     const html = `${WORK}/scene.html`;
     writeFileSync(html, `<html><body style="margin:0;background:${pal(t).bg}"><div style="position:relative;width:${w}px;height:${h}px;overflow:hidden">${scene(name, t, size, h)}</div></body></html>`);
