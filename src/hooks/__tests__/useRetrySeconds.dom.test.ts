@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { secondsUntil, useRetrySeconds } from '../useRetrySeconds';
-import { liveRetryCountdown, LIVE_UNABLE_TO_LOAD } from '../../content/noticeCopy';
+import { liveRetryCountdown, liveUnableToLoadPill, LIVE_UNABLE_TO_LOAD } from '../../content/noticeCopy';
 
 afterEach(() => vi.useRealTimers());
 
@@ -25,5 +25,7 @@ describe('Live retry countdown (CIV-1768)', () => {
   it('reads as Ryan put it: "Unable to load", then the countdown', () => {
     expect(LIVE_UNABLE_TO_LOAD).toBe('Unable to load');
     expect(liveRetryCountdown(12)).toBe('Retrying in 12s');
+    // The map's loading pill (Ryan: "Yes" to "Unable to load · Retrying in 11s").
+    expect(liveUnableToLoadPill(11)).toBe('Unable to load · Retrying in 11s');
   });
 });
