@@ -24,7 +24,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs",
     "check:vercel": "bash scripts/check-vercel.sh",
     "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
-    "check:unused": "npx -y knip@6.44.1 --no-progress --include files,exports,types",
+    "check:unused": "ATLAS_SKIP_ENV_CHECK=1 npx -y knip@6.44.1 --no-progress --include files,exports,types",
     "test": "vitest run",
     "benchmark": "node scripts/benchmark-atlas.mjs",
     "process": "npx tsx pipeline/process-gtfs.ts",

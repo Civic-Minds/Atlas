@@ -15,6 +15,7 @@ const MAP_MODULE = /[\\/]src[\\/](components[\\/]Interval[\\/](map[\\/]|MapCanva
 // loudly when .env.local is missing, instead of starting a server whose map
 // silently lacks the local settings. Worktrees symlink it to the main
 // checkout's .env.dev-public (no R2 write keys), never to its full .env.local.
+// Tools that only read this config (knip in `npm run check:unused`, run in CI) set ATLAS_SKIP_ENV_CHECK=1 (#1577).
 function assertDevEnv(env: Record<string, string>): void {
   if (process.env.ATLAS_SKIP_ENV_CHECK === '1') return;
   const missing: string[] = [];
