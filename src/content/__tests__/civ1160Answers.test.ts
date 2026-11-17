@@ -47,7 +47,7 @@ describe('CIV-1160 wording answers', () => {
 
   it('7: sentence case, and Live names the agency by its own short name', () => {
     expect(NEAR_YOU_TITLE).toBe('Near you');
-    expect(liveLinkPreview('MiWay', '1', null).title).toBe('MiWay 1 · Live · Atlas');
+    expect(liveLinkPreview('MiWay', '1', null).title).toBe('Live: MiWay 1 | Transit Atlas');
     expect(liveNoRoute('109', 'MiWay')).toBe('Live has no route 109 for MiWay.');
     expect(liveNoAgencyAnalysis('MiWay')).toBe('Live has no route analysis for MiWay.');
   });

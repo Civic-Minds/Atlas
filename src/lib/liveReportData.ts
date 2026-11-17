@@ -1,4 +1,6 @@
-import { R2_PUBLIC_URL } from '../../shared/config';
+import { ATLAS_MODE, R2_PUBLIC_URL } from '../../shared/config';
+import { liveTabTitle } from '../../shared/liveLinkPreview';
+import { seoTitlePrefix } from '../../shared/seo';
 
 /**
  * Where the Live report pages read their data. Dev: the local API (local-api/, served by `npm run live`). Production and
@@ -26,8 +28,11 @@ export const devOnly = (devText: string): string => (fromR2 ? LIVE_REPORT_UNAVAI
 /** The developer command that rebuilds the analysis files. Shown only to developers (DevHint, the console), never in reader text. */
 export const ANALYZE_DEV_HINT = 'npm run live:analyze';
 
-/** Page titles (approved): "504 King · Live · Atlas" and "TTC · Live · Atlas". */
-export const liveReportTitle = (name: string) => `${name} · Live · Atlas`;
+/**
+ * A Live report page's tab title: the shared tab format (liveTabTitle, CIV-1796) with the build's tag in front, as every
+ * other page's title has it ("[Internal] Live: 504 King | Transit Atlas" locally, no tag on public).
+ */
+export const liveReportTitle = (name: string) => `${seoTitlePrefix(ATLAS_MODE)}${liveTabTitle(name)}`;
 
 /**
  * The per-stop gaps file for the gaps-through-the-day chart: the local endpoint in dev; null on deployed builds, because
