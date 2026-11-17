@@ -72,6 +72,7 @@ export interface GtfsCalendarDate {
     exception_type: string; // '1' = added, '2' = removed
 }
 
+/** @public A shapes.txt row. Unused in code; kept for review with the other GTFS row types (CIV-1776). */
 export interface GtfsShapePoint {
     shape_id: string;
     shape_pt_lat: string;
@@ -210,7 +211,6 @@ export {
   ALL_DAYS,
   DAY_TO_TYPE,
   DAY_TYPES,
-  getNowDay,
   WEEKDAYS,
 } from '../shared/dayTypes.js';
 

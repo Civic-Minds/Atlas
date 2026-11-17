@@ -9,6 +9,7 @@ export const LIVE_SNAPSHOT_SCHEMA_VERSION = 'atlas.live.v1';
 
 export type LiveFeedType = 'vehicle_positions' | 'trip_updates';
 
+/** @public Unused in code; kept for review as part of the snapshot contract (CIV-1776). */
 export interface LiveVehicleSnapshot {
   id: string;
   routeId: string;
@@ -24,6 +25,7 @@ export interface LiveVehicleSnapshot {
   reportedAt: number | null;
 }
 
+/** @public Unused in code; kept for review as part of the snapshot contract (CIV-1776). */
 export interface LiveTripSnapshot {
   tripId: string;
   routeId: string;
@@ -31,6 +33,7 @@ export interface LiveTripSnapshot {
   delaySeconds: number | null;
 }
 
+/** @public Unused in code; kept for review as part of the snapshot contract (CIV-1776). */
 export interface LiveSnapshotEnvelope<T> {
   schemaVersion: typeof LIVE_SNAPSHOT_SCHEMA_VERSION;
   agency: string;

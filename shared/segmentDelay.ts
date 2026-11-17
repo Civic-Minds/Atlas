@@ -272,11 +272,6 @@ export interface HeadwayBandStat {
   scheduledP90Sec: number;
 }
 
-export interface HeadwayStopStat {
-  stopId: string;
-  directionId: number;
-  bands: Partial<Record<TimeBand | 'all', HeadwayBandStat>>;
-}
 
 /**
  * Headway adherence at one stop for one (service date, band) window.

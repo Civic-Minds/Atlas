@@ -59,11 +59,6 @@ export function periodBandsFor(hours: readonly number[]): Record<string, { left:
   return result;
 }
 
-/** The hour under a pointer position on a chart drawn over `hours`. */
-export function hourAtOn(hours: readonly number[], clientX: number, rect: { left: number; width: number }): number {
-  const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  return hours[Math.min(Math.floor(fraction * hours.length), hours.length - 1)];
-}
 
 /** The period names the hour charts' period band shows: the shared period names, overnight left unnamed as before (CIV-1065). */
 export const PERIOD_BAND_LABELS: Record<string, string> = (({ overnight: _overnight, ...daytime }) => daytime)(PERIOD_LABELS);

@@ -19,7 +19,7 @@ import { shortDate } from './dateText';
 import { MODE_DEFINITIONS, ON_DEMAND_MODE, VIRTUAL_LRT_MODE, modeLabel, modeLabelSortIndex } from './modes';
 import { BETA_BUILD } from './config';
 import { AREA_INDEX, AREA_PARAM } from './areaIndex';
-import { AREA_PATH_PREFIX, areaPagePath, type AreaConfig } from './areas';
+import { areaPagePath, type AreaConfig } from './areas';
 import { agencyIndexHeadingHref, agencyPagePath, parentAgencyPagePath } from './pagePaths';
 import { areaRegionName, areaRegionSentenceStart, areaRegionTitle } from './areaRegions';
 import { SITE_URL, seoTitlePrefix, type SeoMode } from './seo';
@@ -31,7 +31,7 @@ import { agencyInSentence } from './agencyArticle';
 import { titleCase } from './titleCase';
 import { SITE_NAME } from './pageNames';
 
-export { AREA_PATH_PREFIX, areaPagePath, areaAgencySummaries };
+export { areaPagePath, areaAgencySummaries };
 
 /** The prerendered HTML carries its data in <script type="application/json" id=...>. */
 export const AREA_DATA_SCRIPT_ID = 'area-page-data';

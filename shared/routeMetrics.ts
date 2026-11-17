@@ -5,8 +5,6 @@
  */
 import { median, percentile } from './segmentDelay.js';
 
-/** A figure needs this many trips before it is shown without fading. */
-export const MIN_TRIPS = 30;
 /** A day counts only when the archive holds at least this share of the snapshots a normal day has. */
 export const HEALTHY_DAY_SHARE = 0.9;
 /** A week needs this many healthy days to be compared. */

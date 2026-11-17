@@ -1,4 +1,3 @@
-import { useLayoutEffect, useRef, useState } from 'react';
 import { clockTime, hourTime, timeRange } from '../../../shared/timeText';
 import type { AgencyPageRoute } from '../../../shared/agencyPages';
 import { WEEKDAY_HOURS_LABEL } from '../../content/noticeCopy';
@@ -6,13 +5,11 @@ import { WEEKDAY_HOURS_LABEL } from '../../content/noticeCopy';
 /** The track's colour: the split bar's no-service grey. */
 const TRACK = 'var(--control-inactive-bg)';
 const FILL = 'var(--text-muted)';
-/** Space kept between the start and end times when they are written apart, in px. */
-const LABEL_GAP = 8;
 
 /**
  * CIV-1605 (prototype, beta): one route's weekday hours of service as a thin bar on the agency's shared hour axis, with
- * its exact first and last times written at the ends where the data has them. An end without an exact time stops on the
- * hour and gets no label, so no time is guessed. Every route in a table passes the same `axis` so the bars line up.
+ * its exact first and last times written above it as one range where the data has them (CIV-1787). An end without an
+ * exact time stops on the hour and is left out of the label, so no time is guessed. Every route in a table passes the same `axis` so the bars line up.
  */
 export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageRoute['runs']>; axis: { first: number; last: number } }) {
   const span = (axis.last + 1 - axis.first) * 60;
@@ -36,8 +33,9 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
   const lastHour = runs.hours[runs.hours.length - 1];
   // Ryan (CIV-1605): "Weekday hours", then the times: "Weekday hours: from 7 AM until 9:16 PM".
   const label = `${WEEKDAY_HOURS_LABEL}: ${runs.first != null ? `from ${clockTime(runs.first)}` : `from the ${hourTime(firstHour)} hour`} ${runs.last != null ? `until ${clockTime(runs.last)}` : `to the ${hourTime(lastHour)} hour`}`;
-  // Each time sits at its own end of the bar, so a night route's times sit over its pieces, not at the axis's ends.
-  // Ends too close for two labels share one range ("1–5:30 AM").
+  // CIV-1787 (Ryan, option 1): always one range label above the bar ("6:42 AM–8:15 PM"), never two times split at the
+  // ends, so every row reads the same. It starts over the first piece, or ends over the last when the service sits in
+  // the right half, so a night route's times sit over its pieces, not at the axis's ends.
   const pct = (minutes: number) => (100 * (minutes - axis.first * 60)) / span;
   const startPct = pct(drawn[0]?.[0] ?? axis.first * 60);
   const endPct = pct(drawn[drawn.length - 1]?.[1] ?? (axis.last + 1) * 60);
@@ -45,36 +43,12 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
   const atEnd = (text: string) => ({ text, style: endPct >= 50 ? { right: `${100 - endPct}%` } : { left: `${endPct}%` } });
   const first = runs.first != null ? clockTime(runs.first) : null;
   const last = runs.last != null ? clockTime(runs.last) : null;
-  // #1569: whether the two times fit apart is measured, not guessed from the share of the bar: both are laid out
-  // unseen, and if they come closer than LABEL_GAP the bar writes one range. Before the first measure (and in the
-  // prerendered page) a segment under 45% of the bar shares one range, as before.
-  const rowRef = useRef<HTMLDivElement>(null);
-  const [apart, setApart] = useState<boolean | null>(null);
-  useLayoutEffect(() => {
-    const row = rowRef.current;
-    if (!row || !first || !last) return;
-    const check = () => {
-      const [a, b] = Array.from(row.querySelectorAll<HTMLElement>('[data-measure]')).map(el => el.getBoundingClientRect());
-      if (!a || !b || row.getBoundingClientRect().width === 0) return;
-      const [left, right] = a.left <= b.left ? [a, b] : [b, a];
-      setApart(right.left - left.right >= LABEL_GAP);
-    };
-    check();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(check);
-    observer.observe(row);
-    return () => observer.disconnect();
-  }, [first, last, startPct, endPct]);
-  const shareOne = first && last && !(apart ?? endPct - startPct >= 45);
-  const labels = shareOne
-    ? [startPct <= 100 - endPct ? atStart(timeRange(runs.first!, runs.last!)) : atEnd(timeRange(runs.first!, runs.last!))]
-    : [...(first ? [atStart(first)] : []), ...(last ? [atEnd(last)] : [])];
-  const measured = first && last ? [atStart(first), atEnd(last)] : [];
+  const text = first && last ? timeRange(runs.first!, runs.last!) : first ?? last;
+  const timeLabel = text && (startPct <= 100 - endPct ? atStart(text) : atEnd(text));
   return (
-    <div className="min-w-[10rem]" role="img" aria-label={label}>
-      <div ref={rowRef} className="relative h-4 text-xs text-[var(--text-muted)] whitespace-nowrap">
-        {labels.map(l => <span key={l.text} className="absolute top-0" style={l.style}>{l.text}</span>)}
-        {measured.map((l, i) => <span key={`m${i}`} data-measure aria-hidden="true" className="invisible absolute top-0" style={l.style}>{l.text}</span>)}
+    <div className="min-w-[12rem]" role="img" aria-label={label}>
+      <div className="relative h-4 text-xs text-[var(--text-muted)] whitespace-nowrap">
+        {timeLabel && <span className="absolute top-0" style={timeLabel.style}>{timeLabel.text}</span>}
       </div>
       <div className="relative mt-0.5 h-2 overflow-hidden rounded-full" style={{ background: TRACK }}>
         {drawn.map(([a, b]) => (

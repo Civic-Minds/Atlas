@@ -7,7 +7,7 @@ import { CARD_NOTE, CHART_HEADING, HEADING_GAP } from '../../styles';
 import { SPARKLINE_HOURS, SPARKLINE_HOUR_LABELS } from '../../../shared/config';
 import { clockTime } from '../../../shared/timeText';
 import type { PeriodKey, TimePeriod } from '../../hooks/useIntervalStats';
-import type { HeadwayByPeriod, HeadwayByHour } from '../../hooks/useAgencyData';
+import type { HeadwayByHour } from '../../hooks/useAgencyData';
 import type { HeadwayByHourMaxGap } from '../../../shared/config';
 import Pill from '../ui/Pill';
 import ExpandDialog, { ExpandButton } from '../ui/ExpandDialog';
@@ -525,4 +525,3 @@ export function HeadwaySparkline({ byHour, maxGapByHour, stackedByHour, directio
 }
 
 // Legacy period-based export kept for any callers that still use it
-export type { HeadwayByPeriod };

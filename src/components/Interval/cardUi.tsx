@@ -24,7 +24,6 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
-export { CARD_SECTION } from '../../styles';
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
 import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';

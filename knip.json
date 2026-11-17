@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/prerender.tsx",
+    "api/**/*.ts",
+    "local-api/**/*.ts",
+    "workers/**/*.ts",
+    "scripts/**/*.{ts,mts,mjs,js,cjs}",
+    "pipeline/**/*.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "shared/**/*.ts",
+    "api/**/*.ts",
+    "local-api/**/*.ts",
+    "workers/**/*.ts",
+    "scripts/**/*.{ts,mts,mjs}",
+    "pipeline/**/*.ts",
+    "types/**/*.ts"
+  ],
+  "ignoreExportsUsedInFile": true
+}

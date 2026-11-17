@@ -30,10 +30,6 @@ export function readUrlSearchNumber(currentSearch: string, key: string): number 
   return value == null || Number.isNaN(Number(value)) ? null : Number(value);
 }
 
-/** Read a param from the live URL (the read half of syncUrlParams); null outside the browser. */
-export function readUrlParam(key: string): string | null {
-  return typeof window === 'undefined' ? null : readUrlSearchParam(window.location.search, key);
-}
 
 /** Apply updates to the live URL (pathname preserved). */
 export function syncUrlParams(updates: Record<string, string | null | undefined>): void {

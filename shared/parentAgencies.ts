@@ -10,7 +10,7 @@ import { PARENT_AGENCIES, type ParentAgency } from './parentAgencyList';
 
 export { PARENT_AGENCIES, parentAgency, type ParentAgency } from './parentAgencyList';
 import { parentMembers, parentSummary } from './parentSummary';
-export { parentHome, parentMembers, parentRoutes, parentSummary } from './parentSummary';
+export { parentHome, parentMembers, parentRoutes } from './parentSummary';
 
 export interface ParentAgencyPageData extends AgencyPageData {
   /** The members as the area pages' agency table ("Services"), each with its own routes. */

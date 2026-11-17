@@ -2,14 +2,14 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
 import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD } from '../../shared/config';
-import type { HeadwayByHourMaxGap, HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained } from '../../shared/config';
+import type { HeadwayByPeriod } from '../../shared/config';
 import type { HeadwayByHour, RouteProperties } from '../../shared/routeProperties';
 import type { ViewportBounds } from './useIntervalStats';
 import { getSavedView } from '../utils/regionView';
 import { agencySlugsToPrefetchForSearch } from '../utils/agencySearch';
 import { pruneAgencyLayers, MAX_AGENCY_LAYERS_IN_REACT } from './agencyLayerPrune';
 export type { HeadwayByHour, RouteProperties };
-export type { HeadwayByHourMaxGap, HeadwayByPeriod, HeadwayByPeriodMaxGap, HeadwayByPeriodRange, HeadwayByPeriodSustained };
+export type { HeadwayByPeriod };
 export type ShapeProperties = RouteProperties;
 
 export type AgencyLayers = Record<string, GeoJSON.FeatureCollection>;

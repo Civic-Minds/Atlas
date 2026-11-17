@@ -17,7 +17,7 @@ import { parentAgency } from '../../../shared/parentAgencyList';
 import { bboxInViewport } from '../../utils/agencySearch';
 import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
-import { DAY_TYPES, getNowDay, type DayType } from '../../../shared/dayTypes';
+import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { CONNECTION_WINDOWS } from '../../../shared/connections';
 import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
 import type { NightServiceFrequency } from '../../../shared/nightService';
@@ -33,7 +33,6 @@ import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGEN
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 
-export { getNowDay };
 
 interface FilterChipsProps {
   maxHeadway: number;
@@ -100,9 +99,6 @@ function Dot({ show }: { show: boolean }) {
 
 const MODES = filterModeOptions(FEATURES.onDemand);
 
-export function getNowPeriod(): TimePeriod {
-  return periodKeyForHour(new Date().getHours()) ?? 'all';
-}
 
 /**
  * Same as getNowPeriod, but for the current hour where a specific agency

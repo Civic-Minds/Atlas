@@ -1,16 +1,13 @@
 import {
   HISTORY_V2_BASE_OVERRIDE,
   historyV2AgencyUrl,
-  historyV2SidecarUrl,
   historyV2ShapesUrl,
   parseHistoryAgencyV2,
   parseHistoryShapes,
-  parseHistoryV2Sidecar,
   type HistoryAgencyLike,
   type HistorySnapshotLike,
   type HistoryShapesFile,
   type HistoryV2Result,
-  type HistoryV2Sidecar,
 } from '../../shared/historyV2Reader';
 import { R2_PUBLIC_URL } from '../../shared/config';
 import { loadHistoryConfig } from './historyConfig';
@@ -43,12 +40,6 @@ export async function loadHistoryAgencyV2<S extends HistorySnapshotLike = Histor
   }
 }
 
-/** One sidecar. Only available in fixture mode (sidecars are build inputs, not served publicly). */
-export async function loadHistoryV2Sidecar(slug: string, periodKey: string): Promise<HistoryV2Result<HistoryV2Sidecar>> {
-  if (!HISTORY_V2_BASE_OVERRIDE) return { ok: false, error: { code: 'missing-field', path: periodKey, message: 'sidecars are only served in fixture mode' } };
-  const raw = await getJson(historyV2SidecarUrl(HISTORY_V2_BASE_OVERRIDE, slug, periodKey));
-  return raw.ok ? parseHistoryV2Sidecar(raw.value) : raw;
-}
 
 /**
  * One agency's per-year route shapes (validated), loaded on demand: a separate file, never part of the snapshots

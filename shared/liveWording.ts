@@ -128,8 +128,6 @@ export const usuallyOffBy = (minutes: string, side: 'early' | 'late'): string =>
 export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
 
-const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-export const weekdayOf = (date: string): string => WEEKDAYS[new Date(`${date}T12:00:00Z`).getUTCDay()];
 
 /** The week a page is compared with, after its "Week of": "compared with Oct 1–7". */
 export const changesComparedWith = (from: string, to: string): string => `compared with ${dateRange(from, to)}`;

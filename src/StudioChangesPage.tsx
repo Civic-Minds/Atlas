@@ -66,11 +66,6 @@ export function smallChangeParts(c: StudioRouteChange): string[] {
   return routeFigureRows(c).filter(r => r.before !== r.after).map(r => `${r.label} ${r.before} → ${r.after}`);
 }
 
-/** The parts in a line, each kept whole so a time never breaks from its AM or PM. */
-export function SmallChange({ change }: { change: StudioRouteChange }) {
-  const parts = smallChangeParts(change);
-  return <>{parts.map((p, i) => <span key={p}><span className="whitespace-nowrap">{p}</span>{i < parts.length - 1 ? ', ' : ''}</span>)}</>;
-}
 
 export const routeTitle = (c: Pick<StudioRouteChange, 'route' | 'name'>) => routeLabels({ shortName: c.route, longName: c.name });
 
