@@ -212,11 +212,44 @@ export const OTHER_REGION_LABEL = 'Other';
 export const SHARED_STRETCH_LABEL = 'Shared stretch';
 // The frequency heading and button (full-day chart, filter chip, Frequency picker).
 export const FREQUENCY_LABEL = 'Frequency';
-// The button at the end of the For Transit Planners page that emails us (CIV-1706); also the email's subject.
+// The button at the end of the For Transit Planners and For Researchers pages that emails us (CIV-1706); also the email's subject.
 export const REQUEST_DEMO_LABEL = 'Request a demo';
-// The Request a demo card's text (CIV-1706). Ryan picked option 1 on 2026-11-16; split into two sentences so it matches the
-// other feature cards (CIV-1767, waiting on Ryan's OK).
-export const REQUEST_DEMO_TEXT = 'A demo uses your own agency’s schedules to show what changed and where your routes lose time. It also shows how many buses a frequency needs.';
+
+// ---- For Transit Planners and For Researchers pages (CIV-1793): Ryan's words, 2026-11-16, word for word ----
+/** One feature card's words: a title of about five words (title case) and two sentences that never name Atlas. */
+export type FeatureCardCopy = { title: string; text: string; /** Shows the Beta tag beside the title. */ beta?: boolean };
+/** The About page's headline (CIV-1206 D), a sentence, so it stays sentence case. */
+export const ABOUT_HEADLINE = 'Find the transit service that actually runs.';
+/** What Atlas is, in one line: the About page's hero. */
+export const ATLAS_MAP_SUMMARY = 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.';
+/** The "Where the Data Comes From" section on the For Transit Planners and For Researchers pages (CIV-1724). */
+export const DATA_SOURCE_TITLE = 'Where the Data Comes From';
+export const dataSourceText = (agencies: string, countries: string) =>
+  `Atlas covers ${agencies} transit agencies in ${countries}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.`;
+/** For Transit Planners: the hero's line (CIV-1788), the seven cards in a planner's workflow order (CIV-1710) and the demo card. */
+export const PLANNERS_COPY = {
+  intro: 'See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.',
+  cards: {
+    frequency: { title: 'See Frequency, Not Just Routes', text: 'Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a frequency and only the routes that meet it stay on the map — so you can check your network against your own standard.' },
+    // Ryan: "Probably need to be edited later ngl"; the text is unchanged for now.
+    dayTime: { title: 'Service by Day, Time and Span', text: 'Switch between weekday, Saturday and Sunday, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.' },
+    agencies: { title: 'Every Agency on One Map', text: 'Transit doesn’t stop at an agency’s border, and neither does the map. See every agency’s routes together, or filter to just one.' },
+    beforeAfter: { title: 'Before and After a Schedule Change', text: 'Compare two versions of a schedule route by route: frequency, trips, span and trip time. Routes are grouped by how much they changed.', beta: true },
+    vehiclesNeeded: { title: 'Vehicles Needed at Every Frequency', text: 'Pick a route and a time of day to see how many vehicles it runs now, and how many it would need for more frequent service. Routes that share vehicles are counted together.', beta: true },
+    delays: { title: 'Where Delays Build Up', text: 'Every TTC vehicle’s position is recorded each minute and checked against the schedule. Each route’s page shows where delays start, which stops run late most often and how this week compares with last.', beta: true },
+    share: { title: 'Share What You Find', text: 'Send a link that opens the same place and settings, with the latest schedules. Or export a map image with a dated source line, ready for a slide deck or a report.' },
+  } satisfies Record<string, FeatureCardCopy>,
+  demo: 'We’ll explore your network with you and show how the map can back up your next service review.',
+};
+/** For Researchers: the three cards (History is beta only) and the demo card. Its hero line is ATLAS_INTRO_TEXT. */
+export const RESEARCHERS_COPY = {
+  cards: {
+    history: { title: 'How Service Changed, Year by Year', text: 'Past schedules are kept as dated snapshots, so a study of service growth or cuts can start from what was actually scheduled. Pick a year to map an agency’s routes as they ran then, and open any route to see its frequency over the years.', beta: true },
+    compareCities: { title: 'Compare Cities on One Map', text: 'Put two maps side by side, each with its own city, day, time of day and frequency. Set one network’s weekday against its Sunday, or one city’s rush hour against another’s.' },
+    cite: { title: 'Maps You Can Cite', text: 'Every exported map has a source and a date on it, so it’s ready to cite. A link opens the same view with the latest schedules.' },
+  } satisfies Record<string, FeatureCardCopy>,
+  demo: 'We’ll explore your research question with you and show how the map can back up your next study.',
+};
 /**
  * Every search box's hint, in one place (CIV-1569): "Find " + what the box finds + "…" ("Find routes…", "Find an
  * agency…", "Find a MARTA route…"). Search box hints start with "Find" (Ryan, 2026-11-14); the "…" is from CIV-1160

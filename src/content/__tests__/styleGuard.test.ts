@@ -70,6 +70,10 @@ const RULES: Rule[] = [
   // CIV-1614 (Ryan): a metro area is an "area"; "region" is only a state or province.
   { name: '"region" for a metro area (say "area")', doc: 'TEXT.md', pattern: /\b(city|metro) regions?\b|\b(agencies|transit agencies) and regions\b|\bRegions include\b/, slip: "'every agency in a city region'" },
 
+  // CIV-1793 (Ryan): "vehicles", not "buses", on the About, For Transit Planners and For Researchers pages and their cards
+  // ("it's not just buses"). Their noticeCopy strings are checked in featureCardCopy.test.tsx.
+  { name: '"bus" or "buses" in page or card copy (say "vehicles")', doc: 'TEXT.md', pattern: /\bbus(es)?\b/i, slip: "<p>It shows how many buses a frequency needs.</p>",
+    only: /^src\/(AboutPage|PlannersPage|ResearchersPage|components\/(FeatureCard|RequestDemoCard|FeaturePageSections))\.tsx$/ },
   // CIV-1792 (Ryan, CIV-1751, CIV-1733): no "what Atlas isn't" disclaimers. Say what Atlas does. Legal pages may.
   { name: 'a "what Atlas isn’t" disclaimer (say what Atlas does)', doc: 'TEXT.md', pattern: /\b(not a trip planner|trip planning|live alerts|not live arrivals|not real-time|can be wrong|does(?: not|n[’']t) (replace|do)\b|Atlas (is not|isn[’']t) an?\b)/i, slip: "'Atlas is not a trip planner.'",
     allowed: ['src/LegalPage.tsx'] },
@@ -199,10 +203,7 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-const PENDING: Record<string, string[]> = {
-  // CIV-1709: the For Researchers page's card titles, a draft waiting on Ryan's word-for-word OK.
-  'a UI label typed into a component (put its words in noticeCopy or PAGE_NAMES)': ['src/ResearchersPage.tsx'],
-};
+const PENDING: Record<string, string[]> = {};
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
 // removed from its file before the rules run, so only that exact text passes.
@@ -223,8 +224,6 @@ const APPROVED_TEXT: Record<string, string[]> = {
     'Tuesday November 17, Saturday November 21 and Sunday November 22, 2026', 'nearby dates in November 2026',
     'about 5 AM to 11 PM', '311 km away', '83 km away',
   ],
-  // The For Transit Planners page's card and section titles: Ryan's OK'd draft, page prose kept with its page (CIV-1774).
-  'src/PlannersPage.tsx': ['title="See Frequency, Not Just Routes"', 'title="See How Service Changes Over the Day and Week"', 'title="Every Agency in a Region, on One Map"', 'title="A Map Instead of a Long Report"', 'title="Where the Data Comes From"'],
   'src/components/FrequentServiceStoryMap.tsx': ['count on all day', 'every 10 or 15 minutes'],
   'src/data/frequentServiceStory.ts': ['10-minute peak, 12-minute off-peak', 'Every 15 minutes or better during weekday daytime hours'],
   // A round figure reads better as "about 1 km"; TriMet's own rule for its Sandy zone.
