@@ -9,7 +9,7 @@ import { DataSourceSection, PageHero } from './components/FeaturePageSections';
 /**
  * "For Researchers" (CIV-1709), built around History (Ryan, 2026-11-15: "things like history might be good for
  * researchers right", then 1). Local only, like the For Transit Planners page, until History goes public. It mirrors
- * PlannersPage: the same hero, its line the About intro (the bold line above it is gone, CIV-1793 Q10), shared feature
+ * PlannersPage: the same hero, its line the About intro in the bold lead style (the bold line above it is gone, CIV-1793 Q10), shared feature
  * cards with alternating picture sides, the same "Where the Data Comes From" section and the shared Request a demo card
  * at the end (Ryan, 2026-11-16). The card words are Ryan's, word for word (CIV-1793), in noticeCopy. Cards with no
  * picture yet pass null.
@@ -23,7 +23,7 @@ export default function ResearchersPage() {
   return (
     <PageShell variant="wide">
 
-      <PageHero title={PAGE_NAMES.researchers} intro={ATLAS_INTRO_TEXT} picture={featureCardAsset('hero')} />
+      <PageHero title={PAGE_NAMES.researchers} intro={ATLAS_INTRO_TEXT} picture={featureCardAsset('hero')} boldIntro />
 
       <div className="grid gap-5 py-16 sm:py-20">
         {/* History is beta only (FEATURES.history); no picture yet. */}
