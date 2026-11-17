@@ -80,7 +80,14 @@ describe('state and province pages (CIV-976)', () => {
 
 describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () => {
   const all = agencyPageSummaries();
-  const page = (name: string) => buildRegionPageData(regionPages(all).find(x => x.name === name)!, all, null);
+  // #1576: each page built once. The last test reads every state, and rebuilding the region list for each
+  // took 5 s alone and timed out under a loaded full run.
+  const regions = regionPages(all);
+  const built = new Map<string, ReturnType<typeof buildRegionPageData>>();
+  const page = (name: string) => {
+    if (!built.has(name)) built.set(name, buildRegionPageData(regions.find(x => x.name === name)!, all, null));
+    return built.get(name)!;
+  };
 
   it('names up to three, most routes first, each linking its area page', () => {
     const on = regionAreasSentenceParts(page('Ontario'))!;
@@ -104,6 +111,6 @@ describe('areas named after a state intro (CIV-1298)', { timeout: 30_000 }, () =
     expect(page('New Jersey').areas.map(a => a.slug)).toContain('new-york');
     expect(page('Maine').areas).toEqual([]);
     expect(page('Connecticut').areas.map(a => a.slug)).not.toContain('new-york');
-    for (const r of regionPages(all)) for (const a of page(r.name).areas) expect(a.routes, `${r.name} ${a.slug}`).toBeGreaterThan(0);
+    for (const r of regions) for (const a of page(r.name).areas) expect(a.routes, `${r.name} ${a.slug}`).toBeGreaterThan(0);
   });
 });

@@ -18,12 +18,18 @@ describe('routeFeaturePassesMapFilter agency cache (CIV-1598)', () => {
     expect(routeFeaturePassesMapFilter(props, { ...input(agencies), day: 'Saturday' })).toBe(false);
   });
 
-  it('a pass over many features with a 700-agency selection stays fast', () => {
-    const agencies = new Set(Array.from({ length: 700 }, (_, i) => `agency-${i}`).concat('ttc'));
+  it('a pass over many features with a 700-agency selection costs about what a one-agency selection does', () => {
     const features = Array.from({ length: 20000 }, (_, i) => ({ ...props, routeId: String(i) }));
-    const start = performance.now();
-    for (const f of features) routeFeaturePassesMapFilter(f, input(agencies));
-    // Sorting the selection per feature took over 300 ms for 20,000 features.
-    expect(performance.now() - start).toBeLessThan(250);
+    // Best of three, so a busy machine doesn't decide it (#1576: a fixed 250 ms budget failed under a loaded full run).
+    const pass = (agencies: Set<string>) => Math.min(...[0, 1, 2].map(() => {
+      const start = performance.now();
+      for (const f of features) routeFeaturePassesMapFilter(f, input(agencies));
+      return performance.now() - start;
+    }));
+    const one = pass(new Set(['ttc']));
+    const many = pass(new Set(Array.from({ length: 700 }, (_, i) => `agency-${i}`).concat('ttc')));
+    // Sorting the selection per feature made the 700-agency pass dozens of times slower (over 300 ms for 20,000
+    // features); read once per selection, it costs about the same as one agency.
+    expect(many).toBeLessThan(one * 5 + 25);
   });
 });

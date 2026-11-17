@@ -30,7 +30,8 @@ describe('periods a headsign does not run itself (CIV-1069)', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(referenceDate(FIXTURE)); });
   afterAll(() => { vi.useRealTimers(); });
 
-  it('flags CTA 77 Belmont & Octavia, keeps its value, and leaves a headsign with its own trips alone', async () => {
+  // #1576: the whole CTA fixture is processed (about 2 s alone); a loaded full run passed vitest's 5 s default.
+  it('flags CTA 77 Belmont & Octavia, keeps its value, and leaves a headsign with its own trips alone', { timeout: 60_000 }, async () => {
     const zip = new JSZip();
     for (const file of readdirSync(FIXTURE)) zip.file(file, readFileSync(join(FIXTURE, file)));
     const result = await processAgencyFeeds(await zip.generateAsync({ type: 'nodebuffer' }), [], { slug: 'cta' } as never);
