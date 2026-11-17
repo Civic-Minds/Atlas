@@ -321,6 +321,8 @@ export const VIEW_ON_MAP = 'View on map';
 export const SEE_ALL_AGENCIES = 'See all agencies';
 /** The link to the Docs page (About page, and the home page's static text, #1522). */
 export const READ_HOW_ATLAS_WORKS = 'Read how Atlas works';
+/** CIV-1733 (Ryan's exact text, 2026-11-16): what Atlas is, on About's "Built for looking closer." and the For Researchers intro. */
+export const ATLAS_INTRO_TEXT = 'Atlas gathers published agency schedules in one place. Planners, researchers and advocates can compare routes across cities, time periods and modes, and see the patterns in scheduled service.';
 /** CIV-1605 (Ryan): the agency table's hours-bar column, and the start of each bar's screen-reader name. */
 export const WEEKDAY_HOURS_LABEL = 'Weekday hours';
 export const WHATS_NEW_TITLE = PAGE_NAMES.whatsNew;
