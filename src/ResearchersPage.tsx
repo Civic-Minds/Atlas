@@ -5,9 +5,8 @@ import { PageTitle } from './components/ui/PageTitle';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
-import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { EXPLORE_RESEARCH_LABEL, MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
+import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 import FeatureCard from './components/FeatureCard';
 import ThemedPicture from './components/ui/ThemedPicture';
 import RequestDemoCard from './components/RequestDemoCard';
@@ -64,11 +63,6 @@ export default function ResearchersPage() {
         </FeatureCard>
         <FeatureCard title="Maps You Can Cite" color={color(2)} picture={pic('card-export')}>
           <p>Map images export with a source line naming whose schedules are shown and when Atlas last updated its data, ready for a paper or a slide deck. Share links keep the place, frequency tier, day, time of day, agencies and any open route or stop, so readers open the same map you saw.</p>
-        </FeatureCard>
-        {/* No picture yet. The research link shows only where the research pages exist (FEATURES.researchApps). */}
-        <FeatureCard title="Research Stories and Methods" color={color(3)} picture={null} flip>
-          <p>Atlas research looks closer at transit service: which routes run all night, what “frequent” means to each agency and the age kids stop riding free. The Docs set out how Atlas works out each route’s frequency from its published schedule.</p>
-          {FEATURES.researchApps && <ArrowLink href={FEATURE_ROUTES.research}>{EXPLORE_RESEARCH_LABEL}</ArrowLink>}
         </FeatureCard>
       </div>
 
