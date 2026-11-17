@@ -389,15 +389,26 @@ export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
  * agencies whose live feeds are usable (no API key needed, or marked active). The agency list's "Live" tag and
  * filter read it; nothing else keeps its own list (oneLiveAgencyList.test.ts).
  */
+/**
+ * CIV-1797: the one rule for a usable live feed: it needs no API key, or it is marked active. Everything that asks
+ * which routes or agencies are live reads it (oneLiveAgencyList.test.ts fails on a copy).
+ */
+export function isLiveEligibleRoute(r: LiveRouteConfig): boolean {
+  return (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || !!r.active;
+}
+
+/** An agency's polled routes whose live feeds are usable. */
+export function liveEligibleRoutes(slug: string): LiveRouteConfig[] {
+  return LIVE_POLLING_ROUTES.filter(r => r.slug === slug && isLiveEligibleRoute(r));
+}
+
 export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set(
-  LIVE_POLLING_ROUTES.filter(r => (!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active).map(r => r.slug),
+  LIVE_POLLING_ROUTES.filter(isLiveEligibleRoute).map(r => r.slug),
 )];
 
 /** True when an agency's live feeds are usable in the UI (no API key needed, or marked active). */
 export function isLiveEligibleSlug(slug: string): boolean {
-  return LIVE_POLLING_ROUTES.some(
-    r => r.slug === slug && ((!r.apiKeyParamEnvVar && !r.apiKeyHeaderEnvVar) || r.active),
-  );
+  return LIVE_POLLING_ROUTES.some(r => r.slug === slug && isLiveEligibleRoute(r));
 }
 
 /**

@@ -11,7 +11,7 @@ import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
-import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig';
+import { isLiveEligibleSlug, LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { findSeoRoute } from '../shared/seo';
 import { PageTitle } from './components/ui/PageTitle';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -541,14 +541,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     && (inLive || inHistory || inNight || inBustang || inFrequentService || compareActive);
   const showCompareControl = compareOn && inFrequency;
   const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
-    LIVE_POLLING_ROUTES.some(route => route.slug === slug && (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar || route.active)),
+    isLiveEligibleSlug(slug),
   ));
-  const liveAgencyCount = useMemo(
-    () => new Set(LIVE_POLLING_ROUTES
-      .filter(route => (!route.apiKeyParamEnvVar && !route.apiKeyHeaderEnvVar) || route.active)
-      .map(route => route.slug)).size,
-    [],
-  );
+  const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
   const showHistoryControl = historyOn && (inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
