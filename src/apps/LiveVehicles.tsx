@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useR
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
 import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
-import { useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
+import { useLiveFeedsDown, useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
 import { useViewport } from '../context/ViewportContext';
@@ -41,12 +41,11 @@ import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, 
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
-import { useRetrySeconds } from '../hooks/useRetrySeconds';
 import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, LIVE_FEEDS_UNAVAILABLE, LIVE_UNABLE_TO_LOAD, liveRetryCountdown, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
+import { loadingText, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -246,7 +245,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const allVehicles = useMemo(() => Object.values(resolvedVehiclesBySlug).flat(), [resolvedVehiclesBySlug]);
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
-  const retrySeconds = useRetrySeconds(errors.length > 0 ? nextPollAt : null);
 
   // Group failing agencies by identical message+stuck-state so "everyone's down
   // for the same reason" reads as one line instead of repeating per agency.
@@ -708,6 +706,11 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const totalVehicles = allVehicles.length;
   const hasAnyError = errors.length > 0 && totalVehicles === 0;
+  // CIV-1768: every feed in view down: the map's loading pill reads "Unable to load · Retrying in 12s".
+  const { setRetryAt } = useLiveFeedsDown();
+  const feedsDownRetryAt = hasAnyError ? nextPollAt : null;
+  useEffect(() => { setRetryAt(feedsDownRetryAt); }, [feedsDownRetryAt, setRetryAt]);
+  useEffect(() => () => setRetryAt(null), [setRetryAt]);
   const hasLiveElsewhere = offScreenOnly && !query;
   const fade = selectionActive ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto';
 
@@ -942,13 +945,10 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               <PanelEmpty kind="loading">{loadingText('feed')}</PanelEmpty>
             ) : hasAnyError ? (
               (() => {
-                // CIV-1768: where the loading line sits, "Unable to load" and a countdown to the next try,
-                // in place of "Atlas will keep trying." The line under it still names what can't be shown.
+                // CIV-1768: the panel names what can't be shown; "Unable to load" and the countdown to the
+                // next try are in the map's loading pill (Ryan), in place of "Atlas will keep trying."
                 const names = errorGroups.flatMap(g => g.agencyNames);
-                const who = names.length === 1 ? liveUnreachableText(names) : LIVE_FEEDS_UNAVAILABLE;
-                return (
-                  <PanelEmpty kind="error" detail={<CardHelpNotice message={retrySeconds == null ? who : `${who} ${liveRetryCountdown(retrySeconds)}`} />}>{LIVE_UNABLE_TO_LOAD}</PanelEmpty>
-                );
+                return <PanelEmpty kind="error">{names.length === 1 ? liveUnreachableText(names) : LIVE_FEEDS_UNAVAILABLE}</PanelEmpty>;
               })()
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
               query ? (

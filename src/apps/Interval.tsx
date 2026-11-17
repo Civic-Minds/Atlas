@@ -62,7 +62,9 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, liveUnableToLoadPill, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL } from '../content/noticeCopy';
+import { useLiveFeedsDown } from '../context/LiveVehiclesMapOverlay';
+import { useRetrySeconds } from '../hooks/useRetrySeconds';
 import { useIndexSearch } from '../hooks/useIndexSearch';
 import { mergeRouteResults, mergeStopResults } from '../utils/searchResults';
 import { resolveRouteCardBack, type ListOpenedRoute } from '../utils/routeCardBack';
@@ -635,6 +637,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const onLocate = useCallback((lat: number, lon: number) => setUserLocation({ lat, lon }), []);
   const clearUserLocation = useCallback(() => setUserLocation(null), []);
   const [isTilesLoading, setIsTilesLoading] = useState(false);
+  // CIV-1768: Live's next try while every Live feed in view is down, counted down in the loading pill's spot.
+  const liveRetrySeconds = useRetrySeconds(useLiveFeedsDown().retryAt);
   const [isBasemapLoading, setIsBasemapLoading] = useState(false);
 
   // The map draws its routes from the tiles. Agency JSON is fetched first for what is selected or
@@ -1503,6 +1507,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
       <div className={MAP_FOOTER_RIGHT_SLOT}>
+      {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): every Live feed in view is down.
+          A notice, so it never fades with the counts, which Live hides (CIV-50). */}
+      {liveRetrySeconds != null && (
+        <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`} role="status">
+          <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{liveUnableToLoadPill(liveRetrySeconds)}</span></div>
+        </div>
+      )}
       {onDemandFailedInFooter && (
         <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
