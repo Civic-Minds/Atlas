@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, sparseOvernightHeadway, computePeriodSustained } from '../headway-utils';
+import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, periodMedianHeadway, sparseOvernightHeadway, computePeriodSustained } from '../headway-utils';
 import { decidePeriod } from '../routeGrading';
 import { overnightPeriodValues } from '../overnightTerminal';
 import { processGtfsBuffer } from '../process-core';
@@ -186,5 +186,14 @@ describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
       expect(p.headwayByPeriod.overnight ?? null).toBeNull();
       for (const stop of Object.values(p.stopPeriodHeadways ?? {}) as any[]) expect(stop.overnight ?? null).toBeNull();
     }
+  });
+});
+
+describe('periodMedianHeadway: a period\'s median before #897 withholds it (CIV-1799)', () => {
+  it('is the period value, and keeps the value a sparse window withholds', () => {
+    expect(periodMedianHeadway(at('07:00', '07:10', '07:20', '07:30'), 'amPeak')).toBe(periodHeadwayInWindow(at('07:00', '07:10', '07:20', '07:30'), 'amPeak'));
+    const sparse = at('26:00', '26:10', '29:00');
+    expect(periodHeadwayInWindow(sparse, 'overnight')).toBeNull();
+    expect(periodMedianHeadway(sparse, 'overnight')).toBe(sparseOvernightHeadway(sparse));
   });
 });
