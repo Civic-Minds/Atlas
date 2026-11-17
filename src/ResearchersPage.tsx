@@ -6,7 +6,7 @@ import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
+import { ATLAS_INTRO_TEXT, MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
 import FeatureCard from './components/FeatureCard';
 import ThemedPicture from './components/ui/ThemedPicture';
 import RequestDemoCard from './components/RequestDemoCard';
@@ -45,7 +45,7 @@ export default function ResearchersPage() {
         <div>
           <PageTitle level="hero">{PAGE_NAMES.researchers}</PageTitle>
           <p className={`mt-8 max-w-2xl text-lg leading-8 ${STRONG}`}>Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas brings published agency schedules into one place so riders, planners, researchers and advocates can compare routes across cities, time periods and modes.</p>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{ATLAS_INTRO_TEXT}</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           </div>
