@@ -27,11 +27,11 @@ describe('For Transit Planners page (CIV-1320)', () => {
     expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
-  it('alternates the picture side of the feature cards on desktop by card position, right then left (CIV-1754)', () => {
+  it('alternates the picture side of the feature cards on desktop, right then left (CIV-1754)', () => {
     const { container } = render(<PlannersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    // Frequency, Day and Time, Agencies, then Share (the seventh card, so right); cards 4-6 have no picture.
-    expect(sides).toEqual(['right', 'left', 'right', 'right']);
+    // Frequency, Day and Time, Agencies, Share; cards 4-6 have no picture.
+    expect(sides).toEqual(['right', 'left', 'right', 'left']);
   });
 
   it('marks the before and after, vehicles needed and delay cards Beta, with the shared tag beside the title (CIV-1793)', () => {

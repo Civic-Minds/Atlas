@@ -54,10 +54,11 @@ describe('For Researchers page (CIV-1709)', () => {
     expect(demo[0].closest('section')).toContainElement(screen.getByRole('heading', { level: 2, name: 'Request a Demo' }));
   });
 
-  it('leads with the About intro, with no bold line above it, and marks History Beta (CIV-1793)', () => {
+  it('leads with the About intro as its bold line, and marks History Beta (CIV-1793)', () => {
     const { container } = render(<ResearchersPage />);
     const hero = container.querySelector('h1')!.parentElement!;
     expect([...hero.querySelectorAll('p')].map(p => p.textContent)).toEqual([ATLAS_INTRO_TEXT]);
+    expect(hero.querySelector('p')!.className).toContain('font-bold');
     const beta = [...container.querySelectorAll('section')].filter(s => [...s.querySelectorAll('span')].some(t => t.textContent === 'Beta'));
     expect(beta.map(s => s.querySelector('h2')!.textContent)).toEqual(['How Service Changed, Year by Year']);
     expect(screen.getByText('We’ll explore your research question with you and show how the map can back up your next study.')).toBeInTheDocument();

@@ -5,7 +5,7 @@
 //   - light theme: disc luminance must be >= 0.6 (no near-black disc)
 //   - dark theme: disc luminance must be <= 0.25 (no pale disc with a pale icon)
 //   - icon vs disc contrast ratio must be >= 4.5 in every state
-import { chromium } from 'playwright';
+import { launchBrowser, openPage } from './lib/headless.mjs';
 
 const [baseUrl = 'http://localhost:5181/', outDir] = process.argv.slice(2);
 const MIN_CONTRAST = 4.5;
@@ -20,15 +20,13 @@ const lum = ([r, g, b]) => {
 };
 const contrast = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const failures = [];
 try {
   for (const [width, height, size] of [[1440, 900, 'desktop'], [390, 844, 'phone']]) {
     for (const os of ['light', 'dark']) {
       for (const theme of ['light', 'dark']) {
-        const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, colorScheme: os });
-        await ctx.addInitScript((t) => { try { localStorage.setItem('theme', t); } catch {} }, theme);
-        const page = await ctx.newPage();
+        const { ctx, page } = await openPage(browser, { width, height, dpr: 2, theme: os, saveTheme: theme });
         await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
         const btn = page.locator('button[aria-label="Atlas home"]');
         await btn.waitFor({ timeout: 30000 });

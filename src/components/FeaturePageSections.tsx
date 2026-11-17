@@ -14,14 +14,15 @@ import { DATA_SOURCE_TITLE, MAP_LINK, READ_HOW_ATLAS_WORKS, dataSourceText } fro
 
 /**
  * The hero: the page's title and one grey line, the "Try Atlas" link (plus any `actions` after it), and a picture of
- * the map beside them (CIV-1206 D). `picture` is the path without its ending (ThemedPicture).
+ * the map beside them (CIV-1206 D). `picture` is the path without its ending (ThemedPicture). `boldIntro` sets the line
+ * in the bold lead style instead of grey (For Researchers, Ryan's CIV-1793 Q10 pick).
  */
-export function PageHero({ title, intro, picture, actions }: { title: ReactNode; intro: ReactNode; picture: string; actions?: ReactNode }) {
+export function PageHero({ title, intro, picture, actions, boldIntro = false }: { title: ReactNode; intro: ReactNode; picture: string; actions?: ReactNode; boldIntro?: boolean }) {
   return (
     <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14">
       <div>
         <PageTitle level="hero">{title}</PageTitle>
-        <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">{intro}</p>
+        <p className={`mt-8 max-w-2xl text-lg leading-8 ${boldIntro ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>{intro}</p>
         <div className="mt-9 flex flex-wrap gap-3">
           <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           {actions}

@@ -18,7 +18,8 @@
  * to 0.8 more, when the drawn network around that center is small enough to fit. FRAME_OVERRIDES pins a view by hand.
  * Read-only: data comes from the public R2 bucket through the dev server's proxy; nothing is written outside public/.
  */
-import { chromium, type Browser, type Page } from 'playwright';
+import type { Browser, Page } from 'playwright';
+import { launchBrowser, openPage, waitForMap } from './lib/headless.mjs';
 import { spawn, type ChildProcess } from 'child_process';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { dirname, resolve } from 'path';
@@ -102,56 +103,13 @@ async function ensureServer(url: string): Promise<ChildProcess | null> {
   throw new Error(`Vite dev server did not start on ${url}`);
 }
 
-async function launch(): Promise<Browser> {
-  try { return await chromium.launch({ headless: true }); }
-  catch { return chromium.launch({ headless: true, channel: 'chrome' }); }
-}
-
 function mapUrl(base: string, view: { lat: number; lon: number; z: number }): string {
   const q = new URLSearchParams({ lat: view.lat.toFixed(5), lon: view.lon.toFixed(5), z: view.z.toFixed(2), ...VIEW_PARAMS });
   return `${base}/?${q}`;
 }
 
-/** A fresh page: light theme, no saved state, basemap tiles served without labels, in-flight requests counted. */
-async function openPage(browser: Browser) {
-  const ctx = await browser.newContext({ viewport: { width: cssW(), height: cssH() }, deviceScaleFactor: SCALE, colorScheme: 'light' });
-  const page = await ctx.newPage();
-  const state = { inFlight: 0, badTiles: 0 };
-  // Module files (the MapLibre worker script never reports finished) don't count; data and tile requests do.
-  const counted = (r: { url(): string }) => !/\/node_modules\/|\/@fs\/|\/@vite\//.test(r.url());
-  page.on('request', r => { if (counted(r)) state.inFlight++; });
-  const done = (r: { url(): string }) => { if (counted(r)) state.inFlight = Math.max(0, state.inFlight - 1); };
-  page.on('requestfinished', done);
-  page.on('requestfailed', done);
-  await page.route('**/api/carto-tiles**', async route => {
-    const u = new URL(route.request().url());
-    u.searchParams.set('style', (u.searchParams.get('style') ?? 'light_all').replace(/_all$/, '_nolabels'));
-    const res = await handleCartoTiles(new Request(u.toString()));
-    // The handler marks CARTO's "API key required" watermark tile (and any error) as no-store.
-    if (res.status !== 200 || /no-store/.test(res.headers.get('cache-control') ?? '')) state.badTiles++;
-    await route.fulfill({ status: res.status, headers: Object.fromEntries(res.headers), body: Buffer.from(await res.arrayBuffer()) });
-  });
-  return { ctx, page, state };
-}
-
-/** Wait until no request is in flight and the map reports every tile loaded, held for `hold` ms. */
-async function waitSettled(page: Page, state: { inFlight: number }, hold = 1500, timeout = 90000): Promise<void> {
-  await page.waitForFunction(() => Boolean((window as any).__map), null, { timeout });
-  const start = Date.now();
-  let quietSince = 0;
-  while (Date.now() - start < timeout) {
-    const ready = await page.evaluate(() => {
-      const m = (window as any).__map;
-      return Boolean(m && m.loaded() && m.areTilesLoaded());
-    });
-    if (ready && state.inFlight === 0) {
-      if (!quietSince) quietSince = Date.now();
-      if (Date.now() - quietSince >= hold) return;
-    } else quietSince = 0;
-    await page.waitForTimeout(250);
-  }
-  throw new Error('map did not settle');
-}
+/** A fresh page: light theme, no saved state, basemap tiles served without labels, in-flight requests counted (scripts/lib/headless.mjs, CIV-1802). */
+const openSharePage = (browser: Browser) => openPage(browser, { width: cssW(), height: cssH(), dpr: SCALE, cartoTiles: handleCartoTiles });
 
 async function renderedRouteCount(page: Page): Promise<number> {
   return page.evaluate(layers => {
@@ -175,13 +133,13 @@ const pct = (sorted: number[], p: number) => sorted[Math.min(sorted.length - 1, 
  */
 async function chooseFrame(browser: Browser, base: string, center: [number, number], bbox: Bbox): Promise<{ lat: number; lon: number; z: number }> {
   const [s, w, n, e] = bbox;
-  const { ctx, page, state } = await openPage(browser);
+  const { ctx, page, state } = await openSharePage(browser);
   try {
     await page.goto(mapUrl(base, { lat: center[0], lon: center[1], z: 9 }));
-    await waitSettled(page, state, 1000);
+    await waitForMap(page, state, { hold: 1000 });
     await page.evaluate(b => (window as any).__map.fitBounds([[b[1], b[0]], [b[3], b[2]]], { animate: false, padding: 0 }), bbox);
     await page.waitForTimeout(500);
-    await waitSettled(page, state, 1500);
+    await waitForMap(page, state, { hold: 1500 });
     const lines: number[][][] = await page.evaluate(layers => {
       const m = (window as any).__map;
       const present = layers.filter((id: string) => m.getLayer(id));
@@ -250,10 +208,10 @@ async function routePixelShare(page: Page, jpeg: Buffer): Promise<number> {
 
 async function capture(browser: Browser, base: string, slug: string, view: { lat: number; lon: number; z: number }, quality: number, out: string) {
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const { ctx, page, state } = await openPage(browser);
+    const { ctx, page, state } = await openSharePage(browser);
     try {
       await page.goto(mapUrl(base, view));
-      await waitSettled(page, state, attempt === 1 ? 1500 : 4000);
+      await waitForMap(page, state, { hold: attempt === 1 ? 1500 : 4000 });
       const routes = await renderedRouteCount(page);
       if (routes === 0 && attempt === 1) continue;
       await page.addStyleTag({ content: hideUiCss() });
@@ -292,7 +250,7 @@ async function main() {
   mkdirSync(outDir, { recursive: true });
 
   const server = await ensureServer(args.url);
-  const browser = await launch();
+  const browser = await launchBrowser();
   const report: Record<string, unknown> = {};
   let total = 0;
   try {

@@ -46,4 +46,10 @@ describe('one list of live agencies (CIV-1691)', () => {
     });
     expect(lists).toEqual([]);
   });
+
+  // CIV-1797: the rule for a usable live feed (no API key, or marked active) is isLiveEligibleRoute; a copy fails.
+  it('has no copy of the live-eligible rule', () => {
+    const copies = code.filter(f => /apiKeyParamEnvVar[\s\S]{0,80}apiKeyHeaderEnvVar[\s\S]{0,40}\bactive\b/.test(readFileSync(join(ROOT, f), 'utf8')));
+    expect(copies).toEqual([]);
+  });
 });
