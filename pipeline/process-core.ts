@@ -46,7 +46,7 @@ import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
 import { isRailRoute } from './routeMode.js';
-import { computePeriodCoverageHeadways } from './headway-utils.js';
+import { computePeriodCoverageHeadways, departuresInWindow, periodMedianHeadway } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
 import { makeShapeCoverChecker } from './shapeCoverage.js';
 import { annotateSharedStretches, contiguousSharedRuns, isPoolablePattern } from './sharedStretch.js';
@@ -2735,7 +2735,7 @@ export async function processGtfsBuffer(
         // pooled terminal's plain 7 would have beaten the branch's 15).
         const hwPlain = headlineWindowValue(own);
         if (hwPlain != null) allStopHwPlain[stopId] = hwPlain;
-        const middayPlain = medianHeadwayInWindow(forCrossMidnightWindow(own, PERIODS.midday.end), PERIODS.midday.start, PERIODS.midday.end, 3);
+        const middayPlain = periodMedianHeadway(own, 'midday', false);
         if (middayPlain != null) allStopMiddayHwPlain[stopId] = middayPlain;
         if (hw != null && usedOwnFallback) ownFallbackHw.add(stopId);
         const byPeriod: Partial<Record<PeriodKey, number>> = {};
@@ -2743,14 +2743,14 @@ export async function processGtfsBuffer(
           const pooledReading = isPooled ? pooledReadingInWindow(times, start, end, 3, false, own) : null;
           const pooledPh = pooledReading?.value ?? null;
           const ph = isPooled
-            ? (pooledPh ?? medianHeadwayInWindow(forCrossMidnightWindow(own, end), start, end, 3, true))
-            : medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+            ? (pooledPh ?? periodMedianHeadway(own, pk))
+            : periodMedianHeadway(times, pk);
           if (isPooled && pooledPh == null && ph != null) {
             const set = ownFallbackPeriodHw.get(stopId) ?? new Set<PeriodKey>();
             set.add(pk);
             ownFallbackPeriodHw.set(stopId, set);
             if (isThinPool(forCrossMidnightWindow(times, end), forCrossMidnightWindow(own, end), start, end)) {
-              const merged = medianHeadwayInWindow(forCrossMidnightWindow(times, end), start, end, 3, true);
+              const merged = periodMedianHeadway(times, pk);
               if (merged != null) {
                 const thin = thinPoolFallbackPeriodHw.get(stopId) ?? new Map<PeriodKey, PeriodValue>();
                 const sparse = pk === 'overnight' && isSparseOvernightWindow(times);
@@ -3786,7 +3786,7 @@ export async function processGtfsBuffer(
       // end may really be served that rarely); the card row reads Irregular for these periods.
       if (headsignTerminalPeriodHw && period.headway != null && hsSparseH == null) {
         const { start, end } = PERIODS[pk];
-        const own = new Set(forCrossMidnightWindow(terminalScopedTimes ?? [], end).filter(t => t >= start && t <= end)).size;
+        const own = departuresInWindow(terminalScopedTimes ?? [], start, end, true).length;
         if (own < 3) noOwnService.push(pk);
       }
       if (period.withheld != null) sparseOvernightDecided = period.withheld;

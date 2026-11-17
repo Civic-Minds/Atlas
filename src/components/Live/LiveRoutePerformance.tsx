@@ -13,7 +13,7 @@ import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
 import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
-import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE } from '../../content/noticeCopy';
+import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN, LIVE_GAPS_FRONT_TO_BACK } from '../../content/noticeCopy';
 import { DIRECTION_LABEL, ON_TIME_LABEL } from '../../../shared/liveWording';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
@@ -168,8 +168,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
   // Fresh data needs no time; stale data says when it was last updated (by the newest vehicle report).
   const newest = Math.max(0, ...vehicles.map(v => v.tsEpoch ?? 0));
   const rightNowLabel = newest > 0 && now / 1000 - newest > RIGHT_NOW_STALE_SEC
-    ? `Right now · last updated ${agencyTime(slug, new Date(newest * 1000))}`
-    : 'Right now';
+    ? `${RIGHT_NOW_LABEL} · last updated ${agencyTime(slug, new Date(newest * 1000))}`
+    : RIGHT_NOW_LABEL;
 
   return (
     <div className="flex flex-col gap-3">
@@ -185,15 +185,15 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
           ) : (
             <>
               <Stats items={[
-                ['Vehicles', String(live.cars)],
+                [VEHICLES_LABEL, String(live.cars)],
                 ...(onTime != null ? [[ON_TIME_LABEL, String(onTime)] as [string, string]] : []),
-                ...(period ? [['Scheduled', schedLabel] as [string, string]] : []),
+                ...(period ? [[SCHEDULED_COLUMN, schedLabel] as [string, string]] : []),
               ]} />
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
               {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
               {live.gapsMin.some(g => g != null) && (
                 <div className="flex flex-col">
-                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">Gaps, front to back (min)</div>
+                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">{LIVE_GAPS_FRONT_TO_BACK}</div>
                   <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black">
                     {live.gapsMin.map((g, i) => (
                       g == null

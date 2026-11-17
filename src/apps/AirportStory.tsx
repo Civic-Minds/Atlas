@@ -8,6 +8,7 @@ import AirportStoryMap, { ZOOMS } from '../components/AirportStoryMap';
 import { AIRPORTS, landableAt, landableCount } from '../data/airportHourly';
 import { useColorVision } from '../context/ColorVisionContext';
 import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
+import { STORY_HEADING, STORY_PARAGRAPH } from '../pageStyles';
 
 /**
  * CIV-1550: the airport story, local dev only (main.tsx registers it under import.meta.env.DEV, so it is in no built
@@ -19,9 +20,6 @@ import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
  * for Ryan's review; nothing here is approved yet. Counts come from src/data/airport-hourly.json.
  */
 
-/** The story's section headings and body paragraphs, the Frequent service story's look. */
-const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
-const STORY_PARAGRAPH = 'mt-5 text-base leading-8 text-[var(--text-muted)]';
 const STEP_TEXT = 'text-base leading-7 text-[var(--text-primary)]';
 const PLACEHOLDER = 'mt-5 text-xs leading-5 text-[var(--text-dim)]';
 

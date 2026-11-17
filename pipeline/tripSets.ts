@@ -20,6 +20,7 @@ import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
+  departuresInWindow,
   computeHourDepartureCounts,
   computeDepartureSpan,
   type DepartureSpan,
@@ -816,7 +817,7 @@ export function stretchMetaPeriods(s: Stretch): { period: Record<PeriodKey, numb
   // The card's guard (#955): a period whose value is one gap, or that has under three departures (no
   // cadence to read, only the full-window wait), reads "Irregular" on a row; the map keeps
   // the filter value.
-  const departures = (start: number, end: number) => new Set(forCrossMidnightWindow([...s.times], end).filter(t => t >= start && t <= end)).size;
+  const departures = (start: number, end: number) => departuresInWindow(s.times, start, end, true).length;
   // CIV-1251 (Ryan): the stretch's own late start or early end, read as the direction's edge is
   // (#934, CIV-1248), so a branch row can say when its own service starts or stops (TTC 110 Sunday
   // AM: the shared stretch every 15 from 8:07, each branch every 30 from its own first trip).
@@ -911,7 +912,7 @@ export function featureStretchMeta(
  */
 export function runsThroughPeriod(times: readonly number[], start: number, end: number, sustained: boolean | null | undefined): boolean {
   const mid = (start + end) / 2;
-  const inWindow = [...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end);
+  const inWindow = departuresInWindow(times, start, end, true);
   if (!(inWindow.some(x => x < mid) && inWindow.some(x => x >= mid))) return false;
   if (sustained !== false) return true;
   const median = medianHeadwayInWindow(forCrossMidnightWindow([...times], end), start, end, 3);
@@ -1339,7 +1340,7 @@ export interface StretchPeriodEdge {
  */
 export function periodEdge(stretchTimes: readonly number[], start: number, end: number, value: number | null): StretchPeriodEdge | null {
   if (value == null) return null;
-  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   return lateStartOrEarlyEnd(t, start, end, value) ?? (slowStartFromEnabled() ? slowStartEdge(t, start, end, value) : null);
 }
@@ -1423,7 +1424,7 @@ export function slowStartEdge(t: readonly number[], start: number, end: number, 
  * "until 5:40pm, every 10 min" instead of "limited".
  */
 export function periodPartialEdge(stretchTimes: readonly number[], start: number, end: number): StretchPeriodEdge | null {
-  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < HEADLINE_MIN_DEPARTURES) return null;
   const mid = (start + end) / 2;
   const after = t[0] >= mid;
@@ -1448,7 +1449,7 @@ export interface StretchPeriodGap {
  * hole check). `every` is the median gap, `gap` the longest.
  */
 export function periodOneGap(stretchTimes: readonly number[], start: number, end: number): StretchPeriodGap | null {
-  const t = [...new Set(forCrossMidnightWindow([...stretchTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  const t = departuresInWindow(stretchTimes, start, end, false);
   if (t.length < 4) return null;
   const mid = (start + end) / 2;
   if (!(t[0] < mid && t[t.length - 1] >= mid)) return null;
@@ -1487,7 +1488,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     if (!d.tailHandoverTimes || d.disconnected || !t.counts || t.coverage == null || t.coverage <= PERIOD_COVERAGE_MAX_HEADWAY) return false;
     if (m.sustained !== true || m.sustainedMid !== true || m.coverage == null || m.coverage > PERIOD_COVERAGE_MAX_HEADWAY) return false;
     const { on, off } = d.tailHandoverTimes(i);
-    const inWindow = (times: readonly number[]) => [...new Set(forCrossMidnightWindow([...times], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+    const inWindow = (times: readonly number[]) => departuresInWindow(times, start, end, true);
     const a = inWindow(on), b = inWindow(off);
     if (a.length < MIN_SCHEDULE_DEPARTURES || b.length < MIN_SCHEDULE_DEPARTURES) return false;
     const [first, second] = a[a.length - 1] < b[0] ? [a, b] : b[b.length - 1] < a[0] ? [b, a] : [null, null];
@@ -1540,7 +1541,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     period[key].runs = runs;
-    period[key].hasService = forCrossMidnightWindow([...d.main.times], end).some(t => t >= start && t <= end);
+    period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
     period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);

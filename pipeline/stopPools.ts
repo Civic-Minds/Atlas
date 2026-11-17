@@ -25,7 +25,7 @@
  */
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
+import { BUNCHED_DEPARTURE_MINUTES, departuresInWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -72,13 +72,8 @@ export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
  * adds the same for a gap over POOLED_MAX_GAP_TYPICAL_RATIO times the value. Null = publish
  * nothing.
  */
-/**
- * Merged departures this close together are one bus to a rider: two every-10 patterns one
- * minute apart are a bus every 10, not every 9 or 5 (Ryan's IndyGo point). GTFS times are
- * whole minutes, so one minute is the smallest offset two trips can have without being the
- * same time; two minutes apart is kept, since subway trunks really run every 2.
- */
-export const BUNCHED_DEPARTURE_MINUTES = 1;
+// BUNCHED_DEPARTURE_MINUTES lives in headway-utils (CIV-1721 reads it there too); re-exported for its users here.
+export { BUNCHED_DEPARTURE_MINUTES };
 
 /** Collapse departures within BUNCHED_DEPARTURE_MINUTES of the previous kept one into it. */
 export function collapseBunched(sorted: readonly number[]): number[] {
@@ -102,7 +97,7 @@ export function pooledHeadwayInWindow(times: readonly number[], start: number, e
  * whenever value is set or the list is too short to read.
  */
 export function pooledReadingInWindow(times: readonly number[], start: number, end: number, minDeps = 3, allDay = false, own?: readonly number[]): { value: number | null; worstWait: number | null } {
-  const inWindow = collapseBunched([...new Set(forCrossMidnightWindow([...times], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b));
+  const inWindow = collapseBunched(departuresInWindow(times, start, end, true));
   if (inWindow.length < minDeps) return { value: null, worstWait: null };
   const typical = allDay
     ? sustainedMedianHeadwayInWindow(inWindow, start, end, minDeps, undefined, true)
@@ -112,7 +107,7 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
   let longest = 0;
   for (let i = 1; i < inWindow.length; i++) longest = Math.max(longest, inWindow[i] - inWindow[i - 1]);
   // Never worse than the own pattern's reading of the same window.
-  const ownSorted = own ? [...new Set(forCrossMidnightWindow([...own], end))].filter(t => t >= start && t <= end).sort((a, b) => a - b) : [];
+  const ownSorted = own ? departuresInWindow(own, start, end, true) : [];
   const ownValue = ownSorted.length >= minDeps
     ? (allDay ? sustainedMedianHeadwayInWindow(ownSorted, start, end, minDeps, undefined, true) : medianHeadwayInWindow(ownSorted, start, end, minDeps, true))
     : null;

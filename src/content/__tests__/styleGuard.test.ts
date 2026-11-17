@@ -144,8 +144,9 @@ const RULES: Rule[] = [
   { name: 'a map link typed in place (use MAP_LINK)', doc: 'TEXT.md', pattern: /Try Atlas|Open the (Atlas )?map/, slip: '<ArrowLink href="/">Open the map</ArrowLink>',
     allowed: ['src/content/noticeCopy.ts'] },
   // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
+  // CIV-1803: the Live week table's two columns too.
   { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
-    pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry)['"`<]/,
+    pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry|This week|Last week)['"`<]/,
     slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts', 'shared/pageNames.ts'] },
 
   // CIV-1790 (Ryan: "Did we refactor our contact info"): one address, one mailto builder.
@@ -176,7 +177,7 @@ const RULES: Rule[] = [
     allowed: ['src/components/ui/PanelHeader.tsx', 'src/components/ui/SearchClearButton.tsx'] },
   // CIV-1596, CIV-1601: Live's measure and section names, and its words used in more than one place, are written once, in shared/liveWording.ts.
   { name: 'a Live measure or section name typed by hand (use its constant in shared/liveWording.ts)', doc: 'TEXT.md',
-    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|1 in 10 leave|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
+    pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|1 in 10 leave|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
     slip: '<Section title="Stops most often late">', only: /(^|\/)[Ll]ive[^/]*$|\/Live\//, allowed: ['shared/liveWording.ts'] },
   // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and "Live vehicles" (never "Live transit"), written once in shared/liveWording.ts.
   { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_VEHICLES_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
@@ -196,6 +197,10 @@ const RULES: Rule[] = [
     slip: '<div className="rounded-2xl p-6" style={{ background: featureTint(color) }}>',
     skipLine: /export const (FLOATING_CARD|SIDEBAR_CARD_SURFACE|DROPDOWN_PANEL|COMPARE_SIDE_GROUP) =/,
     allowed: ['src/components/ui/Card.tsx', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
+  // CIV-1804: the research stories' heading, paragraph and chart-panel looks are one constant each in src/pageStyles.ts.
+  { name: 'a research story heading, paragraph or chart panel styled by hand (use STORY_HEADING, STORY_PARAGRAPH or STORY_CHART_PANEL)', doc: 'VISUAL.md',
+    pattern: /text-3xl sm:text-4xl font-black tracking-tight|mt-5 text-base leading-8 text-\[var\(--text-muted\)\]|rounded-\[2rem\] border border-\[var\(--border-primary\)\] bg-\[var\(--bg-panel\)\]/,
+    slip: '<section className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">', allowed: ['src/pageStyles.ts'] },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];

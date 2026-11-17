@@ -8,7 +8,7 @@ import LeftOutDays from '../LeftOutDays';
 import { percentTenthText, countText } from '../../../../shared/numberText';
 
 import { SERVICE_DELIVERED_TITLE } from '../../../../shared/liveWording';
-import { DELIVERED_BY_DAY_LABEL } from '../../../content/noticeCopy';
+import { DELIVERED_BY_DAY_LABEL, RAN_COLUMN, DAY_LABEL, LIVE_DELIVERED_CAPTION } from '../../../content/noticeCopy';
 /** The one derivation of the service-delivered figures (healthy days only), so every surface draws the same numbers. */
 export function deliveredModel(v3: LiveV3, dir: number | null) {
   const sd = v3.serviceDelivered;
@@ -38,9 +38,9 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
       points={points}
       formatY={percentTenthText}
       unit="trips"
-      valueHeader="Ran"
-      rowHeader="Day"
-      caption="How many of the scheduled trips ran, each day."
+      valueHeader={RAN_COLUMN}
+      rowHeader={DAY_LABEL}
+      caption={LIVE_DELIVERED_CAPTION}
       scale={{ min: 0.9, max: 1 }}
       everyLabel
     />
@@ -56,7 +56,7 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
       {overall?.share != null && (
         <Card tone="surface" padding="tight" className="min-w-0">
-          <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
+          <div className="text-xs font-bold text-[var(--text-muted)]">{RAN_COLUMN}</div>
           <div className="mt-1 text-3xl font-black tracking-tight">{percentTenthText(overall.share)}</div>
           <div className="mt-1 text-xs text-[var(--text-dim)]">{countText(overall.seen + overall.notSeen)} trips</div>
         </Card>

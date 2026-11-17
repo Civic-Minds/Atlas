@@ -9,6 +9,7 @@ import { branchNamesWrap } from '../BranchStrip';
 import { branchStripFromV3 } from '../branchStripModel';
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
+import { LIVE_BUILDUP_INTRO, MINUTES_LATE_AXIS, LIVE_BUILDUP_CHART_CAPTION } from '../../../content/noticeCopy';
 import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, GROWS_LABEL, ON_TIME_LABEL, TYPICAL_ADDED } from '../../../../shared/liveWording';
 import { mins } from './figures';
 import { countText, percentText } from '../../../../shared/numberText';
@@ -45,7 +46,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
   const twoLineNames = models.some(m => m && branchNamesWrap(m));
   return (
     <Section id={full ? 'b3' : 'x-buildup'} title={DELAY_STARTS_TITLE} shrink={!full} boundary={boundary}>
-      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How late vehicles leave each stop along the route, and where that delay jumps and stays up.</p>}
+      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">{LIVE_BUILDUP_INTRO}</p>}
       {/* One key above the directions' strips, not one under each (CIV-1448). */}
       {full && <StripsLegend v3={v3} directionIds={rows.map(b => b.directionId)} band={band} uncertain={uncertain} modes={DELAY_ONLY} />}
       <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
@@ -66,12 +67,12 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
               ) : (
               <ProfileBars
                 ariaLabel={`${label}: typical delay at each stop along the route.`}
-                axisTitle="Minutes late"
+                axisTitle={MINUTES_LATE_AXIS}
                 points={points}
                 formatY={mins}
                 unit="trips"
                 valueHeader={DELAY_LEGEND_TITLE}
-                caption="How late vehicles usually leave each stop: above the line is late, below is early."
+                caption={LIVE_BUILDUP_CHART_CAPTION}
                 whiskers={false}
                 zero
                 zeroLabel={ON_TIME_LABEL}

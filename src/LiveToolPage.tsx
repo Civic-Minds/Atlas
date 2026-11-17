@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadingText, ATLAS_BYLINE, LOADING_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE, LOADING_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -95,14 +95,12 @@ const BOTH_DIRECTIONS = 'both directions';
 // CIV-1459: the picked time of day's two weeks; none when the file has no figures for it (never the whole day's in their place).
 const weekly = (v3: LiveV3, band: DashboardBand) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}) : []; };
 
-/** Under the left panel's tiles; the full rule is its hover text. */
-const NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
 function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
   const weekLeft = excludingDays(s.weekly);
   const tiles = agencyKpiTiles(s, band);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope="All routes" caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={ALL_ROUTES_LABEL} caption={LIVE_NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
   ];
 }
 
@@ -122,7 +120,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={LIVE_NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
@@ -217,7 +215,7 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   // The picked route's name, in the top bar beside the direction pills (the name the route page's title uses).
   // The route menu at the right end of the top bar: the panel list's routes in its order, plus All routes; a pick sets route= as a list click does.
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
-  const routeOptions = useMemo(() => [['', 'All routes'] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => {
+  const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => {
     const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
   })], [s, networkV3, measure, band]);

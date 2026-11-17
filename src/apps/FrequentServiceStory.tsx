@@ -14,7 +14,7 @@ import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequ
 import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
-import { UNDERLINED_LINK } from '../pageStyles';
+import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH, UNDERLINED_LINK } from '../pageStyles';
 import type { Agency } from '../App';
 import { headwayAmount, headwayFilterLabel, headwayOrBetter } from '../../shared/headwayText';
 import { countOf, joinList } from '../../shared/overflowText';
@@ -24,9 +24,6 @@ import { CHART_TEXT, useActivePart } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
 import { FREQUENT_SERVICE_STORY } from '../../shared/researchStories';
 
-/** The story's section headings and body paragraphs, one look each. */
-const STORY_HEADING = 'text-3xl sm:text-4xl font-black tracking-tight';
-const STORY_PARAGRAPH = 'mt-5 text-base leading-8 text-[var(--text-muted)]';
 /** The hero's in-page jump buttons (Explore the research, See the method): one pill, so the two match. */
 const STORY_JUMP_BUTTON = 'inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]';
 
@@ -227,7 +224,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          <section aria-labelledby="chart-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          <section aria-labelledby="chart-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
               {/* CIV-1495 #4 (Ryan, 2026-11-15): the heading names the most common choice, read from the bars. */}
               <h2 id="chart-heading" className={STORY_HEADING}>Most agencies pick {commonBar.minutes} minutes.</h2>
@@ -249,7 +246,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </section>
 
           {/* CIV-1603 section 1 (Ryan's pick, 2026-11-14): most agencies don't publish a number. Heading, intro and caption approved word for word by Ryan (2026-11-15). */}
-          <section aria-labelledby="definitions-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          <section aria-labelledby="definitions-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
               <h2 id="definitions-heading" className={STORY_HEADING}>Most agencies don’t publish a number.</h2>
               <p className={STORY_PARAGRAPH}>We looked for an official definition of frequent service at {frequentServiceDefinitionSample.agencies} agencies. {frequentServiceDefinitionSample.namedNetwork} have a named frequent network, such as a “Frequent Network”. {frequentServiceDefinitionSample.withWait} of those say how often the bus comes, such as “every 15 minutes or better”. Not finding a definition does not mean an agency has no frequent service.</p>
@@ -272,7 +269,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               first pair, and the country caveat sits under the chart. Heading, intro and the approved sentences are unchanged. */}
           {/* Ryan (CIV-1577): wider, not just two columns. The card breaks out of the story column the Toronto map's way
               (left-1/2, -translate-x-1/2), up to max-w-6xl with a 1rem gutter; its paragraphs keep their max-w-2xl. */}
-          <section aria-labelledby="population-heading" className="relative left-1/2 w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          <section aria-labelledby="population-heading" className={`relative left-1/2 w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 ${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
               <h2 id="population-heading" className={STORY_HEADING}>The threshold changes who can rely on the network.</h2>
               <p className={STORY_PARAGRAPH}>
@@ -325,7 +322,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               bar is a count of routes the main map draws at the threshold at midday (Ryan picked midday only: Sunday has no rush
               hour), from frequent-weekend-counts.json. Each city's bars share its weekday count as the full width, so the
               Sunday bar reads as the share that is left. Heading, intro and caption are placeholders until Ryan approves wording. */}
-          <section aria-labelledby="weekend-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          <section aria-labelledby="weekend-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
               <h2 id="weekend-heading" className={STORY_HEADING}>[Ryan’s wording: section 3 heading]</h2>
               <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 3 intro]</p>
@@ -369,7 +366,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
             </div>
           </section>
 
-          <section aria-labelledby="atlas-heading" className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">
+          <section aria-labelledby="atlas-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
                 <h2 id="atlas-heading" className={STORY_HEADING}>Now find your own network.</h2>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--text-muted)]">Atlas lets you apply one consistent test to the routes around you. Search for a city, compare 15- and 30-minute service, and see where the useful network actually holds together.</p>
             {/* Ryan, 2026-11-14: no dark buttons. The About page's pattern: the main action as ArrowLink, then an outline pill. */}

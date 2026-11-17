@@ -8,7 +8,7 @@ import { PageTable } from '../../ui/PageSection';
 import Section from './Section';
 import { headwayExactAmount } from '../../../utils/headwayText';
 import { dirsOf, mins } from './figures';
-import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP, GAPS_COLUMN, SCHEDULED_EVERY_COLUMN, STOP_COLUMN } from '../../../content/noticeCopy';
+import { LIVE_EXTRA_WAIT_INTRO, LIVE_NO_FREQUENT_STOP, GAPS_COLUMN, SCHEDULED_EVERY_COLUMN, STOP_COLUMN, LIVE_EXTRA_WAIT_CHART_CAPTION, EXTRA_MINUTES_AXIS, LIVE_EXTRA_WAIT_STOPS_CAPTION } from '../../../content/noticeCopy';
 import { countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 
@@ -62,10 +62,10 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
                 formatY={mins}
                 unit="gaps"
                 valueHeader={EXTRA_WAIT_LABEL}
-                caption={full ? undefined : 'How much longer riders wait than the schedule says, at each stop.'}
+                caption={full ? undefined : LIVE_EXTRA_WAIT_CHART_CAPTION}
                 fadedNote={!full}
                 peakLabel={full}
-                axisTitle="Extra minutes"
+                axisTitle={EXTRA_MINUTES_AXIS}
                 scale={scale}
               />
             )}
@@ -79,7 +79,7 @@ export default function ExtraWaitSection({ v3, band, dir, detail, boundary }: { 
         <SortableDataTable
           narrowFit
           rowTitle={s => `${s.name}: ${countText(s.gaps)} gaps`}
-          caption="Stops where riders wait longest compared with the schedule"
+          caption={LIVE_EXTRA_WAIT_STOPS_CAPTION}
           defaultSort="extra"
           rows={worst}
           rowKey={s => `${s.stopId}-${s.directionId}`}

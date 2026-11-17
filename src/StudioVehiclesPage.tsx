@@ -3,7 +3,7 @@ import { PageTable } from './components/ui/PageSection';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { runTimeAmount } from '../shared/headwayText';
 import { MISSING_VALUE } from '../shared/missingValue';
-import { STUDIO_TARGET_HEADWAYS, groupAtTarget, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles';
+import { groupAtTarget, studioGroupTargets, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles';
 import PillGroup from './components/ui/PillGroup';
 import { STUDIO_VEHICLES_TEXT } from '../shared/studioWording';
 
@@ -28,7 +28,7 @@ export function groupFigureRows(g: StudioVehicleGroup, split: StudioBranchSplit 
     { key: 'routes', label: T.routes, value: g.routes.join(', ') },
     { key: 'scheduled', label: T.scheduled, value: g.scheduled },
     { key: 'needed', label: T.needed, value: g.implied },
-    ...STUDIO_TARGET_HEADWAYS.map(hw => ({ key: `at-${hw}`, label: T.neededAt(hw), value: atTarget[hw] ?? MISSING_VALUE })),
+    ...studioGroupTargets(g).map(hw => ({ key: `at-${hw}`, label: T.neededAt(hw), value: atTarget[hw] ?? MISSING_VALUE })),
     { key: 'running', label: T.running, value: runTimeAmount(g.runningMin) },
     { key: 'layover', label: T.layover, value: runTimeAmount(g.layoverMin) },
   ];

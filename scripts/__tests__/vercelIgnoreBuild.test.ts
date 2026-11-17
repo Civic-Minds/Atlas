@@ -7,7 +7,9 @@ import { beforeAll, describe, expect, it } from 'vitest';
 // scripts/vercel-ignore-build.sh is vercel.json's ignoreCommand: exit 0 skips the Vercel build, exit 1 builds.
 const script = resolve(__dirname, '../vercel-ignore-build.sh');
 
-describe('vercel-ignore-build.sh', () => {
+// #1576: every case makes git commits in a temp repo and runs the script; under a loaded full run that passed
+// vitest's 5 s default, so the cases get 30 s.
+describe('vercel-ignore-build.sh', { timeout: 30_000 }, () => {
   let repo = '';
   const git = (...args: string[]) => execFileSync('git', args, { cwd: repo, encoding: 'utf8' }).trim();
   const commit = (files: Record<string, string>): string => {
@@ -39,7 +41,7 @@ describe('vercel-ignore-build.sh', () => {
       '.vercelignore': 'pipeline/\nscripts/*\n!scripts/prerender-routes.ts\n',
       'README.md': 'a', 'src/a.ts': 'a', 'scripts/prerender-routes.ts': 'a', 'scripts/audit.ts': 'a',
     });
-  });
+  }, 30_000);
 
   it('skips commits that only touch docs, the changelog, pipeline or unbuilt scripts', () => {
     expect(exitFor({ 'docs/data/X.md': 'b', 'CHANGELOG.md': 'b', 'README.md': 'b' })).toBe(0);

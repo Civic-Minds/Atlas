@@ -193,6 +193,18 @@ export function forCrossMidnightWindow(departureTimes: number[], windowEnd: numb
   return [...departureTimes, ...asNextNight(departureTimes)];
 }
 
+/**
+ * CIV-1798: a window's departures, folded across midnight (#297), each time once, in order. The one reader of a
+ * period's or window's departures. `includeEnd` says whether a departure at exactly `end` counts: the median,
+ * steadiness and sparse readers count it (t <= end); coverage, in-hour and stretch readers don't (t < end), so a
+ * period's 06:00 trip belongs to the AM peak there (CIV-1746). Each caller keeps the rule it had.
+ */
+export function departuresInWindow(times: readonly number[], start: number, end: number, includeEnd: boolean): number[] {
+  return [...new Set(forCrossMidnightWindow([...times], end))]
+    .filter(t => t >= start && (includeEnd ? t <= end : t < end))
+    .sort((a, b) => a - b);
+}
+
 // headwayByHour used a fixed 90-min-wide window ([h*60, h*60+90]) for every hour, because a
 // strict 60-min window can't reliably reach 3 departures on a real 30-min-or-better route (e.g.
 // TTC 10 direction 0 at Van Horne: 14:15/14:45/15:15/15:45 -- a strict [14:00,15:00] window only
@@ -211,7 +223,7 @@ export const ADAPTIVE_WINDOW_MAX_MINUTES = 90;
  */
 export function hasDepartureInClockHour(departureTimes: readonly number[], start: number): boolean {
   const end = start + 60;
-  return forCrossMidnightWindow([...departureTimes], end).some(t => t >= start && t < end);
+  return departuresInWindow(departureTimes, start, end, false).length > 0;
 }
 
 /**
@@ -671,9 +683,7 @@ export function isSparseOvernightWindow(departureTimes: readonly number[]): bool
  */
 function sparseTestTimes(departureTimes: readonly number[]): number[] | null {
   const { start, end } = PERIODS.overnight;
-  const times = [...new Set(forCrossMidnightWindow([...departureTimes], end))]
-    .filter(t => t >= start && t <= end)
-    .sort((a, b) => a - b);
+  const times = departuresInWindow(departureTimes, start, end, true);
   if (times.length === 3) return times;
   if (times.length === 4 && times[3] === end) return times.slice(0, 3);
   return null;
@@ -691,11 +701,20 @@ export function sparseOvernightHeadway(departureTimes: readonly number[]): numbe
   return medianHeadwayInWindow(sparseTestTimes(departureTimes)!, start, end, 3, true);
 }
 
+/**
+ * CIV-1799: one period's median from a departure list, before the #897 sparse-overnight rule withholds it.
+ * periodHeadwayInWindow reads it, and so do the readers that keep the withheld value themselves (process-core's
+ * per-stop values, which hand a sparse window's value to Step 5 as sparseOvernightStopHw).
+ */
+export function periodMedianHeadway(departureTimes: readonly number[], key: PeriodKey, typical = true): number | null {
+  const { start, end } = PERIODS[key];
+  return medianHeadwayInWindow(forCrossMidnightWindow([...departureTimes], end), start, end, 3, typical);
+}
+
 /** One period's value from a departure list: computePeriodHeadways for a single period. */
 export function periodHeadwayInWindow(departureTimes: number[], key: PeriodKey, typical = true): number | null {
   if (key === 'overnight' && isSparseOvernightWindow(departureTimes)) return null;
-  const { start, end } = PERIODS[key];
-  return medianHeadwayInWindow(forCrossMidnightWindow(departureTimes, end), start, end, 3, typical);
+  return periodMedianHeadway(departureTimes, key, typical);
 }
 
 // The median deliberately stays based on departures inside the period. A separate max-gap value
@@ -719,9 +738,7 @@ export function computePeriodHeadways(departureTimes: number[], typical = true):
 export function computePeriodCoverageHeadways(departureTimes: number[]): HeadwayByPeriod {
   const result: HeadwayByPeriod = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
-      .filter(t => t >= start && t < end)
-      .sort((a, b) => a - b);
+    const times = departuresInWindow(departureTimes, start, end, false);
     if (times.length === 0) {
       result[key] = null;
       continue;
@@ -741,21 +758,40 @@ export function computePeriodCoverageHeadways(departureTimes: number[]): Headway
  * the wait inside the period. This keeps the value useful to riders while ensuring the gap is not
  * silently dropped from both adjacent periods (#281).
  */
+/**
+ * Merged departures this close together are one bus to a rider: two every-10 patterns one
+ * minute apart are a bus every 10, not every 9 or 5 (Ryan's IndyGo point). GTFS times are
+ * whole minutes, so one minute is the smallest offset two trips can have without being the
+ * same time; two minutes apart is kept, since subway trunks really run every 2.
+ */
+export const BUNCHED_DEPARTURE_MINUTES = 1;
+
 export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodMaxGap {
   const result: HeadwayByPeriodMaxGap = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
       .sort((a, b) => a - b);
     let maxGap: number | null = null;
+    let gaps = 0;
+    let onlyGapInside = false;
+    let pairGap = 0;
     for (let i = 1; i < times.length; i++) {
       const overlapStart = Math.max(start, times[i - 1]);
       const overlapEnd = Math.min(end, times[i]);
       if (overlapEnd > overlapStart) {
         const gap = overlapEnd - overlapStart;
         maxGap = maxGap == null ? gap : Math.max(maxGap, gap);
+        gaps++;
+        onlyGapInside = times[i - 1] >= start && times[i] <= end;
+        pairGap = times[i] - times[i - 1];
       }
     }
-    result[key] = maxGap;
+    // CIV-1721 (#1548): a period whose only gap lies between two departures both inside it, at most
+    // BUNCHED_DEPARTURE_MINUTES apart, has one bus to a rider, so no gap: LA Metro 217's doubled school
+    // trip to Washington Fairfax Hub (15:32 and 15:33) read a PM peak longest gap of 1. A pair further
+    // apart keeps its gap, a real wait (St-Lévis 200 at 14:22 and 14:51 keeps 29). Coverage still shows
+    // the wait across the period.
+    result[key] = gaps === 1 && onlyGapInside && pairGap <= BUNCHED_DEPARTURE_MINUTES ? null : maxGap;
   }
   return result;
 }
@@ -766,7 +802,7 @@ export function computePeriodMaxGaps(departureTimes: number[]): HeadwayByPeriodM
  * calculation for the published longest gap (CIV-995) and runsThroughPeriod's hole check.
  */
 export function innerMaxGapInWindow(departureTimes: readonly number[], start: number, end: number): number | null {
-  const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x <= end).sort((a, b) => a - b);
+  const t = departuresInWindow(departureTimes, start, end, true);
   let longest: number | null = null;
   for (let i = 1; i < t.length; i++) longest = Math.max(longest ?? 0, t[i] - t[i - 1]);
   return longest;
@@ -872,9 +908,7 @@ export function computeDepartureSpan(departureTimes: readonly number[], hours: r
 export function computePeriodHeadwayRanges(departureTimes: number[]): HeadwayByPeriodRange {
   const result: HeadwayByPeriodRange = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
-    const times = [...new Set(forCrossMidnightWindow(departureTimes, end))]
-      .filter(t => t >= start && t <= end)
-      .sort((a, b) => a - b);
+    const times = departuresInWindow(departureTimes, start, end, true);
     if (times.length < 3) {
       result[key] = null;
       continue;
@@ -943,7 +977,7 @@ export const UNEVEN_FIRST_HOUR_MINUTES = 60;
 /** Whether a period's departures are uneven around its typical gap (see UNEVEN_GAP_RATIO). */
 export function isUnevenPeriod(departureTimes: readonly number[], start: number, end: number, typical: number | null | undefined): boolean {
   if (typical == null || typical <= 0) return false;
-  const t = [...new Set(forCrossMidnightWindow([...departureTimes], end))].filter(x => x >= start && x < end).sort((a, b) => a - b);
+  const t = departuresInWindow(departureTimes, start, end, false);
   const gaps = t.slice(1).map((x, i) => x - t[i]);
   // #1432: three departures read their longest wait when the two gaps are not even (isSteadyPeriodGaps).
   if (gaps.length === 2) return !isSteadyPeriodGaps(gaps, typical);
@@ -959,7 +993,7 @@ export function computePeriodSustained(departureTimes: number[]): Partial<Record
   const result: Partial<Record<PeriodKey, boolean>> = {};
   for (const [key, { start, end }] of Object.entries(PERIODS) as [PeriodKey, { start: number; end: number }][]) {
     const dt = forCrossMidnightWindow(departureTimes, end);
-    const times = [...new Set(dt)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+    const times = departuresInWindow(departureTimes, start, end, true);
     const value = medianHeadwayInWindow(dt, start, end, 3);
     if (value == null) continue;
     const gaps: number[] = [];

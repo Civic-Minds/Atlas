@@ -7,7 +7,7 @@ import RunTimeChart, { runTimeScale } from '../../charts/RunTimeChart';
 import Section from './Section';
 import { BAND_WORDS, dirsOf } from './figures';
 import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTimeRows, type RowLabel, type RunTimeRow } from './runTimeRows';
-import { liveTooFewTrips } from '../../../content/noticeCopy';
+import { liveTooFewTrips, USUALLY_COLUMN, SCHEDULED_COLUMN, LIVE_RUN_TIME_INTRO } from '../../../content/noticeCopy';
 import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 import { SubsectionTitle } from '../../ui/PageTitle';
 
@@ -50,8 +50,8 @@ export function RowLegend({ dense = false, inline = false }: { dense?: boolean; 
   const label = 'text-xs text-[var(--text-muted)]';
   return (
     <div className={`${inline ? '' : dense ? 'mt-2' : 'mt-3'} flex flex-wrap items-center ${inline ? 'justify-end gap-x-3' : 'gap-x-5'} gap-y-1`} aria-hidden="true">
-      <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />Usually</span>
-      <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-3 w-0.5 bg-[var(--text-secondary)]" />Scheduled</span>
+      <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />{USUALLY_COLUMN}</span>
+      <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-3 w-0.5 bg-[var(--text-secondary)]" />{SCHEDULED_COLUMN}</span>
       <span className={`inline-flex items-center gap-1.5 ${label}`}><span className="inline-block h-1 w-5 rounded-full bg-[var(--strip-delay-1)] opacity-50" />1 in 10 over</span>
     </div>
   );
@@ -144,7 +144,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
   const rowsByDir = runTimeRows(v3, band, dirs, liveStopName);
   const rowScale = runTimeRowScale(Object.values(rowsByDir).flat());
   return frame(<>
-    {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.</p>}
+    {full && <p className="mt-2 text-sm text-[var(--text-muted)]">{LIVE_RUN_TIME_INTRO}</p>}
     {detail === 'brief' && <p className="mt-1 max-w-2xl text-sm text-[var(--text-muted)]">How long the trip takes against the schedule, {BAND_WORDS[band]}, over the stops every regular trip serves, so short turns count too.</p>}
     <RowLegend />
     <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${dirs.length > 1 ? 'lg:grid-cols-2' : ''}`}>

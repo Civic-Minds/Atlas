@@ -54,6 +54,18 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     expect(cells('Layover')).toEqual(['Layover', '29 min']);
   });
 
+  it('offers the group’s own targets: the map’s tiers to 60 by default, rail’s 5 and 8 when the file says so', () => {
+    render(<StudioGroupFigures group={GROUPS[0]} periodLabel="Midday" />);
+    expect(cells('Needed every 60 min')).toEqual(['Needed every 60 min', '—']);
+    expect(screen.queryByRole('rowheader', { name: 'Needed every 5 min' })).toBeNull();
+  });
+
+  it('reads a rail group’s targets from its file', () => {
+    render(<StudioGroupFigures group={{ ...GROUPS[1], targets: [5, 8, 10, 15, 30, 60], atTarget: { 5: 20, 8: 13 } }} periodLabel="Midday" />);
+    expect(cells('Needed every 5 min')).toEqual(['Needed every 5 min', '20']);
+    expect(screen.queryByRole('rowheader', { name: 'Needed every 20 min' })).toBeNull();
+  });
+
   it('shows a dash for layover where the feed has no blocks', () => {
     render(<StudioGroupFigures group={GROUPS[1]} periodLabel="Midday" />);
     expect(cells('Layover')).toEqual(['Layover', '—']);
