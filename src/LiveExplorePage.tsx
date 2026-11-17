@@ -16,7 +16,7 @@ import { applySeoToDocument } from './lib/seoDom';
 import { syncUrlParams } from './utils/syncUrlParams';
 import { LIVE_ROUTE_URL, currentSearch, linkUpdate, readLink } from './utils/urlSchema';
 import { stretchLabel } from './utils/stopLabel';
-import { TILE } from './pageStyles';
+import Card from './components/ui/Card';
 import ErrorBoundary from './components/ErrorBoundary';
 import PageShell from './components/ui/PageShell';
 import EmptyPage from './components/ui/EmptyPage';
@@ -154,11 +154,11 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
 
 function Panel({ title, sub, children }: { title: string; sub: string; children: ReactNode }) {
   return (
-    <aside className={`${TILE} min-w-0 lg:sticky lg:top-4`} aria-live="polite">
+    <Card as="aside" tone="surface" padding="tight" className="min-w-0 lg:sticky lg:top-4" aria-live="polite">
       <h3 className="text-lg font-black leading-tight">{title}</h3>
       <div className="mt-0.5 text-xs text-[var(--text-dim)]">{sub}</div>
       <div className="mt-3">{children}</div>
-    </aside>
+    </Card>
   );
 }
 

@@ -1,8 +1,9 @@
-import { TILE } from '../../pageStyles';
-
-/** The one Live figure tile (KpiTile, and the late-by-hour tiles): its frame, title, big figure and caption lines. */
+/**
+ * The one Live figure tile (KpiTile, and the late-by-hour tiles): its frame inside the surface Card (CIV-1800), title,
+ * big figure and caption lines.
+ */
 export const KPI_TILE = {
-  frame: `${TILE} flex list-none flex-col px-2.5`,
+  frame: 'min-w-0 flex list-none flex-col px-2.5 py-4',
   label: 'text-sm font-bold text-[var(--text-muted)]',
   value: 'mt-1 text-3xl font-black tracking-tight',
   /** A caption line under the figure (and any line after it). */

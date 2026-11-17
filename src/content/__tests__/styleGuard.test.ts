@@ -185,11 +185,13 @@ const RULES: Rule[] = [
     slip: '<ArrowLink href="/">Go to Atlas</ArrowLink>',
     only: /^src\/(?!.*(Diagnostics|FrequentService|FreeChildFares|AirportStory|AboutDocsPage)).*\.tsx$/ },
   // CIV-1789: every card is the base Card (components/ui/Card.tsx): its corners with padding, the panel surface or a card
-  // tint. Map overlays, the contents list, a dialog and the shared style constants are panels, not cards.
+  // tint. Map overlays, the contents list and a dialog are panels, not cards. CIV-1800: a card kept as a style constant
+  // (Live's old TILE) counts too; only the map's named panel constants in styles.ts are allowed.
   { name: 'a card built by hand (use Card in components/ui/Card.tsx)', doc: 'VISUAL.md',
     pattern: /rounded-2xl[^"'`]*\b(p|px|py)-\d|\b(p|px|py)-\d[^"'`]*rounded-2xl|\$\{SURFACE\}[^"'`]*rounded-2xl|rounded-2xl[^"'`]*\$\{SURFACE\}|featureTint\(|cardTint\(/,
     slip: '<div className="rounded-2xl p-6" style={{ background: featureTint(color) }}>',
-    allowed: ['src/components/ui/Card.tsx', 'src/styles.ts', 'src/pageStyles.ts', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
+    skipLine: /export const (FLOATING_CARD|SIDEBAR_CARD_SURFACE|DROPDOWN_PANEL|COMPARE_SIDE_GROUP) =/,
+    allowed: ['src/components/ui/Card.tsx', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];
@@ -281,6 +283,9 @@ describe('UI code follows the style guide (docs/style/TEXT.md, docs/style/VISUAL
       'dayPlural(day)', "label.split('–')", 'countText(n)', 'percentText(share)', '`${metresText(d)} away`', '`${n} min`', '`${n} mins`', "params.set('lat', lat.toFixed(4))", '`${band.left * 100}%`', 'routeShortLabel(route)', 'directionBranchFallback(dir)', '<PanelCloseButton />',
     ];
     for (const rule of RULES) for (const text of fine) expect([rule.name, text, breaks(rule, text)]).toEqual([rule.name, text, false]);
+    // CIV-1800: a card built as a style constant is caught too.
+    const card = RULES.find(r => r.name.startsWith('a card built by hand'))!;
+    expect(breaks(card, "export const TILE = `min-w-0 rounded-2xl p-4 ${SURFACE}`;")).toBe(true);
     const csv = RULES.find(r => r.name === 'a CSV download in Live code')!.only!;
     expect(['src/components/Live/RouteStrip.tsx', 'src/LiveToolPage.tsx', 'src/apps/Interval.tsx'].map(f => csv.test(f))).toEqual([true, true, false]);
   });

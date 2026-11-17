@@ -11,7 +11,7 @@ import { routeStripFromV3 } from './components/Live/routeStripModel';
 import PillGroup, { PILL_ROW } from './components/ui/PillGroup';
 import { shortStopName } from './utils/stopLabel';
 import { useMediaQuery } from './hooks/useMediaQuery';
-import { TILE } from './pageStyles';
+import Card from './components/ui/Card';
 import { KPI_TILE } from './components/Live/kpiTileStyle';
 import ArrowLink from './components/ui/ArrowLink';
 import Section from './components/Live/sections/Section';
@@ -52,14 +52,14 @@ export function KpiRow({ v3 }: { v3: LiveV3 }) {
 export function KpiTile({ k, className = '', math, bare = false, caption = false }: { k: Kpi; className?: string; /** With `bare`: still show the one caption line under the figure. */ caption?: boolean; /** A line that explains how the figure is worked out (a threshold or a rule), under the caption. */ math?: string; /** The figure and its change only, no caption: where the explanation is shown once elsewhere. */ bare?: boolean }) {
   const faded = k.n < MIN_N;
   return (
-    <li className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${faded ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}>
+    <Card as="li" tone="surface" className={`${KPI_TILE.frame} ${faded ? 'opacity-60' : ''} ${className}`.trim()} title={`${bare ? `${k.sub}. ` : ''}${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${faded ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}>
       <div className={KPI_TILE.label}>{k.label}</div>
       <div className={KPI_TILE.value}>{k.value}</div>
       {(!bare || caption) && <div className={`${bare ? 'mt-0 leading-3' : 'mt-0.5 leading-4'} text-xs text-[var(--text-dim)]`}>{k.sub}</div>}
       {math && !bare && <div className={KPI_TILE.line}>{math}</div>}
       {k.scope && !bare && <div className={KPI_TILE.line}>{k.scope}</div>}
       <div className={`mt-auto ${bare && caption ? 'pt-0.5' : 'pt-2'}`}><Delta k={k} /></div>
-    </li>
+    </Card>
   );
 }
 
@@ -83,7 +83,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excludingTitle?: string;
 }) {
   return (
-    <section aria-label={WEEK_COMPARE_TITLE} className={`${TILE} !px-2.5 !py-1.5`}>
+    <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
       <DataTable
         caption={WEEK_COMPARE_TITLE}
         rows={tiles}
@@ -108,7 +108,7 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
         </ul>
       )}
       {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
-    </section>
+    </Card>
   );
 }
 
