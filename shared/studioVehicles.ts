@@ -3,11 +3,15 @@
  * `scripts/vehicles-needed.ts --json tmp/studio/<slug>-vehicles.json` and served only by the Vite dev
  * server at STUDIO_VEHICLES_DEV_URL (vite.config.ts); never uploaded to R2 or built into a deployment.
  */
-import type { PeriodKey } from './config';
+import { SURFACE_TIER_MAXES, type PeriodKey } from './config';
 
-/** The target headways (minutes) the page offers; the script works each one out for every group. */
-export const STUDIO_TARGET_HEADWAYS = [10, 15, 20, 30] as const;
-export type StudioTargetHeadway = (typeof STUDIO_TARGET_HEADWAYS)[number];
+/**
+ * A group's target headways (minutes): its routes' own frequency scale, the one the map and the pipeline grade them on
+ * (pipeline/defaults.ts modeTierOverrides: the surface tiers, 10 to 60, or rail's 5-8-10-15-30-60), never a copy of it
+ * (Ryan: "why does Studio have different ones than the rest of the app"). A file written before groups carried their
+ * own (`targets`) reads the surface tiers.
+ */
+export const studioGroupTargets = (g: Pick<StudioVehicleGroup, 'targets'>): readonly number[] => g.targets ?? SURFACE_TIER_MAXES;
 
 /** Routes that share buses (an interlined group), or one route on its own. */
 export interface StudioVehicleGroup {
@@ -24,8 +28,10 @@ export interface StudioVehicleGroup {
    */
   runningMin: number;
   layoverMin: number | null;
-  /** Buses needed at each STUDIO_TARGET_HEADWAYS value (key: minutes), rounded up once for the group. */
-  atTarget: Partial<Record<StudioTargetHeadway, number>>;
+  /** The group's target headways, its routes' own frequency scale (studioGroupTargets). */
+  targets?: number[];
+  /** Vehicles needed at each of the group's targets (key: minutes), rounded up once for the group. */
+  atTarget: Partial<Record<number, number>>;
 }
 
 export interface StudioVehiclesFile {

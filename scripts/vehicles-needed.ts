@@ -125,6 +125,7 @@ const places: Places = {
 const stopName = new Map(gtfs.stops.map(s => [s.stop_id, s.stop_name]));
 const shortNameOf = new Map((gtfs.routes ?? []).map(r => [r.route_id, r.route_short_name || r.route_long_name || r.route_id]));
 const nameOf = (routeId: string) => shortNameOf.get(routeId) ?? routeId;
+const routeTypeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, String(r.route_type ?? '3')]));
 const fmt = (v: number | null | undefined) => (v == null ? '-' : String(Math.round(v)));
 
 type Analysis = ReturnType<typeof periodPatterns>;
@@ -230,7 +231,7 @@ if (jsonOut) {
       const index = pickRepresentativeWeekday(countsByRoute.get(routeId)!, true);
       return index == null ? [] : [{ routeId, analysis: analysis(WEEKDAYS[index], period) }];
     });
-    file.periods[period] = vehicleGroupRows(routes, nameOf);
+    file.periods[period] = vehicleGroupRows(routes, nameOf, id => routeTypeById.get(id) ?? '3');
   }
   mkdirSync(dirname(resolve(jsonOut)), { recursive: true });
   writeFileSync(resolve(jsonOut), `${JSON.stringify(file, null, 1)}\n`);
