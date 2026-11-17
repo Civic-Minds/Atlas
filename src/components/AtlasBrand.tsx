@@ -1,7 +1,7 @@
 import { ATLAS_MODE } from '../../shared/config';
-import { headerModeTag } from '../content/noticeCopy';
+import { siteModeLabel } from '../../shared/siteMode';
 
-const MODE_TAG = headerModeTag(ATLAS_MODE);
+const MODE_TAG = siteModeLabel(ATLAS_MODE);
 
 /** Wordmark only; use AtlasLogo for the logo. Same look at every width. page: the larger wordmark used in the content-page header, sized against its nav links. */
 export default function AtlasBrand({ size = 'compact', hideByline = false }: { size?: 'compact' | 'page'; hideByline?: boolean }) {
