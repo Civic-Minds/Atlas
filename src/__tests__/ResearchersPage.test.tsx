@@ -1,14 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ResearchersPage from '../ResearchersPage';
+import { ATLAS_INTRO_TEXT } from '../content/noticeCopy';
 import coverage from '../../shared/data/atlas-coverage.json';
 
 describe('For Researchers page (CIV-1709)', () => {
-  it('has its title and the draft card and section headings', () => {
+  it('has its title and Ryan’s card and section headings (CIV-1793)', () => {
     render(<ResearchersPage />);
     expect(screen.getByRole('heading', { level: 1, name: 'For Researchers' })).toBeInTheDocument();
     for (const name of [
-      'See How Service Changed Over the Years',
+      'How Service Changed, Year by Year',
       'Compare Cities on One Map',
       'Maps You Can Cite',
       'Where the Data Comes From',
@@ -51,6 +52,15 @@ describe('For Researchers page (CIV-1709)', () => {
     const demo = screen.getAllByRole('link', { name: 'Request a demo' });
     expect(demo).toHaveLength(1);
     expect(demo[0].closest('section')).toContainElement(screen.getByRole('heading', { level: 2, name: 'Request a Demo' }));
+  });
+
+  it('leads with the About intro, with no bold line above it, and marks History Beta (CIV-1793)', () => {
+    const { container } = render(<ResearchersPage />);
+    const hero = container.querySelector('h1')!.parentElement!;
+    expect([...hero.querySelectorAll('p')].map(p => p.textContent)).toEqual([ATLAS_INTRO_TEXT]);
+    const beta = [...container.querySelectorAll('section')].filter(s => [...s.querySelectorAll('span')].some(t => t.textContent === 'Beta'));
+    expect(beta.map(s => s.querySelector('h2')!.textContent)).toEqual(['How Service Changed, Year by Year']);
+    expect(screen.getByText('We’ll explore your research question with you and show how the map can back up your next study.')).toBeInTheDocument();
   });
 
   it('says nothing about what Atlas is not', () => {

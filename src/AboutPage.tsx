@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Card, { CARD_TITLE } from './components/ui/Card';
 import ResearchTile from './components/ResearchTile';
-import ThemedPicture from './components/ui/ThemedPicture';
 import { Clock, MapPin, Repeat } from 'lucide-react';
 import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
-import { PageTitle } from './components/ui/PageTitle';
+import { PageHero } from './components/FeaturePageSections';
 import { newestResearch } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { DOCS_PATH } from '../shared/pagePaths';
-import { ATLAS_INTRO_TEXT, MAP_LINK, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
+import { ABOUT_HEADLINE, ATLAS_INTRO_TEXT, ATLAS_MAP_SUMMARY, READ_HOW_ATLAS_WORKS, EXPLORE_RESEARCH_LABEL, WHAT_ATLAS_SHOWS_LABEL } from './content/noticeCopy';
 
 /** "Explore our research" (Ryan) shows the newest research, so a new page appears here without editing this one (CIV-1205). */
 const KEEP_LOOKING_COUNT = 3;
@@ -54,17 +53,12 @@ export default function AboutPage() {
 
         {/* The headline beside a picture of the map (CIV-1206 D, Ryan: "a picture of the Atlas map beside the headline"):
             Toronto's routes in their frequency colours, without the base map's street names. */}
-        <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14">
-          <div>
-            <PageTitle level="hero">Find the transit service that actually runs.</PageTitle>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.</p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <ArrowLink href="/">{MAP_LINK}</ArrowLink>
-              {FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{EXPLORE_RESEARCH_LABEL}</a>}
-            </div>
-          </div>
-          <ThemedPicture base="/assets/about/atlas-routes-toronto" ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
-        </section>
+        <PageHero
+          title={ABOUT_HEADLINE}
+          intro={ATLAS_MAP_SUMMARY}
+          picture="/assets/about/atlas-routes-toronto"
+          actions={FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{EXPLORE_RESEARCH_LABEL}</a>}
+        />
 
         {FEATURES.researchApps && <section className="border-b border-[var(--border-primary)] py-16">
           <h2 id="research-heading" className="text-3xl font-black tracking-tight sm:text-4xl">Explore Our Research</h2>
