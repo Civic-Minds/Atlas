@@ -80,20 +80,3 @@ export function getTiersForCriteria(
     const category = getModeCategory(routeType);
     return modeTierOverrides[category] || dayTiers;
 }
-
-/** Tier label lookup */
-const TIER_LABELS: Record<number, string> = {
-    5: 'Rapid', 8: 'Freq++', 10: 'Freq+', 15: 'Freq',
-    20: 'Good', 30: 'Basic', 60: 'Infreq',
-};
-
-export function getTierLabel(threshold: number): string {
-    return TIER_LABELS[threshold] || `${threshold}m`;
-}
-
-/** Color palette for tiers (assigned by position in sorted tier list) */
-const TIER_COLORS = ['cyan', 'teal', 'emerald', 'blue', 'indigo', 'amber', 'orange', 'slate'];
-
-export function getTierColor(index: number): string {
-    return TIER_COLORS[index % TIER_COLORS.length];
-}
