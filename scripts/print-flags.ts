@@ -10,10 +10,11 @@
  *   --json   print the raw results instead of the table
  */
 import { devScriptEnv, featuresForEnv, type FlagsFile } from './featureFlags.js';
+import { BETA_SITE_URL, SITE_URL } from '../shared/rules/paths';
 
 const SITES = [
-  { name: 'public', url: 'https://www.transitatlas.fyi/flags.json' },
-  { name: 'beta', url: 'https://beta.transitatlas.fyi/flags.json' },
+  { name: 'public', url: `${SITE_URL}/flags.json` },
+  { name: 'beta', url: `${BETA_SITE_URL}/flags.json` },
 ] as const;
 const LOCAL = [
   { name: 'local dev:public', script: 'dev:public' },

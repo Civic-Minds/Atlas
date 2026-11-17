@@ -16,8 +16,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { AUDIT_KINDS, auditAgencyFeatures, type AuditMismatch } from './headway-filter-audit-core';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 
-const BASE = 'https://data.transitatlas.fyi';
+const BASE = DEFAULT_R2_PUBLIC_URL;
 const args = process.argv.slice(2);
 const flag = (name: string, fallback: number) => {
   const hit = args.find(a => a.startsWith(`--${name}=`));

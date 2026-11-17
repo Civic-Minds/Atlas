@@ -1,6 +1,9 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { BETA_SITE_URL, DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL, PREVIEW_SITE_URL, SITE_URL } from '../paths';
 import { KIND_REASONS, KNOWN_COPIES } from './rulesBoundaryAllowlist';
-import { lineKinds, scanRules, type RuleKind } from './rulesBoundaryScan';
+import { lineKinds, ROOT, scanRules, type RuleKind } from './rulesBoundaryScan';
 
 /**
  * Rules audit 4.2 (Ryan OK'd the refactor): a rule value, such as a frequency scale, a period window, a day list, an
@@ -26,6 +29,14 @@ describe('rule values live in shared/rules/ (rules audit 4.2)', () => {
       if (now < n) stale.push(`${file}: ${kind} allowed ${n}, found ${now}`);
     }
     expect(stale).toEqual([]);
+  });
+
+  it('every origin in the files that cannot import (index.html, vercel.json) is one from shared/rules/paths.ts', () => {
+    const known = new Set([SITE_URL, BETA_SITE_URL, PREVIEW_SITE_URL, DEFAULT_R2_PUBLIC_URL, DEFAULT_BETA_R2_PUBLIC_URL].map(u => new URL(u).host));
+    for (const f of ['index.html', 'vercel.json']) {
+      const hosts = [...readFileSync(join(ROOT, f), 'utf8').matchAll(/https?:\/\/([a-z0-9.-]*(?:transitatlas\.fyi|r2\.dev|vercel\.app))/g)].map(m => m[1]);
+      expect([f, hosts.filter(h => !known.has(h))]).toEqual([f, []]);
+    }
   });
 
   it('catches each kind of copy, and leaves comments, phone numbers and other numbers alone', () => {

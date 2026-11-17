@@ -16,8 +16,9 @@ import { PERIOD_KEYS, type PeriodKey } from '../shared/config';
 import type { DayType } from '../shared/dayTypes';
 import { frequentRouteCount, STORY_DAYTIME_PERIODS } from '../shared/frequentDayCounts';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 
-const BASE = 'https://data.transitatlas.fyi';
+const BASE = DEFAULT_R2_PUBLIC_URL;
 const OUT = 'src/data/frequent-weekend-counts.json';
 
 /**

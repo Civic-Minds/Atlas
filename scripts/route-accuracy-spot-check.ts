@@ -15,11 +15,12 @@ import { parseGtfsZip } from '../pipeline/parseGtfs.js';
 import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { TIME_PERIODS } from '../shared/config.js';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 
 const SEED = Number(process.argv.find(a => a.startsWith('--seed='))?.slice(7) ?? '20260926');
 const OUTPUT = resolve(process.argv.find(a => a.startsWith('--out='))?.slice(6) ?? 'docs/audits/route-accuracy-spot-check-2026-09.md');
 const DATA_DIR = process.argv.find(a => a.startsWith('--data-dir='))?.slice(11);
-const ARTIFACT_ORIGIN = 'https://data.transitatlas.fyi/atlas';
+const ARTIFACT_ORIGIN = `${DEFAULT_R2_PUBLIC_URL}/atlas`;
 
 type JsonFeature = { properties?: Record<string, any> };
 type Agency = { slug: string; name: string; region?: string; feedUrl?: string | null; mdbFeedUrl?: string | null };

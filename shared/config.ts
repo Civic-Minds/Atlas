@@ -5,9 +5,10 @@ import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH }
  * Shared configuration constants
  */
 
-export const DEFAULT_R2_PUBLIC_URL = 'https://data.transitatlas.fyi';
-/** Staged artifacts used by beta-only agencies while a country rollout is being validated. */
-export const DEFAULT_BETA_R2_PUBLIC_URL = 'https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev';
+import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './rules/paths';
+// The bucket origins are in shared/rules/paths.ts (rules audit, move 6). The beta bucket holds staged artifacts used by
+// beta-only agencies while a country rollout is being validated.
+export { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL };
 
 const getR2PublicUrl = (): string => {
   if (typeof process !== 'undefined' && process.env?.R2_PUBLIC_URL) {

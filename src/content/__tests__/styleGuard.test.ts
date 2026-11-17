@@ -152,10 +152,10 @@ const RULES: Rule[] = [
   // CIV-1790 (Ryan: "Did we refactor our contact info"): one address, one mailto builder.
   { name: 'the contact address typed by hand (use CONTACT_EMAIL or mailto from shared/contact.ts)', doc: 'TEXT.md', pattern: /ryanisnota\.pro/, slip: "href=\"mailto:hey@ryanisnota.pro\"",
     allowed: ['shared/contact.ts'] },
-  // CIV-1615: each fixed page's path is one constant in shared/pagePaths.ts, read by its route, prerender, SEO entry and links.
-  { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',
+  // CIV-1615: each fixed page's path is one constant in shared/rules/paths.ts, read by its route, prerender, SEO entry and links.
+  { name: 'a page path typed by hand (use shared/rules/paths.ts)', doc: 'TEXT.md',
     pattern: /['"`](\/about|\/about\/docs|\/agencies|\/changelog|\/terms|\/privacy|\/apps\/live|\/research)['"`]/, slip: '<a href="/about/docs">',
-    allowed: ['shared/pagePaths.ts'] },
+    allowed: ['shared/rules/paths.ts'] },
   // A research page's own path is one constant too: FEATURE_ROUTES in shared/config.ts (a draft story's in shared/researchStories.ts).
   { name: 'a research page path typed by hand (use FEATURE_ROUTES in shared/config.ts)', doc: 'TEXT.md',
     pattern: /['"`]\/research(\/[a-z][a-z-]*)+['"`]/, slip: '<Route path="/research/free-child-fares" />',
