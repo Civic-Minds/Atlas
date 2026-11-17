@@ -544,7 +544,7 @@ export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn’t be found."
 // Live's own figure wording stays in shared/liveWording.ts.
 
 /** A Live section that failed to draw (its error boundary). */
-export const liveDrawError = (what: string) => `${what} could not be drawn: the analysis file may be from an older version.`;
+export const liveDrawError = (what: string) => `${what} could not be drawn.`;
 export const LIVE_METHOD_DRAW_ERROR = `${METHOD_TITLE} could not be drawn.`;
 /** `agency`: the agency's short name (useLiveAgencyName), never the address in capitals (CIV-1160 question 7). */
 export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
@@ -558,15 +558,16 @@ export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Star
 export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
   if (!polled) {
     return followed.length > 0
-      ? `Live does not follow ${agencyName} ${routeShortName}. It follows ${agencyName} routes ${followed.join(', ')}.`
-      : `Live does not follow any ${agencyName} routes.`;
+      ? `Live doesn’t cover ${agencyName} ${routeShortName}. It covers ${agencyName} routes ${joinList(followed)}.`
+      : `Live doesn’t cover any ${agencyName} routes.`;
   }
-  return `No ${agencyName} ${routeShortName} vehicles are running right now. Live checks again every few seconds.`;
+  return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
 export const LIVE_NO_VEHICLES_ON_ROUTE = 'No vehicles on this route';
 export const LIVE_NO_ROUTE_MATCHES = 'No routes match your search.';
 export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe the buses running this route';
-export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
+/** CIV-1795: the approved "can’t be shown right now" line (CIV-941). */
+export const LIVE_FEED_INCOMPLETE = 'These figures can’t be shown right now.';
 /** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
 export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren’t available yet.';
 /**
@@ -578,11 +579,10 @@ export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`
 export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
 /** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
 export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
-export const LIVE_GAP_NOT_SEEN = "The car ahead’s passing wasn’t seen";
+/** CIV-1795: as the approved "Delay not measured" (CIV-1601). */
+export const LIVE_GAP_NOT_SEEN = 'Gap not measured';
 
 export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';
-export const LIVE_WEEK_NOT_IN_FILE = 'This week against last week is not in this analysis file.';
-export const LIVE_WEEK_NOT_IN_FILES = 'This week against last week is not in the analysis files yet.';
 export const LIVE_NO_STOPS_MEASURED = 'No stops were measured.';
 export const LIVE_NO_STOP_TO_RANK = 'No stop has enough departures to rank.';
 export const LIVE_NO_STOP_TO_RANK_YET = 'No stop has enough departures to rank yet.';
@@ -604,8 +604,19 @@ export const liveTooFewTrips = (bandWords: string) => `Too few trips were measur
 
 /** Live: one agency's feed failed ("<message> It will retry automatically."). */
 /** Live: nothing running on any followed route in view. */
-export const LIVE_NOTHING_ACTIVE = 'Nothing active on tracked routes';
-export const LIVE_NOTHING_ACTIVE_HINT = 'Buses appear here when they are running on a monitored route.';
+export const LIVE_NOTHING_ACTIVE = 'No vehicles running on the routes Live covers here';
+export const LIVE_NOTHING_ACTIVE_HINT = 'Vehicles appear here when one is running on a route Live covers.';
+/**
+ * The Live map's report titles (CIV-1795): "TTC 504" for a route, "TTC 504 · Bus 8123" for a vehicle, in the vehicle
+ * card's own name ("Vehicle 3" with no usable number). `agency` is null while the agency list loads ("Loading…") and
+ * when the agency isn't in it ("This agency couldn’t be found.", N30).
+ */
+export function liveReportFlagTitle(agency: string | null, loaded: boolean, routeShortName: string, vehicleName?: string): string {
+  if (!agency) return loaded ? AGENCY_NOT_FOUND : LOADING_LABEL;
+  return `${agency} ${routeShortName}${vehicleName ? ` · ${vehicleName}` : ''}`;
+}
+/** The Live map's list of the routes it covers in view (CIV-1795: "covers", Atlas's own verb). */
+export const LIVE_COVERED_ROUTES_HEADING = 'Routes Live covers here';
 // N25 listing-ended (Ryan's exact text, CIV-1011; shown since CIV-1055). Defined beside the agency page text it shares.
 export { listingEndedNotice, listingEndedPageLine, listingEndHasPassed } from '../../shared/agencyPages';
 
@@ -850,6 +861,14 @@ export const LIVE_TAB_LABEL = 'Live';
 /** Tags beside an agency or a What's New item. */
 export const LIVE_TAG = 'Live';
 export const HISTORY_TAG = 'History';
+/**
+ * The agency list's "All" pill hover: the filter pills it turns off, named (Ryan, CIV-1795 question 1, option a):
+ * "Clear the Live and History filters", "Clear the Live, History and Outdated filters". Was "Clear status filters".
+ */
+export const clearAgencyFiltersTitle = (pills: readonly string[]): string => `Clear the ${joinList(pills)} filters`;
+/** The agency list's Sources view (CIV-1795: no "GTFS feed" jargon, as About Atlas says "published agency schedules"). */
+export const SOURCES_LEAD = 'We use the schedules transit agencies publish, usually downloaded directly from each agency.';
+export const SOURCES_FALLBACK = 'When we can’t rely on an agency’s own copy, we may use a public copy from:';
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
@@ -878,7 +897,8 @@ export const SERVICES_HEADING = 'Services';
 // CIV-1781: Live's labels, moved here word for word as CIV-1774 moved the rest ("Toggle light mode" now reads
 // TOGGLE_DARK_MODE_LABEL, CIV-1780). FILTERS_LABEL, DAY_LABEL, MAP_COLOURS_LABEL and ROUTE_COLUMN are shared.
 export const LAST_WEEK_COLUMN = 'Last week';
-export const STRETCH_COLUMN = 'Stretch';
+/** The two-stop column on the Live agency page (Ryan, CIV-1795 question 10, option a; was "Stretch"). */
+export const STRETCH_COLUMN = 'Between stops';
 export const ROUTES_HEADING = 'Routes';
 export const DIRECTION_SHOWN_LABEL = 'Direction shown';
 export const VIEW_LABEL = 'View';
@@ -899,6 +919,17 @@ export const STARTS_AT_COLUMN = 'Starts at';
 export const SCHEDULED_COLUMN = 'Scheduled';
 export const USUALLY_COLUMN = 'Usually';
 export const TRIPS_COLUMN = 'Trips';
+/** A Live route page's three views (CIV-1795: "Full report", as the page calls itself; Ryan, question 3, option b: "Overview"). */
+export const LIVE_SUMMARY_VIEW = 'Summary';
+export const LIVE_OVERVIEW_VIEW = 'Overview';
+export const LIVE_FULL_REPORT_VIEW = 'Full report';
+export const LIVE_EVERY_STOP_LINK = `Every stop, in ${LIVE_FULL_REPORT_VIEW}`;
+/** The Live agency page's section intros (CIV-1795; Ryan, question 11, option a). */
+export const LIVE_AGENCY_ROUTES_INTRO = 'Every route Live covers, worst first.';
+export const LIVE_DELAY_STARTS_INTRO = 'Routes where delay jumps between two stops and stays up, and the minutes it usually adds there.';
+export const LIVE_BUNCHING_FORMS_INTRO = 'Routes where gaps too close together or too far apart jump between two stops and stay up.';
+/** The Live vehicle card's delay row (Ryan, CIV-1795 question 2, option a; was "Schedule"). */
+export const LIVE_STATUS_LABEL = 'Status';
 
 /** CIV-1786 (Ryan picked 1): a region page's line under an agency that only partly serves it, "1 route in West Virginia · 68 total". */
 export const partOfAgencyRoutesNote = (here: number, place: string, total: number): string =>

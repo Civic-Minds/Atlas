@@ -21,7 +21,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -436,7 +436,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                           return next;
                         })}
                         selected={on}
-                        title={id === 'all' ? 'Clear status filters' : 'Combine with other filters'}
+                        title={id === 'all' ? clearAgencyFiltersTitle(agencyFilterOptions.filter(([f]) => f !== 'all').map(([, l]) => l)) : 'Combine with other filters'}
                         className="shrink-0"
                       >
                         {label}
@@ -498,10 +498,10 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           {view === 'sources' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                We use GTFS schedule feeds from transit agencies — usually downloaded directly from each agency&apos;s published URL.
+                {SOURCES_LEAD}
               </p>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                When we can&apos;t rely on the official feed, we may use a public copy from:
+                {SOURCES_FALLBACK}
               </p>
               <div className="space-y-2">
                 <LinkCard href="https://mobilitydatabase.org/"
@@ -562,7 +562,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                   {selectedLiveRoutes.length > 0 && (
                     <div>
                       <div className="mb-2">
-                        <Tag className="inline-block">Live ({selectedLiveRoutes.length})</Tag>
+                        <Tag className="inline-block">{LIVE_TAG}</Tag>
                       </div>
                       <div className="space-y-1">
                         {selectedLiveRoutes.map(r => (

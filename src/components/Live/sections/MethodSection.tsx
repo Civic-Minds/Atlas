@@ -3,7 +3,7 @@ import { dateRange } from '../../../../shared/dateText';
 import { goodDayCounts, goodDayLimits } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { joinList } from '../../../../shared/overflowText';
-import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, builtText, coveredRoutesText } from '../../../../shared/liveWording';
+import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, builtText, coveredRoutesText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -66,7 +66,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
       { label: METHOD_GROUPS.colours, items: [v3.weekly && colourLine] },
       { label: METHOD_GROUPS.limits, items: [
         recordingGapsLine,
-        <Term t="Near a limit" colon>{percentText(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
+        <Term t={NEAR_CUTOFF_TERM} colon>{percentText(lim.nearCutoffShare)} of trips left their first stop within {Math.round(v3.uncertainty.withinMin * 60)} seconds of the late or ahead cutoff. Because we record each vehicle once a minute, some of these could be labelled wrong.</Term>,
         // The share is of the raw runs seen; the kept count is the trips the figures describe, the header's count (CIV-910).
         glo && glo.noTimetableTrip > 0 && <Term t="Unscheduled trips">are runs whose trip number isn’t on the schedule, such as extra buses. We left out {countText(glo.noTimetableTrip)} of them ({percentText(glo.noTimetableTrip / (glo.kept + glo.noTimetableTrip + glo.excluded))} of trips seen), so the figures cover the {countText(good.runs)} scheduled trips.</Term>,
         // Counted over the good days, like every other figure (Ryan, CIV-910 Q4).

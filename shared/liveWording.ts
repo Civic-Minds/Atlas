@@ -3,6 +3,7 @@ import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText } from './numberText';
+import { minutesText } from './liveFormat';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -49,10 +50,12 @@ export const NOT_MEASURED_LABEL = 'Not measured';
 export const NOT_MEASURED_VALUE = 'not measured';
 /** A stop with no delay figure, in its hover and card. */
 export const DELAY_NOT_MEASURED = 'Delay not measured';
-/** A chart or strip mark resting on sparse location reports. */
-export const LESS_EXACT_LABEL = 'Less exact';
-/** The 90th-percentile delay column and figure. */
-export const P90_LATER_LABEL = '1 in 10 later than';
+/** A chart or strip mark resting on sparse location reports (Ryan, CIV-1795: the approved hover line's words; was "Less exact"). */
+export const LESS_EXACT_LABEL = 'Fewer location reports';
+/** The 90th-percentile delay column and figure (Ryan, CIV-1795 question 6, option b): "1 in 10 leave: 6+ min late". */
+export const P90_LATER_LABEL = '1 in 10 leave';
+/** That figure's value: "6+ min late", the minutes written by minutesText. */
+export const p90LateText = (min: number): string => `${minutesText(min).replace(/ min$/, '+ min')} late`;
 /** The back link from a report page to the Live map app. */
 export const OPEN_LIVE_LABEL = 'Open Live';
 /** The link from a report page to the same route or agency on the Live map. */
@@ -63,18 +66,18 @@ export const BOTH_DIRECTIONS_LABEL = 'Both directions';
 export const DIRECTION_LABEL = 'Direction';
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
-/** The heading over what a stretch is linked to, and its glossary term. */
-export const LINKED_TO_TITLE = 'Linked to';
-/** A link verdict: measured in the same stretch, or not. */
-export const LINKED_LABEL = 'Linked';
-export const NOT_LINKED_LABEL = 'Not linked';
+/** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
+export const LINKED_TO_TITLE = 'Also measured in this stretch';
+/** A link verdict: its figure passes the set level, or not (Ryan, CIV-1795 question 8, option a; was "Linked" / "Not linked"). */
+export const LINKED_LABEL = 'High';
+export const NOT_LINKED_LABEL = 'Low';
 /** A trip that ends before the line's end: a vehicle card tag and a trip pattern's kind. */
 export const SHORT_TURN_LABEL = 'Short turn';
 /** The two kinds of bunching gap, in charts, legends and figures. */
 export const TOO_CLOSE_LABEL = 'Too close together';
 export const TOO_FAR_LABEL = 'Too far apart';
-/** The share of gaps too short or too long, as a figure and column. */
-export const GAPS_OFF_SCHEDULE_LABEL = 'Gaps off the schedule';
+/** The share of gaps too short or too long, as a figure and column (CIV-1795: Live's two bunching words; was "Gaps off the schedule"). */
+export const GAPS_OFF_SCHEDULE_LABEL = 'Too close or too far apart';
 export const EARLY_STEP_LABEL = '1+ min ahead';
 /** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
 /** A vehicle or stop on schedule; the delay legend's first step (CIV-1601). */
@@ -89,8 +92,11 @@ export const LATE_THRESHOLD = 'more than 5½ min late';
 
 /** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
 export const DELAY_STARTS_TITLE = 'Where delays start';
-/** The column and figure label for the typical minutes a stretch adds (CIV-1448). */
-export const TYPICAL_ADDED = 'Typical added';
+/** The column and figure label for the typical minutes a stretch adds (CIV-1448; CIV-1795: "Usually", as the Live column; was "Typical added"). */
+export const TYPICAL_ADDED = 'Usually adds';
+/** Delays start: the minutes added on the way into a stop that aren't made back over the next 3 stops, on the Live map's stop and stretch cards (Ryan, CIV-1795 question 9: "Time lost: 2 min"). */
+export const TIME_LOST_LABEL = 'Time lost';
+export const timeLostLine = (min: number): string => `${TIME_LOST_LABEL}: ${minutesText(min)}`;
 /** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (Ryan, CIV-1602: "Delays start" everywhere). */
 export const DELAY_STARTS_LABEL = 'Delays start';
 /** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602). */
@@ -175,8 +181,15 @@ export const METHOD_GROUPS = {
   limits: 'Limits',
 } as const;
 
+/** A Live route page with no measured day, in its subtitle where "data up to Oct 14" would be (Ryan, CIV-1795 question 4, option a). */
+export const NO_DATA_YET = 'No data yet.';
+/** The method line on trips close to the late or ahead cutoff (Ryan, CIV-1795 question 12, option a; was "Near a limit"). */
+export const NEAR_CUTOFF_TERM = 'Close to the cutoff';
+/** The agency page's method term for its combined figures, and its glossary term (Ryan, CIV-1795 question 13, option a; was "Network figures"). */
+export const AGENCY_FIGURES_TERM = 'Agency figures';
+
 /** The recording-gaps limit, said once per page. */
-export const RECORDING_GAPS = "are times our recording missed, such as when the feed went down. Trips during a gap aren’t counted, and days with gaps are left out.";
+export const RECORDING_GAPS = "are times our recording missed, such as when the agency’s vehicle locations stopped coming in. Trips during a gap aren’t counted, and days with gaps are left out.";
 
 /** Run time against the timetable in whole minutes: "2 min faster than the schedule" (the tile's caption), or without the tail in a table cell. */
 export const runTimeDiffText = (diffMin: number, tail = true): string => (diffMin === 0 ? 'same as the schedule' : `${Math.abs(diffMin)} min ${diffMin < 0 ? 'faster' : 'slower'}${tail ? ' than the schedule' : ''}`);

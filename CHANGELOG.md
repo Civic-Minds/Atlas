@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The agency list and Live use plain words instead of internal terms**: "GTFS schedule feeds", "Linked", "Near a limit" and similar labels read as jargon to planners
 - **State and province pages say when an agency only partly serves the place**: "1 route in West Virginia · 68 total" under its name, so a cross-border agency's small count isn't mistaken for its size
 - **The agency card's top line is just the route count, with the Details link beside it**: "· N match filters" repeated the "routes outside your filters" note, and the link had a line of its own
 - **On-demand services no longer link to the agency's booking site**: Atlas is for planners, not trip planning, and fixed routes have no such link

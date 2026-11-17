@@ -45,7 +45,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -700,6 +700,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const cardDirectionLabel = cardVehicle?.directionId != null ? directionLabels.get(cardVehicle.directionId) : undefined;
   // The vehicle card is a few lines: on phones its sheet is only as tall as they are, up to the route card's short height (CIV-1413 D).
   const vehicleCardOpen = !!(selectedGroup && cardVehicle);
+  // The report flag's title names the agency as the card's back link does (CIV-1795), never the address.
+  const reportAgency = selectedGroup ? agencies.find(a => a.slug === selectedGroup.agencySlug) : undefined;
+  const reportAgencyName = reportAgency ? agencyShortNameBySlug(agencies, reportAgency.slug) : null;
   const cardBody = selectedGroup && cardVehicle ? (
     <SidebarCardShell>
       <SidebarCardHeaderBlock>
@@ -720,7 +723,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             />
           </div>
           <CardReportButton
-            title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}, vehicle ${cardVehicle.vehicleLabel ?? cardVehicle.id}`}
+            title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName, vehicleRowName(cardVehicle, Math.max(0, allListed.findIndex(v => v.id === cardVehicle.id)), selectedRouteModeWord))}
             details={liveVehicleReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, vehicle: cardVehicle })}
             showLiveReason
             excludeReasons={[REPORT_REASON.stop]}
@@ -772,7 +775,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             />
           </div>
           <CardReportButton
-            title={`Live ${selectedAgencyName ?? selectedGroup.agencySlug} ${selectedGroup.routeShortName}`}
+            title={liveReportFlagTitle(reportAgencyName, agencies.length > 0, selectedGroup.routeShortName)}
             details={liveRouteReportDetails({ agencySlug: selectedGroup.agencySlug, agencyName: selectedAgencyName ?? selectedGroup.agencySlug, routeShortName: selectedGroup.routeShortName, direction: selectedDirection, vehicles: allListed })}
             showLiveReason
             excludeReasons={[REPORT_REASON.stop]}
@@ -925,7 +928,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 <BrowseLiveAgenciesLink onInfoOpen={onInfoOpen} />
               </>
             ) : isLoading && totalVehicles === 0 ? (
-              <PanelEmpty kind="loading">{loadingText('feed')}</PanelEmpty>
+              <PanelEmpty kind="loading">{loadingText('live vehicles')}</PanelEmpty>
             ) : hasAnyError ? (
               // CIV-1768 (Ryan): every feed in view down reads only in the map's loading badge, "Unable to load ·
               // Retrying in 12s"; the panel adds no second line saying the same.
@@ -939,7 +942,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                   {monitoredRoutes.length > 0 && (
                     <>
                       <div className={`${PANEL_SECTION_HEAD} border-t border-[var(--border-primary)]`}>
-                        Tracking in this area
+                        {LIVE_COVERED_ROUTES_HEADING}
                       </div>
                       <div className="flex flex-wrap gap-1.5 px-4 pb-3">
                         {monitoredRoutes.map(r => (

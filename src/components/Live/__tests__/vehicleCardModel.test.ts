@@ -10,7 +10,7 @@ describe('vehicle card content', () => {
       { label: 'Direction', value: 'to Neville Park' },
       { label: 'Ends at', value: 'Humber Loop', tag: 'Short turn' },
       { label: 'Speed', value: '23 km/h' },
-      { label: 'Schedule', value: '7 min late', status: 'late' },
+      { label: 'Status', value: '7 min late', status: 'late' },
     ]);
   });
   it('omits what the feed did not give and never repeats the destination as direction', () => {

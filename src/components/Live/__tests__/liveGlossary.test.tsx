@@ -13,7 +13,7 @@ const text = (node: unknown) => {
 describe('Live glossary', () => {
   const lines: Record<string, unknown> = {
     Late: lateLine, 'Trip time': runTimeLine(), 'Extra wait': extraWaitLine, Bunching: bunchingLine(), Delivered: deliveredLine(),
-    'Vehicle positions': positionsLine, 'Trip matching': tripMatchLine(), 'Network figures': networkFiguresLine, Stops: stopsLine, 'Recording gaps': recordingGapsLine,
+    'Vehicle positions': positionsLine, 'Trip matching': tripMatchLine(), 'Agency figures': networkFiguresLine, Stops: stopsLine, 'Recording gaps': recordingGapsLine,
     'Coloured changes': colourLine,
   };
   for (const { term, text: def } of LIVE_GLOSSARY.filter(g => !g.legend)) {

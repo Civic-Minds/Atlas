@@ -182,7 +182,7 @@ These measures are different things. Never combine them, convert one into anothe
 | route strip delay steps (Live) | `EARLY_STEP_LABEL`, `STEP_LABELS.delay` | "Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind" ("1+ min ahead" only when a stop is ahead; "Not measured" only when a stop is) | E22 (Ryan, CIV-1075). "behind" under 5½ min; "late" only past it (E9) |
 | route strip bunching steps (Live) | `STEP_LABELS.bunching`, `LEGEND_LAST_STEP_TAIL` | "Bunching: Under 15% · 15–25% · 25% or more of gaps" | E23 |
 | week colours (Live) | `COLOURED_CHANGES`, `NOISE_RULE` | "**Coloured changes** are bigger than the figure's normal day-to-day range. Grey changes fall inside that range and may just be normal variation." | E17 |
-| recording gaps (Live) | `RECORDING_GAPS` | "**Recording gaps** are times our recording missed, such as when the feed went down. Trips during a gap aren't counted, and days with gaps are left out." | E18. "Where delays start" is no longer defined (E19 dropped) |
+| recording gaps (Live) | `RECORDING_GAPS` | "**Recording gaps** are times our recording missed, such as when the agency’s vehicle locations stopped coming in. Trips during a gap aren't counted, and days with gaps are left out." | E18; CIV-1795 question 5. "Where delays start" is no longer defined (E19 dropped) |
 
 ### Known mismatches
 
