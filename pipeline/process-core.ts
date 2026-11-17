@@ -2116,12 +2116,9 @@ export async function processGtfsBuffer(
     // Used to show interchange markers at regional zoom levels (zoom 11–12).
     const uniqueRoutes = uniqueShortsByStop.get(stop.stop_id) ?? 0;
     const isHub = stop.location_type === '1' || uniqueRoutes >= 3;
-    const isRail = routeIds.some(rid => {
-      const r = routeById.get(rid);
-      const rt = r?.route_type;
-      // type 1 = subway/metro, type 2 = commuter rail; exclude type 0 (streetcar/tram)
-      return rt === '1' || rt === '2';
-    });
+    // CIV-1812: a rail stop is one a rail-like route serves, by the same rule the route lines use (isRailRoute:
+    // subway, commuter rail, monorail and identified LRT; a plain streetcar is not). It read route types 1 and 2 only.
+    const isRail = routeIds.some(rid => isRailRoute(routeById.get(rid), options?.slug));
 
     stopFeatures.push({
       type: 'Feature',
