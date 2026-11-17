@@ -6,6 +6,7 @@ import LegalPage from './LegalPage';
 import AboutDocsPage from './AboutDocsPage';
 import AboutPage from './AboutPage';
 import PlannersPage from './PlannersPage';
+import ResearchersPage from './ResearchersPage';
 import ChangelogPage from './ChangelogPage';
 import NotFoundPage from './NotFoundPage';
 import './styles/index.css';
@@ -23,7 +24,7 @@ import { withoutMapPosition } from './lib/analytics';
 import { trackKeyboardFocus } from './lib/keyboardFocus';
 import { RESEARCH_DRAFTS } from './apps/researchDrafts';
 import { findSeoRoute } from '../shared/seo';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, AGENCY_PATH_PREFIX, AREA_PATH_PREFIX, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, REGION_PATH_PREFIX, TERMS_PATH } from '../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, AGENCY_PATH_PREFIX, AREA_PATH_PREFIX, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, REGION_PATH_PREFIX, RESEARCHERS_PATH, TERMS_PATH } from '../shared/pagePaths';
 
 const AgencyPage = React.lazy(() => import('./AgencyPage'));
 const LiveRoutePage = React.lazy(() => import('./LiveRoutePage'));
@@ -110,6 +111,8 @@ ReactDOM.createRoot(rootElement).render(
           <Route path={DOCS_PATH} element={<AboutDocsPage />} />
           {/* Local only (CIV-1704): FEATURES.plannersLink, docs/FEATURE_FLAGS.md. */}
           {FEATURES.plannersLink && <Route path={PLANNERS_PATH} element={<PlannersPage />} />}
+          {/* Local only (CIV-1709): FEATURES.researchersLink, docs/FEATURE_FLAGS.md. */}
+          {FEATURES.researchersLink && <Route path={RESEARCHERS_PATH} element={<ResearchersPage />} />}
           <Route path={ABOUT_PATH} element={<AboutPage />} />
           {/* On in every build; beta-tagged entries still show only on beta. */}
           <Route path={CHANGELOG_PATH} element={<ChangelogPage />} />

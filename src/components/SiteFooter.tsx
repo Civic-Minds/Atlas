@@ -4,7 +4,7 @@ import AtlasLogo from './AtlasLogo';
 import { ATLAS_BYLINE, FOOTER_LINKS_LABEL, LEGAL_LINKS_LABEL, SITE_FOOTER_LABEL } from '../content/noticeCopy';
 import { FOOTER_HEADINGS, PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCHERS_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 type FooterLink = { href: string; label: string };
 
@@ -47,6 +47,8 @@ export function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         // CIV-1320: beta only for now (Ryan: "The beta can").
         ...(FEATURES.plannersLink ? [{ href: PLANNERS_PATH, label: PAGE_NAMES.plannersLink }] : []),
+        // CIV-1709: local only, like For Planners.
+        ...(FEATURES.researchersLink ? [{ href: RESEARCHERS_PATH, label: PAGE_NAMES.researchers }] : []),
       ],
     },
     {

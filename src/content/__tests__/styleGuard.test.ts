@@ -186,7 +186,10 @@ const RULES: Rule[] = [
 // Files with a known slip not fixed yet, by rule: new wording waiting on Ryan's word-for-word OK, or old code waiting
 // on its own cleanup item. Every other file is still checked. Remove each entry once its file is fixed (a test below
 // fails when an entry no longer has its slip).
-const PENDING: Record<string, string[]> = {};
+const PENDING: Record<string, string[]> = {
+  // CIV-1709: the For Researchers page's card titles, a draft waiting on Ryan's word-for-word OK.
+  'a UI label typed into a component (put its words in noticeCopy or PAGE_NAMES)': ['src/ResearchersPage.tsx'],
+};
 
 // Exact texts Ryan approved word for word, or quotes of an agency's own words, that keep a form the rules ban. Each is
 // removed from its file before the rules run, so only that exact text passes.

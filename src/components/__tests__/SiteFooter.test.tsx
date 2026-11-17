@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import SiteFooter, { footerGroups } from '../SiteFooter';
 import { FEATURES } from '../../../shared/config';
 import { FOOTER_HEADINGS, PAGE_NAMES } from '../../../shared/pageNames';
-import { PLANNERS_PATH } from '../../../shared/pagePaths';
+import { PLANNERS_PATH, RESEARCHERS_PATH } from '../../../shared/pagePaths';
 
 // A mutable copy of the flags, so each test can turn For Planners on (beta) or off (public).
 vi.mock('../../../shared/config', async importOriginal => {
@@ -11,9 +11,9 @@ vi.mock('../../../shared/config', async importOriginal => {
   return { ...actual, FEATURES: { ...actual.FEATURES } };
 });
 
-const flags = FEATURES as { plannersLink: boolean };
-const original = flags.plannersLink;
-afterEach(() => { flags.plannersLink = original; });
+const flags = FEATURES as { plannersLink: boolean; researchersLink: boolean };
+const original = { planners: flags.plannersLink, researchers: flags.researchersLink };
+afterEach(() => { flags.plannersLink = original.planners; flags.researchersLink = original.researchers; });
 
 describe('SiteFooter', () => {
   it('keeps Terms and Privacy in their own bottom row, not in the link columns', () => {
@@ -29,6 +29,7 @@ describe('SiteFooter', () => {
 
   it('puts For Planners in its own Product column, between Learn and Atlas (CIV-1699)', () => {
     flags.plannersLink = true;
+    flags.researchersLink = false;
     const groups = footerGroups();
     expect(groups.map(g => g.title)).toEqual([FOOTER_HEADINGS.explore, FOOTER_HEADINGS.learn, FOOTER_HEADINGS.product, FOOTER_HEADINGS.atlas]);
     const product = groups.find(g => g.title === FOOTER_HEADINGS.product)!;
@@ -41,11 +42,25 @@ describe('SiteFooter', () => {
     expect(screen.getByRole('link', { name: PAGE_NAMES.plannersLink })).toHaveAttribute('href', PLANNERS_PATH);
   });
 
-  it('shows no empty Product column when For Planners is off (public)', () => {
+  it('puts For Researchers after For Planners in the Product column (CIV-1709)', () => {
+    flags.plannersLink = true;
+    flags.researchersLink = true;
+    const product = footerGroups().find(g => g.title === FOOTER_HEADINGS.product)!;
+    expect(product.links).toEqual([
+      { href: PLANNERS_PATH, label: PAGE_NAMES.plannersLink },
+      { href: RESEARCHERS_PATH, label: PAGE_NAMES.researchers },
+    ]);
+    render(<SiteFooter />);
+    expect(screen.getByRole('link', { name: 'For Researchers' })).toHaveAttribute('href', '/researchers');
+  });
+
+  it('shows no empty Product column when For Planners and For Researchers are off (public)', () => {
     flags.plannersLink = false;
+    flags.researchersLink = false;
     expect(footerGroups().map(g => g.title)).toEqual([FOOTER_HEADINGS.explore, FOOTER_HEADINGS.learn, FOOTER_HEADINGS.atlas]);
     render(<SiteFooter />);
     expect(screen.queryByText(FOOTER_HEADINGS.product)).toBeNull();
     expect(screen.queryByRole('link', { name: PAGE_NAMES.plannersLink })).toBeNull();
+    expect(screen.queryByRole('link', { name: PAGE_NAMES.researchers })).toBeNull();
   });
 });

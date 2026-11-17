@@ -49,6 +49,8 @@ export const ABOUT_PATH = '/about';
 export const DOCS_PATH = '/about/docs';
 /** The For Transit Planners page (CIV-1320). */
 export const PLANNERS_PATH = '/planners';
+/** The For Researchers page (CIV-1709; DECISIONS.md 2026-11-16: audience pages get their own top-level address). */
+export const RESEARCHERS_PATH = '/researchers';
 export const TERMS_PATH = '/terms';
 export const PRIVACY_PATH = '/privacy';
 export const CHANGELOG_PATH = '/changelog';

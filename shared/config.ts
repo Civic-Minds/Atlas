@@ -143,6 +143,9 @@ export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
 // (Ryan, 2026-11-15, CIV-1704: "then make the for planners page local only"): on the Vite dev server, as the connections
 // bar is, never on beta or public builds.
 export const PLANNERS_LINK_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
+// The "For Researchers" page (CIV-1709): its route, footer link, prerendered page and link preview. Local only, like the
+// planners page, until History goes public: on the Vite dev server, never on beta or public builds.
+export const RESEARCHERS_LINK_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 // "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
 // Off everywhere (CIV-940): it links to the agency's website, not its data feed.
 export const DATA_SOURCE_LINK_ENABLED = false;
@@ -198,6 +201,7 @@ export const FEATURES = {
   runningTimes: RUNNING_TIMES_ENABLED,
   sparklineExpand: SPARKLINE_EXPAND_ENABLED,
   plannersLink: PLANNERS_LINK_ENABLED,
+  researchersLink: RESEARCHERS_LINK_ENABLED,
   dataSourceLink: DATA_SOURCE_LINK_ENABLED,
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
@@ -212,6 +216,7 @@ export function seoFlags() {
     live: FEATURES.live,
     history: FEATURES.history,
     planners: FEATURES.plannersLink,
+    researchers: FEATURES.researchersLink,
   };
 }
 
