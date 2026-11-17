@@ -902,3 +902,7 @@ export const STARTS_AT_COLUMN = 'Starts at';
 export const SCHEDULED_COLUMN = 'Scheduled';
 export const USUALLY_COLUMN = 'Usually';
 export const TRIPS_COLUMN = 'Trips';
+
+/** CIV-1786 (Ryan picked 1): a region page's line under an agency that only partly serves it, "1 route in West Virginia · 68 total". */
+export const partOfAgencyRoutesNote = (here: number, place: string, total: number): string =>
+  `${countOf(here, 'route', 'routes')} in ${place} · ${countText(total)} total`;

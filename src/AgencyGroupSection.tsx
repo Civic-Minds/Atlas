@@ -7,7 +7,7 @@ import { FrequencyBar } from './pageParts';
 import ArrowLink from './components/ui/ArrowLink';
 import DataTable, { PAGE_FIGURE_COLUMN_REM } from './components/ui/DataTable';
 import PageSection, { PageTable } from './components/ui/PageSection';
-import { SEE_ALL_AGENCIES, AGENCIES_FREQUENCY_HEADING, AGENCY_COLUMN } from './content/noticeCopy';
+import { SEE_ALL_AGENCIES, AGENCIES_FREQUENCY_HEADING, AGENCY_COLUMN, partOfAgencyRoutesNote } from './content/noticeCopy';
 
 /**
  * Desktop widths of the agency table: the names' smallest width, and each mode column's. Seven mode columns fit beside the
@@ -44,21 +44,21 @@ function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
  * The agencies section of an area page, and of a state or province page (CIV-976): the frequency bar, its note and the
  * agency table by mode.
  */
-export default function AgencyGroupSection({ data, barNote }: { data: AgencyGroupData; barNote: string }) {
+export default function AgencyGroupSection({ data, barNote, place }: { data: AgencyGroupData; barNote: string; /** A state or province page's name, for an agency's "N routes in <place> · M total" line (CIV-1786). */ place?: string }) {
   // CIV-1297: the page's one map link is at its top; "See all agencies" follows the table, as on agency pages.
   return (
     <PageSection id="agencies-heading" title={AGENCIES_FREQUENCY_HEADING}>
       <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
       <FrequencyBar counts={data.bands} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>
-      <AgencyModeTable data={data} />
+      <AgencyModeTable data={data} place={place} />
       <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">{SEE_ALL_AGENCIES}</ArrowLink>
     </PageSection>
   );
 }
 
 /** The agency table by mode: an area's or state's agencies, or a parent agency's services (CIV-1277). */
-export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencies' | 'modeColumns'> }) {
+export function AgencyModeTable({ data, place }: { data: Pick<AgencyGroupData, 'agencies' | 'modeColumns'>; place?: string }) {
   return (
       <PageTable linkedRows>
           <DataTable
@@ -69,7 +69,11 @@ export function AgencyModeTable({ data }: { data: Pick<AgencyGroupData, 'agencie
             rowKey={a => a.slug}
             columns={[
               // Every area has the same mode columns (CIV-973); from md up they are narrow enough for eight to fit beside the names.
-              { key: 'agency', header: AGENCY_COLUMN, rowHeader: true, width: AREA_NAME_COLUMN_REM, className: 'font-normal', cell: a => agencyNameLink(a, data.modeColumns.includes(AREA_TABLE_OTHER)) },
+              { key: 'agency', header: AGENCY_COLUMN, rowHeader: true, width: AREA_NAME_COLUMN_REM, className: 'font-normal', cell: a => <>
+                {agencyNameLink(a, data.modeColumns.includes(AREA_TABLE_OTHER))}
+                {/* CIV-1786: an agency that only partly serves the state says so, with its whole count. */}
+                {place && a.allRoutes != null && <span className="block text-xs text-[var(--text-muted)]">{partOfAgencyRoutesNote(a.totalRoutes, place, a.allRoutes)}</span>}
+              </> },
               ...data.modeColumns.map(m => ({ key: m, header: modeHeader(m), width: AREA_MODE_COLUMN_REM, cell: (a: (typeof data.agencies)[number]) => a.modes[m] ?? MISSING_VALUE })),
             ]}
           />

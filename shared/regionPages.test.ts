@@ -1,3 +1,4 @@
+import { partOfAgencyRoutesNote } from '../src/content/noticeCopy';
 import { describe, expect, it } from 'vitest';
 import { areaPagePath } from './pagePaths';
 import { agencyPageSummaries } from './agencyPagesData';
@@ -67,6 +68,11 @@ describe('state and province pages (CIV-976)', () => {
     // A route with no state tag counts in the agency's home state.
     const co = buildRegionPageData({ slug: 'colorado', name: 'Colorado', country: 'United States' }, all, null);
     expect(co.agencies.map(a => [a.slug, a.totalRoutes])).toEqual([['cross', 3]]);
+    // CIV-1786: a state that gets only part of the agency carries its whole count too; its home state, with all of it, doesn't.
+    expect(wy.agencies[0].allRoutes).toBe(3);
+    expect(co.agencies[0].allRoutes).toBeUndefined();
+    expect(partOfAgencyRoutesNote(1, 'Wyoming', 3)).toBe('1 route in Wyoming · 3 total');
+    expect(partOfAgencyRoutesNote(2, 'West Virginia', 68)).toBe('2 routes in West Virginia · 68 total');
     // The breadcrumb keeps the home state.
     expect(agencyPageData(cross, all).regionPage).toBe('/region/colorado');
   });

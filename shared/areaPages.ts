@@ -48,6 +48,11 @@ export interface AreaAgencyRow {
   href: string;
   /** A parent agency's row, standing for its members counted here. */
   parent?: true;
+  /**
+   * CIV-1786: on a state or province page, an agency that runs only some of its routes there carries its whole count
+   * (agencyStats, as its own page shows it); `totalRoutes` and the mode columns count only the routes here.
+   */
+  allRoutes?: number;
   /** The agencies it stands for on the map: itself, or a parent's members counted here. */
   slugs: string[];
 }

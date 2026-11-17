@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **The For Transit Planners page counts the agencies Atlas really covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
+- **State and province pages say when an agency only partly serves the place**: "1 route in West Virginia · 68 total" under its name, so a cross-border agency's small count isn't mistaken for its size
 - **The agency card's top line is just the route count, with the Details link beside it**: "· N match filters" repeated the "routes outside your filters" note, and the link had a line of its own
 - **On-demand services no longer link to the agency's booking site**: Atlas is for planners, not trip planning, and fixed routes have no such link
 - **The agency card's link to its agency page reads "Details"**, as on the stop card: it said "About", the same word as the About page link
