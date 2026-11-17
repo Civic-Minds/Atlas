@@ -7,37 +7,18 @@ import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { headwayAmount, headwayEveryRange } from '../shared/headwayText';
 import { clockTime } from '../shared/timeText';
 import { countText } from '../shared/numberText';
-import { plural } from '../shared/overflowText';
 import { MISSING_VALUE } from '../shared/missingValue';
 import type { StudioRouteChange, StudioRouteDay } from '../shared/studioBeforeAfter';
+import { STUDIO_CHANGES_TEXT } from '../shared/studioWording';
 
 /**
  * Atlas Studio's before/after schedule figures (CIV-1715), now the Studio map's sidebar (CIV-1731, StudioPage.tsx). What
  * two versions of an agency's schedule say for the compared day type (weekdays for Kingston), from CIV-1684's comparison
  * engine: per route, the map's frequency by time of day, trips, first and last trip and trip time. Routes are grouped by
  * how big the change is (shared/studioBeforeAfter.ts `changeSize`), so a minute of span or trip time doesn't read as a
- * headline. Every string here is proposed and waiting on Ryan's word-for-word OK.
+ * headline. Its words are in shared/studioWording.ts.
  */
 
-export const STUDIO_CHANGES_TEXT = {
-  intro: (agency: string, day: string, before: string, after: string) => `How the ${agency} ${day} schedule changed between ${before} and ${after}.`,
-  leftOut: (days: string, newer: boolean) => `${days} aren’t compared: the ${newer ? 'newer' : 'older'} schedule file’s calendar leaves out many of their trips.`,
-  frequencyTitle: 'Frequency or Trips Changed',
-  hoursTitle: 'First or Last Trip or Trip Time Changed',
-  addedTitle: (n: number) => plural(n, 'Route Added', 'Routes Added'),
-  removedTitle: (n: number) => plural(n, 'Route Removed', 'Routes Removed'),
-  smallTitle: 'Small Changes',
-  smallIntro: 'Frequency or trip time moved by less than 5 min, first or last trip by less than 15 min, or trips by 1 or 2.',
-  unchangedTitle: 'No Change',
-  before: 'Before',
-  after: 'After',
-  trips: 'Trips',
-  firstTrip: 'First trip',
-  lastTrip: 'Last trip',
-  tripTime: 'Trip time',
-  noData: 'No data for this agency yet.',
-  noDay: 'These two schedules couldn’t be compared.',
-} as const;
 
 const T = STUDIO_CHANGES_TEXT;
 /** The periods every route table shows; Late and Overnight join only where either side has a figure. */

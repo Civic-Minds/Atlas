@@ -7,7 +7,7 @@ import { headwayEvery } from '../shared/headwayText';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { DOCS_PATH } from '../shared/pagePaths';
 import { ATLAS_INTRO_TEXT, MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
-import FeatureCard from './components/FeatureCard';
+import FeatureCard, { featureCardAsset } from './components/FeatureCard';
 import ThemedPicture from './components/ui/ThemedPicture';
 import RequestDemoCard from './components/RequestDemoCard';
 import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCoverage';
@@ -21,7 +21,6 @@ import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCove
  * with no picture yet pass null, like the planners Live card.
  */
 
-const pic = (name: string) => `/assets/planners/${name}`;
 
 /** A text section beside its heading, like About's "Built for looking closer." */
 function TextSection({ title, children }: { title: string; children: ReactNode }) {
@@ -50,7 +49,7 @@ export default function ResearchersPage() {
             <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           </div>
         </div>
-        <ThemedPicture base={pic('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
+        <ThemedPicture base={featureCardAsset('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
       </section>
 
       <div className="grid gap-5 py-16 sm:py-20">
@@ -58,10 +57,10 @@ export default function ResearchersPage() {
         <FeatureCard title="See How Service Changed Over the Years" color={color(0)} picture={null}>
           <p>History shows how scheduled transit service changed over time, using dated snapshots of agency schedules. Pick a year to see an agency’s routes as they ran then, and open a route to compare its oldest and newest weekday schedules, with the biggest changes first.</p>
         </FeatureCard>
-        <FeatureCard title="Compare Cities on One Map" color={color(1)} picture={pic('card-agency')} flip>
+        <FeatureCard title="Compare Cities on One Map" color={color(1)} picture={featureCardAsset('card-agency')} flip>
           <p>Atlas puts every agency it covers on the same map, so you can compare routes across cities, time periods and modes. Every route is coloured by its headway on the same scale, from {headwayEvery(10)} to {headwayEvery(60)} or less often, so a frequent route reads the same way in every city.</p>
         </FeatureCard>
-        <FeatureCard title="Maps You Can Cite" color={color(2)} picture={pic('card-export')}>
+        <FeatureCard title="Maps You Can Cite" color={color(2)} picture={featureCardAsset('card-export')}>
           <p>Map images export with a source line naming whose schedules are shown and when Atlas last updated its data, ready for a paper or a slide deck. Share links keep the place, frequency tier, day, time of day, agencies and any open route or stop, so readers open the same map you saw.</p>
         </FeatureCard>
       </div>
