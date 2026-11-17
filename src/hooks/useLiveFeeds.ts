@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { liveVehiclesEqual } from '../utils/liveVehiclesFingerprint';
 
-const POLL_INTERVAL_MS = 15_000;
+export const POLL_INTERVAL_MS = 15_000;
 
 /** The entries of a per-agency record for the agencies in `keep`; the same object when nothing goes. */
 export function keepSlugs<T>(prev: Record<string, T>, keep: ReadonlySet<string>): Record<string, T> {
@@ -28,6 +28,8 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
   // once a feed has clearly been down for a while, not just a blip.
   const [failCountBySlug, setFailCountBySlug] = useState<Record<string, number>>({});
   const [degradedBySlug, setDegradedBySlug] = useState<Record<string, string | null>>({});
+  // CIV-1768: when the next poll runs (epoch ms), for the "Retrying in 12s" countdown. Null while not polling.
+  const [nextPollAt, setNextPollAt] = useState<number | null>(null);
   // #1568: the agencies in view now. A reply for an agency that has left the view is dropped, so
   // it can't put back an error (or vehicles) the view no longer has.
   const inView = useRef<ReadonlySet<string>>(new Set());
@@ -71,6 +73,7 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
       setErrorBySlug({});
       setFailCountBySlug({});
       setDegradedBySlug({});
+      setNextPollAt(null);
       return;
     }
 
@@ -96,10 +99,14 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
       })
     );
 
-    const pollId = setInterval(() => visibleSlugs.forEach(fetchForSlug), POLL_INTERVAL_MS);
+    setNextPollAt(Date.now() + POLL_INTERVAL_MS);
+    const pollId = setInterval(() => {
+      setNextPollAt(Date.now() + POLL_INTERVAL_MS);
+      visibleSlugs.forEach(fetchForSlug);
+    }, POLL_INTERVAL_MS);
     return () => clearInterval(pollId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, visibleSlugKey, fetchForSlug]);
 
-  return { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug };
+  return { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug, nextPollAt };
 }

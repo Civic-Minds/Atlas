@@ -569,9 +569,13 @@ export const LIVE_REPLACEMENT_BUSES = 'Replacement buses: all figures describe t
 export const LIVE_FEED_INCOMPLETE = 'Live feed incomplete right now';
 /** The Live route card when Live has no analysis for the route, so "Right now" can't show (Ryan approved word for word, CIV-1413 B, 2026-11-14). */
 export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren’t available yet.';
-/** Every feed in view failed: the line, then the retry note under it (approved, CIV-941 #55). */
-export const LIVE_FEEDS_UNAVAILABLE = "Live buses in this area can’t be shown right now.";
-export const LIVE_FEEDS_DOWN = 'Atlas will keep trying.';
+/**
+ * CIV-1768 (Ryan, 2026-11-16: "Unable to load then a countdown until it retries", then "Yes" to "Unable to load ·
+ * Retrying in 11s" in the map's loading pill): every Live feed in view failed; the countdown is to the next poll.
+ */
+export const LIVE_UNABLE_TO_LOAD = 'Unable to load';
+export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`;
+export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
 /** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
 export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
 export const LIVE_GAP_NOT_SEEN = "The car ahead’s passing wasn’t seen";
@@ -599,9 +603,6 @@ export const LIVE_TOO_FEW_DEPARTURES = 'too few departures';
 export const liveTooFewTrips = (bandWords: string) => `Too few trips were measured ${bandWords} to draw this.`;
 
 /** Live: one agency's feed failed ("<message> It will retry automatically."). */
-export const liveFeedErrorText = (message: string, stuck: boolean) => `${message}${stuck ? ' — still trying, but this has been down for a while.' : ' It will retry automatically.'}`;
-/** Live: every feed in view failed, and has been for a while (the first line is LIVE_FEEDS_UNAVAILABLE). */
-export const LIVE_FEEDS_DOWN_STUCK = 'Still trying, but these have been down for a while.';
 /** Live: nothing running on any followed route in view. */
 export const LIVE_NOTHING_ACTIVE = 'Nothing active on tracked routes';
 export const LIVE_NOTHING_ACTIVE_HINT = 'Buses appear here when they are running on a monitored route.';
