@@ -396,8 +396,7 @@ export default function AboutDocsPage() {
             <p>During each refresh, Atlas records the feed’s expiry or version. If every available feed has expired, a download fails or validation fails, Atlas marks the agency as stale and retains the last good published artifact instead of replacing it with broken or empty output.</p>
             <p>This also applies when a source publishes a newer GTFS file that is malformed or fails Atlas’s processing checks: the newer file is not promoted simply because it is newer. The active feed identity and last successful refresh remain unchanged; Atlas records the reason for the failure and tries again at the next refresh. If a source’s file is empty or unreadable, Atlas tries the agency’s next source for that feed.</p>
             <p>The interface then identifies that schedule as potentially outdated and shows the known end date and the check history when available. For agencies whose past feeds have repeatedly had problems, a newer feed is marked as under review while it is checked for missing service and other quality problems. A feed can therefore be visible, stale, under review, degraded or unusable as separate states rather than being silently treated as current.</p>
-            <p>Atlas is schedule analysis, not real-time observation. It does not know whether a vehicle is delayed, cancelled, short-turned, crowded or accessible unless an explicitly labelled feature provides that information.</p>
-            <p>Source feeds can be delayed, incomplete, discontinued or incorrect. For live alerts, accessibility information, trip planning and emergency instructions, use the relevant transit agency’s official resources.</p>
+            <p>Source feeds can be delayed, incomplete, discontinued or incorrect.</p>
           </Section>
 
           <Section id="validation">

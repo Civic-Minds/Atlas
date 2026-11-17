@@ -70,6 +70,10 @@ const RULES: Rule[] = [
   // CIV-1614 (Ryan): a metro area is an "area"; "region" is only a state or province.
   { name: '"region" for a metro area (say "area")', doc: 'TEXT.md', pattern: /\b(city|metro) regions?\b|\b(agencies|transit agencies) and regions\b|\bRegions include\b/, slip: "'every agency in a city region'" },
 
+  // CIV-1792 (Ryan, CIV-1751, CIV-1733): no "what Atlas isn't" disclaimers. Say what Atlas does. Legal pages may.
+  { name: 'a "what Atlas isn’t" disclaimer (say what Atlas does)', doc: 'TEXT.md', pattern: /\b(not a trip planner|trip planning|live alerts|not live arrivals|not real-time|can be wrong|does(?: not|n[’']t) (replace|do)\b|Atlas (is not|isn[’']t) an?\b)/i, slip: "'Atlas is not a trip planner.'",
+    allowed: ['src/LegalPage.tsx'] },
+
   // Times (shared/timeText.ts)
   { name: 'a lowercase am/pm or a.m./p.m. (write "7 AM")', doc: 'TEXT.md', pattern: /\d ?(am|pm)\b|\b[ap]\.m\./, slip: "'Daily 6 a.m.–9 pm'" },
   { name: '":00" on the hour (write "7 AM")', doc: 'TEXT.md', pattern: /\d:00 ?(AM|PM)\b/, slip: "'Weekdays 7:00 AM–7 PM'" },

@@ -691,6 +691,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const [phoneMapErrors, setPhoneMapErrors] = useState<string[]>([]);
   const [listedMapErrors, setListedMapErrors] = useState<string[] | null>(null);
   const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
+  /** The bottom-right counts row is on (Live hides it); Live's "Unable to load" badge shows in it regardless (CIV-1768). */
+  const countsRowShown = showUi || nightServiceView || phoneErrorsInRow;
   const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
   useEffect(() => {
@@ -1519,17 +1521,21 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
         </div>
       )}
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow) && (
-        // An error never fades (CIV-50): with the phone's "Error" pill in the row, the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${showUi || nightServiceView || phoneErrorsInRow ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-          {(isLoading || isTilesLoading || isBasemapLoading) && (
-            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}>
-              <Spinner />
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
+        // An error never fades (CIV-50): with the phone's "Error" pill in the row, or Live's "Unable to load", the row stays.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): while every Live feed in view
+              is down, the loading badge reads "Unable to load · Retrying in 12s", counting down to Live's next try. */}
+          {(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(liveRetrySeconds != null ? { role: 'status' } : {})}>
+              {liveRetrySeconds == null && <Spinner />}
               <span className={MAP_BADGE_LABEL}>
-                {isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
+                {liveRetrySeconds != null ? liveUnableToLoadPill(liveRetrySeconds) : isLoading ? networksLoadingText(loadedCount, requestedCount) : loadingText('map')}
               </span>
             </div>
           )}
+          {/* Live hides the counts: with Live down, the row shows only the badge above. */}
+          {(countsRowShown || liveRetrySeconds == null) && (<>
           {/* Phones (CIV-1057): right of the loading pill, in its spot when there is none. */}
           {phoneErrorsInRow && (
             <MapErrorsPill
@@ -1615,6 +1621,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 )}
             </div>
           )}
+          </>)}
         </div>
       )}
       </div>

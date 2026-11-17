@@ -717,7 +717,7 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     : published ? `This schedule was published ${published}.`
     : through ? `This schedule covers service until ${through}.`
     : '';
-  return ["Based on the agency’s published schedule, not live arrivals.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return ["Based on the agency’s published schedule.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /** "2026-10-12" from an ISO or yyyymmdd date; null when unusable. */

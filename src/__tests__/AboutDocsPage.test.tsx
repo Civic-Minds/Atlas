@@ -25,6 +25,11 @@ describe('Docs page Notices section (CIV-1236)', () => {
     expect(screen.getByRole('link', { name: 'Notices' })).toHaveAttribute('href', '#notices');
   });
 
+  it('has no trip planner or live alerts disclaimer (CIV-1792)', () => {
+    const { container } = render(<AboutDocsPage />);
+    expect(container.textContent).not.toMatch(/trip plan|live alerts|official resources/i);
+  });
+
   it('keeps notices out of the glossary', () => {
     const { container } = render(<AboutDocsPage />);
     const glossary = container.querySelector('#glossary')!.textContent!;
