@@ -18,6 +18,8 @@ export const TAB_TITLE_MAX = TITLE_MAX;
 /** Default map center when no saved view (GTHA), [lat, lon]. */
 export const DEFAULT_MAP_CENTER: [number, number] = [43.65, -79.45];
 export const DEFAULT_MAP_ZOOM = 11;
+/** The map's frequency filter when no link or saved choice sets one: every 60 min or better. The Filters count leaves it out. */
+export const DEFAULT_MAX_HEADWAY = 60;
 
 /** Bbox padding from agency center when index.json has no explicit bbox. */
 export const AGENCY_BBOX_PAD = { lat: 0.4, lon: 0.5 } as const;
