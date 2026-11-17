@@ -9,7 +9,7 @@
 // toolbar, the logo and search box apart, every side panel or card, and the analytics prompt. Each overlay is measured by its visible pieces, not its container, so a full-width
 // row only counts where something is drawn. It fails when two overlays' pieces overlap, or when a piece runs off the screen.
 import { mkdirSync } from 'node:fs';
-import { chromium } from 'playwright';
+import { launchBrowser, openPage } from './lib/headless.mjs';
 
 const args = process.argv.slice(2);
 const only = args.find(a => a.startsWith('--scenes='))?.slice(9).split(',');
@@ -84,16 +84,15 @@ function measure() {
 const overlaps = (a, b) => a.x < b.x + b.w - 0.5 && b.x < a.x + a.w - 0.5 && a.y < b.y + b.h - 0.5 && b.y < a.y + a.h - 0.5;
 
 if (outDir) mkdirSync(outDir, { recursive: true });
-// PW_CHROMIUM: a local Chromium to use instead of Playwright's own download.
-const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
+// PW_CHROMIUM (or CHROME_PATH): a local Chromium to use instead of Playwright's own download (scripts/lib/headless.mjs).
+const browser = await launchBrowser();
 const failures = [];
 const skipped = [];
 try {
   for (const width of WIDTHS) for (const scene of SCENES) for (const visitor of scene.visitors) {
     if (scene.minWidth && width < scene.minWidth) continue;
     const label = `${width} ${scene.name} ${visitor}`;
-    const ctx = await browser.newContext({ viewport: { width, height: HEIGHT } });
-    const page = await ctx.newPage();
+    const { ctx, page } = await openPage(browser, { width, height: HEIGHT });
     // A visitor from a strict-consent country sees the analytics prompt; the default visitor doesn't.
     if (visitor.startsWith('consent')) await page.route('**/api/privacy-region*', route => route.fulfill({ json: { country: 'FR' } }));
     // On-demand areas that fail to load put the notice pill along the bottom edge.

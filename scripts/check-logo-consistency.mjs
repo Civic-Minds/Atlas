@@ -3,7 +3,7 @@
 // Needs a running dev server. For every surface and theme it measures the logo disc and the
 // "Atlas" wordmark at 390, 768, 1024 and 1440 and fails if size, fill, border, shadow, icon
 // colour, font size, weight or colour differ between widths (only position may differ).
-import { chromium } from 'playwright';
+import { launchBrowser, openPage } from './lib/headless.mjs';
 
 const [baseUrl = 'http://localhost:5181', outDir] = process.argv.slice(2);
 const WIDTHS = [390, 768, 1024, 1440];
@@ -18,7 +18,7 @@ const SURFACES = [
 ];
 const LOGO = 'button[aria-label="Atlas home"], button[aria-label="Back to frequency map"], a[aria-label="Back to frequency map"], a[aria-label="Atlas by Civic Minds"]';
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const failures = [];
 const rows = [];
 try {
@@ -26,9 +26,7 @@ try {
     for (const theme of ['light', 'dark']) {
       const results = [];
       for (const width of WIDTHS) {
-        const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2, colorScheme: theme });
-        await ctx.addInitScript((t) => { try { localStorage.setItem('theme', t); } catch {} }, theme);
-        const page = await ctx.newPage();
+        const { ctx, page } = await openPage(browser, { width, height: 900, dpr: 2, theme, saveTheme: true });
         await page.goto(baseUrl + surface.path, { waitUntil: 'domcontentloaded' });
         const logo = page.locator(LOGO).first();
         try { await logo.waitFor({ timeout: 30000 }); } catch { results.push({ width, missing: true }); await ctx.close(); continue; }

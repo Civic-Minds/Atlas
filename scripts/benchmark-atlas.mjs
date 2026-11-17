@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright';
+import { findSystemChrome, launchBrowser } from './lib/headless.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_SCENARIOS = [
@@ -79,22 +79,6 @@ function summarize(results) {
   }));
 }
 
-async function findChrome() {
-  const candidates = [
-    process.env.ATLAS_BENCHMARK_CHROME,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
-    '/usr/bin/google-chrome',
-    '/usr/bin/chromium',
-  ].filter(Boolean);
-  for (const candidate of candidates) {
-    try {
-      await fs.access(candidate);
-      return candidate;
-    } catch {}
-  }
-  return undefined;
-}
 
 async function measurePage(page, scenario, kind, run) {
   const url = urlFor(scenario);
@@ -172,8 +156,9 @@ async function measurePage(page, scenario, kind, run) {
 }
 
 async function run() {
-  const executablePath = await findChrome();
-  const browser = await chromium.launch({ headless: !hasFlag('headed'), executablePath });
+  // The installed Chrome, so the numbers are a real browser's (scripts/lib/headless.mjs).
+  const executablePath = await findSystemChrome([process.env.ATLAS_BENCHMARK_CHROME]);
+  const browser = await launchBrowser({ headless: !hasFlag('headed'), executablePath });
   const results = [];
 
   try {
