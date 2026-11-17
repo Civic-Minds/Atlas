@@ -5,6 +5,9 @@
  * "About" (the page is "About Atlas").
  */
 export const SITE_NAME = 'Transit Atlas';
+/** What Atlas is, in one clause; ATLAS_MAP_SUMMARY is the sentence (the About hero, the Researchers search description). */
+export const ATLAS_MAP_CLAUSE = 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place';
+export const ATLAS_MAP_SUMMARY = `${ATLAS_MAP_CLAUSE}.`;
 
 export const PAGE_NAMES = {
   map: 'Map',
