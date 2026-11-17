@@ -531,7 +531,9 @@ export function ModeCrossFadeText({ text, enabled }: { text: string; enabled: bo
   return (
     <span className="inline-grid">
       {old != null && <span aria-hidden="true" className={`[grid-area:1/1] ${out} ${fading ? 'opacity-0' : 'opacity-100'}`}>{old}</span>}
-      <span className={`[grid-area:1/1] ${old != null ? `${into} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
+      {/* Keyed by its words: a new element starts transparent. Reusing the old one made it fade from fully shown, so
+          both hints showed together for the length of the delay. */}
+      <span key={shown} className={`[grid-area:1/1] ${old != null ? `${into} ${fading ? 'opacity-100' : 'opacity-0'}` : ''}`}>{shown}</span>
     </span>
   );
 }
