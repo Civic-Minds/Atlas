@@ -84,7 +84,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     path: ABOUT_PATH,
     title: tabTitle(PAGE_NAMES.aboutPage, 'Frequency Maps for Planners'),
     description:
-      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place, for riders, planners and researchers.',
+      'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place, for planners and researchers.',
     indexable: true,
     prerender: true,
     includeInSitemap: true,
