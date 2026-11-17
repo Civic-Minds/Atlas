@@ -34,7 +34,6 @@ function TextSection({ title, children }: { title: string; children: ReactNode }
   );
 }
 
-const STRONG = 'font-bold text-[var(--text-primary)]';
 
 export default function PlannersPage() {
   const tiers = useHeadwayTiers();
@@ -45,8 +44,7 @@ export default function PlannersPage() {
       <section className="grid gap-12 border-b border-[var(--border-primary)] pb-20 pt-16 sm:pt-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14">
         <div>
           <PageTitle level="hero">{PAGE_NAMES.planners}</PageTitle>
-          <p className={`mt-8 max-w-2xl text-lg leading-8 ${STRONG}`}>Atlas shows how often transit really runs, across every agency in a region, on one map.</p>
-          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.</p>
+          <p className="mt-8 max-w-2xl text-lg leading-8 text-[var(--text-muted)]">See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.</p>
           <div className="mt-9 flex flex-wrap gap-3">
             <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           </div>
