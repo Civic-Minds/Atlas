@@ -10,7 +10,7 @@ import { LIVE_VEHICLES_TITLE, OPEN_LIVE_LABEL } from '../shared/liveWording';
 import { DOCS_PATH, LIVE_PATH } from '../shared/pagePaths';
 import { titleCase } from '../shared/titleCase';
 import { MAP_LINK, READ_HOW_ATLAS_WORKS } from './content/noticeCopy';
-import FeatureCard from './components/FeatureCard';
+import FeatureCard, { featureCardAsset } from './components/FeatureCard';
 import ThemedPicture from './components/ui/ThemedPicture';
 import RequestDemoCard from './components/RequestDemoCard';
 import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCoverage';
@@ -22,7 +22,6 @@ import { coverageAgenciesText, coverageCountriesText } from '../shared/atlasCove
  * frequency-colour tints for the feature cards.
  */
 
-const pic = (name: string) => `/assets/planners/${name}`;
 
 /** A text section beside its heading, like About's "Built for looking closer." */
 function TextSection({ title, children }: { title: string; children: ReactNode }) {
@@ -49,20 +48,20 @@ export default function PlannersPage() {
             <ArrowLink href="/">{MAP_LINK}</ArrowLink>
           </div>
         </div>
-        <ThemedPicture base={pic('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
+        <ThemedPicture base={featureCardAsset('hero')} ext="webp" className="block aspect-[10/9] w-full rounded-2xl border sm:aspect-[16/9] lg:aspect-[10/9] border-[var(--border-primary)] object-cover" />
       </section>
 
       <div className="grid gap-5 py-16 sm:py-20">
-        <FeatureCard title="See Frequency, Not Just Routes" color={color(0)} picture={pic('card-frequency')}>
+        <FeatureCard title="See Frequency, Not Just Routes" color={color(0)} picture={featureCardAsset('card-frequency')}>
           <p>Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a tier and Atlas shows only the routes that meet it, so a frequent network map, or a check against your own frequency standards, takes one click.</p>
         </FeatureCard>
-        <FeatureCard title="See How Service Changes Over the Day and Week" color={color(1)} picture={pic('card-dayweek')} flip>
+        <FeatureCard title="See How Service Changes Over the Day and Week" color={color(1)} picture={featureCardAsset('card-dayweek')} flip>
           <p>Switch between weekday, Saturday and Sunday, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.</p>
         </FeatureCard>
-        <FeatureCard title="Every Agency in a Region, on One Map" color={color(2)} picture={pic('card-agency')}>
+        <FeatureCard title="Every Agency in a Region, on One Map" color={color(2)} picture={featureCardAsset('card-agency')}>
           <p>Atlas puts every agency it covers on the same map, so you can spot weak connections, like a hub where one agency runs {headwayEvery(10)} and the other once an hour. Use the agency filter to focus on one operator, or leave it on All to see the whole region.</p>
         </FeatureCard>
-        <FeatureCard title="A Map Instead of a Long Report" color={color(3)} picture={pic('card-export')} flip>
+        <FeatureCard title="A Map Instead of a Long Report" color={color(3)} picture={featureCardAsset('card-export')} flip>
           <p>Existing-conditions work often ends up as a long report with a few static maps, but Atlas gives you a map people can explore. Share links keep the place, frequency tier, day, time of day, agencies and any open route or stop, and map images export with a source line, ready for a slide deck or a report.</p>
         </FeatureCard>
         {/* CIV-1705: the Live card. No picture yet; its text is a placeholder until Ryan gives the words. */}
