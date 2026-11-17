@@ -25,7 +25,7 @@
  */
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { departuresInWindow, forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
+import { BUNCHED_DEPARTURE_MINUTES, departuresInWindow, forCrossMidnightWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -72,13 +72,8 @@ export const POOLED_MAX_GAP_GRACE_MINUTES = 5;
  * adds the same for a gap over POOLED_MAX_GAP_TYPICAL_RATIO times the value. Null = publish
  * nothing.
  */
-/**
- * Merged departures this close together are one bus to a rider: two every-10 patterns one
- * minute apart are a bus every 10, not every 9 or 5 (Ryan's IndyGo point). GTFS times are
- * whole minutes, so one minute is the smallest offset two trips can have without being the
- * same time; two minutes apart is kept, since subway trunks really run every 2.
- */
-export const BUNCHED_DEPARTURE_MINUTES = 1;
+// BUNCHED_DEPARTURE_MINUTES lives in headway-utils (CIV-1721 reads it there too); re-exported for its users here.
+export { BUNCHED_DEPARTURE_MINUTES };
 
 /** Collapse departures within BUNCHED_DEPARTURE_MINUTES of the previous kept one into it. */
 export function collapseBunched(sorted: readonly number[]): number[] {

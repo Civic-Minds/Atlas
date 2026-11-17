@@ -674,3 +674,26 @@ describe('departuresInWindow: the one reader of a window\'s departures (CIV-1798
     expect(departuresInWindow([600, 540, 900], 540, 900, true)).toEqual([540, 600, 900]);
   });
 });
+
+describe('two departures a minute apart are one bus: no longest gap (CIV-1721, #1548)', () => {
+  const m = (h: number, min = 0) => h * 60 + min;
+  it('drops the 1-minute spacing of LA Metro 217\'s doubled school trip (15:32 and 15:33)', () => {
+    expect(computePeriodMaxGaps([m(15, 32), m(15, 33)]).pmPeak).toBeNull();
+    // The wait across the period still shows.
+    expect(computePeriodCoverageHeadways([m(15, 32), m(15, 33)]).pmPeak).toBe(207);
+  });
+
+  it('keeps a lone pair further apart: a real wait (St-Lévis 200, 14:22 and 14:51)', () => {
+    expect(computePeriodMaxGaps([m(14, 22), m(14, 51)]).midday).toBe(29);
+    expect(computePeriodMaxGaps([m(16), m(17)]).pmPeak).toBe(60);
+  });
+
+  it('keeps the tail of a regular run that crosses into the period (STM 448, Light RailLink: 8:31, then 9:00 and 9:29)', () => {
+    expect(computePeriodMaxGaps([m(8), m(8, 31), m(9), m(9, 29)]).midday).toBe(29);
+  });
+
+  it('keeps a short gap with service around it', () => {
+    expect(computePeriodMaxGaps([m(14, 50), m(15, 32), m(15, 33)]).pmPeak).toBe(32);
+    expect(computePeriodMaxGaps([m(15, 32), m(15, 33), m(15, 34)]).pmPeak).toBe(1);
+  });
+});
