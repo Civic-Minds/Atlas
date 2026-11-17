@@ -16,6 +16,11 @@ export interface DataTableColumn<T> {
   /** With `narrowFit`: leave this column out below the sm breakpoint (its figure can go in `rowTitle`). */
   narrowHide?: boolean;
   /**
+   * `page` layout only (CIV-1787): from lg up, this column takes all the width the others leave; they size to their
+   * content and the first column keeps its `width`. Below lg, where the page is too narrow for it, it is hidden.
+   */
+  grow?: boolean;
+  /**
    * `page` layout only: this column holds words, not figures (a route, a direction), so it stays left-aligned where the
    * figure columns are right-aligned. The first column is always left-aligned.
    */
@@ -136,7 +141,9 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   // The last column drawn on a phone carries no gap on its right.
   const lastNarrow = shown.lastIndexOf(true);
   const pad = (i: number) => (v.gap && i < columns.length - 1 ? (fit && i !== lastNarrow ? ' pr-3 sm:pr-4' : fit ? ' pr-0 sm:pr-4' : ' pr-4') : '');
-  const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '');
+  const hide = (i: number) => (fit && columns[i].narrowHide ? ' max-sm:hidden' : '') + (end && columns[i].grow ? ' max-lg:hidden' : '');
+  // A growing column (CIV-1787): from lg up the table lays out by content and that column takes the rest.
+  const grows = end && !fit && columns.some(c => c.grow);
   // From sm up, right-aligned columns take their gap on the left; the last one has none on the right, so it meets the edge.
   // The last column sets no right padding of its own, so a linked row's `pr-2` (rowEdge) still lines it up with the edge.
   // The names column keeps a wider gap before the first figure column, so a long name doesn't run up against it (CIV-973).
@@ -153,10 +160,10 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   const phoneWidths = columns.map((_, i) => (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   // A linked row's highlight reaches a little past the text on both sides, as in card lists.
   const rowEdge = (i: number) => (rowHref ? (i === 0 ? ' pl-2' : '') + (i === columns.length - 1 ? ' pr-2' : '') : '');
-  const totalRem = widths.reduce((a, b) => a + b, 0);
+  const totalRem = widths.reduce((a, b, i) => a + (columns[i].grow ? 0 : b), 0);
   return (
     <table
-      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end && !fit ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}` : v.table}
+      className={fixed ? `${v.table} ${fit ? 'sm:table-fixed sm:min-w-[var(--table-min)]' : 'table-fixed'}${end && !fit ? ' max-sm:!w-[var(--table-w)] sm:min-w-[var(--table-min)]' : ''}${grows ? ' lg:!table-auto lg:!min-w-0' : ''}` : v.table}
       style={fit ? ({ width: '100%', '--table-min': `${totalRem}rem` } as CSSProperties) : end ? ({ width: '100%', '--table-w': `${phoneWidths.reduce((a, b) => a + b, 0)}rem`, '--table-min': `${totalRem}rem` } as CSSProperties) : fixed ? (fill ? { width: '100%', minWidth: `${totalRem}rem` } : { width: `${totalRem}rem` }) : undefined}
     >
       {caption && <caption className="sr-only">{caption}</caption>}
@@ -165,7 +172,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
           {columns.map((col, i) => fit
             ? <col key={col.key} className={`${end ? (i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto') : fill && i > 0 && col.width == null ? '' : 'sm:w-[var(--col-w)]'}${hide(i)}`} style={{ '--col-w': `${widths[i]}rem` } as CSSProperties} />
             : end
-              ? <col key={col.key} className={`w-[var(--col-phone)] ${i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto'}`} style={{ '--col-phone': `${phoneWidths[i]}rem`, '--col-w': `${widths[i]}rem` } as CSSProperties} />
+              ? <col key={col.key} className={`w-[var(--col-phone)] ${i > 0 ? 'sm:w-[var(--col-w)]' : 'sm:w-auto'}${grows ? (col.grow ? ' lg:!w-full' : i === 0 ? ' lg:!w-[var(--col-w)]' : ' lg:!w-auto') : ''}${hide(i)}`} style={{ '--col-phone': `${phoneWidths[i]}rem`, '--col-w': `${widths[i]}rem` } as CSSProperties} />
               : <col key={col.key} style={fill && i > 0 && col.width == null ? undefined : { width: `${widths[i]}rem` }} />)}
         </colgroup>
       )}

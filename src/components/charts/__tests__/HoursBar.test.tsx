@@ -28,7 +28,8 @@ describe('a period cell’s note on its own line (CIV-1772)', () => {
       const { main, note } = periodShapeParts(text);
       expect(main).toBe('every ' + shape.every + ' min');
       expect(note).not.toBeNull();
-      expect(text.replace(', ', ' ')).toBe(`${main} ${note}`);
+      expect(text.replace(', with ', ' ')).toBe(`${main} ${note}`);
+      if (shape.gap != null) expect(note).toBe(`one ${shape.gap} min gap`);
     }
   });
 
