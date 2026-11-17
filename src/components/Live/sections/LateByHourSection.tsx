@@ -17,6 +17,7 @@ import { DAYS } from './figures';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays, BY_HOUR_HEADING } from '../../../content/noticeCopy';
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
+import Card from '../../ui/Card';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = 30;
@@ -147,12 +148,12 @@ function Spark({ v3, data, band, dir, allOnly = false, title }: Props & { title:
 function Tile({ label, value, sub, thin = false }: { label: string; value: string; sub: string; thin?: boolean }) {
   return (
     // The week tiles' look (KpiTile), from the one tile style (CIV-1117 row 3).
-    <div className={`${KPI_TILE.frame} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
+    <Card tone="surface" className={`${KPI_TILE.frame} ${thin ? 'opacity-60' : ''}`} title={thin ? THIN_HINT : undefined}>
       <div className={KPI_TILE.label}>{label}</div>
       <div className={KPI_TILE.value}>{value}</div>
       <div className={KPI_TILE.line}>{sub}</div>
       {thin && <div className={KPI_TILE.line}>{THIN_HINT}</div>}
-    </div>
+    </Card>
   );
 }
 

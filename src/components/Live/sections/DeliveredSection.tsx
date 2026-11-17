@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { dateRange } from '../../../../shared/dateText';
 import type { LiveV3 } from '../../../../shared/liveDashboard';
-import { TILE } from '../../../pageStyles';
+import Card from '../../ui/Card';
 import ProfileBars, { type ProfilePoint } from '../../charts/ProfileBars';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
@@ -55,11 +55,11 @@ export default function DeliveredSection({ v3, dir, detail, boundary }: { v3: Li
   return frame(
     <div className="mt-4 grid items-start gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
       {overall?.share != null && (
-        <div className={TILE}>
+        <Card tone="surface" padding="tight" className="min-w-0">
           <div className="text-xs font-bold text-[var(--text-muted)]">Ran</div>
           <div className="mt-1 text-3xl font-black tracking-tight">{percentTenthText(overall.share)}</div>
           <div className="mt-1 text-xs text-[var(--text-dim)]">{countText(overall.seen + overall.notSeen)} trips</div>
-        </div>
+        </Card>
       )}
       {chart}
     </div>,
