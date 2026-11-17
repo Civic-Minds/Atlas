@@ -59,8 +59,9 @@ const RULES: Rule[] = [
   { name: '"the shared section" or "shared-section" (say "Shared stretch")', doc: 'TEXT.md', pattern: /\b(the shared section|shared-section)\b/i, slip: "'Buses run on the shared section'" },
   // CIV-1610 (Ryan): Canadian spelling. Only words that are never code names are checked ("color" is a CSS word).
   { name: 'US spelling (write analysed, coloured, labelled, cancelled, neighbour, favourite, catalogue)', doc: 'TEXT.md', pattern: /\b(analyz(ed|es|ing)|[Cc]olored|[Cc]oloring|[Ll]abeled|[Ll]abeling|[Cc]anceled|[Nn]eighbors?|[Nn]eighborhoods?|[Ff]avorites?)\b|(?<=[a-z] )catalogs?(?= [a-z]|[.,])/, slip: "'Routes are analyzed by period'" },
-  // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list.
-  { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and/ },
+  // CIV-1610 (Ryan): no comma before the "and" or "or" that ends a list. "stop by stop" is an aside, not a list, and in
+  // CIV-1733's intro (Ryan's exact text) ", and see" starts a second verb, not the end of a list.
+  { name: 'a comma before the "and" or "or" that ends a list', doc: 'TEXT.md', pattern: /[a-z]+, [A-Za-z’-]+(?: [A-Za-z’-]+){0,3}, (and|or) [a-z]/, slip: "'See what runs in the morning, evening, or overnight.'", skipLine: /stop by stop, and|and modes, and see the patterns/ },
   // CIV-1697 (Ryan): "Docs" on links, heading and tab, from one constant.
   { name: 'the Docs page named by hand (use DOCS_PAGE_TITLE, from PAGE_NAMES)', doc: 'TEXT.md', pattern: />(Docs|Documentation)<\/|label: 'Docs'/, slip: '<a href="/about/docs">Docs</a>' },
   // CIV-1097, CIV-1451. "All days" (Live's kinds of day) is a different thing, and so is the code name 'all-day-summary'.
