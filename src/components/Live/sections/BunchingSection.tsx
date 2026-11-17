@@ -10,7 +10,7 @@ import { allBranchStops, branchStripFromV3, columnsOf } from '../branchStripMode
 import PerPeriod, { PERIOD_BANDS_ONLY } from './PerPeriod';
 import Section from './Section';
 import Tag from '../../ui/Tag';
-import { LIVE_NOTHING_LINKED } from '../../../content/noticeCopy';
+import { LIVE_NOTHING_LINKED, GAPS_THROUGH_DAY_HEADING, STOP_COLUMN, LIVE_BUNCHING_INTRO, LIVE_BUNCHING_CHART_CAPTION, SHARE_OF_GAPS_AXIS, FORMS_HERE_MARK, BIGGEST_RISE_MARK } from '../../../content/noticeCopy';
 import { percentText } from '../../../../shared/numberText';
 
 import { BUNCHING_FORMS_TITLE, BY_TIME_OF_DAY_TITLE, GAPS_OFF_SCHEDULE_LABEL, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../../shared/liveWording';
@@ -35,9 +35,9 @@ function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: R
   return (
     <div className="mt-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="text-sm font-black">Gaps through the day</h4>
+        <h4 className="text-sm font-black">{GAPS_THROUGH_DAY_HEADING}</h4>
         <label className="text-xs text-[var(--text-muted)]">
-          <span className="sr-only">Stop</span>
+          <span className="sr-only">{STOP_COLUMN}</span>
           <select value={stop.stopId} onChange={e => setPicked(e.target.value)} className="h-6 max-w-[16rem] rounded-md border border-[var(--border-primary)] bg-[var(--bg-app)] px-1.5 text-xs text-[var(--text-secondary)] outline-none focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
             {options.map(o => <option key={o.stopId} value={o.stopId}>{o.name}</option>)}
           </select>
@@ -78,7 +78,7 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
   const twoLineNames = models.some(m => m && branchNamesWrap(m));
   return (
     <Section id={full ? 'b4' : 'x-bunching'} title={BUNCHING_FORMS_TITLE} shrink={!full} boundary={boundary}>
-      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">How often vehicles come too close together or too far apart, stop by stop, and where that starts.</p>}
+      {full && <p className="mt-2 text-sm text-[var(--text-muted)]">{LIVE_BUNCHING_INTRO}</p>}
       {/* One key above the directions' strips, not one under each (CIV-1448). */}
       {full && <StripsLegend v3={v3} directionIds={rows.filter(b => b.bands[band]).map(b => b.directionId)} band={band} uncertain={uncertain} modes={BUNCHING_ONLY} />}
       <div className={`mt-4 grid ${full ? 'gap-6' : 'gap-x-10 gap-y-8'} ${rows.length > 1 ? 'lg:grid-cols-2' : ''}`}>
@@ -102,11 +102,11 @@ export default function BunchingSection({ v3, dir, band, gaps, detail, boundary,
                   formatY={y => percentText(y)}
                   unit="gaps"
                   valueHeader={GAPS_OFF_SCHEDULE_LABEL}
-                  caption="How often vehicles arrive too close together or too far apart, at each stop."
-                  axisTitle="Share of gaps"
+                  caption={LIVE_BUNCHING_CHART_CAPTION}
+                  axisTitle={SHARE_OF_GAPS_AXIS}
                   scale={scale}
                   series={[{ name: TOO_CLOSE_LABEL, color: 'var(--strip-bunching-2)' }, { name: TOO_FAR_LABEL, color: 'var(--strip-bunching-1)' }]}
-                  marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? 'Forms here' : 'Biggest rise' }] : []}
+                  marks={markIdx >= 0 ? [{ index: markIdx, label: data.kind === 'forms' ? FORMS_HERE_MARK : BIGGEST_RISE_MARK }] : []}
                 />
               )}
               {full && stretch && <p className="mt-2 text-sm leading-6">{bunchingSentence(label, data)}</p>}

@@ -20,7 +20,7 @@ export default function OverviewList({ s, measure, band = 'all', route, network,
   return (
     <section aria-label={ROUTES_HEADING} className={`flex min-h-0 flex-initial flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur`}>
       <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
-        <span>Routes</span>
+        <span>{ROUTES_HEADING}</span>
         <span>{measureLabel(measure)}</span>
       </div>
       <ul className="m-0 mt-1 min-h-0 flex-1 overflow-hidden p-0">

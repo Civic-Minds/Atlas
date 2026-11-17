@@ -19,8 +19,8 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE } from '../shared/liveWording';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK } from './content/noticeCopy';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL } from '../shared/liveWording';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 
@@ -90,14 +90,14 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
         rowKey={k => k.key}
         rowTitle={k => `${k.sub}. ${countText(k.n)} ${k.unit} this week${k.nLastWeek != null ? `, ${countText(k.nLastWeek)} last week` : ''}${k.delta ? `. ${k.delta.spoken}` : ''}${k.n < MIN_N ? `. ${LIVE_FEW_MEASUREMENTS}` : ''}`}
         columns={[
-          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">Measure </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">This week</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
+          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]"><span className="sr-only">{MEASURE_LABEL} </span>{scope}</span>, rowHeader: true, className: `font-bold text-[var(--text-muted)]`, cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.label}</span> },
+          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">{THIS_WEEK_COLUMN}</span>, className: 'text-right text-sm font-black tracking-tight', cell: k => (
             <span className={k.n < MIN_N ? 'opacity-60' : ''}>
               {k.delta && k.delta.arrow !== 'none' && <span aria-hidden="true" data-tone={k.delta.tone} className={`mr-1 text-2xs font-bold ${TONE_TEXT[k.delta.tone]}`}>{k.delta.arrow === 'up' ? '▲' : '▼'}</span>}
               {k.value}
             </span>
           ) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">Last week</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
+          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">{LAST_WEEK_COLUMN}</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: k => <span className={k.n < MIN_N ? 'opacity-60' : ''}>{k.delta ? k.lastWeekText ?? MISSING_VALUE : MISSING_VALUE}</span> },
         ]}
       />
       {/* The footnote: how the figures are worked out, kept visible but small and light (Live rule: math explanations stay visible). */}
@@ -146,7 +146,7 @@ export function periodNote(v3: LiveV3, directionId: number, uncertain: Uncertain
     return [`${label} near ${shortStopName(day.stops[end].name)}`];
   });
   if (!parts.length) return null;
-  return `${kind === 'delaysStart' ? DELAY_STARTS_LABEL : 'Bunching forms'} elsewhere at some times of day: ${parts.join(', ')}.`;
+  return `${kind === 'delaysStart' ? DELAY_STARTS_LABEL : BUNCHING_FORMS_LABEL} elsewhere at some times of day: ${parts.join(', ')}.`;
 }
 
 /** Each direction as two lines of stops on the same positions: delay on top, bunching underneath. */
@@ -158,7 +158,7 @@ function AlongRoute({ v3, dir, uncertain }: { v3: LiveV3; dir: number | null; un
   const pickable = phone && all.length > 1;
   const dirs = pickable ? [all[Math.min(phoneDir, all.length - 1)]] : all;
   return (
-    <Section id="dash-strip" title={ALONG_ROUTE_TITLE} intro="Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.">
+    <Section id="dash-strip" title={ALONG_ROUTE_TITLE} intro={LIVE_ALONG_ROUTE_INTRO}>
       {pickable && (
         <div className={`mt-3 ${PILL_ROW}`}>
           <PillGroup label={DIRECTION_SHOWN_LABEL} value={String(Math.min(phoneDir, all.length - 1))} onChange={v => setPhoneDir(Number(v))} options={all.map((d, i) => [String(i), d.label] as const)} />
@@ -206,7 +206,7 @@ export default function LiveDashboardView({ v3, data, band, dir, uncertain, filt
     <>
       <ErrorBoundary label={bad('The week comparison')}><KpiRow v3={v3} /></ErrorBoundary>
       <div className="mt-8 border-t border-[var(--border-primary)] pt-2">
-        <p className="mt-3 text-sm text-[var(--text-muted)]">The direction you pick changes everything below. The figures above are the whole week, both directions.</p>
+        <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_DIRECTION_PICK_NOTE}</p>
         {filters}
       </div>
       <ErrorBoundary label={bad('The route strip')}><AlongRoute v3={v3} dir={dir} uncertain={uncertain} /></ErrorBoundary>

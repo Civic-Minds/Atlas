@@ -4,7 +4,7 @@ import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
 import { delayAmount, headwayAbout } from '../../../utils/headwayText';
-import { LIVE_AT_STOP_LABEL } from '../../../content/noticeCopy';
+import { LIVE_AT_STOP_LABEL, RECENTLY_SEEN_HERE } from '../../../content/noticeCopy';
 
 const POLL_MS = 20_000;
 
@@ -72,7 +72,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
         )}
         {hasMeasured && (
           <div className={hasPredicted ? 'mt-2.5 pt-2.5 border-t border-[var(--border-primary)]' : ''}>
-            <p className="text-xs font-bold text-[var(--text-dim)]">Recently seen here</p>
+            <p className="text-xs font-bold text-[var(--text-dim)]">{RECENTLY_SEEN_HERE}</p>
             <div className="flex flex-wrap gap-1.5 mt-1.5">
               {recentlySeen.map((a, i) => (
                 <span

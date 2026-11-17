@@ -35,7 +35,7 @@ import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
 import { LATE_MAP_HINT, LATE_MAP_STOPS, lateStopSpots } from './components/Live/lateStopsMapModel';
-import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_NO_WEEK_COMPARISON, liveNoAgencyAnalysis, LIVE_AGENCY_ROUTES_INTRO, LIVE_DELAY_STARTS_INTRO, LIVE_BUNCHING_FORMS_INTRO, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN } from './content/noticeCopy';
+import { LIVE_API_NO_ANSWER, LIVE_NO_STOP_TO_RANK_YET, LIVE_NO_STRETCH_STANDS_OUT, LIVE_NO_WEEK_COMPARISON, liveNoAgencyAnalysis, LIVE_AGENCY_ROUTES_INTRO, LIVE_DELAY_STARTS_INTRO, LIVE_BUNCHING_FORMS_INTRO, loadingText, LAST_WEEK_COLUMN, ROUTES_HEADING, ROUTE_COLUMN, STRETCH_COLUMN, LIVE_DELAY_STRETCHES_CAPTION, LIVE_BUNCHING_STRETCHES_CAPTION, INCREASE_COLUMN } from './content/noticeCopy';
 import { countOf } from '../shared/overflowText';
 import { percentTenthText, percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
@@ -221,11 +221,11 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-delay" title={DELAY_STARTS_TITLE} intro={LIVE_DELAY_STARTS_INTRO}>
-          <StretchTable s={s} rows={s.delayStarts} caption="Stretches that add the most delay" valueHeader={TYPICAL_ADDED} format={mins} />
+          <StretchTable s={s} rows={s.delayStarts} caption={LIVE_DELAY_STRETCHES_CAPTION} valueHeader={TYPICAL_ADDED} format={mins} />
         </Section>
 
         <Section id="agency-bunching" title={BUNCHING_FORMS_TITLE} intro={LIVE_BUNCHING_FORMS_INTRO}>
-          <StretchTable s={s} rows={s.bunchingForms} caption="Stretches where bunching rises the most" valueHeader="Increase" format={risePointsText} />
+          <StretchTable s={s} rows={s.bunchingForms} caption={LIVE_BUNCHING_STRETCHES_CAPTION} valueHeader={INCREASE_COLUMN} format={risePointsText} />
         </Section>
 
         <MethodSection scope="agency" s={s} agencyName={agencyName} />

@@ -14,7 +14,7 @@ import { LATE_SHARE_SWATCH, lateShareColor } from '../lateShare';
 import Section from './Section';
 import LeftOutDays from '../LeftOutDays';
 import { DAYS } from './figures';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays, BY_HOUR_HEADING } from '../../../content/noticeCopy';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPARTURES, LIVE_TOO_FEW_SCHEDULED_DEPARTURES, liveNoGoodDays, BY_HOUR_HEADING, LATE_PERCENT_LEGEND, DEPARTURES_COLUMN } from '../../../content/noticeCopy';
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 import Card from '../../ui/Card';
@@ -123,8 +123,8 @@ function ChartRow({ cols, tall = false, withLabels = true, showNote }: { cols: D
         })}
       </div>
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
-        <LegendItem color={LATE_SHARE_SWATCH}>Late %</LegendItem>
-        <LegendItem color="var(--text-dim)" swatchClassName="opacity-50">Departures</LegendItem>
+        <LegendItem color={LATE_SHARE_SWATCH}>{LATE_PERCENT_LEGEND}</LegendItem>
+        <LegendItem color="var(--text-dim)" swatchClassName="opacity-50">{DEPARTURES_COLUMN}</LegendItem>
       </div>
       {showNote && <p className="mt-2 text-xs text-[var(--text-dim)]">{fadedNoteText(MIN_N, 'departures')} The percentages count only days with good recordings, as the tiles do.</p>}
     </>

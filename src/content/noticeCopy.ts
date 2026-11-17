@@ -963,6 +963,49 @@ export const LIVE_DELAY_STARTS_INTRO = 'Routes where delay jumps between two sto
 export const LIVE_BUNCHING_FORMS_INTRO = 'Routes where gaps too close together or too far apart jump between two stops and stay up.';
 /** The Live vehicle card's delay row (Ryan, CIV-1795 question 2, option a; was "Schedule"). */
 export const LIVE_STATUS_LABEL = 'Status';
+// CIV-1803: the rest of Live's labels, captions and intros, moved here word for word from the Live components.
+/** The week table's other column, beside LAST_WEEK_COLUMN. */
+export const THIS_WEEK_COLUMN = 'This week';
+/** The route pages' "Along the route" section intro. */
+export const LIVE_ALONG_ROUTE_INTRO = 'Each stop coloured twice, over the whole day: how late cars typically leave it, and how often the gaps between cars are too close or too far apart. Hover or tap a stop for its figures.';
+/** The Overview's line above the direction and time-of-day pills. */
+export const LIVE_DIRECTION_PICK_NOTE = 'The direction you pick changes everything below. The figures above are the whole week, both directions.';
+/** The Live agency page's two stretch tables. */
+export const LIVE_DELAY_STRETCHES_CAPTION = 'Stretches that add the most delay';
+export const LIVE_BUNCHING_STRETCHES_CAPTION = 'Stretches where bunching rises the most';
+export const INCREASE_COLUMN = 'Increase';
+/** The Full report's section intros. */
+export const LIVE_BUILDUP_INTRO = 'How late vehicles leave each stop along the route, and where that delay jumps and stays up.';
+export const LIVE_BUNCHING_INTRO = 'How often vehicles come too close together or too far apart, stop by stop, and where that starts.';
+export const LIVE_RUN_TIME_INTRO = 'How long the trip takes against the schedule, by the hour it starts, over the stops every regular trip serves, so short turns count too.';
+/** The Live charts' axis titles, marks and captions. */
+export const MINUTES_LATE_AXIS = 'Minutes late';
+export const LIVE_BUILDUP_CHART_CAPTION = 'How late vehicles usually leave each stop: above the line is late, below is early.';
+export const SHARE_OF_GAPS_AXIS = 'Share of gaps';
+export const LIVE_BUNCHING_CHART_CAPTION = 'How often vehicles arrive too close together or too far apart, at each stop.';
+export const FORMS_HERE_MARK = 'Forms here';
+export const BIGGEST_RISE_MARK = 'Biggest rise';
+export const GAPS_THROUGH_DAY_HEADING = 'Gaps through the day';
+export const EXTRA_MINUTES_AXIS = 'Extra minutes';
+export const LIVE_EXTRA_WAIT_CHART_CAPTION = 'How much longer riders wait than the schedule says, at each stop.';
+export const LIVE_EXTRA_WAIT_STOPS_CAPTION = 'Stops where riders wait longest compared with the schedule';
+export const LIVE_LATE_STOPS_CAPTION = 'Stops ranked by the share of late departures';
+export const LIVE_LATE_STOPS_TOP_CAPTION = 'The five stops with the highest share of late departures';
+export const LATE_PERCENT_LEGEND = 'Late %';
+/** The Service delivered table and tile: trips that ran, by day. */
+export const RAN_COLUMN = 'Ran';
+export const LIVE_DELIVERED_CAPTION = 'How many of the scheduled trips ran, each day.';
+/** Live's network view: the route menu's first choice and the week table's scope. */
+export const ALL_ROUTES_LABEL = 'All routes';
+/** Under the Live tool's left-panel tiles; the full rule is its hover text. */
+export const LIVE_NOISE_CAPTION = 'Grey = within normal day-to-day change';
+/** The Live route card's "Right now" figures. */
+export const RIGHT_NOW_LABEL = 'Right now';
+export const VEHICLES_LABEL = 'Vehicles';
+export const LIVE_GAPS_FRONT_TO_BACK = 'Gaps, front to back (min)';
+/** The Live map's link to the agency list filtered to Live agencies, and a stop card's recent arrivals. */
+export const BROWSE_LIVE_AGENCIES_LINK = 'Browse all live agencies';
+export const RECENTLY_SEEN_HERE = 'Recently seen here';
 
 /** CIV-1786 (Ryan picked 1): a region page's line under an agency that only partly serves it, "1 route in West Virginia · 68 total". */
 export const partOfAgencyRoutesNote = (here: number, place: string, total: number): string =>

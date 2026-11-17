@@ -34,6 +34,8 @@ export const LATE_STOPS_TITLE = 'Stops most often late';
 export const WEEK_COMPARE_TITLE = 'This week compared with last week';
 /** The bunching section. */
 export const BUNCHING_FORMS_TITLE = 'Where bunching forms';
+/** The route strip's marked stretch where bunching starts, beside DELAY_STARTS_LABEL (CIV-1803). */
+export const BUNCHING_FORMS_LABEL = 'Bunching forms';
 /** The route strip's section. */
 export const ALONG_ROUTE_TITLE = 'Along the route';
 /** The share of trips in which a stretch's delay grows. */

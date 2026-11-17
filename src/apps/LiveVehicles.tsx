@@ -45,7 +45,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -92,7 +92,7 @@ function BrowseLiveAgenciesLink({ onInfoOpen }: { onInfoOpen?: OpenInfoFn }) {
   if (!onInfoOpen) return null;
   return (
     <ArrowLink as="button" tone="inline" size="xs" onClick={() => onInfoOpen('agencies', { featureFilter: 'live' })} className="mx-4 mb-2">
-      Browse all live agencies
+      {BROWSE_LIVE_AGENCIES_LINK}
     </ArrowLink>
   );
 }
@@ -885,7 +885,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               ) : (
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--text-dim)] shrink-0" />
               )}
-              <span className={PANEL_TITLE}>Live</span>
+              <span className={PANEL_TITLE}>{LIVE_TAB_LABEL}</span>
             </PanelTitleBar>
           )}
 
