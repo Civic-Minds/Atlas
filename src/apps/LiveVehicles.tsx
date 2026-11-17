@@ -45,7 +45,7 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, LIVE_FEEDS_UNAVAILABLE, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
+import { loadingText, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
@@ -77,9 +77,6 @@ interface RouteGroup {
   dominantStatus: LiveVehicle['status'];
 }
 
-// After this many consecutive failures (~45s), stop implying the feed will
-// definitely recover — it may be structurally broken, not a transient blip.
-const STUCK_FAIL_THRESHOLD = 3;
 
 // Eligible slugs: no API key required, or explicitly marked active
 const ELIGIBLE_SLUGS = new Set(
@@ -183,7 +180,7 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
 
   const visibleSlugKey = useMemo(() => [...visibleSlugs].sort().join(','), [visibleSlugs]);
 
-  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, failCountBySlug, degradedBySlug, nextPollAt } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
+  const { vehiclesBySlug, headwaysBySlug, loadingBySlug, errorBySlug, degradedBySlug, nextPollAt } = useLiveFeeds(active, visibleSlugs, visibleSlugKey);
 
   // The picked route's vehicles' directions from their trips (the analysis's timetable, via useLiveTripDirections below).
   const [tripDirections, setTripDirections] = useState<ReadonlyMap<string, number> | null>(null);
@@ -246,20 +243,6 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
   const isLoading = Object.values(loadingBySlug).some(Boolean);
   const errors = Object.values(errorBySlug).filter(Boolean) as string[];
 
-  // Group failing agencies by identical message+stuck-state so "everyone's down
-  // for the same reason" reads as one line instead of repeating per agency.
-  const errorGroups = useMemo(() => {
-    const groups = new Map<string, { message: string; stuck: boolean; agencyNames: string[] }>();
-    for (const [slug, message] of Object.entries(errorBySlug)) {
-      if (!message) continue;
-      const stuck = (failCountBySlug[slug] ?? 0) >= STUCK_FAIL_THRESHOLD;
-      const key = `${message}::${stuck}`;
-      const agencyName = agencyShortNameBySlug(agencies, slug);
-      if (!groups.has(key)) groups.set(key, { message, stuck, agencyNames: [] });
-      groups.get(key)!.agencyNames.push(agencyName);
-    }
-    return Array.from(groups.values());
-  }, [errorBySlug, failCountBySlug, agencies]);
 
   // Fetch GeoJSON for any visible agency that has live vehicles and isn't loaded yet
   // (shared IDB/LRU path — same as Frequency / Corridors).
@@ -944,12 +927,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
             ) : isLoading && totalVehicles === 0 ? (
               <PanelEmpty kind="loading">{loadingText('feed')}</PanelEmpty>
             ) : hasAnyError ? (
-              (() => {
-                // CIV-1768: the panel names what can't be shown; "Unable to load" and the countdown to the
-                // next try are in the map's loading pill (Ryan), in place of "Atlas will keep trying."
-                const names = errorGroups.flatMap(g => g.agencyNames);
-                return <PanelEmpty kind="error">{names.length === 1 ? liveUnreachableText(names) : LIVE_FEEDS_UNAVAILABLE}</PanelEmpty>;
-              })()
+              // CIV-1768 (Ryan): every feed in view down reads only in the map's loading badge, "Unable to load ·
+              // Retrying in 12s"; the panel adds no second line saying the same.
+              null
             ) : displayedRouteGroups.length === 0 && routeGroups.length === 0 ? (
               query ? (
                 <PanelEmpty>{LIVE_NO_ROUTE_MATCHES}</PanelEmpty>
