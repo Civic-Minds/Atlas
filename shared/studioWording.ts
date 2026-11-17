@@ -49,4 +49,9 @@ export const STUDIO_VEHICLES_TEXT = {
   running: 'Running time',
   layover: 'Layover',
   noService: 'No buses at this time of day.',
+  // CIV-1712: the planner's choice for a target on routes whose branches share a middle section. Proposed, waiting on
+  // Ryan's word-for-word OK.
+  branchSplit: 'Trips on branches',
+  branchSplitCurrent: 'Keep current mix',
+  branchSplitEven: 'Split evenly',
 } as const;

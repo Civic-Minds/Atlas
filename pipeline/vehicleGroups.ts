@@ -10,7 +10,7 @@
  */
 import type { PeriodPatterns, Pattern } from './vehiclePatterns.js';
 import { cycleMin, needVehicles, targetVehicles } from './vehiclePatterns.js';
-import type { StudioVehicleGroup } from '../shared/studioVehicles.js';
+import type { StudioBranchSplit, StudioVehicleGroup } from '../shared/studioVehicles.js';
 import { SURFACE_TIER_MAXES } from '../shared/config.js';
 import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
 
@@ -47,17 +47,21 @@ export function vehicleGroupRows(
       runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),
       layoverMin: layovers.length ? Math.round(layovers.reduce((s, v) => s + v, 0)) : null,
       targets,
-      atTarget: Object.fromEntries(targets.map(hw => [hw, atTarget(memberIds, patterns, a, hw)])),
+      atTarget: Object.fromEntries(targets.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'current')])),
+      // CIV-1712: the even split too, for the planner's choice, where the group has branches sharing a middle.
+      ...(a.trunks.some(t => memberIds.includes(t.routeId))
+        ? { atTargetEven: Object.fromEntries(targets.map(hw => [hw, atTarget(memberIds, patterns, a, hw, 'even')])) }
+        : {}),
     });
   }
   return rows;
 }
 
-function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a: PeriodPatterns, headwayMin: number): number {
+function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a: PeriodPatterns, headwayMin: number, branchSplit: StudioBranchSplit): number {
   let buses = 0;
   for (const routeId of memberIds) {
     const own = patterns.filter(p => p.routeId === routeId);
-    const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit: 'current', shortTurnHeadwayMin: null, recovery: SCHEDULE });
+    const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit, shortTurnHeadwayMin: null, recovery: SCHEDULE });
     for (const t of targets) {
       if (t.headwayMin == null || t.vehicles == null) continue;
       buses += cycleMin(own.find(p => p.id === t.id)!, SCHEDULE) / t.headwayMin;
