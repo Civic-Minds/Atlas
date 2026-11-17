@@ -50,7 +50,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'scripts/research-fares.mjs': { 'origin': 1 },
   'scripts/route-accuracy-spot-check.ts': { 'route-type-digit': 1 },
   'scripts/verify-deployments.mjs': { 'origin': 3 },
-  'scripts/verify-live-contract.ts': { 'origin': 1 },
   'shared/config.ts': { 'colour': 6, 'definition': 7 },
   'shared/connections.ts': { 'scale-array': 1 },
   'shared/dayTypes.ts': { 'definition': 4 },
@@ -87,5 +86,4 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'src/utils/mapExportDetails.ts': { 'colour': 1, 'scale-array': 1 },
   'src/utils/routeModeFilters.ts': { 'route-type-digit': 1 },
   'vercel.json': { 'origin': 1 },
-  'workers/gtfs-rt-archiver/src/index.ts': { 'origin': 1 },
 };

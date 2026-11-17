@@ -1,4 +1,8 @@
-const baseUrl = (process.env.ATLAS_URL ?? 'https://atlas-gamma-two.vercel.app').replace(/\/$/, '');
+import { SITE_URL } from '../shared/rules/paths';
+
+// Today's site by default (rules audit 5 #10; it named an old Vercel address). The live-snapshot and live-replay
+// endpoints it checks are local only now (local-api/), so point ATLAS_URL at the local API server to run it.
+const baseUrl = (process.env.ATLAS_URL ?? SITE_URL).replace(/\/$/, '');
 const agency = process.env.ATLAS_AGENCY ?? 'ttc';
 const end = Math.floor(Date.now() / 1000);
 const start = end - 60 * 60;
