@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FEATURES } from '../../shared/config';
 import ResearchersPage from '../ResearchersPage';
 import coverage from '../../shared/data/atlas-coverage.json';
 
@@ -12,7 +11,6 @@ describe('For Researchers page (CIV-1709)', () => {
       'See How Service Changed Over the Years',
       'Compare Cities on One Map',
       'Maps You Can Cite',
-      'Research Stories and Methods',
       'Where the Data Comes From',
       'Request a Demo',
     ]) expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
@@ -22,7 +20,7 @@ describe('For Researchers page (CIV-1709)', () => {
     const { container } = render(<ResearchersPage />);
     const cards = [...container.querySelectorAll('section')].filter(s => s.querySelector('h2') && s.style.background);
     const features = cards.filter(c => c.querySelector('h2')!.textContent !== 'Request a Demo');
-    expect(features).toHaveLength(4);
+    expect(features).toHaveLength(3);
     for (const card of features) {
       const text = card.querySelector('p')!.textContent!;
       expect([card.querySelector('h2')!.textContent, text.split(/(?<=\.)\s+/).length]).toEqual([card.querySelector('h2')!.textContent, 2]);
@@ -38,7 +36,7 @@ describe('For Researchers page (CIV-1709)', () => {
   it('alternates the picture side of the cards with pictures, and reuses the planners pictures', () => {
     const { container } = render(<ResearchersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    // Compare Cities (flipped), Maps You Can Cite, then the Request a demo card; History and Stories have no picture yet.
+    // Compare Cities (flipped), Maps You Can Cite, then the Request a demo card; History has no picture yet.
     expect(sides).toEqual(['left', 'right', 'right']);
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
     for (const theme of ['light', 'dark']) {
@@ -53,13 +51,6 @@ describe('For Researchers page (CIV-1709)', () => {
     const demo = screen.getAllByRole('link', { name: 'Request a demo' });
     expect(demo).toHaveLength(1);
     expect(demo[0].closest('section')).toContainElement(screen.getByRole('heading', { level: 2, name: 'Request a Demo' }));
-  });
-
-  it('links to Research only when the research pages exist', () => {
-    render(<ResearchersPage />);
-    const research = screen.queryByRole('link', { name: 'Explore Research' });
-    if (FEATURES.researchApps) expect(research).toHaveAttribute('href', '/research');
-    else expect(research).toBeNull();
   });
 
   it('says nothing about what Atlas is not', () => {
