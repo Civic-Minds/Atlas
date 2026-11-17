@@ -37,6 +37,19 @@ Route-days without stretch data (no direction_id in the feed, partial-weekday ro
 
 The map reads PMTiles. A change to these rules reaches the live map only after a PMTiles rebuild. Changes to how processing measures headways also need a reprocess of every agency first.
 
+## Where the scales live
+
+Every frequency scale is defined once, in `shared/frequencyRules.ts` (Ryan, 2026-11-17: "we have some internally frequencies and some externally which is fine but like we need to keep this info centralized"). Everything else reads it, and `shared/__tests__/frequencyScales.test.ts` fails on a hand-typed tier list anywhere else.
+
+| Scale | Shown or internal | Constant | Values |
+| --- | --- | --- | --- |
+| Map tiers (line colours, legend, filter) | Shown | `PUBLIC_TIER_MAXES`; `HEADWAY_TIERS` adds the colours (`shared/config.ts`) | 10, 15, 20, 30, 60, then Infrequent |
+| Grading scale, every mode | Internal | `TIER_MAXES`: every public grade plus the finer 5 and 8, which count as 10 (`publicTierOf`); also the release gate, `TIER_RANK`, near-miss shares, audits | 5, 8, 10, 15, 20, 30, 60 |
+| Near-miss share per tier | Internal | `VIOLATION_PERCENT_BY_TIER` (10% up to 15 min, 5% above) | table A below |
+| Near-miss allowance | Internal | `nearMissGrace`, `EDGE_GAP_ALLOWANCE_MINUTES`, `GRACE_FLOOR_MIN_GAPS` | table A below |
+
+"Shown" means riders see the numbers on the map or a page; "internal" means only the pipeline grades with them. **One scale for every mode** (Ryan, 2026-11-17, CIV-1813; DECISIONS.md: "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes"): bus, rail and streetcar are all graded on `TIER_MAXES`, and no mode has a scale of its own. Its finer grades, 5 and 8, are internal and count as the next public grade up (10). `frequencyScales.test.ts` fails if a mode-specific scale or tier list appears, or if the scale skips a public grade.
+
 ## Thresholds and where they were decided
 
 These are settled; don't change them without a new decision (Ryan, 2026-10-15).

@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { determineTier } from '../pipeline/transit-phase2';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
+import { DEFAULT_CRITERIA } from '../pipeline/defaults';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
 
 const parse = (text: string) => Papa.parse(text, {
@@ -223,7 +223,7 @@ for (let index = 0; index < archives.length; index++) {
     const dayType = DAY_TO_TYPE[raw.day];
     const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
     if (!dayConfig) continue;
-    const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides);
+    const tiers = dayConfig.tiers;
     const gaps = window.times.slice(1).map((time, gapIndex) => time - window.times[gapIndex]);
     const currentTier = determineTier(
       gaps,

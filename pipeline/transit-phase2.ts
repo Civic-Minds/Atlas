@@ -11,8 +11,9 @@ import {
 } from '../types/gtfs';
 import { computeMedian } from './transit-utils';
 import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults';
-import { SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config.js';
+import { DEFAULT_CRITERIA } from './defaults';
+import { TIME_PERIODS } from '../shared/config.js';
+import { TIER_MAXES } from '../shared/frequencyRules.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 import { forCrossMidnightWindow } from './headway-utils';
@@ -87,7 +88,7 @@ export const determineTier = (
     headways: number[],
     tripCount: number,
     spanMinutes: number,
-    tiers: number[] = SURFACE_TIER_MAXES,
+    tiers: number[] = TIER_MAXES,
     graceMinutes: number = GRACE_MINUTES,
     maxGraceViolations: number = 0,
     gracePercent: number = GRACE_PERCENT,
@@ -517,7 +518,7 @@ export function applyAnalysisCriteria(
         }
 
         const spanMins = analysisWindow[analysisWindow.length - 1] - analysisWindow[0];
-        const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, criteria.modeTierOverrides);
+        const tiers = dayConfig.tiers;
         // Routes that don't provide sustained all-day service — classify as span:
         // - trips compressed into ≤90 minutes (school runs, shuttle bursts)
         // - active span covers <40% of the analysis window (rush-hour-only, e.g. GO Milton)
@@ -982,9 +983,9 @@ export const calculateTiers = (
     const criteria: AnalysisCriteria = {
         ...DEFAULT_CRITERIA,
         dayTypes: {
-            Weekday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
-            Saturday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
-            Sunday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: SURFACE_TIER_MAXES },
+            Weekday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: TIER_MAXES },
+            Saturday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: TIER_MAXES },
+            Sunday: { timeWindow: { start: startTimeMins, end: endTimeMins }, tiers: TIER_MAXES },
         },
     };
     return applyAnalysisCriteria(rawData, criteria);

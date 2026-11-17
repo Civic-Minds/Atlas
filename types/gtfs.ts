@@ -276,8 +276,6 @@ export interface AnalysisCriteria {
     violationPercent: number;     // fallback fraction of gaps allowed in the grace zone
     /** Tier-specific internal near-miss percentages; production also caps the result at 3. */
     violationPercentByTier?: Record<number, number>;
-    /** Override tiers for rail vs surface modes */
-    modeTierOverrides?: Record<string, number[]>;
     isDefault?: boolean;
 
     // Financial overrides

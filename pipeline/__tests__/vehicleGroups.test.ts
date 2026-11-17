@@ -1,4 +1,4 @@
-import { SURFACE_TIER_MAXES } from '../../shared/config';
+import { PUBLIC_TIER_MAXES } from '../../shared/config';
 import { STUDIO_TARGETS } from '../../shared/studioVehicles';
 import { describe, expect, it } from 'vitest';
 import type { TripRun } from '../vehiclesNeeded.js';
@@ -70,8 +70,8 @@ describe('Studio route groups (CIV-1693)', () => {
   });
 
   it('gives every group the map’s public scale as targets, no typed list and no internal 5 or 8', () => {
-    for (const row of rows) expect(Object.keys(row.atTarget).map(Number)).toEqual(SURFACE_TIER_MAXES);
-    expect(STUDIO_TARGETS).toBe(SURFACE_TIER_MAXES);
+    for (const row of rows) expect(Object.keys(row.atTarget).map(Number)).toEqual(PUBLIC_TIER_MAXES);
+    expect(STUDIO_TARGETS).toBe(PUBLIC_TIER_MAXES);
   });
 
   it('lists each route once even when every member is passed in', () => {

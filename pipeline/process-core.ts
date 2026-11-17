@@ -18,14 +18,15 @@ import { dropOneOffRailTrips } from './oneOffServices.js';
 import { prefixGtfsIds } from './supplementalIds.js';
 import { directionSplitsOf, mergeDirectionSplitRoutes, type DirectionSplit } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from './defaults.js';
+import { DEFAULT_CRITERIA } from './defaults.js';
+import { TIER_MAXES } from '../shared/frequencyRules.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, SPARKLINE_HOURS, SURFACE_TIER_MAXES, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -405,7 +406,7 @@ function pooledTerminalHeadway(times: readonly number[] | undefined): number | n
 
 /**
  * Phase 2's rail tier rule on a departure list (#898): the every-gap grade of the midday window
- * (09:30 to 14:30) on the route's own tier scale, or null when the window has under three
+ * (09:30 to 14:30) on the grading scale, or null when the window has under three
  * departures, they are limited service by phase 2's test (packed into BURST_MAX_SPAN_MINUTES or
  * covering under 40% of the window), or they grade as span. Without the limited test the gaps
  * read only run from the first to the last departure in the window, so three trains every 30
@@ -456,7 +457,7 @@ export function scopedTerminalHeadline(
     gaps,
     windowed.length,
     windowed[windowed.length - 1] - windowed[0],
-    getTiersForCriteria(routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides),
+    dayConfig.tiers,
     DEFAULT_CRITERIA.graceMinutes,
     DEFAULT_CRITERIA.maxGraceViolations,
     DEFAULT_CRITERIA.gracePercent,
@@ -3139,11 +3140,9 @@ export async function processGtfsBuffer(
     // hole (ttc 100 via Linkwood) still read. Without one the stop is drawn limited and
     // left out of the headline and the period floors (CIV-150: cta J14 Saturday read 455 from a
     // two-trip tail under segments every 10; nine lines lost their headline to one such stop).
-    // The tier scale this route grades on (rail and streetcars: 5, 8, 10, 15, 30, 60; buses: the
-    // surface tiers). Every headway-to-tier step on the route reads it, so a 4-minute people mover
-    // graded 5 is never degraded to the surface scale's 10 (settleTier, the rescue, the worst
-    // reading stop and the stop grades' headway cap).
-    const routeTierScale = (): readonly number[] => getTiersForCriteria(featureRoute?.route_type ?? '', DEFAULT_CRITERIA.dayTypes[day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
+    // Every headway-to-tier step on the route reads the one grading scale (TIER_MAXES, every mode,
+    // CIV-1813), so a 4-minute people mover graded 5 is never degraded to the public scale's 10
+    // (settleTier, the rescue, the worst reading stop and the stop grades' headway cap).
     const stopHasReading = (stopId: string): boolean => {
       const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
       const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
@@ -3203,7 +3202,7 @@ export async function processGtfsBuffer(
         drawnStopIds,
         gradeAt: (stopId, weekday) => (weekday ? (lift ? lift.gradeOnWeekday(stopId, weekday) : null) : stopTiers[stopId] ?? null),
         otherWeekdays: () => (lift ? lift.otherWeekdays() : []),
-        tiers: routeTierScale(),
+        tiers: TIER_MAXES,
       });
     };
     const publishStopData = (): { onShape: typeof coverageStops; stopHeadways: Record<string, number> } | null => {
@@ -3265,7 +3264,7 @@ export async function processGtfsBuffer(
           const headway = allStopHw[stopId];
           if (headway == null) continue;
           // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
-          // the rail tier scale, the midday-window reading rail's own tier rule uses. A short-turn
+          // the grading scale, the midday-window reading rail's own tier rule uses. A short-turn
           // pattern that runs entirely on a shared trunk (WMATA Yellow to Mount Vernon Square on
           // weekends, every 16 under a trunk every 8 with the Greenbelt trains) then colours that
           // trunk at the trunk's service, as a bus trunk does, instead of the row's own tier.
@@ -3275,9 +3274,9 @@ export async function processGtfsBuffer(
           // wait alone read an hourly stop with a multi-hour hole as 60 and a peak-only commuter
           // station at its peak wait; the client then fills an ungraded stop from its neighbours.
           if (railFeature) {
-            const railGraded = railMiddayTier(times, day as DayType, featureRoute?.route_type ?? '', routeTierScale());
+            const railGraded = railMiddayTier(times, day as DayType, featureRoute?.route_type ?? '', TIER_MAXES);
             if (railGraded == null) continue;
-            const byHeadway = headwayToTierOn(headway, routeTierScale());
+            const byHeadway = headwayToTierOn(headway, TIER_MAXES);
             stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
             continue;
           }
@@ -3294,10 +3293,10 @@ export async function processGtfsBuffer(
           // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
           // graded 20 on its usual wait.
           if (best == null) continue;
-          // The headway cap reads the route's own tier scale (rail and streetcars grade on 5 and
-          // 8): a 4-minute people mover graded 5 at every stop was capped to the surface scale's
-          // 10 and the worst-stop rule took the line from 5 to 10.
-          const byHeadway = headwayToTierOn(headway, routeTierScale());
+          // The headway cap reads the grading scale, 5 and 8 included: a 4-minute people mover
+          // graded 5 at every stop was capped to the public scale's 10 and the worst-stop rule
+          // took the line from 5 to 10.
+          const byHeadway = headwayToTierOn(headway, TIER_MAXES);
           stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
@@ -3333,7 +3332,7 @@ export async function processGtfsBuffer(
           : null;
         if (scoped) {
           feature.properties.headway = scoped.headway;
-          const newTier = headwayToTierOn(scoped.headway, routeTierScale());
+          const newTier = headwayToTierOn(scoped.headway, TIER_MAXES);
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) {
             feature.properties.tier = newTier;
           }
@@ -3412,7 +3411,7 @@ export async function processGtfsBuffer(
         const overnightFloor = overnight.headway ?? overnight.withheld;
         if (overnightOnly && !rescued && !limitedVariant && headline != null && overnightFloor != null && overnightFloor > headline) {
           feature.properties.headway = overnightFloor;
-          const newTier = headwayToTierOn(overnightFloor, routeTierScale());
+          const newTier = headwayToTierOn(overnightFloor, TIER_MAXES);
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
         }
       }
@@ -3431,7 +3430,7 @@ export async function processGtfsBuffer(
         if (vals.length) {
           const headway = Math.max(...vals);
           feature.properties.headway = headway;
-          const newTier = headwayToTierOn(headway, routeTierScale());
+          const newTier = headwayToTierOn(headway, TIER_MAXES);
           if ((TIER_RANK[newTier] ?? -1) > (TIER_RANK[feature.properties.tier as string] ?? -1)) feature.properties.tier = newTier;
         } else if (!reading.length) {
           feature.properties.headway = null;
@@ -3573,7 +3572,7 @@ export async function processGtfsBuffer(
         pooledPlainTerminalHw: pooledTerminalHeadway(terminalId ? headsignMap?.get(terminalId) : undefined),
       });
       feature.properties.headway = headway;
-      feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, routeTierScale());
+      feature.properties.tier = settleTier(feature.properties.tier as string, headway, scoped, TIER_MAXES);
       // #898: a rail row's tier is phase 2's grade of the drawn pattern's own midday departures,
       // while its headline reads the headsign's pooled terminal sample. Where that sample has
       // more departures than the pattern's own (two origins to one destination: WMATA Yellow to
@@ -3605,9 +3604,9 @@ export async function processGtfsBuffer(
             headway,
             day: day as DayType,
             drawnStopIds: drawnIds,
-            gradeAt: (stopId, weekday) => railMiddayTier(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', routeTierScale()),
+            gradeAt: (stopId, weekday) => railMiddayTier(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', TIER_MAXES),
             otherWeekdays: () => otherWeekdayPools(hsKey),
-            tiers: routeTierScale(),
+            tiers: TIER_MAXES,
           });
         }
       }
@@ -3644,7 +3643,7 @@ export async function processGtfsBuffer(
             drawnStopIds: drawnIds,
             gradeAt: (stopId, weekday) => scopedTerminalHeadline(branchPoolTimesAt(hsKey, drawnIds, stopId, true, weekday), day as DayType, featureRoute?.route_type ?? '', railFeature)?.tier ?? null,
             otherWeekdays: () => otherWeekdayPools(hsKey),
-            tiers: routeTierScale(),
+            tiers: TIER_MAXES,
           });
         }
       }
@@ -4063,8 +4062,7 @@ export async function processGtfsBuffer(
         if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
         const tierBefore = p.tier as string | undefined;
         if (board.passes) {
-          const scale = getTiersForCriteria(String(p.routeType ?? ''), DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.tiers ?? SURFACE_TIER_MAXES, DEFAULT_CRITERIA.modeTierOverrides);
-          const byWait = headwayToTierOn(board.wait, scale);
+          const byWait = headwayToTierOn(board.wait, TIER_MAXES);
           headlineBeforeRiderWait.set(feature as GeoJsonFeature, headline);
           p.headway = board.wait;
           if ((TIER_RANK[byWait] ?? -1) > (TIER_RANK[tierBefore ?? ''] ?? -1)) p.tier = byWait;

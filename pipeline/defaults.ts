@@ -1,12 +1,10 @@
 import { AnalysisCriteria } from '../types/gtfs';
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
-import { GRACE_MINUTES, GRACE_PERCENT, RAIL_TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
-
-const SURFACE_TIERS = SURFACE_TIER_MAXES;
+import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
 
 /**
  * Default analysis criteria:
  * - Weekday: 07:00–22:00 · Saturday: 07:00–22:00 · Sunday: 09:00–21:00
+ * - Tiers: TIER_MAXES, one scale for every mode (CIV-1813)
  * - Grace: max(5 min, T × 15%) per tier — tier=60 gets 9 min, tighter tiers keep 5 min floor
  * - Internal near misses: 10% for 5–15-minute tiers and 5% for 20–60-minute
  *   tiers, with one near miss allowed once there are 8 or more gaps
@@ -18,15 +16,15 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     dayTypes: {
         Weekday: {
             timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
-            tiers: SURFACE_TIERS,
+            tiers: TIER_MAXES,
         },
         Saturday: {
             timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
-            tiers: SURFACE_TIERS,
+            tiers: TIER_MAXES,
         },
         Sunday: {
             timeWindow: { start: 540, end: 1260 },  // 09:00–21:00
-            tiers: SURFACE_TIERS,
+            tiers: TIER_MAXES,
         },
     },
     graceMinutes: GRACE_MINUTES,
@@ -34,49 +32,5 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     maxGraceViolations: 0,
     violationPercent: VIOLATION_PERCENT,
     violationPercentByTier: { ...VIOLATION_PERCENT_BY_TIER },
-    modeTierOverrides: {
-        rail: [...RAIL_TIER_MAXES],
-        surface: SURFACE_TIERS,
-    },
     isDefault: true,
 };
-
-/**
- * GTFS route_type → mode category for tier override lookup.
- * Handles both base types (0–12) and GTFS extended types (HVT spec).
- */
-export function getModeCategory(routeType: string): string {
-    const n = parseInt(routeType);
-    if (Number.isNaN(n)) return 'surface';
-
-    // Base GTFS types (Standard Spec)
-    // 0: Tram/Light Rail, 1: Subway/Metro, 2: Rail, 5: Cable Car, 7: Funicular, 12: Monorail
-    const baseRailTypes = new Set([0, 1, 2, 5, 7, 12]);
-    if (baseRailTypes.has(n)) return 'rail';
-
-    // Extended HVT types (Google/Extended Spec)
-    // 100-199: Railway, 400-499: Urban Railway, 500-599: Metro, 900-999: Tram, 1400-1499: Funicular
-    if ((n >= 100 && n < 200) || (n >= 400 && n < 600) || (n >= 900 && n < 1000) || (n >= 1400 && n < 1500)) {
-        return 'rail';
-    }
-
-    // Default to surface for all other types (Buses, Trolleybuses, Ferries, etc.). Gondolas (6)
-    // and trolleybuses (11) stay on the surface scale on purpose: a trolleybus is a bus in
-    // mixed traffic, and the rail scale's 5 and 8 exist for exclusive-guideway service riders
-    // treat as turn-up-and-go, which a gondola's continuous cabins are not graded as.
-    return 'surface';
-}
-
-/**
- * Get the tier array for a given route type and criteria.
- * Uses mode-specific overrides if available, otherwise falls back to day type tiers.
- */
-export function getTiersForCriteria(
-    routeType: string,
-    dayTiers: number[],
-    modeTierOverrides?: Record<string, number[]>
-): number[] {
-    if (!modeTierOverrides) return dayTiers;
-    const category = getModeCategory(routeType);
-    return modeTierOverrides[category] || dayTiers;
-}

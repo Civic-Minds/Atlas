@@ -53,7 +53,7 @@ weekday schedules vary and explains that the displayed tier reflects the
 slowest weekday.
 
 ### 6. Assigning frequency tiers
-Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The current surface thresholds (`HEADWAY_TIERS` in `shared/config.ts`) are below. Rail routes also use 5 and 8 minute tiers (`modeTierOverrides` in `pipeline/defaults.ts`: 5, 8, 10, 15, 30, 60). The tolerances for near misses and edge gaps are in [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md) (Thresholds), not here. The surface tiers are:
+Atlas uses sustained service thresholds to assign frequency tiers. It tests the analyzed gaps across each service window, allowing a small number of grace-period violations, then stores headway metrics separately for display and filtering. The public thresholds (`HEADWAY_TIERS` in `shared/config.ts`) are below. Every mode is graded on one scale, which adds internal 5 and 8 minute tiers that count as 10 (`TIER_MAXES` in `shared/frequencyRules.ts`: 5, 8, 10, 15, 20, 30, 60; CIV-1813). The tolerances for near misses and edge gaps are in [FREQUENCY_RULES.md](../product/FREQUENCY_RULES.md) (Thresholds), not here. The public tiers are:
 
 - **≤10 minutes**
 - **≤15 minutes**

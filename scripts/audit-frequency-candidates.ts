@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { determineTier } from '../pipeline/transit-phase2';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
+import { DEFAULT_CRITERIA } from '../pipeline/defaults';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
 import { TIME_PERIODS } from '../shared/config';
 import {
@@ -18,6 +18,7 @@ import {
   HardGapPolicy,
   determineCandidateTier,
 } from './frequency-candidate-rules';
+import { TIER_MAXES } from '../shared/frequencyRules';
 
 type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence' | 'q2Internal';
 type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup; targetTier?: number };
@@ -76,7 +77,7 @@ for (const internal of INTERNAL_CANDIDATES) {
 // Q2 study candidates. These compare tier-specific percentage allowances against
 // a strict zero-exception reference. The current 30% rule is intentionally not
 // used as the reference or treated as a recommendation.
-const q2Tiers = [5, 8, 10, 15, 20, 30, 60];
+const q2Tiers = TIER_MAXES;
 const q2Percentages = [0.05, 0.10, 0.15, 0.20, 0.25];
 const q2Floors = [0, 1];
 const q2Caps: Array<number | undefined> = [undefined, 3, 5];
@@ -294,7 +295,7 @@ for (let index = 0; index < allArchives.length; index++) {
     const dayType = DAY_TO_TYPE[raw.day];
     const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
     if (!dayConfig) continue;
-    const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides);
+    const tiers = dayConfig.tiers;
     const gaps = times.slice(1).map((time, gapIndex) => time - times[gapIndex]);
     const currentTier = determineTier(
       gaps,

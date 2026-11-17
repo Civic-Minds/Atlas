@@ -3,14 +3,15 @@
  * `scripts/vehicles-needed.ts --json tmp/studio/<slug>-vehicles.json` and served only by the Vite dev
  * server at STUDIO_VEHICLES_DEV_URL (vite.config.ts); never uploaded to R2 or built into a deployment.
  */
-import { SURFACE_TIER_MAXES, type PeriodKey } from './config';
+import { type PeriodKey } from './config';
+import { PUBLIC_TIER_MAXES } from './frequencyRules';
 
 /**
  * Studio's target headways (minutes): the map's public scale, the same for every group, rail included, never a copy of
  * it (Ryan: "why does Studio have different ones than the rest of the app"; "having 10/15/20/30/60 is already a bit and
- * doubling that list would be chaotic"). Internal grades such as rail's 5 and 8 are never shown.
+ * doubling that list would be chaotic"). The internal 5 and 8 are never shown.
  */
-export const STUDIO_TARGETS: readonly number[] = SURFACE_TIER_MAXES;
+export const STUDIO_TARGETS: readonly number[] = PUBLIC_TIER_MAXES;
 
 /** Routes that share buses (an interlined group), or one route on its own. */
 export interface StudioVehicleGroup {

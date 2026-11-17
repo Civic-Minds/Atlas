@@ -6,8 +6,11 @@
  * checkout being judged (see route-values.mts). Compare two outputs with report.py route-values.
  */
 
-export const THRESHOLDS = [10, 15, 20, 30, 60] as const;
-export const PERIODS = ['all', 'amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'] as const;
+import { PUBLIC_TIER_MAXES } from '../../shared/frequencyRules';
+import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+
+export const THRESHOLDS: readonly number[] = PUBLIC_TIER_MAXES;
+export const PERIODS: readonly ('all' | PeriodKey)[] = ['all', ...PERIOD_KEYS];
 export type RoutePeriod = (typeof PERIODS)[number];
 
 export interface FilterRules {

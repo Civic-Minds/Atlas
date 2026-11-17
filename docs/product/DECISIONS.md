@@ -19,6 +19,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### How a route's frequency is decided
 
+- **One frequency scale for every mode**
+  - What: bus, rail and streetcar are all graded on one scale, 5, 8, 10, 15, 20, 30 and 60 minutes; no mode has bands of its own. Riders see 10, 15, 20, 30 and 60: the internal 5 and 8 count as 10.
+  - Why: Ryan, "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". Rail had no 20 and graded a train every 16-20 minutes 30.
+  - Source: [decision log](#decision-log) (2026-11-17)
 - **Every direction must pass**
   - What: a route's value is its worst direction's; a direction with stray trips but no real service voids the route.
   - Why: a route that is frequent one way only is not frequent.
@@ -260,6 +264,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-17 — One frequency scale for every mode
+Ryan, 2026-11-17 (CIV-1813): "Fix it now then omfg why the fuck are there any separate freqeucnies between buses and rail", then "like we can have 5 mins or 8 mins or 12 mins or whatever and not expose it to th epublic and put it under the next highest one if we want but this is much different than that", then "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". There are no mode-specific scales: every mode, bus, rail and streetcar, is graded on one scale, 5, 8, 10, 15, 20, 30, 60 (`TIER_MAXES`). The public scale is 10, 15, 20, 30, 60 (`PUBLIC_TIER_MAXES`); the internal 5 and 8 count as 10 (`publicTierOf`). Before this, buses graded on 10-60 and rail on 5-8-10-15-30-60, with no 20 since 75c2d8422 (2026-10-06, never approved). `modeTierOverrides` and `RAIL_TIER_MAXES` are gone, and `frequencyScales.test.ts` fails if a mode-specific scale or tier list appears.
 
 ### 2026-11-16 — The For Transit Planners page is at /planners
 Ryan, 2026-11-16 (CIV-1744): "should it rlly be at /about/planners or should it be at another url", then picked "1": `/planners`, and later `/researchers` for the researchers page (CIV-1709). Audience pages get their own top-level address instead of sitting under About. The page had never been public, so the old address has no redirect.

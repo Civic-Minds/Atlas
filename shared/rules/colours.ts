@@ -1,6 +1,6 @@
 /**
  * Every colour Atlas sets in code, in one place (rules audit 4.1, move 8): the frequency tier palettes (one colour per
- * SURFACE_TIER_MAXES step, then Infrequent), vehicle status colours, the night and branch palettes, the shared
+ * PUBLIC_TIER_MAXES step, then Infrequent), vehicle status colours, the night and branch palettes, the shared
  * fallback grey and the map's halo and line colours. CSS tokens stay in src/styles/index.css. Imports nothing, so any
  * bundle, the pipeline and the scripts can read it.
  */

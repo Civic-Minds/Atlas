@@ -1,4 +1,5 @@
 import { headwayTierLabel } from './headwayText';
+import { PUBLIC_TIER_MAXES } from './frequencyRules';
 import { hourRange, hourTime } from './timeText';
 import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
@@ -366,20 +367,17 @@ export interface HeadwayTier {
   label: string;
 }
 
-/** The frequency tiers, best first, in their colours (shared/rules/colours.ts). */
+/**
+ * The frequency tiers, best first, in their colours (shared/rules/colours.ts): one per PUBLIC_TIER_MAXES step
+ * (shared/frequencyRules.ts, the scales' one home), then Infrequent.
+ */
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: TIER_COLOURS[0], label: headwayTierLabel(10) },
-  { max: 15, color: TIER_COLOURS[1], label: headwayTierLabel(15) },
-  { max: 20, color: TIER_COLOURS[2], label: headwayTierLabel(20) },
-  { max: 30, color: TIER_COLOURS[3], label: headwayTierLabel(30) },
-  { max: 60, color: TIER_COLOURS[4], label: headwayTierLabel(60) },
-  { max: Infinity, color: TIER_COLOURS[5], label: 'Infrequent' },
+  ...PUBLIC_TIER_MAXES.map((max, i) => ({ max, color: TIER_COLOURS[i], label: headwayTierLabel(max) })),
+  { max: Infinity, color: TIER_COLOURS[PUBLIC_TIER_MAXES.length], label: 'Infrequent' },
 ];
 
-/** Finite headway tier breakpoints derived from HEADWAY_TIERS (pipeline analysis). */
-export const SURFACE_TIER_MAXES: number[] = HEADWAY_TIERS
-  .filter(t => t.max !== Infinity)
-  .map(t => t.max);
+/** The public scale, re-exported here for its many readers; defined in shared/frequencyRules.ts. */
+export { PUBLIC_TIER_MAXES };
 
 /** The default map view, its padding and the zoom steps (shared/rules/limits.ts). */
 export {

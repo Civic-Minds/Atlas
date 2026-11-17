@@ -42,16 +42,17 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/modes.js';
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
-import { RAIL_TIER_MAXES, TIER_RANK } from './headway-utils.js';
-import { PERIOD_KEYS, SURFACE_TIER_MAXES } from '../shared/config.js';
+import { TIER_RANK } from './headway-utils.js';
+import { PERIOD_KEYS } from '../shared/config.js';
+import { publicTierOf, TIER_MAXES } from '../shared/frequencyRules.js';
 import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
 
 /**
- * The weekday tiers the gate compares: the surface scale plus rail's 5 and 8, so a rail line
- * moving two steps on its own scale (5 -> 10, 8 -> 15) is a route shift like a bus moving
- * 10 -> 20 (#871). Only 'span' is left out: it is no service, not a tier.
+ * The weekday tiers the gate reads: the one grading scale, 5 and 8 included. A route shift is
+ * counted in public steps (publicTierOf, CIV-1813): an internal move such as 10 -> 5 or 5 -> 10
+ * changes nothing riders see and raises no flag; 8 -> 20 (10 -> 20 publicly) does. Only 'span' is left out: it is no service, not a tier.
  */
-const GATE_TIERS = new Set([...SURFACE_TIER_MAXES.map(String), ...RAIL_TIER_MAXES.map(String), 'infrequent']);
+const GATE_TIERS = new Set([...TIER_MAXES.map(String), 'infrequent']);
 import { addYearsYmd, PLACEHOLDER_EXPIRY_YEARS } from './refreshMeta.js';
 
 export const GATE_FLAGS = ['drop', 'empty', 'mode-lost', 'duplicate', 'headway-shift', 'route-shift', 'headway-lost', 'day-lost', 'day-shrunk', 'expired', 'future-start', 'placeholder-expiry', 'added'] as const;
@@ -78,6 +79,13 @@ export const HEADWAY_SHIFT_MIN_ROUTES = 5;
 export const HEADWAY_SHIFT_MIN_SHIFTED = 3;
 /** A single route is flagged when its weekday tier moves at least this many steps (#707). */
 export const ROUTE_SHIFT_TIER_STEPS = 2;
+
+/** A gate tier as riders see it: a numeric tier's public grade (5 and 8 read 10), 'infrequent' as is. */
+const publicTier = (tier: string | undefined): string | undefined => {
+  if (tier == null) return undefined;
+  const n = Number(tier);
+  return Number.isFinite(n) ? String(publicTierOf(n) ?? 'infrequent') : tier;
+};
 /** At most this many routes are named in a route-shift message. */
 const ROUTE_SHIFT_MAX_LISTED = 10;
 /** The route id of a `routeId|start|end` signature. */
@@ -345,8 +353,9 @@ export function routeShifts(live: ArtifactSummary, next: ArtifactSummary): { shi
   for (const routeId of [...ids].sort()) {
     const parts: string[] = [];
     const [tierBefore, tierAfter] = [liveTiers[routeId], nextTiers[routeId]];
-    const tierMoved = tierBefore != null && tierAfter != null && Math.abs(TIER_RANK[tierBefore] - TIER_RANK[tierAfter]) >= ROUTE_SHIFT_TIER_STEPS;
-    if (tierMoved) parts.push(`tier ${tierBefore}->${tierAfter}`);
+    const [publicBefore, publicAfter] = [publicTier(tierBefore), publicTier(tierAfter)];
+    const tierMoved = publicBefore != null && publicAfter != null && Math.abs(TIER_RANK[publicBefore] - TIER_RANK[publicAfter]) >= ROUTE_SHIFT_TIER_STEPS;
+    if (tierMoved) parts.push(`tier ${publicBefore}->${publicAfter}`);
     const before = riderValues(live, routeId), after = riderValues(next, routeId);
     // Weekday reads as before ("60->25 min"); a weekend day is named ("Saturday 30->60 min").
     const label = (day: string) => (day === 'Weekday' ? '' : `${day} `);
