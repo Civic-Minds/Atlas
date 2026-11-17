@@ -20,6 +20,7 @@ The shared components live in `src/components/ui/`.
 - The "On this page" menu is `PageContents` (`src/components/PageContents.tsx`). Commit 49f72ada.
   - It highlights the section being read.
 - Page and section headings use `PageTitle` and `SectionTitle` (`src/components/ui/PageTitle.tsx`), so the same kind of page looks the same.
+- The research stories share one heading, paragraph and chart-panel look (`STORY_HEADING`, `STORY_PARAGRAPH`, `STORY_CHART_PANEL` in `src/pageStyles.ts`). CIV-1804. (checked)
 - Floating cards over the map use `Panel` (`src/components/ui/Panel.tsx`).
 
 ## Tables, controls and labels

@@ -197,6 +197,10 @@ const RULES: Rule[] = [
     slip: '<div className="rounded-2xl p-6" style={{ background: featureTint(color) }}>',
     skipLine: /export const (FLOATING_CARD|SIDEBAR_CARD_SURFACE|DROPDOWN_PANEL|COMPARE_SIDE_GROUP) =/,
     allowed: ['src/components/ui/Card.tsx', 'src/components/AirportStoryMap.tsx', 'src/components/FrequentServiceStoryMap.tsx', 'src/components/PageContents.tsx', 'src/components/ui/ExpandDialog.tsx'] },
+  // CIV-1804: the research stories' heading, paragraph and chart-panel looks are one constant each in src/pageStyles.ts.
+  { name: 'a research story heading, paragraph or chart panel styled by hand (use STORY_HEADING, STORY_PARAGRAPH or STORY_CHART_PANEL)', doc: 'VISUAL.md',
+    pattern: /text-3xl sm:text-4xl font-black tracking-tight|mt-5 text-base leading-8 text-\[var\(--text-muted\)\]|rounded-\[2rem\] border border-\[var\(--border-primary\)\] bg-\[var\(--bg-panel\)\]/,
+    slip: '<section className="rounded-[2rem] border border-[var(--border-primary)] bg-[var(--bg-panel)] p-6 sm:p-10">', allowed: ['src/pageStyles.ts'] },
   // Commit 697af467: Live pages offer no CSV downloads.
   { name: 'a CSV download in Live code', doc: 'VISUAL.md', pattern: /\bCSV\b|\.csv\b|text\/csv/i, slip: "'Download CSV'", only: /(^|\/)[Ll]ive[^/]*$|\/Live\// },
 ];
