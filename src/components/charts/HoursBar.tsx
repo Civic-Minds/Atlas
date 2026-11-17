@@ -34,22 +34,13 @@ export default function HoursBar({ runs, axis }: { runs: NonNullable<AgencyPageR
   // Ryan (CIV-1605): "Weekday hours", then the times: "Weekday hours: from 7 AM until 9:16 PM".
   const label = `${WEEKDAY_HOURS_LABEL}: ${runs.first != null ? `from ${clockTime(runs.first)}` : `from the ${hourTime(firstHour)} hour`} ${runs.last != null ? `until ${clockTime(runs.last)}` : `to the ${hourTime(lastHour)} hour`}`;
   // CIV-1787 (Ryan, option 1): always one range label above the bar ("6:42 AM–8:15 PM"), never two times split at the
-  // ends, so every row reads the same. It starts over the first piece, or ends over the last when the service sits in
-  // the right half, so a night route's times sit over its pieces, not at the axis's ends.
-  const pct = (minutes: number) => (100 * (minutes - axis.first * 60)) / span;
-  const startPct = pct(drawn[0]?.[0] ?? axis.first * 60);
-  const endPct = pct(drawn[drawn.length - 1]?.[1] ?? (axis.last + 1) * 60);
-  const atStart = (text: string) => ({ text, style: startPct <= 50 ? { left: `${startPct}%` } : { right: `${100 - startPct}%` } });
-  const atEnd = (text: string) => ({ text, style: endPct >= 50 ? { right: `${100 - endPct}%` } : { left: `${endPct}%` } });
+  // ends, and every label starts at the bar's left edge so the rows read evenly.
   const first = runs.first != null ? clockTime(runs.first) : null;
   const last = runs.last != null ? clockTime(runs.last) : null;
   const text = first && last ? timeRange(runs.first!, runs.last!) : first ?? last;
-  const timeLabel = text && (startPct <= 100 - endPct ? atStart(text) : atEnd(text));
   return (
     <div className="min-w-[12rem]" role="img" aria-label={label}>
-      <div className="relative h-4 text-xs text-[var(--text-muted)] whitespace-nowrap">
-        {timeLabel && <span className="absolute top-0" style={timeLabel.style}>{timeLabel.text}</span>}
-      </div>
+      <div className="h-4 text-xs leading-4 text-[var(--text-muted)] whitespace-nowrap">{text}</div>
       <div className="relative mt-0.5 h-2 overflow-hidden rounded-full" style={{ background: TRACK }}>
         {drawn.map(([a, b]) => (
           <div key={a} className="absolute inset-y-0 rounded-full" style={{ left: at(a), width: `calc(${at(b)} - ${at(a)})`, minWidth: 2, background: FILL }} />

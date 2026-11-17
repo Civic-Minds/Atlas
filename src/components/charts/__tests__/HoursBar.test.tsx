@@ -6,7 +6,8 @@ import { headwayPeriodShape, periodShapeParts } from '../../../utils/headwayText
 const axis = { first: 5, last: 23 };
 // 6:53 AM to 6:27 PM: about 64% of a 5 AM to midnight axis, over the old 45% cutoff.
 const runs = { hours: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], first: 6 * 60 + 53, last: 18 * 60 + 27 };
-const shown = (c: HTMLElement) => Array.from(c.querySelectorAll('span')).map(s => s.textContent);
+// The text line above the bar.
+const shown = (c: HTMLElement) => [c.querySelector('[role="img"] > div')?.textContent];
 
 describe('HoursBar time label (#1569, CIV-1787)', () => {
   it('writes one range above the bar, never two times split at the ends', () => {
