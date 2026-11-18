@@ -13,7 +13,7 @@ import { computeMedian } from './transit-utils';
 import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA } from './defaults';
 import { MINUTES_PER_DAY, PERIOD_MINUTES, TIME_PERIODS } from '../shared/config.js';
-import { TIER_MAXES } from '../shared/rules/frequency.js';
+import { publicTierOf, TIER_MAXES } from '../shared/rules/frequency.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 import { forCrossMidnightWindow } from './headway-utils';
@@ -830,8 +830,14 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        // Compared on the public scale: weekdays graded 8 and 10 both show as every 10, so they
+        // don't "vary by day" (CIV-1846, #1584: Lawrence KU 43).
+        const publicGrade = (tier: string) => {
+            const n = Number(tier);
+            return Number.isFinite(n) ? String(publicTierOf(n) ?? tier) : tier;
+        };
         const weekdayTierVariation = dayType === 'Weekday'
-            && new Set(tierEntries.map(entry => entry.result.tier)).size > 1;
+            && new Set(tierEntries.map(entry => publicGrade(entry.result.tier))).size > 1;
         const ownServiceClass = classEntries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
             : classEntries.some(e => e.result.serviceClass === 'time-limited')
