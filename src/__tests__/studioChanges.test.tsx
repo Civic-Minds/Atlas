@@ -76,7 +76,7 @@ const change = (route: string) => FILE.changes.find(c => c.route === route)!;
 
 describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-1731)', () => {
   it('draws Route 12 at about every 30 min, never the notice\'s 10', () => {
-    render(<StudioRouteTable change={change('12')} />);
+    render(<StudioRouteTable change={change('12')} beforeDate="2026-08-27" afterDate="2026-09-17" period="midday" />);
     const r12 = routeBlock('12');
     expect(rowCells(r12, 'AM peak')).toEqual(['AM peak', '—', '31 min']);
     expect(rowCells(r12, 'Midday')).toEqual(['Midday', '—', '30 min']);
@@ -86,11 +86,28 @@ describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-17
   });
 
   it('gives Route 10\'s frequency, trips and last trip both sides', () => {
-    render(<StudioRouteTable change={change('10')} />);
+    render(<StudioRouteTable change={change('10')} beforeDate="2026-08-27" afterDate="2026-09-17" period="midday" />);
     const r10 = routeBlock('10');
     expect(rowCells(r10, 'Midday')).toEqual(['Midday', '60 min', '30 min']);
     expect(rowCells(r10, 'Trips')).toEqual(['Trips', '51', '66']);
     expect(rowCells(r10, 'Last trip')).toEqual(['Last trip', '11:55 PM', '10:57 PM']);
+  });
+
+  it('heads the columns with the two dates, marks the top bar\'s time of day and bolds nothing (CIV-1827)', () => {
+    render(<StudioRouteTable change={change('10')} beforeDate="2026-08-27" afterDate="2026-09-17" period="midday" />);
+    const r10 = routeBlock('10');
+    expect([...r10.querySelectorAll('thead th')].map(c => c.textContent)).toEqual(['', 'Aug 27', 'Sep 17']);
+    expect(r10.querySelector('tr[aria-current="true"] th')!.textContent).toBe('Midday');
+    expect(r10.querySelector('tbody .font-bold')).toBeNull();
+  });
+
+  it('puts the route\'s length first, so a longer trip time has its reason (CIV-1827)', () => {
+    const c = { ...change('12'), before: { ...change('12').before!, stops: [10, 10] as [number, number], ends: ['Cambrai', 'Downtown'] as [string, string] }, after: { ...change('12').after!, stops: [26, 28] as [number, number], ends: ['Cambrai', 'St. Lawrence College'] as [string, string] } };
+    render(<StudioRouteTable change={c} beforeDate="2026-08-27" afterDate="2026-09-17" period="midday" />);
+    const r12 = routeBlock('12');
+    expect([...r12.querySelectorAll('tbody th')].slice(0, 3).map(c => c.textContent)).toEqual(['Route', 'Stops', 'Trip time']);
+    expect(rowCells(r12, 'Stops')).toEqual(['Stops', '10', '26–28']);
+    expect(rowCells(r12, 'Route')).toEqual(['Route', '[Placeholder: Cambrai – Downtown]', '[Placeholder: Cambrai – St. Lawrence College]']);
   });
 
   it('says a small change in one line, only what differs', () => {

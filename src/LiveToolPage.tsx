@@ -46,6 +46,7 @@ import { useAgencies } from './hooks/useAgencies';
 import Pill from './components/ui/Pill';
 import LiveMapKey from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
+import { CardBackLink } from './components/CardBack';
 import { PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 import { percentText, countText } from '../shared/numberText';
@@ -192,7 +193,8 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <LiveBackLink agencyName={agencyName} onClick={backToNetwork} className="-my-[13px] py-[13px] pr-4" /> };
+  // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
+  const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routePanel: PanelWidget[] | null = !route ? null
     : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];

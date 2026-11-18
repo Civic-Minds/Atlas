@@ -7,7 +7,11 @@ import { agencyNames } from './utils/agencyName';
 import AtlasLogo from './components/AtlasLogo';
 import RouteRowName from './components/RouteRowName';
 import MapKey from './components/ui/MapKey';
-import LiveBackLink from './components/Live/LiveBackLink';
+import Card from './components/ui/Card';
+import { CardBackLink } from './components/CardBack';
+import { SubsectionTitle } from './components/ui/PageTitle';
+import { RouteTitleName } from './components/RouteRowName';
+import { SidebarCardSection } from './components/Interval/cardUi';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, SidebarPanel, SidebarWidget, MAP_APP_PADDING, framePadding, useMapAppWide, type MapLine, type PanelWidget } from './components/MapApp';
 import { MapLegendCard } from './components/ui/MapLegendCard';
 import { frequencyChange } from '../shared/frequencyChange';
@@ -20,10 +24,10 @@ import { dayInSentence, dayPlural } from '../shared/dayTypes';
 import { joinList } from '../shared/overflowText';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
-import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
+import { studioVehiclesDevUrl, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, periodFigure, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { STUDIO_AGENCIES, STUDIO_DEFAULT_AGENCY, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, vehiclesTitleText } from '../shared/studioWording';
 
 /**
  * Atlas Studio (CIV-1731): one map-and-sidebar page on the shared layout Live uses (CIV-1732), desktop only. The map draws
@@ -193,12 +197,19 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
 }
 
 /** The map key in the regular map's key card and slot, bottom left above the footer (CIV-1821). */
-function StudioMapKey() {
+function StudioMapKey({ beforeDate, afterDate }: { beforeDate: string; afterDate: string }) {
   const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: T[k], className: 'text-xs text-[var(--text-primary)]' }));
+  // CIV-1827: which line is which schedule, by its date (the change list's headers), in place of "Dashed: before the change".
+  const grey = CHANGE_COLOR.same;
+  const sides = [
+    { color: grey, label: dateRange(afterDate, afterDate), className: 'text-xs text-[var(--text-primary)]', swatchClassName: 'w-5' },
+    { color: `repeating-linear-gradient(90deg, ${grey} 0 4px, transparent 4px 7px)`, label: dateRange(beforeDate, beforeDate), className: 'text-xs text-[var(--text-primary)]', swatchClassName: 'w-5 !rounded-none' },
+  ];
   return (
     <MapLegendCard label={MAP_COLOURS_LABEL}>
-      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{T.keyTitle}<span className="font-normal"> · {T.dashed}</span></p>
+      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{T.keyTitle}</p>
       <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={steps} />
+      <MapKey stepsClassName="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-0.5" steps={sides} />
     </MapLegendCard>
   );
 }
@@ -229,8 +240,6 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
 }) {
   const wide = useMapAppWide();
   const [footH, setFootH] = useState(0);
-  // CIV-1712: the planner's branch split, the current mix until changed.
-  const [split, setSplit] = useState<StudioBranchSplit>('current');
   const lines = useMemo(() => studioMapLines(file, period, route), [file, period, route]);
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;
   const intro = file.day ? C.intro(agency, dayInSentence(file.day), shortDate(file.before.date) ?? file.before.date, shortDate(file.after.date) ?? file.after.date) : C.noDay;
@@ -244,17 +253,27 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
       {leftOut.map(n => <p key={n} className="m-0 mt-1 text-sm text-[var(--text-muted)]">{n}</p>)}
     </SidebarWidget>
   ) }];
-  const back: PanelWidget = { key: 'back', size: 'medium', node: <LiveBackLink agencyName={agency} onClick={() => setRoute(null)} className="-my-[13px] py-[13px] pr-4" /> };
-  const routePanel: PanelWidget[] | null = route ? [
-    back,
-    ...(change ? [{ key: 'changes', size: 'medium' as const, node: <SidebarWidget title={PAGE_NAMES.studioChanges}><StudioRouteTable change={change} /></SidebarWidget> }] : []),
-    { key: 'vehicles', size: 'medium', node: (
-      <SidebarWidget title={PAGE_NAMES.studioVehicles}>
+  // CIV-1827: one card for the open route, as the main map's route card: the way back (CardBackLink, its slot above the
+  // name), the route's name, what changed between the two dates, then what running it at other frequencies takes.
+  const routeLabel = route ? routeTitle({ route, name: change?.name ?? null }) : null;
+  // On a wide screen the card scrolls inside the sidebar when it is taller than the map (Studio is a planner tool, as its
+  // change list); on narrow screens the page scrolls.
+  const routeCard = route && routeLabel ? (
+    <Card as="section" tone="surface" aria-label={routeLabel.text} className={`min-w-0 flex-1 p-3${wide ? ' min-h-0 overflow-y-auto' : ''}`}>
+      <CardBackLink onClick={() => setRoute(null)}>{agency}</CardBackLink>
+      <SubsectionTitle className="!m-0"><RouteTitleName label={routeLabel} /></SubsectionTitle>
+      {change && (
+        <SidebarCardSection label={PAGE_NAMES.studioChanges}>
+          <StudioRouteTable change={change} beforeDate={file.before.date} afterDate={file.after.date} period={period} />
+        </SidebarCardSection>
+      )}
+      <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date)) || PAGE_NAMES.studioVehicles}>
         {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-          : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} periodLabel={PERIOD_LABELS[period]} split={split} onSplit={setSplit} /> : null}
-      </SidebarWidget>
-    ) },
-  ] : null;
+          : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} /> : null}
+      </SidebarCardSection>
+    </Card>
+  ) : null;
+  const routePanel: PanelWidget[] | null = routeCard ? [{ key: 'route', size: 'medium', node: routeCard }] : null;
   const list = <ChangeList file={file} period={period} route={route} onPick={setRoute} />;
   const routeOptions = useMemo(() => [['', T.allRoutes] as const, ...[...new Set([...Object.keys(file.lines?.after ?? {}), ...Object.keys(file.lines?.before ?? {})])]
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
@@ -271,8 +290,8 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
         padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)}
         ariaLabel={PAGE_NAMES.studio}
       />}
-      overlay={<><StudioMapKey /><MapAppFooter onHeight={setFootH} /></>}
-      sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel className="shrink-0" widgets={summary} />{list}</>}
+      overlay={<><StudioMapKey beforeDate={file.before.date} afterDate={file.after.date} /><MapAppFooter onHeight={setFootH} /></>}
+      sidebar={routeCard ? <div className="flex min-h-0 flex-col">{routeCard}</div> : <><SidebarPanel className="shrink-0" widgets={summary} />{list}</>}
       narrowPanels={<>
         <SidebarPanel className="p-3" widgets={routePanel ?? summary} />
         {/* One column, one width: the list card is as wide as the summary card above it. */}

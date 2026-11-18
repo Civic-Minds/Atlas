@@ -3,8 +3,9 @@
  * schedule changes (STUDIO_CHANGES_TEXT) and the buses needed (STUDIO_VEHICLES_TEXT). Every string is Ryan's
  * word-for-word OK or waiting on it; the CIV-1774 style guard keeps labels out of the components.
  */
-import { headwayEvery } from './headwayText';
-import { plural } from './overflowText';
+import { joinList, plural } from './overflowText';
+import { devPlaceholder } from './devPlaceholder';
+import { PAGE_NAMES } from './pageNames';
 
 /** "Routes": the route list's heading on the map page and the group's routes row under Buses Needed. */
 const ROUTES = 'Routes';
@@ -46,13 +47,18 @@ export const STUDIO_VEHICLES_TEXT = {
   routes: ROUTES,
   scheduled: 'Scheduled now',
   needed: 'Needed',
-  neededAt: (hw: number) => `Needed ${headwayEvery(hw)}`,
   running: 'Running time',
   layover: 'Layover',
   noService: 'No buses at this time of day.',
-  // CIV-1712: the planner's choice for a target on routes whose branches share a middle section. Proposed, waiting on
-  // Ryan's word-for-word OK.
-  branchSplit: 'Trips on branches',
-  branchSplitCurrent: 'Keep current mix',
-  branchSplitEven: 'Split evenly',
 } as const;
+
+/**
+ * CIV-1827's three new strings, waiting on Ryan's word-for-word OK (sent via Atlas Questions). Until then each shows as a
+ * dev-only placeholder with the proposed words; once he answers, the approved text goes here.
+ */
+/** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). */
+export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder(`${ends[0]} – ${ends[1]}`);
+/** Why the buses cover more than the open route: "12, 31, 601 and 602 share buses, so these numbers cover all four." */
+export const groupSharesText = (routes: readonly string[]) => devPlaceholder(`${joinList([...routes])} share buses, so these numbers cover all ${routes.length}.`);
+/** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17". */
+export const vehiclesTitleText = (date: string) => devPlaceholder(`${PAGE_NAMES.studioVehicles} · ${date}`);

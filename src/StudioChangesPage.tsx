@@ -1,16 +1,19 @@
-import { SubsectionTitle } from './components/ui/PageTitle';
-import { PageTable } from './components/ui/PageSection';
+import ScrollX from './components/ui/ScrollX';
 import DataTable from './components/ui/DataTable';
-import { RouteTitleName } from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { headwayAmount, headwayEveryRange } from '../shared/headwayText';
 import { clockTime } from '../shared/timeText';
 import { countText } from '../shared/numberText';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { dateRange } from '../shared/dateText';
+import { STOPS_TERM } from '../shared/liveGlossary';
 import { periodEdgeText } from './utils/effectiveHeadway';
+import { tidyStopName } from './utils/segmentDelayView';
 import type { StudioRouteChange, StudioRouteDay } from '../shared/studioBeforeAfter';
-import { STUDIO_CHANGES_TEXT } from '../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, routeEndsText } from '../shared/studioWording';
+
+const ROUTE_LABEL = STUDIO_MAP_TEXT.route;
 
 /**
  * Atlas Studio's before/after schedule figures (CIV-1715), now the Studio map's sidebar (CIV-1731, StudioPage.tsx). What
@@ -60,26 +63,51 @@ export function smallChangeParts(c: StudioRouteChange): string[] {
 
 export const routeTitle = (c: Pick<StudioRouteChange, 'route' | 'name'>) => routeLabels({ shortName: c.route, longName: c.name });
 
-/** A route's before/after table: one row per figure, no bold (Ryan, CIV-1806: bold read as better frequency). */
-export function StudioRouteTable({ change }: { change: StudioRouteChange }) {
+/** A route's end stops on one side, feed capitals in title case (tidyStopName, as Live's cards). */
+const endsText = (d: StudioRouteDay | null) => (d?.ends ? routeEndsText([tidyStopName(d.ends[0]), tidyStopName(d.ends[1])]) : MISSING_VALUE);
+
+/** A route's stop count on one side: "26" or "26–28" across its patterns. */
+const stopsText = (d: StudioRouteDay | null) => (d?.stops ? (d.stops[0] === d.stops[1] ? countText(d.stops[0]) : `${countText(d.stops[0])}–${countText(d.stops[1])}`) : MISSING_VALUE);
+
+/**
+ * The route's length on each side (CIV-1827), above its other figures so a longer trip time has its reason right above
+ * it: its end stops and its stops. Left out where neither side has them (files built before CIV-1827).
+ */
+export function routeShapeRows(c: Pick<StudioRouteChange, 'before' | 'after'>): FigureRow[] {
+  const { before: b, after: a } = c;
+  if (!b?.ends && !a?.ends) return [];
+  return [
+    { key: 'ends', label: ROUTE_LABEL, before: endsText(b), after: endsText(a) },
+    { key: 'stops', label: STOPS_TERM, before: stopsText(b), after: stopsText(a) },
+  ];
+}
+
+/**
+ * The open route's figures under the two schedules' dates (CIV-1827, as the change list's columns): its length first,
+ * then trip time, frequency by time of day (the top bar's marked, no header repeating it), trips and first and last
+ * trip. No bold (Ryan, CIV-1806: bold read as better frequency).
+ */
+export function StudioRouteTable({ change, beforeDate, afterDate, period }: { change: StudioRouteChange; beforeDate: string; afterDate: string; period: PeriodKey }) {
   const label = routeTitle(change);
-  const rows = routeFigureRows(change);
+  const figures = routeFigureRows(change);
+  const run = figures.find(r => r.key === 'run')!;
+  const rows = [...routeShapeRows(change), run, ...figures.filter(r => r.key !== 'run')];
   return (
-    <div className="min-w-0" data-route={change.route}>
-      <SubsectionTitle><RouteTitleName label={label} /></SubsectionTitle>
-      <PageTable>
-        <DataTable
-          caption={label.text}
-          layout="fixed"
-          rows={rows}
-          rowKey={r => r.key}
-          columns={[
-            { key: 'label', header: '', rowHeader: true, width: 8, className: 'font-normal', cell: r => r.label },
-            ...(change.before ? [{ key: 'before', header: T.before, width: 6.5, cell: (r: FigureRow) => r.before }] : []),
-            ...(change.after ? [{ key: 'after', header: T.after, width: 6.5, cell: (r: FigureRow) => r.after }] : []),
-          ]}
-        />
-      </PageTable>
+    <div data-route={change.route}>
+    <ScrollX className="-mx-2">
+      <DataTable
+        caption={label.text}
+        layout="fixed"
+        rows={rows}
+        rowKey={r => r.key}
+        rowCurrent={r => r.key === period}
+        columns={[
+          { key: 'label', header: '', rowHeader: true, width: 6, className: 'font-normal', cell: r => r.label },
+          { key: 'before', header: dateRange(beforeDate, beforeDate), width: 6.5, cell: (r: FigureRow) => r.before },
+          { key: 'after', header: dateRange(afterDate, afterDate), width: 6.5, cell: (r: FigureRow) => r.after },
+        ]}
+      />
+    </ScrollX>
     </div>
   );
 }
