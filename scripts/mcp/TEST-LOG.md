@@ -15,6 +15,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.5.0 | 2026-11-17 | routes_near, route_history, buses_needed, branches in route_frequency, list_agencies near a place; "Blue" finds the Blue Line; a newer schedule file is read without a restart |
 | 0.5.1 | 2026-11-17 | route_history marks impossible old figures (3 min or less on a route now at 30 or more) as doubtful |
 | 0.5.2 | 2026-11-17 | buses_needed reads Studio's buses-needed file instead of running the calculation (8+ minutes per question on TTC); no file, it says so; targets 10/15/20/30/60 only; the recovery option is gone |
+| 0.5.3 | 2026-11-17 | A wait Atlas counts to a period's edge (every 61 min for service every 10 until 1 AM) says it is the rule, in route_frequency and route_history; branches with no stops are dropped |
 
 ## Standing questions
 
@@ -155,3 +156,25 @@ Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl` (from "Which TTC routes run e
 ## 2026-11-17: round 4, first run (stopped)
 
 Version 0.5.1, one headless chat. Stopped about 8 minutes in, before the first answer finished. Each buses_needed call started Studio's whole calculation on TTC's schedule (8+ minutes at 35–50% CPU). Two ran at once, alongside Studio's own work, and the chat retried. Fix in 0.5.2: buses_needed reads Studio's buses-needed file and never runs the calculation itself. Round 4 runs again on 0.5.2.
+
+## 2026-11-17: round 4, on 0.5.2
+
+Chat: `_reports/mcp-tests/2026-11-17-round4.jsonl`. One headless chat, 4.5 minutes. All 15 questions went in at once and were answered in one reply.
+
+| Question | Tools used | Answer | Right? | Gap or fix |
+|---|---|---|---|---|
+| TTC 29 on Saturday | route_frequency | Busiest and quietest figures by period; 5:46 AM to 2:08 AM | Right | None |
+| 29 branches | route_frequency | Dufferin Gate Loop and Princes' Gates, from Wilson | Right | None |
+| Buses for the 29, AM peak, and with 10% | buses_needed | Said Atlas has no TTC figures yet and didn't estimate | Right to decline | TTC's buses-needed file isn't built; the 10% option is gone in 0.5.2. Build TTC's file once, at low priority |
+| Other routes, Dufferin to Wilson | combined_frequency | The 929; every 4–6 together on weekdays; the 329 has no daytime trips | Right | None |
+| 929 vs 29 | trip_time | 4 min faster typical, 8 in the morning rush | Right (weekday) | None |
+| US bus peers of HSR | rank_agencies | Lubbock 6, LADOT DASH 5, Grand Rapids 4 … | Right | None |
+| Routes near Bathurst and Bloor | routes_near | Line 2, 7, 511, 300, 307 | Right | None |
+| The 504 since 2019 | route_history | Roughly halved, with a table by period | Right, except it called 2026 late night "every 61" a counting error | That is Atlas's rule for service ending partway through a period. Fixed in 0.5.3 |
+| HealthLine over time | route_history | 7–9 in 2015, 10 in 2018, 15 from 2021 | Right | None |
+| The Cherry streetcar | route_frequency, routes_near | No route by that name; the 504's Distillery branch | Right | route_frequency listed a branch with no stops. Fixed in 0.5.3 |
+| Agencies around Hamilton | list_agencies near | 12 within 60 km, nearest first | Right | None |
+| Blue Line, Sunday evening | route_frequency, trip_time | Every 10; 39 min, older schedule noted | Right | None |
+| TTC 999 | route_frequency | No such route | Right | None |
+| Is the 29 late now | None | Schedules only, no live positions | Right | None |
+| 504 King Station to Dufferin Gate | trip_time | The 504 no longer goes to Dufferin Gate (December schedule) | Right | None |

@@ -172,7 +172,15 @@ export function periodFigure(r: RouteRows, period: PeriodKey) {
     waitMinutes,
     shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
     ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
+    ...(edgeWait(shown, waitMinutes) ? { meaning: `Atlas grades this part of the day as every ${waitMinutes} min, not by the trips that run: service starts or stops partway through it, and Atlas counts the wait to the edge of the period (${formatPeriodRange(period)}). This is Atlas's rule, not a data error.` } : {}),
   };
+}
+
+/** A wait longer than every figure shown, where the shown text says service starts or stops in the period: the wait to the period's edge counted (settled rule 3). */
+export function edgeWait(shown: string | null, waitMinutes: number | null): boolean {
+  if (!shown || waitMinutes == null || !/\b(until|from)\b/.test(shown)) return false;
+  const shownMins = [...shown.matchAll(/every (\d+(?:\.\d+)?)/g)].map(m => Number(m[1]));
+  return shownMins.length > 0 && waitMinutes > Math.max(...shownMins);
 }
 
 /** The first and last departures of the day, and any break inside it, as clock times. */
@@ -421,7 +429,7 @@ export function branchesOf(agency: CatalogAgency & { file: string }, r: RouteRow
   return r.rows.map(row => {
     const order = (row.stopOrder as string[] | undefined) ?? [];
     return { direction: String(row.directionId ?? '0'), towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) };
-  }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
+  }).filter(b => b.trips > 0 && b.stops > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
