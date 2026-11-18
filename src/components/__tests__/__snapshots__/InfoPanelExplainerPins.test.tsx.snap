@@ -51,7 +51,7 @@ exports[`explainer text is pinned (CIV-1061) > E2 1`] = `
   ],
   "paragraphs": [
     "About Atlas",
-    "Grand River Transit’s new schedule went on the map on Oct 20, 2026. It may have errors we haven’t found yet.",
+    "Grand River Transit’s new schedule was added on Oct 20, 2026, and is still being verified.",
     "We’re verifying it for missing service and other errors, and we’ll correct anything we find.",
     "The agency’s website has its current schedule.",
   ],
@@ -61,7 +61,6 @@ exports[`explainer text is pinned (CIV-1061) > E2 1`] = `
 exports[`explainer text is pinned (CIV-1061) > E3 1`] = `
 {
   "links": [
-    "Technical details (#123)",
     "Report a problem",
   ],
   "paragraphs": [

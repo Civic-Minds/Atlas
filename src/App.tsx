@@ -111,8 +111,6 @@ export interface Agency {
   rolloutIssueUrl?: string;
   /** Base route tiles are not published yet; beta renders this agency from its local GeoJSON. */
   pmtilesPending?: boolean;
-  issueUrl?: string;
-  issueUrls?: string[];
   overrideNote?: string;
   overrideNoteRoutes?: string[];
   /** CIV-1639: Atlas's own notes about fixes to this agency's data (shared/correctionNotices.ts), shown on the routes they name. */
@@ -286,8 +284,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       expiredFeedCheckSince: opts.expiredFeedCheckSince,
       websiteUrl: opts.websiteUrl,
       overrideNote: opts.overrideNote,
-      issueUrl: opts.issueUrl,
-      issueUrls: opts.issueUrls,
       rolloutNotice: opts.rolloutNotice,
       filterNotice: opts.filterNotice,
     } : null);

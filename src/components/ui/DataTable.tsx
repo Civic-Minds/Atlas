@@ -100,6 +100,11 @@ interface DataTableProps<T> {
    * first and last cells get a little inner space for the highlight; give the wrapper `-mx-2` to keep the text in line.
    */
   rowHref?: (row: T) => string;
+  /**
+   * Marks the current row (CIV-1827): the shared selected tint and edge (SELECTION_ACTIVE's colours, as on ListRow) plus
+   * aria-current. Every row then gets the linked rows' small inner space, so the tint reaches past the text.
+   */
+  rowCurrent?: (row: T) => boolean;
   /** Hover text for a whole row (where a column was left out on a phone, its figure). */
   rowTitle?: (row: T) => string | undefined;
   /** Current sort, for the sortable columns' arrow and aria-sort. */
@@ -129,8 +134,11 @@ function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
 
 export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
 
+/** A table row's current-row marker: SELECTION_ACTIVE's tint, its left edge drawn inside the row (a row has no border box). */
+const SELECTION_ROW = 'bg-[var(--selection-active-bg)] shadow-[inset_2px_0_0_var(--selection-active-border)]';
+
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
-export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowTitle, sort, onSort }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, sort, onSort }: DataTableProps<T>) {
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
   const v = VARIANTS[variant];
@@ -159,7 +167,7 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
   // Phones: the default fixed widths, whatever the columns ask for from sm up.
   const phoneWidths = columns.map((_, i) => (i === 0 ? FIXED_FIRST_COLUMN_REM : FIXED_COLUMN_REM));
   // A linked row's highlight reaches a little past the text on both sides, as in card lists.
-  const rowEdge = (i: number) => (rowHref ? (i === 0 ? ' pl-2' : '') + (i === columns.length - 1 ? ' pr-2' : '') : '');
+  const rowEdge = (i: number) => (rowHref || rowCurrent ? (i === 0 ? ' pl-2' : '') + (i === columns.length - 1 ? ' pr-2' : '') : '');
   const totalRem = widths.reduce((a, b, i) => a + (columns[i].grow ? 0 : b), 0);
   return (
     <table
@@ -208,7 +216,8 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
         {rows.map(row => (
           <tr
             key={rowKey(row)}
-            className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}`}
+            className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}`}
+            aria-current={rowCurrent?.(row) ? 'true' : undefined}
             title={rowTitle?.(row)}
             onClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
             onAuxClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}

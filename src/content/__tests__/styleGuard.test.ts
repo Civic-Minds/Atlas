@@ -146,7 +146,7 @@ const RULES: Rule[] = [
   // CIV-1599: labels used in more than one place come from noticeCopy.ts (and report detail labels from reportIssue.ts).
   // CIV-1803: the Live week table's two columns too.
   { name: 'a shared label typed in place (use its noticeCopy.ts constant)', doc: 'TEXT.md',
-    pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Agency data refreshed|Feed expiry|This week|Last week)['"`<]/,
+    pattern: /['"`>](View on map|See all agencies|What’s [Nn]ew|Documentation|Atlas by Civic Minds|Export map image|Go to my location|Overnight service on part of the route|About Atlas|Transit frequency|Frequent service|Service history|Live transit|Agency slug|Schedule added|Schedule covers service until|This week|Last week)['"`<]/,
     slip: '<ArrowLink href="/">View on map</ArrowLink>', allowed: ['src/content/noticeCopy.ts', 'src/content/backLinks.ts', 'src/utils/reportIssue.ts', 'shared/frequentService.ts', 'shared/pageNames.ts'] },
 
   // CIV-1790 (Ryan: "Did we refactor our contact info"): one address, one mailto builder.

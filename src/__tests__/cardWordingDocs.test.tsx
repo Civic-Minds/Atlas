@@ -1,11 +1,13 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import AboutDocsPage from '../AboutDocsPage';
+import { FEATURES } from '../../shared/config';
 
 // CIV-1251: Ryan approved _review/card-wording word for word on 2026-11-01. The Docs glossary and Service section, as rendered (rows 2, 4, 5, 6, 9, 12).
 describe('card wording (CIV-1251): Docs text, word for word', () => {
   it.each([
-    'Uneven service: Service that runs through the whole time period, but with gaps that vary. The card names the longest gap.',
+    // CIV-1814 item 9: the longest-gap sentence shows only where cards show the gap (FEATURES.unevenBanner, beta).
+    `Uneven service: Service that runs through the whole time period, but with gaps that vary.${FEATURES.unevenBanner ? ' The card names the longest gap.' : ''}`,
     'Occasional: School runs, a few trips a day, on-demand.', // CIV-1610 (Ryan): the filter's own words
     'Service class: The kind of service a route runs: regular, part-time or occasional.',
     'Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap',

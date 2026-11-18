@@ -23,9 +23,9 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
-import { CARD_NOTE, CARD_SECTION } from '../../styles';
+import { CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, reportFormHint, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -84,7 +84,7 @@ export const REPORT_REASON = {
   stop: 'Stop is missing, misplaced or assigned incorrectly',
   filter: 'Filter, search or route selection is wrong',
   live: 'Live vehicle information is missing or wrong',
-  stale: 'Route data is stale',
+  stale: 'Route data is out of date',
 } as const;
 export type ReportReason = (typeof REPORT_REASON)[keyof typeof REPORT_REASON];
 
@@ -108,7 +108,7 @@ const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   [REPORT_REASON.stop]: 'The stop is missing, misplaced or assigned incorrectly',
   [REPORT_REASON.filter]: 'The map, filter, search or route selection is wrong',
   [REPORT_REASON.live]: 'The live vehicle information is missing or wrong',
-  [REPORT_REASON.stale]: 'The route data is stale',
+  [REPORT_REASON.stale]: 'The route data is out of date',
 };
 
 const FREQUENCY_REASON_LABELS: Record<string, string> = {
@@ -276,8 +276,6 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
       : selectedCategory === 'filter'
         ? 'What is wrong with the map, filter or search?'
         : 'What is wrong with the live vehicle information?';
-  const copiesDiagnostics = details.includes('Generated route metrics from the loaded artifact:')
-    || details.includes('Generated route metrics (loaded artifact):');
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -332,7 +330,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>{REPORT_A_PROBLEM}</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>{reportFormHint(FEATURES.cardClickToFlag)}</p>
               </div>
               <PanelCloseButton onClick={reset} label={closeLabel(CLOSE_PLACES.reportForm)} />
             </div>
@@ -414,11 +412,6 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   className={`mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 ${CARD_LIST_ROUTE} placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]`}
                 />
               </label>}
-              {selectedCategory && copiesDiagnostics && (
-                <p className={CARD_NOTE}>
-                  {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
-                </p>
-              )}
               {validationError && <p className="text-xs font-bold text-[var(--status-negative-text)]" role="alert">{validationError}</p>}
             </div>
 
@@ -842,8 +835,6 @@ export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { 
         helpTopic: explainerFor(on === 'route' ? 'N5' : 'N22'),
         agencyName: agency.name,
         overrideNote,
-        issueUrl: agency.issueUrl,
-        issueUrls: agency.issueUrls,
       })}
     />
   );

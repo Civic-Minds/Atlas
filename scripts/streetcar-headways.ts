@@ -17,8 +17,9 @@
 import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getR2Client, r2PublicUrl } from '../pipeline/r2.js';
 import { pickBestShape, projectOntoShape, shapesFromGeometry, type Shape } from '../shared/shapeProjection.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
 
-const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live';
+const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
 const STREETCARS = ['501', '503', '504', '505', '506', '507', '509', '510', '511', '512'];
 const MAX_SHAPE_DIST_M = 120;  // sample must be this close to the shape to count
 const DECIMATE_M = 20;         // shape vertex spacing after decimation

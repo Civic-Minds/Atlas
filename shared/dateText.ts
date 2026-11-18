@@ -7,6 +7,7 @@
  * - longDate: "November 3, 2026". The month in full. A research page's method box and its "Date updated" lines.
  * - dateRange: "Oct 8–14", or "Sep 30–Oct 14" across months, with an en dash and no year; one day reads "Oct 8".
  *   Live's weeks, days and "data up to" lines.
+ * - isoDate: "2026-10-12". A machine value, for report emails only (TEXT.md, Numbers).
  * Each takes an ISO date ("2026-10-12", a timestamp's date part counts) or a feed's yyyymmdd ("20261012"), and
  * shortDate / longDate give null for anything else. Never type a date by hand or build one with toLocaleDateString.
  */
@@ -32,6 +33,12 @@ export function shortDate(value: string | null | undefined): string | null {
 export function longDate(value: string | null | undefined): string | null {
   const p = dateParts(value);
   return p ? `${LONG_MONTHS[p.month - 1]} ${p.day}, ${p.year}` : null;
+}
+
+/** "2026-10-12" from an ISO or yyyymmdd date; null when the value isn't a date. */
+export function isoDate(value: string | null | undefined): string | null {
+  const p = dateParts(value);
+  return p ? `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}` : null;
 }
 
 /** "Oct 8–14", "Sep 30–Oct 14" across months, "Oct 8" for one day; from two ISO dates. */

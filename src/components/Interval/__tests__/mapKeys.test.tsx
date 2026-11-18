@@ -13,7 +13,7 @@ describe('map keys', () => {
     expect(text.startsWith('Frequency')).toBe(true);
     expect(text).toContain('Infrequent');
     // With on-demand on, the key ends with the partial-coverage line (CIV-23).
-    const end = `Selected / qualifyingOther routes${FEATURES.onDemand ? ON_DEMAND_PARTIAL_COVERAGE : ''}`;
+    const end = `Selected or in your filtersOther routes${FEATURES.onDemand ? ON_DEMAND_PARTIAL_COVERAGE : ''}`;
     expect(text.endsWith(end)).toBe(true);
   });
 

@@ -27,6 +27,7 @@ import { AgencyCardTop, AgencyDataSourceLink, SidebarCardHeader, CARD_HEADER_BLO
 import CardRouteList from './CardRouteList';
 import { buildRouteFacts, type RouteLabel } from '../../utils/routeFacts';
 import { reportDetails, REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
+import { isoDate } from '../../../shared/dateText';
 import { AGENCY_ROUTES_FAILED, BACK_TO_MAP_LABEL, BETA_ROLLOUT_NOTICE, BETA_SERVICE_ROLLOUT_NOTICE, explainerFor, getRolloutNotice, NO_ROUTES_LOADED, noRoutesMatchText, noServiceOnDayNotice, notOnMapYetNotice, ON_DEMAND_NOT_MAPPED_NOTE, ON_DEMAND_SHADED_AREA, onDemandPickupSentence, ROUTES_OUTSIDE_FILTERS_NOTICE, routesOutsideFiltersNotice, VIEW_ON_BETA, ON_DEMAND_SERVICE_LABEL, DETAILS_LABEL } from '../../content/noticeCopy';
 import { namedOnDemandService, onDemandCardName, resolveOnDemandLinkTarget } from '../../utils/onDemandSelection';
 import { onDemandCoverageNote } from '../../data/onDemandCoverage';
@@ -514,11 +515,10 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
       details={reportDetails([
         [REPORT_DETAIL_LABELS.agency, agency.name],
-        [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
         ['Day', day],
         ['Period', period],
-        [REPORT_DETAIL_LABELS.dataRefreshed, agency.lastRefreshedAt ?? 'unknown'],
-        [REPORT_DETAIL_LABELS.feedExpiry, effectiveFeedExpiry(agency) ?? 'unknown'],
+        [REPORT_DETAIL_LABELS.scheduleAdded, isoDate(agency.lastRefreshedAt) ?? 'unknown'],
+        [REPORT_DETAIL_LABELS.scheduleCoversUntil, isoDate(effectiveFeedExpiry(agency)) ?? 'unknown'],
       ])}
       excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
     />
@@ -554,14 +554,13 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
         title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
           [REPORT_DETAIL_LABELS.agency, agency.name],
-          [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
           [ON_DEMAND_SERVICE_LABEL, zone.serviceName ?? service.serviceName ?? 'unknown'],
           ['Zone', zoneName ?? 'whole service'],
           ['Hours', zone.serviceHours ?? 'not published'],
           ['Availability', zone.availability ? JSON.stringify(zone.availability) : 'none'],
           ['Day', day],
           ['Period', period],
-          [REPORT_DETAIL_LABELS.dataRefreshed, agency.lastRefreshedAt ?? 'unknown'],
+          [REPORT_DETAIL_LABELS.scheduleAdded, isoDate(agency.lastRefreshedAt) ?? 'unknown'],
         ])}
         excludeReasons={[REPORT_REASON.stop, REPORT_REASON.frequency, REPORT_REASON.combined]}
       />

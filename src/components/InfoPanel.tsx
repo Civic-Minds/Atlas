@@ -53,8 +53,6 @@ export type HelpContext = {
   expiredFeedCheckSince?: string;
   websiteUrl?: string;
   overrideNote?: string;
-  issueUrl?: string;
-  issueUrls?: string[];
   /** E9 (CIV-1199): the card's N12 notice, with its live values, as paragraph 1. */
   filterNotice?: string;
   rolloutNotice?: string;
@@ -75,8 +73,6 @@ export type OpenInfoOptions = {
   expiredFeedCheckSince?: string;
   websiteUrl?: string;
   overrideNote?: string;
-  issueUrl?: string;
-  issueUrls?: string[];
   filterNotice?: string;
   rolloutNotice?: string;
 };
@@ -110,20 +106,10 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
   const { p2, p3 } = EXPLAINER_LAYOUT[layout];
   const last: { text: string; links?: readonly ExplainerLink[]; needsWebsite?: boolean } | null = p3 ? EXPLAINER_PIECES[p3] : null;
   const showLast = !!last && (!last.needsWebsite || !!helpContext?.websiteUrl);
-  const issueUrls = [...(helpContext?.issueUrls ?? []), ...(helpContext?.issueUrls?.length ? [] : [helpContext?.issueUrl])]
-    .filter((url): url is string => !!url);
   const link = (kind: ExplainerLink) => {
     if (kind === 'agency-website') return helpContext?.websiteUrl
       ? <LinkCard key={kind} as={OutboundLink} href={helpContext.websiteUrl} kind="agency_website" icon="external">Check current schedules</LinkCard>
       : null;
-    if (kind === 'technical-details') return issueUrls.map((url, index) => {
-      const issueNumber = url.match(/\/issues\/(\d+)/)?.[1];
-      return (
-        <LinkCard key={url} href={url} target="_blank" rel="noreferrer" icon="external">
-          {issueNumber ? `Technical details (#${issueNumber})` : `Technical details ${index + 1}`}
-        </LinkCard>
-      );
-    });
     const data = kind === 'report-data';
     return (
       <LinkCard key={kind} href={mailto(`Atlas ${data ? 'data' : 'schedule'} feedback`)}

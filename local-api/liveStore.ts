@@ -1,7 +1,8 @@
 import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_SNAPSHOT_SCHEMA_VERSION, type LiveFeedType } from '../shared/liveContract.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET, FEED_AGE_LIMITS_SEC } from '../shared/rules/live.js';
 
-export const LIVE_BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live';
+export const LIVE_BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
 
 export function getR2Client(): S3Client {
   if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
@@ -28,9 +29,9 @@ export function prefixFor(feedType: LiveFeedType, agency: string, date: string):
 }
 
 export function statusForAge(ageSeconds: number): 'fresh' | 'degraded' | 'stale' | 'unavailable' {
-  if (ageSeconds <= 90) return 'fresh';
-  if (ageSeconds <= 300) return 'degraded';
-  if (ageSeconds <= 900) return 'stale';
+  if (ageSeconds <= FEED_AGE_LIMITS_SEC.fresh) return 'fresh';
+  if (ageSeconds <= FEED_AGE_LIMITS_SEC.degraded) return 'degraded';
+  if (ageSeconds <= FEED_AGE_LIMITS_SEC.stale) return 'stale';
   return 'unavailable';
 }
 

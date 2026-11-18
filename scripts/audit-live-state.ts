@@ -16,10 +16,11 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LIVE_ARCHIVE_BUCKET_BY_SLUG, LIVE_ARCHIVE_SHARDS } from '../shared/liveArchiveFeeds.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
 
 const API = 'https://api.cloudflare.com/client/v4';
 const WORKER_PREFIX = 'atlas-gtfs-rt-archiver-';
-const DEFAULT_BUCKET = 'atlas-live';
+const DEFAULT_BUCKET = DEFAULT_LIVE_ARCHIVE_BUCKET;
 
 // ---------- pure parts (unit-tested) ----------
 

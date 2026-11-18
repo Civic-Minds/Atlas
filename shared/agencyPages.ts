@@ -690,7 +690,7 @@ function dateParts(value: string | null | undefined): RegExpExecArray | null {
 }
 
 /**
- * The page footer in plain words: what the numbers are based on, when the timetable was published and how long it runs,
+ * The page footer in plain words: what the numbers are based on, when Atlas added the timetable and how long it runs,
  * and when Atlas last updated the page. A clause whose date is missing is left out; an ended timetable says so.
  */
 // N25 listing-ended (Ryan's exact text, CIV-1011). One definition for the agency page and the map (content/noticeCopy re-exports it).
@@ -713,8 +713,9 @@ export function agencyDatesText(a: Pick<AgencyPageSummary, 'lastRefreshedAt' | '
     // N112 with a through date, else N25 (CIV-1055): "covers service until" alone would overstate a timetable whose routes mostly stopped.
     : listingEnded && through ? listingEndedPageLine(through, listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
     : listingEnded ? listingEndedNotice(listingEnded, listingEndHasPassed(a.listingEndedOn!, todayYmd))
-    : published && through ? `This schedule was published ${published} and covers service until ${through}.`
-    : published ? `This schedule was published ${published}.`
+    // CIV-1814 item 5 (Ryan: "This schedule was added on X and covers service until X"): the day Atlas added it, not the agency's.
+    : published && through ? `This schedule was added on ${published} and covers service until ${through}.`
+    : published ? `This schedule was added on ${published}.`
     : through ? `This schedule covers service until ${through}.`
     : '';
   return ["Based on the agency’s published schedule.", datesClause, release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');

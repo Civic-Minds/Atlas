@@ -12,8 +12,9 @@
 import { S3Client, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getR2Client } from '../pipeline/r2.js';
 import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
 
-const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live';
+const BUCKET = process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET;
 const MAX_PAIR_GAP_SEC = 180;   // ignore pairs across archiver outages
 const MAX_SANE_KMH = 80;        // GPS jumps
 

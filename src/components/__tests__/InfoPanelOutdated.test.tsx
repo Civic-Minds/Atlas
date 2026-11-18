@@ -28,7 +28,7 @@ describe('E2 new schedule, three paragraphs (CIV-1051)', () => {
     const t = render(
       <InfoPanel open onClose={() => {}} agencies={[]} helpContext={{ topic: 'new-schedule-data', agencyName: 'Grand River Transit', lastRefreshedAt: '2026-10-20', websiteUrl: 'https://www.grt.ca' }} />,
     ).container.textContent ?? '';
-    expect(t).toContain("Grand River Transit’s new schedule went on the map on Oct 20, 2026. It may have errors we haven’t found yet.");
+    expect(t).toContain("Grand River Transit’s new schedule was added on Oct 20, 2026, and is still being verified.");
     expect(t).toContain("We’re verifying it for missing service and other errors, and we’ll correct anything we find.");
     expect(t).toContain("The agency’s website has its current schedule.");
     expect(t).not.toContain('temporary');

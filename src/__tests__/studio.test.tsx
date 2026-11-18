@@ -44,57 +44,44 @@ const GROUPS: StudioVehicleGroup[] = [
 const cells = (label: string) => [...screen.getByRole('rowheader', { name: label }).closest('tr')!.querySelectorAll('th, td')].map(c => c.textContent);
 
 describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)', () => {
-  it('gives the picked route\'s group: its routes, buses scheduled and needed, and at each target', () => {
-    render(<StudioGroupFigures group={GROUPS[0]} periodLabel="Midday" />);
-    expect(cells('Routes')).toEqual(['Routes', '701, 702, 801, 802']);
-    expect(cells('Scheduled now')).toEqual(['Scheduled now', '7']);
-    expect(cells('Needed')).toEqual(['Needed', '8']);
-    expect(cells('Needed every 15 min')).toEqual(['Needed every 15 min', '10']);
-    expect(cells('Running time')).toEqual(['Running time', '112 min']);
-    expect(cells('Layover')).toEqual(['Layover', '29 min']);
+  it('gives the picked route\'s group: its routes, buses needed at each frequency with now marked, then running time and layover (CIV-1827)', () => {
+    render(<StudioGroupFigures group={GROUPS[0]} />);
+    expect(screen.getAllByRole('columnheader').map(c => c.textContent)).toEqual(['Frequency', 'Needed']);
+    // Now (7 buses) sits by its count, between every 20 min (8) and every 30 min (5); its own frequency needs 8.
+    expect(screen.getAllByRole('rowheader').map(c => c.textContent)).toEqual(['every 10 min', 'every 15 min', 'every 20 min', 'Scheduled nowNeeded 8', 'every 30 min', 'every 60 min']);
+    const now = screen.getByRole('rowheader', { name: 'Scheduled nowNeeded 8' }).closest('tr')!;
+    expect(now.getAttribute('aria-current')).toBe('true');
+    expect(now.querySelector('td')!.textContent).toBe('7');
+    expect(cells('every 15 min')).toEqual(['every 15 min', '10']);
+    expect(cells('every 60 min')).toEqual(['every 60 min', '—']);
+    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time 112 min · Layover 29 min');
+    expect(screen.queryByText('Midday')).toBeNull();
   });
 
-  it('offers the map’s public scale, 10 to 60, for every group', () => {
-    render(<StudioGroupFigures group={GROUPS[0]} periodLabel="Midday" />);
-    const targets = screen.getAllByRole('rowheader').map(c => c.textContent).filter(t => t?.startsWith('Needed every'));
-    expect(targets).toEqual([10, 15, 20, 30, 60].map(m => `Needed every ${m} min`));
-    expect(cells('Needed every 60 min')).toEqual(['Needed every 60 min', '—']);
+  it('leaves out the second line where the buses on the road match the frequency', () => {
+    render(<StudioGroupFigures group={GROUPS[1]} />);
+    expect(screen.getByRole('rowheader', { name: 'Scheduled now' }).closest('tr')!.getAttribute('aria-current')).toBe('true');
+    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time 113 min · Layover —');
   });
 
   it('never shows rail’s internal 5 or 8, even from an older file that has them', () => {
     const old = { ...GROUPS[1], targets: [5, 8, 10, 15, 30, 60], atTarget: { 5: 20, 8: 13, 10: 12 } } as StudioVehicleGroup;
-    render(<StudioGroupFigures group={old} periodLabel="Midday" />);
-    expect(screen.queryByRole('rowheader', { name: 'Needed every 5 min' })).toBeNull();
-    expect(screen.queryByRole('rowheader', { name: 'Needed every 8 min' })).toBeNull();
-    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '12']);
-    expect(cells('Needed every 20 min')).toEqual(['Needed every 20 min', '—']);
+    render(<StudioGroupFigures group={old} />);
+    expect(screen.queryByRole('rowheader', { name: 'every 5 min' })).toBeNull();
+    expect(screen.queryByRole('rowheader', { name: 'every 8 min' })).toBeNull();
+    expect(cells('every 10 min')).toEqual(['every 10 min', '12']);
+    expect(cells('every 20 min')).toEqual(['every 20 min', '—']);
   });
 
-  it('shows a dash for layover where the feed has no blocks', () => {
-    render(<StudioGroupFigures group={GROUPS[1]} periodLabel="Midday" />);
-    expect(cells('Layover')).toEqual(['Layover', '—']);
-  });
-
-  it('lets the planner split a shared middle’s trips evenly among branches, the current mix first (CIV-1712)', () => {
-    const branched = { ...GROUPS[0], atTargetEven: { 10: 17, 15: 11, 20: 9, 30: 6 } };
-    const onSplit = vi.fn();
-    const { rerender } = render(<StudioGroupFigures group={branched} periodLabel="Midday" onSplit={onSplit} />);
-    const choice = screen.getByRole('group', { name: 'Trips on branches' });
-    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '15']);
-    screen.getByRole('button', { name: 'Split evenly' }).click();
-    expect(onSplit).toHaveBeenCalledWith('even');
-    rerender(<StudioGroupFigures group={branched} periodLabel="Midday" split="even" onSplit={onSplit} />);
-    expect(cells('Needed every 10 min')).toEqual(['Needed every 10 min', '17']);
-    expect(choice).toBeTruthy();
-  });
-
-  it('offers no choice for a group without branches', () => {
-    render(<StudioGroupFigures group={GROUPS[1]} periodLabel="Midday" onSplit={() => {}} />);
-    expect(screen.queryByRole('group', { name: 'Trips on branches' })).toBeNull();
+  it('says why other routes count where they share the open route’s buses, and offers no split choice (CIV-1827)', () => {
+    render(<StudioGroupFigures group={{ ...GROUPS[0], atTargetEven: { 10: 17 } }} />);
+    expect(screen.getByText('[Placeholder: 701, 702, 801 and 802 share buses, so these numbers cover all 4.]')).toBeTruthy();
+    expect(screen.queryByRole('group')).toBeNull();
+    expect(cells('every 10 min')).toEqual(['every 10 min', '15']);
   });
 
   it('says so when a time of day has no buses', () => {
-    render(<StudioGroupFigures group={null} periodLabel="Midday" />);
+    render(<StudioGroupFigures group={null} />);
     expect(screen.getByText('No buses at this time of day.')).toBeTruthy();
   });
 

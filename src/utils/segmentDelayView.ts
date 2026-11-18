@@ -2,12 +2,13 @@
  * Types and small helpers for the Live route analysis (local proof of concept):
  * the analysis output's shape, time bands, sample minimums, rounding and stop names.
  */
+import { LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_SAMPLE } from '../../shared/rules/live';
 
 export type SegmentBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
 
 /** A stop pair needs at least this many observed trips, over this many days, to be shown. */
-export const MIN_SEGMENT_TRIPS = 30;
-export const MIN_DAYS = 5;
+export const MIN_SEGMENT_TRIPS = LIVE_MIN_SAMPLE;
+export const MIN_DAYS = LIVE_MIN_EVIDENCE_DAYS;
 
 export interface SegmentBandStat {
   trips: number;

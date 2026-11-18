@@ -29,7 +29,7 @@ describe('explainer text is pinned (CIV-1061)', () => {
     expect(panel({ topic: 'new-schedule-data', agencyName: 'Grand River Transit', lastRefreshedAt: '2026-10-20', websiteUrl: site })).toMatchSnapshot();
   });
   it('E3', () => {
-    expect(panel({ topic: 'corrected-data', agencyName: 'Fred Transit', overrideNote: 'This schedule is from January 2026.', issueUrl: 'https://github.com/Civic-Minds/Atlas/issues/123' })).toMatchSnapshot();
+    expect(panel({ topic: 'corrected-data', agencyName: 'Fred Transit', overrideNote: 'This schedule is from January 2026.' })).toMatchSnapshot();
   });
   it('E4', () => {
     expect(panel({ topic: 'beta-rollout', agencyName: 'Metz' })).toMatchSnapshot();

@@ -15,6 +15,7 @@ import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
 import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN, LIVE_GAPS_FRONT_TO_BACK } from '../../content/noticeCopy';
 import { DIRECTION_LABEL, ON_TIME_LABEL } from '../../../shared/liveWording';
+import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
 const tenthMin = (sec: number): number => Math.round(sec / 6) / 10;
@@ -37,7 +38,7 @@ export function agencyHour(slug: string, d = new Date()): number {
 }
 
 /** "Right now" names a time only once the vehicles' newest report is older than this: "Right now · last updated 2:04 PM" (CIV-1034). */
-export const RIGHT_NOW_STALE_SEC = 2 * 60;
+export { RIGHT_NOW_STALE_SEC };
 
 /** "11:42 PM" on the agency's clock (shared/timeText.ts). */
 export function agencyTime(slug: string, d = new Date()): string {

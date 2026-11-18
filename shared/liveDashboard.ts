@@ -12,6 +12,7 @@ import { runTimeAmount } from './headwayText.js';
 import { NO_DATA_YET, NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
+import { LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS } from './rules/live.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -250,8 +251,8 @@ export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string
   // The start is read at the first stop measured well (510 northbound's first stops are in the tunnel).
   // Terminal stretches (the run out of and into a loop) are left out of the start and end figures.
   const inner = b.stretches.filter(s => !s.terminal);
-  const first = b.stretches.find((s, i) => s.n >= 30 && !s.terminal && i >= Math.max(0, lessExactStops - 1)) ?? inner[0];
-  const last = [...inner].reverse().find(s => s.n >= 30) ?? inner[inner.length - 1];
+  const first = b.stretches.find((s, i) => s.n >= LIVE_MIN_SAMPLE && !s.terminal && i >= Math.max(0, lessExactStops - 1)) ?? inner[0];
+  const last = [...inner].reverse().find(s => s.n >= LIVE_MIN_SAMPLE) ?? inner[inner.length - 1];
   const ends = first && last ? ` (${min(first.medianDelayMin)} at the start, ${min(last.medianDelayMin)} at the end)` : '';
   if (b.kind === 'forms' && b.forms) return `Delay jumps by ${min(b.forms.medianAddedMin)} between ${b.forms.fromName} and ${b.forms.toName}, and stays up${ends}.`;
   if (b.kind === 'gradual') return `Delay builds slowly along the route; no single stretch stands out${ends}.`;
@@ -262,12 +263,12 @@ export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string
 /** B4: one sentence per direction and period. "Linked to", never "caused by". */
 export function bunchingSentence(label: string, b: DashboardBunchingBand): string {
   if (b.kind == null) return `${label}: too few measured stops to say where bunching forms.`;
-  const first = b.stops.find(s => s.n >= 30);
+  const first = b.stops.find(s => s.n >= LIVE_MIN_SAMPLE);
   if (b.kind === 'forms' && b.forms) {
     return `${label}: bunching forms between ${b.forms.fromName} and ${b.forms.toName}: gaps that are too short or too long go from ${percentText(b.forms.fromBadShare)} to ${percentText(b.forms.toBadShare)} (${Math.round(b.forms.rise * 100)} points) and stay up.`;
   }
   if (b.kind === 'gradual') {
-    const top = b.stops.filter(s => s.n >= 30).reduce((m, s) => Math.max(m, s.badShare), 0);
+    const top = b.stops.filter(s => s.n >= LIVE_MIN_SAMPLE).reduce((m, s) => Math.max(m, s.badShare), 0);
     return `${label}: bunching builds gradually, from ${first ? percentText(first.badShare) : 'the start'} at the first measured stop to ${percentText(top)} at its highest. No single stretch steps up by 10 points.`;
   }
   return `${label}: gaps stay close to the schedule along the route.`;
@@ -330,7 +331,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
   if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
-  if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
+  if (r.n < LIVE_MIN_SAMPLE) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
   return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourTime(atHour)}` : ''}.`;
 }
 
@@ -351,7 +352,7 @@ export type CompareKey = 'late' | 'tripTime' | 'extraWait' | 'bunching' | 'deliv
  * always agree. A change is coloured only when it is bigger than normal noise, for every measure the same way: twice
  * the standard error of the difference of the two weekly means, from that measure's day-to-day spread (dailyNoise).
  * The analysis file holds a value per day for all five measures. A fixed amount (FIXED_NOISE) stands in only where
- * fewer than 3 good days leave no spread to measure (or an older file has no daily values).
+ * fewer than LIVE_MIN_SPREAD_DAYS good days leave no spread to measure (or an older file has no daily values).
  */
 /** E17, after the term "Coloured changes" (approved by Ryan, CIV-1075). */
 export const COLOURED_CHANGES = "are bigger than the figure’s normal day-to-day range. Grey changes fall inside that range and may just be normal variation.";
@@ -367,12 +368,12 @@ export const FIXED_NOISE: Record<CompareKey, number> = { late: 0.02, bunching: 0
 /**
  * Noise for a week-over-week change measured from daily values: 2 x the standard error of the difference of two weekly
  * means. The file holds daily values for this week only, so their spread stands in for both weeks:
- * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than 3 days (no spread to measure).
+ * 2 * sd * sqrt(1/n1 + 1/n2). `null` with fewer than LIVE_MIN_SPREAD_DAYS days (no spread to measure).
  * TODO (planned day-split rebuild of the analysis): store last week's daily values too, so each week uses its own
  * spread: 2 * sqrt(sd1^2/n1 + sd2^2/n2).
  */
 export function dailyNoise(daily: readonly number[], nThis: number, nLast: number): number | null {
-  if (daily.length < 3 || nThis < 1 || nLast < 1) return null;
+  if (daily.length < LIVE_MIN_SPREAD_DAYS || nThis < 1 || nLast < 1) return null;
   const mean = daily.reduce((a, x) => a + x, 0) / daily.length;
   const sd = Math.sqrt(daily.reduce((a, x) => a + (x - mean) ** 2, 0) / (daily.length - 1));
   return 2 * sd * Math.sqrt(1 / nThis + 1 / nLast);

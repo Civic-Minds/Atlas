@@ -18,11 +18,12 @@ import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPAR
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 import Card from '../../ui/Card';
+import { LIVE_MIN_GOOD_DAYS, LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 
 /** Fewer departures than this and an hour's bar is faded. */
-const MIN_N = 30;
+const MIN_N = LIVE_MIN_SAMPLE;
 /** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text. */
-export const MIN_GOOD_DAYS = 3;
+export const MIN_GOOD_DAYS = LIVE_MIN_GOOD_DAYS;
 export const THIN_HINT = LIVE_FEW_MEASUREMENTS;
 /** The top of a row's shared scale: the highest bar among hours with enough departures, at least 10%, rounded up to a tenth. */
 export const rowMax = (hours: readonly HourValue[]): number => Math.ceil(Math.max(0.1, ...hours.filter(h => h.n >= MIN_N).map(h => h.value)) * 10) / 10;
@@ -208,12 +209,12 @@ function BarsOne({ v3, data, band, dir, day }: { v3: LiveV3; data: DashboardBand
 function Mini({ hours, band, overall, days, leftOut, height = 24, scope }: Omit<MiniProps, 'chart'>) {
   if (!hours.length) return null;
   // The bars fill the chart's height relative to its own tallest hour, which is labelled.
-  const max = Math.max(0.01, ...hours.filter(h => h.n >= 30).map(h => h.value));
+  const max = Math.max(0.01, ...hours.filter(h => h.n >= MIN_N).map(h => h.value));
   return (
     <Widget title={LATE_BY_HOUR_TITLE} size="medium" className={isThin(days) ? 'opacity-60' : ''} hint={isThin(days) ? THIN_HINT : undefined} action={leftOut?.length ? <LeftOutDays className="shrink-0 text-xs text-[var(--text-dim)]" dates={leftOut} /> : undefined}>
       <HourSpark
         idleText={isThin(days) ? THIN_HINT : scope} barColor={lateShareColor} height={height} peakLabel values={hours} scale={{ min: 0, max }} color="var(--status-negative-text)" format={percentText} unit="departures" valueHeader={LATE_LABEL}
-        hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= 30))}
+        hours={liveChartHours(h => hours.some(x => x.hour === h && x.n >= MIN_N))}
         shade={band === 'all' ? undefined : h => periodKeyForHour(h) === band}
         hoverLine={(t, v) => lateHourLine(t, lateCount(v.value, v.n), v.n)}
         ariaLabel={`Share of departures late by hour of the day${overall != null ? `, ${percentText(overall)} late overall` : ''}.`}

@@ -132,9 +132,9 @@ describe('dates', () => {
   it('names each date for what it is', () => {
     const lead = "Based on the agency’s published schedule.";
     expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: '20261031' }, '2026-10-13T06:34:30.913Z', '20261013'))
-      .toBe(`${lead} This schedule was published Aug 27, 2026 and covers service until Oct 31, 2026. This page was last updated Oct 13, 2026.`);
+      .toBe(`${lead} This schedule was added on Aug 27, 2026 and covers service until Oct 31, 2026. This page was last updated Oct 13, 2026.`);
     expect(agencyDatesText({ lastRefreshedAt: null, validThrough: null }, null, '20261013')).toBe(lead);
-    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13', '20261013')).toBe(`${lead} This schedule was published Aug 27, 2026. This page was last updated Oct 13, 2026.`);
+    expect(agencyDatesText({ lastRefreshedAt: '2026-08-27', validThrough: null }, '2026-10-13', '20261013')).toBe(`${lead} This schedule was added on Aug 27, 2026. This page was last updated Oct 13, 2026.`);
     expect(agencyDatesText({ lastRefreshedAt: null, validThrough: '20261031' }, null, '20261013')).toBe(`${lead} This schedule covers service until Oct 31, 2026.`);
   });
 
@@ -146,7 +146,7 @@ describe('dates', () => {
   it('ends on the map’s date: the day after the last day, in the agency’s own time zone (#1229)', () => {
     // LA Metro: the rail feed's Oct 31 ends the page's schedule, as on the map.
     const lacmta = { lastRefreshedAt: '2026-10-19', validThrough: '20261031', timezone: 'America/Los_Angeles' };
-    expect(agencyDatesText(lacmta, '2026-10-27', '20261031')).toContain('This schedule was published Oct 19, 2026 and covers service until Oct 31, 2026.');
+    expect(agencyDatesText(lacmta, '2026-10-27', '20261031')).toContain('This schedule was added on Oct 19, 2026 and covers service until Oct 31, 2026.');
     expect(agencyDatesText(lacmta, '2026-10-27', '20261101')).toContain('This schedule ended on Oct 31, 2026;');
     // No date passed: the agency's own date. 06:59 UTC Nov 1 is still Oct 31 in Los Angeles.
     vi.useFakeTimers({ now: new Date('2026-11-01T06:59:00Z') });
