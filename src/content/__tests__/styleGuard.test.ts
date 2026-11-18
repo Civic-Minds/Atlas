@@ -179,8 +179,8 @@ const RULES: Rule[] = [
   { name: 'a Live measure or section name typed by hand (use its constant in shared/liveWording.ts)', doc: 'TEXT.md',
     pattern: /(["'`])(Late|Extra wait|Bunching|Delivered|Service delivered|Trip time|Typical delay|Usually adds|Time lost|Stops most often late|This week compared with last week|Where bunching forms|Along the route|Trips where it grows|Stretch that adds the most|By time of day|Late departures by hour|Where delays start|Bunching forms|How this is measured|On time|Not measured|not measured|Delay not measured|Fewer location reports|1 in 10 leave|Open Live|View on Live map|Both directions|Direction|Time of day|Also measured in this stretch|High|Low|Short turn|Too close together|Too far apart|Too close or too far apart|Close to the cutoff|Agency figures)\1/,
     slip: '<Section title="Stops most often late">', only: /(^|\/)[Ll]ive[^/]*$|\/Live\//, allowed: ['shared/liveWording.ts'] },
-  // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and "Live vehicles" (never "Live transit"), written once in shared/liveWording.ts.
-  { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_VEHICLES_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
+  // CIV-1602: Ryan's picks, "Delays start" (never "Delay starts") and the Live map's name "Live" (never "Live vehicles" or "Live transit", Ryan 2026-11-17), written once in shared/liveWording.ts.
+  { name: 'the Live delay-start or Live map name typed by hand (use DELAY_STARTS_LABEL or LIVE_MAP_TITLE in shared/liveWording.ts)', doc: 'TEXT.md',
     pattern: /(["'`])(Delays? starts?|Live vehicles|Live transit)\1/, slip: "label: 'Delay starts'", allowed: ['shared/liveWording.ts'] },
   // CIV-1774 (Ryan, 2026-11-16: "in one place only for grammar reasons /branding"): a button, link, tag, heading, control
   // label or table column typed into a component. Its words go in noticeCopy (or PAGE_NAMES); Live's too since CIV-1781.
