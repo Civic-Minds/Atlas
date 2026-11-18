@@ -91,7 +91,8 @@ const CHECKS = [
     ['combined wait', r => r.byWindow[0].combined.every, 'every 5 min'],
   ] },
   // Known gaps: reported, never fail the run. Move a check up once its fix ships.
-  { known: 'A window starting at midnight returns nothing (CIV-1845 split-store round)', local: true,
+  // Fixed in 0.7.0 (CIV-1840): a window starting at midnight used to return nothing.
+  { local: true,
     call: ['combined_frequency', { agency: 'TTC', from_stop: 'Spadina Ave at College St', to_stop: 'Spadina Ave at King St West', from_time: '12 AM', to_time: '3 AM' }], expect: [
     ['window has figures', r => r.byWindow.length > 0, true],
   ] },
