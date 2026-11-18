@@ -63,6 +63,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - Canadian spelling: colour, centre, catalogue, analyse. Words ending in -ize keep the z (normalize). Ryan, CIV-1610. (checked)
 - No comma before the "and" or "or" that ends a list: "morning, evening or overnight". Ryan, CIV-1610. (checked)
 - No "what Atlas isn't" disclaimers (not a trip planner, live alerts, doesn't replace, can be wrong): say what Atlas does. Legal pages excepted. Ryan, CIV-1733, CIV-1792. (checked)
+  - Status notes tied to specific data are fine and say so plainly (e.g. 'is still being verified'); the rule targets general 'Atlas isn't / can be wrong' lines, above all next to a sales or demo ask. Ryan, 2026-11-17.
 - Feature card titles are about the same length, about five words (Ryan, CIV-1793: "The titles should be relatively the same amount of words"). (checked: at most 7, `featureCardCopy.test.tsx`)
 - No "Atlas" in feature card body text (Ryan, CIV-1793). (checked: `featureCardCopy.test.tsx`)
 - "Vehicles", not "buses", in page and card copy: the About, For Transit Planners and For Researchers pages and their cards (Ryan, CIV-1793: "it's not just buses"). (checked)
