@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import PageSection, { PageTable, PAGE_SECTION_NOTE } from './components/ui/PageSection';
 import DataTable, { PAGE_FIGURE_COLUMN_REM, type DataTableColumn } from './components/ui/DataTable';
-import { PageTitle } from './components/ui/PageTitle';
 import AppLink from './components/ui/AppLink';
 import Pill from './components/ui/Pill';
+import Tag from './components/ui/Tag';
 import { LINK } from './pageStyles';
 import { useAgencies } from './hooks/useAgencies';
 import { PAGE_NAMES } from '../shared/pageNames';
@@ -13,24 +13,39 @@ import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { LIVE_ARCHIVE_SLUGS, type LiveCoverage } from '../shared/liveCoverage';
 import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
 import { agencyPagePath } from '../shared/pagePaths';
-import { COVERAGE_COLUMNS as H, COVERAGE_TEXT as T, coverageRows, type CoverageRow } from '../shared/coverageRows';
+import { coverageRows, type CoverageRow } from '../shared/coverageRows';
 import historyAgencyList from '../shared/data/history-agencies.json';
-import { loadingText } from './content/noticeCopy';
+import { COVERAGE_COLUMNS as H, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T, loadingText } from './content/noticeCopy';
 import { agencyNames } from './utils/agencyName';
 
 interface LocalFacts { studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
 
-const yes = (v: boolean) => (v ? 'Yes' : MISSING_VALUE);
 const WIDE = PAGE_FIGURE_COLUMN_REM + 2;
+
+/** A cell that lists what applies as the agencies page's small tags; a dash when nothing does. */
+function TagCell({ tags }: { tags: readonly string[] }) {
+  return tags.length === 0
+    ? <>{MISSING_VALUE}</>
+    : <span className="inline-flex flex-wrap justify-end gap-1">{tags.map(t => <Tag key={t} size="inline">{t}</Tag>)}</span>;
+}
+
+const liveTags = (r: CoverageRow) => [
+  ...(r.liveRecorded === 'recording' ? [L.recorded] : r.liveRecorded === 'paused' ? [L.paused] : []),
+  ...(r.liveRealtime ? [L.realtime] : []),
+];
+const studioTags = (r: CoverageRow) => [...(r.studioSchedule ? [S.schedule] : []), ...(r.studioVehicles ? [S.vehicles] : [])];
+// Every agency on the map has the MCP's schedule answers; real-time answers are none today (CIV-1870).
+const mcpTags = (r: CoverageRow) => [
+  M.schedule,
+  ...(r.mcpLive === 'ready' ? [M.live] : r.mcpLive === 'from' ? [M.liveFrom(r.mcpLiveFrom)] : r.mcpLive === 'paused' ? [M.livePaused] : r.mcpLive === 'unread' ? [M.liveUnread] : []),
+];
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink> },
-  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => yes(r.history) },
-  { key: 'liveRecorded', header: H.liveRecorded, width: WIDE, cell: r => r.liveRecorded },
-  { key: 'liveRealtime', header: H.liveRealtime, width: WIDE, cell: r => yes(r.liveRealtime) },
-  { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => r.studio },
-  { key: 'mcpFigures', header: H.mcpFigures, width: WIDE, cell: r => r.mcpFigures },
-  { key: 'figuresStart', header: H.figuresStart, width: WIDE, cell: r => r.figuresStart },
+  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? 'Yes' : MISSING_VALUE) },
+  { key: 'live', header: H.live, width: WIDE + 4, cell: r => <TagCell tags={liveTags(r)} /> },
+  { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell tags={studioTags(r)} /> },
+  { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagCell tags={mcpTags(r)} /> },
 ];
 
 function CoverageTable({ rows, caption }: { rows: CoverageRow[]; caption: string }) {
@@ -73,8 +88,6 @@ export default function StudioCoveragePage() {
 
   return (
     <DocsPageLayout width="wide">
-      <PageTitle>{PAGE_NAMES.studioCoverage}</PageTitle>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{T.intro}</p>
       {agenciesLoadState === 'loading' ? (
         <p className="mt-12 text-sm text-[var(--text-dim)]">{loadingText('the agencies')}</p>
       ) : agenciesLoadState === 'error' ? (

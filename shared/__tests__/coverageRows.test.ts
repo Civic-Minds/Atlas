@@ -22,14 +22,13 @@ describe('coverage rows (CIV-1871)', () => {
   });
 
   it('reads each column from its source', () => {
-    expect(row('ttc')).toMatchObject({ history: true, liveRecorded: 'Recording', liveRealtime: true, studio: MISSING_BUT_BUSES });
-    expect(row('kingston')).toMatchObject({ history: false, liveRealtime: false, studio: 'Changes and buses' });
-    expect(coverageRows({ ...base, historySlugs: ['alpha'] }).find(r => r.slug === 'alpha')).toMatchObject({ history: true, liveRecorded: '—', mcpFigures: '—', studio: '—' });
+    expect(row('ttc')).toMatchObject({ history: true, liveRecorded: 'recording', liveRealtime: true, studioSchedule: false, studioVehicles: true });
+    expect(row('kingston')).toMatchObject({ history: false, liveRealtime: false, studioSchedule: true, studioVehicles: true });
+    expect(coverageRows({ ...base, historySlugs: ['alpha'] }).find(r => r.slug === 'alpha')).toMatchObject({ history: true, liveRecorded: null, mcpLive: null, studioSchedule: false, studioVehicles: false });
   });
 
   it('says when figures start while recordings build up, and where it has no coverage file', () => {
-    expect(row('kingston')).toMatchObject({ mcpFigures: 'Building', figuresStart: 'Nov 22, 2026' });
-    expect(row('ttc')).toMatchObject({ mcpFigures: 'Not read', figuresStart: '—' });
+    expect(row('kingston')).toMatchObject({ mcpLive: 'from', mcpLiveFrom: 'Nov 22, 2026' });
+    expect(row('ttc')).toMatchObject({ mcpLive: 'unread', mcpLiveFrom: null });
   });
 });
-const MISSING_BUT_BUSES = 'Buses (no menu entry)';
