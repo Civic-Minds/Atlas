@@ -14,7 +14,6 @@ import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
-import { PageMapOverlayLayer } from './map/PageMapLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
 import { topMapHit } from './map/mapHitTargets';
@@ -68,6 +67,10 @@ import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, useMediaQuery } from '../
 // Keep the Live/Deck.gl graph out of public builds entirely when Live is disabled.
 // Read directly, not through FEATURES.live: the bundler only drops the import when it sees the literal env read
 // (with FEATURES.live the public build gains the deck and LiveVehiclesLayer chunks; checked in CIV-1402).
+// A page's drawing (Studio, CIV-1828): local only, so the DEV check keeps it out of deployed bundles.
+const PageMapOverlayLayer = import.meta.env.DEV
+  ? React.lazy(() => import('./map/PageMapLayer').then(m => ({ default: m.PageMapOverlayLayer })))
+  : null;
 const LiveVehiclesLayer = import.meta.env.VITE_LIVE_ENABLED === 'true'
   ? React.lazy(() => import('./map/LiveVehiclesLayer'))
   : null;
@@ -1313,7 +1316,11 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
         <canvas ref={mapHoldRef} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" style={{ visibility: 'hidden' }} />
       )}
 
-      {pageView && <PageMapOverlayLayer map={mapLoaded ? mapRef.current : null} light={lightMode} />}
+      {PageMapOverlayLayer && pageView && (
+        <React.Suspense fallback={null}>
+          <PageMapOverlayLayer map={mapLoaded ? mapRef.current : null} light={lightMode} />
+        </React.Suspense>
+      )}
 
       {LiveVehiclesLayer && liveLayerRequested && (
         <React.Suspense fallback={null}>
