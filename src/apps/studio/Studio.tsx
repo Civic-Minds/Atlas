@@ -4,9 +4,6 @@ import { useSearchParams } from 'react-router';
 import { Activity, Bus } from 'lucide-react';
 import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
-import Panel from '../../components/ui/Panel';
-import PanelEmpty from '../../components/ui/PanelEmpty';
-import { DevPlaceholder } from '../../content/devPlaceholder';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
 import { sidebarFrameStyle } from '../../styles';
@@ -15,7 +12,8 @@ import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAge
 import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
-import StudioChips, { type StudioMenu } from './StudioChips';
+import Live from './Live';
+import { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
 /**
@@ -76,12 +74,8 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
       {page === 'fleet' && slug && (
         <Fleet key={slug} slug={slug} agency={agency} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
-      {page === 'live' && (
-        // Atlas Live rebuilds this page on the main map's parts next (CIV-1828 step 2).
-        <>
-          <StudioChips container={headerPortal} menus={[agencyMenu]} />
-          <Panel sidebar style={frameStyle}><PanelEmpty><DevPlaceholder what="Live page, rebuilt on the main map next" /></PanelEmpty></Panel>
-        </>
+      {page === 'live' && slug && (
+        <Live key={slug} slug={slug} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
     </>
   );

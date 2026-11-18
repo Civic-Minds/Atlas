@@ -13,6 +13,15 @@ export function framePadding<P extends { bottom: number }>(pad: P, footerHeight:
   return { ...pad, bottom: Math.max(pad.bottom, footerHeight ? footerHeight + FRAME_GAP : 0) };
 }
 
+/** The map's note, in the regular map's notice slot (a map app's, and Studio's pages on the main map's frame). */
+export function MapAppNote({ children }: { children: ReactNode }) {
+  return (
+    <div data-map-overlay="notice" className={`${MAP_NOTICE_SLOT} ${Z_PANEL} pointer-events-none`}>
+      <p className={`${MAP_BADGE} m-0 min-h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{children}</p>
+    </div>
+  );
+}
+
 /**
  * The bottom of the map, as the regular map has it (CIV-1821: Ryan, "why the fuck are we doing things differently
  * here"): the regular map's footer row (MAP_FOOTER_ROW_SLOT) with its own pills, the About, What's new and Feedback
@@ -37,11 +46,7 @@ export function MapAppFooter({ note, onHeight }: { note?: ReactNode; onHeight?: 
   }, [el]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
-      {note && (
-        <div data-map-overlay="notice" className={`${MAP_NOTICE_SLOT} ${Z_PANEL} pointer-events-none`}>
-          <p className={`${MAP_BADGE} m-0 min-h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{note}</p>
-        </div>
-      )}
+      {note && <MapAppNote>{note}</MapAppNote>}
       <div ref={setEl} className={MAP_FOOTER_ROW_SLOT}><MapAttribution /></div>
     </>
   );
