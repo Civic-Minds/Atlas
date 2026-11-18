@@ -28,6 +28,7 @@ import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import { headwayEvery } from '../../shared/headwayText';
+import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts } from '../../shared/stopNameText';
@@ -248,21 +249,16 @@ export async function routesMeeting(agency: CatalogAgency, day: DayType, period:
 /** Studio's schedule comparison for an agency, if one was built (tmp/studio/<slug>-before-after.json). */
 export const scheduleComparison = (slug: string): Promise<StudioBeforeAfterFile | null> => store.comparison(slug);
 
-/** Frequency changes in a comparison, by the shared rule (a grade move on the one scale), biggest first. */
 /**
  * Studio's comparison lists a route written differently in the two schedules (RTD's Bound, FreeRide and MetroRide in
- * another case) as removed and added. Pair those by name, ignoring case and spaces, into one route with both figures.
+ * another case) as removed and added. Pair those by name, ignoring case and spaces, into one route with both figures
+ * (shared/scheduleChangePairing.ts, which Studio's page switches to under CIV-1868).
  */
 export function pairedChanges(file: StudioBeforeAfterFile): StudioBeforeAfterFile['changes'] {
-  const key = (c: { route: string }) => c.route.trim().toLowerCase();
-  const removed = new Map(file.changes.filter(c => !c.after && c.before).map(c => [key(c), c] as const));
-  const added = new Map(file.changes.filter(c => !c.before && c.after).map(c => [key(c), c] as const));
-  const merged = new Set([...removed.keys()].filter(k => added.has(k)));
-  const out = file.changes.filter(c => !merged.has(key(c)) || (c.before && c.after));
-  for (const k of merged) { const r = removed.get(k)!, a = added.get(k)!; out.push({ ...a, before: r.before, after: a.after }); }
-  return out;
+  return pairChanges(file.changes);
 }
 
+/** Frequency changes in a comparison, by the shared rule (a grade move on the one scale), biggest first. */
 export function frequencyChanges(file: StudioBeforeAfterFile) {
   const out: Array<{ route: string; name: string | null; period: string; hours: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
   for (const c of pairedChanges(file)) for (const period of PERIOD_KEYS) {
