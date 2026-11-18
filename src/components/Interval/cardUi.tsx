@@ -84,7 +84,7 @@ export const REPORT_REASON = {
   stop: 'Stop is missing, misplaced or assigned incorrectly',
   filter: 'Filter, search or route selection is wrong',
   live: 'Live vehicle information is missing or wrong',
-  stale: 'Route data is stale',
+  stale: 'Route data is out of date',
 } as const;
 export type ReportReason = (typeof REPORT_REASON)[keyof typeof REPORT_REASON];
 
@@ -108,7 +108,7 @@ const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   [REPORT_REASON.stop]: 'The stop is missing, misplaced or assigned incorrectly',
   [REPORT_REASON.filter]: 'The map, filter, search or route selection is wrong',
   [REPORT_REASON.live]: 'The live vehicle information is missing or wrong',
-  [REPORT_REASON.stale]: 'The route data is stale',
+  [REPORT_REASON.stale]: 'The route data is out of date',
 };
 
 const FREQUENCY_REASON_LABELS: Record<string, string> = {

@@ -54,12 +54,12 @@ describe('FlaggableValue + CardReportButton', () => {
     await activateReportMode();
     fireEvent.click(screen.getByRole('button', { name: /every 10 min/i }));
     await waitFor(() => expect(screen.getByRole('dialog')).toBeTruthy());
-    fireEvent.click(screen.getByLabelText('The route data is stale'));
+    fireEvent.click(screen.getByLabelText('The route data is out of date'));
     fireEvent.click(screen.getByRole('button', { name: 'Close report form' }));
     await activateReportMode();
     fireEvent.click(screen.getByRole('button', { name: /every 10 min/i }));
     await waitFor(() => expect(screen.getByRole('dialog')).toBeTruthy());
     expect((screen.getByLabelText('The frequency is wrong') as HTMLInputElement).checked).toBe(true);
-    expect((screen.getByLabelText('The route data is stale') as HTMLInputElement).checked).toBe(false);
+    expect((screen.getByLabelText('The route data is out of date') as HTMLInputElement).checked).toBe(false);
   });
 });
