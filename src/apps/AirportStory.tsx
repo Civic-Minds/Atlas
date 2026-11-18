@@ -9,6 +9,7 @@ import { AIRPORTS, landableAt, landableCount } from '../data/airportHourly';
 import { useColorVision } from '../context/ColorVisionContext';
 import { AIRPORT_STORY_DRAFT } from '../../shared/researchStories';
 import { STORY_HEADING, STORY_PARAGRAPH } from '../pageStyles';
+import { DevPlaceholder, devPlaceholder } from '../content/devPlaceholder';
 
 /**
  * CIV-1550: the airport story, local dev only (main.tsx registers it under import.meta.env.DEV, so it is in no built
@@ -43,12 +44,12 @@ const MEMPHIS_GAP = [11, 12].filter(h => MEMPHIS && !landableAt(MEMPHIS, 'wk', h
  */
 const STEPS: { hour: number; slot: number; text: ReactNode }[] = [
   { hour: 6, slot: slotOf(6), text: <>It’s {hourTime(6)}. At {downtownAt(6)} of {TOTAL} airports, a bus or train leaves for downtown within the hour.</> },
-  { hour: 11, slot: slotOf(11), text: <>[Ryan’s wording: Memphis midday gap.] At Memphis, no bus leaves the airport in the {MEMPHIS_GAP.map(h => hourTime(h)).join(' and ')} hours. The last bus downtown leaves at {clockTime(16 * 60 + 34)}.</> },
-  { hour: 19, slot: slotOf(19), text: <>{downtownAt(19)} airports still have a ride downtown within the hour. One by one, the last buses leave. [Ryan’s wording: 7 PM, count drops or another airport.]</> },
+  { hour: 11, slot: slotOf(11), text: <><DevPlaceholder what="Memphis midday gap" /> At Memphis, no bus leaves the airport in the {MEMPHIS_GAP.map(h => hourTime(h)).join(' and ')} hours. The last bus downtown leaves at {clockTime(16 * 60 + 34)}.</> },
+  { hour: 19, slot: slotOf(19), text: <>{downtownAt(19)} airports still have a ride downtown within the hour. One by one, the last buses leave. <DevPlaceholder what="7 PM, count drops or another airport" /></> },
   { hour: 23, slot: slotOf(23), text: <>At {hourTime(23)}, {downtownAt(23)} airports have a ride downtown within the hour. At Pearson, the UP Express to Union Station runs until {clockTime(24 * 60 + 54)}.</> },
   // The 747 meets 1:57 AM only on Saturday and Sunday; on the weekday it leaves at 1:41 and 2:33 AM (route 356 at 1:57 AM).
-  { hour: 3, slot: slotOf(3), text: <>At {hourTime(3)}, only {landableCount(AIRPORTS, 'wk', 3, 'any')} airports have any transit within the hour, and {downtownAt(3)} go straight downtown. [Ryan’s wording: Montréal pair. On weekdays the 747 leaves at {clockTime(25 * 60 + 41)} and {clockTime(26 * 60 + 33)}; it leaves at {clockTime(25 * 60 + 57)} only on Saturday and Sunday. Route 356 leaves for downtown at {clockTime(25 * 60 + 57)} on weekdays.]</> },
-  { hour: 6, slot: slotOf(6, true), text: <>[Ryan’s wording: first buses back.] At {hourTime(5)}, {downtownAt(5)} of {TOTAL} airports have a ride downtown within the hour. At {hourTime(6)}, {downtownAt(6)} do.</> },
+  { hour: 3, slot: slotOf(3), text: <>At {hourTime(3)}, only {landableCount(AIRPORTS, 'wk', 3, 'any')} airports have any transit within the hour, and {downtownAt(3)} go straight downtown. <DevPlaceholder what={`Montréal pair. On weekdays the 747 leaves at ${clockTime(25 * 60 + 41)} and ${clockTime(26 * 60 + 33)}; it leaves at ${clockTime(25 * 60 + 57)} only on Saturday and Sunday. Route 356 leaves for downtown at ${clockTime(25 * 60 + 57)} on weekdays.`} /></> },
+  { hour: 6, slot: slotOf(6, true), text: <><DevPlaceholder what="first buses back" /> At {hourTime(5)}, {downtownAt(5)} of {TOTAL} airports have a ride downtown within the hour. At {hourTime(6)}, {downtownAt(6)} do.</> },
 ];
 
 function StorySection({ id, heading, children }: { id: string; heading: string; children: ReactNode }) {
@@ -116,7 +117,7 @@ export default function AirportStory() {
       <article className="pb-16 pt-10 sm:pt-14">
         <ResearchHeader
           width="story"
-          title={AIRPORT_STORY_DRAFT.heading}
+          title={devPlaceholder('title')}
           intro={<>{AIRPORT_STORY_DRAFT.intro!({}).map(text => <p key={text}>{text}</p>)}</>}
         />
 
@@ -137,8 +138,8 @@ export default function AirportStory() {
 
         <div className="mx-auto mt-24 max-w-4xl space-y-24 sm:mt-32 sm:space-y-32">
           {/* The week grid stays further down (Ryan's pick, 2026-11-16); the chart itself is not built yet. */}
-          <StorySection id="airport-week-heading" heading="[Ryan’s wording: week grid heading]">
-            <p className={PLACEHOLDER}>[Chart later: week grid per airport, with real scheduled flights marked at featured airports.]</p>
+          <StorySection id="airport-week-heading" heading={devPlaceholder('week grid heading')}>
+            <DevPlaceholder as="p" className={PLACEHOLDER} what="chart later: week grid per airport, with real scheduled flights marked at featured airports" />
           </StorySection>
 
           <StorySection id="airport-weekend-heading" heading="The weekend gap">
@@ -154,7 +155,7 @@ export default function AirportStory() {
           </StorySection>
 
           <StorySection id="airport-find-heading" heading="Find your airport">
-            <p className={PLACEHOLDER}>[Existing link to the map.]</p>
+            <DevPlaceholder as="p" className={PLACEHOLDER} what="existing link to the map" />
           </StorySection>
         </div>
       </article>

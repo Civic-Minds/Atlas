@@ -23,6 +23,7 @@ import Pill from '../components/ui/Pill';
 import { CHART_TEXT, useActivePart } from '../components/charts/useActivePart';
 import { hourTime } from '../../shared/timeText';
 import { FREQUENT_SERVICE_STORY } from '../../shared/researchStories';
+import { DevPlaceholder, devPlaceholder } from '../content/devPlaceholder';
 
 /** The hero's in-page jump buttons (Explore the research, See the method): one pill, so the two match. */
 const STORY_JUMP_BUTTON = 'inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--bg-panel)] px-4 py-2.5 text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]';
@@ -276,7 +277,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 We applied the same test to Atlas route data and population geography: a 10-minute walk to the frequent part of a route at that threshold in the weekday AM peak, midday and PM peak. The stricter 15-minute threshold reaches far fewer people than the broader 30-minute threshold.
               </p>
               <p className={STORY_PARAGRAPH}>The practical difference is large: 30-minute service reaches about {frequentServiceCoverageInterpretation.canadaThirtyToFifteenRatio} times as many people in Canada and {frequentServiceCoverageInterpretation.unitedStatesThirtyToFifteenRatio} times as many in the United States as 15-minute service.</p>
-              <p className={STORY_PARAGRAPH}>[Ryan’s wording: cities paragraph]</p>
+              <DevPlaceholder as="p" className={STORY_PARAGRAPH} what="cities paragraph" />
             </div>
             <div className="mt-10">
               <DotPairKey first={headwayAmount(15)} second={headwayAmount(30)} series={coverageSeries} />
@@ -289,7 +290,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                   return (
                     <div key={country.country}>
                       <DotPairs
-                        label={`[Ryan’s wording: cities chart name for screen readers], ${country.label}`}
+                        label={[devPlaceholder('cities chart name for screen readers'), country.label].filter(Boolean).join(', ')}
                         details={coverageDetails}
                         firstHeader={headwayAmount(15)}
                         secondHeader={headwayAmount(30)}
@@ -303,18 +304,18 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                         }]}
                       />
                       {noneAtFifteen.length > 0 && (
-                        <p className={`mt-4 ${CHART_TEXT}`}><span className="font-bold">[Ryan’s wording: none at 15 min]</span>: {joinList(noneAtFifteen.map(metro => metro.name))}</p>
+                        <p className={`mt-4 ${CHART_TEXT}`}>{devPlaceholder('none at 15 min') && <><span className="font-bold">{devPlaceholder('none at 15 min')}</span>: </>}{joinList(noneAtFifteen.map(metro => metro.name))}</p>
                       )}
                     </div>
                   );
                 })}
               </div>
-              <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: cities caption]</p>
+              <DevPlaceholder as="p" className="mt-6 text-xs leading-5 text-[var(--text-dim)]" what="cities caption" />
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Canada is higher at both thresholds in this analysis, but the countries use different population vintages and geographies, so the comparison is descriptive rather than a ranking.</p>
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Each country’s percentages use the same population base at both thresholds. Canada uses 2021 Statistics Canada dissemination areas; the United States uses 2020 Census block groups.</p>
               <p className="mt-2 text-xs leading-5 text-[var(--text-dim)]">Date updated: {longDate(frequentServiceCoverageUpdated)}.</p>
               <ChartTableDetails id={coverageTableId} caption="Population within a ten-minute walk of frequent transit by headway threshold" columns={COVERAGE_COLUMNS} rows={frequentServiceCoverageStats} rowKey={row => row.country} />
-              <ChartTableDetails id={citiesTableId} caption="[Ryan’s wording: cities table caption]" columns={CITY_COLUMNS} rows={COVERAGE_CITY_ROWS} rowKey={row => row.id} />
+              <ChartTableDetails id={citiesTableId} caption={devPlaceholder('cities table caption')} columns={CITY_COLUMNS} rows={COVERAGE_CITY_ROWS} rowKey={row => row.id} />
             </div>
           </section>
 
@@ -324,10 +325,10 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
               Sunday bar reads as the share that is left. Heading, intro and caption are placeholders until Ryan approves wording. */}
           <section aria-labelledby="weekend-heading" className={`${STORY_CHART_PANEL} p-6 sm:p-10`}>
             <div className="max-w-2xl">
-              <h2 id="weekend-heading" className={STORY_HEADING}>[Ryan’s wording: section 3 heading]</h2>
-              <p className={STORY_PARAGRAPH}>[Ryan’s wording: section 3 intro]</p>
+              <DevPlaceholder as="h2" id="weekend-heading" className={STORY_HEADING} what="section 3 heading" />
+              <DevPlaceholder as="p" className={STORY_PARAGRAPH} what="section 3 intro" />
             </div>
-            <div className="mt-8 flex gap-1.5" role="group" aria-label="[Ryan’s wording: threshold picker name for screen readers]">
+            <div className="mt-8 flex gap-1.5" role="group" aria-label={devPlaceholder('threshold picker name for screen readers') || undefined}>
               {WEEKEND_THRESHOLDS.map(minutes => (
                 <Pill key={minutes} size="segment" tone="outline" selected={weekendMinutes === minutes} onClick={() => setWeekendMinutes(minutes)}>
                   {headwayFilterLabel(minutes)}
@@ -355,8 +356,8 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
                 );
               })}
             </div>
-            <p className="mt-6 text-xs leading-5 text-[var(--text-dim)]">[Ryan’s wording: section 3 caption]</p>
-            <ChartTableDetails id={weekendTableId} caption="[Ryan’s wording: section 3 heading]" columns={WEEKEND_COLUMNS} rows={frequentWeekendCities} rowKey={city => city.city} />
+            <DevPlaceholder as="p" className="mt-6 text-xs leading-5 text-[var(--text-dim)]" what="section 3 caption" />
+            <ChartTableDetails id={weekendTableId} caption={devPlaceholder('section 3 heading')} columns={WEEKEND_COLUMNS} rows={frequentWeekendCities} rowKey={city => city.city} />
           </section>
 
           <section aria-labelledby="more-heading" className="mx-auto w-full max-w-[48rem]">

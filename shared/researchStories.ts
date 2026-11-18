@@ -86,11 +86,11 @@ export const FREE_CHILD_FARES_STORY: ResearchStoryText = {
 };
 
 /** A draft (dev server only, CIV-1550): its page and card read this too; no tab or preview until it's published. */
-export const AIRPORT_STORY_DRAFT: Pick<ResearchStoryText, 'path' | 'cardTitle' | 'heading' | 'intro'> = {
+export const AIRPORT_STORY_DRAFT: Pick<ResearchStoryText, 'path' | 'cardTitle' | 'intro'> = {
   path: '/research/airports/story',
-  // The page's heading is still a placeholder for Ryan's wording, so the card uses the page's working name.
+  // The page's heading is still a dev-only placeholder (AirportStory.tsx, CIV-1814 item 29), so the card uses the page's
+  // working name.
   cardTitle: 'Airport story',
-  heading: '[Ryan’s wording: title]',
   intro: () => [
     'You land, walk out of the terminal and look for the bus. Whether one is coming depends on which airport you landed at, and when.',
     'We checked the 157 passenger airports in the cities Atlas covers in Canada and the United States. For each one, we counted the hours of the week when a bus or train leaves for downtown within an hour of landing.',

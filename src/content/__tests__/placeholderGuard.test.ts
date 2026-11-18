@@ -2,18 +2,14 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-// CIV-1775: no "[Placeholder" text in a public or beta build. Placeholder text is a stand-in for wording Ryan has not
-// given yet (CIV-1766, CIV-1705). It may only sit behind a flag that is true only on the Vite dev server, and each such
-// file is listed here with its flag. Any other hit fails. Tests are not scanned; comments are, so a comment that quotes
-// the marker needs rewording.
+// CIV-1775, CIV-1814 item 29: no bracketed placeholder text in a public, preview or beta build. Placeholder text is a
+// stand-in for wording Ryan has not given yet. Every placeholder goes through shared/devPlaceholder.ts (drawn as an
+// element by src/content/devPlaceholder.tsx), which shows it only on the Vite dev server; that file is the only one allowed to hold the markers. Tests are not scanned;
+// comments are, so a comment that quotes a marker needs rewording.
 const ROOT = resolve(__dirname, '../../..');
 const SCANNED = ['src', 'shared'];
-const MARKER = '[Placeholder';
-
-/** Each file allowed to hold the marker, the FEATURES key that gates it, and why. */
-const DEV_ONLY: Array<{ file: string; flag: string; why: string }> = [
-  { file: 'src/components/Interval/FilterChips.tsx', flag: 'connectionsBar', why: 'connections bar side labels (CIV-1766); App.tsx only builds the bar when the flag is on' },
-];
+const HELPER = 'shared/devPlaceholder.ts';
+const MARKERS = [/\[Placeholder/, /\[Ryan[’']s wording/i];
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {
@@ -23,36 +19,28 @@ function files(dir: string): string[] {
   });
 }
 
-/** The line of shared/config.ts that defines FEATURES.<flag>'s constant, and the constant's own definition. */
-function flagDefinition(flag: string): string | null {
-  const config = readFileSync(join(ROOT, 'shared/config.ts'), 'utf8');
-  const entry = config.match(new RegExp(`^\\s*${flag}:\\s*([A-Z_]+),`, 'm'));
-  if (!entry) return null;
-  return config.match(new RegExp(`^export const ${entry[1]}\\s*=\\s*(.+);$`, 'm'))?.[1] ?? null;
-}
+const hasMarker = (text: string) => MARKERS.some(marker => marker.test(text));
 
-const hits = SCANNED.flatMap(dir => files(join(ROOT, dir))).filter(path => readFileSync(path, 'utf8').includes(MARKER))
+const hits = SCANNED.flatMap(dir => files(join(ROOT, dir))).filter(path => hasMarker(readFileSync(path, 'utf8')))
   .map(path => relative(ROOT, path));
 
-describe('placeholder text guard (CIV-1775)', () => {
-  it('finds the marker only in listed dev-only files', () => {
-    const unlisted = hits.filter(file => !DEV_ONLY.some(entry => entry.file === file));
-    expect(unlisted, `"${MARKER}" text in a file that is not dev-only: ${unlisted.join(', ')}. Give it real wording, or gate it behind a dev-only flag and list it in DEV_ONLY in placeholderGuard.test.ts.`).toEqual([]);
+describe('placeholder text guard (CIV-1775, CIV-1814 item 29)', () => {
+  it('finds bracketed placeholder text only in the dev-only helper', () => {
+    const outside = hits.filter(file => file !== HELPER);
+    expect(outside, `Bracketed placeholder text outside ${HELPER}: ${outside.join(', ')}. Give it real wording, or use devPlaceholder()/<DevPlaceholder> from that file.`).toEqual([]);
   });
 
-  it('lists no file that no longer has the marker', () => {
-    const stale = DEV_ONLY.filter(entry => !hits.includes(entry.file)).map(entry => entry.file);
-    expect(stale, `Remove from DEV_ONLY, the marker is gone: ${stale.join(', ')}`).toEqual([]);
+  it('the helper shows placeholders only on the dev server', () => {
+    const helper = readFileSync(join(ROOT, HELPER), 'utf8');
+    const flag = helper.match(/^export const SHOW_PLACEHOLDERS\s*=\s*(.+);$/m)?.[1];
+    expect(flag, `SHOW_PLACEHOLDERS was not found in ${HELPER}`).toBeDefined();
+    expect(flag).toMatch(/^import\.meta\.env\??\.DEV === true$/);
   });
 
-  it.each(DEV_ONLY.map(entry => [entry.flag, entry.file, entry.why]))('flag %s (%s) is true only on the dev server', (flag) => {
-    const definition = flagDefinition(flag);
-    expect(definition, `FEATURES.${flag} was not found in shared/config.ts`).not.toBeNull();
-    expect(definition, `FEATURES.${flag} is not dev-only: ${definition}`).toMatch(/import\.meta\.env\.DEV\s*$/);
-    expect(definition).not.toMatch(/\|\||BETA_BUILD|PUBLIC/);
-  });
-
-  it('catches an unlisted hit', () => {
-    expect(['src/NewPage.tsx'].filter(file => !DEV_ONLY.some(entry => entry.file === file))).toEqual(['src/NewPage.tsx']);
+  it('catches both markers', () => {
+    expect(hasMarker('[Placeholder: heading]')).toBe(true);
+    expect(hasMarker('[Ryan’s wording: intro]')).toBe(true);
+    expect(hasMarker("[Ryan's wording: intro]")).toBe(true);
+    expect(hasMarker('Every 15 min')).toBe(false);
   });
 });
