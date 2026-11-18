@@ -100,7 +100,8 @@ describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-17
 describe('Studio map page (CIV-1731)', () => {
   it('groups the changes as the page did: frequency or trips, first or last trip, removed, small', () => {
     expect(changeGroups(FILE).map(g => [g.title, g.routes.map(c => c.route)])).toEqual([
-      ['Frequency or Trips Changed', ['10', '12']],
+      // CIV-1814 item 38: by the biggest move in grades, a start (12's AM peak) above 10's one-grade moves.
+      ['Frequency or Trips Changed', ['12', '10']],
       ['First or Last Trip or Trip Time Changed', ['2']],
       ['Route Removed', ['7B']],
       ['Small Changes', ['1']],
