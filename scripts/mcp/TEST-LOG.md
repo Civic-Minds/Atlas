@@ -24,6 +24,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.6.2 | 2026-11-17 | Instructions sent at start: answer from the tools, say where anything else comes from, don't estimate unasked, no shell work-arounds |
 | 0.7.0 | 2026-11-18 | Hosted-version tool code (CIV-1840): schedule end date on every answer, map links, merged same-destination branches, midnight windows, routes_near hours, route_history ends with today's schedule, paged schedule_changes, ferries as their own kind, the optional question field |
 | 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
+| 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
 
 ## Standing questions
 
@@ -350,3 +351,13 @@ The pilot Worker on workers.dev (free plan), reached through a tester's private 
 - **Kennedy Station:** both runs answered with one routes_near and one routes_at_frequency call (18 routes running at midday), well inside the 30-a-minute limit.
 - **Calgary (not in this deployment):** "No route data for calgary"; both runs said Atlas has no figures and pointed to the agency. For the pilot the message should say the pilot covers a set list of agencies, unless every agency's files are up by then.
 - **Web clients:** Claude.ai and ChatGPT on the web can't be driven headlessly without signing in and adding a connector to an account, so they weren't tested. Claude Code over HTTP uses the same Streamable HTTP endpoint those clients call.
+
+## 2026-11-18: Live reliability tools (CIV-1860, 0.10.0), Claude both ways
+
+10 questions on route_reliability and route_bunching (local server on feat/civ-1860, Live's published TTC streetcar summaries, weeks Nov 3–9 and Nov 10–16). Chats: `_reports/mcp-tests/2026-11-18-live-claude-*`.
+
+- **Both runs:** every answer came from the two tools. Figures not in the tool results were the tool's fractions written as percentages (0.093 as 9.3%) or simple sums, checked by hand.
+- **Right:** 504 at rush hour (2.3% late in the AM peak, 9.3% in the PM peak, about 4 in 10 gaps bunched or gapped); the ranking (510 late most often at 16.5%, 504 worst spaced); the 505 improving (14.3% to 9.9%, mostly midday and evening); the 510's trip time against its schedule; and the 504 against the 501 at midday.
+- **No Live data:** OC Transpo Line 1 and the TTC 29 were answered as "no Live recordings" with the recorded routes listed. The 29 answer also gave its schedule from route_frequency.
+- **Right now:** "Is the 504 late right now?" was declined (past recordings only), and the past week was given instead.
+- **Fixed after the round:** both runs wrote shares as "4 in 10", which Ryan's numbers rule rules out. The tools' definitions now say to give percentages, never "1 in N".

@@ -18,12 +18,16 @@ import { TIME_PERIODS } from '../../shared/rules/periods';
 import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
+import { liveReader } from './liveData';
+import { RELIABILITY_BANDS } from '../../shared/liveReliability';
+import { LATE_ABOVE_MIN, EARLY_AT_OR_BELOW_MIN, BUNCHED_GAP_SEC, GAPPED_FACTOR } from '../../shared/rules/live';
 
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
 const agency = { type: 'string', description: 'Agency name or short name, e.g. "TTC" or "Toronto Transit Commission".' };
 const alsoAgencies = { type: 'array', items: { type: 'string' }, description: 'Optional other agencies serving the same trip, counted together (e.g. LA Metro with Big Blue Bus between downtown LA and Santa Monica). Use list_agencies near a place to find them.' };
 const period = { type: 'string', enum: PERIODS, description: `Part of the day: ${PERIOD_KEYS.map(k => `${PERIOD_LABELS[k]} ${formatPeriodRange(k)}`).join(', ')}.` };
+const livePeriod = { type: 'string', enum: ['All day', ...RELIABILITY_BANDS.filter(b => b !== 'all').map(b => PERIOD_LABELS[b])], description: 'Optional part of the day; every part when left out.' };
 const every = { type: 'number', description: `Minutes: routes that run this often or better. Atlas's map uses ${PUBLIC_TIER_MAXES.join(', ')}.` };
 const fromTime = { type: 'string', description: 'Optional start of a time window, such as "10:00" or "10 AM".' };
 const toTime = { type: 'string', description: 'Optional end of the time window, such as "18:00" or "6 PM".' };
@@ -42,6 +46,8 @@ const TOOL_LIST = [
   { name: 'routes_by_hours', description: "Routes whose service ends early or starts late on a day type: every route whose last trip leaves before ends_before, or whose first trip leaves after starts_after, with its first and last trips. For questions such as which routes stop before 10 PM on Sundays.", inputSchema: { type: 'object', properties: { agency, day, ends_before: { type: 'string', description: 'Clock time, e.g. "22:00" or "10 PM".' }, starts_after: { type: 'string', description: 'Clock time, e.g. "07:00".' } }, required: ['agency'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
+  { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service, not right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod }, required: ['agency'] } },
+  { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod }, required: ['agency', 'route'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency, offset: { type: 'number', description: 'Skip this many frequency changes (to page through a long list).' }, limit: { type: 'number', description: 'How many frequency changes to return; 40 when left out, 200 at most.' } }, required: ['agency'] } },
 ];
 
@@ -59,13 +65,14 @@ const TITLES: Record<string, string> = {
   routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place',
   route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
+  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced',
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
 const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.8.0';
+export const SERVER_VERSION = '0.10.0';
 
 export type Args = Record<string, unknown>;
 
@@ -142,6 +149,43 @@ export const INSTRUCTIONS = [
   "When a tool says Atlas has no figure, say so; don't work one out or estimate it unless the person asks for an estimate, and then call it yours.",
   "Don't run shell commands or read files to get around a missing tool.",
 ].join(' ');
+
+const LIVE_SOURCE = "Atlas Live's recordings of where vehicles were, matched to the timetable (past service, not live).";
+/** The meaning of every Live figure, worded from the shared rules (shared/rules/live.ts). */
+const LIVE_DEFINITIONS = {
+  late: `More than ${LATE_ABOVE_MIN} minutes after the scheduled time.`,
+  early: `${Math.abs(EARLY_AT_OR_BELOW_MIN)} minutes or more before the scheduled time.`,
+  bunched: `A gap of ${BUNCHED_GAP_SEC / 60} minutes or less behind the vehicle ahead.`,
+  gapped: `A gap more than ${GAPPED_FACTOR} times the scheduled gap.`,
+  shares: 'Shares are fractions: 0.093 means 9.3% of departures. Give them as percentages, never as "1 in N" or "4 in 10".',
+};
+const bandLabel = (k: string) => (k === 'all' ? 'All day' : `${PERIOD_LABELS[k as keyof typeof PERIOD_LABELS]} (${formatPeriodRange(k as Parameters<typeof formatPeriodRange>[0])})`);
+function liveBand(p: unknown): string | null {
+  if (p == null || p === '' || /^all/i.test(String(p))) return null;
+  const k = RELIABILITY_BANDS.find(b => b !== 'all' && PERIOD_LABELS[b as keyof typeof PERIOD_LABELS].toLowerCase() === String(p).toLowerCase());
+  if (!k) throw new Error(`Part of the day must be one of: All day, ${RELIABILITY_BANDS.filter(b => b !== 'all').map(b => PERIOD_LABELS[b as keyof typeof PERIOD_LABELS]).join(', ')}.`);
+  return k;
+}
+const liveWeeks = (m: { thisWeek: { from: string; to: string } | null; lastWeek: { from: string; to: string } | null }) => ({ thisWeek: m.thisWeek, lastWeek: m.lastWeek });
+/** Any public agency, whether or not its route files are on hand: Live figures don't need them. */
+async function liveAgencyFor(q: unknown) {
+  const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
+  if (!a) throw new Error(`No agency matches "${q}". Use list_agencies to search.`);
+  return a;
+}
+async function liveAgency(a: { slug: string; name: string }) {
+  const manifest = await liveReader().manifest(a.slug);
+  if (!manifest) return { none: { agency: a.name, live: null, note: `Atlas has no Live recordings published for ${a.name}, so it has no figures for how its routes actually ran. It has the published schedule (route_frequency).` } };
+  return { manifest };
+}
+async function liveRoute(a: { slug: string; name: string }, m: { routes: string[] }, route: unknown) {
+  const q = String(route ?? '').trim().toLowerCase();
+  const id = m.routes.find(r => r.toLowerCase() === q) ?? m.routes.find(r => q.startsWith(`${r.toLowerCase()} `));
+  if (!id) return { none: { agency: a.name, live: null, recordedRoutes: m.routes, note: `Atlas's Live recordings for ${a.name} cover only these routes; "${route}" is not one of them.` } };
+  const file = await liveReader().route(a.slug, id);
+  if (!file) return { none: { agency: a.name, live: null, note: `Atlas has no Live figures for route ${id} yet.` } };
+  return { file };
+}
 
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   list_agencies: async ({ query, region, country, near, km }) => {
@@ -259,6 +303,32 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     if (endsBefore == null && startsAfter == null) throw new Error('Give ends_before or starts_after as a clock time, such as "22:00".');
     const routes = await data.routesByHours(a, dayType, endsBefore, startsAfter);
     return { agency: a.name, day: dayType, ...(endsBefore != null ? { endsBefore: clockTime(endsBefore) } : {}), ...(startsAfter != null ? { startsAfter: clockTime(startsAfter) } : {}), routesOnDay: (await data.routeList(a, dayType)).length, count: routes.length, routes, note: 'A last trip after midnight counts as that night, not as early.', scheduleValidThrough: validThrough(a), source: SOURCE };
+  },
+  route_reliability: async ({ agency: q, route, period: p }) => {
+    const band = liveBand(p);
+    const a = await liveAgencyFor(q);
+    const live = await liveAgency(a);
+    if ('none' in live) return live.none;
+    if (route == null || String(route).trim() === '') {
+      const r = await liveReader().ranking(a.slug);
+      if (!r) return { agency: a.name, ranking: null, note: 'Atlas has no ranking of recorded routes for this agency.' };
+      const routes = [...r.routes].sort((x, y) => (y.lateShare ?? -1) - (x.lateShare ?? -1)).map(x => ({ route: x.route, name: x.titleLabel, lateShare: x.lateShare, lateShareLastWeek: x.lateLastWeek, departures: x.lateN, bunchedOrGappedShare: x.bunchingShare, deliveredShare: x.deliveredShare }));
+      return { agency: a.name, ...liveWeeks(live.manifest), measured: 'Whole day, this week, most often late first.', routes, held: r.held.map(h => h.route), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+    }
+    const f = await liveRoute(a, live.manifest, route);
+    if ('none' in f) return f.none;
+    const bands = Object.fromEntries(Object.entries(f.file.reliability.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), directions: f.file.reliability.directions, weeksComparable: f.file.reliability.weeksComparable, byPartOfDay: bands, definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+  },
+  route_bunching: async ({ agency: q, route, period: p }) => {
+    const band = liveBand(p);
+    const a = await liveAgencyFor(q);
+    const live = await liveAgency(a);
+    if ('none' in live) return live.none;
+    const f = await liveRoute(a, live.manifest, route);
+    if ('none' in f) return f.none;
+    const bands = Object.fromEntries(Object.entries(f.file.bunching.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), byPartOfDay: bands, definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE, note: 'startShare is the share of bunched or gapped gaps where the route starts; formsAt is the stretch where it forms (pattern "forms") or rises most; risePoints is how many percentage points it rises across that stretch.' };
   },
   schedule_changes: async ({ agency: q, offset, limit }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
