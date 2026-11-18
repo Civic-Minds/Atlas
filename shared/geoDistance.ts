@@ -19,6 +19,17 @@ export function metresBetween(a: LatLon, b: LatLon): number {
   return 2 * EARTH_RADIUS_M * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
+/**
+ * Whether two points are within `metres` of each other, checking the cheap latitude and longitude spans first: for scans
+ * over many stops (nearby routes on the map and in the MCP, CIV-1864).
+ */
+export function withinMetres(a: LatLon, b: LatLon, metres: number): boolean {
+  const dLat = (metres / 111_000) * 1.5;
+  if (Math.abs(a.lat - b.lat) > dLat) return false;
+  if (Math.abs(a.lon - b.lon) > dLat / Math.max(0.05, Math.cos(b.lat * RAD))) return false;
+  return metresBetween(a, b) <= metres;
+}
+
 /** A GeoJSON-order [lon, lat] position as a point. */
 export const lonLatPoint = ([lon, lat]: readonly [number, number] | readonly number[]): LatLon => ({ lat, lon });
 

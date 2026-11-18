@@ -30,6 +30,8 @@ export const AGENCY_CHIP_PAD = 0.5;
 
 /** A zoom step's max headway that means "no limit": every route shows. */
 export const NO_HEADWAY_LIMIT = 9999;
+/** A route-list headway at or above this is a no-service marker, not a spacing (the route list, its filter and the MCP). */
+export const HEADWAY_NO_SERVICE_FROM = 999;
 /** Runtime map zoom gate: [zoom threshold, max headway] steps after the sub-zoom-7 default (10 min). */
 export const MAP_ZOOM_HEADWAY_STEPS: ReadonlyArray<readonly [zoom: number, maxHeadway: number]> = [
   [7, 20],

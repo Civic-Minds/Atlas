@@ -180,3 +180,17 @@ describe('Live files in the private bucket (CIV-1860)', () => {
     expect(src).not.toMatch(/stdio:\s*'inherit'/);
   });
 });
+
+describe('route lookup (CIV-1864)', () => {
+  it('uses the map search rule after exact names and lines: leading zeros, numbers, names, rail first', async () => {
+    const { findRoute } = await import('../mcp/atlasData');
+    const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
+    const routes = [r('01', 'King'), r('10', 'B-Line Express'), r('60', 'Blue Island'), r('Blue', 'Blue Line', 'Subway'), r('105', 'Kingsway')];
+    expect(findRoute(routes, '1')?.shortName).toBe('01');
+    expect(findRoute(routes, 'blue')?.shortName).toBe('Blue');
+    expect(findRoute(routes, 'b-line')?.shortName).toBe('10');
+    expect(findRoute(routes, 'kingsway')?.shortName).toBe('105');
+    expect(findRoute(routes, 'zzz')).toBeNull();
+  });
+});
+

@@ -1,4 +1,5 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
+import { HEADWAY_NO_SERVICE_FROM } from '../../shared/rules/limits';
 import { isHourInPeriod, MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_MINUTES, TIME_PERIODS, type PeriodKey } from '../../shared/config';
 import { hasNoPeriodService } from '../../shared/periodEligibility';
 import { routeFilterHeadway } from '../../shared/routeHeadwayFilter';
@@ -421,7 +422,7 @@ export interface RouteListDisplay {
  * or its existing limited / irregular-period word. Null when the route has nothing on that side.
  */
 export function compareSideListText(label: 'A' | 'B', display: RouteListDisplay): string | null {
-  if (display.headway != null && display.headway < 999) return `${label} every ${display.headway}`;
+  if (display.headway != null && display.headway < HEADWAY_NO_SERVICE_FROM) return `${label} every ${display.headway}`;
   if (display.noRegular) return `${label} ${IRREGULAR_PERIOD_SHORT_LABEL}`;
   if (display.limited) return `${label} ${LIMITED_SERVICE_LABEL}`;
   return null;
@@ -526,7 +527,7 @@ function routeValueEdge(features: readonly ShapeProperties[], period: TimePeriod
  * range, or "Irregular" where it has no number. Null where the row shows nothing. Agency pages store these (`text`).
  */
 export function routeListCellText(display: RouteListDisplay, compact = false): string | null {
-  if (display.headway != null && display.headway < 999) return display.edgeText ?? routeListHeadwayText(display.headway, display.sharedHeadway, compact);
+  if (display.headway != null && display.headway < HEADWAY_NO_SERVICE_FROM) return display.edgeText ?? routeListHeadwayText(display.headway, display.sharedHeadway, compact);
   return display.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : null;
 }
 

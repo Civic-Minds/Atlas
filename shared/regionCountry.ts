@@ -102,6 +102,17 @@ const REGION_TO_COUNTRY: Record<string, string> = {
   'Madrid': 'Spain',
 };
 
+/** Other names people use for a country ("US", "USA", "America"). */
+const COUNTRY_ALIASES: Record<string, string[]> = { 'united states': ['us', 'usa', 'america', 'united states of america'], canada: ['ca'] };
+
+/** Whether a typed country ("US", "U.S.A.", "united states") names the catalog's country. */
+export function sameCountry(country: string | null, query: string): boolean {
+  if (!country) return false;
+  const q = query.trim().toLowerCase().replace(/\./g, '');
+  const c = country.toLowerCase();
+  return c === q || (COUNTRY_ALIASES[c] ?? []).includes(q);
+}
+
 export function countryForRegion(region: string | null | undefined): string | null {
   if (!region) return null;
   return REGION_TO_COUNTRY[region] ?? null;

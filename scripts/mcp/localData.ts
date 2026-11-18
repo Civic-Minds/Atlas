@@ -3,13 +3,16 @@
  * schedule files on this Mac), buses needed (Studio's file on this Mac) and the index build (writes next to the route
  * files). The hosted server never imports this module; the tools in atlasData.ts are pure.
  */
+import { agencyNames } from '../../src/utils/agencyName';
+import { stopMatchText } from '../../shared/stopNameText';
+import { headwayAmount, headwayEvery } from '../../shared/headwayText';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { countryForRegion } from '../../shared/regionCountry';
 import { metresBetween } from '../../shared/geoDistance';
-import type { StudioVehicleGroup, StudioVehiclesFile } from '../../shared/studioVehicles';
+import { studioVehiclesFileName, type StudioVehicleGroup, type StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { IndexedAgency } from '../../shared/mcpStore';
 import type { GtfsData } from '../../types/gtfs';
 import { parseGtfsZip } from '../../pipeline/parseGtfs';
@@ -66,7 +69,7 @@ export async function schedules(slug: string): Promise<GtfsData[]> {
   return Promise.all(files.map(f => readSchedule(f, slug)));
 }
 
-const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
+const norm = stopMatchText;
 /** The places (stations, or stops without one) whose stop names match the text, with the names matched. */
 export function findPlaces(gtfs: GtfsData, query: string): { places: Set<string>; names: string[] } {
   const q = norm(query);
@@ -92,11 +95,10 @@ export function routeIdsNamed(gtfs: GtfsData, names: readonly string[]): Map<str
  * Trips from one place to another on one or more agencies, each read from every schedule file it has. With more than
  * one agency, routes are named with their agency ("Big Blue Bus 10").
  */
-/** A short label for an agency in a list of several: its config short name, else the shorter of its name and its bracketed name. */
+/** A short label for an agency in a list of several: its config short name, else the app's short name (agencyNames). */
 export function agencyLabel(slug: string, name: string): string {
   try { const c = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }; if (c.shortName) return c.shortName; } catch { /* no config */ }
-  const m = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(name);
-  return m ? (m[2].length < m[1].length ? m[2] : m[1]) : name;
+  return agencyNames(name).short;
 }
 
 /** A route named with its agency, without repeating a word ("LA Metro" and "Metro E Line": "LA Metro E Line"). */
@@ -162,7 +164,7 @@ export async function combinedDepartures(agencies: ReadonlyArray<{ slug: string;
   const reading = (starts: number[], start: number, end: number) => {
     const r = pooledReadingInWindow(starts, start, end);
     const n = new Set(starts.filter(s => s >= start && s < end)).size;
-    return { departures: n, every: r.value != null ? `every ${Math.round(r.value)} min` : r.worstWait != null ? `uneven: waits up to ${Math.round(r.worstWait)} min` : n ? 'too few trips for a regular frequency' : 'no trips' };
+    return { departures: n, every: r.value != null ? headwayEvery(Math.round(r.value)) : r.worstWait != null ? `uneven: waits up to ${headwayAmount(r.worstWait)}` : n ? 'too few trips for a regular frequency' : 'no trips' };
   };
   return { ...t, reading };
 }
@@ -190,11 +192,11 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
 }
 
 /** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
-export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', `${slug}-vehicles.json`); }
+export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', studioVehiclesFileName(slug)); }
 
 /** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
 export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${slug}-vehicles.json`;
+  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${studioVehiclesFileName(slug)}`;
 }
 
 export type BusesNeeded =

@@ -22,6 +22,14 @@ export const RELIABILITY_DEFINITIONS = {
   gappedFactor: GAPPED_FACTOR,
 } as const;
 
+/** What each Live figure means, in words, from the same shared rules: the MCP's answers and Studio's view say it the same way. */
+export const RELIABILITY_DEFINITION_TEXT = {
+  late: `More than ${LATE_ABOVE_MIN} minutes after the scheduled time.`,
+  early: `${Math.abs(EARLY_AT_OR_BELOW_MIN)} minutes or more before the scheduled time.`,
+  bunched: `A gap of ${BUNCHED_GAP_SEC / 60} minutes or less behind the vehicle ahead.`,
+  gapped: `A gap more than ${GAPPED_FACTOR} times the scheduled gap.`,
+} as const;
+
 /** One week's figures for one time of day. Null where nothing was measured. */
 export interface WeekFigures {
   dates: string[];

@@ -17,6 +17,15 @@ type StretchHours = { departuresByHour?: Record<string, number> | null; span?: R
  * with an exact end only where a period edge falls in that first or last hour, and no bar when the day has a break (its
  * ends aren't known). Null when the data has no per-hour departures.
  */
+/** The trips a route's rows run in a period, from their departures by hour (GTFS hours, so 25 is 1 AM). */
+export function departuresInPeriod(rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null }>, period: string): number {
+  const p = TIME_PERIODS.find(t => t.key === period);
+  if (!p) return 0;
+  let n = 0;
+  for (const row of rows) for (const [h, c] of Object.entries(row.departuresByHour ?? {})) if (+h >= p.startHour && +h < p.endHour) n += c;
+  return n;
+}
+
 export function routeRuns(
   rows: ReadonlyArray<{ departuresByHour?: Record<string, number> | null; departureSpan?: RouteDepartureSpan | null; stretchMeta?: { main?: StretchHours | null; tails?: StretchHours[] } | null }>,
   edge: AgencyPageRoute['edge'],

@@ -7,6 +7,7 @@
  * Worker can swap in a reader of small ready-made files (useLiveReader) to stay inside its CPU budget.
  */
 import { DEFAULT_R2_PUBLIC_URL } from '../../shared/config';
+import { jsonOrNull } from '../../shared/mcpSplitStore';
 import { liveReliabilityFile, type LiveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
 import type { AgencySummary } from '../../shared/liveAgency';
@@ -32,8 +33,7 @@ const cache = new Map<string, { at: number; value: unknown }>();
 async function getJson<T>(path: string): Promise<T | null> {
   const hit = cache.get(path);
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value as T | null;
-  const res = await fetch(`${base()}/${path}`);
-  const value = res.status === 404 || res.status === 403 ? null : res.ok ? await res.json() as T : (() => { throw new Error(`Reading ${path} failed (${res.status}).`); })();
+  const value = await jsonOrNull<T>(await fetch(`${base()}/${path}`), path, true);
   cache.set(path, { at: Date.now(), value });
   return value;
 }

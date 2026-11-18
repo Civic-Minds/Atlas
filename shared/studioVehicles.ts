@@ -56,5 +56,7 @@ export interface StudioVehiclesFile {
   periods: Partial<Record<PeriodKey, StudioVehicleGroup[]>>;
 }
 
+/** An agency's buses-needed file name, in tmp/studio/ (scripts/vehicles-needed.ts writes it; Studio and the MCP read it). */
+export const studioVehiclesFileName = (slug: string) => `${slug}-vehicles.json`;
 /** Where the Vite dev server serves an agency's file (tmp/studio/<slug>-vehicles.json). */
-export const studioVehiclesDevUrl = (slug: string) => `/dev-studio/${slug}-vehicles.json`;
+export const studioVehiclesDevUrl = (slug: string) => `/dev-studio/${studioVehiclesFileName(slug)}`;

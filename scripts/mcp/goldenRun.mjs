@@ -19,6 +19,14 @@ if (process.env.GOLDEN_EXTRA) calls.push(
   ['list_agencies', { query: 'Viva' }], ['rank_agencies', { period: 'Midday', every: 30, similar_to: 'BC Ferries' }],
   ['schedule_changes', { agency: 'RTD' }], ['schedule_changes', { agency: 'RTD', offset: 40, limit: 10 }],
   ['route_frequency', { agency: 'TTC', route: '329' }],
+  // CIV-1864 (shared calculations): route lookup, nearby routes, trip times, buses needed, combined frequency, changes.
+  ['route_frequency', { agency: 'TTC', route: 'king' }], ['route_frequency', { agency: 'GO Transit', route: 'Lakeshore West' }],
+  ['routes_near', { agency: 'OC Transpo', place: 'Rideau Centre' }], ['routes_near', { agency: 'TTC', place: 'Union Station', km: 0.5 }],
+  ['trip_time', { agency: 'TTC', route: '29', from_stop: 'Dufferin Station', to_stop: 'Exhibition' }],
+  ['buses_needed', { agency: 'Kingston Transit', route: '2', period: 'Midday', every: 15 }], ['buses_needed', { agency: 'TTC', route: '29', period: 'PM peak', every: 10 }],
+  ['combined_frequency', { agency: 'TTC', routes: ['504', '505'], place: 'Spadina' }],
+  ['schedule_changes', { agency: 'Kingston Transit' }], ['compare_agencies', { agencies: ['Hamilton Street Railway', 'Kingston Transit'], period: 'Midday', every: 15 }],
+  ['route_reliability', { agency: 'TTC' }], ['route_bunching', { agency: 'TTC', route: '510' }],
 );
 const p = spawn('/opt/homebrew/bin/node', [`${root}/node_modules/tsx/dist/cli.mjs`, `${root}/scripts/mcp/atlas-mcp.ts`], { stdio: ['pipe', 'pipe', 'inherit'], env: { ...process.env, ATLAS_ROOT: process.env.ATLAS_ROOT } });
 let buf = ''; const res = {};

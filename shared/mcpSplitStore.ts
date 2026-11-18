@@ -39,14 +39,19 @@ export const splitPaths = {
   comparison: (slug: string) => `agencies/${slug}/comparison.json`,
 };
 
+/**
+ * A JSON file read over HTTP: null when it isn't there (404, or 403 from a bucket that hides missing keys when
+ * `missingAs403`), an error naming the path when the read fails. Every MCP reader of published files uses it (CIV-1864).
+ */
+export async function jsonOrNull<T = unknown>(res: Response, path: string, missingAs403 = false): Promise<T | null> {
+  if (res.status === 404 || (missingAs403 && res.status === 403)) return null;
+  if (!res.ok) throw new Error(`Reading ${path} failed (${res.status}).`);
+  return res.json() as Promise<T>;
+}
+
 /** Reads files from a base URL (the published release's mcp folder). Works in Node and in a Worker. */
-export function urlReader(base: string): SplitRead {
-  return async path => {
-    const res = await fetch(`${base.replace(/\/$/, '')}/${path}`);
-    if (res.status === 404) return null;
-    if (!res.ok) throw new Error(`Reading ${path} failed (${res.status}).`);
-    return res.json();
-  };
+export function urlReader(base: string, init?: RequestInit): SplitRead {
+  return async path => jsonOrNull(await fetch(`${base.replace(/\/$/, '')}/${path}`, init), path);
 }
 
 /** The store over a reader. Each file is read once per store; a new release is a new store. */
