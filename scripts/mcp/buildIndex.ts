@@ -8,5 +8,8 @@
 export {};
 console.log = (...args: unknown[]) => console.error(...args);
 const data = await import('./atlasData');
-const out = await data.buildIndex((done, total) => { if (done % 50 === 0 || done === total) console.error(`${done}/${total}`); });
-console.error(`Wrote ${data.indexFile()}: ${out.length} agencies`);
+const local = await import('./localData');
+const { diskStore, indexFile } = await import('./diskStore');
+data.useStore(diskStore());
+const out = await local.buildIndex((done, total) => { if (done % 50 === 0 || done === total) console.error(`${done}/${total}`); });
+console.error(`Wrote ${indexFile()}: ${out.length} agencies`);

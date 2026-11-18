@@ -48,11 +48,21 @@ describe('Atlas Studio MCP stores (CIV-1840)', () => {
     process.env.ATLAS_ROOT = root;
     process.env.ATLAS_MCP_DATA_DIR = join(root, 'nowhere');
     const data = await import('./atlasData');
+    const { diskStore } = await import('./diskStore');
+    data.useStore(diskStore());
     const fromDisk = await results(data);
     data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files: { fixture: JSON.parse(JSON.stringify(features)) } }));
     const fromMemory = await results(data);
     expect(fromMemory).toEqual(fromDisk);
     expect(fromDisk.routes).toEqual(['29']);
     expect(fromDisk.near.routes.length).toBeGreaterThan(0);
+  });
+});
+
+describe('the pure tool code (CIV-1840)', () => {
+  it('imports no file, process or pipeline module, so a Worker can import it', () => {
+    const src = readFileSync(join(import.meta.dirname, 'atlasData.ts'), 'utf8');
+    const imports = [...src.matchAll(/^(?:import|export)[^'\n]*from '([^']+)'/gm)].map(m => m[1]);
+    expect(imports.filter(i => i.startsWith('node:') || /pipeline\/|diskStore|localData/.test(i))).toEqual([]);
   });
 });

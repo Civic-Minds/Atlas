@@ -20,5 +20,5 @@ p.stdout.on('data', d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0)
 const send = (id, method, params) => p.stdin.write(JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n');
 send(0, 'initialize', { protocolVersion: '2025-06-18' });
 calls.forEach(([name, args], i) => send(i + 1, 'tools/call', { name, arguments: args }));
-const t = setInterval(() => { if (Object.keys(res).length >= calls.length + 1) { clearInterval(t); const o = calls.map(([n, a], i) => ({ call: [n, a], result: res[i + 1].result ?? res[i + 1].error })); writeFileSync(out, JSON.stringify(o, null, 1)); console.log('ok', o.length, o.filter(x => JSON.stringify(x.result).includes('"isError":true')).length, 'errors'); p.kill(); } }, 500);
-setTimeout(() => { console.log('timeout', Object.keys(res).length); p.kill(); process.exit(1); }, 600000);
+const t = setInterval(() => { if (Object.keys(res).length >= calls.length + 1) { clearInterval(t); clearTimeout(giveUp); const o = calls.map(([n, a], i) => ({ call: [n, a], result: res[i + 1].result ?? res[i + 1].error })); writeFileSync(out, JSON.stringify(o, null, 1)); console.log('ok', o.length, o.filter(x => JSON.stringify(x.result).includes('"isError":true')).length, 'errors'); p.kill(); } }, 500);
+const giveUp = setTimeout(() => { console.log('timeout', Object.keys(res).length); p.kill(); process.exit(1); }, 600000);

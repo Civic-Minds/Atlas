@@ -20,6 +20,10 @@ import { STUDIO_TARGETS } from '../../shared/studioVehicles';
 // Anything an imported module prints must not reach stdout, which is the protocol channel.
 console.log = (...args: unknown[]) => console.error(...args);
 const data = await import('./atlasData');
+// The parts that read files on this Mac (trip times, buses needed) stay out of the pure tool code (CIV-1840).
+const local = await import('./localData');
+const { diskStore } = await import('./diskStore');
+data.useStore(diskStore());
 
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -194,7 +198,7 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
     const key = needPeriod(args.period);
     const route = String(args.route ?? '');
     const every = args.every != null ? Number(args.every) : null;
-    const res = data.busesNeeded(a.slug, route, key);
+    const res = local.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
     if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.`, ...(res.command ? { toBuild: res.command } : {}) };
     if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].toLowerCase()}: it may not run then, or its number is written differently.` };
@@ -233,10 +237,10 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
     const dayType = data.parseDay(args.day);
     const w = window(args);
     const ags = await withAlso(a, args);
-    const t = await data.tripTimes(ags.map(x => ({ slug: x.slug, label: data.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType, Array.isArray(args.routes) ? args.routes.map(String) : []);
+    const t = await local.tripTimes(ags.map(x => ({ slug: x.slug, label: local.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType, Array.isArray(args.routes) ? args.routes.map(String) : []);
     const routes = [...t.byRoute.entries()].map(([route, runs]) => {
       const inWindow = w ? runs.filter(x => x.start >= w.start && x.start < w.end) : runs;
-      const s = data.runningTimeSummary(inWindow);
+      const s = local.runningTimeSummary(inWindow);
       const mins = inWindow.map(x => x.minutes).sort((x, y) => x - y);
       return {
         route, trips: inWindow.length,
@@ -247,7 +251,7 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
     }).sort((x, y) => (x.typicalMinutes ?? 1e9) - (y.typicalMinutes ?? 1e9));
     return {
       ...staleNote(a, t.scheduleEnds),
-      agency: ags.map(x => data.agencyLabel(x.slug, x.name)).join(', '), from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
+      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
       ...(t.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes, note: 'Scheduled minutes from leaving the first stop to arriving at the second; an hour needs at least two trips.', source: "The agency's own schedule file that Atlas processed.",
     };
@@ -257,12 +261,12 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
     const dayType = data.parseDay(args.day);
     const w = window(args);
     const ags = await withAlso(a, args);
-    const c = await data.combinedDepartures(ags.map(x => ({ slug: x.slug, label: data.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
+    const c = await local.combinedDepartures(ags.map(x => ({ slug: x.slug, label: local.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
     const windows = w ? [{ name: w.label, start: w.start, end: w.end }] : PERIOD_KEYS.map(k => ({ name: `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`, start: PERIOD_MINUTES[k].start, end: PERIOD_MINUTES[k].end }));
     const all = [...c.byRoute.values()].flat().map(x => x.start);
     return {
       ...staleNote(a, c.scheduleEnds),
-      agency: ags.map(x => data.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
+      agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
       ...(c.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes: [...c.byRoute.keys()],
       byWindow: windows.map(win => ({

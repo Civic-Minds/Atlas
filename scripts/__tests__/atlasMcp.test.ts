@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { agencyLabel, edgeWait, withAgency, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies } from '../mcp/atlasData';
+import { edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { agencyLabel, withAgency } from '../mcp/localData';
+import { diskStore } from '../mcp/diskStore';
 import { stopToStopRuns } from '../../pipeline/stopToStop';
 import type { GtfsData } from '../../types/gtfs';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+
+useStore(diskStore());
 
 describe('Atlas MCP server data (CIV-1650)', () => {
   it('reads days and periods by the shared names', () => {
