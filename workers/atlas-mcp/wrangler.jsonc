@@ -3,6 +3,7 @@
   // own tester list and call log. Run locally with `wrangler dev`; nothing here is deployed yet.
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "atlas-studio-mcp",
+  "account_id": "334f99db1478f9e95eaea65b3b9e1fdd",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-18",
   "compatibility_flags": ["nodejs_compat"],
