@@ -24,6 +24,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.6.2 | 2026-11-17 | Instructions sent at start: answer from the tools, say where anything else comes from, don't estimate unasked, no shell work-arounds |
 | 0.7.0 | 2026-11-18 | Hosted-version tool code (CIV-1840): schedule end date on every answer, map links, merged same-destination branches, midnight windows, routes_near hours, route_history ends with today's schedule, paged schedule_changes, ferries as their own kind, the optional question field |
 | 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
+| 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
 
 ## Standing questions
 
