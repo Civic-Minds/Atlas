@@ -32,11 +32,14 @@ claude mcp add -s user atlas-studio -- /opt/homebrew/bin/node /Users/ryan/Develo
 
 | Tool | Answers |
 |---|---|
-| `list_agencies` | Which agencies it covers, filtered by name or city, region and country (40 rows at most) |
+| `list_agencies` | Which agencies it covers, filtered by name or city, region and country, or near a place (40 rows at most) |
 | `rank_agencies` | Agencies ranked by routes every N minutes or better in a period, filtered by country, region and size (or "similar to" an agency) |
-| `route_frequency` | A route's frequency in each period on a day type, with first and last trips; with a time window, hour by hour for each branch |
+| `route_frequency` | A route's frequency in each period on a day type, with first and last trips and its branches; with a time window, hour by hour for each branch |
 | `routes_at_frequency` | An agency's routes that run every N minutes or better in a period |
 | `compare_agencies` | For several agencies, how many routes run every N minutes or better in a period |
+| `routes_near` | Routes that stop near a corner, station or stop, with the stops they use there |
+| `route_history` | How a route's frequency changed over the years, from Atlas's History data |
+| `buses_needed` | Buses needed for a route in a period, by Atlas Studio's own calculation (now, and at a target frequency) |
 | `trip_time` | Scheduled trip time between two stops, per route, by the hour the trip leaves |
 | `combined_frequency` | Every route between two stops, and how often a trip leaves on any of them combined |
 | `schedule_changes` | Frequency changes between two schedules, where Studio has built the comparison |
@@ -50,5 +53,8 @@ The standing test questions and every run's results: [TEST-LOG.md](TEST-LOG.md).
 - **Frequencies.** Each agency's published route file. The server reads the newest release cache first (`tmp/agency-pages-cache/<release>/`, written by `build-agency-page-summaries.ts`), then local dry-run output (`tmp/process-preview/<slug>/`). `ATLAS_MCP_DATA_DIR` points it at another folder. Every number comes from the map's own functions: `routeListFilterDisplay`, `routeListDisplay`, `routeRuns` and the hourly chart values.
 - **Trip times and combined frequency.** The agency's schedule file that Atlas processed (`Atlas-worktrees/_feeds/<slug>/`, newest; `ATLAS_MCP_FEEDS_DIR` overrides). It is read the way processing reads it (`pipeline/stopToStop.ts`): same week, same services, near-duplicate trips dropped, same representative weekday. Trip times are summarized with the running-time rules (`runningTimeSummary`). Combined frequency uses the stop-pool rule the map uses at a stop (`pooledReadingInWindow`).
 - **Agency index.** `rank_agencies` reads `_mcp-index.json` next to the route files: every route's wait per period and day type, made with the same functions. Rebuild it after the release cache changes: `nice -n 15 npx tsx scripts/mcp/buildIndex.ts`.
+- **History.** `route_history` reads Atlas's published History data, kept on this Mac at `tmp/history-cache/history-config.json` (the same file the History screen loads), with History's own snapshot rules.
+- **Buses needed.** `buses_needed` runs Studio's `scripts/vehicles-needed.ts` on the schedule file.
+- **Testing.** The Data chat runs the standing questions itself in fresh headless chats and logs the results in [TEST-LOG.md](TEST-LOG.md).
 - **Public agencies only.** It answers only for agencies in `public/data/catalog-public.json`.
 - **Schedule changes.** These come from Studio's comparison files (`tmp/studio/<slug>-before-after.json`), ranked by the shared rule (`shared/frequencyChange.ts`).

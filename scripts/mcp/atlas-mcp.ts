@@ -31,11 +31,14 @@ const stop = (which: string) => ({ type: 'string', description: `${which} stop o
 
 const WAIT = 'waitMinutes is the typical wait on the route\'s least frequent part (its slowest branch or direction), the number Atlas colours and filters the route by; "shown" is what the route list says, with a range where parts of the route differ.';
 const TOOLS = [
-  { name: 'list_agencies', description: 'Find transit agencies Atlas covers, filtered by name or city, region (state or province) and country. Returns at most 40 compact rows; with no filter, only the count.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Name or city to search for.' }, region: { type: 'string', description: 'State or province, e.g. "Ontario", "Ohio".' }, country: { type: 'string', description: 'Country, e.g. "Canada", "United States".' } } } },
+  { name: 'list_agencies', description: 'Find transit agencies Atlas covers, filtered by name or city, region (state or province) and country, or near a place (another agency or a city, within 60 km by default). Returns at most 40 compact rows; with no filter, only the count.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Name or city to search for.' }, region: { type: 'string', description: 'State or province, e.g. "Ontario", "Ohio".' }, country: { type: 'string', description: 'Country, e.g. "Canada", "United States".' }, near: { type: 'string', description: 'An agency or city: agencies whose area centre is within km of it.' }, km: { type: 'number', description: 'Distance for near; 60 when left out.' } } } },
   { name: 'rank_agencies', description: `Rank agencies by how many of their routes run every N minutes or better in a part of the day (by waitMinutes). Filter by country, region, kind (bus: no rail routes; rail: has rail routes) and size: weekday route count between min_routes and max_routes, or similar_to an agency (half to double its weekday routes, and the same kind). Agencies that are part of a larger operator are flagged and, with similar_to, left out unless include_parts is true. Returns each agency's routes on the day, routes meeting the bar, and the list of those routes. ${WAIT}`, inputSchema: { type: 'object', properties: { period, every, day, country: { type: 'string' }, region: { type: 'string' }, similar_to: { type: 'string', description: 'An agency to find peers of: half to double its weekday route count, the same kind (bus only, or with rail), not part of a larger operator.' }, kind: { type: 'string', enum: ['bus', 'rail'], description: 'bus: agencies with no rail routes; rail: agencies with rail routes.' }, include_parts: { type: 'boolean', description: 'Keep agencies that are part of a larger operator (such as one MTA borough) when using similar_to.' }, min_routes: { type: 'number' }, max_routes: { type: 'number' }, limit: { type: 'number', description: 'How many agencies to return; 15 when left out.' } }, required: ['period', 'every'] } },
-  { name: 'route_frequency', description: `How often a route runs in each part of the day on a day type, with its first and last trips. ${WAIT} With a time window it also gives the frequency hour by hour.`, inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'route'] } },
+  { name: 'route_frequency', description: `How often a route runs in each part of the day on a day type, with its first and last trips and its branches (where each goes, first and last stop, trips). ${WAIT} With a time window it also gives the frequency hour by hour.`, inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'route'] } },
   { name: 'routes_at_frequency', description: `Routes in an agency that run every N minutes or better in a part of the day (by waitMinutes: ${WAIT})`, inputSchema: { type: 'object', properties: { agency, period, every, day }, required: ['agency', 'period', 'every'] } },
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period, every, day }, required: ['agencies', 'period', 'every'] } },
+  { name: 'routes_near', description: 'Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within 250 m by default, with the stops each uses there. Then use route_frequency for how often they run.', inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' } }, required: ['agency', 'place'] } },
+  { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
+  { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, by Atlas Studio's own calculation from the schedule: scheduled now, needed at the current frequency, and needed at a target frequency if given. recovery sets the layover counted: the schedule's own (default), a percent of running time such as 10%, or minutes per leg. Can take a minute or two for a large agency.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period, every: { type: 'number', description: 'Optional target minutes between buses.' }, recovery: { type: 'string', description: 'Optional: "10%" or minutes per leg such as "8".' } }, required: ['agency', 'route', 'period'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency }, required: ['agency'] } },
@@ -69,7 +72,12 @@ const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) =
 const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
 
 const handlers: Record<string, (args: Args) => unknown> = {
-  list_agencies: ({ query, region, country }) => {
+  list_agencies: ({ query, region, country, near, km }) => {
+    if (near != null) {
+      const res = data.agenciesNear(String(near), km != null ? Number(km) : 60);
+      if (!res) throw new Error(`No agency or city matching "${near}".`);
+      return { ...res, agencies: res.agencies.slice(0, 40).map(a => `${a.name} | ${a.region ?? ''} | ${a.km} km`), columns: 'name | region | distance between area centres' };
+    }
     const q = String(query ?? '').trim().toLowerCase(), reg = String(region ?? '').trim().toLowerCase(), ctry = String(country ?? '').trim();
     const all = data.availableAgencies();
     if (!q && !reg && !ctry) return { agencies: all.length, note: 'Filter by name or city, region or country to list them.' };
@@ -122,6 +130,7 @@ const handlers: Record<string, (args: Args) => unknown> = {
       agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType,
       periods: PERIOD_KEYS.map(p => data.periodFigure(r, p)),
       service: data.serviceSpan(r),
+      branches: data.branchesOf(a, r),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end), windowNote: windowNote(w) } : {}),
       scheduleValidThrough: validThrough(a), source: SOURCE,
     };
@@ -140,6 +149,27 @@ const handlers: Record<string, (args: Args) => unknown> = {
       return { agency: a.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: validThrough(a) };
     });
     return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows, source: SOURCE };
+  },
+  routes_near: ({ agency: q, place, metres }) => {
+    const a = needAgency(q);
+    const res = data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : 250);
+    if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.' };
+    return { agency: a.name, place, ...res, source: SOURCE };
+  },
+  route_history: ({ agency: q, route, day: d }) => {
+    const a = data.findAgency(String(q ?? ''), data.publicAgencies().map(x => ({ ...x, file: '' })));
+    if (!a) throw new Error(`No agency matches "${q}".`);
+    const dayType = data.parseDay(d);
+    const h = data.routeHistory(a.slug, String(route ?? ''), dayType);
+    if (!h) return { agency: a.name, history: null, note: "Atlas's History has no data for this agency." };
+    if (!h.route) return { agency: a.name, history: null, note: `Atlas's History has ${h.routes} routes for this agency, none matching "${route}".` };
+    return { agency: a.name, day: dayType, ...h, note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures.', source: "Atlas's History data." };
+  },
+  buses_needed: async (args) => {
+    const a = needAgency(args.agency);
+    const key = needPeriod(args.period);
+    const res = await data.busesNeeded(a.slug, String(args.route ?? ''), key, args.every != null ? Number(args.every) : null, args.recovery != null ? String(args.recovery) : null);
+    return { agency: a.name, route: args.route, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, ...staleNote(a, null), report: res.report, howToRead: "Atlas Studio's calculation from the schedule: 'scheduled now' is buses on the route at the middle of the period; 'implied' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once); with a target, the buses at that frequency. Trips to and from the garage are not in schedules and not counted.", source: "The agency's own schedule file that Atlas processed." };
   },
   trip_time: async (args) => {
     const a = needAgency(args.agency);
@@ -209,7 +239,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.4.0' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.0' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {

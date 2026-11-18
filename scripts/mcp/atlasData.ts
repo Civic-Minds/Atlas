@@ -23,6 +23,9 @@ import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { routeRuns } from '../build-agency-page-summaries';
 import { countryForRegion } from '../../shared/regionCountry';
+import { metresBetween } from '../../shared/geoDistance';
+import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
+import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { parentAgency } from '../../shared/parentAgencyList';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import { writeFileSync } from 'node:fs';
@@ -126,14 +129,23 @@ export function routesOn(agency: CatalogAgency & { file: string }, day: DayType)
   return [...byKey.values()].sort((a, b) => compareRouteNumber(a.name, b.name, a.longName, b.longName));
 }
 
-/** A route by short name, long name or id. */
+/**
+ * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
+ * not the 60 Blue Island bus), then any name containing them, rail first.
+ */
 export function findRoute(routes: RouteRows[], query: string): RouteRows | null {
   const q = query.trim().toLowerCase();
-  return routes.find(r => r.shortName.toLowerCase() === q) ?? routes.find(r => r.name.toLowerCase() === q)
-    ?? routes.find(r => (r.longName ?? '').toLowerCase() === q) ?? routes.find(r => `${r.shortName} ${r.longName ?? ''}`.toLowerCase().includes(q)) ?? null;
+  const names = (r: RouteRows) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
+  const rail = (r: RouteRows) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
+  const exact = routes.find(r => names(r).includes(q));
+  if (exact) return exact;
+  const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
+  if (line.length) return line[0];
+  const contains = routes.filter(r => `${r.shortName} ${r.longName ?? ''}`.toLowerCase().includes(q)).sort((a, b) => rail(a) - rail(b));
+  return contains[0] ?? null;
 }
 
-/** The hours a row's trips depart in a period, from its departures by hour (GTFS hours, so 25 is 1 AM). */
+/** The trips a route's rows run in a period, from their departures by hour (GTFS hours, so 25 is 1 AM). */
 function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
   const p = TIME_PERIODS.find(t => t.key === period)!;
   let n = 0;
@@ -261,19 +273,20 @@ export function feedFile(slug: string): string | null {
   const dir = join(root, slug);
   if (!existsSync(dir)) return null;
   const zips = readdirSync(dir).filter(n => n.endsWith('.zip')).sort();
-  return zips.length ? join(dir, zips[zips.length - 1]) : null;
+  return zips.length ? join(dir, zips.sort((a, b) => statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs)[zips.length - 1]) : null;
 }
 
-const feeds = new Map<string, Promise<GtfsData>>();
-/** The agency's schedule, read once per session (a large feed takes a few seconds). */
+const feeds = new Map<string, { key: string; gtfs: Promise<GtfsData> }>();
+/** The agency's schedule, read once per file: a newer file (or a changed one) is read again. */
 export function schedule(slug: string): Promise<GtfsData> {
   const file = feedFile(slug);
   if (!file) return Promise.reject(new Error(`No schedule file for ${slug} on this Mac.`));
-  if (!feeds.has(slug)) {
+  const key = `${file}:${statSync(file).mtimeMs}`;
+  if (feeds.get(slug)?.key !== key) {
     const buf = readFileSync(file);
-    feeds.set(slug, parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }));
+    feeds.set(slug, { key, gtfs: parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }) });
   }
-  return feeds.get(slug)!;
+  return feeds.get(slug)!.gtfs;
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -383,4 +396,100 @@ export function sameCountry(country: string | null, query: string): boolean {
   const c = country.toLowerCase();
   const aliases: Record<string, string[]> = { 'united states': ['us', 'usa', 'america', 'united states of america'], canada: ['ca'] };
   return c === q || (aliases[c] ?? []).includes(q);
+}
+
+// ---- Branches, places, nearby agencies, history and buses needed (0.5.0) ----
+
+type Stop = { id: string; name: string; lat: number; lon: number; routeIds: string[] };
+const stopsCache = new Map<string, Stop[]>();
+/** An agency's stops from its route file: name, place and the routes that stop there. */
+export function stopsOf(agency: CatalogAgency & { file: string }): Stop[] {
+  if (!stopsCache.has(agency.slug)) {
+    const j = JSON.parse(readFileSync(agency.file, 'utf8')) as { features: Array<{ geometry: { type: string; coordinates: [number, number] } | null; properties: Record<string, unknown> }> };
+    stopsCache.set(agency.slug, j.features.filter(f => f.geometry?.type === 'Point').map(f => ({
+      id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates[0], lat: f.geometry!.coordinates[1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String),
+    })));
+  }
+  return stopsCache.get(agency.slug)!;
+}
+
+/** Each branch of a route on a day: its direction, where it goes, its first and last stops and its trips. */
+export function branchesOf(agency: CatalogAgency & { file: string }, r: RouteRows) {
+  const name = new Map(stopsOf(agency).map(s => [s.id, s.name]));
+  const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
+  return r.rows.map(row => {
+    const order = (row.stopOrder as string[] | undefined) ?? [];
+    return { direction: String(row.directionId ?? '0'), towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) };
+  }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
+}
+
+const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
+/**
+ * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
+ * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
+ */
+export function routesNear(agency: CatalogAgency & { file: string }, place: string, metres = 250) {
+  const parts = words(place);
+  const stops = stopsOf(agency);
+  const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  const near = stops.filter(s => seeds.some(t => metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres));
+  const routeNames = new Map<string, { name: string; longName: string | null; mode: string }>();
+  for (const d of DAY_TYPES) for (const r of routesOn(agency, d)) for (const row of r.rows) routeNames.set(String(row.routeId), { name: r.name, longName: r.longName, mode: r.mode });
+  const byRoute = new Map<string, Set<string>>();
+  for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
+  const info = new Map([...routeNames.values()].map(v => [v.name, v]));
+  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => ({ route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4) })).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+}
+
+/** Agencies whose centre is within `km` of a place: another agency, or a city an agency lists. */
+export function agenciesNear(query: string, km = 60) {
+  const q = query.trim().toLowerCase();
+  const all = publicAgencies() as Array<CatalogAgency & { center?: [number, number] }>;
+  const anchor = findAgency(query, all.map(a => ({ ...a, file: '' }))) as (CatalogAgency & { center?: [number, number] }) | null;
+  const byCity = all.find(a => (a.cities ?? []).some(c => c.toLowerCase().split(',')[0] === q));
+  const centre = (anchor?.center ?? byCity?.center) ?? null;
+  if (!centre) return null;
+  const dist = (c?: [number, number]) => c ? metresBetween({ lat: centre[0], lon: centre[1] }, { lat: c[0], lon: c[1] }) / 1000 : Infinity;
+  return { near: anchor?.name ?? query, km, agencies: all.map(a => ({ a, d: dist(a.center) })).filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.a.name, region: x.a.region ?? null, km: Math.round(x.d) })) };
+}
+
+type HistoryRoute = { routeShortName: string; routeName?: string; snapshots: Array<{ label: string; year: number } & Record<string, unknown>> };
+let history: Array<{ slug: string; routes: HistoryRoute[] }> | null = null;
+/** Atlas's published History data (atlas/history-config.json), kept on this Mac in tmp/history-cache. */
+export function historyAgencies(): Array<{ slug: string; routes: HistoryRoute[] }> | null {
+  if (history) return history;
+  const file = process.env.ATLAS_MCP_HISTORY_FILE ?? join(ATLAS_ROOT, 'tmp/history-cache/history-config.json');
+  if (!existsSync(file)) return null;
+  const j = JSON.parse(readFileSync(file, 'utf8'));
+  history = (Array.isArray(j) ? j : j.agencies) as Array<{ slug: string; routes: HistoryRoute[] }>;
+  return history;
+}
+
+/** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
+export function routeHistory(slug: string, routeQuery: string, day: DayType) {
+  const ag = historyAgencies()?.find(a => a.slug === slug);
+  if (!ag) return null;
+  const q = routeQuery.trim().toLowerCase();
+  const route = ag.routes.find(r => r.routeShortName.toLowerCase() === q) ?? ag.routes.find(r => (r.routeName ?? '').toLowerCase() === q)
+    ?? ag.routes.find(r => `${r.routeShortName} ${r.routeName ?? ''}`.toLowerCase().includes(q));
+  if (!route) return { route: null, routes: ag.routes.length };
+  const snaps = [...snapshotsNewestFirst(usableSnapshots(route.snapshots))].reverse();
+  return {
+    route: route.routeShortName, name: route.routeName ?? null,
+    schedules: snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => { const v = historyDayPeriodValue(s as never, day, k); return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null]; }).filter(([, v]) => v != null)) })),
+  };
+}
+
+/**
+ * Buses needed to run a route in a period: Studio's own calculation (scripts/vehicles-needed.ts, CIV-1685), run on the
+ * schedule file Atlas processed, so the answer is Studio's, not the assistant's arithmetic. Returns its report text.
+ */
+export async function busesNeeded(slug: string, route: string, period: PeriodKey, every: number | null, recovery: string | null): Promise<{ report: string; file: string }> {
+  const file = feedFile(slug);
+  if (!file) throw new Error(`No schedule file for ${slug} on this Mac.`);
+  const { execFile } = await import('node:child_process');
+  const tsx = join(ATLAS_ROOT, 'node_modules', 'tsx', 'dist', 'cli.mjs');
+  const args = [tsx, join(ATLAS_ROOT, 'scripts', 'vehicles-needed.ts'), file, '--slug', slug, '--route', route, '--period', period, ...(every ? ['--headway', String(every)] : []), ...(recovery ? ['--recovery', recovery] : [])];
+  const report = await new Promise<string>((ok, fail) => execFile(process.execPath, args, { cwd: ATLAS_ROOT, maxBuffer: 20 * 1024 * 1024, timeout: 10 * 60 * 1000 }, (err, stdout, stderr) => err ? fail(new Error(String(stderr || err.message).slice(-600))) : ok(stdout)));
+  return { report: report.split('\n').filter(l => !/^(Inferred direction_id|CIV\d+\t)/.test(l)).join('\n'), file };
 }
