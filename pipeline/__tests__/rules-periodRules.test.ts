@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CRITERIA } from '../defaults';
 import {
-  FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS, NIGHT_SERVICE_WINDOW_END_MIN,
-  NIGHT_SERVICE_WINDOW_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN,
+  FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN,
   RESEARCH_FREQUENT_SERVICE_START_MIN,
 } from '../headway-utils';
 import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../tripSets';
@@ -43,8 +42,7 @@ describe('period values (rules audit move 4)', () => {
     expect(HEADLINE_WINDOWS).toEqual({ midday: { start: 540, end: 900 }, pmPeak: { start: 900, end: 1140 }, allDay: { start: 360, end: 1320 } });
   });
 
-  it('keeps both night windows as they are (2 to 6 AM for the night gap check, 2 to 5 AM for stretches; audit drift #1)', () => {
-    expect([NIGHT_SERVICE_WINDOW_START_MIN, NIGHT_SERVICE_WINDOW_END_MIN]).toEqual([1560, 1800]);
+  it('keeps the one night window, 2 to 5 AM (CIV-1812 item 1)', () => {
     expect([STRETCH_NIGHT_START_MIN, STRETCH_NIGHT_END_MIN]).toEqual([1560, 1740]);
   });
 

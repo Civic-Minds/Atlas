@@ -12,7 +12,7 @@ import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
 import type { HistoryV2Sidecar, RefDateQuality } from '../shared/historyV2.js';
-import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST, dayTypeOfDow } from '../shared/rules/days.js';
 
 export type { RefDateQuality };
 
@@ -30,7 +30,6 @@ export interface QualityRows {
 const day = (ymd: string) => Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8))) / 86400000;
 const ymdOf = (n: number) => { const d = new Date(n * 86400000); return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`; };
 const dowOf = (n: number) => new Date(n * 86400000).getUTCDay();
-const classOf = (dow: number) => (dow === 0 ? 'Sunday' : dow === 6 ? 'Saturday' : 'weekday');
 
 function median(xs: number[]): number {
   const s = [...xs].sort((a, b) => a - b);
@@ -72,9 +71,9 @@ export function tripsByDate(rows: QualityRows): Map<string, number> {
 /** The trips stamp: trips on refDate, and the median of the other full-service days of its day type. */
 export function refDayTrips(rows: QualityRows, refDate: string): { tripsOnRef: number; medianTrips: number } {
   const byDate = tripsByDate(rows);
-  const type = classOf(dowOf(day(refDate)));
+  const type = dayTypeOfDow(dowOf(day(refDate)));
   const others: number[] = [];
-  for (const [d, n] of byDate) if (n > 0 && d !== refDate && classOf(dowOf(day(d))) === type) others.push(n);
+  for (const [d, n] of byDate) if (n > 0 && d !== refDate && dayTypeOfDow(dowOf(day(d))) === type) others.push(n);
   // A feed can carry months of stub days (MBTA Aug 2016: leftover boat/rail service, 64 trips
   // against ~17,900); they must not set the median.
   let full = others;

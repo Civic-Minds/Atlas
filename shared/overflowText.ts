@@ -12,11 +12,15 @@ export function plural(count: number, singular: string, pluralForm: string = `${
   return count === 1 ? singular : pluralForm;
 }
 
-/** "A", "A and B", "A, B and C" (no comma before "and" unless `oxford` is set). An empty list is an empty string. */
-export function joinList(items: readonly string[], options: { oxford?: boolean } = {}): string {
+/**
+ * "A", "A and B", "A, B and C" (no comma before "and" unless `oxford` is set). `conjunction: 'or'` gives "A, B or C".
+ * An empty list is an empty string.
+ */
+export function joinList(items: readonly string[], options: { oxford?: boolean; conjunction?: 'and' | 'or' } = {}): string {
+  const word = options.conjunction ?? 'and';
   if (items.length <= 1) return items.join('');
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(', ')}${options.oxford ? ',' : ''} and ${items[items.length - 1]}`;
+  if (items.length === 2) return `${items[0]} ${word} ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}${options.oxford ? ',' : ''} ${word} ${items[items.length - 1]}`;
 }
 
 /** The count and its noun: countOf(1, 'agency', 'agencies') is "1 agency", countOf(3, 'route') is "3 routes". */
