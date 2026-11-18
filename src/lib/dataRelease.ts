@@ -41,7 +41,7 @@ export class NoVerifiedDataReleaseError extends Error {
  * development keeps the fallback for previews of unpublished data.
  */
 export function verifiedReleaseRequired(): boolean {
-  return import.meta.env.PROD === true;
+  return import.meta.env?.PROD === true;
 }
 
 const releases = new Map<string, Promise<DataRelease | null>>();
