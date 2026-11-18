@@ -75,6 +75,25 @@ function shareSignificantToken(name1: string | null | undefined, name2: string |
   return tokens1.some(t => tokens2.includes(t));
 }
 
+/** Every stop feature on the map as a hub candidate (the stop card and the map filter read the same list). */
+export function stopHubCandidates(features: readonly GeoJSON.Feature[]): StopHubCandidate[] {
+  return features
+    .filter((f): f is GeoJSON.Feature<GeoJSON.Point> =>
+      f.geometry?.type === 'Point' && !!(f.properties as { stopId?: unknown } | null)?.stopId)
+    .map(f => {
+      const p = f.properties as { stopId: string; agencySlug: string; stopName?: string; routeIds?: string[] };
+      const [lon, lat] = f.geometry.coordinates;
+      return {
+        stopId: p.stopId,
+        agencySlug: p.agencySlug,
+        stopName: p.stopName,
+        lat,
+        lon,
+        routeIds: p.routeIds,
+      };
+    });
+}
+
 /**
  * Expand a clicked stop into hub siblings: same name under the same agency,
  * or any agency stop within STOP_HUB_PROXIMITY_M. Used by map filter + stop card.

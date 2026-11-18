@@ -8,7 +8,8 @@ import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
 import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
-import { R2_PUBLIC_URL, getAgencyArtifactUrls, getAgencyCatalogUrl, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
+import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
+import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
 import { isLiveEligibleSlug, LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
@@ -31,7 +32,6 @@ import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
 import type { FeedRefreshMeta } from '../shared/feedRefresh';
-import type { SupplementalFeedMeta } from '../shared/feedAvailability';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
 import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
@@ -58,7 +58,6 @@ const ResearchPage = React.lazy(() => import('./apps/ResearchPage'));
 import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
-import type { HiddenAgencyReason } from '../shared/hiddenAgencyNote';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL } from './content/noticeCopy';
 import Panel from './components/ui/Panel';
 import PanelEmpty from './components/ui/PanelEmpty';
@@ -69,67 +68,20 @@ import { splitRouteKey } from './utils/routeKey';
 import { LIVE_MAP_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
 import { LIVE_PATH } from '../shared/pagePaths';
-import type { CorrectionNotice } from '../shared/correctionNotices';
+import type { AgencyCatalogEntry } from '../shared/agencyCatalog';
 
-export interface Agency {
-  slug: string;
-  /** The registry name, built from the name fields below (#1245); read it through agencyNames() for display. */
-  name: string;
+/**
+ * An agency as the app reads it: the catalog entry (shared/agencyCatalog.ts, one home for its fields), with the
+ * artifact URL always set, the feed quality typed, and the fields only the app reads.
+ */
+export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> {
   officialName?: string;
   commonName?: string;
   nameQualifier?: string;
-  center: [number, number];
   /** Artifact URL on R2. Derived at load time from slug if absent (see getAgencyArtifactUrls). */
   url: string;
-  stopsUrl?: string;
-  corridorsUrl?: string;
-  bbox?: [number, number, number, number]; // [south, west, north, east]
   region?: string;
-  /** Optional service-area label for regional agencies; avoids presenting one stop-density city as the agency's home. */
-  displayArea?: string;
-  /** CIV-1277: its parent agency (config/parent-agencies.json), one row in the agency picker. */
-  parentAgency?: string;
-  lastFeedExpiry?: string | null;
-  /** CIV-1011: the date most routes stopped being listed with nothing replacing them (YYYYMMDD); the agency shows Ryan's notice. Absent otherwise. */
-  listingEndedOn?: string | null;
-  /** Expiry/version/archive key per supplemental feed (e.g. separate rail GTFS), in supplementalFeedUrls order. */
-  lastSupplementalFeeds?: SupplementalFeedMeta[];
-  lastRefreshedAt?: string | null;
-  lastFeedCheckAt?: string | null;
-  expiredFeedCheckCount?: number;
-  expiredFeedCheckSince?: string | null;
-  expiredFeedCheckExpiry?: string | null;
-  excludeRouteShortNames?: string[];
-  staged?: boolean;
-  /** Excluded from production until country coverage is validated. Visible in local dev, and in beta when betaOnly is set. */
-  hiddenInProduction?: boolean;
-  /** Visible on the deployed beta build while the agency is being validated for production. */
-  betaOnly?: boolean;
-  /** Rider-facing notice shown on the agency card while betaOnly is active. */
-  rolloutNotice?: string;
-  /** GitHub issue documenting the rollout validation. */
-  rolloutIssueUrl?: string;
-  /** Base route tiles are not published yet; beta renders this agency from its local GeoJSON. */
-  pmtilesPending?: boolean;
-  overrideNote?: string;
-  overrideNoteRoutes?: string[];
-  /** CIV-1639: Atlas's own notes about fixes to this agency's data (shared/correctionNotices.ts), shown on the routes they name. */
-  correctionNotices?: CorrectionNotice[];
-  /** CIV-1060: why a hidden agency shows nothing; the agency card shows hiddenAgencyNoteFor(hiddenReason). */
-  hiddenReason?: HiddenAgencyReason;
-  feedReviewStatus?: 'review' | 'verified';
   feedQuality?: FeedQuality;
-  fare?: number;
-  gtfsFares?: boolean;
-  fareUrl?: string;
-  websiteUrl?: string;
-  searchAliases?: string[];
-  /** Cities the agency serves, ranked by stop density — derived from GTFS stops, not hand-curated. First entry is the primary/display city. */
-  cities?: string[];
-  /** IANA timezone from GTFS agency.txt (e.g. "America/Toronto"). Absent for agencies processed before this field existed — see #245. */
-  timezone?: string | null;
-  /** The current GTFS artifact was received or maintained manually. */
-  manualFeedSource?: boolean;
   /** Agency-published direction names keyed by route short name and GTFS direction_id. */
   directionLabels?: Record<string, Record<string, string>>;
   /** The agency's destination for a direction, keyed like directionLabels, where its trip headsign names the wrong end (RFTA HC). */
@@ -182,13 +134,6 @@ const APP_TO_PATH: Record<AppId, string> = {
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
 };
-
-/** Fill in R2 artifact URLs for catalog entries that don't carry their own. */
-function withArtifactUrls(a: Agency): Agency {
-  if (a.url) return a;
-  const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
-  return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
-}
 
 export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
@@ -640,24 +585,18 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, inFrequency, inFrequentService]);
 
-  useEffect(() => {
+  // The catalog load, and its retry from the error notice: useAgencies' loader, with today's feed quality.
+  const loadCatalog = useCallback(() => {
     setAgenciesLoadState('loading');
-    fetch(getAgencyCatalogUrl())
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((data: { agencies: Agency[] }) => {
-        const enriched = data.agencies
-          .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-          .map(withArtifactUrls)
-          .map(a => withFeedQualityToday(a));
-        setAgencies(enriched);
+    loadAgencyCatalog()
+      .then(list => {
+        setAgencies(list.map(a => withFeedQualityToday(a)));
         markAtlasOnce('agency-catalog-ready');
         setAgenciesLoadState('ready');
       })
       .catch(() => setAgenciesLoadState('error'));
   }, []);
+  useEffect(() => { loadCatalog(); }, [loadCatalog]);
 
   // Refresh details are shown only in the Info panel, so keep them out of the first load.
   useEffect(() => {
@@ -1018,30 +957,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             <button
               type="button"
               className="font-bold text-[var(--text-primary)] hover:text-[var(--accent)]"
-              onClick={() => {
-                setAgenciesLoadState('loading');
-                fetch(getAgencyCatalogUrl())
-                  .then(r => {
-                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                    return r.json();
-                  })
-                  .then((data: { agencies: Agency[] }) => {
-                    const enriched = data.agencies
-                      .filter((a: Agency) => isAgencyVisibleInBrowser(a, { mode: ATLAS_MODE }))
-                      .map((a: Agency) => {
-                        if (!a.url) {
-                          const arts = getAgencyArtifactUrls(a.slug, { betaOnly: a.betaOnly });
-                          return { ...a, url: arts.url, stopsUrl: a.stopsUrl ?? arts.stopsUrl, corridorsUrl: a.corridorsUrl ?? arts.corridorsUrl };
-                        }
-                        return a;
-                      })
-                      .map(a => withFeedQualityToday(a));
-                    setAgencies(enriched);
-                    markAtlasOnce('agency-catalog-ready');
-                    setAgenciesLoadState('ready');
-                  })
-                  .catch(() => setAgenciesLoadState('error'));
-              }}
+              onClick={loadCatalog}
             >
               {RETRY_LABEL}
             </button>

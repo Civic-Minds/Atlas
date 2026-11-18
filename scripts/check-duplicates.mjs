@@ -44,6 +44,8 @@ function codeLines(file) {
     line = line.replace(/(["'`])(?:\\.|(?!\1).)*\1/g, '"s"').replace(/-?\b\d+(\.\d+)?\b/g, '0').replace(/\s+/g, ' ');
     // Lines of only values (coordinates, number tables, string lists) are data, not code: a table is not a copy.
     if (/^[\s{}()[\];,0"s:.-]*$/.test(line)) return;
+    // So are properties set to a value in a config record (slug: "s", routeIds: ["s"], "s": { "s": 0 }).
+    if (/^"?[\w$]+"?\??: [\s{}()[\];,0"s:.-]*$/.test(line)) return;
     out.push({ line, n: i + 1 });
   });
   return out;
