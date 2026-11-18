@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { NIGHT_SERVICE_CRITERIA } from '../../../pipeline/nightServiceIndex';
-import { NIGHT_ONLY_DAY_START_MIN } from '../../../pipeline/tripSets';
-import { PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN } from '../../../pipeline/transit-phase2';
-import { AIRPORTS } from '../../../src/data/airportHourly';
-import { PERIOD_BANDS_ONLY } from '../../../src/components/Live/sections/figures';
-import { LIVE_DAY_HOURS } from '../../../src/utils/sparklinePeriods';
-import { TIME_LOSS_BANDS } from '../../../src/utils/timeLossReport';
-import { onDemandRunningNote } from '../../onDemandAvailability';
-import { DAYTIME_PERIOD_KEYS } from '../periods';
+import { NIGHT_SERVICE_CRITERIA } from '../nightServiceIndex';
+import { NIGHT_ONLY_DAY_START_MIN } from '../tripSets';
+import { PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN } from '../transit-phase2';
+import { AIRPORTS } from '../../src/data/airportHourly';
+import { PERIOD_BANDS_ONLY } from '../../src/components/Live/sections/figures';
+import { LIVE_DAY_HOURS } from '../../src/utils/sparklinePeriods';
+import { TIME_LOSS_BANDS } from '../../src/utils/timeLossReport';
+import { onDemandRunningNote } from '../../shared/onDemandAvailability';
+import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 
 /**
  * CIV-1835: leftover hand-typed copies now read from shared/rules, each pinned to the literal it replaced so the swap is

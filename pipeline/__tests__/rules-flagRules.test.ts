@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { featuresForEnv } from '../../../scripts/featureFlags';
-import { FEATURE_ROUTES } from '../../config';
-import { historyV2Enabled } from '../../../pipeline/historyV2Flag';
+import { featuresForEnv } from '../../scripts/featureFlags';
+import { FEATURE_ROUTES } from '../../shared/config';
+import { historyV2Enabled } from '../historyV2Flag';
 
 /**
  * Rules audit move 10: what each build switches on, pinned per mode, so moving the switches into shared/rules/flags.ts
  * is proven to change nothing. Runs shared/config.ts with each env as Vite would (scripts/featureFlags.ts).
  */
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../..', import.meta.url).pathname;
 const ALL = ['agencyHoursBar', 'beta', 'cardClickToFlag', 'collapseModeTabs', 'connectionsBar', 'contextLayer', 'dataSourceLink', 'feedQuality', 'frequentService', 'history', 'historyDayPicker', 'live', 'liveReports', 'mapContext', 'matchPercentage', 'modeTransitions', 'onDemand', 'outdatedFilter', 'persistedSettings', 'plannersLink', 'preview', 'researchApps', 'researchersLink', 'routeVariants', 'runningTimes', 'segmentColours', 'shareUtm', 'sparklineExpand', 'studio', 'unevenBanner', 'updateBanner', 'whatsNewBetaItems'];
 const CASES: Record<string, { env: Record<string, string | boolean>; mode: string; on: string[] }> = {
     public: { env: { VITE_ATLAS_MODE: 'public' }, mode: 'public', on: ['modeTransitions'] },

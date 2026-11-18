@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_CRITERIA } from '../../../pipeline/defaults';
+import { DEFAULT_CRITERIA } from '../defaults';
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS, NIGHT_SERVICE_WINDOW_END_MIN,
   NIGHT_SERVICE_WINDOW_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN,
   RESEARCH_FREQUENT_SERVICE_START_MIN,
-} from '../../../pipeline/headway-utils';
-import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../../../pipeline/tripSets';
-import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, SPARKLINE_HOURS, TIME_PERIODS, toGtfsHour } from '../../config';
-import { DEFAULT_SERVICE_DAY_END_HOUR } from '../../liveAgencyConfig';
+} from '../headway-utils';
+import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../tripSets';
+import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, SPARKLINE_HOURS, TIME_PERIODS, toGtfsHour } from '../../shared/config';
+import { DEFAULT_SERVICE_DAY_END_HOUR } from '../../shared/liveAgencyConfig';
 
 /**
  * Rules audit move 4: every period value, pinned as literals, so moving them into shared/rules/periods.ts is proven to
