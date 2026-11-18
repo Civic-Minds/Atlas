@@ -2580,11 +2580,9 @@ export async function processGtfsBuffer(
     // CIV-209: a drawn stop's per-stop answers (boards, has a reading, grades) come from stopReading (drawnStops.ts). It reads
     // stopMetricMap live, so a stop's reading follows the list the line reads once pooling settles.
     const readStop = (stopId: string) => stopReading(stopId, { times: stopMetricMap.get(stopId), dropOffOnly: dropOffOnlyStops });
-    // CIV-209 (Ryan, 2026-11-18, option 1): the one rule for which drawn stops count. A stop counts where it has a
-    // grade: riders can board there (stopReading's gradeable) and its departures pass the every-gap grade, spread
-    // through the day. The map colour (stopTiers) is this grade, and the headline, period and hourly floors, the
-    // pooled skip floor count only stops that have one, so the headline and the colour never disagree about which stop
-    // sets the line's value. Whether a line has a headline at all still reads stopReading's count (hasReading). Memoised per stop list: it reads stopMetricMap and allStopHw live, which pooling
+    // A drawn stop's map grade (stopTiers), one function: riders can board there (stopReading's gradeable) and its
+    // departures pass the every-gap grade. The worst-stop floors read stopReading's countsInFloor (floorStop below), the
+    // same boarding and burst tests. Memoised per stop list: it reads stopMetricMap and allStopHw live, which pooling
     // replaces once.
     let stopGradeMemo: { list: Map<string, number[]>; hw: Record<string, number>; grades: Map<string, string | null> } | null = null;
     const stopGrade = (stopId: string): string | null => {
@@ -2593,7 +2591,6 @@ export async function processGtfsBuffer(
       if (!memo.has(stopId)) memo.set(stopId, gradeStop(stopId));
       return memo.get(stopId)!;
     };
-    const stopCounts = (stopId: string): boolean => stopGrade(stopId) != null;
     function gradeStop(stopId: string): string | null {
       // A drop-off-only stop has arrivals, not departures: its value stays on the stop
       // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
@@ -3210,9 +3207,9 @@ export async function processGtfsBuffer(
     // Every headway-to-tier step on the route reads the one grading scale (TIER_MAXES, every mode,
     // CIV-1813), so a 4-minute people mover graded 5 is never degraded to the public scale's 10
     // (settleTier, the rescue, the worst reading stop and the stop grades' headway cap).
-    // That count is stopReading's hasReading. The floors below count a stop only where it has a map grade
-    // (stopCounts, CIV-209): riders board there and its departures pass the every-gap grade, so a drop-off-only stop or
-    // a bunched handful of departures never sets the headline.
+    // That count is stopReading's hasReading. The floors below count a stop only where riders board and its departures
+    // are not bunched into one burst (countsInFloor, CIV-209), so a drop-off-only stop or a bunched handful never sets
+    // the headline.
     // The line runs by day when at least half of its stop departures fall in 6-22h; a night
     // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
     const lineRunsByDay = (): boolean => {
@@ -3238,23 +3235,19 @@ export async function processGtfsBuffer(
       return [...floor];
     };
     // CIV-209: the stop that stands for a drawn stop in a worst-stop floor (null: none). A stop with no all-day reading
-    // (stopReading's count) is left out, as before. One with a map grade (stopCounts) stands for itself. One with a reading
-    // but no grade (a drop-off-only stop, a bunched handful of departures, a list the every-gap grade refuses) is read at
-    // the next graded stop riders board at (TTC 102 to Warden: dropping its two ungraded first stops read the pool's 10
-    // under ten stops graded 30 at every 15).
-    // Two cases keep today's rule (the stop for itself): a line with no graded stop at all (its colour is limited, so
-    // nothing grades its headline; LA Metro 14/37 and 78 otherwise fell to a sparse fallback of 60), and the overnight
-    // period (the grade reads the day, not the night).
-    // The stand-in is the nearest graded stop after it, and only where the floor reads that stop's value (`readable`:
-    // not the own pattern's fallback, a value this period). Otherwise the stop stands for itself, as today: TTC 102's next
-    // graded stops read only the own pattern's fallback, which the floor leaves out, so a stand-in there let the pool's 10
-    // through.
+    // (stopReading's count) is left out, as before. One that counts in the floor (stopReading's countsInFloor: riders
+    // board there and its departures are not bunched into one burst) stands for itself. A bunched stop is read at the next
+    // stop that counts, where the floor reads that stop's value; otherwise it stands for itself, as today. A line with no
+    // stop that counts, and the overnight period, keep today's rule. (Drop-off-only stops before the terminal are already
+    // read at the next boarding stop by servedByFewerTrips.) Sparse stops with holes still count: leaving out every stop
+    // without a map grade overstated service at thin tails (ART 45 to Rosslyn 45 -> 15, TARTA 18).
+    const countsInFloor = (stopId: string): boolean => readStop(stopId).countsInFloor;
     const floorStop = (stopId: string, readable: (stopId: string) => boolean, overnight = false): string | null => {
       if (!readStop(stopId).hasReading) return null;
-      if (overnight || stopCounts(stopId)) return stopId;
+      if (overnight || countsInFloor(stopId)) return stopId;
       const drawn = drawnPatternStops().map(p => p.stopId);
-      if (!drawn.some(stopCounts)) return stopId;
-      const next = drawn.slice(drawn.indexOf(stopId) + 1, -1).find(stopCounts);
+      if (!drawn.some(countsInFloor)) return stopId;
+      const next = drawn.slice(drawn.indexOf(stopId) + 1, -1).find(countsInFloor);
       return next != null && readable(next) ? next : stopId;
     };
     const floorStopsOf = (stopIds: readonly string[], readable: (stopId: string) => boolean, overnight = false): string[] =>
@@ -3477,7 +3470,7 @@ export async function processGtfsBuffer(
         feature.properties.headway = null;
       } else if (!rescued && !railFeature && !isMapless && lineRunsByDay()
         && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
-        // Whether the line has a reading at all stays the count; which stops set its value is stopCounts (CIV-209).
+        // Whether the line has a reading at all stays the count; which stops set its value is floorStop (CIV-209).
         const reading = drawnPatternStops().filter(p => readStop(p.stopId).hasReading);
         const vals = floorStopsOf(reading.map(p => p.stopId), id => allStopHw[id] != null).map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
         if (vals.length) {
@@ -3599,7 +3592,7 @@ export async function processGtfsBuffer(
       // the worst reading among those stops, never the sparse own value (455), unless the pool or
       // the thin-shape rescue already speaks for the terminal.
       const worstReadingStop = (): number | undefined => {
-        // CIV-209: only stops that count (stopCounts) set the worst reading; whether the line or its terminal has a
+        // CIV-209: only stops that count (floorStop) set the worst reading; whether the line or its terminal has a
         // reading at all (readingStops, terminalHasReading) stays the count, so no line loses its headline here.
         const vals = floorStopsOf(readingStops.map(p => p.stopId), id => allStopHw[id] != null).map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;

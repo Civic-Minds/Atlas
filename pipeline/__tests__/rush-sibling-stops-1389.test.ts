@@ -45,8 +45,7 @@ describe('a sibling counts the rush-hour-only trips at the stops they share (CIV
     // Nothing else of the row moves: midday, headline, tier, row periods, route fields, labels.
     expect(warden.stopPeriodHeadways['4220']).toMatchObject({ amPeak: 12, midday: 14, evening: 8, late: 10, overnight: 12 });
     expect(warden).toMatchObject({ headway: 15, tier: 'infrequent', serviceClass: 'regular' });
-    // CIV-209: the AM floor's ungraded first stops (12) are read at the next graded stop, 13668, every 8 in the AM peak.
-    expect(warden.headwayByPeriod).toEqual({ amPeak: 8, midday: 15, pmPeak: 30, evening: 8, late: 10, overnight: 13 });
+    expect(warden.headwayByPeriod).toEqual({ amPeak: 12, midday: 15, pmPeak: 30, evening: 8, late: 10, overnight: 13 });
     expect(warden.routeFilterHeadwayByPeriod).toEqual({ amPeak: 24, midday: 30, pmPeak: 30, evening: 30, late: 20, overnight: null });
     // The shared-stretch label still names only pool members: 102C is not one.
     expect(warden.sharedStretches).toEqual([{ from: 0, to: 13, with: ['Sheppard'] }]);
