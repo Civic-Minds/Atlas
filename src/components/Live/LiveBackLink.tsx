@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import AppLink from '../ui/AppLink';
 import { BACK_ARROW, backLinkLabel } from '../../content/backLinks';
 
 const BACK = 'text-sm font-bold text-[var(--text-primary)] hover:underline';
@@ -17,6 +18,6 @@ export default function LiveBackLink({ agencyName, href, onClick, className = ''
 }) {
   const text = <>{BACK_ARROW} {typeof agencyName === 'string' ? backLinkLabel(agencyName) : <>Back to {agencyName}</>}</>;
   return href != null
-    ? <a href={href} className={`${BACK} ${className}`}>{text}</a>
+    ? <AppLink to={href} className={`${BACK} ${className}`}>{text}</AppLink>
     : <button type="button" onClick={onClick} className={`${BACK} text-left ${className}`}>{text}</button>;
 }

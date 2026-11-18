@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import AppLink from './components/ui/AppLink';
 import { mailto } from '../shared/contact';
 import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
@@ -24,7 +25,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 function Inline({ paragraph }: { paragraph: LegalParagraph }) {
   return <>{paragraph.map((part, i) => {
     if (part.type === 'em') return <em key={i}>{part.text}</em>;
-    if (part.type === 'link') return <a key={i} className="text-[var(--accent)] hover:underline" href={part.href}>{part.text}</a>;
+    if (part.type === 'link') return <AppLink key={i} className="text-[var(--accent)] hover:underline" to={part.href}>{part.text}</AppLink>;
     return part.text;
   })}</>;
 }

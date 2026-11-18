@@ -1,4 +1,5 @@
 import { Map as MapIcon } from 'lucide-react';
+import AppLink from './ui/AppLink';
 import AtlasBrand from './AtlasBrand';
 import { TOP_BAR_SURFACE } from '../styles';
 
@@ -35,6 +36,6 @@ export default function AtlasLogo({ ariaLabel, href, onClick, showMark = true, s
     </>
   );
   const cls = showMark ? LINK_CLASS : WORD_LINK_CLASS;
-  if (href) return <a href={href} aria-label={ariaLabel} className={cls}>{content}</a>;
+  if (href) return <AppLink to={href} aria-label={ariaLabel} className={cls}>{content}</AppLink>;
   return <button type="button" onClick={onClick} aria-label={ariaLabel} className={cls}>{content}</button>;
 }

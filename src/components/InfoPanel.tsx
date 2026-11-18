@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
@@ -392,11 +393,11 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
               {/* Pinned to the panel's bottom edge, below the scrolling content. */}
               <div className="shrink-0 border-t border-[var(--border-primary)] px-5 py-3 text-xs text-[var(--text-dim)] space-y-1" data-testid="info-panel-footer">
                 <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                  <a href={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_PAGE_TITLE}</a>
+                  <AppLink to={DOCS_PATH} className="hover:text-[var(--accent)] hover:underline">{DOCS_PAGE_TITLE}</AppLink>
                   <span aria-hidden="true">·</span>
-                  <a href={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.termsLink}</a>
+                  <AppLink to={TERMS_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.termsLink}</AppLink>
                   <span aria-hidden="true">·</span>
-                  <a href={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.privacyLink}</a>
+                  <AppLink to={PRIVACY_PATH} className="hover:text-[var(--accent)] hover:underline">{PAGE_NAMES.privacyLink}</AppLink>
                 </div>
                 <p>© 2026 Civic Minds.</p>
               </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AppLink from './components/ui/AppLink';
 import { useParams } from 'react-router';
 import {
   areaAgencyRowHref,
@@ -70,7 +71,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
               <PageTitle>{areaPageH1(data)}</PageTitle>
               {subtitle.length > 0 && (
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  {subtitle.map((part, i) => <span key={part.text}>{i > 0 && ', '}{part.href ? <a className={UNDERLINED_LINK} href={part.href}>{part.text}</a> : part.text}</span>)}
+                  {subtitle.map((part, i) => <span key={part.text}>{i > 0 && ', '}{part.href ? <AppLink className={UNDERLINED_LINK} to={part.href}>{part.text}</AppLink> : part.text}</span>)}
                 </p>
               )}
             </div>
@@ -78,7 +79,7 @@ export default function AreaPage({ data: dataProp }: { data?: AreaPageData }) {
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(areaIntroName(data, a))}<a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{areaIntroName(data, a)}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(areaIntroName(data, a))}<AppLink className={UNDERLINED_LINK} to={areaAgencyRowHref(a)}>{areaIntroName(data, a)}</AppLink>{joiners.separators[i]}</span>)}
             {joiners.tail}
           </p>
           {data.area.note && <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">{data.area.note}</p>}

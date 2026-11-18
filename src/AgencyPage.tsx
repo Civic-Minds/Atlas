@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AppLink from './components/ui/AppLink';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { useParams } from 'react-router';
 import {
@@ -62,7 +63,7 @@ function LinkedNames({ items, others, counted }: { items: ReadonlyArray<{ name: 
         <span key={p.name}>
           {i > 0 ? (i === items.length - 1 && others === 0 ? ' and ' : ', ') : ''}
           {p.before}
-          {p.href ? <a className={UNDERLINED_LINK} href={p.href}>{p.name}</a> : p.name}
+          {p.href ? <AppLink className={UNDERLINED_LINK} to={p.href}>{p.name}</AppLink> : p.name}
         </span>
       ))}
       {others > 0 ? ` ${andOthers(others, ...counted)}` : ''}
@@ -89,7 +90,7 @@ function Intro({ data }: { data: AgencyPageData }) {
   // CIV-1277 (Ryan, 2026-11-02): a member's parent sits in the sentence, linked: "MTA NYCT Subway, part of MTA New York, operates …".
   const parentAt = data.parent ? introLead.indexOf(`${PART_OF}${data.parent.name},`) : -1;
   const lead = data.parent && parentAt >= 0
-    ? <>{introLead.slice(0, parentAt)}{PART_OF}<a className={UNDERLINED_LINK} href={data.parent.path}>{data.parent.name}</a>{introLead.slice(parentAt + PART_OF.length + data.parent.name.length)}</>
+    ? <>{introLead.slice(0, parentAt)}{PART_OF}<AppLink className={UNDERLINED_LINK} to={data.parent.path}>{data.parent.name}</AppLink>{introLead.slice(parentAt + PART_OF.length + data.parent.name.length)}</>
     : introLead;
   return (
     <p className={sentence}>
@@ -207,8 +208,8 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               {data!.area ? (
                 // CIV-1614: "Calgary, Alberta", "Greater Toronto and Hamilton Area, Ontario". An area with too few agencies for a page is named without a link (Ryan, 2026-11-01).
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  {data!.area.page !== false ? <a className={UNDERLINED_LINK} href={areaPagePath(data!.area.slug)}>{areaSubtitleName(data!.area)}</a> : areaSubtitleName(data!.area)}
-                  {agency.region && !areaSubtitleName(data!.area).includes(agency.region) && <>, {data!.regionPage ? <a className={UNDERLINED_LINK} href={data!.regionPage}>{agency.region}</a> : agency.region}</>}
+                  {data!.area.page !== false ? <AppLink className={UNDERLINED_LINK} to={areaPagePath(data!.area.slug)}>{areaSubtitleName(data!.area)}</AppLink> : areaSubtitleName(data!.area)}
+                  {agency.region && !areaSubtitleName(data!.area).includes(agency.region) && <>, {data!.regionPage ? <AppLink className={UNDERLINED_LINK} to={data!.regionPage}>{agency.region}</AppLink> : agency.region}</>}
                 </p>
               ) : agency.city && <p className="mt-1 text-sm text-[var(--text-muted)]">{agency.city}</p>}
             </div>
@@ -264,13 +265,13 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
             <section className="mt-12" aria-labelledby="nearby-heading">
               <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
                 <SectionTitle id="nearby-heading">
-                  {data!.area?.page !== false && data!.area ? <>{NEARBY_IN}<a className="underline underline-offset-2" href={areaPagePath(data!.area.slug)}>{titleCase(`${NEARBY_IN}${areaRegionName(data!.area)}`).slice(NEARBY_IN.length)}</a></> : 'Nearby Agencies'}
+                  {data!.area?.page !== false && data!.area ? <>{NEARBY_IN}<AppLink className="underline underline-offset-2" to={areaPagePath(data!.area.slug)}>{titleCase(`${NEARBY_IN}${areaRegionName(data!.area)}`).slice(NEARBY_IN.length)}</AppLink></> : 'Nearby Agencies'}
                 </SectionTitle>
                 <ArrowLink href={AGENCY_INDEX_PATH}>{SEE_ALL_AGENCIES}</ArrowLink>
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
-                  <li key={o.slug}><a className={UNDERLINED_LINK} href={agencyPagePath(o.slug)}>{o.name}</a></li>
+                  <li key={o.slug}><AppLink className={UNDERLINED_LINK} to={agencyPagePath(o.slug)}>{o.name}</AppLink></li>
                 ))}
               </ul>
             </section>
