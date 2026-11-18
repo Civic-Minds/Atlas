@@ -4,10 +4,28 @@ A read-only MCP server that lets Claude on this Mac answer planner questions fro
 
 ## Setup
 
-From the Atlas checkout:
+Paths below are for the main checkout. Both setups call `node` by its full path, because Claude Desktop starts servers without Homebrew on `PATH`, and `tsx`'s own launcher then can't find `node`. The server finds its data from its own file location, so the folder it starts in doesn't matter.
+
+**Claude Code** (every project, `-s user`):
 
 ```bash
-claude mcp add atlas -- "$PWD/node_modules/.bin/tsx" "$PWD/scripts/mcp/atlas-mcp.ts"
+claude mcp add -s user atlas -- /opt/homebrew/bin/node /Users/ryan/Developer/Code/Platforms/Atlas/node_modules/tsx/dist/cli.mjs /Users/ryan/Developer/Code/Platforms/Atlas/scripts/mcp/atlas-mcp.ts
+```
+
+**Claude Desktop**: add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, merged into any `mcpServers` already there, then quit and reopen Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "atlas": {
+      "command": "/opt/homebrew/bin/node",
+      "args": [
+        "/Users/ryan/Developer/Code/Platforms/Atlas/node_modules/tsx/dist/cli.mjs",
+        "/Users/ryan/Developer/Code/Platforms/Atlas/scripts/mcp/atlas-mcp.ts"
+      ]
+    }
+  }
+}
 ```
 
 ## Tools

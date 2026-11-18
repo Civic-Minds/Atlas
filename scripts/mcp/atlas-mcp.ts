@@ -3,7 +3,7 @@
  * and answers planner questions from Atlas's processed per-agency route files (scripts/mcp/atlasData.ts), with the
  * map's own numbers. Nothing is fetched, uploaded or written; it is not deployed anywhere.
  *
- *   claude mcp add atlas -- <repo>/node_modules/.bin/tsx <repo>/scripts/mcp/atlas-mcp.ts
+ * Setup for Claude Code and Claude Desktop: scripts/mcp/README.md.
  *
  * Speaks MCP's stdio transport directly (newline-delimited JSON-RPC 2.0: initialize, tools/list, tools/call, ping),
  * so it adds no dependency. Logs go to stderr; stdout carries only protocol messages.
