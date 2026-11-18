@@ -469,7 +469,7 @@ export default function AboutDocsPage() {
             <p><strong className="text-[var(--text-primary)]">Service class:</strong> The kind of service a route runs: regular, part-time or occasional.</p>
             <p><strong className="text-[var(--text-primary)]">Occasional:</strong> {HIDE_ONE_OFF_SETTING.description} “{HIDE_ONE_OFF_SETTING.label}” hides them.</p>
             <p><strong className="text-[var(--text-primary)]">Consistent service:</strong> Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.</p>
-            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary. The card names the longest gap.</p>
+            <p><strong className="text-[var(--text-primary)]">Uneven service:</strong> Service that runs through the whole time period, but with gaps that vary.{FEATURES.unevenBanner && ' The card names the longest gap.'}</p>
             {FEATURES.onDemand && <p><strong className="text-[var(--text-primary)]">On-demand zone:</strong> An area served by booked rides instead of a fixed route. It is shown as an area on the map and never given a frequency.</p>}
             <p><strong className="text-[var(--text-primary)]">Provenance:</strong> The source, schedule period, freshness state, review status and correction history attached to an Atlas result.</p>
             <p><strong className="text-[var(--text-primary)]">PMTiles:</strong> A single archive format that lets the map request only the vector-tile regions it needs.</p>
