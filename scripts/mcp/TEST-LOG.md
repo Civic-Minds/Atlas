@@ -10,7 +10,8 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 |---|---|---|
 | 0.1.0 | 2026-11-17 | First version: list_agencies, route_frequency, routes_at_frequency, compare_agencies, schedule_changes (3229a4ea3) |
 | 0.2.0 | 2026-11-17 | trip_time, combined_frequency, time windows, plainer answers, named Atlas Studio (e16b2037e) |
-| 0.3.0 | 2026-11-17 | rank_agencies, filtered list_agencies, schedule_changes dates up front |
+| 0.3.0 | 2026-11-17 | rank_agencies, filtered list_agencies, schedule_changes dates up front (88f7e2bb8) |
+| 0.4.0 | 2026-11-17 | Peers match on kind (buses only or with rail) and leave out parts of a larger operator; agencies found by short name (HSR); a station matches its bays and platforms; trip times warn when the schedule file on this Mac is older than the map's |
 
 ## Standing questions
 
@@ -27,6 +28,12 @@ Planner samples:
 8. Which York Region Transit routes run every 15 minutes or better on Sunday midday?
 9. What changed in Hamilton's spring schedule?
 10. Which agencies does Atlas cover around Hamilton?
+
+Weak spots (no tool yet: a good answer says so instead of guessing):
+- Which routes are near Bathurst and Bloor?
+- How has the 504 changed since 2019?
+
+Ryan's test page for the next round: `Atlas-worktrees/_reports/mcp-tests/test-questions.html`.
 
 Ryan's second round:
 11. Which Mississauga routes run every 15 minutes or better on weekday evenings?

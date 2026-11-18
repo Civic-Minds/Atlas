@@ -23,6 +23,8 @@ import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { routeRuns } from '../build-agency-page-summaries';
 import { countryForRegion } from '../../shared/regionCountry';
+import { parentAgency } from '../../shared/parentAgencyList';
+import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import { writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
@@ -75,8 +77,21 @@ export function availableAgencies(): Array<CatalogAgency & { file: string }> {
 }
 
 /** An agency by slug or name (case-insensitive), among those available. */
+/** The short names riders use for an agency (config shortName, such as "HSR" or "TTC"), lower case. */
+const shortNames = new Map<string, string>();
+function shortNameOf(slug: string): string {
+  if (!shortNames.has(slug)) {
+    let name = '';
+    try { name = String((JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }).shortName ?? '').toLowerCase(); } catch { /* no config */ }
+    shortNames.set(slug, name);
+  }
+  return shortNames.get(slug)!;
+}
+
 export function findAgency(query: string, list: Array<CatalogAgency & { file: string }> = availableAgencies()): (CatalogAgency & { file: string }) | null {
   const q = query.trim().toLowerCase();
+  const byShort = list.filter(a => shortNameOf(a.slug) === q);
+  if (byShort.length === 1) return byShort[0];
   return list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q) ?? list.find(a => a.name.toLowerCase().includes(q)) ?? null;
 }
 
@@ -235,6 +250,12 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number) {
 }
 
 /** The feed file Atlas processed for an agency, newest first: Atlas-worktrees/_feeds/<slug>/*.zip, or ATLAS_MCP_FEEDS_DIR. */
+/** The last service date in a schedule (calendar end dates, else calendar_dates), as YYYYMMDD. */
+export function scheduleEnds(gtfs: GtfsData): string | null {
+  const dates = [...(gtfs.calendar ?? []).map(c => c.end_date), ...(gtfs.calendarDates ?? []).filter(d => d.exception_type === '1').map(d => d.date)].filter(Boolean).sort();
+  return dates[dates.length - 1] ?? null;
+}
+
 export function feedFile(slug: string): string | null {
   const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
   const dir = join(root, slug);
@@ -260,8 +281,8 @@ const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').repla
 export function findPlaces(gtfs: GtfsData, query: string): { places: Set<string>; names: string[] } {
   const q = norm(query);
   const place = placeOf(gtfs);
-  const exact = (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '') === q);
-  const hits = exact.length ? exact : (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q));
+  // Every stop whose name contains the words: a station's platforms and bus bays are named after it ("Finch Station - Bay 3").
+  const hits = (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q));
   return { places: new Set(hits.map(s => place(s.stop_id))), names: [...new Set(hits.map(s => s.stop_name ?? s.stop_id))].slice(0, 6) };
 }
 
@@ -287,7 +308,7 @@ export async function tripTimes(slug: string, fromQuery: string, toQuery: string
   const byRoute = new Map<string, Array<{ start: number; minutes: number }>>();
   const nameOf = routeIdsNamed(gtfs, []);
   for (const r of runs) { const n = nameOf.get(r.routeId) ?? r.routeId; (byRoute.get(n) ?? byRoute.set(n, []).get(n)!).push(r); }
-  return { from: from.names, to: to.names, readOn: calendarDay, byRoute };
+  return { from: from.names, to: to.names, readOn: calendarDay, byRoute, scheduleEnds: scheduleEnds(gtfs) };
 }
 
 /** Departures from the first stop towards the second, per route and combined, read with the map's stop-pool rule. */
@@ -306,7 +327,18 @@ export { runningTimeSummary };
 // ---- Agency index for peers and rankings (CIV-1650 round 2) ----
 
 /** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
-export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; days: Partial<Record<DayType, Array<{ route: string; name: string | null; wait: Partial<Record<PeriodKey, number | null>> }>>> }
+export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
+
+/** Mode labels that are rail, from the shared mode list (shared/rules/modes.ts) by the rail-like ids and streetcar. */
+const RAIL_MODE_LABELS = new Set([...RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE.TRAM, PEOPLE_MOVER_MODE].map(id => modeLabel(id)));
+
+/** The parent agency an agency's config names (config/agencies/<slug>.json parentAgency), by its name. */
+function partOf(slug: string): string | null {
+  try {
+    const cfg = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { parentAgency?: string };
+    return cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null;
+  } catch { return null; }
+}
 
 /** Where the index sits: next to the route files it was built from, so a new release gets a new index. */
 export function indexFile(): string | null {
@@ -322,9 +354,10 @@ export function buildIndex(onProgress?: (done: number, total: number) => void): 
     const days: IndexedAgency['days'] = {};
     for (const d of DAY_TYPES) {
       const routes = routesOn(a, d);
-      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
+      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
     }
-    out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), days });
+    const railRoutes = (routesOn(a, 'Weekday')).filter(r => RAIL_MODE_LABELS.has(r.mode)).length;
+    out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), partOf: partOf(a.slug), railRoutes, days });
     loaded.delete(a.slug); // one agency in memory at a time
     onProgress?.(i + 1, list.length);
   });

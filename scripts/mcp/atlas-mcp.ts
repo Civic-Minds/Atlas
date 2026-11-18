@@ -32,7 +32,7 @@ const stop = (which: string) => ({ type: 'string', description: `${which} stop o
 const WAIT = 'waitMinutes is the typical wait on the route\'s least frequent part (its slowest branch or direction), the number Atlas colours and filters the route by; "shown" is what the route list says, with a range where parts of the route differ.';
 const TOOLS = [
   { name: 'list_agencies', description: 'Find transit agencies Atlas covers, filtered by name or city, region (state or province) and country. Returns at most 40 compact rows; with no filter, only the count.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Name or city to search for.' }, region: { type: 'string', description: 'State or province, e.g. "Ontario", "Ohio".' }, country: { type: 'string', description: 'Country, e.g. "Canada", "United States".' } } } },
-  { name: 'rank_agencies', description: `Rank agencies by how many of their routes run every N minutes or better in a part of the day (by waitMinutes). Filter by country or region, and by size: weekday route count between min_routes and max_routes, or similar_to an agency (half to double its weekday routes). Returns each agency's routes on the day, routes meeting the bar, and the list of those routes. ${WAIT}`, inputSchema: { type: 'object', properties: { period, every, day, country: { type: 'string' }, region: { type: 'string' }, similar_to: { type: 'string', description: 'An agency whose size to match: half to double its weekday route count.' }, min_routes: { type: 'number' }, max_routes: { type: 'number' }, limit: { type: 'number', description: 'How many agencies to return; 15 when left out.' } }, required: ['period', 'every'] } },
+  { name: 'rank_agencies', description: `Rank agencies by how many of their routes run every N minutes or better in a part of the day (by waitMinutes). Filter by country, region, kind (bus: no rail routes; rail: has rail routes) and size: weekday route count between min_routes and max_routes, or similar_to an agency (half to double its weekday routes, and the same kind). Agencies that are part of a larger operator are flagged and, with similar_to, left out unless include_parts is true. Returns each agency's routes on the day, routes meeting the bar, and the list of those routes. ${WAIT}`, inputSchema: { type: 'object', properties: { period, every, day, country: { type: 'string' }, region: { type: 'string' }, similar_to: { type: 'string', description: 'An agency to find peers of: half to double its weekday route count, the same kind (bus only, or with rail), not part of a larger operator.' }, kind: { type: 'string', enum: ['bus', 'rail'], description: 'bus: agencies with no rail routes; rail: agencies with rail routes.' }, include_parts: { type: 'boolean', description: 'Keep agencies that are part of a larger operator (such as one MTA borough) when using similar_to.' }, min_routes: { type: 'number' }, max_routes: { type: 'number' }, limit: { type: 'number', description: 'How many agencies to return; 15 when left out.' } }, required: ['period', 'every'] } },
   { name: 'route_frequency', description: `How often a route runs in each part of the day on a day type, with its first and last trips. ${WAIT} With a time window it also gives the frequency hour by hour.`, inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'route'] } },
   { name: 'routes_at_frequency', description: `Routes in an agency that run every N minutes or better in a part of the day (by waitMinutes: ${WAIT})`, inputSchema: { type: 'object', properties: { agency, period, every, day }, required: ['agency', 'period', 'every'] } },
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period, every, day }, required: ['agencies', 'period', 'every'] } },
@@ -62,6 +62,10 @@ function window(args: Args): { start: number; end: number; label: string; period
   if (start == null || end == null || end <= start) throw new Error('Give the window as from_time and to_time, such as "10:00" and "18:00".');
   return { start, end, label: `${clockTime(start)}–${clockTime(end)}`, periods: data.periodsIn(start, end) };
 }
+/** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
+const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) => (ends && a.lastFeedExpiry && ends < a.lastFeedExpiry
+  ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${ends.slice(0, 4)}-${ends.slice(4, 6)}-${ends.slice(6, 8)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
+  : {});
 const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
 
 const handlers: Record<string, (args: Args) => unknown> = {
@@ -81,24 +85,30 @@ const handlers: Record<string, (args: Args) => unknown> = {
     const weekdayRoutes = (a: IndexedAgency) => a.days.Weekday?.length ?? 0;
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
+    let kind = args.kind === 'bus' || args.kind === 'rail' ? args.kind : null;
+    let skipParts = false;
+    const kindOf = (a: IndexedAgency) => (a.railRoutes > 0 ? 'rail' : 'bus');
     if (args.similar_to != null) {
       const a = needAgency(args.similar_to);
       const self = idx.find(x => x.slug === a.slug);
       if (!self) throw new Error(`${a.name} is not in the index.`);
-      like = `${a.name} (${weekdayRoutes(self)} weekday routes)`;
+      kind ??= kindOf(self);
+      skipParts = args.include_parts !== true;
+      like = `${a.name}: ${weekdayRoutes(self)} weekday routes, ${kindOf(self) === 'bus' ? 'buses only' : 'with rail'}`;
       lo = Math.ceil(weekdayRoutes(self) / 2); hi = weekdayRoutes(self) * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
-    const pool = idx.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && weekdayRoutes(a) >= lo && weekdayRoutes(a) <= hi);
+    const pool = idx.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && weekdayRoutes(a) >= lo && weekdayRoutes(a) <= hi
+      && (!kind || kindOf(a) === kind) && !(skipParts && a.partOf));
     const rows = pool.map(a => {
       const routes = a.days[dayType] ?? [];
       const meeting = routes.filter(r => r.wait[key] != null && r.wait[key]! <= minutes).sort((x, y) => x.wait[key]! - y.wait[key]!);
-      return { agency: a.name, region: a.region, weekdayRoutes: weekdayRoutes(a), routesOnDay: routes.length, routesMeeting: meeting.length, routes: meeting.map(r => `${r.route}${r.name ? ` ${r.name}` : ''} (every ${r.wait[key]})`) };
+      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: kindOf(a) === 'bus' ? 'buses only' : 'with rail', weekdayRoutes: weekdayRoutes(a), routesOnDay: routes.length, routesMeeting: meeting.length, routes: meeting.map(r => `${r.route}${r.name ? ` ${r.name}` : ''} (every ${r.wait[key]})`) };
     }).sort((x, y) => y.routesMeeting - x.routesMeeting || x.agency.localeCompare(y.agency));
     const limit = args.limit != null ? Number(args.limit) : 15;
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
-      ...(like ? { sizedLike: like } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: kind === 'bus' ? 'buses only' : 'with rail' } : {}), ...(skipParts ? { leftOut: 'agencies that are part of a larger operator' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
       agenciesCompared: rows.length, ranking: rows.slice(0, limit), source: SOURCE,
     };
   },
@@ -148,6 +158,7 @@ const handlers: Record<string, (args: Args) => unknown> = {
       };
     }).sort((x, y) => (x.typicalMinutes ?? 1e9) - (y.typicalMinutes ?? 1e9));
     return {
+      ...staleNote(a, t.scheduleEnds),
       agency: a.name, from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
       routes, note: 'Scheduled minutes from leaving the first stop to arriving at the second; an hour needs at least two trips.', source: "The agency's own schedule file that Atlas processed.",
     };
@@ -160,6 +171,7 @@ const handlers: Record<string, (args: Args) => unknown> = {
     const windows = w ? [{ name: w.label, start: w.start, end: w.end }] : PERIOD_KEYS.map(k => ({ name: `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`, start: PERIOD_MINUTES[k].start, end: PERIOD_MINUTES[k].end }));
     const all = [...c.byRoute.values()].flat().map(x => x.start);
     return {
+      ...staleNote(a, c.scheduleEnds),
       agency: a.name, from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
       routes: [...c.byRoute.keys()],
       byWindow: windows.map(win => ({
@@ -197,7 +209,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.3.0' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.4.0' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
