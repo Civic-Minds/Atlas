@@ -44,6 +44,11 @@ jobs:
       - name: Check for unused files and exports
         run: npm run check:unused
 
+      # 2026-11-17 (Ryan, on copied components): no new block of code copied between files in src/ or shared/.
+      # scripts/duplicates-baseline.json lists today's copies and may only shrink. Under a second, no dependency.
+      - name: Check for copied code
+        run: npm run check:duplicates
+
       - name: Validate index.json
         run: npm run validate-index
 

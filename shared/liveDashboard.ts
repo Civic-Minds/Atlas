@@ -4,6 +4,7 @@
  * the plain-language sentences, so the page and the tests share one wording.
  */
 import { hasLiveAnalysis } from './livePollingConfig.js';
+import type { DaytimePeriodKey } from './rules/periods.js';
 import { dateRange } from './dateText.js';
 import { directionBranchFallback } from './headsignDisplay.js';
 import { minutesText as min } from './liveFormat.js';
@@ -110,7 +111,7 @@ export function weekForBand<W extends { thisWeek: WeekMetrics; lastWeek: WeekMet
 }
 export interface DeliveredFigures { seen: number; notSeen: number; unknown: number; share: number | null }
 /** Time-of-day keys: the whole day, then the map's periods. */
-export type DashboardBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+export type DashboardBand = 'all' | DaytimePeriodKey;
 export interface DashboardBandData {
   stops: DashboardStop[];
   buildup: DashboardBuildup[];

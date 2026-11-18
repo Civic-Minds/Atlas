@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { frequencyChange, STARTS_OR_STOPS_STEPS } from '../frequencyChange';
-import { TIER_MAXES } from '../frequencyRules';
+import { TIER_MAXES } from '../rules/frequency';
 
 describe('frequencyChange: a route changes when it moves grade on the one scale (CIV-1814 item 38)', () => {
   it('a move inside one grade is no change (Hamilton 44, 30 → 29)', () => {

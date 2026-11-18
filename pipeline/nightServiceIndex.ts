@@ -13,6 +13,7 @@
 
 import type { RouteIndexProperties } from '../shared/routeIndexProperties.js';
 import { rowPassesNightGrade } from '../shared/nightService.js';
+import { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 type RouteFeatureProperties = RouteIndexProperties;
 
@@ -44,8 +45,14 @@ export interface NightServiceIndexFile {
   routes: NightServiceRouteEntry[];
 }
 
+/** A GTFS minute-of-day as the criteria text says it: 1560 -> "2am". */
+const clockWord = (min: number): string => {
+  const h = (min / 60) % 24;
+  return `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
+};
+
 export const NIGHT_SERVICE_CRITERIA =
-  'At least one departure every 30, 60 or 90 minutes, 2am-5am local time, with no gap at the start or end of the core overnight window.';
+  `At least one departure every 30, 60 or 90 minutes, ${clockWord(STRETCH_NIGHT_START_MIN)}-${clockWord(STRETCH_NIGHT_END_MIN)} local time, with no gap at the start or end of the core overnight window.`;
 
 /**
  * Pure: pull the qualifying routes out of one agency's already-processed feature

@@ -4,7 +4,7 @@
  * server at STUDIO_VEHICLES_DEV_URL (vite.config.ts); never uploaded to R2 or built into a deployment.
  */
 import { type PeriodKey } from './config';
-import { PUBLIC_TIER_MAXES } from './frequencyRules';
+import { PUBLIC_TIER_MAXES } from './rules/frequency';
 
 /**
  * Studio's target headways (minutes): the map's public scale, the same for every group, rail included, never a copy of

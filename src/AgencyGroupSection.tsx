@@ -2,6 +2,8 @@ import { fitAgencyName } from './utils/agencyName';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { AREA_TABLE_OTHER, areaAgencyRowHref, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../shared/areaPages';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
+import { agencyPagePath } from '../shared/pagePaths';
+import { RUSH_HOUR_ONLY } from './utils/routePattern';
 import { LINK } from './pageStyles';
 import { FrequencyBar } from './pageParts';
 import ArrowLink from './components/ui/ArrowLink';
@@ -52,6 +54,10 @@ export default function AgencyGroupSection({ data, barNote, place }: { data: Age
       <FrequencyBar counts={data.bands} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>
       <AgencyModeTable data={data} place={place} />
+      {/* CIV-1814 item 15 (Ryan's words): agencies that only run at rush hour, each linking to its page. */}
+      {data.rushHourOnly && <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">
+        {RUSH_HOUR_ONLY}: {data.rushHourOnly.map((a, i) => <span key={a.slug}>{i > 0 && ', '}<a className={LINK} href={agencyPagePath(a.slug)}>{a.name}</a></span>)}.
+      </p>}
       <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">{SEE_ALL_AGENCIES}</ArrowLink>
     </PageSection>
   );

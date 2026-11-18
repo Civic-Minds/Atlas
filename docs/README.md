@@ -41,7 +41,7 @@ Read first: [Decisions](product/DECISIONS.md), then [How Live measures a route](
 | [How Live measures a route](product/LIVE_METHOD.md) | Open when you change or question a Live number: delay, bunching, run time or extra wait. |
 | [Feature flags](FEATURE_FLAGS.md) | Open when you add, change or check a flag, or need Live's current status. |
 | [Live polling](operations/LIVE_POLLING.md) | Open when Live shows no data for an agency, to see whether its feed is polled or parked. |
-| [Live analysis](operations/LIVE_ANALYSIS.md) | Open when you build or read the local Live route analysis. |
+| [Live analysis](operations/LIVE_ANALYSIS.md) | Open when you build or read the local Live route analysis, or build a new agency's Studio files. |
 
 ## Rebuilds and publishing
 

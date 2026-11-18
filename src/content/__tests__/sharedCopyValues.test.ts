@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COMPARE_LABEL, DEFAULT_EXPORT_TITLE, FEEDBACK_LABEL, FILTERS_BOTH_MAPS_LABEL, FILTERS_LABEL, HISTORY_BUTTON_LABEL, HISTORY_TAG, LIVE_TAB_LABEL, LOCAL_STOP_WITHIN_LABEL, MORE_LABEL, NO_ROUTES_NEARBY, noLocalRouteWithinText, notWithinLead, SCHEDULED_COLUMN, USUALLY_COLUMN } from '../noticeCopy';
+import { COMPARE_LABEL, DEFAULT_EXPORT_TITLE, FEEDBACK_LABEL, FREQUENCY_LABEL, FILTERS_BOTH_MAPS_LABEL, FILTERS_LABEL, HISTORY_BUTTON_LABEL, HISTORY_TAG, LIVE_TAB_LABEL, LOCAL_STOP_WITHIN_LABEL, MORE_LABEL, NO_ROUTES_NEARBY, noLocalRouteWithinText, notWithinLead, SCHEDULED_COLUMN, USUALLY_COLUMN } from '../noticeCopy';
 import { REPORT_DETAIL_LABELS } from '../../utils/reportIssue';
 import { headwayAmount } from '../../../shared/headwayText';
 import { MAX_CONNECTION_WINDOW } from '../../../shared/connections';
@@ -13,8 +13,8 @@ import { DEFAULT_MAX_HEADWAY, MAP_ZOOM_HEADWAY_STEPS, NEARBY_ROUTES_RADIUS_M, NO
  */
 describe('shared copy keeps the text the screens showed (CIV-1814)', () => {
   it('keeps each label word for word', () => {
-    expect([FILTERS_BOTH_MAPS_LABEL, LOCAL_STOP_WITHIN_LABEL, USUALLY_COLUMN, SCHEDULED_COLUMN, FEEDBACK_LABEL, DEFAULT_EXPORT_TITLE, FILTERS_LABEL, REPORT_DETAIL_LABELS.agency, LIVE_TAB_LABEL, HISTORY_BUTTON_LABEL, COMPARE_LABEL, MORE_LABEL, HISTORY_TAG])
-      .toEqual(['Filters for both maps', 'Local stop within', 'Usually', 'Scheduled', 'Feedback', 'Transit map', 'Filters', 'Agency', 'Live', 'History', 'Compare', 'More', 'History']);
+    expect([FILTERS_BOTH_MAPS_LABEL, LOCAL_STOP_WITHIN_LABEL, USUALLY_COLUMN, SCHEDULED_COLUMN, FEEDBACK_LABEL, DEFAULT_EXPORT_TITLE, FILTERS_LABEL, REPORT_DETAIL_LABELS.agency, LIVE_TAB_LABEL, HISTORY_BUTTON_LABEL, COMPARE_LABEL, MORE_LABEL, HISTORY_TAG, FREQUENCY_LABEL])
+      .toEqual(['Filters for both maps', 'Local stop within', 'Usually', 'Scheduled', 'Feedback', 'Transit map', 'Filters', 'Agency', 'Live', 'History', 'Compare', 'More', 'History', 'Frequency']);
   });
 
   it('builds the sentences that hold a number from the number’s home', () => {

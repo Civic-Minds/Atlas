@@ -1,4 +1,5 @@
 import ScrollX from '../../components/ui/ScrollX';
+import { DAYTIME_PERIOD_KEYS } from '../../../shared/rules/periods';
 import DataTable from '../../components/ui/DataTable';
 import { routeLabels } from '../../utils/format';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
@@ -26,7 +27,7 @@ const ROUTE_LABEL = STUDIO_MAP_TEXT.route;
 
 const T = STUDIO_CHANGES_TEXT;
 /** The periods every route table shows; Late and Overnight join only where either side has a figure. */
-const MAIN_PERIODS: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const MAIN_PERIODS: PeriodKey[] = [...DAYTIME_PERIOD_KEYS];
 
 const runText = (d: StudioRouteDay | null) => (d?.runMinutes.length ? headwayEveryRange(d.runMinutes[0], d.runMinutes[d.runMinutes.length - 1], true) : MISSING_VALUE);
 /**

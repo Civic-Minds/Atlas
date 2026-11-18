@@ -68,6 +68,7 @@ Rules marked "(checked)" fail `src/content/__tests__/styleGuard.test.ts` (or the
 - No "Atlas" in feature card body text (Ryan, CIV-1793). (checked: `featureCardCopy.test.tsx`)
 - "Vehicles", not "buses", in page and card copy: the About, For Transit Planners and For Researchers pages and their cards (Ryan, CIV-1793: "it's not just buses"). (checked)
 - Every page has one name, in `shared/pageNames.ts` (`PAGE_NAMES`): its heading, the header and footer links to it, back and close links, and the start of its browser tab all read it. Ryan, 2026-11-15. (checked)
+  - A mode keeps one name in every product: "Live" is the Live mode in the main map and in Studio, never renamed per product. Ryan, 2026-11-17: "Live is a 'mode' inside different products".
   - "Docs" on every link to the Docs page, as its heading and in its tab (`DOCS_PAGE_TITLE`). CIV-1697 (Ryan, 2026-11-15: "Should we rename Documentation page back to Docs", then option 1, everywhere) reversed the page-names refactor's "Documentation". The URL stays /about/docs.
   - "What’s New" for the release notes: the footer link, the /changelog page and tab, and the map's panel. The URL stays /changelog.
   - The footer's Atlas column links "About" (link names are one word); the page is "About Atlas", as are the map's About panel and its buttons. The legal links read "Terms" and "Privacy"; the pages are "Terms of Service" and "Privacy Policy".

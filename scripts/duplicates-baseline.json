@@ -1,0 +1,13 @@
+{
+  "note": "Copied code that exists today (2026-11-17). May only shrink: see scripts/check-duplicates.mjs.",
+  "pairs": {
+    "src/apps/Interval.tsx <> src/apps/Interval.tsx": 47,
+    "src/components/Live/BranchStrip.tsx <> src/components/Live/RouteStrip.tsx": 27,
+    "src/components/InfoPanel.tsx <> src/components/InfoPanel.tsx": 13,
+    "src/apps/LiveVehicles.tsx <> src/apps/LiveVehicles.tsx": 12,
+    "src/components/Live/BranchStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
+    "src/components/Live/RouteStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
+    "src/components/Interval/AgencyCard.tsx <> src/components/Interval/AgencyCard.tsx": 11,
+    "src/LiveExplorePage.tsx <> src/LiveRoutePage.tsx": 10
+  }
+}

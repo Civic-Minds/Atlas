@@ -1,7 +1,8 @@
 import { headwayTierLabel } from './headwayText';
-import { PUBLIC_TIER_MAXES } from './frequencyRules';
+import { PUBLIC_TIER_MAXES } from './rules/frequency';
 import { hourRange, hourTime } from './timeText';
-import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
+import { TIME_PERIODS, type PeriodKey } from './rules/periods';
+import { FEATURES } from './rules/flags';
 /**
  * Shared configuration constants
  */
@@ -42,197 +43,9 @@ const getBetaR2PublicUrl = (): string => {
 
 export const BETA_R2_PUBLIC_URL = getBetaR2PublicUrl().replace(/\/$/, '');
 
-// Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
-// off by default until that's resolved. Env-driven rather than a hardcoded constant so production
-// and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED'): boolean {
-  return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
-}
-
-export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
-// Live reports only: the static route and agency pages (/apps/live/:agency, /apps/live/:agency/:route), reading the
-// published analysis JSON from R2. Nothing realtime: the map vehicle layer, stop-card arrivals and the route-card
-// delay stay behind VITE_LIVE_ENABLED and the local-only endpoints (#867).
-export const LIVE_REPORTS_ENABLED = envFlag('VITE_LIVE_REPORTS_ENABLED');
-export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
-// Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
-// no typing required. New/unproven interaction -- beta only until it's been used for real.
-export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
-// "Service is uneven" route-card banner. The threshold that decides when a period's worst gap
-// is worth surfacing to a rider needed more real-feed tuning than a single main push should
-// carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
-export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
-export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
-
-function getAtlasMode(): AtlasMode {
-  // Plain import.meta.env (not import.meta?.env) so Vite and Vitest both resolve it; the
-  // guard covers tsx scripts, where import.meta.env is undefined.
-  const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : undefined;
-  const configured = env?.VITE_ATLAS_MODE;
-  if (configured === 'public' || configured === 'preview' || configured === 'beta' || configured === 'dev') return configured;
-  // Preserve the existing defaults when the explicit mode is not configured yet.
-  if (env?.DEV) return 'dev';
-  if (envFlag('VITE_PREVIEW_BUILD')) return 'preview';
-  return envFlag('VITE_BETA_BUILD') ? 'beta' : 'public';
-}
-
-export const ATLAS_MODE = getAtlasMode();
-export const BETA_BUILD = ATLAS_MODE !== 'public';
-export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
-export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// CIV-1425 / CIV-1646: History's Weekday/Saturday/Sunday picker. On in beta and dev (Boston's weekend values are
-// built); public stays off until Ryan turns it on, which the env var still does anywhere. Needs History on too.
-export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev' || envFlag('VITE_HISTORY_DAY_PICKER_ENABLED'));
-// Shared links and shared map images carry utm tags so analytics can count shared visits.
-// Beta-only until it's been seen working end to end.
-export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// While a mode (Live, History, Compare) is active, the other mode tabs shrink to icons. Beta-only.
-export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// CIV-1567: one gentle transition for entering and leaving a mode (Compare, History): the new view fades in once its
-// map has drawn, and a map's label changes only when the map has redrawn. On in every mode since Ryan's OK on beta
-// (2026-11-17, "Looks pretty good yes ty"); Live stays without it.
-export const MODE_TRANSITIONS_ENABLED = true;
-// #690: route lines drawn in segments coloured by the pooled per-stop tier (every trip at each
-// stop), with the route-level tier still deciding the filter. Beta and dev only until the
-// segment colours have been looked at on real routes.
-export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// Population density / median household income shading under the route lines (CIV-482). There is no production data URL yet, so even where the flag is on the control stays hidden
-// unless a dev-only file URL is set (CONTEXT_LAYER_URL below).
-// CIV-524 (Ryan, 2026-11-14: "I think it should be local only"): local dev only, like the connections bar; off on
-// public, preview and beta.
-export const CONTEXT_LAYER_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-// Local testing only: a PMTiles URL for the context layer (served by vite from tmp/dev-context, see
-// vite.config.ts). Ignored in every built site, so a deployed build can never be pointed at other data.
-const devContextUrl: unknown =
-  typeof import.meta !== 'undefined' && import.meta.env?.DEV ? import.meta.env.VITE_CONTEXT_LAYER_URL : undefined;
-export const CONTEXT_LAYER_URL: string | undefined =
-  typeof devContextUrl === 'string' && devContextUrl ? devContextUrl : undefined;
-// On-demand zones, the On-demand filter chip and the standalone on-demand agencies. Beta and
-// preview only until Ryan signs off on the public launch (CIV-23); launch flips this one value.
-export const ON_DEMAND_PUBLIC = false;
-export const ON_DEMAND_ENABLED = ON_DEMAND_PUBLIC || BETA_BUILD;
-// Local testing only: read on-demand files from a dev path instead of R2 (CIV-50). Ignored in
-// every built site, so a deployed build can't be pointed at other files.
-const devOnDemandUrl: unknown =
-  typeof import.meta !== 'undefined' && import.meta?.env?.DEV ? import.meta?.env?.VITE_ON_DEMAND_URL : undefined;
-export const ON_DEMAND_URL_OVERRIDE: string | undefined =
-  typeof devOnDemandUrl === 'string' && devOnDemandUrl ? devOnDemandUrl : undefined;
-export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
-  return `/data/catalog-${mode}.json`;
-}
-
-// Beta-only features that used to read FEATURES.beta ("any non-public build") because they had no flag
-// of their own. Each has its own name now so it can graduate alone; until one is changed on purpose,
-// every one of them is exactly BETA_BUILD, so what each build shows has not changed.
-// Saved Settings: hide-low-quality, persistent legend and data saver, remembered between visits.
-export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
-// The "a new version is available" banner.
-export const UPDATE_BANNER_ENABLED = BETA_BUILD;
-// The map-context readout and the match percentage in the map's status badge.
-export const MAP_CONTEXT_ENABLED = BETA_BUILD;
-export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;
-// Feed-quality notes on the route and agency cards.
-export const FEED_QUALITY_ENABLED = BETA_BUILD;
-// The "Outdated" choice in the agency list filter.
-export const OUTDATED_FILTER_ENABLED = BETA_BUILD;
-// Entries marked beta-only in "What's new".
-export const WHATS_NEW_BETA_ITEMS_ENABLED = BETA_BUILD;
-// "Includes variants ..." under a route's title.
-export const ROUTE_VARIANTS_ENABLED = BETA_BUILD;
-// Trip running times on the route card's frequency chart.
-export const RUNNING_TIMES_ENABLED = BETA_BUILD;
-// The expand control on the route card's frequency chart.
-export const SPARKLINE_EXPAND_ENABLED = BETA_BUILD;
-// The "For Transit Planners" page (CIV-1320): its route, footer link, prerendered page and link preview. Local only
-// (Ryan, 2026-11-15, CIV-1704: "then make the for planners page local only"): on the Vite dev server, as the connections
-// bar is, never on beta or public builds.
-export const PLANNERS_LINK_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-// The "For Researchers" page (CIV-1709): its route, footer link, prerendered page and link preview. Local only, like the
-// planners page, until History goes public: on the Vite dev server, never on beta or public builds.
-export const RESEARCHERS_LINK_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-// "Source" link to the agency's own website on the agency card (CIV-467; renamed in CIV-841).
-// Off everywhere (CIV-940): it links to the agency's website, not its data feed.
-export const DATA_SOURCE_LINK_ENABLED = false;
-// The connections top bar (CIV-1353): pick a route's trip, a wait and a walk, and the map shows the connecting
-// routes. Local only for now (Ryan, 2026-11-06: "can it be local only for now"): on the Vite dev server, as Live is,
-// never on beta or public builds.
-// Plain import.meta.env, as getAtlasMode reads it, so Vite and Vitest both resolve it; the guard covers tsx scripts.
-export const CONNECTIONS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-
-// The hours-of-service bar on agency pages (CIV-1605, CIV-1611): a bar per route for the weekday hours it runs, carrying
-// its exact first and last times so the table's cells drop "from"/"until". Local only for now (Ryan, 2026-11-15: "1 but
-// local for now"): on the Vite dev server, as the connections bar is, never on beta or public builds.
-export const AGENCY_HOURS_BAR_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-
-// Atlas Studio, the agency tools section (CIV-1693; DECISIONS.md 2026-11-15, Ryan: "Yes local only"): its pages and the
-// header's Studio link. Local only until the demo is ready: on the Vite dev server, never on beta or public builds.
-export const STUDIO_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
-
-/**
- * Single source of truth for feature exposure. Consumers should use this registry for navigation,
- * routes, data, and controls instead of checking environment flags independently.
- */
-export const FEATURES = {
-  beta: BETA_BUILD,
-  preview: PREVIEW_BUILD,
-  researchApps: RESEARCH_APPS_ENABLED,
-  live: LIVE_ENABLED,
-  liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED,
-  history: HISTORY_ENABLED,
-  historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
-  frequentService: RESEARCH_APPS_ENABLED,
-  shareUtm: SHARE_UTM_ENABLED,
-  collapseModeTabs: COLLAPSE_MODE_TABS_ENABLED,
-  modeTransitions: MODE_TRANSITIONS_ENABLED,
-  onDemand: ON_DEMAND_ENABLED,
-  cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
-  unevenBanner: UNEVEN_BANNER_ENABLED,
-  segmentColours: SEGMENT_COLOURS_ENABLED,
-  contextLayer: CONTEXT_LAYER_ENABLED,
-  persistedSettings: PERSISTED_SETTINGS_ENABLED,
-  updateBanner: UPDATE_BANNER_ENABLED,
-  mapContext: MAP_CONTEXT_ENABLED,
-  matchPercentage: MATCH_PERCENTAGE_ENABLED,
-  feedQuality: FEED_QUALITY_ENABLED,
-  outdatedFilter: OUTDATED_FILTER_ENABLED,
-  whatsNewBetaItems: WHATS_NEW_BETA_ITEMS_ENABLED,
-  routeVariants: ROUTE_VARIANTS_ENABLED,
-  runningTimes: RUNNING_TIMES_ENABLED,
-  sparklineExpand: SPARKLINE_EXPAND_ENABLED,
-  plannersLink: PLANNERS_LINK_ENABLED,
-  researchersLink: RESEARCHERS_LINK_ENABLED,
-  dataSourceLink: DATA_SOURCE_LINK_ENABLED,
-  connectionsBar: CONNECTIONS_BAR_ENABLED,
-  agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
-  studio: STUDIO_ENABLED,
-} as const;
-
-/** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
-export function seoFlags() {
-  return {
-    researchApps: FEATURES.researchApps,
-    live: FEATURES.live,
-    history: FEATURES.history,
-    planners: FEATURES.plannersLink,
-    researchers: FEATURES.researchersLink,
-  };
-}
-
-export const FEATURE_ROUTES = {
-  research: RESEARCH_PATH,
-  /** CIV-1693: Atlas Studio, local only (FEATURES.studio). */
-  studio: STUDIO_PATH,
-  studioVehicles: STUDIO_VEHICLES_PATH,
-  studioChanges: STUDIO_CHANGES_PATH,
-  nightService: '/research/night',
-  freeChildFares: '/research/free-child-fares',
-  /** CIV-101: beta-only, not listed on /research yet. */
-  bustangConnections: '/research/bustang-connections',
-  frequentService: {
-    map: '/research/frequent-service',
-    story: '/research/frequent-service/story',
-  },
-} as const;
+// The feature switches (envFlag, ATLAS_MODE, every *_ENABLED, FEATURES, FEATURE_ROUTES) moved to shared/rules/flags.ts
+// (rules audit, move 10); this re-export stays until no file imports them here.
+export * from './rules/flags';
 
 /**
  * Derive the public URLs for an agency's processed artifacts.
@@ -256,41 +69,9 @@ export function getAgencyDataUrl(slug: string, variant: '' | '-stops' | '-corrid
   return `${R2_PUBLIC_URL}/atlas/${slug}${variant}.json`;
 }
 
-export interface PeriodConfig<K extends string = string> {
-  key: K;
-  label: string;
-  startHour: number;
-  endHour: number;
-}
-
-export const TIME_PERIODS = [
-  { key: 'amPeak',    label: 'AM peak',    startHour: 6,  endHour: 9  },
-  { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
-  { key: 'pmPeak',    label: 'PM peak',    startHour: 15, endHour: 19 },
-  { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 23 },
-  { key: 'late',      label: 'Late',       startHour: 23, endHour: 26 },
-  { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: 30 },
-] as const satisfies readonly PeriodConfig[];
-
-export type PeriodKey = (typeof TIME_PERIODS)[number]['key'];
-
-export const PERIOD_KEYS: PeriodKey[] = TIME_PERIODS.map(p => p.key);
-
-/** Each period's window in minutes after midnight, [start, end), the unit the pipeline reads departures in (CIV-986). */
-export const PERIOD_MINUTES = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
-) as Record<PeriodKey, { start: number; end: number }>;
-
-/** Minutes in a day: a departure written at or past this belongs to the night after its service day. */
-export const MINUTES_PER_DAY = 1440;
-
-/** The day's times before midnight, moved to the following night (02:00 read as 26:00). */
-export const asNextNight = (times: readonly number[]): number[] =>
-  times.filter(t => t < MINUTES_PER_DAY).map(t => t + MINUTES_PER_DAY);
-
-export const PERIOD_LABELS: Record<PeriodKey, string> = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, p.label]),
-) as Record<PeriodKey, string>;
+// The periods, their minutes and the sparkline hours moved to shared/rules/periods.ts (rules audit, move 4); this
+// re-export stays until no file imports them here.
+export * from './rules/periods';
 
 /** A period's hours for its filter chip, in the app's one time format (CIV-1095): "6–9 AM", "9 AM–3 PM". */
 export function formatPeriodRange(key: string): string {
@@ -307,36 +88,6 @@ export function formatPeriodHourLong(h: number): string {
 export function formatPeriodRangeLong(startHour: number, endHour: number): string {
   return hourRange(startHour, endHour);
 }
-
-/** Map clock/sparkline hour to GTFS extended hour for period lookup (matches filter chip logic). */
-export function toGtfsHour(h: number): number {
-  return h < 6 ? h + 24 : h;
-}
-
-export function periodKeyForHour(h: number): PeriodKey | null {
-  const gtfsH = toGtfsHour(h);
-  return TIME_PERIODS.find(p => gtfsH >= p.startHour && gtfsH < p.endHour)?.key ?? null;
-}
-
-export function isHourInPeriod(h: number, periodKey: string): boolean {
-  const gtfsH = toGtfsHour(h);
-  const p = TIME_PERIODS.find(t => t.key === periodKey);
-  return p != null && gtfsH >= p.startHour && gtfsH < p.endHour;
-}
-
-/** Sparkline data window: 6 AM–2 AM, then overnight tail 3 AM, 4 AM, 5 AM. */
-export const SPARKLINE_START_HOUR = 5;
-export const SPARKLINE_END_HOUR = 26;
-/** GTFS hours for 3 AM and 4 AM — omitted when #100 moved 5 AM to the tail. */
-export const SPARKLINE_OVERNIGHT_TAIL = [27, 28, SPARKLINE_START_HOUR] as const;
-/** Display order: 6 AM → 2 AM, then 3 AM, 4 AM, 5 AM (#100 overnight tail). */
-export const SPARKLINE_HOURS: readonly number[] = [
-  ...Array.from(
-    { length: SPARKLINE_END_HOUR - SPARKLINE_START_HOUR },
-    (_, i) => i + SPARKLINE_START_HOUR + 1,
-  ),
-  ...SPARKLINE_OVERNIGHT_TAIL,
-];
 
 /** Axis labels the sparkline puts under its bars (keyed by GTFS hour): 6 AM, 12 PM, 6 PM, 12 AM. Other charts reuse them. */
 export const SPARKLINE_HOUR_LABELS: Readonly<Record<number, string>> = Object.fromEntries([6, 12, 18, 24].map(h => [h, hourTime(h)]));

@@ -4,7 +4,7 @@ import JSZip from 'jszip';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { processGtfsBuffer } from '../process-core';
 import { processAgencyFeeds } from '../agencyFeeds.js';
-import { TIER_MAXES } from '../../shared/frequencyRules';
+import { TIER_MAXES } from '../../shared/rules/frequency';
 
 // CIV-152: every headway-to-tier step on the route (settleTier, the rescues, the stop grades' cap,
 // the lift) reads the grading scale, so a subway every 4 reaches tier 5 end to end. CIV-1813: that

@@ -1,5 +1,5 @@
 import { dayInSentence, dayPlural, type DayType } from './dayTypes.js';
-import { TIME_PERIODS, type PeriodKey } from './config.js';
+import { PERIOD_LABELS, TIME_PERIODS, type PeriodKey } from './config.js';
 import { clockTime, timeRange } from './timeText.js';
 import { DAY_TYPES, SHORT_DAY_LABELS } from './rules/days.js';
 
@@ -359,12 +359,12 @@ function formatHoursLinesWithFriday(availability: OnDemandAvailability): OnDeman
 
 const RUNNING_PERIOD_LABELS: Record<OnDemandPeriod, string> = {
   all: '',
-  amPeak: 'AM peak',
-  midday: 'midday',
-  pmPeak: 'PM peak',
-  evening: 'evening',
-  late: 'late',
-  overnight: 'overnight',
+  amPeak: PERIOD_LABELS.amPeak,
+  midday: PERIOD_LABELS.midday.toLowerCase(),
+  pmPeak: PERIOD_LABELS.pmPeak,
+  evening: PERIOD_LABELS.evening.toLowerCase(),
+  late: PERIOD_LABELS.late.toLowerCase(),
+  overnight: PERIOD_LABELS.overnight.toLowerCase(),
 };
 
 /** Plain note for the selected day/period. Never claims service when hours are missing. */

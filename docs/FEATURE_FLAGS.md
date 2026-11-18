@@ -14,7 +14,7 @@ Atlas gates immature features (thin agency coverage, no scaling plan, or genuine
 | `UNEVEN_BANNER_ENABLED` (`VITE_UNEVEN_BANNER_ENABLED`) | "Service is uneven" route-card banner, `RouteCardHeadway.tsx` | off | on | The excess/ratio threshold deciding when a period's worst gap is worth surfacing (#345) needs more real-feed tuning than a single main push should carry. |
 | `SEGMENT_COLOURS_ENABLED` | Route lines drawn in segments coloured by the pooled per-stop tier (`route-segments` layers in `MapCanvas.tsx`, `src/utils/frequencySegments.ts`) | off | on (follows `beta`/`dev` mode) | New map reading ([#690](https://github.com/Civic-Minds/Atlas/issues/690)): the public map keeps one colour per route line from the route-level tier until the segment colours have been reviewed on real routes. |
 | `CONTEXT_LAYER_ENABLED` (`FEATURES.contextLayer`) | Population density and median household income shading under the route lines, its control, legend and popup (`useContextLayer.ts`, `src/utils/contextLayer.ts`, `FilterPanel.tsx`) | off | off | Local only (Ryan, 2026-11-14, CIV-524: "I think it should be local only"): on the Vite dev server, like the connections bar. Trial (CIV-482). Also needs a data URL: none exists in production, so the control stays hidden until one is set; local testing uses the dev-only `VITE_CONTEXT_LAYER_URL` (vite serves `tmp/dev-context/context.pmtiles`). Loads nothing until the layer is switched on. |
-| `SHARE_UTM_ENABLED` | Shared links and shared map images carry `utm` tags so analytics can count shared visits (`shared/config.ts`) | off | on (follows `beta`/`dev` mode) | Not env-driven; tried on beta until it is seen working end to end. |
+| `SHARE_UTM_ENABLED` | Shared links and shared map images carry `utm` tags so analytics can count shared visits (`shared/rules/flags.ts`) | off | on (follows `beta`/`dev` mode) | Not env-driven; tried on beta until it is seen working end to end. |
 | `COLLAPSE_MODE_TABS_ENABLED` | While Live, History or Compare is on, the other top-bar mode tabs shrink to icons (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Not env-driven; layout is tried on beta first. |
 | `FEATURES.persistedSettings` | Saved Settings: hide low-quality routes, persistent legend and data saver, remembered between visits (`App.tsx`, `FilterPanel.tsx`) | off | on (follows `beta`/`dev` mode) | Was a plain `FEATURES.beta` check; named so it can graduate alone. |
 | `FEATURES.updateBanner` | "New version available" banner (`App.tsx`) | off | on (follows `beta`/`dev` mode) | Same: named stand-in for `FEATURES.beta`. |
@@ -42,7 +42,7 @@ The table above is the intended state. To see what each site actually has switch
 
 ## How it works
 
-Defined in `shared/config.ts`, read from Vite build-time environment variables rather than hardcoded booleans:
+Defined in `shared/rules/flags.ts`, read from Vite build-time environment variables rather than hardcoded booleans:
 
 ```ts
 function envFlag(name: ...): boolean {
@@ -53,11 +53,11 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 
 **Why env vars, not a `const true`/`false`:** Public and Beta use the same repository, while their Vercel project environments decide which features are exposed. Configure deployment-specific values in Vercel, not in source control.
 
-`SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/config.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
+`SHARE_UTM_ENABLED`, `COLLAPSE_MODE_TABS_ENABLED` and the research apps (Night Service at `/research/night`, Frequent Service, the `/research` page) are not env flags: they follow the Atlas mode and are on in `beta` and `dev` only. All of them read through the `FEATURES` registry in `shared/rules/flags.ts`. The `FEATURES.*` rows in the table above are named stand-ins for what used to be bare `FEATURES.beta` checks: each equals the beta build today (pinned by `src/__tests__/betaStandInFlags.test.tsx`) and can now graduate on its own with a one-line change. `FEATURES.beta` is still read directly for beta data hosts and agency visibility, the Night Service mount in `App.tsx`, and the About docs text.
 
 There are two Live switches. `VITE_LIVE_ENABLED` (the Live map, vehicles and arrivals) is unset in every deployment; do not add a beta override until the Live feature is intentionally re-enabled. `VITE_LIVE_REPORTS_ENABLED` (the Live report pages) is unset in every deployment since 2026-11-15 (removed from Beta's Vercel settings; Ryan: local only until the archive restarts and the pages are approved), so `/apps/live/ttc` and `/apps/live/ttc/505` are 404 on Beta and Public and load only on the local dev server.
 
-Every `VITE_*` switch read by `envFlag` needs a row in a table in this doc, and `VITE_*_ENABLED` switches are read only in `shared/config.ts`; `src/__tests__/featureFlagDocs.test.ts` fails otherwise.
+Every `VITE_*` switch read by `envFlag` needs a row in a table in this doc, and `VITE_*_ENABLED` switches are read only in `shared/rules/flags.ts`; `src/__tests__/featureFlagDocs.test.ts` fails otherwise.
 
 ## Graduated features
 

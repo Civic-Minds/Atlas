@@ -31,6 +31,16 @@ export interface ResearchStoryText {
   description: string;
   /** The share picture's alt text, where the story has a share picture. */
   shareImageAlt?: string;
+  /** Sentences that cite a source, in order: the text before the link, the link's words, its address and the text after. */
+  sources?: readonly LinkedSentence[];
+}
+
+/** A sentence with one link in it: before + link + after, read as one sentence. */
+export interface LinkedSentence {
+  before: string;
+  link: string;
+  href: string;
+  after: string;
 }
 
 const OVERNIGHT_TITLE = 'Overnight service';
@@ -64,6 +74,14 @@ export const FREQUENT_SERVICE_STORY: ResearchStoryText = {
   tabTitle: `${FREQUENT_STORY_HEADING} ${SITE_NAME}`,
   description: 'A source-backed look at what frequent service means across transit networks.',
   shareImageAlt: FREQUENT_SERVICE_TITLE,
+  // The chart paragraph's sources, after its counts: Walker 2011 and the TCQSM (Ryan approved, 2026-11-15), then two
+  // studies (CIV-1626, Ryan approved word for word, 2026-11-17).
+  sources: [
+    { before: 'Transit planner ', link: 'Jarrett Walker', href: 'https://humantransit.org/2011/12/how-frequent-is-freedom.html', after: ' puts “the threshold of ‘high frequency’” at “around every 15 minutes all day.”' },
+    { before: 'The industry’s ', link: 'planning manual', href: 'https://onlinepubs.trb.org/onlinepubs/tcrp/tcrp_rpt_165ch-05.pdf', after: ' says that at 10 minutes or better there is “no need for passengers to consult schedules.”' },
+    { before: 'A ', link: '2021 study', href: 'https://arxiv.org/pdf/2002.02493', after: ' of bus routes in four US cities found that in three of them, “low-frequency routes are the most sensitive to changes in frequency.”' },
+    { before: 'In Montréal, a ', link: '2024 study', href: 'https://tram.mcgill.ca/Research/Publications/STM_Elasticity_COVID.pdf', after: ' of 169 bus routes found that 10% fewer weekday trips meant 13% fewer riders, and the STM’s “10-Minute Max” frequent network shrank from 31 routes to 8 before it was dropped in January 2023.' },
+  ],
 };
 
 const FREE_CHILD_FARES_TITLE = 'Free child fares';

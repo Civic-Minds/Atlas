@@ -147,10 +147,12 @@ describe('tile rules fingerprint', () => {
   // for #899: older tiles lack the key and evaluate on their 30/60 flags, and older apps ignore it. Hash only.
   // CIV-1579 adds the tv_<period> keys (the trunk's filter value, shadow: nothing reads them yet). No version bump, as for
   // #710: older tiles lack the keys and older apps ignore them; rv_ and every other tile value are unchanged. Hash only.
+  // CIV-1811 moves the daytime period list into shared/rules/periods.ts; worstDirection.ts now imports it instead of
+  // typing it. Same four keys, no tile value changes (checked against the previous tree): hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '5afebd1f62f12073f9667a140bb9c4510ca00f9ad027f4e22c72469264312a7a',
+      fingerprint: 'bdd070d6924c59a9d5071d0170d4515e3df425a98665a15c135180aa1bb36d6d',
     });
   });
 });

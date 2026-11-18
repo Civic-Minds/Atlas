@@ -8,6 +8,8 @@ import { isIrregularService, isLimitedService } from '../../shared/irregularRout
 import type { ShapeProperties } from '../hooks/useIntervalStats';
 
 export type RoutePatternLabel = 'Rush hour only' | 'Evenings only' | 'Some days only' | 'A few trips a day';
+/** The route card's rush-hour label; area and state pages use it for agencies that only run then (CIV-1814 item 15). */
+export const RUSH_HOUR_ONLY: RoutePatternLabel = 'Rush hour only';
 
 const RUSH: ReadonlySet<PeriodKey> = new Set(['amPeak', 'pmPeak']);
 const EVENING: ReadonlySet<PeriodKey> = new Set(['evening', 'late', 'overnight']);
@@ -51,11 +53,11 @@ export function routePatternLabel(directions: readonly ShapeProperties[]): Route
   if (directions.some(d => d.partialWeekdayServiceByPeriod != null)) return 'Some days only';
   const hours = hoursWithService(directions);
   if (hours && hours.size > 0) {
-    if (within(hours, h => RUSH_HOURS.has(h))) return 'Rush hour only';
+    if (within(hours, h => RUSH_HOURS.has(h))) return RUSH_HOUR_ONLY;
     if (within(hours, h => h >= EVENING_FROM_HOUR)) return 'Evenings only';
   } else {
     const periods = periodsWithService(directions);
-    if (within(periods, p => RUSH.has(p))) return 'Rush hour only';
+    if (within(periods, p => RUSH.has(p))) return RUSH_HOUR_ONLY;
     if (within(periods, p => EVENING.has(p))) return 'Evenings only';
   }
   return irregular ? 'A few trips a day' : null;

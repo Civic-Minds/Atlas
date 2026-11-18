@@ -16,7 +16,7 @@ import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { TIME_PERIODS } from '../shared/config.js';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
-import { PUBLIC_TIER_MAXES } from '../shared/frequencyRules';
+import { PUBLIC_TIER_MAXES } from '../shared/rules/frequency';
 import { ROUTE_TYPE } from '../shared/rules/modes.js';
 
 const SEED = Number(process.argv.find(a => a.startsWith('--seed='))?.slice(7) ?? '20260926');

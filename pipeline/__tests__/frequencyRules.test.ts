@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CRITERIA } from '../defaults';
 import { EDGE_GAP_ALLOWANCE_MINUTES as PIPELINE_EDGE, GRACE_FLOOR_MIN_GAPS as PIPELINE_FLOOR } from '../transit-phase2';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../../shared/frequencyRules';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../../shared/rules/frequency';
 
 // CIV-1612 (kept under pipeline/: a shared/ file, tests too, may not import pipeline code, or the Vercel build pulls it in): the pipeline grades with these settings and the Docs page states them; one source, so they can't differ.
 describe('near-miss settings', () => {

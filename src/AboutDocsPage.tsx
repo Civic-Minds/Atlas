@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { FEATURES, PERIOD_LABELS, PUBLIC_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_WINDOW, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_WINDOW, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency';
 import { countText, percentText } from '../shared/numberText';
 import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
 import { metresText } from '../shared/unitText';

@@ -3,9 +3,10 @@
  * Unset (the weekly refresh-feeds cron) means the published history output is exactly what
  * origin/main produces. A tiny file of its own so the key function can read it without a cycle.
  */
-export function historyV2Enabled(envValue: string | undefined): boolean {
-  return envValue === '1';
-}
+import { historyV2Enabled } from '../shared/rules/flags.js';
+
+// The switch's rule lives in shared/rules/flags.ts (rules audit, move 10); this file reads the env.
+export { historyV2Enabled };
 
 /**
  * CIV-1425 pilot: agencies whose History v2 sidecars also store Saturday/Sunday per-period values.

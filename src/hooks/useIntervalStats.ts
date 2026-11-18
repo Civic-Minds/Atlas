@@ -2,11 +2,11 @@ import { useMemo, useCallback, useDeferredValue } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { matchesRouteQuery, searchRouteResults, searchStopResults } from '../utils/searchResults';
 import { isLivePollingRoute } from '../utils/livePolling';
-import { PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+import { PERIOD_LABELS, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildRouteTileFilter, routeFeaturePassesMapFilter } from '../../shared/routeTileFilter';
 import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
-import { collectStopHubSiblings } from '../utils/stopHub';
+import { collectStopHubSiblings, stopHubCandidates } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
 import { type DayType } from '../../shared/rules/days';
@@ -68,7 +68,7 @@ export type { PeriodKey };
 export type TimePeriod = 'all' | PeriodKey;
 
 // No label for 'all': the map has no All day option (CIV-1097, CIV-1451); 'all' is only the internal default.
-export const PERIOD_LABELS: Record<PeriodKey, string> = PERIOD_LABELS_BY_KEY;
+export { PERIOD_LABELS };
 
 export { PERIOD_KEYS };
 
@@ -296,21 +296,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     const slug = props.agencySlug;
     const [clickLon, clickLat] = stopFeature.geometry.coordinates;
 
-    const candidates = allFeatures
-      .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
-        f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
-      .map(f => {
-        const p = f.properties as any;
-        const [lon, lat] = f.geometry.coordinates;
-        return {
-          stopId: p.stopId as string,
-          agencySlug: p.agencySlug as string,
-          stopName: p.stopName as string | undefined,
-          lat,
-          lon,
-          routeIds: p.routeIds as string[] | undefined,
-        };
-      });
+    const candidates = stopHubCandidates(allFeatures);
 
     const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
 

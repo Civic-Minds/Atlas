@@ -5,6 +5,7 @@
 import {
   agencyStats,
   areaAgencySummaries,
+  areaRushHourOnly,
   bandCounts,
   bestRoute,
   formatIso,
@@ -27,6 +28,7 @@ import { compareAgencyName } from './sortCompare';
 import { DESCRIPTION_MAX, TITLE_MAX, firstThatFits, truncateAtWord } from './seoText';
 import { agencyInSentence } from './agencyArticle';
 import { titleCase } from './titleCase';
+import { agencyNames } from '../src/utils/agencyName';
 import { SITE_NAME } from './pageNames';
 
 export { areaPagePath, areaAgencySummaries };
@@ -71,6 +73,8 @@ export interface AgencyGroupData {
   /** Newest schedule refresh among the area's agencies, and the data release the numbers come from. */
   newestRefresh: string | null;
   releaseDate: string | null;
+  /** CIV-1814 item 15: agencies here that run only at rush hour (rushHourOnlyAgency), named in their own line; not in the figures. */
+  rushHourOnly?: Array<{ slug: string; name: string }>;
 }
 
 export interface AreaPageData extends AgencyGroupData {
@@ -134,7 +138,7 @@ export function areaAgencyRowHref(row: { slug: string; parent?: true }): string 
 }
 
 /** The page numbers for a set of agencies, each with only the routes the page counts: the rows, bar, mode counts and dates. */
-export function agencyGroupData(members: readonly AgencyPageSummary[], all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null): AgencyGroupData {
+export function agencyGroupData(members: readonly AgencyPageSummary[], all: ReadonlyMap<string, AgencyPageSummary>, releaseDate: string | null, rushHourOnly: readonly AgencyPageSummary[] = []): AgencyGroupData {
   const shared = sharedOfficialNames([...all.values()]);
   const allRoutes = members.flatMap(a => a.routes);
   const modeCounts = new Map<string, number>();
@@ -169,6 +173,7 @@ export function agencyGroupData(members: readonly AgencyPageSummary[], all: Read
     modeColumns: [...AREA_TABLE_MODES, ...(rows.some(r => r.modes[AREA_TABLE_OTHER]) ? [AREA_TABLE_OTHER] : [])],
     newestRefresh: newest,
     releaseDate,
+    ...(rushHourOnly.length ? { rushHourOnly: rushHourOnly.map(a => ({ slug: a.slug, name: agencyNames({ name: a.name }).name })).sort((x, y) => compareAgencyName(x.name, y.name)) } : {}),
   };
 }
 
@@ -186,8 +191,8 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     const href = regionPageHref({ country: members.find(a => a.region === r)?.country, region: r }, allList);
     if (href) regionPages[r] = href;
   }
-  const group = agencyGroupData(members, all, releaseDate);
-  const { totalRoutes, bands, best, byMode, agencies, modeColumns, newestRefresh } = group;
+  const group = agencyGroupData(members, all, releaseDate, areaRushHourOnly(area, all));
+  const { totalRoutes, bands, best, byMode, agencies, modeColumns, newestRefresh, rushHourOnly } = group;
   return {
     area: { slug, name, type, officialName, country, cities, bbox, center, ...(note ? { note } : {}) },
     totalRoutes,
@@ -200,6 +205,7 @@ export function buildAreaPageData(area: AreaConfig, all: ReadonlyMap<string, Age
     modeColumns,
     newestRefresh,
     releaseDate,
+    ...(rushHourOnly ? { rushHourOnly } : {}),
   };
 }
 

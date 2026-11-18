@@ -1,0 +1,23 @@
+name: Feature
+description: Something new Atlas should do
+type: Feature
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What to add
+      description: One sentence. Title it with the page or part of Atlas it belongs to, like `Agency page: show service end date`.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Who it helps and what they can do with it.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Examples, links, or anything else that helps.

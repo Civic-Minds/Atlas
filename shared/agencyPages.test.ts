@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   agencyIntroSentence, agencyMention, agencyTitle, sharedOfficialNames, agencySpansArea, namesList, agencyBreadcrumbs, agencyDatesText, agencyLeadSentence, agencyMapHref, agencyPageDescription, agencyPageH1, agencyPageJsonLd, hasMiddayService,
   agencyPageData, agencyPagePath, agencyPageTitle, agencyStats, bandCounts, nearbyAgencies, resolveAgencySeo, trimRedundantCity,
-  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed,
+  type AgencyPageRoute, type AgencyPageSummary, bestRoute, modesText, listingEndedNotice, listingEndHasPassed, rushHourOnlyAgency,
 } from './agencyPages';
 import { agencyTodayYmd } from './feedAvailability';
 import { agencyPageSummaries, getAgencyPageSummary } from './agencyPagesData';
@@ -302,5 +302,20 @@ describe('#1521: breadcrumb markup passes Google\'s check', () => {
     expect(items.find(i => i.name === 'Canada')?.item).toBe('https://x/agencies#index-Canada');
     expect(items.find(i => i.name === 'Ontario')?.item).toBe('https://x/agencies#index-canada-ontario');
     expect(items.map(i => i.position)).toEqual(items.map((_, i) => i + 1));
+  });
+});
+
+// CIV-1814 item 15 (Ryan "1"): area and state pages name agencies that run only at rush hour, such as VRE.
+describe('rushHourOnlyAgency', () => {
+  const route = (r: Partial<AgencyPageRoute>): AgencyPageRoute => ({ name: 'x', longName: null, mode: 2, midday: null, am: null, pm: null, evening: null, overnight: null, ...r });
+  it('is an agency that runs only in the peaks', () => {
+    // VRE: peak service only on both lines (its one 1 PM trip gives no midday reading).
+    expect(rushHourOnlyAgency({ routes: [route({ am: 20, pm: 30 }), route({ am: 30, pm: 30 })] })).toBe(true);
+  });
+  it('is not an agency with midday service, evening trips or no trips at all', () => {
+    expect(rushHourOnlyAgency({ routes: [route({ am: 20, midday: 60, pm: 30 })] })).toBe(false);
+    expect(rushHourOnlyAgency({ routes: [route({ am: 20, pm: 30, limited: ['evening'] })] })).toBe(false);
+    expect(rushHourOnlyAgency({ routes: [route({ am: 20, noRegular: ['midday'] })] })).toBe(false);
+    expect(rushHourOnlyAgency({ routes: [] })).toBe(false);
   });
 });

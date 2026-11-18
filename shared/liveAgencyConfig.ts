@@ -7,12 +7,13 @@
  * the TTC entry here, not in the scripts. Other agencies get none of it.
  */
 import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
+import { DEFAULT_SERVICE_DAY_END_HOUR } from './rules/periods.js';
 
 /** The default archive bucket: shared/rules/live.ts. */
 export { DEFAULT_LIVE_ARCHIVE_BUCKET };
 
-/** GTFS service days run past midnight; a position before this local hour belongs to the previous service date. */
-export const DEFAULT_SERVICE_DAY_END_HOUR = 4;
+/** GTFS service days run past midnight; a position before this local hour belongs to the previous service date (shared/rules/periods.ts). */
+export { DEFAULT_SERVICE_DAY_END_HOUR };
 
 export type LatLon = [number, number];
 
