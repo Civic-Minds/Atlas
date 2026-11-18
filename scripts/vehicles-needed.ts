@@ -35,6 +35,7 @@ import { processGtfsBuffer, type ProcessOptions } from '../pipeline/process-core
 import { agencyProcessOptions, type AgencyFeedConfig } from '../pipeline/agencyFeeds.js';
 import { pickRepresentativeWeekday } from '../pipeline/representativeWeekday.js';
 import { tripRunsForDay } from '../pipeline/vehiclesNeeded.js';
+import { PRODUCT_FOCUS } from '../shared/rules/focus.js';
 import { cycleMin, needVehicles, unevenLegs, parseRecovery, periodPatterns, recoveryMin, targetVehicles, type Places, type TargetOptions } from '../pipeline/vehiclePatterns.js';
 import { vehicleGroupRows } from '../pipeline/vehicleGroups.js';
 import type { StudioVehiclesFile } from '../shared/studioVehicles.js';
@@ -69,6 +70,11 @@ const shortTurnHeadway = option('--short-turn-headway') != null ? Number(option(
 if (shortTurnHeadway != null && !(shortTurnHeadway > 0)) throw new Error('--short-turn-headway must be a positive number of minutes');
 const recovery = parseRecovery(option('--recovery'));
 const jsonOut = option('--json');
+
+// CIV-1866: the figures go to focus agencies first (shared/rules/focus.ts); say so, don't stop, for any other.
+if (slug && !(PRODUCT_FOCUS.vehiclesNeeded as readonly string[]).includes(slug)) {
+  console.error(`Note: ${slug} is not on the vehicles-needed focus list (shared/rules/focus.ts); build it only if an agency or consultant asked.`);
+}
 
 const config: AgencyFeedConfig | null = slug
   ? JSON.parse(readFileSync(resolve('config/agencies', `${slug}.json`), 'utf8')) as AgencyFeedConfig
