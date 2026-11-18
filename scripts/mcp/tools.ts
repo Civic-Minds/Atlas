@@ -17,8 +17,10 @@ import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
 import { liveReader } from './liveData';
 import { LIVE_ARCHIVE_SLUGS, coverageLimits } from '../../shared/liveCoverage';
-import { RELIABILITY_BANDS } from '../../shared/liveReliability';
-import { LATE_ABOVE_MIN, EARLY_AT_OR_BELOW_MIN, BUNCHED_GAP_SEC, GAPPED_FACTOR } from '../../shared/rules/live';
+import { RELIABILITY_BANDS, RELIABILITY_DEFINITION_TEXT } from '../../shared/liveReliability';
+import { headwayEvery } from '../../shared/headwayText';
+import { isoDate } from '../../shared/dateText';
+import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -38,13 +40,13 @@ const TOOL_LIST = [
   { name: 'route_frequency', description: `How often a route runs in each part of the day on a day type, with its first and last trips and its branches (where each goes, first and last stop, trips). ${WAIT} With a time window it also gives the frequency hour by hour. It reads today's schedule only: for how a route ran in past years (a frequency in 2017, a cut since), use route_history.`, inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'route'] } },
   { name: 'routes_at_frequency', description: `Routes in an agency that run every N minutes or better in a part of the day (by waitMinutes: ${WAIT})`, inputSchema: { type: 'object', properties: { agency, period, every, day }, required: ['agency', 'period', 'every'] } },
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period, every, day }, required: ['agencies', 'period', 'every'] } },
-  { name: 'routes_near', description: 'Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within 250 m by default, with the stops each uses there and the weekday first and last trips of each route (a route that runs only at night is marked nightRoute). Then use route_frequency for how often they run.', inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' } }, required: ['agency', 'place'] } },
+  { name: 'routes_near', description: `Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within ${NEARBY_ROUTES_RADIUS_M} m by default, with the stops each uses there and the weekday first and last trips of each route (a route that runs only at night is marked nightRoute). Then use route_frequency for how often they run.`, inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' } }, required: ['agency', 'place'] } },
   { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
   { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, from Atlas Studio's buses-needed file for the agency (the same figures Studio's page shows): buses scheduled now, buses needed at the schedule's own frequency, and buses needed every 10, 15, 20, 30 or 60 minutes. Routes that share buses are counted together. Counts use the schedule's own layover. Only agencies whose file has been built have an answer; for others it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period, every: { type: 'number', description: 'Optional target minutes between buses: 10, 15, 20, 30 or 60.' } }, required: ['agency', 'route', 'period'] } },
   { name: 'routes_by_hours', description: "Routes whose service ends early or starts late on a day type: every route whose last trip leaves before ends_before, or whose first trip leaves after starts_after, with its first and last trips. For questions such as which routes stop before 10 PM on Sundays.", inputSchema: { type: 'object', properties: { agency, day, ends_before: { type: 'string', description: 'Clock time, e.g. "22:00" or "10 PM".' }, starts_after: { type: 'string', description: 'Clock time, e.g. "07:00".' } }, required: ['agency'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
-  { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service, not right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod }, required: ['agency'] } },
+  { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service; Atlas has no figures yet for how a route is running right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod }, required: ['agency'] } },
   { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod }, required: ['agency', 'route'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency, offset: { type: 'number', description: 'Skip this many frequency changes (to page through a long list).' }, limit: { type: 'number', description: 'How many frequency changes to return; 40 when left out, 200 at most.' } }, required: ['agency'] } },
 ];
@@ -103,7 +105,7 @@ export function windowHas(t: number, w: { start: number; end: number }): boolean
   if (t >= w.start && t < w.end) return true;
   return w.start < TIME_PERIODS[0].startHour * 60 && w.end <= 1440 && t >= w.start + 1440 && t < w.end + 1440;
 }
-export const validThrough = (a: { lastFeedExpiry?: string | null }) => a.lastFeedExpiry ? `${a.lastFeedExpiry.slice(0, 4)}-${a.lastFeedExpiry.slice(4, 6)}-${a.lastFeedExpiry.slice(6, 8)}` : null;
+export const validThrough = (a: { lastFeedExpiry?: string | null }) => isoDate(a.lastFeedExpiry);
 export const SOURCE = "Atlas's published schedule data for this agency.";
 
 export async function needAgency(q: unknown) {
@@ -132,7 +134,7 @@ export async function withAlso(a: Awaited<ReturnType<typeof needAgency>>, args: 
 }
 /** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
 export const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) => (ends && a.lastFeedExpiry && ends < a.lastFeedExpiry
-  ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${ends.slice(0, 4)}-${ends.slice(4, 6)}-${ends.slice(6, 8)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
+  ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${isoDate(ends)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
   : {});
 export const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
 
@@ -146,15 +148,14 @@ export const INSTRUCTIONS = [
   "Anything not from these tools (ridership, crowding, causes of a change, holiday plans, history before Atlas's data) is outside Atlas: leave it out, or say plainly where it comes from.",
   "When a tool says Atlas has no figure, say so; don't work one out or estimate it unless the person asks for an estimate, and then call it yours.",
   "Don't run shell commands or read files to get around a missing tool.",
+  // CIV-1860, Ryan: "'where is my streetcar right now' is a rider question not a transit planner question".
+  "Live figures are past service. For how a route is running right now (vehicles in service against scheduled, current gaps and bunching, how far behind it is), say Atlas has no current figures yet and offer the latest recorded week. Atlas doesn't look up where a single vehicle is.",
 ].join(' ');
 
-const LIVE_SOURCE = "Atlas Live's recordings of where vehicles were, matched to the timetable (past service, not live).";
+const LIVE_SOURCE = "Atlas Live's recordings of where vehicles were, matched to the timetable: past service, not how the route is running right now.";
 /** The meaning of every Live figure, worded from the shared rules (shared/rules/live.ts). */
 const LIVE_DEFINITIONS = {
-  late: `More than ${LATE_ABOVE_MIN} minutes after the scheduled time.`,
-  early: `${Math.abs(EARLY_AT_OR_BELOW_MIN)} minutes or more before the scheduled time.`,
-  bunched: `A gap of ${BUNCHED_GAP_SEC / 60} minutes or less behind the vehicle ahead.`,
-  gapped: `A gap more than ${GAPPED_FACTOR} times the scheduled gap.`,
+  ...RELIABILITY_DEFINITION_TEXT,
   shares: 'Shares are fractions: 0.093 means 9.3% of departures. Give them as percentages, never as "1 in N" or "4 in 10".',
 };
 const bandLabel = (k: string) => (k === 'all' ? 'All day' : `${PERIOD_LABELS[k as keyof typeof PERIOD_LABELS]} (${formatPeriodRange(k as Parameters<typeof formatPeriodRange>[0])})`);
@@ -294,7 +295,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   },
   routes_near: async ({ agency: q, place, metres }) => {
     const a = await needAgency(q);
-    const res = await data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : 250);
+    const res = await data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : NEARBY_ROUTES_RADIUS_M);
     if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.', scheduleValidThrough: validThrough(a) };
     return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
   },
@@ -355,7 +356,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       compares: `${file.day ?? 'one day'} service on ${date(file.before.date)} (before) with ${date(file.after.date)} (after)`,
       agency: a.name, scheduleValidThrough: validThrough(a),
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
-      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : `every ${c.before} min`, after: c.after == null ? 'no service' : `every ${c.after} min`, better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
+      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,
       ...(from + size < changes.length ? { more: `Call again with offset ${from + size} for the next ${Math.min(size, changes.length - from - size)}.` } : {}),
     };
