@@ -9,11 +9,12 @@
  * - typical value rounded to nearest ½ min, the 1-in-10 rounded down, shown only when greater than the typical value;
  * - "looser than needed": typical at least 30 s under the timetable and 1-in-10 at or under it, at most 2 listed.
  */
+import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, halfMinutes, halfMinutesDown, tidyStopName, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 
 /** The Live card's bands, in its order. */
-export const TIME_LOSS_BANDS: readonly SegmentBand[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+export const TIME_LOSS_BANDS: readonly SegmentBand[] = ['all', ...DAYTIME_PERIOD_KEYS];
 /** Listed from, and amber from (raw seconds). */
 export const TIME_LOSS_LIST_FROM_SEC = 30;
 /** Red from (raw seconds). */

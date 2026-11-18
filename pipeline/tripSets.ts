@@ -1139,7 +1139,7 @@ export const NIGHT_ONLY_MAX_DAY_DEPARTURES = 2;
  * The daytime a night-only stretch has (almost) no departures in: 9 AM to 10 PM. CIV-1331: a night route that runs on
  * into the early morning (TTC 320 on Sundays until about 8 AM, before the subway opens) is still a night route.
  */
-export const NIGHT_ONLY_DAY_START_MIN = 9 * 60;
+export const NIGHT_ONLY_DAY_START_MIN = PERIOD_MINUTES.midday.start;
 export const NIGHT_ONLY_DAY_END_MIN = 22 * 60;
 
 /** #1322: the stretch runs only at night: no regular daytime service (at most NIGHT_ONLY_MAX_DAY_DEPARTURES from 9 AM to 10 PM). */
