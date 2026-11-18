@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFrom } from '../../shared/studioAgencies';
+import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFor, studioPageFrom } from '../../shared/studioAgencies';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
@@ -133,5 +133,23 @@ describe('Studio pages (CIV-1828)', () => {
   it('opens each page on its own first agency when the address names one it lacks', () => {
     expect(studioAgencyFrom('kingston', ['ttc'], 'ttc')).toBe('ttc');
     expect(studioAgencyFrom(null, ['kingston', 'hamilton'])).toBe('kingston');
+  });
+});
+
+describe('Studio opens the page that has the address\'s agency (CIV-1828)', () => {
+  const lists = { live: ['ttc'], fleet: ['kingston', 'hamilton', 'rtd-denver'] };
+  it('never swaps the agency: RTD with no page opens Fleet, TTC opens Live', () => {
+    expect(studioPageFor(null, 'rtd-denver', lists)).toBe('fleet');
+    expect(studioPageFor(null, 'ttc', lists)).toBe('live');
+  });
+  it('keeps a named page, and opens the default page for no agency or one no page has', () => {
+    expect(studioPageFor('live', 'rtd-denver', lists)).toBe('live');
+    expect(studioPageFor(null, null, lists)).toBe('live');
+    expect(studioPageFor(null, 'nowhere', lists)).toBe('live');
+  });
+  it('waits for the lists it needs before choosing', () => {
+    expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null })).toBeNull();
+    expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null })).toBeNull();
+    expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null })).toBe('live');
   });
 });

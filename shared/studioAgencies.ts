@@ -42,3 +42,19 @@ export type StudioPageKey = (typeof STUDIO_PAGES)[number];
 /** The page an address asks for (?page=); Live otherwise. */
 export const studioPageFrom = (param: string | null): StudioPageKey =>
   (STUDIO_PAGES as readonly string[]).includes(param ?? '') ? (param as StudioPageKey) : STUDIO_PAGES[0];
+
+/**
+ * The page to open (CIV-1828; Ryan: "I opened …/studio?agency=rtd-denver and it is showing me the city of toronto"). A
+ * named page wins. With an agency and no page, the first page that has that agency, so the agency is never swapped
+ * silently; an agency no page has opens the default page. Null while a list it needs is still loading.
+ */
+export function studioPageFor(pageParam: string | null, agencyParam: string | null, lists: Record<StudioPageKey, readonly string[] | null>): StudioPageKey | null {
+  if (pageParam && (STUDIO_PAGES as readonly string[]).includes(pageParam)) return pageParam as StudioPageKey;
+  if (!agencyParam) return STUDIO_PAGES[0];
+  for (const k of STUDIO_PAGES) {
+    const list = lists[k];
+    if (!list) return null;
+    if (list.includes(agencyParam)) return k;
+  }
+  return STUDIO_PAGES[0];
+}

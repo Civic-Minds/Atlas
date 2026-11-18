@@ -27,7 +27,7 @@ import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, route
 import { studioVehiclesDevUrl, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, periodFigure, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { StudioGroupFigures } from './StudioVehiclesPage';
-import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioPageFrom } from '../shared/studioAgencies';
+import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioPageFor } from '../shared/studioAgencies';
 import { LIVE_STUDIO_AGENCIES_URL } from '../shared/liveStudioAgencies';
 import StudioLiveBody, { type StudioLiveSlots } from './components/Live/StudioLiveBody';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_PAGE_NAMES, vehiclesTitleText } from '../shared/studioWording';
@@ -315,7 +315,6 @@ function PortalInto({ slot, children }: { slot: HTMLElement; children: ReactNode
  */
 export default function StudioPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = studioPageFrom(searchParams.get('page'));
   const set = (changes: Record<string, string | null>) => setSearchParams(p => {
     const n = new URLSearchParams(p);
     for (const [k, v] of Object.entries(changes)) { if (v == null) n.delete(k); else n.set(k, v); }
@@ -323,7 +322,10 @@ export default function StudioPage() {
   });
   const liveList = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
-  const listed = page === 'live' ? liveList : fleetList;
+  const listOf = (f: typeof liveList) => (f && f !== 'missing' ? f.agencies : f === 'missing' ? [] : null);
+  // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
+  const page = studioPageFor(searchParams.get('page'), searchParams.get('agency'), { live: listOf(liveList), fleet: listOf(fleetList) });
+  const listed = page === 'live' ? liveList : page === 'fleet' ? fleetList : null;
   const pageAgencies = listed && listed !== 'missing' ? listed.agencies : listed === 'missing' ? [] : null;
   // Live opens on its first agency (TTC), Fleet on Kingston.
   const slug = studioAgencyFrom(searchParams.get('agency'), pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
@@ -350,8 +352,8 @@ export default function StudioPage() {
     <MapAppShell>
       <MapAppHeader>
         <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
-        <PillMenu label={PAGE_NAMES.studio} value={page} options={pageOptions} onPick={pickPage} />
-        {slug && <PillMenu label={AGENCY_COLUMN} value={slug} options={agencyOptions} onPick={pickAgency} />}
+        {page && <PillMenu label={PAGE_NAMES.studio} value={page} options={pageOptions} onPick={pickPage} />}
+        {page && slug && <PillMenu label={AGENCY_COLUMN} value={slug} options={agencyOptions} onPick={pickAgency} />}
         {page === 'live' && <><div ref={slot('direction')} className="contents" /><span aria-hidden className="mx-1 h-5 w-px bg-[var(--border-primary)]" /><div ref={slot('measure')} className="contents" /></>}
         <div className="ml-auto flex items-center gap-3">
           {/* Live: its data date, then the route menu (its time of day sits in the data row). Fleet: the route menu, then the time of day. */}
