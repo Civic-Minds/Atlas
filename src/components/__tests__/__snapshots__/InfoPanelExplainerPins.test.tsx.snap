@@ -61,7 +61,6 @@ exports[`explainer text is pinned (CIV-1061) > E2 1`] = `
 exports[`explainer text is pinned (CIV-1061) > E3 1`] = `
 {
   "links": [
-    "Technical details (#123)",
     "Report a problem",
   ],
   "paragraphs": [

@@ -842,8 +842,6 @@ export function CorrectedDataNotice({ agency, overrideNote, onInfoOpen, on }: { 
         helpTopic: explainerFor(on === 'route' ? 'N5' : 'N22'),
         agencyName: agency.name,
         overrideNote,
-        issueUrl: agency.issueUrl,
-        issueUrls: agency.issueUrls,
       })}
     />
   );

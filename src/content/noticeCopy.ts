@@ -704,7 +704,7 @@ export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
-export type ExplainerLink = 'agency-website' | 'report-schedule' | 'technical-details' | 'report-data';
+export type ExplainerLink = 'agency-website' | 'report-schedule' | 'report-data';
 type ExplainerPieceDef = {
   /** Permanent code (X1, X2…), never reused, like N and E codes. */
   code: string;
@@ -730,7 +730,7 @@ export const EXPLAINER_PIECES = {
   AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency’s website.", links: ['agency-website', 'report-schedule'] },
   AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency’s website has its current schedule.", links: ['agency-website'], needsWebsite: true },
   AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency’s website has each day’s schedule.", links: ['agency-website'], needsWebsite: true },
-  REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
+  REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['report-data'] },
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
   // Paragraph 2 of E9 (CIV-1199), after X9.
   STRETCH_AND_BRANCHES_SEPARATE: { code: 'X15', text: "We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is." },
