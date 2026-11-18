@@ -187,6 +187,9 @@ async function liveRoute(a: { slug: string; name: string }, m: { routes: string[
   return { file };
 }
 
+/** The Live tools (CIV-1860). The hosted pilot hides them until Ryan decides whether testers see Live figures. */
+export const LIVE_TOOLS: readonly string[] = ['route_reliability', 'route_bunching'];
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   list_agencies: async ({ query, region, country, near, km }) => {
     if (near != null) {
