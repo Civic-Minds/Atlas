@@ -157,7 +157,7 @@ const LIVE_DEFINITIONS = {
   early: `${Math.abs(EARLY_AT_OR_BELOW_MIN)} minutes or more before the scheduled time.`,
   bunched: `A gap of ${BUNCHED_GAP_SEC / 60} minutes or less behind the vehicle ahead.`,
   gapped: `A gap more than ${GAPPED_FACTOR} times the scheduled gap.`,
-  shares: 'Shares are fractions: 0.093 means 9.3% of departures.',
+  shares: 'Shares are fractions: 0.093 means 9.3% of departures. Give them as percentages, never as "1 in N" or "4 in 10".',
 };
 const bandLabel = (k: string) => (k === 'all' ? 'All day' : `${PERIOD_LABELS[k as keyof typeof PERIOD_LABELS]} (${formatPeriodRange(k as Parameters<typeof formatPeriodRange>[0])})`);
 function liveBand(p: unknown): string | null {
