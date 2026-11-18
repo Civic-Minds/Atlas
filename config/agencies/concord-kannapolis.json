@@ -28,16 +28,16 @@
       "shapeAnomalies": 0,
       "routeHeadwayMismatches": 0,
       "featureCount": 48,
-      "feedExpiry": "20281117",
+      "feedExpiry": "20281118",
       "routeCount": 9,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 0,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-17"
+    "checkedAt": "2026-11-18"
   },
-  "lastFeedExpiry": "20281117",
+  "lastFeedExpiry": "20281118",
   "lastFeedVersion": "Yellow Route Fixed",
   "lastRefreshedAt": "2026-11-02",
   "lastFeedCheckAt": "20261116",
