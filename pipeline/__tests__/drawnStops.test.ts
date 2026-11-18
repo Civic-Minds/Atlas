@@ -34,8 +34,8 @@ describe('stopReading', () => {
   const none = new Set<string>();
 
   it('has a reading at MIN_ALL_DAY_TERMINAL_DEPARTURES unique daytime departures, not one fewer', () => {
-    expect(stopReading('a', { times: daytime(MIN_ALL_DAY_TERMINAL_DEPARTURES), dropOffOnly: none })).toEqual({ boards: true, hasReading: true, gradeable: true });
-    expect(stopReading('a', { times: daytime(MIN_ALL_DAY_TERMINAL_DEPARTURES - 1), dropOffOnly: none })).toEqual({ boards: true, hasReading: false, gradeable: false });
+    expect(stopReading('a', { times: daytime(MIN_ALL_DAY_TERMINAL_DEPARTURES), dropOffOnly: none })).toMatchObject({ boards: true, hasReading: true, gradeable: true });
+    expect(stopReading('a', { times: daytime(MIN_ALL_DAY_TERMINAL_DEPARTURES - 1), dropOffOnly: none })).toMatchObject({ boards: true, hasReading: false, gradeable: false });
   });
 
   it('counts unique times only, and only inside the 6-22h window (edges included)', () => {
@@ -50,11 +50,21 @@ describe('stopReading', () => {
     expect(stopReading('a', { times: [start + 60, start + 75, start + 90, start + 105], dropOffOnly: none }).hasReading).toBe(true);
   });
 
+  it('the floor counts a boarding stop with a reading unless its departures are bunched into one burst (CIV-209)', () => {
+    const bunched = stopReading('a', { times: [start + 60, start + 75, start + 90, start + 105], dropOffOnly: none });
+    expect(bunched).toMatchObject({ hasReading: true, bunched: true, countsInFloor: false });
+    // A sparse stop with holes (ART 45's tail: a few trips spread over the day) still counts, so the headline never
+    // reads better than the stops riders board at.
+    const sparse = stopReading('a', { times: [start, start + 180, start + 360, start + 600], dropOffOnly: none });
+    expect(sparse).toMatchObject({ hasReading: true, bunched: false, countsInFloor: true });
+    expect(stopReading('a', { times: daytime(10), dropOffOnly: new Set(['a']) }).countsInFloor).toBe(false);
+  });
+
   it('a drop-off-only stop does not board or grade, but keeps its reading for the floor (#879, CIV-1071 step A)', () => {
-    expect(stopReading('a', { times: daytime(10), dropOffOnly: new Set(['a']) })).toEqual({ boards: false, hasReading: true, gradeable: false });
+    expect(stopReading('a', { times: daytime(10), dropOffOnly: new Set(['a']) })).toMatchObject({ boards: false, hasReading: true, gradeable: false });
   });
 
   it('a stop with no list has no reading and still boards unless drop-off-only', () => {
-    expect(stopReading('a', { times: undefined, dropOffOnly: none })).toEqual({ boards: true, hasReading: false, gradeable: false });
+    expect(stopReading('a', { times: undefined, dropOffOnly: none })).toMatchObject({ boards: true, hasReading: false, gradeable: false });
   });
 });
