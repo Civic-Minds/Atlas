@@ -1,0 +1,35 @@
+name: Bug
+description: Something on Atlas looks wrong
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Title it with a real example and what is wrong, like `LA Metro 182: Westbound Midday shows 2 min headway next to 30 min`.
+        Search open issues first. If the same cause is already tracked, add to that issue instead.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What is wrong
+      description: One sentence. Say which agency, route or page.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happens instead. Describe any screenshot in words.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: A link or steps to see it, the day and time period, and anything else that helps.
