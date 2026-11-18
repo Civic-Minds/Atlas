@@ -1,12 +1,12 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import * as rules from '../frequencyRules';
-import { publicTierOf, PUBLIC_TIER_MAXES, TIER_MAXES, VIOLATION_PERCENT_BY_TIER } from '../frequencyRules';
+import * as rules from '../rules/frequency';
+import { publicTierOf, PUBLIC_TIER_MAXES, TIER_MAXES, VIOLATION_PERCENT_BY_TIER } from '../rules/frequency';
 import { HEADWAY_TIERS } from '../config';
 
 /**
- * Every frequency scale lives in shared/frequencyRules.ts (Ryan, 2026-11-17: "we need to keep this info centralized").
+ * Every frequency scale lives in shared/rules/frequency.ts (Ryan, 2026-11-17: "we need to keep this info centralized").
  * These pin the values the move kept, and fail on a hand-typed tier list anywhere else.
  */
 describe('the frequency scales (one home)', () => {
@@ -33,7 +33,7 @@ describe('the frequency scales (one home)', () => {
   });
 
   const ROOT = join(import.meta.dirname, '..', '..');
-  const HOME = 'shared/frequencyRules.ts';
+  const HOME = 'shared/rules/frequency.ts';
   // Lists of minutes that are not frequency scales, each with its reason.
   const NOT_A_SCALE: Record<string, string> = {
     'shared/connections.ts': 'CONNECTION_WINDOWS: the connections view\'s wait groups (Ryan, 2026-11-04), not tiers',
@@ -50,7 +50,7 @@ describe('the frequency scales (one home)', () => {
   const LIST = new RegExp(`\\[\\s*${T}(?:\\s*,\\s*${T}){2,}\\s*\\]`);
   const KEYS = new RegExp(`\\b${T}\\s*:\\s*[^,{}\\n]+,\\s*${T}\\s*:\\s*[^,{}\\n]+,\\s*${T}\\s*:`);
 
-  it('has no hand-typed tier list outside shared/frequencyRules.ts', () => {
+  it('has no hand-typed tier list outside shared/rules/frequency.ts', () => {
     const found = ['src', 'shared', 'pipeline', 'scripts', 'api', 'local-api']
       .flatMap(files)
       .filter(f => f !== HOME && !(f in NOT_A_SCALE))

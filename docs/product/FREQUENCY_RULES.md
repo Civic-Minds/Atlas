@@ -39,7 +39,7 @@ The map reads PMTiles. A change to these rules reaches the live map only after a
 
 ## Where the scales live
 
-Every frequency scale is defined once, in `shared/frequencyRules.ts` (Ryan, 2026-11-17: "we have some internally frequencies and some externally which is fine but like we need to keep this info centralized"). Everything else reads it, and `shared/__tests__/frequencyScales.test.ts` fails on a hand-typed tier list anywhere else.
+Every frequency scale is defined once, in `shared/rules/frequency.ts` (Ryan, 2026-11-17: "we have some internally frequencies and some externally which is fine but like we need to keep this info centralized"). Everything else reads it, and `shared/__tests__/frequencyScales.test.ts` fails on a hand-typed tier list anywhere else.
 
 | Scale | Shown or internal | Constant | Values |
 | --- | --- | --- | --- |

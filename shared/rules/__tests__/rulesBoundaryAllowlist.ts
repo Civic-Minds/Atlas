@@ -49,7 +49,6 @@ export const KNOWN_COPIES: Record<string, Partial<Record<RuleKind, number>>> = {
   'shared/connections.ts': { 'scale-array': 1 },
   // CIV-1814: the night and frequent-service grades' one home each, replacing four typed copies; they move with step 1.
   'shared/frequentService.ts': { 'scale-array': 1 },
-  'shared/frequencyRules.ts': { 'definition': 2, 'period-minutes': 1, 'scale-array': 2 },
   'shared/liveDashboard.ts': { 'min-sample': 5 },
   'shared/liveWording.ts': { 'definition': 1 },
   'shared/nightService.ts': { 'scale-array': 1 },

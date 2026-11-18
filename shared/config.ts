@@ -369,14 +369,14 @@ export interface HeadwayTier {
 
 /**
  * The frequency tiers, best first, in their colours (shared/rules/colours.ts): one per PUBLIC_TIER_MAXES step
- * (shared/frequencyRules.ts, the scales' one home), then Infrequent.
+ * (shared/rules/frequency.ts, the scales' one home), then Infrequent.
  */
 export const HEADWAY_TIERS: HeadwayTier[] = [
   ...PUBLIC_TIER_MAXES.map((max, i) => ({ max, color: TIER_COLOURS[i], label: headwayTierLabel(max) })),
   { max: Infinity, color: TIER_COLOURS[PUBLIC_TIER_MAXES.length], label: 'Infrequent' },
 ];
 
-/** The public scale, re-exported here for its many readers; defined in shared/frequencyRules.ts. */
+/** The public scale, re-exported here for its many readers; defined in shared/rules/frequency.ts. */
 export { PUBLIC_TIER_MAXES };
 
 /** The default map view, its padding and the zoom steps (shared/rules/limits.ts). */

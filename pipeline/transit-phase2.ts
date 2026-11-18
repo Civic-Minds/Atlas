@@ -41,7 +41,7 @@ export type TierDeterminer = (
     preCountedGraceViolations?: number,
 ) => string;
 
-// The near-miss settings live in shared/frequencyRules.ts (CIV-1612), so the Docs page states the same numbers.
+// The near-miss settings live in shared/rules/frequency.ts (CIV-1612), so the Docs page states the same numbers.
 export { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS };
 
 /** Departures packed into this many minutes or fewer are a burst, not a schedule. */

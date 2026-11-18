@@ -76,7 +76,7 @@ function hasBranchEvidence(group: RouteGroup, all: RouteGroup[]): boolean {
   return variants.size >= 2 || headsigns.size >= 2 || namedSiblings;
 }
 
-/** Headways that divide the hour evenly: the map's tiers plus this study's extra 5, 6 and 12 (the scales live in shared/frequencyRules.ts). */
+/** Headways that divide the hour evenly: the map's tiers plus this study's extra 5, 6 and 12 (the scales live in shared/rules/frequency.ts). */
 const CLOCK_FACE_HEADWAYS = new Set([...PUBLIC_TIER_MAXES, 5, 6, 12]);
 
 function category(group: RouteGroup, all: RouteGroup[]): 'branch' | 'rail' | 'sparse' | 'clock-face' | 'other' {

@@ -3,7 +3,7 @@
  * change box. Ryan, 2026-11-17 ("1", the full grade list): a change counts when a route moves to a different grade on
  * the one grading scale (TIER_MAXES: internal 5 and 8, public 10, 15, 20, 30, 60, then Infrequent), and bigger grade
  * jumps rank higher. So 30 → 29 min is no change (both grade 30), while 31 → 29 is one step. The grades come from
- * shared/frequencyRules.ts, never a list of their own. The release check's ratio-2 alarm is a different question
+ * shared/rules/frequency.ts, never a list of their own. The release check's ratio-2 alarm is a different question
  * (broken data) and keeps its own rule.
  */
 import { headwayGradeOn, publicTierOf, TIER_MAXES } from './frequencyRules';
