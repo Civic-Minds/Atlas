@@ -3042,7 +3042,7 @@ export async function processGtfsBuffer(
       // line then never reads better than the skipped stop. Used only when every stop a pool
       // trip skips is one the floor counts (served by fewer departures than the pool).
       const floorStops = new Set(drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(id => id !== terminalId && stopCounts(id) && !ownFallbackHw.has(id) && allStopHw[id] != null));
+        .filter(id => id !== terminalId && floorStop(id) != null && !ownFallbackHw.has(id) && allStopHw[id] != null));
       const strictPool = branchTerminalTimes(hsKey, coverageIds, terminalId, true);
       let pool = strictPool;
       if (floorStops.size > 0) {
@@ -3236,6 +3236,23 @@ export async function processGtfsBuffer(
       }
       return [...floor];
     };
+    // CIV-209: the stop that stands for a drawn stop in a worst-stop floor (null: none). A stop with no all-day reading
+    // (stopReading's count) is left out, as before. One with a map grade (stopCounts) stands for itself. One with a reading
+    // but no grade (a drop-off-only stop, a bunched handful of departures, a list the every-gap grade refuses) is read at
+    // the next graded stop riders board at, so the line never reads better than its graded stops (TTC 102 to Warden: its
+    // two ungraded first stops held it at 15; dropping them read the pool's 10 under ten stops graded 30 at every 15).
+    // Two cases keep today's rule (the stop for itself): a line with no graded stop at all (its colour is limited, so
+    // nothing grades its headline; LA Metro 14/37 and 78 otherwise fell to a sparse fallback of 60), and the overnight
+    // period (the grade reads the day, not the night).
+    const floorStop = (stopId: string, overnight = false): string | null => {
+      if (!readStop(stopId).hasReading) return null;
+      if (overnight || stopCounts(stopId)) return stopId;
+      const drawn = drawnPatternStops().map(p => p.stopId);
+      if (!drawn.some(stopCounts)) return stopId;
+      return drawn.slice(drawn.indexOf(stopId) + 1, -1).find(stopCounts) ?? null;
+    };
+    const floorStopsOf = (stopIds: readonly string[], overnight = false): string[] =>
+      [...new Set(stopIds.map(stopId => floorStop(stopId, overnight)).filter((id): id is string => id != null))];
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
     // CIV-152: the drawn stops' every-gap grades, filled by publishStopData.
@@ -3456,7 +3473,7 @@ export async function processGtfsBuffer(
         && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
         // Whether the line has a reading at all stays the count; which stops set its value is stopCounts (CIV-209).
         const reading = drawnPatternStops().filter(p => readStop(p.stopId).hasReading);
-        const vals = reading.filter(p => stopCounts(p.stopId)).map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        const vals = floorStopsOf(reading.map(p => p.stopId)).map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
         if (vals.length) {
           const headway = Math.max(...vals);
           feature.properties.headway = headway;
@@ -3548,8 +3565,8 @@ export async function processGtfsBuffer(
       // and left out of the headline (CIV-150: cta J14 Saturday read 455 from a two-trip tail
       // under segments every 10; nine lines read no headline at all for one such stop).
       const worstDrawnStopHw = (): number | undefined => {
-        const vals = servedByFewerTrips(headlinePool)
-          .filter(stopId => !ownFallbackHw.has(stopId) && stopCounts(stopId))
+        const vals = floorStopsOf(servedByFewerTrips(headlinePool))
+          .filter(stopId => !ownFallbackHw.has(stopId))
           .map(stopId => allStopHw[stopId])
           .filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
@@ -3577,7 +3594,7 @@ export async function processGtfsBuffer(
       const worstReadingStop = (): number | undefined => {
         // CIV-209: only stops that count (stopCounts) set the worst reading; whether the line or its terminal has a
         // reading at all (readingStops, terminalHasReading) stays the count, so no line loses its headline here.
-        const vals = readingStops.filter(p => stopCounts(p.stopId)).map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        const vals = floorStopsOf(readingStops.map(p => p.stopId)).map(stopId => allStopHw[stopId]).filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
@@ -3779,8 +3796,7 @@ export async function processGtfsBuffer(
       // read no midday at all for one such stop). Null when the periods do not come from the pool.
       let worstDrawnStop: PeriodValue | null = null;
       if (periodsFromPool) {
-        for (const stopId of servedByFewerTrips(periodPoolTimes)) {
-          if (!stopCounts(stopId)) continue;
+        for (const stopId of floorStopsOf(servedByFewerTrips(periodPoolTimes), pk === 'overnight')) {
           const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
           if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
           const stopH = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] : undefined);
@@ -3872,11 +3888,12 @@ export async function processGtfsBuffer(
     // card's chart and its rows rate the same line. An hourly stop has no hour value (the hour
     // window needs three departures), so its period value stands in (TriMet 35's deviation
     // stops: every 60 under a trunk every 30).
-    const hourFloorStops = periodsFromPool ? servedByFewerTrips(periodPoolTimes).filter(stopId => stopCounts(stopId)) : [];
+    const hourFloorStops = periodsFromPool ? floorStopsOf(servedByFewerTrips(periodPoolTimes)) : [];
+    const overnightHourFloorStops = periodsFromPool ? floorStopsOf(servedByFewerTrips(periodPoolTimes), true) : [];
     const hourFloor = (h: number): { headway: number; stopId: string; standIn: boolean } | null => {
       const pk = periodKeyForHour(h);
       let floor: { headway: number; stopId: string; standIn: boolean } | null = null;
-      for (const stopId of hourFloorStops) {
+      for (const stopId of pk === 'overnight' ? overnightHourFloorStops : hourFloorStops) {
         // A stop the period floor skips this period (its pooled reading published nothing and
         // the own pattern's value stood in) is skipped here too, hour value or stand-in, so the
         // chart never shows a floor the row beside it does not.
