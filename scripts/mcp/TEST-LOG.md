@@ -330,3 +330,12 @@ Other findings:
 Spot checks against the tools: Gemini's R4 every 3 at the AM peak and the 929 every 8 all day are right.
 
 Gemini plan (manager, 2026-11-18): rounds run on Claude only until Gemini's quota resets (about 2026-11-25). Then the 7 missing Gemini questions (30 to 36 above) run on the same server code.
+
+## 2026-11-18: 0.7.0 (CIV-1840 at 1f641a90e), Claude both ways
+
+The same 36 questions (the 32 standing plus the 4 held wow questions) on Studio's 0.7.0, locked down and normal; Gemini waits for its quota (see above). Chats and `.meta.json`: `_reports/mcp-tests/2026-11-18-v070-claude-*`. The figure check passed 34 of 34 on the same code.
+
+- **Both runs:** all 36 answered from the tools. The locked run reached no figure from outside them. The normal run used one web search, for Seattle crowding (question 22, asked as an estimate), and labelled it.
+- **Fixed since the split round:** the midnight window (510 and 310 hour by hour from 12 AM: every 9 combined from 1 to 2 AM, the hand-over around 1:23 to 1:47 AM); every answer names its end date.
+- **TTC 29 branches:** `branches` now has one northbound row to Wilson (144 trips, starting at either loop), as Ryan described. The hourly figures still split northbound by the loop a trip starts from, so both runs printed two northbound columns (question 35). Sent to Studio: hourly northbound as one row too.
+- **Question 13 (the 504 in 2017), normal run:** again answered without route_history and said Atlas has no 2017 schedules; the locked run called it and gave the Oct 2017 figures. Twice now in the normal setup. Fix to consider: route_frequency's description, or its answer, points history questions at route_history.
