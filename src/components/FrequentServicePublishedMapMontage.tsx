@@ -2,8 +2,12 @@ import { useEffect, useState } from 'react';
 import { OutboundLink } from './OutboundLink';
 import { agencyInSentence } from '../../shared/agencyArticle';
 
-/** How long each map shows: about one a second (Ryan, CIV-1495 #2, 2026-11-15; it was 180 ms). */
-export const MONTAGE_FRAME_MS = 1000;
+/**
+ * How long each map shows: a quick flick through the pictures, 180 ms. CIV-1495 #2 (2026-11-15) slowed it to a second;
+ * Ryan, 2026-11-18, reversed that: "Feel like the point of this was that it changed through pics fast ... but then u made
+ * us slow it down now it looks dumb". Reduced motion and pause still stop it.
+ */
+export const MONTAGE_FRAME_MS = 180;
 
 interface MapFrame {
   agency: string;
