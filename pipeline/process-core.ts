@@ -19,7 +19,7 @@ import { prefixGtfsIds } from './supplementalIds.js';
 import { directionSplitsOf, mergeDirectionSplitRoutes, type DirectionSplit } from './directionSplitRoutes.js';
 import { bookingRequiredRouteIds } from './bookedRoutes.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { TIER_MAXES } from '../shared/frequencyRules.js';
+import { TIER_MAXES } from '../shared/rules/frequency.js';
 import { normalizeGtfs, type GtfsPreprocess, type GtfsTransformOptions } from './preprocess/run.js';
 import { clearLoneOriginRows, labelConvergingOrigins, originLabelOf } from './convergingOrigins.js';
 import { validateGtfs, type ValidationReport } from './validation.js';
