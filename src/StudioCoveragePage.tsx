@@ -37,14 +37,13 @@ const liveTags = (r: CoverageRow) => [
   ...(r.liveRealtime ? [L.realtime] : []),
 ];
 const studioTags = (r: CoverageRow) => [...(r.studioSchedule ? [S.schedule] : []), ...(r.studioVehicles ? [S.vehicles] : [])];
-// Every agency on the map has the MCP's schedule answers; real-time answers are none today (CIV-1870).
+// Schedule answers are universal, like the map, so they aren't listed; real-time answers are none today (CIV-1870).
 const mcpTags = (r: CoverageRow) => [
-  M.schedule,
   ...(r.mcpLive === 'ready' ? [M.live] : r.mcpLive === 'from' ? [M.liveFrom(r.mcpLiveFrom)] : []),
 ];
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
-  { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink> },
+  { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
   { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? 'Yes' : MISSING_VALUE) },
   { key: 'live', header: H.live, width: WIDE + 4, cell: r => <TagCell tags={liveTags(r)} link={r.liveReport ? { label: L.report, to: `${LIVE_PATH}/${r.slug}` } : undefined} /> },
   { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell tags={studioTags(r)} /> },
@@ -87,7 +86,7 @@ export default function StudioCoveragePage() {
   useEffect(() => { document.title = `${PAGE_NAMES.studioCoverage} | Atlas`; }, []);
 
   const rows = useMemo(() => coverageRows({
-    agencies: agencies.map(a => ({ slug: a.slug, name: agencyNames(a).name })),
+    agencies: agencies.map(a => { const n = agencyNames(a).list; return { slug: a.slug, name: n.primary, place: n.secondary }; }),
     historySlugs: (historyAgencyList as { slugs: string[] }).slugs,
     liveArchiveSlugs: LIVE_ARCHIVE_SLUGS,
     liveMapSlugs: LIVE_AGENCY_SLUGS,

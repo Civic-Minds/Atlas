@@ -1082,9 +1082,8 @@ export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time',
  */
 export const COVERAGE_STUDIO_TAGS = { schedule: 'Schedule', vehicles: 'Vehicles' } as const;
 
-/** What an MCP cell lists: schedule answers, Live answers (from a date once recordings build up), real-time (none yet). */
+/** What an MCP cell lists: Live answers (from a date once recordings build up), and real-time answers (none yet). Schedule answers are universal, so they aren't listed. */
 export const COVERAGE_MCP_TAGS = {
-  schedule: 'Schedule',
   live: 'Live',
   liveFrom: (date: string | null) => (date ? `Live from ${date}` : 'Live building'),
 } as const;
