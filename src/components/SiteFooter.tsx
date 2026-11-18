@@ -1,3 +1,4 @@
+import AppLink from './ui/AppLink';
 import { ATLAS_MODE, FEATURE_ROUTES, FEATURES } from '../../shared/config';
 import { BETA_SITE_URL } from '../../shared/seo';
 import AtlasLogo from './AtlasLogo';
@@ -6,7 +7,8 @@ import { FOOTER_HEADINGS, PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCHERS_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
-type FooterLink = { href: string; label: string };
+/** `inApp`: opens inside the app through the router, without reloading the page (CIV-1619). */
+type FooterLink = { href: string; label: string; inApp?: boolean };
 
 const LINK = 'text-[var(--accent)] hover:underline';
 
@@ -38,7 +40,7 @@ export function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: FOOTER_HEADINGS.learn,
       links: [
         { href: DOCS_PATH, label: PAGE_NAMES.docs },
-        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research }] : []),
+        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research, inApp: true }] : []),
       ],
     },
     {
@@ -81,7 +83,9 @@ export default function SiteFooter() {
               <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
               <ul className="space-y-1.5">
                 {group.links.map(link => (
-                  <li key={link.href}><a className={`whitespace-nowrap ${LINK}`} href={link.href}>{link.label}</a></li>
+                  <li key={link.href}>{link.inApp
+                    ? <AppLink className={`whitespace-nowrap ${LINK}`} to={link.href}>{link.label}</AppLink>
+                    : <a className={`whitespace-nowrap ${LINK}`} href={link.href}>{link.label}</a>}</li>
                 ))}
               </ul>
             </div>
