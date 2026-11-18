@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A shared map link with a location previews that exact spot on X, LinkedIn and Facebook**: the preview picture shows Atlas's frequency lines around the shared spot (it used to show the nearest of about 60 city pictures, so a spot 30 km out showed downtown); links with no location keep today's picture
 - **On beta, a route with a frequent shared middle passes the frequency filter at that middle (pending sign-off)**: TTC 110 reads every 15 at weekday midday, where its slower branches every 30 used to decide for the whole route; section colours still show each branch's own frequency
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
 - **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
