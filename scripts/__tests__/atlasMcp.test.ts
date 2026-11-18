@@ -82,3 +82,13 @@ describe('time windows that start after midnight (CIV-1840)', () => {
     expect([1380, 1500, 100].map(t => windowHas(t, { start: 1380, end: 1680 }))).toEqual([true, true, false]);
   });
 });
+
+describe('tool annotations (CIV-1854: every directory asks for a title and readOnlyHint)', () => {
+  it('marks every tool read-only, with a title', async () => {
+    const { TOOLS } = await import('../mcp/tools');
+    for (const t of TOOLS) {
+      expect(t.title, t.name).not.toBe(t.name);
+      expect(t.annotations).toMatchObject({ title: t.title, readOnlyHint: true, destructiveHint: false, openWorldHint: false });
+    }
+  });
+});

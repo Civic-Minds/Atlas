@@ -22,6 +22,8 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.6.0 | 2026-11-17 | trip_time and combined_frequency read an agency's supplemental schedules too (LA Metro's rail lines) and take also_agencies, matching a place on another agency's stops within a 500 m walk (downtown LA to Santa Monica: E Line, 720, 20 and Big Blue Bus R10 together) |
 | 0.6.1 | 2026-11-17 | routes_by_hours (routes that end early or start late); the newest schedule file is picked by the date in its name, not when it was copied; buses_needed says not to work out other frequencies |
 | 0.6.2 | 2026-11-17 | Instructions sent at start: answer from the tools, say where anything else comes from, don't estimate unasked, no shell work-arounds |
+| 0.7.0 | 2026-11-18 | Hosted-version tool code (CIV-1840): schedule end date on every answer, map links, merged same-destination branches, midnight windows, routes_near hours, route_history ends with today's schedule, paged schedule_changes, ferries as their own kind, the optional question field |
+| 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
 
 ## Standing questions
 
