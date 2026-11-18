@@ -54,13 +54,13 @@
       "routeHeadwayMismatches": 15,
       "featureCount": 412,
       "feedExpiry": "20261127",
-      "routeCount": 45,
+      "routeCount": 44,
       "problemShapes": 0,
       "problemShapeRoutes": 0,
       "mismatchRoutes": 8,
       "resumesOn": null
     },
-    "checkedAt": "2026-11-17"
+    "checkedAt": "2026-11-18"
   },
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
