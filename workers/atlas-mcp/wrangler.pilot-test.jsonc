@@ -1,0 +1,21 @@
+{
+  // First deployed test of the hosted MCP (CIV-1840), with nothing uploaded to R2: the split files for a few agencies
+  // (workers/atlas-mcp/test-data, built by scripts/mcp/splitRelease.ts, git-ignored) ship inside the Worker as static
+  // assets, read only through the ASSETS binding (run_worker_first keeps them off the public URL). Not the final setup:
+  // the real Worker (wrangler.jsonc) reads the release on R2.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "atlas-studio-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-18",
+  "compatibility_flags": ["nodejs_compat"],
+  // Invocation logs would record each request URL, and a tester's link carries their token in the path: keep them off.
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } },
+  "vars": { "DATA_ORIGIN": "https://data.transitatlas.fyi", "DAILY_CALL_CAP": "300", "DATA_FROM_ASSETS": "1" },
+  "assets": { "directory": "./test-data", "binding": "ASSETS", "run_worker_first": true },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "atlas-studio-mcp", "database_id": "19dabe73-5f54-4f50-8135-adb62d3a2154", "migrations_dir": "migrations" }
+  ],
+  "ratelimits": [
+    { "name": "TESTER_LIMIT", "namespace_id": "184001", "simple": { "limit": 30, "period": 60 } }
+  ]
+}

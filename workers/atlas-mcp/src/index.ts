@@ -33,7 +33,23 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 // The release the tools read now. One per isolate: a new release id swaps the store (and clears its caches).
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
-async function useCurrentRelease(env: Env): Promise<string> {
+/** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
+type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string };
+
+async function useCurrentRelease(env: TestEnv): Promise<string> {
+  if (env.ASSETS && env.DATA_FROM_ASSETS) {
+    const assets = env.ASSETS;
+    if (activeRelease?.id !== 'bundled') {
+      data.useStore(splitStore(async path => {
+        const r = await assets.fetch(`https://assets.invalid/${path}`);
+        if (r.status === 404) return null;
+        if (!r.ok) throw new Error(`Reading ${path} failed (${r.status}).`);
+        return r.json();
+      }));
+      activeRelease = { id: 'bundled', checkedAt: Date.now() };
+    }
+    return 'bundled';
+  }
   if (env.MCP_DATA_BASE) {
     // Local testing: a folder served over HTTP stands in for the release.
     if (activeRelease?.id !== 'local') { data.useStore(splitStore(urlReader(env.MCP_DATA_BASE))); activeRelease = { id: 'local', checkedAt: Date.now() }; }
@@ -76,7 +92,7 @@ async function readBody(request: Request): Promise<string | null> {
   return text.length > MAX_BODY_BYTES ? null : text;
 }
 
-async function handleMcp(request: Request, env: Env, ctx: ExecutionContext, tester: string): Promise<Response> {
+async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, tester: string): Promise<Response> {
   if (request.method !== 'POST') return json({ error: 'Use POST for MCP requests.' }, 405, { Allow: 'POST' });
   const text = await readBody(request);
   if (text == null) return rpcError(null, -32600, 'Request too large.', 413);
@@ -95,7 +111,7 @@ async function handleMcp(request: Request, env: Env, ctx: ExecutionContext, test
   }
 }
 
-async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: Env, ctx: ExecutionContext, tester: string): Promise<Response> {
+async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: string): Promise<Response> {
   const name = params.name ?? '';
   const handler = handlers[name];
   if (!handler) return rpcError(id, -32602, `Unknown tool ${name}`);
@@ -192,4 +208,4 @@ export default {
       return json({ error: 'Something went wrong on our side.' }, 500);
     }
   },
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<TestEnv>;

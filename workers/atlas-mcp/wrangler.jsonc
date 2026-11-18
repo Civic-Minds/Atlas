@@ -6,7 +6,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-11-18",
   "compatibility_flags": ["nodejs_compat"],
-  "observability": { "enabled": true },
+  // Invocation logs would record each request URL, and a tester's link carries their token in the path: keep them off.
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } },
   "vars": {
     // Where the published data lives (the release pointer is DATA_ORIGIN/atlas/release.json).
     "DATA_ORIGIN": "https://data.transitatlas.fyi",
@@ -14,7 +15,7 @@
     "DAILY_CALL_CAP": "300"
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "atlas-studio-mcp", "database_id": "local-only-until-created", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "atlas-studio-mcp", "database_id": "19dabe73-5f54-4f50-8135-adb62d3a2154", "migrations_dir": "migrations" }
   ],
   "ratelimits": [
     // 30 calls a minute per tester, per Cloudflare location (approximate). The namespace id is a placeholder.
