@@ -291,3 +291,40 @@ Where both runs called the same tool, they gave the same figures. They called di
 Not covered by the standing questions: buses_needed, routes_by_hours and also_agencies. The final round's trick questions are where models added figures of their own; they are worth adding to the standing set.
 
 Fixes: none made in this round. Every gap is in `atlasData.ts` or `atlas-mcp.ts`, which the hosted-version work (CIV-1840) is rewriting, so they went to the manager as a list.
+
+## 2026-11-18: the hosted version's tool code (CIV-1840), Claude both ways and Gemini
+
+Studio's branch at 64a0f49e0 (feat/civ-1840-hosted-mcp; it gives the same answers as the split store), still labelled 0.6.2 though its answers changed (0.7.0 asked for). Data release-mwl8qwjk. The 32 standing questions plus the 4 held wow questions, one chat per client, one question at a time. Each run's version, commit and data release are in its `.meta.json` next to the chat (`_reports/mcp-tests/2026-11-18-split-*`).
+
+- **Claude, locked down** (only atlas-studio, no built-in tools, settings or memory): all 36 answered from the tools. No figure from outside them.
+- **Claude, normal** (usual setup, but only the branch's atlas-studio, so the main checkout's server could not answer instead): all 36 answered; no web, shell or file reads.
+- **Gemini** (agy, Gemini 3.8 Flash High, only the Atlas tools allowed): 29 answered, then Gemini's quota ran out (resets in about 6½ days). Questions 30 to 36 (Kingston buses, Kipling, TransLink coverage and the 4 wow questions) have no Gemini answer.
+
+The 9 tool answers that changed from 0.6.2, and how the chats used them:
+
+| Change | Seen in | Verdict |
+|---|---|---|
+| rank_agencies and schedule_changes give each schedule's end date | 9, 16, 21, 29, 33, 36 | Right: every client now names the end dates, which 0.6.2 left out |
+| Ferries are no longer bus peers (HSR's evening peers 179 → 177) | 33 | Right: BC Ferries is gone from HSR's peers |
+| A last trip after midnight says so ("2:08 AM (after midnight)") | 13, 26 | Right |
+| route_frequency adds trips by direction | 35 | The TTC 29 still shows two northbound "branches" with 144 trips each. Ryan: northbound 29s have one destination; only southbound branches. 144 is the direction's count; the tool should show one northbound row. Sent to Studio |
+| routes_near gives each route's weekday hours | 18, 31 | Right: no client guessed night routes from memory this time |
+| route_history ends with today's schedule when History is older (Kingston 12) | 13 | Right |
+| schedule_changes gives clock hours and the end date, matches names regardless of capitals, and pages | 29, 36 | Right: RTD's Bound, FreeRide and MetroRide no longer show as removed and added |
+| list_agencies "Viva" points to YRT | (wow only) | Right in the golden run; no chat asked |
+
+Other findings:
+
+| # | Client | Finding | Verdict |
+|---|---|---|---|
+| 26 | Claude normal | A combined_frequency window that starts at midnight (12 AM–3 AM) returns no figures; 11 PM–5 AM works. Same on main | Tool bug. Added to the figure check as a known gap |
+| 13 | Claude normal | Said Atlas has no 2017 data without calling route_history; the locked run called it and gave the 2017 table | Model miss: the tool descriptions should point history questions at route_history |
+| 26 | Gemini | "Evenly spaced… every 9 min" for 11 PM–2 AM. The tool says every 10 (21 departures), and its no-bunching list doesn't show even spacing | Wrong: a figure not from the tool |
+| 4 | Gemini | "The LRT remains under construction", unlabelled | From memory, not Atlas |
+| 10 | Gemini | Gave the 52's 20-minute branch figure as its "typical wait" | Misread the range |
+| 22 | Both | Crowding estimates, labelled as their own | Fine (asked for) |
+| 36 | Claude | Read RTD's FX routes as "FlexRide zones", unlabelled | Its own reading of the names |
+
+Spot checks against the tools: Gemini's R4 every 3 at the AM peak and the 929 every 8 all day are right.
+
+Gemini plan (manager, 2026-11-18): rounds run on Claude only until Gemini's quota resets (about 2026-11-25). Then the 7 missing Gemini questions (30 to 36 above) run on the same server code.
