@@ -11,7 +11,8 @@
 import { createInterface } from 'node:readline';
 import { PERIOD_KEYS, PERIOD_MINUTES, PERIOD_LABELS, formatPeriodRange } from '../../shared/config';
 import { hourRange } from '../../shared/timeText';
-import { STUDIO_TARGETS } from '../../shared/studioVehicles';
+import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
+import { headwayEvery } from '../../shared/headwayText';
 
 // Anything an imported module prints must not reach stdout, which is the protocol channel.
 console.log = (...args: unknown[]) => console.error(...args);
@@ -52,6 +53,7 @@ const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> 
     if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].toLowerCase()}: it may not run then, or its number is written differently.` };
     const missing = every != null && !STUDIO_TARGETS.includes(every);
     const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
+    const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
     return {
       agency: a.name, route, period,
       ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
@@ -62,8 +64,9 @@ const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> 
         neededAtCurrentFrequency: g.implied,
         roundTripRunningMinutes: g.runningMin,
         roundTripLayoverMinutes: g.layoverMin,
-        neededAt: Object.fromEntries(targets.filter(t => g.atTarget[t] != null).map(t => [`every ${t} min`, g.atTarget[t]])),
-        ...(g.atTargetEven ? { neededAtWithBranchesEven: Object.fromEntries(targets.filter(t => g.atTargetEven![t] != null).map(t => [`every ${t} min`, g.atTargetEven![t]])) } : {}),
+        // The same figures Studio's buses-needed page shows for each branch split (groupAtTarget).
+        neededAt: neededAt(groupAtTarget(g, 'current')),
+        ...(g.atTargetEven ? { neededAtWithBranchesEven: neededAt(groupAtTarget(g, 'even')) } : {}),
       })),
       targetsNote: `Atlas Studio works buses out only for every ${STUDIO_TARGETS.join(', ')} minutes. For any other frequency, say Atlas has no figure; don't work one out yourself.`,
       ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),

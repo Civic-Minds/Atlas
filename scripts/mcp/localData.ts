@@ -11,7 +11,7 @@ import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { countryForRegion } from '../../shared/regionCountry';
 import { metresBetween } from '../../shared/geoDistance';
-import type { StudioVehicleGroup, StudioVehiclesFile } from '../../shared/studioVehicles';
+import { studioVehiclesFileName, type StudioVehicleGroup, type StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { IndexedAgency } from '../../shared/mcpStore';
 import type { GtfsData } from '../../types/gtfs';
 import { parseGtfsZip } from '../../pipeline/parseGtfs';
@@ -192,11 +192,11 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
 }
 
 /** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
-export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', `${slug}-vehicles.json`); }
+export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', studioVehiclesFileName(slug)); }
 
 /** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
 export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${slug}-vehicles.json`;
+  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${studioVehiclesFileName(slug)}`;
 }
 
 export type BusesNeeded =
