@@ -350,33 +350,43 @@ export async function stopsOf(agency: CatalogAgency): Promise<Stop[]> {
   return stops;
 }
 
-/** Each branch of a route on a day: its direction, where it goes, its first and last stops and its trips. */
+/**
+ * Each branch of a route on a day: its direction, where it goes, its first and last stops and its trips. Branches of one
+ * direction that end at the same stop are one row (TTC 29 northbound runs to Wilson Station from either of two loops):
+ * their trips are counted once where they carry the same departures (a shared trunk), and added where they differ.
+ */
 export async function branchesOf(agency: CatalogAgency, r: RouteRows) {
   const name = new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
-  const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
-  return r.rows.map(row => {
+  type Branch = { direction: string; towards: string | null; from?: string | null; to?: string | null; stops?: number; trips: number; startsAt?: string[] };
+  const groups = new Map<string, { rows: ShapeProperties[]; branch: Branch; hours: Map<string, number>; from: string[]; headsigns: Set<string> }>();
+  const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
+  const total = (h: Record<string, number>) => Object.values(h).reduce((a, b) => a + b, 0);
+  for (const row of r.rows) {
     const order = (row.stopOrder as string[] | undefined) ?? [];
     const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+    const direction = String(row.directionId ?? '0');
+    const trips = total(hoursOf(row));
+    if (trips <= 0 || !(towards || order.length)) continue;
     // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
-    return order.length ? { direction: String(row.directionId ?? '0'), towards, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) } : { direction: String(row.directionId ?? '0'), towards, trips: trips(row) };
-  }).filter(b => b.trips > 0 && (b.towards || 'stops' in b)).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
-}
-
-/**
- * Trips each way on a day. Two branches of one direction that share a trunk each carry the trunk's trips (TTC 29: the
- * two Wilson-bound branches both read 190), so adding the branches together double counts. Rows with the same
- * departures by hour count once; rows with different ones add up.
- */
-export function tripsByDirection(r: RouteRows) {
-  const byDir = new Map<string, Map<string, number>>();
-  for (const row of r.rows) {
-    const hours = (row.departuresByHour as Record<string, number> | undefined) ?? {};
-    const total = Object.values(hours).reduce((a, b) => a + b, 0);
-    if (!total) continue;
-    const dir = String(row.directionId ?? '0');
-    (byDir.get(dir) ?? byDir.set(dir, new Map()).get(dir)!).set(JSON.stringify(Object.entries(hours).sort(([a], [b]) => +a - +b)), total);
+    const to = order.length ? name.get(order[order.length - 1]) ?? null : null;
+    const key = order.length ? `${direction}|to:${to}` : `${direction}|towards:${towards}`;
+    const sig = JSON.stringify(Object.entries(hoursOf(row)).sort(([a], [b]) => +a - +b));
+    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: order.length } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
+    g.rows.push(row);
+    g.hours.set(sig, trips); // the same departures count once
+    const from = order.length ? name.get(order[0]) : null;
+    if (from && !g.from.includes(from)) g.from.push(from);
+    if (row.headsign) g.headsigns.add(String(row.headsign));
   }
-  return [...byDir.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([direction, sets]) => ({ direction, trips: [...sets.values()].reduce((a, b) => a + b, 0) }));
+  return [...groups.values()].map(g => {
+    const merged = g.rows.length > 1 && g.from.length > 1;
+    return {
+      ...g.branch,
+      trips: [...g.hours.values()].reduce((a, b) => a + b, 0),
+      // Rows that start at different stops but end at the same one are a single way to the end.
+      ...(merged ? { towards: g.headsigns.size === 1 ? [...g.headsigns][0] : g.branch.towards, from: g.from.join(' or '), startsAt: g.from } : {}),
+    };
+  }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);

@@ -7,13 +7,15 @@
  * found through the release pointer the map reads, so it is never staler than the map.
  */
 import * as data from '../../../scripts/mcp/atlasData';
-import { TOOLS, handlers, INSTRUCTIONS } from '../../../scripts/mcp/tools';
+import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION } from '../../../scripts/mcp/tools';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
 const POINTER_TTL_SECONDS = 60;
-const SERVER = { name: 'atlas-studio', title: 'Atlas Studio', version: '0.7.0' };
+const SERVER = { name: 'atlas-studio', title: 'Atlas Studio', version: SERVER_VERSION };
+// The MCP protocol versions this server answers to (the newest first); a client asking for another gets the newest.
+const PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 
 const json = (body: unknown, status = 200, headers: HeadersInit = {}) => Response.json(body, { status, headers });
 const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -43,8 +45,15 @@ async function useCurrentRelease(env: Env): Promise<string> {
   if (!res.ok) throw new Error(`The release pointer could not be read (${res.status}).`);
   const { releaseId } = await res.json<{ releaseId: string }>();
   if (activeRelease?.id !== releaseId) {
-    // Files of one release never change, so they cache for a long time at the edge.
+    // A new release counts only once its MCP files are up (the pointer can move before they are uploaded): until then the
+    // release already loaded keeps answering. With none loaded yet there is nothing to answer from.
     const base = `${env.DATA_ORIGIN}/atlas/releases/${releaseId}/mcp`;
+    const ready = await fetch(`${base}/manifest.json`, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
+    if (!ready.ok) {
+      if (activeRelease) { activeRelease = { ...activeRelease, checkedAt: now }; return activeRelease.id; }
+      throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
+    }
+    // Files of one release never change, so they cache for a long time at the edge.
     data.useStore(splitStore(async path => {
       const r = await fetch(`${base}/${path}`, { cf: { cacheTtl: 86_400, cacheEverything: true } });
       if (r.status === 404) return null;
@@ -78,7 +87,7 @@ async function handleMcp(request: Request, env: Env, ctx: ExecutionContext, test
   if (id === undefined) return new Response(null, { status: 202 }); // notifications need no answer
   switch (method) {
     case 'initialize':
-      return rpcResult(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: SERVER, instructions: INSTRUCTIONS });
+      return rpcResult(id, { protocolVersion: PROTOCOL_VERSIONS.includes(params?.protocolVersion ?? '') ? params?.protocolVersion : PROTOCOL_VERSIONS[0], capabilities: { tools: {} }, serverInfo: SERVER, instructions: INSTRUCTIONS });
     case 'ping': return rpcResult(id, {});
     case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers) });
     case 'tools/call': return callTool(id, params ?? {}, env, ctx, tester);
@@ -91,10 +100,12 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   const handler = handlers[name];
   if (!handler) return rpcError(id, -32602, `Unknown tool ${name}`);
   const { success } = await env.TESTER_LIMIT.limit({ key: tester });
-  if (!success) return json({ error: 'Too many requests: please slow down a little.' }, 429, { 'Retry-After': '60' });
+  // Said as a tool result, not a bare HTTP error, so the assistant can tell the person plainly.
+  const limited = (message: string, retryAfter: string) => json({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: message }], isError: true } }, 200, { 'Retry-After': retryAfter });
+  if (!success) return limited('Too many requests in a short time. Wait a minute and try again.', '60');
   const since = new Date(Date.now() - 86_400_000).toISOString();
   const used = await env.DB.prepare('SELECT COUNT(*) AS n FROM calls WHERE tester = ? AND at >= ?').bind(tester, since).first<{ n: number }>();
-  if ((used?.n ?? 0) >= Number(env.DAILY_CALL_CAP)) return json({ error: 'Daily fair-use limit reached. It resets as the day rolls over.' }, 429, { 'Retry-After': '3600' });
+  if ((used?.n ?? 0) >= Number(env.DAILY_CALL_CAP)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
 
   const { question, ...args } = params.arguments ?? {};
   const started = Date.now();
@@ -176,7 +187,8 @@ export default {
       }
       return json({ error: 'Not found' }, 404);
     } catch (e) {
-      console.error(JSON.stringify({ error: e instanceof Error ? e.message : String(e), path: url.pathname }));
+      // The path of a tester's link holds their token, so it is never logged.
+      console.error(JSON.stringify({ error: e instanceof Error ? e.message : String(e), path: url.pathname.replace(/^\/t\/[^/]+/, '/t/…') }));
       return json({ error: 'Something went wrong on our side.' }, 500);
     }
   },

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
+import { startsInWindow, windowHas } from '../mcp/tools';
 import { stopToStopRuns } from '../../pipeline/stopToStop';
 import type { GtfsData } from '../../types/gtfs';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
@@ -66,5 +67,18 @@ describe('agency labels for trips across agencies', () => {
     expect(agencyLabel('no-such-agency', 'Big Blue Bus (Santa Monica)')).toBe('Big Blue Bus');
     expect(withAgency('LA Metro', 'Metro E Line')).toBe('LA Metro E Line');
     expect(withAgency('Big Blue Bus', 'R10')).toBe('Big Blue Bus R10');
+  });
+});
+
+describe('time windows that start after midnight (CIV-1840)', () => {
+  it('reads 12 AM–3 AM as the late night of the service day (24:00–27:00) as well as the clock hours', () => {
+    const w = { start: parseClock('12 AM')!, end: parseClock('3 AM')! };
+    expect(w).toEqual({ start: 0, end: 180 });
+    expect([100, 1500, 1600, 600, 1700].map(t => windowHas(t, w))).toEqual([true, true, true, false, false]);
+    expect(startsInWindow([100, 1500, 1700], w)).toEqual([100, 60]);
+  });
+  it('leaves daytime windows and windows past midnight as they were', () => {
+    expect([700, 1500].map(t => windowHas(t, { start: 600, end: 1080 }))).toEqual([true, false]);
+    expect([1380, 1500, 100].map(t => windowHas(t, { start: 1380, end: 1680 }))).toEqual([true, true, false]);
   });
 });

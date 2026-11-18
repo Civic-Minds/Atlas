@@ -69,7 +69,7 @@ const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> 
     const ags = await withAlso(a, args);
     const t = await local.tripTimes(ags.map(x => ({ slug: x.slug, label: local.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType, Array.isArray(args.routes) ? args.routes.map(String) : []);
     const routes = [...t.byRoute.entries()].map(([route, runs]) => {
-      const inWindow = w ? runs.filter(x => x.start >= w.start && x.start < w.end) : runs;
+      const inWindow = w ? runs.filter(x => tools.windowHas(x.start, w)) : runs;
       const s = local.runningTimeSummary(inWindow);
       const mins = inWindow.map(x => x.minutes).sort((x, y) => x - y);
       return {
@@ -94,6 +94,8 @@ const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> 
     const c = await local.combinedDepartures(ags.map(x => ({ slug: x.slug, label: local.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
     const windows = w ? [{ name: w.label, start: w.start, end: w.end }] : PERIOD_KEYS.map(k => ({ name: `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`, start: PERIOD_MINUTES[k].start, end: PERIOD_MINUTES[k].end }));
     const all = [...c.byRoute.values()].flat().map(x => x.start);
+    // A window that starts after midnight (12 AM–3 AM) is also read as the late night of the service day (24:00–27:00).
+    const inWin = (starts: number[], win: { start: number; end: number }) => (w ? tools.startsInWindow(starts, win) : starts);
     return {
       ...staleNote(a, c.scheduleEnds),
       agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
@@ -101,11 +103,11 @@ const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> 
       routes: [...c.byRoute.keys()],
       byWindow: windows.map(win => ({
         window: win.name,
-        combined: c.reading(all, win.start, win.end),
-        eachRoute: Object.fromEntries([...c.byRoute.entries()].map(([route, runs]) => [route, c.reading(runs.map(x => x.start), win.start, win.end)])),
+        combined: c.reading(inWin(all, win), win.start, win.end),
+        eachRoute: Object.fromEntries([...c.byRoute.entries()].map(([route, runs]) => [route, c.reading(inWin(runs.map(x => x.start), win), win.start, win.end)])),
       })).filter(x => x.combined.departures > 0),
       ...(w ? { windowNote: windowNote(w) } : {}),
-      leaveTogether: windows.map(win => ({ window: win.name, departuresCountedAsOne: local.bunchedCount(all, win.start, win.end) })).filter(x => x.departuresCountedAsOne > 0),
+      leaveTogether: windows.map(win => ({ window: win.name, departuresCountedAsOne: local.bunchedCount(inWin(all, win), win.start, win.end) })).filter(x => x.departuresCountedAsOne > 0),
       leaveTogetherNote: `Where two routes leave within ${local.BUNCHED_MINUTES} minute of each other, Atlas counts them as one departure, so the combined wait can read longer than the trips listed.`,
       note: 'Departures from the first stop on trips that go on to the second.', source: "The agency's own schedule file that Atlas processed.",
     };
@@ -125,7 +127,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.6.2' }, instructions: INSTRUCTIONS });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: tools.SERVER_VERSION }, instructions: INSTRUCTIONS });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {

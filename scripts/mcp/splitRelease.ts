@@ -10,7 +10,7 @@
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { splitPaths, type SplitManifest } from '../../shared/mcpSplitStore';
-import { diskStore, indexFile } from './diskStore';
+import { cachedReleaseId, diskStore, indexFile } from './diskStore';
 import { agencyFiles } from './splitBuild';
 console.log = (...args: unknown[]) => console.error(...args);
 const data = await import('./atlasData');
@@ -42,7 +42,7 @@ for (const [i, a] of agencies.entries()) {
   data.forget(a.slug);
   if ((i + 1) % 25 === 0 || i + 1 === agencies.length) console.error(`${i + 1}/${agencies.length}`);
 }
-const manifest: SplitManifest = { releaseId: 'local-' + (process.env.ATLAS_MCP_RELEASE ?? 'cache'), builtAt: new Date().toISOString(), // A check build of a few agencies can still list every agency (ATLAS_SPLIT_MANIFEST_ALL=1), so list_agencies answers as the full release does.
+const manifest: SplitManifest = { releaseId: process.env.ATLAS_MCP_RELEASE ?? cachedReleaseId() ?? 'local', builtAt: new Date().toISOString(), // A check build of a few agencies can still list every agency (ATLAS_SPLIT_MANIFEST_ALL=1), so list_agencies answers as the full release does.
   agencies: (process.env.ATLAS_SPLIT_MANIFEST_ALL ? have : agencies).map(a => a.slug) };
 put(splitPaths.manifest, manifest);
 console.error(`Wrote ${out}`);

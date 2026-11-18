@@ -37,6 +37,14 @@ export function routeFiles(): Map<string, string> {
   return out;
 }
 
+/** The release the route files on disk belong to: the name of the newest release cache folder (release-xxxx), or null when they come from local dry-run output. */
+export function cachedReleaseId(): string | null {
+  const cache = join(ATLAS_ROOT, 'tmp/agency-pages-cache');
+  if (!existsSync(cache)) return null;
+  const newest = readdirSync(cache).map(d => join(cache, d)).filter(d => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+  return newest ? newest.split('/').pop()! : null;
+}
+
 /** Where the ranking index sits: next to the route files it was built from, so a new release gets a new index. */
 export function indexFile(): string | null {
   const any = [...routeFiles().values()][0];

@@ -13,6 +13,11 @@ import type { IndexedAgency } from './atlasData';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { modeLabel } from '../../shared/modes';
 import { ROUTE_TYPE } from '../../shared/rules/modes';
+import { SITE_URL } from '../../shared/rules/paths';
+import { TIME_PERIODS } from '../../shared/rules/periods';
+import { MAP_URL } from '../../src/utils/urlSchema';
+import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
+import { buildRouteKey } from '../../src/utils/routeKey';
 
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -47,7 +52,40 @@ const TOOL_LIST = [
 const QUESTION = { type: 'string', description: "Optional: the person's question, as you understood it. Used only to improve Atlas; leave it out if unsure." };
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
+/** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
+export const SERVER_VERSION = '0.7.0';
+
 export type Args = Record<string, unknown>;
+
+/**
+ * A link to the same view on the Atlas map, built from the map's own link parameters (src/utils/urlSchema.ts): the
+ * route card, or the agencies with a frequency filter, a day and a part of the day. The map always shows the live
+ * release, so a link opens on the newest schedule; the answer's scheduleValidThrough says which one that is.
+ */
+export function mapLink(view: { route?: { agency: string; routeId: string }; agencies?: string[]; day?: string; period?: string; every?: number }): string {
+  const q = new URLSearchParams();
+  if (view.agencies?.length) q.set(AGENCIES_PARAM, view.agencies.join('.'));
+  if (view.route) q.set(MAP_URL.route.key, buildRouteKey(view.route.agency, view.route.routeId));
+  if (view.every != null && (PUBLIC_TIER_MAXES as readonly number[]).includes(view.every)) q.set(MAP_URL.headway.key, MAP_URL.headway.serialize(view.every));
+  if (view.period) q.set(MAP_URL.period.key, view.period);
+  if (view.day) q.set(MAP_URL.day.key, view.day);
+  return `${SITE_URL}/?${q.toString()}`;
+}
+
+/**
+ * A time window for the service day. A clock window that starts before the first part of the day (12 AM–3 AM) can mean
+ * the hours after midnight that belong to the day's late night (24:00–27:00), where the schedule writes them, or the
+ * hours at its start (5 AM). Both are read: the starts that fall in the window shifted a day, folded into it.
+ */
+export function startsInWindow(starts: readonly number[], w: { start: number; end: number }): number[] {
+  return starts.filter(t => windowHas(t, w)).map(t => (t >= w.end ? t - 1440 : t));
+}
+
+/** Whether a departure (minutes in the service day) falls in a window, reading an early-morning window both ways (see startsInWindow). */
+export function windowHas(t: number, w: { start: number; end: number }): boolean {
+  if (t >= w.start && t < w.end) return true;
+  return w.start < TIME_PERIODS[0].startHour * 60 && w.end <= 1440 && t >= w.start + 1440 && t < w.end + 1440;
+}
 export const validThrough = (a: { lastFeedExpiry?: string | null }) => a.lastFeedExpiry ? `${a.lastFeedExpiry.slice(0, 4)}-${a.lastFeedExpiry.slice(4, 6)}-${a.lastFeedExpiry.slice(6, 8)}` : null;
 export const SOURCE = "Atlas's published schedule data for this agency.";
 
@@ -164,10 +202,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       periods: PERIOD_KEYS.map(p => data.periodFigure(r, p)),
       service: data.serviceSpan(r),
       branches: await data.branchesOf(a, r),
-      tripsByDirection: data.tripsByDirection(r),
-      branchesNote: "A branch's trips are all the trips on its stretch, including trips it shares with the other branch of its direction. Don't add branches together: tripsByDirection is each direction's total.",
+      branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
       ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end), windowNote: windowNote(w) } : {}),
+      mapLink: mapLink({ route: found.routeIds[0] != null ? { agency: a.slug, routeId: found.routeIds[0] } : undefined, day: dayType }),
       scheduleValidThrough: validThrough(a), source: SOURCE,
     };
   },
@@ -175,22 +213,22 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const a = await needAgency(q);
     const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
     const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
     const rows = await Promise.all((Array.isArray(agencies) ? agencies : []).map(async q => {
       const a = await needAgency(q);
       const res = await data.routesMeeting(a, dayType, key, minutes);
-      return { agency: a.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: validThrough(a) };
+      return { slug: a.slug, agency: a.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: validThrough(a) };
     }));
-    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows, source: SOURCE };
+    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slug: _slug, ...row }) => row), mapLink: mapLink({ agencies: rows.map(r => r.slug), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
   routes_near: async ({ agency: q, place, metres }) => {
     const a = await needAgency(q);
     const res = await data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : 250);
-    if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.' };
-    return { agency: a.name, place, ...res, source: SOURCE };
+    if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.', scheduleValidThrough: validThrough(a) };
+    return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   route_history: async ({ agency: q, route, day: d }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
@@ -199,7 +237,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const h = await data.routeHistory(a, String(route ?? ''), dayType);
     if (!h) return { agency: a.name, history: null, note: "Atlas's History has no data for this agency." };
     if (!h.route) return { agency: a.name, history: null, note: `Atlas's History has ${h.routes} routes for this agency, none matching "${route}".` };
-    return { agency: a.name, day: dayType, ...h, note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
+    return { agency: a.name, day: dayType, ...h, scheduleValidThrough: validThrough(a), note: 'Each schedule is one Atlas kept from that time; a part of the day with no figure is left out. Older schedules may lack weekend figures. Where a route starts or stops partway through a part of the day, Atlas counts the wait to the edge of that part, so a figure can be far longer than the gap between the trips that run (a route every 10 min until 1 AM shows every 61 min from 11 PM to 2 AM). That is the rule Atlas uses, not a data error.', source: "Atlas's History data." };
   },
   routes_by_hours: async (args) => {
     const a = await needAgency(args.agency);
