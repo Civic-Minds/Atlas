@@ -32,7 +32,7 @@ async function handler(req: Request): Promise<Response> {
     // ?fields=segments: only what the time-loss views read (Studio's Live page loads every route of an agency at once).
     if (params.get('fields') === 'segments') {
       const d = JSON.parse(raw) as Record<string, unknown>;
-      return json({ agency: d.agency, route: d.route, generatedAt: d.generatedAt, dates: d.dates, directionLabels: d.directionLabels, observations: d.observations, segments: d.segments });
+      return json({ agency: d.agency, route: d.route, generatedAt: d.generatedAt, dates: d.dates, directionLabels: d.directionLabels, observations: d.observations, segments: d.segments, recent: d.recent });
     }
     return new Response(raw, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   } catch {
