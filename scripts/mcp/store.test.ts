@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { PERIOD_KEYS } from '../../shared/config';
 import { memoryStore } from '../../shared/mcpMemoryStore';
+import { splitPaths, splitStore } from '../../shared/mcpSplitStore';
 
 const FIXTURE = JSON.parse(readFileSync(join(import.meta.dirname, '../../src/utils/__tests__/fixtures/ttc-29-weekday.json'), 'utf8')) as { features: Array<{ geometry: unknown; properties: Record<string, unknown> }> };
 const lineFeatures = FIXTURE.features.map(f => ({ ...f, geometry: { type: 'LineString', coordinates: [[0, 0], [0, 1]] } }));
@@ -20,8 +21,8 @@ const AGENCY = { slug: 'fixture', name: 'Fixture Transit', region: 'Ontario', ci
 
 async function results(data: typeof import('./atlasData')) {
   const a = (await data.findAgency('FX'))!;
-  const rows = await data.routesOn(a, 'Weekday');
-  const r = data.findRoute(rows, '29')!;
+  const rows = await data.routeList(a, 'Weekday');
+  const r = await data.routeWithRows(a, 'Weekday', data.findRoute(rows, '29')!);
   return {
     agency: a.name,
     available: (await data.availableAgencies()).map(x => x.slug),
@@ -54,6 +55,14 @@ describe('Atlas Studio MCP stores (CIV-1840)', () => {
     data.useStore(memoryStore({ catalog: [AGENCY], meta: { fixture: { shortName: 'FX', parentAgency: null } }, files: { fixture: JSON.parse(JSON.stringify(features)) } }));
     const fromMemory = await results(data);
     expect(fromMemory).toEqual(fromDisk);
+    // The split release: files made from the same data, read back through the split store.
+    const { agencyFiles } = await import('./splitBuild');
+    const files = new Map<string, unknown>(await agencyFiles(AGENCY));
+    files.set(splitPaths.manifest, { releaseId: 'test', builtAt: '', agencies: ['fixture'] });
+    files.set(splitPaths.catalog, [AGENCY]);
+    files.set(splitPaths.meta, { fixture: { shortName: 'FX', parentAgency: null } });
+    data.useStore(splitStore(async path => (files.has(path) ? JSON.parse(JSON.stringify(files.get(path))) : null)));
+    expect(await results(data)).toEqual(fromDisk);
     expect(fromDisk.routes).toEqual(['29']);
     expect(fromDisk.near.routes.length).toBeGreaterThan(0);
   });

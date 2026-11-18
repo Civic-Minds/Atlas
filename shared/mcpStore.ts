@@ -22,6 +22,22 @@ export interface McpAgencyMeta { shortName: string; parentAgency: string | null 
 /** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
 export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
 
+/** One part of the day's figure for a route, as the map shows it (periodFigure in scripts/mcp/atlasData.ts). */
+export interface PeriodFigure { period: string; hours: string; waitMinutes: number | null; shown: string; meaning?: string }
+
+/**
+ * Everything the list-style tools need about one route on one day, so they never read its rows: its names and mode,
+ * each period's figure, its first and last trips, and the route ids it carries (routes near a place).
+ */
+export interface RouteSummary {
+  key: string; name: string; shortName: string; longName: string | null; mode: string;
+  routeIds: string[];
+  figures: Record<PeriodKey, PeriodFigure>;
+  span: { first: string | null; last: string | null; breaks: string[] } | null;
+  /** First and last trip in minutes after midnight, as routes_by_hours compares them; null when the data has no per-hour departures. */
+  bounds: { first: number | null; last: number | null } | null;
+}
+
 export interface McpHistoryRoute { routeShortName: string; routeName?: string; snapshots: Array<{ label: string; year: number } & Record<string, unknown>> }
 export interface McpHistoryAgency { slug: string; routes: McpHistoryRoute[] }
 
@@ -42,6 +58,13 @@ export interface AtlasStore {
   history(): Promise<McpHistoryAgency[] | null>;
   /** Studio's schedule comparison for an agency, or null when none was built. */
   comparison(slug: string): Promise<StudioBeforeAfterFile | null>;
+  /**
+   * Optional: an agency's route summaries by day, ready made (the split release). A store without it is read through
+   * its route features and summarised on the fly, with the same function.
+   */
+  summaries?(slug: string): Promise<Partial<Record<DayType, RouteSummary[]>> | null>;
+  /** Optional: one route's rows on a day, already normalised as the map normalises them (the split release). */
+  routeRows?(slug: string, day: DayType, key: string): Promise<Array<Record<string, unknown>> | null>;
   /** Frees an agency's loaded route data (the index build holds one agency at a time). */
   evict?(slug: string): void;
 }

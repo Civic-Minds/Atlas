@@ -9,7 +9,7 @@
  * - tmp/process-preview/<slug>/<slug>.json: a local `npm run process -- --dry-run` of the agency.
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
-import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpHistoryAgency, McpStop } from '../../shared/mcpStore';
+import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpHistoryAgency, McpStop, PeriodFigure, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, TIME_PERIODS, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
@@ -35,10 +35,11 @@ export type { IndexedAgency };
 /** Where the tools read from (CIV-1840): the store a caller sets (disk for the local server, R2 for the hosted one, memory in tests). This module is pure: no files, no network, so a Worker can import it. */
 let current: AtlasStore | null = null;
 const store: AtlasStore = new Proxy({} as AtlasStore, { get: (_t, k) => { if (!current) throw new Error('No store set: call useStore() first.'); return (current as unknown as Record<string | symbol, unknown>)[k]; } });
-export function useStore(s: AtlasStore): void { current = s; loaded.clear(); index = null; }
+export function useStore(s: AtlasStore): void { current = s; loaded.clear(); summaries.clear(); daySummaries.clear(); index = null; }
 export const currentStore = () => store;
 /** Frees one agency's loaded route lines (the index build holds one agency at a time). */
-export function forget(slug: string): void { loaded.delete(slug); store.evict?.(slug); }
+export function forget(slug: string): void { loaded.delete(slug); for (const k of [...daySummaries.keys()]) if (k.startsWith(`${slug}|`)) daySummaries.delete(k); store.evict?.(slug); }
+export type { RouteSummary };
 
 /** The public catalog: the agencies the public site shows. */
 export const publicAgencies = (): Promise<CatalogAgency[]> => store.catalog();
@@ -60,7 +61,7 @@ export async function findAgency(query: string, list?: CatalogAgency[]): Promise
   return list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q) ?? list.find(a => a.name.toLowerCase().includes(q)) ?? null;
 }
 
-interface RouteRows { key: string; name: string; shortName: string; longName: string | null; mode: string; rows: ShapeProperties[] }
+export interface RouteRows { key: string; name: string; shortName: string; longName: string | null; mode: string; rows: ShapeProperties[] }
 const loaded = new Map<string, Feature[]>();
 
 async function lines(slug: string): Promise<Feature[]> {
@@ -92,14 +93,60 @@ export async function routesOn(agency: CatalogAgency, day: DayType): Promise<Rou
   return [...byKey.values()].sort((a, b) => compareRouteNumber(a.name, b.name, a.longName, b.longName));
 }
 
+/** A route's summary: what the list tools read, made with the same functions route_frequency uses. */
+export function summarize(r: RouteRows): RouteSummary {
+  const runs = routeRuns(r.rows as never, undefined);
+  return {
+    key: r.key, name: r.name, shortName: r.shortName, longName: r.longName, mode: r.mode,
+    routeIds: [...new Set(r.rows.map(row => String(row.routeId)))],
+    figures: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k)])) as Record<PeriodKey, PeriodFigure>,
+    span: serviceSpan(r),
+    bounds: runs ? { first: runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null), last: runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null) } : null,
+  };
+}
+
+const summaries = new Map<string, Promise<Partial<Record<DayType, RouteSummary[]>> | null>>();
+/** A store's ready-made summaries for an agency (the split release), or null when it makes them on the fly. */
+function readySummaries(slug: string) {
+  if (!store.summaries) return null;
+  if (!summaries.has(slug)) summaries.set(slug, store.summaries(slug));
+  return summaries.get(slug)!;
+}
+const daySummaries = new Map<string, RouteSummary[]>();
+
+/** Each route on a day as a summary: read ready-made where the store has them, else made from its rows. */
+export async function routeList(agency: CatalogAgency, day: DayType): Promise<RouteSummary[]> {
+  const ready = readySummaries(agency.slug);
+  if (ready) {
+    const all = await ready;
+    if (!all) throw new Error(`No route data for ${agency.slug}.`);
+    return all[day] ?? [];
+  }
+  const id = `${agency.slug}|${day}`;
+  if (!daySummaries.has(id)) daySummaries.set(id, (await routesOn(agency, day)).map(summarize));
+  return daySummaries.get(id)!;
+}
+
+/** One route's rows on a day (what route_frequency's branches and hourly figures read). */
+export async function routeWithRows(agency: CatalogAgency, day: DayType, s: RouteSummary): Promise<RouteRows> {
+  if (store.routeRows) {
+    const rows = await store.routeRows(agency.slug, day, s.key);
+    if (!rows) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
+    return { key: s.key, name: s.name, shortName: s.shortName, longName: s.longName, mode: s.mode, rows: rows as unknown as ShapeProperties[] };
+  }
+  const r = (await routesOn(agency, day)).find(x => x.key === s.key);
+  if (!r) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
+  return r;
+}
+
 /**
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
  * not the 60 Blue Island bus), then any name containing them, rail first.
  */
-export function findRoute(routes: RouteRows[], query: string): RouteRows | null {
+export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
-  const names = (r: RouteRows) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
-  const rail = (r: RouteRows) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
+  const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
+  const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
   const exact = routes.find(r => names(r).includes(q));
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
@@ -122,7 +169,7 @@ function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
  * which give a range where parts of the route differ ("every 5–16 min": every 5 on the busiest part, every 16 on the
  * quietest) and name a long gap where the route card does.
  */
-export function periodFigure(r: RouteRows, period: PeriodKey) {
+export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
   const waitMinutes = filter.headway != null && filter.headway < 999 ? filter.headway : null;
@@ -166,11 +213,11 @@ export const parsePeriod = (period: unknown): PeriodKey | null => {
  * Other routes of the agency with the same long name as this one (TTC 510 and its night 310, both "Spadina"), each with
  * its first and last trips, so a question about a street's service can include the night route that takes over.
  */
-export async function sameNameRoutes(agency: CatalogAgency, day: DayType, r: RouteRows) {
+export async function sameNameRoutes(agency: CatalogAgency, day: DayType, r: Pick<RouteRows, 'name' | 'longName'>) {
   const name = (r.longName ?? '').trim().toLowerCase();
   if (!name) return [];
-  return (await routesOn(agency, day)).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
-    .map(o => ({ route: o.name, mode: o.mode, service: serviceSpan(o) }));
+  return (await routeList(agency, day)).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
+    .map(o => ({ route: o.name, mode: o.mode, service: o.span }));
 }
 
 /**
@@ -179,14 +226,12 @@ export async function sameNameRoutes(agency: CatalogAgency, day: DayType, r: Rou
  */
 export async function routesByHours(agency: CatalogAgency, day: DayType, endsBefore: number | null, startsAfter: number | null) {
   const out: Array<{ route: string; name: string | null; first: string | null; last: string | null }> = [];
-  for (const r of await routesOn(agency, day)) {
-    const runs = routeRuns(r.rows as never, undefined);
-    if (!runs) continue;
-    const first = runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null);
-    const last = runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null);
+  for (const r of await routeList(agency, day)) {
+    if (!r.bounds) continue;
+    const { first, last } = r.bounds;
     if (endsBefore != null && !(last != null && last < endsBefore)) continue;
     if (startsAfter != null && !(first != null && first > startsAfter)) continue;
-    const span = serviceSpan(r);
+    const span = r.span;
     out.push({ route: r.name, name: r.longName, first: span?.first ?? null, last: span?.last ?? null });
   }
   return out.sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name));
@@ -194,8 +239,8 @@ export async function routesByHours(agency: CatalogAgency, day: DayType, endsBef
 
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export async function routesMeeting(agency: CatalogAgency, day: DayType, period: PeriodKey, every: number) {
-  const all = await routesOn(agency, day);
-  const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...periodFigure(r, period) }));
+  const all = await routeList(agency, day);
+  const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
   const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
   return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
@@ -309,11 +354,17 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
   const near = stops.filter(s => seeds.some(t => metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres));
   const routeNames = new Map<string, { name: string; longName: string | null; mode: string }>();
-  for (const d of DAY_TYPES) for (const r of await routesOn(agency, d)) for (const row of r.rows) routeNames.set(String(row.routeId), { name: r.name, longName: r.longName, mode: r.mode });
+  for (const d of DAY_TYPES) for (const r of await namesOn(agency, d)) for (const id of r.routeIds) routeNames.set(id, { name: r.name, longName: r.longName, mode: r.mode });
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
   return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => ({ route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4) })).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+}
+
+/** Each route's names and route ids on a day: from the summaries where the store has them, else straight from the rows (no figures to work out). */
+async function namesOn(agency: CatalogAgency, day: DayType): Promise<Array<Pick<RouteSummary, 'name' | 'longName' | 'mode' | 'routeIds'>>> {
+  if (store.summaries) return routeList(agency, day);
+  return (await routesOn(agency, day)).map(r => ({ name: r.name, longName: r.longName, mode: r.mode, routeIds: r.rows.map(row => String(row.routeId)) }));
 }
 
 /** Agencies whose centre is within `km` of a place: another agency, or a city an agency lists. */

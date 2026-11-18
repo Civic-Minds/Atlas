@@ -23,7 +23,14 @@ const data = await import('./atlasData');
 // The parts that read files on this Mac (trip times, buses needed) stay out of the pure tool code (CIV-1840).
 const local = await import('./localData');
 const { diskStore } = await import('./diskStore');
-data.useStore(diskStore());
+// ATLAS_MCP_STORE=split:<folder> reads the split release files in a folder (what the hosted server reads), else the files on this Mac.
+const splitDir = process.env.ATLAS_MCP_STORE?.startsWith('split:') ? process.env.ATLAS_MCP_STORE.slice(6) : null;
+if (splitDir) {
+  const { splitStore } = await import('../../shared/mcpSplitStore');
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  data.useStore(splitStore(async path => { const f = join(splitDir, path); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; }));
+} else data.useStore(diskStore());
 
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
@@ -149,8 +156,9 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   route_frequency: async (args) => {
     const a = await needAgency(args.agency);
     const dayType = data.parseDay(args.day);
-    const r = data.findRoute(await data.routesOn(a, dayType), String(args.route ?? ''));
-    if (!r) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
+    const found = data.findRoute(await data.routeList(a, dayType), String(args.route ?? ''));
+    if (!found) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
+    const r = await data.routeWithRows(a, dayType, found);
     const w = window(args);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
     return {
@@ -230,7 +238,7 @@ const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
     const startsAfter = args.starts_after != null ? data.parseClock(args.starts_after) : null;
     if (endsBefore == null && startsAfter == null) throw new Error('Give ends_before or starts_after as a clock time, such as "22:00".');
     const routes = await data.routesByHours(a, dayType, endsBefore, startsAfter);
-    return { agency: a.name, day: dayType, ...(endsBefore != null ? { endsBefore: clockTime(endsBefore) } : {}), ...(startsAfter != null ? { startsAfter: clockTime(startsAfter) } : {}), routesOnDay: (await data.routesOn(a, dayType)).length, count: routes.length, routes, note: 'A last trip after midnight counts as that night, not as early.', scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, day: dayType, ...(endsBefore != null ? { endsBefore: clockTime(endsBefore) } : {}), ...(startsAfter != null ? { startsAfter: clockTime(startsAfter) } : {}), routesOnDay: (await data.routeList(a, dayType)).length, count: routes.length, routes, note: 'A last trip after midnight counts as that night, not as early.', scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   trip_time: async (args) => {
     const a = await needAgency(args.agency);
