@@ -1,9 +1,10 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { existsSync, statSync, createReadStream } from 'fs';
+import { existsSync, statSync, createReadStream, readdirSync } from 'fs';
 import { resolve } from 'path';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
+import { STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
@@ -182,6 +183,14 @@ export default defineConfig(({ mode, command, isPreview }) => {
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
+        // The agency menu's list: every agency with a built Schedule Changes file (shared/studioAgencies.ts).
+        if ((req.url ?? '').split('?')[0] === STUDIO_MANIFEST_DEV_URL) {
+          const names = existsSync(STUDIO_DIR) ? readdirSync(STUDIO_DIR) : [];
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(JSON.stringify({ agencies: studioAgenciesFromFiles(names) }));
+          return;
+        }
         const m = /^\/dev-studio\/([\w-]+-(?:vehicles|before-after)\.json)$/.exec((req.url ?? '').split('?')[0]);
         if (!m) return next();
         const file = resolve(STUDIO_DIR, m[1]);

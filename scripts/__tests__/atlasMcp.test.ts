@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies } from '../mcp/atlasData';
+import { agencyLabel, edgeWait, withAgency, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies } from '../mcp/atlasData';
 import { stopToStopRuns } from '../../pipeline/stopToStop';
 import type { GtfsData } from '../../types/gtfs';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
@@ -43,5 +43,23 @@ describe('Atlas MCP server data (CIV-1650)', () => {
     } as unknown as GtfsData;
     const { runs } = stopToStopRuns(gtfs, new Set(['A']), new Set(['B']), 'Saturday');
     expect(runs.map(r => [r.tripId, r.start, r.minutes]).sort()).toEqual([['t1', 600, 30], ['t2', 620, 25]]);
+  });
+});
+
+describe('edgeWait', () => {
+  it('marks a wait counted to the period edge', () => {
+    expect(edgeWait('every 10 min until 12:59 AM on part of the route', 61)).toBe(true);
+    expect(edgeWait('every 10 min', 10)).toBe(false);
+    expect(edgeWait('every 5–10 min', 10)).toBe(false);
+    expect(edgeWait('every 10 min until 12:59 AM', 10)).toBe(false);
+  });
+});
+
+describe('agency labels for trips across agencies', () => {
+  it('shortens a name and does not repeat a word', () => {
+    expect(agencyLabel('no-such-agency', 'Los Angeles County Metropolitan Transportation Authority (LA Metro)')).toBe('LA Metro');
+    expect(agencyLabel('no-such-agency', 'Big Blue Bus (Santa Monica)')).toBe('Big Blue Bus');
+    expect(withAgency('LA Metro', 'Metro E Line')).toBe('LA Metro E Line');
+    expect(withAgency('Big Blue Bus', 'R10')).toBe('Big Blue Bus R10');
   });
 });
