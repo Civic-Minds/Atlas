@@ -12,7 +12,7 @@
  * I/O and no feature access. The scripts/handcheck/stretch-departures.py oracle (`--at mid`)
  * computes the same stretches from the feed zip.
  */
-import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, type PeriodKey } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_DAY, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
@@ -478,7 +478,7 @@ export function directionStretches(
       countedTrips.add(trip.tripId);
       if (visit.final !== true) departingTrips.add(trip.tripId);
       times.add(visit.minutes);
-      if (visit.overnightOnly) overnight.push(visit.minutes + 1440);
+      if (visit.overnightOnly) overnight.push(visit.minutes + MINUTES_PER_DAY);
     }
     const sorted = [...times].sort((a, b) => a - b);
     return { times: sorted, nightTimes: nightServiceDepartureTimes(sorted, overnight), tripCount: count, countedTrips, departingTrips };
@@ -570,7 +570,7 @@ export function directionStretches(
           const minutes = i === from ? a.minutes : Math.round(a.minutes + ((b.minutes - a.minutes) * (i - from)) / (to - from));
           counts[i]++;
           times[i].add(minutes);
-          if (a.overnightOnly) overnight[i].push(minutes + 1440);
+          if (a.overnightOnly) overnight[i].push(minutes + MINUTES_PER_DAY);
         }
       }
     }
@@ -871,7 +871,7 @@ export function stretchRowPeriods(
   const out: PeriodKey[] = [];
   // A trip is in a period when any of its times falls in it (its first to last departure overlaps the window, on the
   // service day or the night after), so a trip that starts before the PM peak and runs into it counts there too.
-  const overlaps = ([a, b]: [number, number], start: number, end: number) => (a < end && b >= start) || (a + 1440 < end && b + 1440 >= start);
+  const overlaps = ([a, b]: [number, number], start: number, end: number) => (a < end && b >= start) || (a + MINUTES_PER_DAY < end && b + MINUTES_PER_DAY >= start);
   for (const { key, start, end } of PERIOD_WINDOWS) {
     let any = false;
     let all = true;
@@ -1256,7 +1256,7 @@ export function stopNightWait(d: DirectionStretches): number | null | undefined 
 export function nightOnlyTrips(trips: readonly DirectionTrip[]): DirectionTrip[] {
   const mid = (STRETCH_NIGHT_START_MIN + STRETCH_NIGHT_END_MIN) / 2;
   const inWindow = (t: number) => t >= STRETCH_NIGHT_START_MIN && t < mid;
-  return trips.filter(trip => trip.visits.some(v => inWindow(v.minutes) || inWindow(v.minutes + 1440)));
+  return trips.filter(trip => trip.visits.some(v => inWindow(v.minutes) || inWindow(v.minutes + MINUTES_PER_DAY)));
 }
 
 export interface DirectionRollup {
@@ -1600,7 +1600,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   // window, 07-22 or Sunday 09-21), not the 4x dominant-gap check: one 32-minute evening gap on an
   // every-7 trunk (LA Metro 51) must not void the route's all-day value.
   const dayType = d.key.slice(d.key.lastIndexOf('::') + 2) as 'Weekday' | 'Saturday' | 'Sunday';
-  const grading = DEFAULT_CRITERIA.dayTypes[dayType]?.timeWindow ?? { start: 420, end: 1320 };
+  const grading = (DEFAULT_CRITERIA.dayTypes[dayType] ?? DEFAULT_CRITERIA.dayTypes.Weekday!).timeWindow;
   // Phase 2's overnight fallback: a main stretch with under two departures in the grading window
   // is a night route, read over all its departures. Its branches are judged overnight, where it
   // runs, so the slower branch decides as by day (TTC 300: the Bloor trunk every 8, its branches

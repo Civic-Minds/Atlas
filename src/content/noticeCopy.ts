@@ -14,7 +14,7 @@ import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
-import { countText } from '../../shared/numberText';
+import { countText, countWord } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
@@ -998,7 +998,8 @@ export const EXTRA_MINUTES_AXIS = 'Extra minutes';
 export const LIVE_EXTRA_WAIT_CHART_CAPTION = 'How much longer riders wait than the schedule says, at each stop.';
 export const LIVE_EXTRA_WAIT_STOPS_CAPTION = 'Stops where riders wait longest compared with the schedule';
 export const LIVE_LATE_STOPS_CAPTION = 'Stops ranked by the share of late departures';
-export const LIVE_LATE_STOPS_TOP_CAPTION = 'The five stops with the highest share of late departures';
+/** The short list's caption, from the number of stops it lists (the dashboard's five). */
+export const liveLateStopsTopCaption = (n: number): string => `The ${countWord(n)} stops with the highest share of late departures`;
 export const LATE_PERCENT_LEGEND = 'Late %';
 /** The Service delivered table and tile: trips that ran, by day. */
 export const RAN_COLUMN = 'Ran';

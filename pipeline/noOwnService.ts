@@ -5,7 +5,7 @@
  * The card row reads Irregular for these periods. A row that reads its stretch (main or tail)
  * shows the stretch's departures, so it is never marked here. Display only: no filter value reads this.
  */
-import { PERIOD_KEYS, PERIOD_MINUTES, type PeriodKey } from '../shared/config.js';
+import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_MINUTES, type PeriodKey } from '../shared/config.js';
 
 export const MIN_OWN_DEPARTURES = 3;
 
@@ -15,7 +15,7 @@ export function ownDeparturesInPeriod(departuresByHour: Record<string, number>, 
   let n = 0;
   for (const [hour, count] of Object.entries(departuresByHour)) {
     const h = Number(hour) * 60;
-    if ((h >= start && h < end) || (h + 1440 >= start && h + 1440 < end)) n += count;
+    if ((h >= start && h < end) || (h + MINUTES_PER_DAY >= start && h + MINUTES_PER_DAY < end)) n += count;
   }
   return n;
 }
