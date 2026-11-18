@@ -5,13 +5,14 @@ import { fmtHeadway } from '../../utils/format';
 import { placeAlreadyInName } from '../../utils/agencyName';
 import { headwayToTierColor } from './HeadwaySparkline';
 import { getTierColor } from '../../utils/colors';
-import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH, CONTROL_ACTIVE } from '../../styles';
+import { CARD_NOTICE, FLOATING_CARD, PANEL_ENTER_LEFT, SIDEBAR_CARD_SURFACE, SIDEBAR_PANEL_WIDTH } from '../../styles';
 import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorMode } from '../../hooks/useColorMode';
 import { PHONE_MEDIA_QUERY } from '../../hooks/useMediaQuery';
 import ArrowLink from '../ui/ArrowLink';
+import Pill from '../ui/Pill';
 import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
 import type { Agency } from '../../App';
@@ -422,7 +423,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
 
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-3 bg-[var(--bg-panel)] border-t border-[var(--border-primary)]">
               <button type="button" onClick={reset} className="h-8 px-3 rounded-lg border border-[var(--border-primary)] bg-[var(--bg-app)] text-xs font-black text-[var(--text-muted)] hover:border-[var(--text-dim)] hover:text-[var(--text-primary)] transition-colors">{CANCEL_LABEL}</button>
-              {selectedCategory && <button type="submit" className={`h-8 px-3 rounded-lg border text-xs font-black hover:opacity-90 transition-opacity ${CONTROL_ACTIVE}`}>{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</button>}
+              {selectedCategory && <Pill submit selected className="!h-8 !px-3 !py-0 !rounded-lg !font-black hover:opacity-90">{import.meta.env.DEV ? 'Open GitHub report' : 'Open email draft'}</Pill>}
             </div>
           </form>
         </div>,

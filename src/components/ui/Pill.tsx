@@ -8,6 +8,8 @@ interface PillProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'
   /** Render as another element, such as a link ("a"), keeping the pill look. Defaults to a button. */
   as?: ElementType;
   href?: string;
+  /** A submit button inside a form (default: a plain button). */
+  submit?: boolean;
   /** Selected state; sets aria-pressed. Leave undefined for a plain action pill (tone "outline"). */
   selected?: boolean;
   /**
@@ -22,13 +24,13 @@ interface PillProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'
 }
 
 /** Compact option pill (text-xs, rounded-full). One component for the filter, option and bulk-action pills. */
-export default function Pill({ as: Tag = 'button', selected = false, tone = 'control', size = 'option', className = '', ...rest }: PillProps) {
+export default function Pill({ as: Tag = 'button', submit = false, selected = false, tone = 'control', size = 'option', className = '', ...rest }: PillProps) {
   const state = tone === 'outline' ? (selected ? CONTROL_ACTIVE : OUTLINE)
     : tone === 'glass' ? (selected ? APP_TAB_ACTIVE : APP_TAB_INACTIVE)
     : (selected ? CONTROL_ACTIVE : CONTROL_INACTIVE);
   return (
     <Tag
-      {...(Tag === 'button' ? { type: 'button', 'aria-pressed': tone === 'outline' && !selected ? undefined : selected } : {})}
+      {...(Tag === 'button' ? { type: submit ? 'submit' : 'button', 'aria-pressed': tone === 'outline' && !selected ? undefined : selected } : {})}
       className={`${size === 'segment' ? SEGMENT : FILTER_OPTION} ${state} ${className}`.trim()}
       {...rest}
     />
