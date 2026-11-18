@@ -45,7 +45,7 @@ node ../../scripts/mcp/goldenWorker.mjs <link from step 3> <golden file>
 
 - The D1 database exists (id in both configs) and is migrated. Choose the rate-limit `namespace_id` (a placeholder is in the config) and the real `DAILY_CALL_CAP`.
 - Switch from `wrangler.pilot-test.jsonc` (bundled files) to `wrangler.jsonc` (reads the release on R2) once the files are uploaded.
-- Measured CPU per call on the deployed Worker, cold: 30–84 ms (route_history 84, rank_agencies 76, TTC route 52 82, TTC 29 32, list_agencies 30), 0 ms warm calls are far less. The free plan's limit is 10 ms per request; all calls returned ok, so confirm which plan the account is on. To fit 10 ms: History per agency, a slimmer ranking index, a slimmer catalog.
+- Measured CPU per call on the deployed Worker, cold: 30–84 ms (route_history 84, rank_agencies 76, TTC route 52 82, TTC 29 32, list_agencies 30); warm calls are far less. The free plan's limit is 10 ms per request; all calls returned ok, so confirm which plan the account is on. To fit 10 ms: History per agency, a slimmer ranking index, a slimmer catalog.
 - Upload the split files to `atlas/releases/<id>/mcp/` with the next data rebuild; History (8.4 MB) and the ranking index (4.9 MB) are each read whole, so split History per agency if memory on a busy isolate becomes a problem.
 - The pilot note must say requests are logged (what the log keeps is above).
 - `npm run typecheck:mcp-worker` checks the Worker and the MCP files; `npx wrangler@4.164.0 types --include-runtime=false` refreshes `worker-configuration.d.ts` after a config change.
