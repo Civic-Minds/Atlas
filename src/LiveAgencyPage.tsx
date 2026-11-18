@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AppLink from './components/ui/AppLink';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { useParams } from 'react-router';
 import { useLiveAgencyName, useLiveAgencyNames } from './hooks/useLiveAgencyName';
@@ -91,7 +92,7 @@ function Section({ id, title, intro, children }: { id: string; title: string; in
 /** A hotspot's route, in the Routes table's name style, on one line (its direction sits in its own column). */
 function HotspotRoute({ s, route }: { s: AgencySummary; route: string }) {
   const r = s.routes.find(x => x.route === route);
-  return <a href={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency} /></a>;
+  return <AppLink to={liveDashboardPath(s.agency, route)} className="whitespace-nowrap hover:underline"><RouteNameCell shortName={route} longName={r?.longName} mode={r?.mode ?? 3} agencyName={s.agency} /></AppLink>;
 }
 
 function RoutesTable({ s }: { s: AgencySummary }) {
@@ -123,7 +124,7 @@ function RoutesTable({ s }: { s: AgencySummary }) {
             rows={group.routes}
             rowKey={r => r.route}
             columns={[
-              { key: 'route', header: ROUTE_COLUMN, rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <a href={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></a> },
+              { key: 'route', header: ROUTE_COLUMN, rowHeader: true, width: FIRST_COL, className: 'font-normal whitespace-nowrap', cell: r => <AppLink to={liveDashboardPath(s.agency, r.route)} className="hover:underline"><RouteNameCell shortName={r.route} longName={r.longName} mode={r.mode} agencyName={s.agency} /></AppLink> },
               { key: 'late', sortable: true, header: LATE_LABEL, width: FIGURE_COL, cell: r => <span title={`${countText(r.lateN)} trips this week`}>{percentOrDash(r.lateShare)}</span> },
               { key: 'lastWeek', header: LAST_WEEK_COLUMN, width: FIGURE_COL, narrowHide: true, className: 'text-[var(--text-muted)]', cell: r => percentOrDash(r.lateLastWeek) },
               { key: 'runTime', sortable: true, header: TRIP_TIME_LABEL, width: FIGURE_COL, className: 'whitespace-nowrap', cell: r => (r.runTimeDiffMin != null ? runTimeDiffText(r.runTimeDiffMin, false) : r.runTimeOver == null ? MISSING_VALUE : runTimeShareText(r.runTimeOver)) },

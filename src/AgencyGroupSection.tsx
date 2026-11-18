@@ -1,4 +1,5 @@
 import { fitAgencyName } from './utils/agencyName';
+import AppLink from './components/ui/AppLink';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { AREA_TABLE_OTHER, areaAgencyRowHref, areaTableColumnTitle, type AgencyGroupData, type AreaAgencyRow } from '../shared/areaPages';
 import { AGENCY_INDEX_PATH } from '../shared/agencyIndex';
@@ -39,7 +40,7 @@ function modeHeader(label: string) {
 /** The agency's link in the table: its card title, or in a narrow names column a short one with the title on hover (#1245). */
 function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
   const { text, title } = narrow ? fitAgencyName(a.title, a.displayName, NARROW_NAME_MAX_CHARS) : { text: a.title, title: undefined };
-  return <a className={LINK} href={areaAgencyRowHref(a)} title={title}>{text}</a>;
+  return <AppLink className={LINK} to={areaAgencyRowHref(a)} title={title}>{text}</AppLink>;
 }
 
 /**
@@ -56,7 +57,7 @@ export default function AgencyGroupSection({ data, barNote, place }: { data: Age
       <AgencyModeTable data={data} place={place} />
       {/* CIV-1814 item 15 (Ryan's words): agencies that only run at rush hour, each linking to its page. */}
       {data.rushHourOnly && <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">
-        {RUSH_HOUR_ONLY}: {data.rushHourOnly.map((a, i) => <span key={a.slug}>{i > 0 && ', '}<a className={LINK} href={agencyPagePath(a.slug)}>{a.name}</a></span>)}.
+        {RUSH_HOUR_ONLY}: {data.rushHourOnly.map((a, i) => <span key={a.slug}>{i > 0 && ', '}<AppLink className={LINK} to={agencyPagePath(a.slug)}>{a.name}</AppLink></span>)}.
       </p>}
       <ArrowLink href={AGENCY_INDEX_PATH} className="mt-6">{SEE_ALL_AGENCIES}</ArrowLink>
     </PageSection>

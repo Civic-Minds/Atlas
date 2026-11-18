@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ElementType } from 'react';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import AppLink from './AppLink';
 
 const TONES = {
   /** A call to action on a page: accent, bold, with an underline on hover. */
@@ -29,9 +30,12 @@ type ArrowLinkProps<T extends ElementType> = {
 /** Text with an arrow: the one "go here" link, so it looks and behaves the same on every page and panel. */
 export default function ArrowLink<T extends ElementType = 'a'>(props: ArrowLinkProps<T>) {
   const { as, tone = 'page', size, nudge = false, back = false, external = false, wrap = false, className = '', children, ...rest } = props as {
-    as?: ElementType; tone?: keyof typeof TONES; size?: 'sm' | 'xs'; nudge?: boolean; back?: boolean; external?: boolean; wrap?: boolean; className?: string; children?: React.ReactNode;
+    as?: ElementType; tone?: keyof typeof TONES; size?: 'sm' | 'xs'; nudge?: boolean; back?: boolean; external?: boolean; wrap?: boolean; className?: string; children?: React.ReactNode; [attr: string]: unknown;
   };
-  const Tag: ElementType = as ?? 'a';
+  // A plain link to a page of Atlas opens through the router (CIV-1838); AppLink keeps outside, mailto and new-tab links plain.
+  const plainHref = !as && typeof rest.href === 'string' ? rest.href : null;
+  if (plainHref != null) { delete rest.href; rest.to = plainHref; }
+  const Tag: ElementType = as ?? (plainHref != null ? AppLink : 'a');
   const t = TONES[tone];
   const xs = size === 'xs';
   const Icon = external ? ExternalLink : back ? ArrowLeft : ArrowRight;

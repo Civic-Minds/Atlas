@@ -2,6 +2,7 @@ import DocsPageLayout from '../components/ui/DocsPageLayout';
 import ArrowLink from '../components/ui/ArrowLink';
 import Tag from '../components/ui/Tag';
 import Card from '../components/ui/Card';
+import AppLink from '../components/ui/AppLink';
 import ResearchTile from '../components/ResearchTile';
 import { PageTitle, SectionTitle } from '../components/ui/PageTitle';
 import { RESEARCH } from '../data/research';
@@ -25,7 +26,7 @@ export default function ResearchPage() {
                   picture yet and keeps the plain card. */}
               {RESEARCH.map(entry => <ResearchTile key={entry.href} entry={entry} />)}
               {DRAFT_CARDS.map(({ href, Icon, kind, title, body, linkText, draft }) => (
-                <Card as="a" key={href} href={href} tone="surface" padding="compact" className="group flex flex-col transition-colors hover:border-[var(--accent-border)]">
+                <Card as={AppLink} key={href} to={href} tone="surface" padding="compact" className="group flex flex-col transition-colors hover:border-[var(--accent-border)]">
                   <div className="flex items-center justify-between gap-3">
                     <Icon className="h-4 w-4 text-[var(--text-dim)]" aria-hidden="true" />
                     <span className="flex items-center gap-2">

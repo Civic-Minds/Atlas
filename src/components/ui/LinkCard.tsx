@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 import { ChevronRight, ExternalLink, Mail } from 'lucide-react';
+import AppLink from './AppLink';
 
 const ICONS = { chevron: ChevronRight, external: ExternalLink, mail: Mail } as const;
 
@@ -17,7 +18,9 @@ type LinkCardProps<T extends ElementType> = {
 /** Bordered row with a label and a small icon, used for links and actions in panels. */
 export default function LinkCard<T extends ElementType = 'a'>(props: LinkCardProps<T>) {
   const { as, icon, children, className = '', ...rest } = props as { as?: ElementType; icon?: keyof typeof ICONS; children: ReactNode; className?: string };
-  const Tag: ElementType = as ?? 'a';
+  const plainHref = !as && typeof (rest as { href?: unknown }).href === 'string' ? (rest as { href: string }).href : null;
+  if (plainHref != null) { delete (rest as { href?: string }).href; (rest as { to?: string }).to = plainHref; }
+  const Tag: ElementType = as ?? (plainHref != null ? AppLink : 'a');
   const Icon = icon ? ICONS[icon] : null;
   return (
     <Tag className={`${Tag === 'button' ? 'w-full ' : ''}${CARD} ${className}`.trim()} {...(Tag === 'button' ? { type: 'button' } : {})} {...rest}>
