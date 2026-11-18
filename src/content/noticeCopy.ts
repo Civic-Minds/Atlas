@@ -201,8 +201,10 @@ export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
 // D5 setting-hide-part-time
 export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' } as const;
-// D6 setting-hide-degraded-feeds
-export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
+// D6 setting-hide-degraded-feeds (Ryan, CIV-1814 item 30: "1")
+export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide agencies with data-quality problems', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
+/** The list the setting opens (CIV-1814 item 30). */
+export const DATA_QUALITY_AGENCIES_TITLE = 'Agencies with data-quality problems';
 
 // ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
 // The back link from an agency or stop card to the map (CIV-1462: the words live in backLinks.ts).

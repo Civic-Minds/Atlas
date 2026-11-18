@@ -16,13 +16,13 @@ import { plural } from '../../../shared/overflowText';
 import type { Agency } from '../../App';
 import { routeLabels } from '../../utils/format';
 import { agencyNames } from '../../utils/agencyName';
-import { feedQualityListItems, presentFeedQualityReason, qualityStatusLabel } from '../../../shared/feedQuality';
+import { feedQualityListItems, presentFeedQualityReason } from '../../../shared/feedQuality';
 import { useColorVision } from '../../context/ColorVisionContext';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
-import { SEARCH_FEEDS_PLACEHOLDER, SEARCH_HIDDEN_ROUTES_PLACEHOLDER, CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP, FILTERS_LABEL, TOGGLE_DARK_MODE_LABEL, TOGGLE_DATA_SAVER_LABEL, TOGGLE_HIGH_CONTRAST_LABEL, TOGGLE_LEGEND_LABEL } from '../../content/noticeCopy';
+import { SEARCH_FEEDS_PLACEHOLDER, SEARCH_HIDDEN_ROUTES_PLACEHOLDER, CLOSE_PLACES, closeLabel, COMPARE_B_PICKER_NOTE, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, TIME_LABEL, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, HIDDEN_ROUTES_UNAVAILABLE, loadingText, ON_DEMAND_PARTIAL_COVERAGE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, noSearchMatchText, OTHER_REGION_LABEL, PART_TIME_ROUTES_NOUN, PART_TIME_ROUTES_SEARCH, PART_TIME_ROUTES_TITLE, SETTINGS_APPLY_TO_FREQUENCY_MAP, FILTERS_LABEL, TOGGLE_DARK_MODE_LABEL, TOGGLE_DATA_SAVER_LABEL, TOGGLE_HIGH_CONTRAST_LABEL, TOGGLE_LEGEND_LABEL } from '../../content/noticeCopy';
 import { compareAgencyName, compareRegion, compareRouteNumber } from '../../utils/sortCompare';
 import PanelHeader from '../ui/PanelHeader';
 import { ON_DEMAND_MODE } from '../../../shared/modes';
@@ -168,7 +168,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const [hiddenRoutesQuery, setHiddenRoutesQuery] = useState('');
   const [hiddenRegionFilter, setHiddenRegionFilter] = useState<Set<string>>(new Set());
   const [degradedFeedsQuery, setDegradedFeedsQuery] = useState('');
-  const [degradedFeedsStatus, setDegradedFeedsStatus] = useState<'all' | 'degraded' | 'unusable'>('all');
 
   useEffect(() => {
     if (open) {
@@ -218,7 +217,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     setHiddenRoutesQuery('');
     setHiddenRegionFilter(new Set());
     setDegradedFeedsQuery('');
-    setDegradedFeedsStatus('all');
   };
 
   const selectHiddenRouteRegion = (region: string) => {
@@ -292,7 +290,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   const filteredDegradedFeeds = useMemo(() => {
     const q = degradedFeedsQuery.trim().toLowerCase();
     return hiddenFeedAgencies
-      .filter(agency => degradedFeedsStatus === 'all' || agency.feedQuality?.status === degradedFeedsStatus)
       .filter(agency => {
         if (!q) return true;
         const quality = agency.feedQuality!;
@@ -300,7 +297,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           .some(value => value.toLowerCase().includes(q));
       })
       .sort((a, b) => compareAgencyName(a.name, b.name) || a.slug.localeCompare(b.slug));
-  }, [degradedFeedsQuery, degradedFeedsStatus, hiddenFeedAgencies]);
+  }, [degradedFeedsQuery, hiddenFeedAgencies]);
 
   const agencyCitiesBySlug = useMemo(
     () => new Map(agencyCatalog.map(agency => [agency.slug, agency.cities] as const)),
@@ -396,7 +393,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 : view === 'limited-routes'
                   ? PART_TIME_ROUTES_TITLE
                 : view === 'degraded-feeds'
-                  ? (hideLowQuality ? 'Hidden feeds' : 'Degraded feeds')
+                  ? DATA_QUALITY_AGENCIES_TITLE
                   : isFilters ? FILTERS_LABEL : 'Settings'}
               onBack={view !== 'settings' ? () => { setView('settings'); setHiddenRoutesQuery(''); setHiddenRegionFilter(new Set()); } : undefined}
               backLabel={backLinkLabel(BACK_PLACES.settings)}
@@ -467,20 +464,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               ) : view === 'degraded-feeds' ? (
                 <div className="px-5 py-3">
                   {hiddenFeedAgencies.length > 0 && (
-                    <>
-                      <SearchBox value={degradedFeedsQuery} onChange={setDegradedFeedsQuery} placeholder={SEARCH_FEEDS_PLACEHOLDER} autoFocus />
-                      <div className="flex items-center gap-1.5 mt-2">
-                        {(['all', 'degraded', 'unusable'] as const).map(status => (
-                          <Pill
-                            key={status}
-                            onClick={() => setDegradedFeedsStatus(status)}
-                            selected={degradedFeedsStatus === status}
-                          >
-                            {status === 'all' ? 'All' : qualityStatusLabel(status)}
-                          </Pill>
-                        ))}
-                      </div>
-                    </>
+                    <SearchBox value={degradedFeedsQuery} onChange={setDegradedFeedsQuery} placeholder={SEARCH_FEEDS_PLACEHOLDER} autoFocus />
                   )}
                   {hiddenFeedAgencies.length === 0 ? (
                     <p className="py-4 text-xs text-[var(--text-muted)]">
