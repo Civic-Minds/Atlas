@@ -1,5 +1,5 @@
 import { originVariantText } from '../../../utils/nameCase';
-import { shortDate } from '../../../../shared/dateText';
+import { isoDate, shortDate } from '../../../../shared/dateText';
 import React from 'react';
 import type { ShapeProperties, TimePeriod, HoveredBranch } from '../../../hooks/useIntervalStats';
 import { routePatternLabel } from '../../../utils/routePattern';
@@ -29,7 +29,6 @@ import {
 } from '../cardUi';
 import { CARD_NOTE, CARD_NOTICE, CARD_NOTICE_FOOTER } from '../../../styles';
 import { FEATURES, SPARKLINE_HOURS, TIME_PERIODS, formatPeriodRangeLong } from '../../../../shared/config';
-import { routeCardDisplayHeadway } from '../../../utils/effectiveHeadway';
 import { buildRouteCardModel, matchesHoveredBranch, rowIsHovered, sharedIsHovered } from '../../../utils/routeCardRows';
 import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCardNotices';
 import { dirIdNum } from '../../../utils/routeCardTrunk';
@@ -40,19 +39,6 @@ import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvai
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { directionBranchFallback } from '../../../../shared/headsignDisplay';
 import { correctionNoteForRoute } from '../../../../shared/correctionNotices';
-
-function formatMetricMap(
-  values: Record<string, number | null | undefined> | null | undefined,
-  keyLabel = 'key',
-  valueLabel = 'value',
-  separator = '; ',
-): string {
-  if (!values) return 'none';
-  const entries = Object.entries(values);
-  return entries.length > 0
-    ? entries.map(([key, value]) => `${keyLabel}=${key}, ${valueLabel}=${value ?? 'none'}`).join(separator)
-    : 'none';
-}
 
 /**
  * Labels for the full-day schedule's direction pills. Uses the bound label
@@ -278,40 +264,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
   };
 
   const reportServiceLines = model.reportServiceLines;
-  const reportRawMetrics = currentRoute.directions.map((direction, index) => {
-    const selectedPeriodHourlyHeadways = selectedPeriod
-      ? Object.fromEntries(
-          Object.entries(direction.headwayByHour ?? {})
-            .filter(([hour]) => {
-              const h = Number(hour);
-              return h >= selectedPeriod.startHour && h < selectedPeriod.endHour;
-            }),
-        )
-      : null;
-    const selectedPeriodStopHeadways = period === 'all'
-      ? direction.stopHeadways ?? null
-      : Object.fromEntries(
-          Object.entries(direction.stopPeriodHeadways ?? {})
-            .map(([stopId, periods]) => [stopId, periods[period] ?? null]),
-        );
-    return [
-      `Branch ${index + 1}:`,
-      `  routeId=${direction.routeId}`,
-      `  directionId=${direction.directionId}`,
-      `  headsign=${direction.headsign ?? 'none'}`,
-      `  tier=${direction.tier ?? 'none'}`,
-      `  rawHeadwayMinutes=${direction.headway ?? 'none'}`,
-      `  displayedHeadwayMinutes=${routeCardDisplayHeadway(direction, period) ?? 'none'}`,
-      `  headwayByPeriod: ${formatMetricMap(direction.headwayByPeriod, 'period', 'typicalGapMinutes')}`,
-      `  typicalGapRangeByPeriod: ${JSON.stringify(direction.headwayRangeByPeriod ?? {})}`,
-      `  longestGapByPeriod: ${formatMetricMap(direction.maxGapByPeriod, 'period', 'longestGapMinutes')}`,
-      `  sustainedByPeriod: ${JSON.stringify(direction.headwayByPeriodSustained ?? {})}`,
-      `  hourlyHeadways (${period}): ${formatMetricMap(selectedPeriodHourlyHeadways, 'hour', 'typicalGapMinutes')}`,
-      `  minimumStopHeadwayByPeriod: ${formatMetricMap(direction.minStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
-      `  headsignMinimumStopHeadwayByPeriod: ${formatMetricMap(direction.headsignMinStopHeadwayByPeriod, 'period', 'minimumGapMinutes')}`,
-      `  stopHeadways (${period}): ${formatMetricMap(selectedPeriodStopHeadways, 'stopId', 'typicalGapMinutes', '\n    ')}`,
-    ].join('\n');
-  }).join('\n\n');
   // One route name for the title, the sparkline and the issue report (shared/routeDisplay.ts).
   const routeLabel = currentRoute.label ?? routeLabels({ shortName: currentRoute.routeShortName, longName: currentRoute.routeLongName, routeType: currentRoute.routeType ?? currentRoute.directions[0]?.routeType, agencySlug: currentRoute.agencySlug ?? routeSlug, agencyName: agencyDisplayName });
   // Plain text keeps the dash (report details, the chart window's screen-reader name); on screen the title is RouteTitleName (CIV-1128).
@@ -322,15 +274,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     : selectedPeriod && `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`;
   const details = reportDetails([
     [REPORT_DETAIL_LABELS.agency, routeAgency?.name ?? routeSlug ?? 'Unknown'],
-    ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
+    ['Route', `${routeTitle || 'Unknown'} (short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
     ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
-    [REPORT_DETAIL_LABELS.dataRefreshed, routeAgency?.lastRefreshedAt ?? 'unknown'],
-    [REPORT_DETAIL_LABELS.feedExpiry, (routeAgency && effectiveFeedExpiry(routeAgency)) ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.scheduleAdded, isoDate(routeAgency?.lastRefreshedAt) ?? 'unknown'],
+    [REPORT_DETAIL_LABELS.scheduleCoversUntil, (routeAgency && isoDate(effectiveFeedExpiry(routeAgency))) ?? 'unknown'],
     '**Displayed service:**',
     ...(reportServiceLines.length > 0 ? reportServiceLines : ['- No displayed service rows']),
-    '',
-    '**Generated route metrics from the loaded artifact:**',
-    reportRawMetrics,
   ]);
 
   const patternLabel = routePatternLabel(currentRoute.directions);

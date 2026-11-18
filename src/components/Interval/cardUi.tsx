@@ -23,7 +23,7 @@ export const CARD_EYEBROW = 'text-xs font-bold text-[var(--text-muted)] leading-
 export const CARD_TITLE = 'text-sm font-black text-[var(--text-primary)] leading-tight';
 export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] leading-snug';
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
-import { CARD_NOTE, CARD_SECTION } from '../../styles';
+import { CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
 import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, reportFormHint, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
@@ -276,8 +276,6 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
       : selectedCategory === 'filter'
         ? 'What is wrong with the map, filter or search?'
         : 'What is wrong with the live vehicle information?';
-  const copiesDiagnostics = details.includes('Generated route metrics from the loaded artifact:')
-    || details.includes('Generated route metrics (loaded artifact):');
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -414,11 +412,6 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
                   className={`mt-1.5 w-full resize-y rounded-xl bg-[var(--bg-app)] border border-[var(--border-primary)] px-3 py-2 ${CARD_LIST_ROUTE} placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]`}
                 />
               </label>}
-              {selectedCategory && copiesDiagnostics && (
-                <p className={CARD_NOTE}>
-                  {import.meta.env.DEV ? 'The GitHub report includes the captured route diagnostics.' : 'The email draft includes the captured route diagnostics.'}
-                </p>
-              )}
               {validationError && <p className="text-xs font-bold text-[var(--status-negative-text)]" role="alert">{validationError}</p>}
             </div>
 

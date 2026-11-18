@@ -10,7 +10,7 @@ describe('reportDetails', () => {
 
   it("matches the agency card's old hand-built text", () => {
     const url = 'https://x/';
-    const old = `**Agency:** A\n**Agency slug:** a\n**Day:** Weekday\n**Period:** midday\n**Agency data refreshed:** unknown\n**Feed expiry:** unknown\n**Atlas URL:** ${url}`;
-    expect(reportDetails([['Agency', 'A'], ['Agency slug', 'a'], ['Day', 'Weekday'], ['Period', 'midday'], ['Agency data refreshed', 'unknown'], ['Feed expiry', 'unknown']], url)).toBe(old);
+    const old = `**Agency:** A\n**Agency slug:** a\n**Day:** Weekday\n**Period:** midday\n**Schedule added:** unknown\n**Schedule covers service until:** unknown\n**Atlas URL:** ${url}`;
+    expect(reportDetails([['Agency', 'A'], ['Agency slug', 'a'], ['Day', 'Weekday'], ['Period', 'midday'], ['Schedule added', 'unknown'], ['Schedule covers service until', 'unknown']], url)).toBe(old);
   });
 });

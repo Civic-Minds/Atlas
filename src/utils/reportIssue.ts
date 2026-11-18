@@ -19,8 +19,9 @@ export function currentAtlasUrl(): string {
 export const REPORT_DETAIL_LABELS = {
   agency: 'Agency',
   agencySlug: 'Agency slug',
-  dataRefreshed: 'Agency data refreshed',
-  feedExpiry: 'Feed expiry',
+  // CIV-1814 item 11 (Ryan, "1"): plain labels; the dates stay machine values (YYYY-MM-DD).
+  scheduleAdded: 'Schedule added',
+  scheduleCoversUntil: 'Schedule covers service until',
 } as const;
 
 export type ReportDetailLine = readonly [label: string, value: string] | string;
