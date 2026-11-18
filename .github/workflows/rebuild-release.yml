@@ -11,7 +11,7 @@ name: Rebuild data release
 #          pipeline fix before publishing.
 #          Runs the branch's code with READ-ONLY R2 credentials and a read-only GitHub token, so
 #          it cannot write R2 or the repo even if the code under test misbehaves.
-# publish: reprocess --write -> build-pmtiles -> verify-pmtiles-remote -> build-history ->
+# publish: reprocess --write -> build-pmtiles -> verify-pmtiles-remote -> build-history -> MCP files ->
 #          publish-data-release -> promote -> night service summary. Refuses unless `ref` is the current tip of main.
 on:
   workflow_dispatch:
@@ -271,6 +271,19 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
 
+      # Atlas Studio MCP files (CIV-1855): built from this run's agency files exactly as publish builds them; nothing is uploaded.
+      # A failure is a warning only: the map's release never waits on the MCP.
+      - name: Build the Atlas Studio MCP files (dry run)
+        if: always() && steps.summary.outputs.report == 'true'
+        continue-on-error: true
+        run: nice -n 10 npx tsx scripts/mcp/releaseMcpFiles.ts --dry-run --data-dir tmp/derived-reprocess || { echo "::warning::The Atlas Studio MCP files failed to build; see the log."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+
       - name: Upload the reprocess report and release diff
         if: always()
         uses: actions/upload-artifact@v7
@@ -282,6 +295,7 @@ jobs:
             tmp/derived-reprocess/build-settings.json
             tmp/release-diff/*.md
             tmp/release-diff/*.json
+            tmp/mcp-release/report.json
           if-no-files-found: warn
           retention-days: 30
 
@@ -671,6 +685,20 @@ jobs:
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+      # Atlas Studio MCP files (CIV-1855): built from this release's agency files and History, uploaded to
+      # atlas/releases/<id>/mcp/ before the pointer moves. The hosted MCP keeps answering from the release it has until a
+      # release's mcp/manifest.json exists, so a failure here is a warning and never holds back the map's release.
+      - name: Build and upload the Atlas Studio MCP files
+        if: inputs.start_at != 'promote'
+        continue-on-error: true
+        run: nice -n 10 npx tsx scripts/mcp/releaseMcpFiles.ts || { echo "::warning::The Atlas Studio MCP files were not uploaded; the hosted MCP stays on the previous release."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
