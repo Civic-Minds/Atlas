@@ -330,3 +330,23 @@ Other findings:
 Spot checks against the tools: Gemini's R4 every 3 at the AM peak and the 929 every 8 all day are right.
 
 Gemini plan (manager, 2026-11-18): rounds run on Claude only until Gemini's quota resets (about 2026-11-25). Then the 7 missing Gemini questions (30 to 36 above) run on the same server code.
+
+## 2026-11-18: 0.7.0 (CIV-1840 at 1f641a90e), Claude both ways
+
+The same 36 questions (the 32 standing plus the 4 held wow questions) on Studio's 0.7.0, locked down and normal; Gemini waits for its quota (see above). Chats and `.meta.json`: `_reports/mcp-tests/2026-11-18-v070-claude-*`. The figure check passed 34 of 34 on the same code.
+
+- **Both runs:** all 36 answered from the tools. The locked run reached no figure from outside them. The normal run used one web search, for Seattle crowding (question 22, asked as an estimate), and labelled it.
+- **Fixed since the split round:** the midnight window (510 and 310 hour by hour from 12 AM: every 9 combined from 1 to 2 AM, the hand-over around 1:23 to 1:47 AM); every answer names its end date.
+- **TTC 29 branches:** `branches` now has one northbound row to Wilson (144 trips, starting at either loop), as Ryan described. The hourly figures still split northbound by the loop a trip starts from, so both runs printed two northbound columns (question 35). Sent to Studio: hourly northbound as one row too.
+- **Question 13 (the 504 in 2017), normal run:** again answered without route_history and said Atlas has no 2017 schedules; the locked run called it and gave the Oct 2017 figures. Twice now in the normal setup. Fix to consider: route_frequency's description, or its answer, points history questions at route_history.
+
+## 2026-11-18: the hosted test Worker (CIV-1851), Claude over HTTP
+
+The pilot Worker on workers.dev (free plan), reached through a tester's private link over Streamable HTTP. This test deployment has eight agencies' files inside the Worker (TTC, Kingston, OC Transpo, York Region Transit, TransLink, MBTA, Hamilton Street Railway, RTD; the ranking index and History cover every agency). It reported 0.8.0 at the start and 0.9.0 by the end, because Studio redeployed it several times between 10:55 and 11:00, while the locked run was going. 21 questions those agencies can answer, plus one on Calgary to see how a missing agency reads. Chats, `.meta.json` and timings: `_reports/mcp-tests/2026-11-18-hosted-*` (the link itself is kept out of every file).
+
+- **Timing** (42 direct calls, 14 tools × 3 rounds, about one call every 2 seconds): no errors, no CPU-limit failures, no 5xx. Median 170 ms, 90th percentile 441 ms, slowest 966 ms (the first call, a cold start).
+- **Claude, locked down and normal:** all 21 answered from the tools, with no rate-limit or CPU errors. Each question took 9–26 seconds end to end. The figures match the local server's answers to the same questions. The normal run used no web search.
+- **The 504 in 2017:** both runs now call route_history and give the Oct 2017 figures (0.9.0's route_frequency description points past years there).
+- **Kennedy Station:** both runs answered with one routes_near and one routes_at_frequency call (18 routes running at midday), well inside the 30-a-minute limit.
+- **Calgary (not in this deployment):** "No route data for calgary"; both runs said Atlas has no figures and pointed to the agency. For the pilot the message should say the pilot covers a set list of agencies, unless every agency's files are up by then.
+- **Web clients:** Claude.ai and ChatGPT on the web can't be driven headlessly without signing in and adding a connector to an account, so they weren't tested. Claude Code over HTTP uses the same Streamable HTTP endpoint those clients call.
