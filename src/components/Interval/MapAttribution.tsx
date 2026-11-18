@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import AppLink from '../ui/AppLink';
 import { MAP_FOOTER_PILLS_PHONE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS, FLOATING_CARD, MAP_BADGE, MAP_BADGE_LABEL, Z_PANEL } from '../../styles';
 import { FEATURES } from '../../../shared/config';
 import { version as appVersion } from '../../../package.json';
@@ -76,7 +77,7 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
         </button>
         {aboutOpen && (
           <div className={`absolute bottom-full left-0 mb-2 ${FLOATING_CARD} min-w-44 p-1.5 flex flex-col gap-0.5`}>
-            <a href={ABOUT_PATH} className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</a>
+            <AppLink to={ABOUT_PATH} className={`${MAP_BADGE_LABEL} px-3 py-2 rounded-xl no-underline hover:text-[var(--text-primary)]`}>{ABOUT_ATLAS}</AppLink>
             <button
               type="button"
               onClick={() => { setAboutOpen(false); setWhatsNewOpen(true); }}
@@ -96,12 +97,12 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
           </div>
         )}
       </div>
-      <a
-        href={ABOUT_PATH}
+      <AppLink
+        to={ABOUT_PATH}
         className={`${MAP_BADGE} h-8 max-sm:hidden ${MAP_BADGE_LABEL} whitespace-nowrap no-underline hover:text-[var(--text-primary)]`}
       >
         {ABOUT_ATLAS}
-      </a>
+      </AppLink>
       <button
         type="button"
         onClick={() => setWhatsNewOpen(open => !open)}

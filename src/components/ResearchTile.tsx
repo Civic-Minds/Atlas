@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import AppLink from './ui/AppLink';
 import Card from './ui/Card';
 import ThemedPicture from './ui/ThemedPicture';
 import Tag from './ui/Tag';
@@ -15,9 +16,9 @@ export default function ResearchTile({ entry, tilt }: { entry: ResearchEntry; ti
   const tilted = tilt != null;
   return (
     <Card
-      as="a"
+      as={AppLink}
       tone="surface"
-      href={entry.href}
+      to={entry.href}
       className={`group flex w-full flex-col overflow-hidden${tilted ? ' transition-[rotate] [rotate:var(--tilt)] hover:rotate-0 focus-visible:rotate-0' : ' transition-colors hover:border-[var(--accent-border)]'}`}
       style={tilted ? ({ '--tilt': `${tilt}deg` } as CSSProperties) : undefined}
     >

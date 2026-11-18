@@ -5,6 +5,7 @@ import { Clock, MapPin, Repeat } from 'lucide-react';
 import { FEATURE_ROUTES, FEATURES } from '../shared/config';
 import PageShell from './components/ui/PageShell';
 import ArrowLink from './components/ui/ArrowLink';
+import AppLink from './components/ui/AppLink';
 import { PageHero } from './components/FeaturePageSections';
 import { newestResearch } from './data/research';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
@@ -57,7 +58,7 @@ export default function AboutPage() {
           title={ABOUT_HEADLINE}
           intro={ATLAS_MAP_SUMMARY}
           picture="/assets/about/atlas-routes-toronto"
-          actions={FEATURES.researchApps && <a href={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{EXPLORE_RESEARCH_LABEL}</a>}
+          actions={FEATURES.researchApps && <AppLink to={FEATURE_ROUTES.research} className="inline-flex h-11 items-center rounded-full border border-[var(--border-primary)] px-5 text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-btn-hover)]">{EXPLORE_RESEARCH_LABEL}</AppLink>}
         />
 
         {FEATURES.researchApps && <section className="border-b border-[var(--border-primary)] py-16">

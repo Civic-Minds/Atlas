@@ -6,8 +6,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On beta, a route with a frequent shared middle passes the frequency filter at that middle (pending sign-off)**: TTC 110 reads every 15 at weekday midday, where its slower branches every 30 used to decide for the whole route; section colours still show each branch's own frequency
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
 - **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle
+- **Moving between Atlas pages no longer reloads the page**: links to Research, Docs, About, agencies, areas and the rest, and clicking a table row, switch pages inside the app, so each opens as smoothly as the other views
 - **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
 - **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views

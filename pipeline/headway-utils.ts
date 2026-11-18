@@ -3,9 +3,9 @@ import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routePropertie
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 import { headwayGradeOn, TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/rules/frequency.js';
 import {
-  FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS, NIGHT_SERVICE_WINDOW_END_MIN,
-  NIGHT_SERVICE_WINDOW_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN,
-  RESEARCH_FREQUENT_SERVICE_START_MIN,
+  FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
+  RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, RESEARCH_FREQUENT_SERVICE_START_MIN,
+  STRETCH_NIGHT_END_MIN,
 } from '../shared/rules/periods.js';
 
 
@@ -571,9 +571,6 @@ export function hasSustainedServiceInWindow(
   return true;
 }
 
-// Night Service window: GTFS hour 26 (2am) to hour 30 (6am), in shared/rules/periods.ts (rules audit, move 4).
-export { NIGHT_SERVICE_WINDOW_END_MIN, NIGHT_SERVICE_WINDOW_START_MIN };
-export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
 
 /**
  * Normalize both GTFS overnight notations before the Night Service gap check:
@@ -586,7 +583,7 @@ export function nightServiceDepartureTimes(
 ): number[] {
   return forCrossMidnightWindow(
     [...(routeTimes ?? []), ...overnightOnlyTimes],
-    NIGHT_SERVICE_WINDOW_END_MIN,
+    STRETCH_NIGHT_END_MIN,
   );
 }
 

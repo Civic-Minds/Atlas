@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AppLink from './components/ui/AppLink';
 import { useParams } from 'react-router';
 import { areaAgencyRowHref, areaDatesText, areaIntroJoiners } from '../shared/areaPages';
 import {
@@ -69,9 +70,9 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
           </div>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">
             {intro.lead}{joiners.opener}
-            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(a.title)}<a className={UNDERLINED_LINK} href={areaAgencyRowHref(a)}>{a.title}</a>{joiners.separators[i]}</span>)}
+            {intro.named.map((a, i) => <span key={a.slug}>{agencyArticle(a.title)}<AppLink className={UNDERLINED_LINK} to={areaAgencyRowHref(a)}>{a.title}</AppLink>{joiners.separators[i]}</span>)}
             {joiners.tail}
-            {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.name}</a>{areas.separators[i]}</span>)}{areas.tail}</>}
+            {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><AppLink className={UNDERLINED_LINK} to={areaPagePath(a.slug)}>{a.name}</AppLink>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>
 
           <AgencyGroupSection data={data} barNote={regionBarNote(data)} place={data.region.name} />

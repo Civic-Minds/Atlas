@@ -8,7 +8,7 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { PAGE_NAMES } from '../../shared/pageNames';
-import { PERIOD_LABELS, type PeriodKey } from '../../shared/config';
+import { PERIOD_LABELS, PUBLIC_TIER_MAXES, type PeriodKey } from '../../shared/config';
 import { PEOPLE_MOVER_MODE, ROUTE_TYPE, VIRTUAL_LRT_MODE } from '../../shared/rules/modes';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
@@ -22,7 +22,7 @@ import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
+import { DAY_TYPES, dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
 import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
@@ -237,9 +237,9 @@ export const dataSourceText = (agencies: string, countries: string) =>
 export const PLANNERS_COPY = {
   intro: 'See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.',
   cards: {
-    frequency: { title: 'See Frequency, Not Just Routes', text: 'Every route is coloured by its headway: every 10, 15, 20, 30 or 60 min, or less often. Pick a frequency and only the routes that meet it stay on the map — so you can check your network against your own standard.' },
+    frequency: { title: 'See Frequency, Not Just Routes', text: `Every route is coloured by its headway: every ${joinList(PUBLIC_TIER_MAXES.map(String), { conjunction: 'or' })} min, or less often. Pick a frequency and only the routes that meet it stay on the map — so you can check your network against your own standard.` },
     // Ryan: "Probably need to be edited later ngl"; the text is unchanged for now.
-    dayTime: { title: 'Service by Day, Time and Span', text: 'Switch between weekday, Saturday and Sunday, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.' },
+    dayTime: { title: 'Service by Day, Time and Span', text: `Switch between ${joinList(DAY_TYPES.map(dayInSentence))}, then pick a time of day from AM peak to overnight, so peak, off-peak and owl service each get their own map. Compare puts two of them side by side on desktop, and any route opens an hourly chart of its headways and span of service.` },
     agencies: { title: 'Every Agency on One Map', text: 'Transit doesn’t stop at an agency’s border, and neither does the map. See every agency’s routes together, or filter to just one.' },
     beforeAfter: { title: 'Before and After a Schedule Change', text: 'Compare two versions of a schedule route by route: frequency, trips, span and trip time. Routes are grouped by how much they changed.', beta: true },
     vehiclesNeeded: { title: 'Vehicles Needed at Every Frequency', text: 'Pick a route and a time of day to see how many vehicles it runs now, and how many it would need for more frequent service. Routes that share vehicles are counted together.', beta: true },

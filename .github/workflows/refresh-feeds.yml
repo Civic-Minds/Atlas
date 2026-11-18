@@ -214,6 +214,19 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
 
+      # Atlas Studio MCP files (CIV-1855): built from this release's agency files and History, uploaded to
+      # atlas/releases/<id>/mcp/ before the pointer moves. The hosted MCP keeps answering from the release it has until a
+      # release's mcp/manifest.json exists, so a failure here is a warning and never holds back the map's release.
+      - name: Build and upload the Atlas Studio MCP files
+        continue-on-error: true
+        run: nice -n 10 npx tsx scripts/mcp/releaseMcpFiles.ts || { echo "::warning::The Atlas Studio MCP files were not uploaded; the hosted MCP stays on the previous release."; exit 1; }
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
       # Only make the new PMTiles release public after every derived data
       # artifact, including History, has rebuilt successfully.
       - name: Publish verified data release
