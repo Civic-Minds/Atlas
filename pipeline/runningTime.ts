@@ -82,6 +82,14 @@ function summarize(runs: readonly TripRun[], loop: boolean): RunningTimeSummary 
   return { byHour, byPeriod, ...(loop ? { loop: true as const } : {}) };
 }
 
+/**
+ * The same summary for runs between two stops (CIV-1650's trip_time): median minutes by hour of departure and by period,
+ * MIN_TRIPS per hour or period, one run per departure minute. Only `start` and `minutes` are read.
+ */
+export function runningTimeSummary(runs: ReadonlyArray<{ start: number; minutes: number }>): RunningTimeSummary | null {
+  return summarize(runs as readonly TripRun[], false);
+}
+
 function dominant<T>(items: readonly T[], keyOf: (item: T) => string): string | undefined {
   const counts = new Map<string, number>();
   for (const item of items) counts.set(keyOf(item), (counts.get(keyOf(item)) ?? 0) + 1);

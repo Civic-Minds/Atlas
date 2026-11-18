@@ -13,7 +13,7 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 
 Both depend on a licence decision for Atlas's data (Ryan, 2026-11-17).
 - **Open data**: publish route, stop, map and freshness data that other transit tools can build on, with a licence to match.
-- **Atlas MCP server**: lets AI assistants query Atlas frequency data.
+- **Atlas Studio for AI assistants, public**: lets any AI assistant query Atlas frequency data. A private version already runs on Ryan's Mac as part of Atlas Studio (CIV-1650).
 
 ---
 
