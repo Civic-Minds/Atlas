@@ -4,7 +4,7 @@
  * The VITE_* reads stay literal import.meta.env reads so Vite can drop off features from each build. Flag docs:
  * docs/FEATURE_FLAGS.md.
  */
-import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
+import { INTERNAL_PATH, RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -145,7 +145,9 @@ export const FEATURES = {
   preview: PREVIEW_BUILD,
   researchApps: RESEARCH_APPS_ENABLED,
   live: LIVE_ENABLED,
-  liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED,
+  // CIV-1872: one rule for the report pages and their routes. The dev server always has them (it used to register the
+  // routes but show "Live is off" unless an env switch was also set).
+  liveReports: LIVE_ENABLED || LIVE_REPORTS_ENABLED || STUDIO_ENABLED,
   history: HISTORY_ENABLED,
   historyDayPicker: HISTORY_DAY_PICKER_ENABLED,
   frequentService: RESEARCH_APPS_ENABLED,
@@ -174,6 +176,8 @@ export const FEATURES = {
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
   studio: STUDIO_ENABLED,
+  /** CIV-1872: the /internal home page and the header's internal links: the dev server only. */
+  internal: STUDIO_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -194,6 +198,7 @@ export const FEATURE_ROUTES = {
   studioVehicles: STUDIO_VEHICLES_PATH,
   studioChanges: STUDIO_CHANGES_PATH,
   studioCoverage: STUDIO_COVERAGE_PATH,
+  internal: INTERNAL_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

@@ -14,15 +14,17 @@ describe('coverage rows (CIV-1871)', () => {
   const rows = coverageRows(base);
   const row = (slug: string) => rows.find(r => r.slug === slug)!;
 
-  it('lists focus agencies first, in the focus list order, then the rest by name', () => {
-    expect(rows.map(r => r.slug)).toEqual(['ttc', 'kingston', 'alpha', 'zeta']);
-    expect(row('ttc').focus && !row('alpha').focus).toBe(true);
+  it('lists focus agencies first, in the focus list order, then the rest by name, and leaves out agencies with only the map', () => {
+    expect(rows.map(r => r.slug)).toEqual(['ttc', 'kingston']);
+    const more = coverageRows({ ...base, historySlugs: ['ttc', 'zeta'] });
+    expect(more.map(r => r.slug)).toEqual(['ttc', 'kingston', 'zeta']);
+    expect(more.find(r => r.slug === 'zeta')!.focus).toBe(false);
   });
 
   it('reads each column from its source', () => {
     expect(row('ttc')).toMatchObject({ history: true, liveRecorded: 'Recording', liveRealtime: true, studio: MISSING_BUT_BUSES });
     expect(row('kingston')).toMatchObject({ history: false, liveRealtime: false, studio: 'Changes and buses' });
-    expect(row('alpha')).toMatchObject({ history: false, liveRecorded: '—', mcpFigures: '—', studio: '—' });
+    expect(coverageRows({ ...base, historySlugs: ['alpha'] }).find(r => r.slug === 'alpha')).toMatchObject({ history: true, liveRecorded: '—', mcpFigures: '—', studio: '—' });
   });
 
   it('says when figures start while recordings build up, and where it has no coverage file', () => {

@@ -65,6 +65,9 @@ export const STUDIO_CHANGES_PATH = '/studio/changes';
 /** CIV-1871: what each agency has across the products. Local only; a plain address until the Internal menu is chosen. */
 export const STUDIO_COVERAGE_PATH = '/studio/coverage';
 
+/** CIV-1872: the local-only home page listing every local-only page; the "Internal" tag beside the Atlas name opens it. Dev server only. */
+export const INTERNAL_PATH = '/internal';
+
 /** The map's address parameter that opens an agency card (`/?operator=<slug>`); shareUrlState.ts re-exports it (CIV-1783). */
 export const AGENCY_CARD_PARAM = 'operator';
 

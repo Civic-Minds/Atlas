@@ -2,9 +2,10 @@ import ArrowLink from './ui/ArrowLink';
 import AppLink from './ui/AppLink';
 import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
-import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
+import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, INTERNAL_NAV_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import { ABOUT_PATH, DOCS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { INTERNAL_HEADER_LINKS } from '../../shared/internalPages';
 
 /** Where the shared header's and footer's logo goes: the About home page (#1509). */
 export const ABOUT_HOME_PATH = ABOUT_PATH;
@@ -20,13 +21,20 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
       {showWordmark ? (
         <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" hideByline />
       ) : <span aria-hidden="true" />}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6">
+      {/* CIV-1872: the local-only links, in the same text style, beside the public ones; dev server only. */}
+      {FEATURES.internal && (
+        <nav aria-label={INTERNAL_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
+          {INTERNAL_HEADER_LINKS.map(link => <AppLink key={link.path} to={link.path} className="hover:text-[var(--text-primary)]">{link.label}</AppLink>)}
+        </nav>
+      )}
       <nav aria-label={SITE_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
         {FEATURES.researchApps && <AppLink to={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</AppLink>}
         {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
         <AppLink to={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</AppLink>
-        {FEATURES.studio && <AppLink to={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</AppLink>}
         <ArrowLink tone="quiet" href="/">{GO_TO_ATLAS_LABEL}</ArrowLink>
       </nav>
+      </div>
     </header>
   );
 }
