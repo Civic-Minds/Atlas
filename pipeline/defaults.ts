@@ -1,5 +1,6 @@
 import { AnalysisCriteria } from '../types/gtfs';
-import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
+import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency.js';
+import { SATURDAY_GRADING_WINDOW, SUNDAY_GRADING_WINDOW, WEEKDAY_GRADING_WINDOW } from '../shared/rules/periods.js';
 
 /**
  * Default analysis criteria:
@@ -15,15 +16,15 @@ export const DEFAULT_CRITERIA: AnalysisCriteria = {
     name: 'Default',
     dayTypes: {
         Weekday: {
-            timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
+            timeWindow: { ...WEEKDAY_GRADING_WINDOW },  // 07:00–22:00
             tiers: TIER_MAXES,
         },
         Saturday: {
-            timeWindow: { start: 420, end: 1320 },  // 07:00–22:00
+            timeWindow: { ...SATURDAY_GRADING_WINDOW },  // 07:00–22:00
             tiers: TIER_MAXES,
         },
         Sunday: {
-            timeWindow: { start: 540, end: 1260 },  // 09:00–21:00
+            timeWindow: { ...SUNDAY_GRADING_WINDOW },  // 09:00–21:00
             tiers: TIER_MAXES,
         },
     },

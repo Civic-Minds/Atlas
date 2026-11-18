@@ -1,4 +1,4 @@
-import { PERIOD_LABELS, periodKeyForHour, SPARKLINE_HOURS, TIME_PERIODS } from '../../shared/config';
+import { PERIOD_LABELS, periodKeyForHour, SPARKLINE_HOURS, SPARKLINE_START_HOUR, TIME_PERIODS } from '../../shared/config';
 
 /**
  * The hour-to-period map and the hover bands of the route card's schedule sparkline, shared with every other hour
@@ -32,7 +32,7 @@ export function periodOverviewBandsFor(hours: readonly number[]) {
  * hours that have enough trips. Never an overnight tail after 12a: late-night hours follow on from midnight, and an
  * axis ends at its last well-measured hour. Charts shown side by side pass the same hours so they line up.
  */
-export const LIVE_DAY_HOURS: readonly number[] = Array.from({ length: 24 }, (_, i) => i + 5);
+export const LIVE_DAY_HOURS: readonly number[] = Array.from({ length: 24 }, (_, i) => i + SPARKLINE_START_HOUR);
 
 export function liveChartHours(enough: (hour24: number) => boolean): number[] {
   const first = LIVE_DAY_HOURS.findIndex(h => enough(h % 24));

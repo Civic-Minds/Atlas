@@ -44,7 +44,7 @@ import { findModeOverride, getGtfsModeName, VIRTUAL_LRT_MODE } from '../shared/m
 import { countArtifacts, dropGuardRefusal, type ArtifactCounts } from './archiveSelection.js';
 import { TIER_RANK } from './headway-utils.js';
 import { PERIOD_KEYS } from '../shared/config.js';
-import { publicTierOf, TIER_MAXES } from '../shared/frequencyRules.js';
+import { publicTierOf, TIER_MAXES } from '../shared/rules/frequency.js';
 import { routeFilterHeadway } from '../shared/routeHeadwayFilter.js';
 
 /**

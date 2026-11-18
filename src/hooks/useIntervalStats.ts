@@ -2,7 +2,7 @@ import { useMemo, useCallback, useDeferredValue } from 'react';
 import type { AgencyLayers as BaseAgencyLayers, ShapeProperties as BaseShapeProperties } from '../hooks/useAgencyData';
 import { matchesRouteQuery, searchRouteResults, searchStopResults } from '../utils/searchResults';
 import { isLivePollingRoute } from '../utils/livePolling';
-import { PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
+import { PERIOD_LABELS, PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 import { buildRouteTileFilter, routeFeaturePassesMapFilter } from '../../shared/routeTileFilter';
 import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
@@ -68,7 +68,7 @@ export type { PeriodKey };
 export type TimePeriod = 'all' | PeriodKey;
 
 // No label for 'all': the map has no All day option (CIV-1097, CIV-1451); 'all' is only the internal default.
-export const PERIOD_LABELS: Record<PeriodKey, string> = PERIOD_LABELS_BY_KEY;
+export { PERIOD_LABELS };
 
 export { PERIOD_KEYS };
 

@@ -12,12 +12,12 @@ import {
 import { computeMedian } from './transit-utils';
 import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA } from './defaults';
-import { MINUTES_PER_DAY, TIME_PERIODS } from '../shared/config.js';
-import { TIER_MAXES } from '../shared/frequencyRules.js';
+import { MINUTES_PER_DAY, PERIOD_MINUTES, TIME_PERIODS } from '../shared/config.js';
+import { publicTierOf, TIER_MAXES } from '../shared/rules/frequency.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 import { forCrossMidnightWindow } from './headway-utils';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, MAX_NEAR_MISSES, VIOLATION_PERCENT } from '../shared/frequencyRules.js';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, MAX_NEAR_MISSES, VIOLATION_PERCENT } from '../shared/rules/frequency.js';
 
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
@@ -363,7 +363,7 @@ export function representativeIndexByCount(counts: number[]): number {
 
 /** A day counts as the previous night's tail only if all of its departures are before 06:00
  * (the same early-morning cutoff #297 uses for overnight-only service ids)... */
-export const PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN = 6 * 60;
+export const PREVIOUS_NIGHT_TAIL_LAST_DEPARTURE_BEFORE_MIN = PERIOD_MINUTES.amPeak.start;
 /** ...and its first departure follows the previous day's last one within 90 minutes. */
 export const PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN = 90;
 
@@ -830,8 +830,14 @@ export function applyAnalysisCriteria(
         const worstTier = worstTierValue === Infinity ? 'span'
             : worstTierValue >= INFREQUENT_VAL ? 'infrequent'
             : String(worstTierValue);
+        // Compared on the public scale: weekdays graded 8 and 10 both show as every 10, so they
+        // don't "vary by day" (CIV-1846, #1584: Lawrence KU 43).
+        const publicGrade = (tier: string) => {
+            const n = Number(tier);
+            return Number.isFinite(n) ? String(publicTierOf(n) ?? tier) : tier;
+        };
         const weekdayTierVariation = dayType === 'Weekday'
-            && new Set(tierEntries.map(entry => entry.result.tier)).size > 1;
+            && new Set(tierEntries.map(entry => publicGrade(entry.result.tier))).size > 1;
         const ownServiceClass = classEntries.some(e => e.result.serviceClass === 'irregular')
             ? 'irregular'
             : classEntries.some(e => e.result.serviceClass === 'time-limited')

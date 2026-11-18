@@ -23,7 +23,7 @@
  *                        destination pool, never better than the worst drawn stop, whose own
  *                        reading and companions it then takes (#771)
  */
-import { TIER_MAXES } from '../shared/frequencyRules.js';
+import { TIER_MAXES } from '../shared/rules/frequency.js';
 import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineDeparturesInWindow, headlineWindowValue, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 
 const { midday: MIDDAY, pmPeak: PM_PEAK, allDay: ALL_DAY } = HEADLINE_WINDOWS;

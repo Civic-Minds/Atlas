@@ -6,7 +6,7 @@
  * checkout being judged (see route-values.mts). Compare two outputs with report.py route-values.
  */
 
-import { PUBLIC_TIER_MAXES } from '../../shared/frequencyRules';
+import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
 
 export const THRESHOLDS: readonly number[] = PUBLIC_TIER_MAXES;

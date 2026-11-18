@@ -4,20 +4,20 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 // CIV-1402: docs/FEATURE_FLAGS.md said Live was off everywhere for weeks after VITE_LIVE_REPORTS_ENABLED was
-// added to shared/config.ts and set on beta. These checks keep the doc and the code from drifting apart again.
+// added to shared/config.ts (now shared/rules/flags.ts) and set on beta. These checks keep the doc and the code from drifting apart again.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const CONFIG = 'shared/config.ts';
+const CONFIG = 'shared/rules/flags.ts';
 const DOC = 'docs/FEATURE_FLAGS.md';
 const read = (file: string) => readFileSync(path.join(root, file), 'utf8');
 
-/** The VITE_* names envFlag accepts: the union in its signature in shared/config.ts. */
+/** The VITE_* names envFlag accepts: the union in its signature in shared/rules/flags.ts. */
 function envFlagNames(): string[] {
   const signature = read(CONFIG).match(/function envFlag\(name:([^)]*)\)/);
   if (!signature) throw new Error(`${CONFIG}: the envFlag(name: ...) signature was not found; update this test to match how switches are listed.`);
   return [...signature[1].matchAll(/'(VITE_[A-Z0-9_]+)'/g)].map(m => m[1]);
 }
 
-/** Direct reads that have to stay outside shared/config.ts. Keep this short, and say why for each. */
+/** Direct reads that have to stay outside shared/rules/flags.ts. Keep this short, and say why for each. */
 const DIRECT_READ_ALLOWLIST: Record<string, string[]> = {
   // The bundler drops the lazy import of the Live vehicles layer (and deck.gl with it) from builds without Live
   // only when it sees the literal env read. Through FEATURES.live the public build gains those chunks.
@@ -54,7 +54,7 @@ function directReads(): Array<{ file: string; name: string; line: number }> {
 }
 
 describe('feature switches and docs/FEATURE_FLAGS.md', () => {
-  it('finds the switch list in shared/config.ts', () => {
+  it('finds the switch list in shared/rules/flags.ts', () => {
     expect(envFlagNames()).toContain('VITE_LIVE_ENABLED');
   });
 
@@ -69,7 +69,7 @@ describe('feature switches and docs/FEATURE_FLAGS.md', () => {
     ).toEqual([]);
   });
 
-  it('reads VITE_*_ENABLED switches from the env only in shared/config.ts', () => {
+  it('reads VITE_*_ENABLED switches from the env only in shared/rules/flags.ts', () => {
     const stray = directReads().filter(r => !DIRECT_READ_ALLOWLIST[r.file]?.includes(r.name));
     expect(
       stray,

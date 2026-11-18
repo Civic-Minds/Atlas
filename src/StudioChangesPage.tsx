@@ -1,4 +1,5 @@
 import { SubsectionTitle } from './components/ui/PageTitle';
+import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods';
 import { PageTable } from './components/ui/PageSection';
 import DataTable from './components/ui/DataTable';
 import { RouteTitleName } from './components/RouteRowName';
@@ -23,7 +24,7 @@ import { STUDIO_CHANGES_TEXT } from '../shared/studioWording';
 
 const T = STUDIO_CHANGES_TEXT;
 /** The periods every route table shows; Late and Overnight join only where either side has a figure. */
-const MAIN_PERIODS: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const MAIN_PERIODS: PeriodKey[] = [...DAYTIME_PERIOD_KEYS];
 
 const runText = (d: StudioRouteDay | null) => (d?.runMinutes.length ? headwayEveryRange(d.runMinutes[0], d.runMinutes[d.runMinutes.length - 1], true) : MISSING_VALUE);
 /**

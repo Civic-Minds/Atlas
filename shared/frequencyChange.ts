@@ -6,7 +6,7 @@
  * shared/rules/frequency.ts, never a list of their own. The release check's ratio-2 alarm is a different question
  * (broken data) and keeps its own rule.
  */
-import { headwayGradeOn, publicTierOf, TIER_MAXES } from './frequencyRules';
+import { headwayGradeOn, publicTierOf, TIER_MAXES } from './rules/frequency';
 
 /** A headway in minutes, or null/undefined where the route has none (no service in that period or on that side). */
 type Headway = number | null | undefined;

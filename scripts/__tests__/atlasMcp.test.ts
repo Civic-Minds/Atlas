@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { agencyLabel, edgeWait, withAgency, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies } from '../mcp/atlasData';
+import { hourlyFrequency, edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { agencyLabel, withAgency } from '../mcp/localData';
+import { diskStore } from '../mcp/diskStore';
+import { startsInWindow, windowHas } from '../mcp/tools';
 import { stopToStopRuns } from '../../pipeline/stopToStop';
 import type { GtfsData } from '../../types/gtfs';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+
+useStore(diskStore());
 
 describe('Atlas MCP server data (CIV-1650)', () => {
   it('reads days and periods by the shared names', () => {
@@ -10,9 +15,10 @@ describe('Atlas MCP server data (CIV-1650)', () => {
     expect([parsePeriod('Midday'), parsePeriod('AM peak'), parsePeriod('pm_peak'), parsePeriod('lunch')]).toEqual(['midday', 'amPeak', 'pmPeak', null]);
   });
 
-  it('answers only for public agencies', () => {
-    expect(publicAgencies().length).toBeGreaterThan(100);
-    expect(publicAgencies().some(a => a.betaOnly)).toBe(false);
+  it('answers only for public agencies', async () => {
+    const agencies = await publicAgencies();
+    expect(agencies.length).toBeGreaterThan(100);
+    expect(agencies.some(a => a.betaOnly)).toBe(false);
   });
 
   it('lists schedule changes by the shared rule: a move inside a grade is none (Hamilton 44, 30 → 29)', () => {
@@ -61,5 +67,76 @@ describe('agency labels for trips across agencies', () => {
     expect(agencyLabel('no-such-agency', 'Big Blue Bus (Santa Monica)')).toBe('Big Blue Bus');
     expect(withAgency('LA Metro', 'Metro E Line')).toBe('LA Metro E Line');
     expect(withAgency('Big Blue Bus', 'R10')).toBe('Big Blue Bus R10');
+  });
+});
+
+describe('time windows that start after midnight (CIV-1840)', () => {
+  it('reads 12 AM–3 AM as the late night of the service day (24:00–27:00) as well as the clock hours', () => {
+    const w = { start: parseClock('12 AM')!, end: parseClock('3 AM')! };
+    expect(w).toEqual({ start: 0, end: 180 });
+    expect([100, 1500, 1600, 600, 1700].map(t => windowHas(t, w))).toEqual([true, true, true, false, false]);
+    expect(startsInWindow([100, 1500, 1700], w)).toEqual([100, 60]);
+  });
+  it('leaves daytime windows and windows past midnight as they were', () => {
+    expect([700, 1500].map(t => windowHas(t, { start: 600, end: 1080 }))).toEqual([true, false]);
+    expect([1380, 1500, 100].map(t => windowHas(t, { start: 1380, end: 1680 }))).toEqual([true, true, false]);
+  });
+});
+
+describe('tool annotations (CIV-1854: every directory asks for a title and readOnlyHint)', () => {
+  it('marks every tool read-only, with a title', async () => {
+    const { TOOLS } = await import('../mcp/tools');
+    for (const t of TOOLS) {
+      expect(t.title, t.name).not.toBe(t.name);
+      expect(t.annotations).toMatchObject({ title: t.title, readOnlyHint: true, destructiveHint: false, openWorldHint: false });
+    }
+  });
+});
+
+describe('hourly figures by branch (CIV-1840)', () => {
+  const row = (directionId: number, headsign: string, variant: string, by: Record<string, number>, hours: Record<string, number | null>) => ({ directionId, headsign, routeVariant: variant, departuresByHour: by, headwayByHour: hours });
+  const north = (variant: string) => row(1, 'Wilson', variant, { '8': 6, '9': 6 }, { '8': 10, '9': 10 });
+  const rows = [
+    row(0, 'Exhibition (Dufferin Gate)', 'a', { '8': 4, '9': 4 }, { '8': 15, '9': 15 }),
+    row(0, "Exhibition (Princes' Gates)", 'b', { '8': 2, '9': 2 }, { '8': 30, '9': 30 }),
+    north('from Dufferin Gate Loop'), north("from Princes' Gates Loop"),
+  ];
+  const r = { key: '29', name: '29', shortName: '29', longName: 'Dufferin', mode: 'Bus', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+  const endOf = (x: { directionId?: unknown; headsign?: unknown }) => (x.directionId === 1 ? 'Wilson Station' : String(x.headsign));
+
+  it('shows branches that end at the same stop and read the same as one column', () => {
+    expect(hourlyFrequency(r, 480, 600, endOf as never).map(c => c.towards)).toEqual(['Exhibition (Dufferin Gate) a', "Exhibition (Princes' Gates) b", 'Wilson']);
+  });
+  it('keeps every column when the ends are not known', () => {
+    expect(hourlyFrequency(r, 480, 600).length).toBe(4);
+  });
+});
+
+describe('Live tools (CIV-1860)', () => {
+  it('say plainly when an agency has no Live recordings, and which routes are recorded', async () => {
+    const { useLiveReader } = await import('../mcp/liveData');
+    const { handlers } = await import('../mcp/tools');
+    useLiveReader({ manifest: async slug => (slug === 'ttc' ? { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504', '510'] } : null), ranking: async () => null, route: async () => null });
+    const none = await handlers.route_reliability({ agency: 'OC Transpo', route: '1' }) as { live: null; note: string };
+    expect(none.live).toBeNull();
+    expect(none.note).toMatch(/no Live recordings/);
+    const other = await handlers.route_bunching({ agency: 'TTC', route: '29' }) as { recordedRoutes: string[] };
+    expect(other.recordedRoutes).toEqual(['504', '510']);
+    await expect(handlers.route_reliability({ agency: 'TTC', route: '504', period: 'Noonish' })).rejects.toThrow(/Part of the day/);
+  });
+});
+
+describe('Live files in the release folder (CIV-1860)', () => {
+  it('reads the slim files the release step writes, at the same paths', async () => {
+    const { splitLiveReader, liveSplitPaths, useLiveReader, publishedLiveReader } = await import('../mcp/liveData');
+    const { handlers } = await import('../mcp/tools');
+    const files = new Map<string, unknown>([
+      [liveSplitPaths.manifest('ttc'), { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504'] }],
+      [liveSplitPaths.ranking('ttc'), { generatedAt: 'x', covered: ['504'], held: [], routes: [{ route: '504', titleLabel: '504 King', lateShare: 0.073, lateN: 3377, lateLastWeek: 0.08, bunchingShare: 0.39, bunchedShare: 0.3, gappedShare: 0.09, deliveredShare: 0.989 }] }],
+    ]);
+    useLiveReader(splitLiveReader(async p => files.get(p) ?? null));
+    const r = await handlers.route_reliability({ agency: 'TTC' }) as { routes: Array<{ route: string; lateShare: number }> };
+    expect(r.routes).toEqual([expect.objectContaining({ route: '504', lateShare: 0.073 })]);
+    useLiveReader(publishedLiveReader);
   });
 });

@@ -5,6 +5,7 @@
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
 import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekBands, type WeekMetrics } from './liveDashboard.js';
+import { DAYTIME_PERIOD_KEYS } from './rules/periods.js';
 import { LIVE_MIN_SAMPLE } from './rules/live.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
@@ -166,7 +167,7 @@ export function agencySummary(input: {
     };
     // Each time of day across routes, only where every route's file has it (CIV-1459): a period missing on some routes would
     // otherwise read as the network's.
-    const periods = (['amPeak', 'midday', 'pmPeak', 'evening'] as const).filter(b => withWeekly.every(r => r.v3.weekly!.bands?.[b]));
+    const periods = DAYTIME_PERIOD_KEYS.filter(b => withWeekly.every(r => r.v3.weekly!.bands?.[b]));
     const bands: WeekBands = Object.fromEntries(periods.map(b => [b, {
       thisWeek: combineWeeks(withWeekly.map(r => r.v3.weekly!.bands![b]!.thisWeek)),
       lastWeek: combineWeeks(withWeekly.map(r => r.v3.weekly!.bands![b]!.lastWeek)),

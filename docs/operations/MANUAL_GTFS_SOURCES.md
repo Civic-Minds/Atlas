@@ -12,6 +12,7 @@ actually accepted and published.
 | Agency | Current source | Published artifact | Notes |
 | --- | --- | --- | --- |
 | `brantford` | Direct agency-provided GTFS file received by email | `2026-10-06` | `feedUrl` remains `null`; the file was processed, quality-checked, and published as Brantford Transit. |
+| `cobourg` | Direct agency-provided GTFS file received by email (TransitFare export, version 152) | `2026-10-10` | `feedUrl` remains `null`; no public feed link is known (asked 2026-11-12, no reply yet). Fixed route only: the On Demand service has no GTFS-Flex and is drawn from the Town's stop map. The file's service ends 2026-12-30. |
 
 ## Maintenance rules
 
