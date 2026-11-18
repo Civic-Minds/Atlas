@@ -9,7 +9,7 @@ import RouteRowName from './components/RouteRowName';
 import MapKey from './components/ui/MapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, SidebarPanel, SidebarWidget, MAP_APP_PADDING, framePadding, useMapAppWide, type MapLine, type PanelWidget } from './components/MapApp';
-import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
+import { MapLegendCard } from './components/ui/MapLegendCard';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { PAGE_NAMES, tabTitle } from '../shared/pageNames';
@@ -178,14 +178,14 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
   );
 }
 
-/** The map key: one pill at the map's top left, as Live's. */
+/** The map key in the regular map's key card and slot, bottom left above the footer (CIV-1821). */
 function StudioMapKey() {
-  const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{T[k]}</span> }));
+  const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: T[k], className: 'text-xs text-[var(--text-primary)]' }));
   return (
-    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
-      <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{T.keyTitle}<span className="font-normal text-[var(--text-muted)]"> · {T.dashed}</span></span>
-      <MapKey steps={steps} />
-    </div>
+    <MapLegendCard label={MAP_COLOURS_LABEL}>
+      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{T.keyTitle}<span className="font-normal"> · {T.dashed}</span></p>
+      <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={steps} />
+    </MapLegendCard>
   );
 }
 
@@ -254,10 +254,10 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
         layer={{ kind: 'lines', lines }} selected={null} highlightRoute={route}
         onPick={p => { if (p?.kind === 'line' && p.route) setRoute(p.route); }}
         frameKey={route ? `route-${route}-${footH}` : `network-${footH}`}
-        padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)} controlsRight={12}
+        padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)}
         ariaLabel={PAGE_NAMES.studio}
       />}
-      overlay={<><div className="pointer-events-auto absolute left-0 top-0 max-w-full"><StudioMapKey /></div><MapAppFooter onHeight={setFootH} /></>}
+      overlay={<><StudioMapKey /><MapAppFooter onHeight={setFootH} /></>}
       sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel widgets={summary} />{list}</>}
       narrowPanels={<>
         <SidebarPanel className="p-3" widgets={routePanel ?? summary} />

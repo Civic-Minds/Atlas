@@ -6,6 +6,7 @@ import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../Live/MapCard';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import MapZoomButtons from '../MapZoomButtons';
+import { MAP_CONTROLS_SLOT, Z_PANEL } from '../../styles';
 import { getMapStyle } from '../../lib/mapStyle';
 import { stopDotPaint } from '../Interval/map/stopStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from '../Live/routeMapModel';
@@ -61,8 +62,6 @@ interface Props {
   frameKey: string;
   /** Pixels at each edge the map keeps clear when framing (panels floating over it). */
   padding?: { top: number; bottom: number; left: number; right: number };
-  /** Distance of the zoom buttons from the right edge, px: the main map's 12, more where a panel floats over the map's right side. */
-  controlsRight?: number | string;
   className?: string;
   /** The map's accessible name. */
   ariaLabel?: string;
@@ -86,7 +85,7 @@ function stepColor(measure: MapMeasure, step: 0 | 1 | 2 | null): string {
  * layer: each line in its own colour, dashed where asked; a line can be clicked. Frames what it draws whenever `frameKey`
  * changes.
  */
-export default function MapAppMap({ layer, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, controlsRight = 12, className = '', ariaLabel = 'Map of the route, coloured by the chosen measure' }: Props) {
+export default function MapAppMap({ layer, selected, onPick, anchor = null, card = null, centerOn = null, highlightRoute = null, frameKey, padding, className = '', ariaLabel = 'Map of the route, coloured by the chosen measure' }: Props) {
   const model = layer.kind === 'segments' ? layer.model : EMPTY_MODEL;
   const measure: MapMeasure = layer.kind === 'segments' ? layer.measure : 'late';
   const heat = layer.kind === 'segments' ? layer.heat ?? null : null;
@@ -238,7 +237,7 @@ export default function MapAppMap({ layer, selected, onPick, anchor = null, card
     <div className={`relative h-full w-full overflow-hidden ${className}`.trim()}>
       <div ref={box} className="h-full w-full" role="img" aria-label={ariaLabel} />
       {/* Phones zoom by pinching, so the + and − buttons show only from sm up, as on the regular map. */}
-      <div className="pointer-events-auto absolute bottom-6 z-20 max-sm:hidden" style={{ right: controlsRight }}>
+      <div className={`${MAP_CONTROLS_SLOT} ${Z_PANEL} pointer-events-auto max-sm:hidden`}>
         <MapZoomButtons onZoomIn={() => mapRef.current?.zoomIn({ duration: 200 })} onZoomOut={() => mapRef.current?.zoomOut({ duration: 200 })} />
       </div>
       {at && card && <FloatingMapCard at={at} padding={padding}>{card}</FloatingMapCard>}
