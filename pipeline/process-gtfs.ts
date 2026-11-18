@@ -22,7 +22,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 // loadEnv first so shared/config sees staging/prod R2_PUBLIC_URL
-import { LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
+import { DRY_RUN_ENV_LABEL, LOADED_ENV_FILE, isProductionPublicR2Bucket } from './loadEnv.js';
 import { loadSupplementalFeeds, processAgencyFeeds, type AgencyFeedConfig } from './agencyFeeds.js';
 import { r2Put, r2Get, r2PutArchive, rawFeedArchiveKey } from './r2.js';
 import { loadFareOverrides, manualBaseFareFor } from './fareOverrides.js';
@@ -51,7 +51,9 @@ import { buildHiddenRoutesForAgency, mergeHiddenRoutes, type HiddenRoutesFile } 
 import { clearDataRefreshHandoff, writeDataRefreshMarker } from './dataRefreshMarker.js';
 import { resolveAgencyTimezone } from '../shared/agencyTimezone.js';
 
-console.log(`  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
+console.log(LOADED_ENV_FILE === DRY_RUN_ENV_LABEL
+  ? `  env: ${DRY_RUN_ENV_LABEL}`
+  : `  env: ${LOADED_ENV_FILE} (bucket=${process.env.R2_BUCKET_NAME ?? '?'}${isProductionPublicR2Bucket() ? ' [PRODUCTION]' : ' [non-prod]'})`);
 
 const FLAG_ARGS = new Set(['--dry-run', COUNTRY_LAUNCH_FLAG]);
 const rawArgs = process.argv.slice(2);

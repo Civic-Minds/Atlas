@@ -722,7 +722,31 @@ describe('step 5a: the frequency filter reads the stretch selector (rv_)', () =>
     normalizeRouteFilterFeatures(features);
     return features.map(f => f.properties);
   };
-  const passes = (r: Run, route: string, day: string, period: any, max: number) => routePassesHeadwayFilter(filterable(r, route), period, day, max);
+  // The public rule (rv_, the slower branch decides). CIV-1822's trunk rule (tv_) is pinned separately below.
+  const passes = (r: Run, route: string, day: string, period: any, max: number, trunk = false) => routePassesHeadwayFilter(filterable(r, route), period, day, max, trunk);
+
+  // CIV-1822: the trunk rule (tv_, beta and dev) reads each route's frequent shared middle, leaving the slower branches
+  // out. Expected trunk values: LA Metro 51 AM 8, TTC 123 midday 11, TTC 507 midday 8 (rv_ 24, 23 and 25).
+  it('CIV-1822 trunk rule: a route whose shared middle is frequent passes at its middle, not its slowest branch', async () => {
+    const la = await run('lacmta-51-weekday');
+    expect([passes(la, '51', 'Weekday', 'amPeak', 8, true), passes(la, '51', 'Weekday', 'amPeak', 5, true)]).toEqual([true, false]);
+    const t123 = await run('ttc-123-weekday');
+    expect([passes(t123, '123', 'Weekday', 'midday', 15, true), passes(t123, '123', 'Weekday', 'midday', 10, true)]).toEqual([true, false]);
+    const t507 = await run('ttc-507-weekday');
+    expect([passes(t507, '507', 'Weekday', 'midday', 10, true), passes(t507, '507', 'Weekday', 'midday', 5, true)]).toEqual([true, false]);
+  });
+  it('CIV-1822 trunk rule: a route with no slower branch reads the same under both rules', async () => {
+    for (const [fx, route, day, period, pass, fail] of [
+      ['ttc-29-weekday', '29', 'Weekday', 'midday', 8, 5],
+      ['cta-36-saturday', '36', 'Saturday', 'pmPeak', 15, 10],
+      ['ttc-134-weekday', '134', 'Weekday', 'midday', 15, 10],
+    ] as const) {
+      const r = await run(fx);
+      for (const trunk of [false, true]) {
+        expect([fx, trunk, passes(r, route, day, period, pass, trunk), passes(r, route, day, period, fail, trunk)]).toEqual([fx, trunk, true, false]);
+      }
+    }
+  });
 
   it('LA Metro 51 Weekday AM: the slower branch (24) decides, so it fails every 20 and passes every 30 (D1)', async () => {
     const r = await run('lacmta-51-weekday');

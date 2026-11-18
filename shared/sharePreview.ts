@@ -69,6 +69,21 @@ export function shareCityForQuery(params: URLSearchParams): ShareCity | null {
   return shareCityForPoint(Number(lat), Number(lon));
 }
 
+/** The shared spot, rounded to about 100 m so each spot has one cacheable picture (CIV-1393), or null when the link has no valid location. */
+export function sharePointFromQuery(params: URLSearchParams): { lat: string; lon: string } | null {
+  const lat = params.get('lat');
+  const lon = params.get('lon');
+  if (lat === null || lon === null || lat.trim() === '' || lon.trim() === '') return null;
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 85 || Math.abs(lo) > 180) return null;
+  return { lat: la.toFixed(3), lon: lo.toFixed(3) };
+}
+
+/** The drawn picture for a spot (api/share-image.ts): a PNG of the lines around it. */
+export function shareImagePathForPoint(point: { lat: string; lon: string }): string {
+  return `/api/share-image?lat=${point.lat}&lon=${point.lon}`;
+}
+
 function escapeAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -81,8 +96,13 @@ function escapeAttr(value: string): string {
 export function sharePreviewHtml(opts: { search: string; mode: SeoMode; origin?: string }): string {
   const origin = (opts.origin ?? SITE_URL).replace(/\/$/, '');
   const params = new URLSearchParams(opts.search);
-  const city = shareCityForQuery(params);
-  const image = city ? shareImageForCity(city) : DEFAULT_SHARE_IMAGE;
+  // CIV-1393: a link with a location gets the picture drawn for that exact spot, even when it also names an area;
+  // area-only links keep the city picture.
+  const point = sharePointFromQuery(params);
+  const city = point ? shareCityForPoint(Number(point.lat), Number(point.lon)) : shareCityForQuery(params);
+  const image = point
+    ? { path: shareImagePathForPoint(point), alt: city ? `Atlas frequency map of the area around this spot in ${city.name}` : 'Atlas frequency map of the area around this spot' }
+    : city ? shareImageForCity(city) : DEFAULT_SHARE_IMAGE;
   const seo = resolveSeo('/', { mode: opts.mode, flags: {}, origin });
   const query = params.toString();
   const url = `${origin}/${query ? `?${query}` : ''}`;
@@ -106,7 +126,7 @@ export function sharePreviewHtml(opts: { search: string; mode: SeoMode; origin?:
     `<meta property="og:image" content="${img}" />`,
     '<meta property="og:image:width" content="1200" />',
     '<meta property="og:image:height" content="630" />',
-    `<meta property="og:image:type" content="${imageMimeType(image.path)}" />`,
+    `<meta property="og:image:type" content="${point ? 'image/png' : imageMimeType(image.path)}" />`,
     `<meta property="og:image:alt" content="${escapeAttr(image.alt)}" />`,
     '<meta name="twitter:card" content="summary_large_image" />',
     `<meta name="twitter:title" content="${t}" />`,

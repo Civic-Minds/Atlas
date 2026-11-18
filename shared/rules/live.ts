@@ -29,6 +29,11 @@ export const LIVE_MIN_GOOD_DAYS = 3;
 export const LIVE_MIN_SPREAD_DAYS = 3;
 /** Each of two weeks needs this many healthy days before they are compared. */
 export const LIVE_MIN_HEALTHY_DAYS_PER_WEEK = 4;
+/**
+ * A route gets Live figures (the hosted MCP's private files, CIV-1860) once its latest week has this many good days.
+ * Reuses the week-comparison bar until Live sets its own rule for this.
+ */
+export const LIVE_MIN_DAYS_TO_SHOW = LIVE_MIN_HEALTHY_DAYS_PER_WEEK;
 /** A day is compared with the median of at least this many other days of its own type; with fewer, with every other day. */
 export const LIVE_MIN_SAME_TYPE_DAYS = 2;
 /** A stop, stretch or stop pair is shown only with evidence from at least this many days. */

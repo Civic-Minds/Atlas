@@ -2,6 +2,7 @@ import type { ShapeProperties } from '../hooks/useAgencyData';
 import type { ViewportBounds } from '../hooks/useIntervalStats';
 import type { AgencySearchGroup } from './agencySearch';
 import { buildRouteFacts, labelShortNameOf, type RouteLabel } from './routeFacts';
+import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank, stripLeadingZeros } from '../../shared/routeMatch';
 import { compareRouteNumber, compareSearchRelevance, compareText } from './sortCompare';
 import { searchFold } from '../../shared/areaSearch';
 import type { SearchRoutesFile, SearchStopsFile } from '../../shared/searchIndex';
@@ -75,7 +76,6 @@ function featureDistanceM(f: GeoJSON.Feature, bounds: ViewportBounds | null): nu
   return metresBetween({ lat, lon }, { lat: vLat, lon: vLon });
 }
 
-const stripLeadingZeros = (s: string) => s.replace(/^0+/, '') || '0';
 
 /** True when the query looks like a route number/code rather than an agency name. */
 export function isRoutePrimaryQuery(query: string): boolean {
@@ -208,23 +208,11 @@ export function prepareRouteResultsForDisplay(
 export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
   const q = query.trim().toLowerCase();
   if (!q) return 99;
-  const qNorm = stripLeadingZeros(q);
-  const shortName = (p.routeShortName ?? '').toLowerCase();
-  const shortNorm = stripLeadingZeros(shortName);
   // The route ID only counts where riders see it: as the route's number when it has no number or name (labelShortNameOf).
   // A hidden ID never matches: UTA 240's ID 34504 made it a result for "504" (#1183).
-  const routeId = (labelShortNameOf(p) === p.routeId ? p.routeId ?? '' : '').toLowerCase();
-  const longName = (p.routeLongName ?? '').toLowerCase();
-
-  if (shortName === q || shortNorm === qNorm) return 0;
-  if (shortName.startsWith(q) || shortNorm.startsWith(qNorm)) return 1;
-  if (routeId === q) return 2;
-  if (routeId.startsWith(q)) return 3;
-  if (shortName.includes(q) || shortNorm.includes(qNorm)) return 4;
-  if (routeId.includes(q)) return 5;
-  if (q.length >= 2 && longName.includes(q)) return 6;
-  // "38 Geary": the number and name as rows show them (CIV-1048).
-  if (shortName && longName && `${shortName} ${longName}`.startsWith(q)) return 6;
+  const visibleId = labelShortNameOf(p) === p.routeId ? p.routeId ?? '' : '';
+  const rank = routeTextMatchRank({ shortName: p.routeShortName, longName: p.routeLongName, visibleId }, q);
+  if (rank <= ROUTE_TEXT_MATCH_MAX) return rank;
   const agencySlug = ((p as { agencySlug?: string }).agencySlug ?? '').toLowerCase();
   if (agencySlug.startsWith(q)) return 7;
   return 8;
@@ -233,7 +221,7 @@ export function routeQueryMatchRank(p: ShapeProperties, query: string): number {
 export function matchesRouteQuery(p: ShapeProperties, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
-  if (routeQueryMatchRank(p, q) <= 6) return true;
+  if (routeQueryMatchRank(p, q) <= ROUTE_TEXT_MATCH_MAX) return true;
   const cIds = (p as { routeIds?: string[] }).routeIds;
   if (cIds?.some(r => r.toLowerCase().includes(q))) return true;
   const cNames = (p as { corridorShortNames?: string[] }).corridorShortNames;

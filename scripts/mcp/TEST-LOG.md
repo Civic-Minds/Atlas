@@ -1,6 +1,8 @@
 # Atlas Studio MCP: test log
 
-The standing questions for the Atlas Studio MCP server ([README](README.md)), and what it answered each time. Rerun all of them after every change to the server, and add a dated section with the results checked against Atlas data.
+What the Atlas Studio MCP server ([README](README.md)) answered to the questions in [QUESTIONS.md](QUESTIONS.md), round by round. Rerun all of them after every change to the server, and add a dated section with the results checked against Atlas data.
+
+The quick check comes first: `node scripts/mcp/figureCheck.mjs` asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
 
 ## Versions
 
@@ -20,36 +22,15 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.6.0 | 2026-11-17 | trip_time and combined_frequency read an agency's supplemental schedules too (LA Metro's rail lines) and take also_agencies, matching a place on another agency's stops within a 500 m walk (downtown LA to Santa Monica: E Line, 720, 20 and Big Blue Bus R10 together) |
 | 0.6.1 | 2026-11-17 | routes_by_hours (routes that end early or start late); the newest schedule file is picked by the date in its name, not when it was copied; buses_needed says not to work out other frequencies |
 | 0.6.2 | 2026-11-17 | Instructions sent at start: answer from the tools, say where anything else comes from, don't estimate unasked, no shell work-arounds |
+| 0.7.0 | 2026-11-18 | Hosted-version tool code (CIV-1840): schedule end date on every answer, map links, merged same-destination branches, midnight windows, routes_near hours, route_history ends with today's schedule, paged schedule_changes, ferries as their own kind, the optional question field |
+| 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
+| 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
+| 0.11.0 | 2026-11-18 | Live tools cover every agency Live records: each answer states the agency's limits (days kept, routes covered, earliest date figures can appear); figures switch on by themselves once a route has 4 good days in a week (CIV-1860) |
+| 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
 
-## Standing questions
+## Questions
 
-Ryan's, from his first test:
-1. How often does the TTC 29 bus run on a Saturday?
-2. How much does that change between Saturday and Sunday from 10 AM to 6 PM?
-3. Between Dufferin Station and Wilson Station, are there other routes that make service effectively more frequent?
-4. How much faster is the 929?
-5. Do the 29 and 929 take the same time northbound between those stops from 10 AM to 6 PM, or does it change through the day?
-
-Planner samples:
-6. Which OC Transpo routes run every 10 minutes or better at weekday midday?
-7. Compare TTC, TransLink, MBTA, CTA and SEPTA: how many routes run every 15 minutes or better on weekday evenings?
-8. Which York Region Transit routes run every 15 minutes or better on Sunday midday?
-9. What changed in Hamilton's spring schedule?
-10. Which agencies does Atlas cover around Hamilton?
-
-Weak spots (no tool yet: a good answer says so instead of guessing):
-- Which routes are near Bathurst and Bloor?
-- How has the 504 changed since 2019?
-
-Ryan's test page for the next round: `Atlas-worktrees/_reports/mcp-tests/test-questions.html`.
-
-- How has Kingston Transit route 12 changed since 2018? (Its old schedules hold impossible 3-minute figures; a good answer calls them doubtful.)
-
-Ryan's second round:
-11. Which Mississauga routes run every 15 minutes or better on weekday evenings?
-12. Compare frequent service on Sunday midday in Calgary, Edmonton and Winnipeg.
-13. What changed in Hamilton's spring schedule?
-14. Which US agencies our size run the most routes every 10 minutes or better at midday? ("Our size": Hamilton Street Railway.)
+The questions moved to [QUESTIONS.md](QUESTIONS.md), the one list any chat adds to (2026-11-18). Rounds run from it; the question numbers in the older sections below are those rounds' own.
 
 Full chats and reruns are kept outside the repo, because they hold local paths: `Atlas-worktrees/_reports/mcp-tests/`.
 
@@ -257,3 +238,117 @@ Ryan approved running the same 32 questions through Gemini ("1"; "You need to us
 | No answer | 5 and 21 (tried the shell, which was blocked, and returned nothing); 32 (Antigravity sign-in error) |
 
 What it shows: the tools' answers read the same on both. The difference is what each model adds. Gemini follows "don't estimate" more strictly but adds unlabelled facts from memory and reaches for the shell. Fixed in 0.6.2: the server now sends instructions at the start (answer from the tools; say where anything else comes from; no estimates unless asked; no shell work-arounds). Not rerun on Gemini.
+
+## 2026-11-18: standing questions, locked down and normal (CIV-1845)
+
+Version 0.6.2, from the main checkout. The 16 standing questions above (question 13 is the same as 9, so it was asked once; "our size" named Hamilton Street Railway in the question). Each run is one headless chat from ~/Desktop, one question at a time, each waiting for the answer. Driver: `_reports/mcp-tests/run-round.py`; chats: `2026-11-18-locked.jsonl` and `2026-11-18-normal.jsonl`; a figure check (`judge-figures.py`) lists every number in an answer that appears in no tool result, and each was checked by hand.
+
+- **Locked down**: `--bare` refuses to start without an API key (it never reads the Claude sign-in), so the run used the same lock-down without it: `--strict-mcp-config` with only atlas-studio, `--tools ""` (no built-in tools at all), `--allowedTools "mcp__atlas-studio__*"`, `--setting-sources ""` and auto-memory off. Checked before the round: the chat listed only the 12 Atlas tools and saw no CLAUDE.md or memory.
+- **Normal**: the usual setup, permission mode auto. It used no web search, shell or files; only ToolSearch and the Atlas tools.
+
+Where both runs called the same tool, they gave the same figures. They called different tools on 6 and 8 (the normal run made extra calls) and on K (only the locked run called route_frequency, which is why the normal run got K partly wrong). Every figure came from a tool, except those under "Added by the assistant". The # column is the standing list's number; the two weak spots and Kingston are W1, W2 and K.
+
+| # | Question (short) | Tools | Answer | Right? | Added by the assistant | Gap or fix |
+|---|---|---|---|---|---|---|
+| 1 | TTC 29, Saturday | route_frequency | 5:46 AM to 2:08 AM; every 5–16 midday, 10–20 early; the 329 covers 1:50–6 AM | Right | None | None |
+| 2 | Saturday vs Sunday, 10 AM–6 PM | route_frequency (window) | Same before noon; Dufferin Gate branch every 5 south, 8 north on Sunday from 1 PM against 10 on Saturday | Right: Sunday's 29 leaves Dufferin Station northbound every 5 from 1 PM in the schedule file (13:04, 13:09, 13:14 …), which settles the 2026-11-17 check | None | None |
+| 3 | Other routes, Dufferin to Wilson | combined_frequency (Sat, Sun) | 929; together every 3 Saturday (137 trips), every 5 Sunday (138 trips); 329 none | Right. Checked in the schedule file: on Sunday each 929 leaves a minute after a 29 (13:04 and 13:05, 13:14 and 13:15 …), so the wait stays about 5; on Saturday the 929 leaves between them (13:05, 13:08, 13:10), so it falls to 3 | Both runs guessed this (buses leaving together), labelled as a guess, and were right | The tool could say so itself when two routes leave together. List for the manager |
+| 4 | How much faster is the 929 | trip_time | Saturday 37 vs 44 min (7 faster); Sunday 34–36 vs 40 | Right | The "take the 929 only if it leaves within 7 min" advice (locked run) is its own, from tool figures | None |
+| 5 | 29 vs 929 through the day | None (reused question 4's call) | Flat through the day; Saturday 29 is 45 min at 11 AM | Right | None | None |
+| 6 | OC Transpo, every 10, midday | routes_at_frequency | Only Line 1, every 6, of 76 running | Right | None | Normal run also listed every-15 routes unasked: the 12 shows "every 17" yet counts at 15. List for the manager (why the route list and the filter differ) |
+| 7 | Five agencies, every 15, evenings | compare_agencies | TTC 64, CTA 34, MBTA 33, TransLink 32, SEPTA 10 | Right: same as 2026-11-17 | Shares of evening routes (38%, 37% …), labelled as its own | None |
+| 8 | YRT, every 15, Sunday midday | routes_at_frequency, list_agencies "Viva" | Only 20 Jane of 31 running | Right | None | Both runs said they couldn't tell whether Viva is in Atlas. It is (Viva Blue every 10–21 at Sunday midday, inside YRT). List for the manager: list_agencies "Viva" should say it is part of YRT |
+| 9 | Hamilton's spring schedule | schedule_changes | April 15 vs May 27: 51 University removed, 44 AM peak 15 → 30, 01 AM peak 16 → 15; none added | Right per Studio's current file | Why the 51 stopped (a term route), labelled as a guess | The 56 and 99 no longer show as added: Studio's comparison now reads the real week (#1581), which settles the earlier 56/99 question |
+| 10 | Agencies around Hamilton | list_agencies near | 12 within 60 km, nearest first | Right | None | None |
+| 11 | Mississauga, every 15, evenings | routes_at_frequency | 6 of 43: 2, 61, 66, 109, 1, 42 | Right: same as 2026-11-17 | None | None |
+| 12 | Calgary, Edmonton, Winnipeg, Sunday midday | compare_agencies, routes_at_frequency | Edmonton 13, Calgary 2 (Red and Blue Lines, every 10), Winnipeg 0 | Right | None | None |
+| 14 | US agencies HSR's size, every 10, midday | rank_agencies, routes_at_frequency | Lubbock 6, LADOT DASH 5, Grand Rapids 4 … of 153; HSR 2 (02 Barton, 51 University) | Right | Which leaders rely on campus routes, from route names | None |
+| W1 | Routes near Bathurst and Bloor | routes_near | Line 2, 511, 7, 300, 307 | Right | Both runs called the 300 and 307 night buses from memory, labelled | routes_near gives no hours. List for the manager: say when each route runs (or mark night routes) |
+| W2 | The 504 since 2019 | route_history | Table 2019 to 2026; AM peak 6 → 13; 2026 late "every 61" explained as the rule | Right | None | None |
+| K | Kingston 12 since 2018 | route_history (+ route_frequency in the locked run) | Doubtful 3-minute figures left out; evening service gone | Locked: right. Normal: partly wrong | Both runs distrusted the Jan 2019 midday "every 5" on their own | (a) The normal run didn't call route_frequency and said the latest schedule has midday service only: History's newest Kingston snapshot (Aug 2026) has only a midday figure, but today's schedule runs every 30 from 6:30 AM to 6:26 PM. route_history should end with today's schedule when History is older, as it does for the 504. (b) The doubtful rule (3 min or less) misses the Jan 2019 "every 5". Both listed for the manager |
+
+Not covered by the standing questions: buses_needed, routes_by_hours and also_agencies. The final round's trick questions are where models added figures of their own; they are worth adding to the standing set.
+
+Fixes: none made in this round. Every gap is in `atlasData.ts` or `atlas-mcp.ts`, which the hosted-version work (CIV-1840) is rewriting, so they went to the manager as a list.
+
+## 2026-11-18: the hosted version's tool code (CIV-1840), Claude both ways and Gemini
+
+Studio's branch at 64a0f49e0 (feat/civ-1840-hosted-mcp; it gives the same answers as the split store), still labelled 0.6.2 though its answers changed (0.7.0 asked for). Data release-mwl8qwjk. The 32 standing questions plus the 4 held wow questions, one chat per client, one question at a time. Each run's version, commit and data release are in its `.meta.json` next to the chat (`_reports/mcp-tests/2026-11-18-split-*`).
+
+- **Claude, locked down** (only atlas-studio, no built-in tools, settings or memory): all 36 answered from the tools. No figure from outside them.
+- **Claude, normal** (usual setup, but only the branch's atlas-studio, so the main checkout's server could not answer instead): all 36 answered; no web, shell or file reads.
+- **Gemini** (agy, Gemini 3.8 Flash High, only the Atlas tools allowed): 29 answered, then Gemini's quota ran out (resets in about 6½ days). Questions 30 to 36 (Kingston buses, Kipling, TransLink coverage and the 4 wow questions) have no Gemini answer.
+
+The 9 tool answers that changed from 0.6.2, and how the chats used them:
+
+| Change | Seen in | Verdict |
+|---|---|---|
+| rank_agencies and schedule_changes give each schedule's end date | 9, 16, 21, 29, 33, 36 | Right: every client now names the end dates, which 0.6.2 left out |
+| Ferries are no longer bus peers (HSR's evening peers 179 → 177) | 33 | Right: BC Ferries is gone from HSR's peers |
+| A last trip after midnight says so ("2:08 AM (after midnight)") | 13, 26 | Right |
+| route_frequency adds trips by direction | 35 | The TTC 29 still shows two northbound "branches" with 144 trips each. Ryan: northbound 29s have one destination; only southbound branches. 144 is the direction's count; the tool should show one northbound row. Sent to Studio |
+| routes_near gives each route's weekday hours | 18, 31 | Right: no client guessed night routes from memory this time |
+| route_history ends with today's schedule when History is older (Kingston 12) | 13 | Right |
+| schedule_changes gives clock hours and the end date, matches names regardless of capitals, and pages | 29, 36 | Right: RTD's Bound, FreeRide and MetroRide no longer show as removed and added |
+| list_agencies "Viva" points to YRT | (wow only) | Right in the golden run; no chat asked |
+
+Other findings:
+
+| # | Client | Finding | Verdict |
+|---|---|---|---|
+| 26 | Claude normal | A combined_frequency window that starts at midnight (12 AM–3 AM) returns no figures; 11 PM–5 AM works. Same on main | Tool bug. Added to the figure check as a known gap |
+| 13 | Claude normal | Said Atlas has no 2017 data without calling route_history; the locked run called it and gave the 2017 table | Model miss: the tool descriptions should point history questions at route_history |
+| 26 | Gemini | "Evenly spaced… every 9 min" for 11 PM–2 AM. The tool says every 10 (21 departures), and its no-bunching list doesn't show even spacing | Wrong: a figure not from the tool |
+| 4 | Gemini | "The LRT remains under construction", unlabelled | From memory, not Atlas |
+| 10 | Gemini | Gave the 52's 20-minute branch figure as its "typical wait" | Misread the range |
+| 22 | Both | Crowding estimates, labelled as their own | Fine (asked for) |
+| 36 | Claude | Read RTD's FX routes as "FlexRide zones", unlabelled | Its own reading of the names |
+
+Spot checks against the tools: Gemini's R4 every 3 at the AM peak and the 929 every 8 all day are right.
+
+Gemini plan (manager, 2026-11-18): rounds run on Claude only until Gemini's quota resets (about 2026-11-25). Then the 7 missing Gemini questions (30 to 36 above) run on the same server code.
+
+## 2026-11-18: 0.7.0 (CIV-1840 at 1f641a90e), Claude both ways
+
+The same 36 questions (the 32 standing plus the 4 held wow questions) on Studio's 0.7.0, locked down and normal; Gemini waits for its quota (see above). Chats and `.meta.json`: `_reports/mcp-tests/2026-11-18-v070-claude-*`. The figure check passed 34 of 34 on the same code.
+
+- **Both runs:** all 36 answered from the tools. The locked run reached no figure from outside them. The normal run used one web search, for Seattle crowding (question 22, asked as an estimate), and labelled it.
+- **Fixed since the split round:** the midnight window (510 and 310 hour by hour from 12 AM: every 9 combined from 1 to 2 AM, the hand-over around 1:23 to 1:47 AM); every answer names its end date.
+- **TTC 29 branches:** `branches` now has one northbound row to Wilson (144 trips, starting at either loop), as Ryan described. The hourly figures still split northbound by the loop a trip starts from, so both runs printed two northbound columns (question 35). Sent to Studio: hourly northbound as one row too.
+- **Question 13 (the 504 in 2017), normal run:** again answered without route_history and said Atlas has no 2017 schedules; the locked run called it and gave the Oct 2017 figures. Twice now in the normal setup. Fix to consider: route_frequency's description, or its answer, points history questions at route_history.
+
+## 2026-11-18: the hosted test Worker (CIV-1851), Claude over HTTP
+
+The pilot Worker on workers.dev (free plan), reached through a tester's private link over Streamable HTTP. This test deployment has eight agencies' files inside the Worker (TTC, Kingston, OC Transpo, York Region Transit, TransLink, MBTA, Hamilton Street Railway, RTD; the ranking index and History cover every agency). It reported 0.8.0 at the start and 0.9.0 by the end, because Studio redeployed it several times between 10:55 and 11:00, while the locked run was going. 21 questions those agencies can answer, plus one on Calgary to see how a missing agency reads. Chats, `.meta.json` and timings: `_reports/mcp-tests/2026-11-18-hosted-*` (the link itself is kept out of every file).
+
+- **Timing** (42 direct calls, 14 tools × 3 rounds, about one call every 2 seconds): no errors, no CPU-limit failures, no 5xx. Median 170 ms, 90th percentile 441 ms, slowest 966 ms (the first call, a cold start).
+- **Claude, locked down and normal:** all 21 answered from the tools, with no rate-limit or CPU errors. Each question took 9–26 seconds end to end. The figures match the local server's answers to the same questions. The normal run used no web search.
+- **The 504 in 2017:** both runs now call route_history and give the Oct 2017 figures (0.9.0's route_frequency description points past years there).
+- **Kennedy Station:** both runs answered with one routes_near and one routes_at_frequency call (18 routes running at midday), well inside the 30-a-minute limit.
+- **Calgary (not in this deployment):** "No route data for calgary"; both runs said Atlas has no figures and pointed to the agency. For the pilot the message should say the pilot covers a set list of agencies, unless every agency's files are up by then.
+- **Web clients:** Claude.ai and ChatGPT on the web can't be driven headlessly without signing in and adding a connector to an account, so they weren't tested. Claude Code over HTTP uses the same Streamable HTTP endpoint those clients call.
+
+## 2026-11-18: Live reliability tools (CIV-1860, 0.10.0), Claude both ways
+
+10 questions on route_reliability and route_bunching (local server on feat/civ-1860, Live's published TTC streetcar summaries, weeks Nov 3–9 and Nov 10–16). Chats: `_reports/mcp-tests/2026-11-18-live-claude-*`.
+
+- **Both runs:** every answer came from the two tools. Figures not in the tool results were the tool's fractions written as percentages (0.093 as 9.3%) or simple sums, checked by hand.
+- **Right:** 504 at rush hour (2.3% late in the AM peak, 9.3% in the PM peak, about 4 in 10 gaps bunched or gapped); the ranking (510 late most often at 16.5%, 504 worst spaced); the 505 improving (14.3% to 9.9%, mostly midday and evening); the 510's trip time against its schedule; and the 504 against the 501 at midday.
+- **No Live data:** OC Transpo Line 1 and the TTC 29 were answered as "no Live recordings" with the recorded routes listed. The 29 answer also gave its schedule from route_frequency.
+- **Right now:** "Is the 504 late right now?" was declined (past recordings only), and the past week was given instead.
+- **Fixed after the round:** both runs wrote shares as "4 in 10", which Ryan's numbers rule rules out. The tools' definitions now say to give percentages, never "1 in N".
+
+## 2026-11-18: Live limits for every recorded agency (CIV-1860, 0.11.0 before the earliest-date line), Claude both ways
+
+8 questions on Kingston, Hamilton, the TTC and OC Transpo (local server on feat/civ-1860-all-live-agencies, reading a dry run of the private Live files: TTC figures, Kingston 3 days kept, Hamilton 1 day). Chats: `_reports/mcp-tests/2026-11-18-limits-claude-*`.
+
+- **Both runs:** no invented figures. Kingston route 2, Kingston bunching and Hamilton's B-Line were answered as "no figures yet", with the days kept (Kingston Nov 16–18, Hamilton Nov 18) and the 4-good-day rule. The TTC 29 and OC Transpo answers said what isn't recorded; the TTC streetcar answers were unchanged (510 late most often at 16.4%, 504 worst spaced at 39.9%).
+- **Fixed after the round:** the normal run guessed when figures would start and put Hamilton's at Nov 21, two days early. The limits now give the earliest date themselves (the first full days after recording began, built the next morning).
+
+## 2026-11-18: shared calculations (CIV-1864, 0.11.1), golden comparison
+
+No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with GOLDEN_EXTRA, which now also covers route lookup by name, routes_near, trip_time, buses_needed, combined_frequency, Kingston's changes and the Live tools), run against the disk store and the split store before and after each commit, with Live read from a fixed folder. Files: `_reports/mcp-tests/civ-1864/`.
+
+- **Changed on purpose:** routes_near's default radius, 250 m to the map's 500 m (2 answers: Bathurst and Bloor, Union Station gain nearby stops and routes); the Live tools' source line now says past service, not how the route is running right now.
+- **Unchanged:** every other answer, after each of the other steps (buses_needed through Studio's groupAtTarget, one protocol and file-reading helper for both servers, nearby stops and period trips from shared code, the shared route match, the shared schedule-change pairing, the tool-code split). The hosted Worker bundles to 80 KB gzipped.
+

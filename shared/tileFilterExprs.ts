@@ -1,4 +1,4 @@
-import type { PeriodKey } from './config.js';
+import { TRUNK_FILTER_ENABLED, type PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
 import { buildEffectiveModeExpression } from './modes.js';
@@ -53,7 +53,7 @@ export function tileRouteKeyExpr(): unknown[] {
  * Filter-safe: no to-number or numeric coalesce fallbacks — those break the
  * style-spec compiler when combined with direction/day clauses.
  */
-export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
+export function tileEffectiveHeadwayExpr(period?: PeriodFilter, trunk: boolean = TRUNK_FILTER_ENABLED): unknown[] {
   // This expression is the single definition of the frequency-filter rule: in-memory surfaces
   // evaluate it via shared/routeHeadwayFilter.ts. Worst direction decides. minStopHeadway (the
   // busiest stop) is deliberately not a fallback: a busy stretch must never make a route pass.
@@ -129,12 +129,18 @@ export function tileEffectiveHeadwayExpr(period?: PeriodFilter): unknown[] {
       qualifiedCadence,
       coverage,
     ];
+    // CIV-1822: with the trunk rule on (TRUNK_FILTER_ENABLED), the route's value is its trunk's (tv_: every direction's
+    // main stretch alone, the slower branches left out), where the tiles carry it; otherwise rv_. tv_ equals rv_ where
+    // a route has no tail or its trunk is too short to read, and Overnight's tv_ is the night value, as rv_'s is.
+    const stretchValue = trunk
+      ? ['case', ['has', `tv_${period}`], ['get', `tv_${period}`], ['get', `rv_${period}`]]
+      : ['get', `rv_${period}`];
     const value = [
       'case',
       ['has', `rv_${period}`],
       ['case',
         ['==', ['get', 'tier'], 'span'], NO_PERIOD_SERVICE_TILE_VALUE,
-        rowRuns, ['get', `rv_${period}`],
+        rowRuns, stretchValue,
         NO_PERIOD_SERVICE_TILE_VALUE,
       ],
       legacy,
@@ -173,7 +179,7 @@ export function tilePeriodServiceExpr(period: PeriodFilter): unknown[] {
 }
 
 /** MapLibre filter clause for the selected period and frequency ceiling. */
-export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, maxHeadway: number): unknown[] {
+export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, maxHeadway: number, trunk: boolean = TRUNK_FILTER_ENABLED): unknown[] {
   // When Frequency = All for a specific period, the service predicate is already
   // boolean. Do not wrap it in a numeric <= comparison; MapLibre 6 rejects that
   // expression and it never represented a numeric headway threshold.
@@ -182,7 +188,7 @@ export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, m
   }
 
   const threshold = maxHeadway === Infinity ? NO_PERIOD_SERVICE_TILE_VALUE - 1 : maxHeadway;
-  const clause = ['<=', tileEffectiveHeadwayExpr(period), threshold];
+  const clause = ['<=', tileEffectiveHeadwayExpr(period, trunk), threshold];
   // #899: all day, a direction with little or no midday service caps the route at its midday wait
   // (worstDirection.ts; no midday service at all fails every threshold). A tile without the cap
   // behaves as before.

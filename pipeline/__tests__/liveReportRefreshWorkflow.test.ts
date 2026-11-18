@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest';
 describe('live report refresh workflow contract', () => {
   const workflow = readFileSync(resolve('.github/workflows/live-report-refresh.yml'), 'utf8');
   const buildJob = workflow.slice(workflow.indexOf('\n  build:'), workflow.indexOf('\n  publish:'));
-  const publishJob = workflow.slice(workflow.indexOf('\n  publish:'));
+  const publishJob = workflow.slice(workflow.indexOf('\n  publish:'), workflow.indexOf('\n  mcp-live:'));
+  // CIV-1860: the MCP's Live files are built after the publish step, in their own job.
+  const mcpLiveJob = workflow.slice(workflow.indexOf('\n  mcp-live:'));
 
   it('runs daily off the hour (CIV-1690), and a manual run does not publish unless asked', () => {
     expect(workflow).toContain('  workflow_dispatch:');
@@ -22,9 +24,10 @@ describe('live report refresh workflow contract', () => {
     expect(triggers).toEqual(['workflow_dispatch:', 'schedule:']);
   });
 
-  it('keeps the two jobs apart: publish waits for build, and neither keeps the checkout token', () => {
+  it('keeps the jobs apart: publish waits for build, mcp-live waits for publish, and none keeps the checkout token', () => {
     expect(publishJob).toMatch(/^\n  publish:\n    needs: build\n/);
-    for (const job of [buildJob, publishJob]) {
+    expect(mcpLiveJob).toMatch(/^\n  mcp-live:\n    needs: publish\n/);
+    for (const job of [buildJob, publishJob, mcpLiveJob]) {
       expect(job.match(/uses: actions\/checkout@/g)).toHaveLength(1);
       expect(job).toMatch(/uses: actions\/checkout@v\d+\n\s+with:\n\s+persist-credentials: false/);
     }

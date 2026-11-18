@@ -5,11 +5,16 @@
  * STUDIO_MANIFEST_DEV_URL (vite.config.ts); nothing here is uploaded or built into a deployment.
  */
 
-/** The agency Studio opens on when the address names none (or one it has no file for). */
-export const STUDIO_DEFAULT_AGENCY = 'kingston';
+import { STUDIO_DEFAULT_AGENCY } from './rules/focus.js';
+
+/** The agency Studio opens on when the address names none (or one it has no file for): the focus list's demo agency. */
+export { STUDIO_DEFAULT_AGENCY };
 
 /** Where the Vite dev server lists the built Studio agencies: `{ agencies: string[] }`. */
 export const STUDIO_MANIFEST_DEV_URL = '/dev-studio/index.json';
+
+/** CIV-1871: where the dev server lists what each Studio file and Live coverage file says, for the coverage page: `{ studio, vehicles, coverage }`. */
+export const STUDIO_COVERAGE_DEV_URL = '/dev-studio/coverage.json';
 
 const BEFORE_AFTER = /^([\w-]+)-before-after\.json$/;
 

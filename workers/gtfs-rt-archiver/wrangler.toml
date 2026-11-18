@@ -1,4 +1,5 @@
 name = "atlas-gtfs-rt-archiver-ttc-positions"
+account_id = "334f99db1478f9e95eaea65b3b9e1fdd"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]

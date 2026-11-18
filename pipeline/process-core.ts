@@ -3,7 +3,7 @@
  * Used by process-gtfs.ts (local zip) and refresh.ts (downloaded feeds).
  */
 import { pipelineRunDateYmd } from './pipelineTimeZone.js';
-import { boardableDrawnStops, drawnStopsBeforeTerminal } from './drawnStops.js';
+import { boardableDrawnStops, drawnStopsBeforeTerminal, stopReading } from './drawnStops.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { computeRunningTimes, runningTimesJson } from './runningTime.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
@@ -863,7 +863,7 @@ export async function processGtfsBuffer(
   const feedCalendarDates = gtfs.calendarDates;
   // CIV-1101: the live map reads one model, the week riders face (readWeekOf, pickRiderWeek), for
   // every agency. The run-date and next-service-dates opt-ins below are read only by the old
-  // picker: the kill switch (ATLAS_LEGACY_REFERENCE_DATE=1), History backfills and direct callers.
+  // picker: History backfills and direct callers.
   const useRiderWeek = !!options?.riderWeek && !options.referenceDate;
   // Old picker, feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read
   // from one typical real weekday, Saturday and Sunday after the run date. See serviceDates.ts.
@@ -880,7 +880,7 @@ export async function processGtfsBuffer(
   // Stage 4 (CIV-1011): the week riders face, written back as that week's calendar so every reader
   // below (phase 1, corridors, converging origins, part-week counts) reads it.
   const riderWeek = useRiderWeek
-    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate, legacy: false }).riderWeek
+    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate }).riderWeek
     : null;
   // CIV-1076: routes with trips in the file but none in the read week, and the date each runs again.
   const resumingRoutes = riderWeek
@@ -2577,8 +2577,9 @@ export async function processGtfsBuffer(
     const dropOffOnlyStops: ReadonlySet<string> = !railFeature && featureShape && shapeMap != null && ownMetricStopMap === shapeMap
       ? new Set([...shapeMap.keys()].filter(stopId => !(boardableStopsByShape.get(`${featureShape}::${day}`)?.has(stopId))))
       : new Set();
-    /** CIV-1011 #6: a drawn stop is graded, and settles the tier, only where a rider can board (boardsAt). */
-    const gradesAt = (stopId: string): boolean => !dropOffOnlyStops.has(stopId);
+    // CIV-209: a drawn stop's per-stop answers (boards, has a reading, grades) come from stopReading (drawnStops.ts). It reads
+    // stopMetricMap live, so a stop's reading follows the list the line reads once pooling settles.
+    const readStop = (stopId: string) => stopReading(stopId, { times: stopMetricMap.get(stopId), dropOffOnly: dropOffOnlyStops });
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
@@ -2983,7 +2984,7 @@ export async function processGtfsBuffer(
       // line then never reads better than the skipped stop. Used only when every stop a pool
       // trip skips is one the floor counts (served by fewer departures than the pool).
       const floorStops = new Set(drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(id => id !== terminalId && stopHasReading(id) && !ownFallbackHw.has(id) && allStopHw[id] != null));
+        .filter(id => id !== terminalId && readStop(id).hasReading && !ownFallbackHw.has(id) && allStopHw[id] != null));
       const strictPool = branchTerminalTimes(hsKey, coverageIds, terminalId, true);
       let pool = strictPool;
       if (floorStops.size > 0) {
@@ -3060,10 +3061,10 @@ export async function processGtfsBuffer(
       // A terminal with a grade of its own speaks for the line: the route tier stays the worst drawn
       // stop's (King County Metro 107's Renton bays grade 60 and 30 on their own trips). Only an
       // ungraded terminal (Brantford 9's Sinclair stop: no midday reading) defers to the sibling.
-      if (publishedStopTiers ? publishedStopTiers[terminal] != null : stopHasReading(terminal)) return none;
+      if (publishedStopTiers ? publishedStopTiers[terminal] != null : readStop(terminal).hasReading) return none;
       const before = drawn.slice(0, -1);
       if (!before.some(p => pooled.pooledStops.has(p.stopId))) return none;
-      if (!before.every(p => pooled.pooledStops.has(p.stopId) || !stopHasReading(p.stopId))) return none;
+      if (!before.every(p => pooled.pooledStops.has(p.stopId) || !readStop(p.stopId).hasReading)) return none;
       const lastPooled = [...before].reverse().find(p => pooled.pooledStops.has(p.stopId))?.stopId ?? null;
       if (!lastPooled) return none;
       if (!stopTimeIdxByTrip || !tripsByHsKey) buildBranchIndex();
@@ -3150,15 +3151,9 @@ export async function processGtfsBuffer(
     // Every headway-to-tier step on the route reads the one grading scale (TIER_MAXES, every mode,
     // CIV-1813), so a 4-minute people mover graded 5 is never degraded to the public scale's 10
     // (settleTier, the rescue, the worst reading stop and the stop grades' headway cap).
-    const stopHasReading = (stopId: string): boolean => {
-      const sorted = [...new Set(stopMetricMap.get(stopId) ?? [])].sort((a, b) => a - b);
-      const daytime = sorted.filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
-      return daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
-    };
-    // CIV-1071: a stop that grades: riders can board there (gradesAt) and it has an all-day reading.
-    // The headline floor below still reads stopHasReading alone (a drop-off-only stop counts there);
-    // aligning it is CIV-1071 step B, a data change.
-    const stopGradeable = (stopId: string): boolean => gradesAt(stopId) && stopHasReading(stopId);
+    // That count is stopReading's hasReading (CIV-209). A stop grades (gradeable) where riders can board and it has
+    // that reading (CIV-1071 step A); the headline floor below still reads hasReading alone, so a drop-off-only stop
+    // counts there. Aligning the two is CIV-209 step 1, a data change.
     // The line runs by day when at least half of its stop departures fall in 6-22h; a night
     // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
     const lineRunsByDay = (): boolean => {
@@ -3256,7 +3251,7 @@ export async function processGtfsBuffer(
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
         // stop's own (pooled) list, never better than its headway's tier. The client colours the
         // line section by section from these and the route tier is their worst (settleTier
-        // below); a stop with no all-day reading (stopHasReading) is left out, so a limited
+        // below); a stop with no all-day reading (readStop().hasReading) is left out, so a limited
         // tail or a valueless stop never grades the line (ttc 17 weekday Steeles via
         // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
@@ -3265,7 +3260,7 @@ export async function processGtfsBuffer(
           // A drop-off-only stop has arrivals, not departures: its value stays on the stop
           // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
           // arrivals while all 37 trips of the destination end there every 30).
-          if (!stopGradeable(stopId)) continue;
+          if (!readStop(stopId).gradeable) continue;
           const times = stopMetricMap.get(stopId);
           if (!times || times.length === 0) continue;
           const headway = allStopHw[stopId];
@@ -3309,7 +3304,7 @@ export async function processGtfsBuffer(
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
         // The drawn stops with no boardable stop time (#879): the client colours them from
         // their neighbours instead of reading their missing grade as limited service.
-        const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => !gradesAt(stopId));
+        const dropOffOnlyDrawn = drawnPatternStops().map(p => p.stopId).filter(stopId => !readStop(stopId).boards);
         if (dropOffOnlyDrawn.length > 0) feature.properties.dropOffOnlyStops = dropOffOnlyDrawn;
       }
       return { onShape, stopHeadways };
@@ -3432,7 +3427,7 @@ export async function processGtfsBuffer(
         feature.properties.headway = null;
       } else if (!rescued && !railFeature && !isMapless && lineRunsByDay()
         && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
-        const reading = drawnPatternStops().filter(p => stopHasReading(p.stopId));
+        const reading = drawnPatternStops().filter(p => readStop(p.stopId).hasReading);
         const vals = reading.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
         if (vals.length) {
           const headway = Math.max(...vals);
@@ -3526,7 +3521,7 @@ export async function processGtfsBuffer(
       // under segments every 10; nine lines read no headline at all for one such stop).
       const worstDrawnStopHw = (): number | undefined => {
         const vals = servedByFewerTrips(headlinePool)
-          .filter(stopId => !ownFallbackHw.has(stopId) && stopHasReading(stopId))
+          .filter(stopId => !ownFallbackHw.has(stopId) && readStop(stopId).hasReading)
           .map(stopId => allStopHw[stopId])
           .filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
@@ -3534,8 +3529,8 @@ export async function processGtfsBuffer(
       // No drawn stop with a real all-day reading, the terminal included: the line is limited and
       // has no all-day headline (translink 6727 weekday, pace 807 weekday read 227 and 321 from a
       // terminal's sparse all-day fallback while every segment was limited).
-      const readingStops = railFeature || isMapless ? [] : drawnPatternStops().filter(p => stopHasReading(p.stopId));
-      const terminalHasReading = !terminalId || stopHasReading(terminalId);
+      const readingStops = railFeature || isMapless ? [] : drawnPatternStops().filter(p => readStop(p.stopId).hasReading);
+      const terminalHasReading = !terminalId || readStop(terminalId).hasReading;
       // The own pattern's terminal sample is sparse when it has fewer than
       // MIN_ALL_DAY_TERMINAL_DEPARTURES daytime departures, or fewer than
       // MIN_POOLED_TIER_DEPARTURES while the pooled list at that stop holds at least twice as
@@ -3755,7 +3750,7 @@ export async function processGtfsBuffer(
       let worstDrawnStop: PeriodValue | null = null;
       if (periodsFromPool) {
         for (const stopId of servedByFewerTrips(periodPoolTimes)) {
-          if (!stopHasReading(stopId)) continue;
+          if (!readStop(stopId).hasReading) continue;
           const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
           if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
           const stopH = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] : undefined);
@@ -3847,7 +3842,7 @@ export async function processGtfsBuffer(
     // card's chart and its rows rate the same line. An hourly stop has no hour value (the hour
     // window needs three departures), so its period value stands in (TriMet 35's deviation
     // stops: every 60 under a trunk every 30).
-    const hourFloorStops = periodsFromPool ? servedByFewerTrips(periodPoolTimes).filter(stopId => stopHasReading(stopId)) : [];
+    const hourFloorStops = periodsFromPool ? servedByFewerTrips(periodPoolTimes).filter(stopId => readStop(stopId).hasReading) : [];
     const hourFloor = (h: number): { headway: number; stopId: string; standIn: boolean } | null => {
       const pk = periodKeyForHour(h);
       let floor: { headway: number; stopId: string; standIn: boolean } | null = null;

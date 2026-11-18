@@ -4,7 +4,7 @@
  * The VITE_* reads stay literal import.meta.env reads so Vite can drop off features from each build. Flag docs:
  * docs/FEATURE_FLAGS.md.
  */
-import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
+import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -60,6 +60,10 @@ export const MODE_TRANSITIONS_ENABLED = true;
 // stop), with the route-level tier still deciding the filter. Beta and dev only until the
 // segment colours have been looked at on real routes.
 export const SEGMENT_COLOURS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// CIV-1822 (CIV-1579 option 1): the frequency filter reads each route's frequent shared middle (its trunk, tv_) instead
+// of the value its slowest branch sets (rv_). On only where section colours are on, so a slower branch is drawn in its
+// own colour rather than the trunk's; it goes public when section colours do (Ryan, CIV-1830).
+export const TRUNK_FILTER_ENABLED = SEGMENT_COLOURS_ENABLED;
 // Population density / median household income shading under the route lines (CIV-482). There is no production data URL yet, so even where the flag is on the control stays hidden
 // unless a dev-only file URL is set (CONTEXT_LAYER_URL below).
 // CIV-524 (Ryan, 2026-11-14: "I think it should be local only"): local dev only, like the connections bar; off on
@@ -152,6 +156,7 @@ export const FEATURES = {
   cardClickToFlag: CARD_CLICK_TO_FLAG_ENABLED,
   unevenBanner: UNEVEN_BANNER_ENABLED,
   segmentColours: SEGMENT_COLOURS_ENABLED,
+  trunkFilter: TRUNK_FILTER_ENABLED,
   contextLayer: CONTEXT_LAYER_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,
   updateBanner: UPDATE_BANNER_ENABLED,
@@ -188,6 +193,7 @@ export const FEATURE_ROUTES = {
   studio: STUDIO_PATH,
   studioVehicles: STUDIO_VEHICLES_PATH,
   studioChanges: STUDIO_CHANGES_PATH,
+  studioCoverage: STUDIO_COVERAGE_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */

@@ -3,7 +3,7 @@ import { shortDate } from '../../../shared/dateText';
 import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import { Settings, SlidersHorizontal } from 'lucide-react';
 import { CompareSidePicker, SideBadge, type CompareSide } from './CompareControl';
-import { TOP_BAR_ICON_BTN, CONTROL_ACTIVE, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
+import { TOP_BAR_ICON_BTN, DROPDOWN_PANEL, dropdownAnim, TRANSITION_BASE, Z_MODAL_TOP, CARD_NOTE } from '../../styles';
 import Pill from '../ui/Pill';
 import ActiveDot from '../ui/ActiveDot';
 import Toggle from '../ui/Toggle';
@@ -355,9 +355,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           >
             <SlidersHorizontal className="w-4 h-4" />
             {activeFilterCount > 0 && (
-              <span className={`absolute -top-1 -right-1 min-w-4 h-4 px-1 flex items-center justify-center rounded-full border text-xs font-bold ${CONTROL_ACTIVE}`}>
+              <Pill as="span" selected className="absolute -top-1 -right-1 min-w-4 h-4 !px-1 !py-0 flex items-center justify-center">
                 {activeFilterCount}
-              </span>
+              </Pill>
             )}
           </button>
         )
