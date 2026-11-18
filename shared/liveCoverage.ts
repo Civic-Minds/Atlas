@@ -4,7 +4,7 @@
  * service dates found in the archive; the release step lists them, and the MCP's Live tools read the result.
  */
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds';
-import { LIVE_MIN_HEALTHY_DAYS_PER_WEEK } from './rules/live';
+import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live';
 import { HEALTHY_DAY_SHARE } from './routeMetrics';
 import { qualityHold, type LiveV3 } from './liveDashboard';
 
@@ -57,12 +57,12 @@ export function liveCoverage(slug: string, dates: readonly string[] | null, toda
 export const LIVE_ARCHIVE_SLUGS: readonly string[] = [...new Set([...LIVE_ARCHIVE_POSITION_FEEDS, ...LIVE_ARCHIVE_TRIP_FEEDS].map(f => f.slug))];
 
 /**
- * Whether a route's Live analysis has enough to state figures: this week has at least LIVE_MIN_HEALTHY_DAYS_PER_WEEK good
+ * Whether a route's Live analysis has enough to state figures: this week has at least LIVE_MIN_DAYS_TO_SHOW good
  * days and Live's own quality check holds nothing back. The same rule for every agency, so figures switch on (and off)
  * by themselves as recordings build up or lapse.
  */
 export function liveFiguresReady(v3: LiveV3 | undefined | null): boolean {
-  return !!v3?.weekly && v3.weekly.thisWeek.healthyDates.length >= LIVE_MIN_HEALTHY_DAYS_PER_WEEK && !qualityHold(v3);
+  return !!v3?.weekly && v3.weekly.thisWeek.healthyDates.length >= LIVE_MIN_DAYS_TO_SHOW && !qualityHold(v3);
 }
 
 /** What a good day is, in words, from the shared values. */
@@ -70,12 +70,12 @@ export const GOOD_DAY_DEFINITION = `a good day is one with at least ${Math.round
 
 /**
  * The earliest morning figures can appear while recording continues: the first day may be partial, so it counts the next
- * LIVE_MIN_HEALTHY_DAYS_PER_WEEK full days, and the daily build runs the morning after the last of them. Null when not
+ * LIVE_MIN_DAYS_TO_SHOW full days, and the daily build runs the morning after the last of them. Null when not
  * recording or nothing is kept.
  */
 export function earliestFiguresDay(c: LiveCoverage, today = new Date().toISOString().slice(0, 10)): string | null {
   if (!c.firstDay || c.recordingNow !== true) return null;
-  const day = addDays(c.firstDay, LIVE_MIN_HEALTHY_DAYS_PER_WEEK + 1);
+  const day = addDays(c.firstDay, LIVE_MIN_DAYS_TO_SHOW + 1);
   return day > today ? day : null;
 }
 
@@ -87,7 +87,7 @@ export function coverageLimits(c: LiveCoverage, routesWithFigures: number, today
   else if (c.daysRecorded === 0) out.push('No recordings are kept now.');
   else out.push(`Recordings kept: ${c.daysRecorded} service day${c.daysRecorded === 1 ? '' : 's'}, ${c.firstDay} to ${c.lastDay}${c.recordingNow === false ? ' (not recording now)' : ''}.`);
   if (routesWithFigures === 0) {
-    out.push(`No figures yet: a route needs at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days in the latest week (${GOOD_DAY_DEFINITION}).`);
+    out.push(`No figures yet: a route needs at least ${LIVE_MIN_DAYS_TO_SHOW} good days in the latest week (${GOOD_DAY_DEFINITION}).`);
     const from = earliestFiguresDay(c, today);
     if (from) out.push(`If every day records well, the earliest figures are on ${from}.`);
   }

@@ -151,15 +151,15 @@ describe('Live files in the private bucket (CIV-1860)', () => {
 
   it('states the limits until a route has enough good days, then switches figures on', async () => {
     const { liveFiguresReady, liveCoverage, coverageLimits } = await import('../../shared/liveCoverage');
-    const { LIVE_MIN_HEALTHY_DAYS_PER_WEEK } = await import('../../shared/rules/live');
-    const v3 = (n: number) => ({ schema: 3, weekly: { minHealthyDays: LIVE_MIN_HEALTHY_DAYS_PER_WEEK, health: [], thisWeek: week(n), lastWeek: week(0), comparable: false } }) as never;
-    expect(liveFiguresReady(v3(LIVE_MIN_HEALTHY_DAYS_PER_WEEK - 1))).toBe(false);
-    expect(liveFiguresReady(v3(LIVE_MIN_HEALTHY_DAYS_PER_WEEK))).toBe(true);
+    const { LIVE_MIN_DAYS_TO_SHOW } = await import('../../shared/rules/live');
+    const v3 = (n: number) => ({ schema: 3, weekly: { minHealthyDays: LIVE_MIN_DAYS_TO_SHOW, health: [], thisWeek: week(n), lastWeek: week(0), comparable: false } }) as never;
+    expect(liveFiguresReady(v3(LIVE_MIN_DAYS_TO_SHOW - 1))).toBe(false);
+    expect(liveFiguresReady(v3(LIVE_MIN_DAYS_TO_SHOW))).toBe(true);
     const c = liveCoverage('kingston', ['2026-11-15', '2026-11-16', '2026-11-17'], '2026-11-18');
     const before = coverageLimits(c, 0);
     expect(before.join(' ')).toMatch(/3 service days, 2026-11-15 to 2026-11-17/);
-    expect(before.join(' ')).toMatch(new RegExp(`at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days`));
-    expect(before.join(' ')).toMatch(new RegExp(`earliest figures are on 2026-11-${15 + LIVE_MIN_HEALTHY_DAYS_PER_WEEK + 1}`));
+    expect(before.join(' ')).toMatch(new RegExp(`at least ${LIVE_MIN_DAYS_TO_SHOW} good days`));
+    expect(before.join(' ')).toMatch(new RegExp(`earliest figures are on 2026-11-${15 + LIVE_MIN_DAYS_TO_SHOW + 1}`));
     expect(coverageLimits(c, 5).join(' ')).not.toMatch(/No figures yet/);
 
     const { useLiveReader, publishedLiveReader } = await import('../mcp/liveData');

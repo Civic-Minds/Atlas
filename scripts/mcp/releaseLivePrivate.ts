@@ -21,7 +21,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, write
 import { join, resolve } from 'path';
 import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
-import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_HEALTHY_DAYS_PER_WEEK } from '../../shared/rules/live';
+import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_DAYS_TO_SHOW } from '../../shared/rules/live';
 import { readCsv } from '../live-agency-summary';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
@@ -156,7 +156,7 @@ for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
     if (coverage.daysRecorded == null) throw new BuildFailed('archive');
     // Too few days for any route to qualify (the first may be partial): skip the analysis.
     const built = slug === 'ttc' ? await fromPublished(slug)
-      : coverage.daysRecorded > LIVE_MIN_HEALTHY_DAYS_PER_WEEK ? fromArchive(slug) : { files: new Map(), routes: [], manifest: null } as Built;
+      : coverage.daysRecorded > LIVE_MIN_DAYS_TO_SHOW ? fromArchive(slug) : { files: new Map(), routes: [], manifest: null } as Built;
     written.set(liveSplitPaths.coverage(slug), coverage);
     if (built.manifest) { written.set(liveSplitPaths.manifest(slug), built.manifest); for (const [k, v] of built.files) written.set(k, v); }
     index.agencies[slug] = { figures: built.routes.length > 0, routes: built.routes.length };
