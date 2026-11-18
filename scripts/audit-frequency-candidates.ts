@@ -19,7 +19,7 @@ import {
   HardGapPolicy,
   determineCandidateTier,
 } from './frequency-candidate-rules';
-import { TIER_MAXES } from '../shared/frequencyRules';
+import { TIER_MAXES } from '../shared/rules/frequency';
 
 type CandidateGroup = 'edge' | 'internal' | 'hardGap' | 'minimumEvidence' | 'q2Internal';
 type Candidate = CandidateRuleOptions & { name: string; group: CandidateGroup; targetTier?: number };

@@ -1,5 +1,5 @@
 import { headwayTierLabel } from './headwayText';
-import { PUBLIC_TIER_MAXES } from './frequencyRules';
+import { PUBLIC_TIER_MAXES } from './rules/frequency';
 import { hourRange, hourTime } from './timeText';
 import { TIME_PERIODS, type PeriodKey } from './rules/periods';
 import { FEATURES } from './rules/flags';

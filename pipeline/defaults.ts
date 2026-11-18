@@ -1,5 +1,5 @@
 import { AnalysisCriteria } from '../types/gtfs';
-import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules.js';
+import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency.js';
 import { SATURDAY_GRADING_WINDOW, SUNDAY_GRADING_WINDOW, WEEKDAY_GRADING_WINDOW } from '../shared/rules/periods.js';
 
 /**

@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
-import { publicTierOf } from '../../shared/frequencyRules';
+import { publicTierOf } from '../../shared/rules/frequency';
 import { processGtfsBuffer } from '../process-core';
 import { oppositeSharedStops, pairOppositeStop } from '../../shared/sharedStops';
 import { alignedSharedRuns, qualifyingSharedRuns, SHARED_STRETCH_KEYS } from '../sharedStretch';

@@ -7,7 +7,7 @@ import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { DEFAULT_CRITERIA } from '../pipeline/defaults';
 import { RAIL_TIER_WINDOW } from '../shared/rules/frequency';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
-import { TIER_MAXES } from '../shared/frequencyRules';
+import { TIER_MAXES } from '../shared/rules/frequency';
 
 const parse = (text: string) => Papa.parse(text, {
   header: true,

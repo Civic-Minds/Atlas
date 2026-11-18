@@ -14,7 +14,7 @@ import { clockTime, hourRange } from '../../shared/timeText';
 import { DAY_TYPES } from '../../shared/rules/days';
 import { countryForRegion } from '../../shared/regionCountry';
 import type { IndexedAgency } from './atlasData';
-import { PUBLIC_TIER_MAXES } from '../../shared/frequencyRules';
+import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { STUDIO_TARGETS } from '../../shared/studioVehicles';
 
 // Anything an imported module prints must not reach stdout, which is the protocol channel.

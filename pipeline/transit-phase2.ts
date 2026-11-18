@@ -13,11 +13,11 @@ import { computeMedian } from './transit-utils';
 import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA } from './defaults';
 import { MINUTES_PER_DAY, PERIOD_MINUTES, TIME_PERIODS } from '../shared/config.js';
-import { TIER_MAXES } from '../shared/frequencyRules.js';
+import { TIER_MAXES } from '../shared/rules/frequency.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
 import { forCrossMidnightWindow } from './headway-utils';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, MAX_NEAR_MISSES, VIOLATION_PERCENT } from '../shared/frequencyRules.js';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, MAX_NEAR_MISSES, VIOLATION_PERCENT } from '../shared/rules/frequency.js';
 
 export type TierDeterminerContext = {
     rawDepartureTimes: readonly number[];
