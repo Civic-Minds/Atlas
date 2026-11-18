@@ -2,16 +2,15 @@ import { render, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { changeSize, periodChange, studioBeforeAfterFile, type StudioComparisonInput } from '../../shared/studioBeforeAfter';
 
-vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioRouteTable, periodFigure, smallChangeParts } = await import('../StudioChangesPage');
+const { StudioRouteTable, periodFigure, smallChangeParts } = await import('../apps/studio/StudioRouteTable');
 const { STUDIO_CHANGES_TEXT } = await import('../../shared/studioWording');
-const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../StudioPage');
+const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../apps/studio/fleetModel');
 
 const day = (headway: Record<string, number>, trips: number, first: number | null, last: number, runs: number[]) =>
   ({ headway, trips, first, last, runMinutes: Object.fromEntries(runs.map((r, i) => [String(i), r])) });

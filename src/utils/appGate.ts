@@ -1,9 +1,11 @@
-export type AppId = 'frequency' | 'history' | 'live' | 'night' | 'bustang';
+/** The map's views. 'studio' is Atlas Studio (CIV-1828), a view of the map as History is, local only. */
+export type AppId = 'frequency' | 'history' | 'live' | 'night' | 'bustang' | 'studio';
 
 interface GateFlags {
   live: boolean;
   history: boolean;
   researchApps: boolean;
+  studio?: boolean;
 }
 
 /** Old app URLs that no longer exist; they redirect to the frequency map. */
@@ -13,7 +15,8 @@ export const RETIRED_APP_PATHS: readonly string[] = ['/apps/corridors', '/apps/f
 export function isAppGated(app: AppId, flags: GateFlags): boolean {
   return (app === 'live' && !flags.live)
     || (app === 'history' && !flags.history)
-    || ((app === 'night' || app === 'bustang') && !flags.researchApps);
+    || ((app === 'night' || app === 'bustang') && !flags.researchApps)
+    || (app === 'studio' && !flags.studio);
 }
 
 /**

@@ -36,8 +36,6 @@ const FrequentServiceStoryPage = React.lazy(() => import('./apps/FrequentService
 const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
-// Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
-const StudioPage = import.meta.env.DEV ? React.lazy(() => import('./StudioPage')) : () => null;
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -50,7 +48,9 @@ function NightServiceRedirect() {
 /** The map answers only the addresses the site knows; anything else gets the not-found page. */
 function MapOrNotFound() {
   const { pathname } = useLocation();
-  return findSeoRoute(pathname)
+  // Atlas Studio (CIV-1828) is a view of the map, as History is, and local only, so it has no page entry of its own.
+  const studio = FEATURES.studio && pathname.replace(/\/$/, '') === FEATURE_ROUTES.studio;
+  return findSeoRoute(pathname) || studio
     ? <HomeRemount>{goHome => <App onGoHome={goHome} />}</HomeRemount>
     : <NotFoundPage />;
 }
@@ -98,9 +98,8 @@ ReactDOM.createRoot(rootElement).render(
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
           {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
-          {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). */}
-          {/* CIV-1731: one map page; the two earlier pages' addresses open it. */}
-          {FEATURES.studio && <Route path={FEATURE_ROUTES.studio} element={<StudioPage />} />}
+          {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). It is a view of the
+              map (App, CIV-1828), so its own address falls through to the map below; the two earlier pages' addresses open it. */}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />

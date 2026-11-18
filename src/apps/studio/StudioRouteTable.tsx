@@ -1,22 +1,22 @@
-import ScrollX from './components/ui/ScrollX';
-import DataTable from './components/ui/DataTable';
-import { routeLabels } from './utils/format';
-import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
-import { headwayAmount, headwayEveryRange } from '../shared/headwayText';
-import { clockTime } from '../shared/timeText';
-import { countText } from '../shared/numberText';
-import { MISSING_VALUE } from '../shared/missingValue';
-import { dateRange } from '../shared/dateText';
-import { STOPS_TERM } from '../shared/liveGlossary';
-import { periodEdgeText } from './utils/effectiveHeadway';
-import { tidyStopName } from './utils/segmentDelayView';
-import type { StudioRouteChange, StudioRouteDay } from '../shared/studioBeforeAfter';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, routeEndsText } from '../shared/studioWording';
+import ScrollX from '../../components/ui/ScrollX';
+import DataTable from '../../components/ui/DataTable';
+import { routeLabels } from '../../utils/format';
+import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
+import { headwayAmount, headwayEveryRange } from '../../../shared/headwayText';
+import { clockTime } from '../../../shared/timeText';
+import { countText } from '../../../shared/numberText';
+import { MISSING_VALUE } from '../../../shared/missingValue';
+import { dateRange } from '../../../shared/dateText';
+import { STOPS_TERM } from '../../../shared/liveGlossary';
+import { periodEdgeText } from '../../utils/effectiveHeadway';
+import { tidyStopName } from '../../utils/segmentDelayView';
+import type { StudioRouteChange, StudioRouteDay } from '../../../shared/studioBeforeAfter';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, routeEndsText } from '../../../shared/studioWording';
 
 const ROUTE_LABEL = STUDIO_MAP_TEXT.route;
 
 /**
- * Atlas Studio's before/after schedule figures (CIV-1715), now the Studio map's sidebar (CIV-1731, StudioPage.tsx). What
+ * Atlas Studio's before/after schedule figures (CIV-1715), now Fleet's route card (CIV-1828, Fleet.tsx). What
  * two versions of an agency's schedule say for the compared day type (weekdays for Kingston), from CIV-1684's comparison
  * engine: per route, the map's frequency by time of day, trips, first and last trip and trip time. Routes are grouped by
  * how big the change is (shared/studioBeforeAfter.ts `changeSize`), so a minute of span or trip time doesn't read as a

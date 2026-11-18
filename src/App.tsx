@@ -23,10 +23,13 @@ const BustangConnections = React.lazy(() => import('./apps/BustangConnections'))
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
+// Atlas Studio is local only (FEATURES.studio is the dev server); the DEV check keeps it out of deployed bundles entirely.
+const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
+import { PageMapOverlayProvider } from './context/PageMapOverlay';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
@@ -173,6 +176,8 @@ const PATH_TO_APP: Record<string, AppId> = {
   '/apps/compare': 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
   [FEATURE_ROUTES.bustangConnections]: 'bustang',
+  // Atlas Studio (CIV-1828): a view of the map, as History is; local only.
+  [FEATURE_ROUTES.studio]: 'studio',
 };
 
 const APP_TO_PATH: Record<AppId, string> = {
@@ -181,6 +186,7 @@ const APP_TO_PATH: Record<AppId, string> = {
   live: LIVE_PATH,
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
+  studio: FEATURE_ROUTES.studio,
 };
 
 /** Fill in R2 artifact URLs for catalog entries that don't carry their own. */
@@ -212,12 +218,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const phoneModes = phoneModeFlags(isPhone);
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = phoneModes.compareMode;
+  const studioOn = FEATURES.studio && phoneModes.mapApps;
   const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
   const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
+  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn, studio: studioOn })
     || isCompareGated(pathname, compareOn)
     || (isFrequentServiceMapRoute && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
@@ -461,6 +468,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // Atlas Studio (CIV-1828): its pages draw on the map through PageMapOverlay; the map's own routes, tabs and chips step aside.
+  const inStudio = activeApp === 'studio';
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
   // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
   const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
@@ -536,11 +545,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const nonMapViewActive = FEATURES.collapseModeTabs
     && (inLive || inHistory || inNight || inBustang || inFrequentService || compareActive);
   const showCompareControl = compareOn && inFrequency;
-  const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
+  const showLiveControl = FEATURES.live && !inStudio && (inLive || [...loadedAgencySlugs].some(slug =>
     isLiveEligibleSlug(slug),
   ));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
-  const showHistoryControl = historyOn && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = historyOn && !inStudio && (inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
   )));
@@ -572,6 +581,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
     : inNight ? SEARCH_NIGHT_PLACEHOLDER
     : inBustang ? SEARCH_BUSTANG_PLACEHOLDER
+    : inStudio ? SEARCH_ROUTES_PLACEHOLDER
     : SEARCH_VEHICLES_PLACEHOLDER;
 
   function handleSearchClear() {
@@ -699,6 +709,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <OnDemandViewportLoader data={onDemandData} linkedSlug={linkedOnDemandSlug} />
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
+    <PageMapOverlayProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -710,7 +721,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           hideByline
           hideWordmark={phoneSearchExpanded}
           onClick={() => {
-            if (inLive || inHistory || inNight) {
+            if (inLive || inHistory || inNight || inStudio) {
               // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
               setActiveApp('frequency');
             } else if (onGoHome) {
@@ -726,7 +737,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         <div className="flex-1 min-w-0 sm:flex">
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        {/* Studio (CIV-1828) searches nothing yet: the box keeps its place, which places the sidebar card under it, unseen. */}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''} ${inStudio ? 'invisible' : ''}`} aria-hidden={inStudio || undefined}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
@@ -883,7 +895,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
-              query={deferredQuery}
+              query={inStudio ? '' : deferredQuery}
               setQuery={setQuery}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight || inBustang}
@@ -906,7 +918,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               filterToAgencies={historyMapFilterOn || inBustang}
               agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService}
+              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService || inStudio}
+              pageView={inStudio}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -938,9 +951,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
               compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
-              headerPortalContainer={headerPortalEl}
-              viewTabsPortalContainer={viewTabsPortalEl}
-              moreMenuPortalContainer={moreMenuPortalEl}
+              // Studio puts its own chips and tabs in these slots (CIV-1828).
+              headerPortalContainer={inStudio ? null : headerPortalEl}
+              viewTabsPortalContainer={inStudio ? null : viewTabsPortalEl}
+              moreMenuPortalContainer={inStudio ? null : moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
               searchBarWidth={isPhone ? undefined : searchBarWidth}
@@ -967,6 +981,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 </ModeFadeInOnMount>
               ) : null}>
                 <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              </React.Suspense>
+            )}
+            {studioOn && inStudio && (
+              <React.Suspense fallback={null}>
+                <Studio agencyCatalog={agencies} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
@@ -1050,6 +1069,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </main>
       <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} />
     </div>
+    </PageMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </OnDemandStatusProvider>

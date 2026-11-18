@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
  */
 const ROOT = join(import.meta.dirname, '..', '..', '..', '..');
 const read = (f: string) => readFileSync(join(ROOT, f), 'utf8');
-const FILES = ['src/components/MapApp/MapAppLayout.tsx', 'src/components/MapApp/MapAppFooter.tsx', 'src/components/MapApp/MapAppMap.tsx', 'src/StudioPage.tsx', 'src/LiveToolPage.tsx'];
+const FILES = ['src/components/MapApp/MapAppLayout.tsx', 'src/components/MapApp/MapAppFooter.tsx', 'src/components/MapApp/MapAppMap.tsx', 'src/apps/studio/Fleet.tsx', 'src/LiveToolPage.tsx'];
 
 describe('map apps use the regular map\'s overlay slots (CIV-1821)', () => {
   it('puts the footer, credit, controls, key and sidebar in the shared slots and components', () => {
@@ -17,7 +17,7 @@ describe('map apps use the regular map\'s overlay slots (CIV-1821)', () => {
     expect(read('src/components/MapApp/MapAppFooter.tsx')).toContain('MAP_NOTICE_SLOT');
     expect(read('src/components/MapApp/MapAppMap.tsx')).toContain('MAP_CONTROLS_SLOT');
     expect(read('src/components/MapApp/MapAppLayout.tsx')).toContain('MAP_APP_SIDEBAR_SLOT');
-    for (const page of ['src/StudioPage.tsx', 'src/LiveToolPage.tsx']) expect([page, read(page).includes('<MapLegendCard')]).toEqual([page, true]);
+    for (const page of ['src/apps/studio/Fleet.tsx', 'src/LiveToolPage.tsx']) expect([page, read(page).includes('<MapLegendCard')]).toEqual([page, true]);
     expect(read('src/components/ui/MapLegendCard.tsx')).toContain('MAP_LEGEND_SLOT');
     // The top-bar menus are the main map's chip (Ryan: "Are the pills in Studio different design than elsewhere").
     expect(read('src/components/MapApp/PillMenu.tsx')).toContain('topBarChipClass(active)');

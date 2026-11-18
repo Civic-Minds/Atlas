@@ -132,6 +132,8 @@ interface Props {
   searchFocused?: boolean;
   setSearchFocused?: (focused: boolean) => void;
   hideFilterPanel?: boolean;
+  /** A page draws on the map (Studio, CIV-1828, through PageMapOverlay): the map's own routes, clicks, key and route link are off. */
+  pageView?: boolean;
   filterToAgencies?: boolean;
   /** With filterToAgencies: the agencies to draw (History), so the agencies prop can stay the same list. */
   agencyFilterSlugs?: string[] | null;
@@ -232,7 +234,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -267,8 +269,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     try { const v = Number(localStorage.getItem('atlas_pref_headway')); if (v > 0) return v; } catch {}
     return DEFAULT_MAX_HEADWAY;
   });
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.route) ?? null);
-  const [selectedStop, setSelectedStop] = useState<string | null>(() => readUrlParam(searchParams, MAP_URL.stop) ?? null);
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.route) ?? null));
+  const [selectedStop, setSelectedStop] = useState<string | null>(() => (pageView ? null : readUrlParam(searchParams, MAP_URL.stop) ?? null));
   // Research views never show on-demand, so a shared link's on-demand mode (or ?ondemand=) is dropped there.
   const onDemandAllowed = viewAllowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }));
   const [onDemandStopAgencySlug, setOnDemandStopAgencySlug] = useState<string | null>(() => onDemandAllowed ? readUrlParam(searchParams, MAP_URL.onDemand) ?? null : null);
@@ -1227,10 +1229,13 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // concurrent writers (day, map center, filters) don't clobber each other.
   useEffect(() => {
     if (!selectedRoute && handedToLiveRef.current) { handedToLiveRef.current = false; return; }
+    // A page on the map keeps ?route= for its own route (Studio's).
+    if (pageView && !selectedRoute) return;
     syncUrlParams(urlParamUpdate(MAP_URL.route, selectedRoute));
   }, [selectedRoute]);
 
   useEffect(() => {
+    if (pageView && !selectedStop) return;
     syncUrlParams(urlParamUpdate(MAP_URL.stop, selectedStop));
   }, [selectedStop]);
 
@@ -1405,6 +1410,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
             sidebarLeft={sidebarLeft}
             searchBarWidth={searchBarWidth}
             onMapReady={setMapA}
+            pageView={pageView}
             onPhoneErrorsChange={setPhoneMapErrors}
             showMapControls={!compareActive}
         onRenderedRouteKeysChange={compareActive ? setRenderedA : undefined}
@@ -1501,7 +1507,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
         )}
       </div>
 
-      {showMapLegend && !nightServiceView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
+      {showMapLegend && !nightServiceView && !pageView && <PersistentMapLegend contextMetric={contextLayerAvailable() ? contextMetric : null} />}
 
       {/* On sm and up the bottom-left pills and the bottom-right counts share one row, so the pills
           (and the analytics prompt, their last pill) wrap upward before they reach the counts (#999).

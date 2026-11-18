@@ -1,14 +1,14 @@
-import DataTable from './components/ui/DataTable';
-import ScrollX from './components/ui/ScrollX';
-import { PAGE_NAMES } from '../shared/pageNames';
-import { headwayEvery, runTimeAmount } from '../shared/headwayText';
-import { FREQUENCY_LABEL } from './content/noticeCopy';
-import { MISSING_VALUE } from '../shared/missingValue';
-import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles';
-import { STUDIO_VEHICLES_TEXT, groupSharesText } from '../shared/studioWording';
+import DataTable from '../../components/ui/DataTable';
+import ScrollX from '../../components/ui/ScrollX';
+import { PAGE_NAMES } from '../../../shared/pageNames';
+import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
+import { FREQUENCY_LABEL } from '../../content/noticeCopy';
+import { MISSING_VALUE } from '../../../shared/missingValue';
+import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../../../shared/studioVehicles';
+import { STUDIO_VEHICLES_TEXT, groupSharesText } from '../../../shared/studioWording';
 
 /**
- * Atlas Studio's buses-needed figures (CIV-1693), now a sidebar panel on the Studio map (CIV-1731): the picked route's
+ * Atlas Studio's buses-needed figures (CIV-1693), now in Fleet's route card (CIV-1828, Fleet.tsx): the picked route's
  * group of routes that share buses (Kingston runs each direction as its own route, so one route alone overstates), at
  * the top bar's time of day. The numbers come from `scripts/vehicles-needed.ts --json`, served by the Vite dev server;
  * see shared/studioVehicles.ts. Its words are in shared/studioWording.ts.

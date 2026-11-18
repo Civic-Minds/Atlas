@@ -6,7 +6,6 @@ import { join } from 'node:path';
 import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFor, studioPageFrom } from '../../shared/studioAgencies';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
-vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
@@ -14,8 +13,8 @@ vi.mock('../../shared/config', async (importOriginal) => {
 });
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
-const { StudioGroupFigures } = await import('../StudioVehiclesPage');
-const { groupFor } = await import('../StudioPage');
+const { StudioGroupFigures } = await import('../apps/studio/StudioGroupFigures');
+const { groupFor } = await import('../apps/studio/fleetModel');
 
 describe('Studio link in the header (CIV-1694)', () => {
   it('shows with the flag on and opens /studio', () => {

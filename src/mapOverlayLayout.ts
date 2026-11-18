@@ -104,6 +104,9 @@ export const MAP_NOTICE_SLOT_RAISED = `absolute ${R.noticeRaised} ${E.noticeSide
 /** Sidebar cards on sm and up stop 7px above the footer row however far it wraps (CIV-1137): 56px top, the row's
  *  1.5rem inset and its measured height (--map-footer-h, published on <html>, so the cards outside the map app see it). */
 export const SIDEBAR_CARD_BOTTOM_LIMIT = 'max-h-[calc(100vh-80px-var(--map-footer-h,2rem))]';
+/** ...and, in a view whose key is always on the map (Studio, CIV-1828), above the key too (--map-key-h, from MapLegendCard),
+ *  so the card never covers it. */
+export const SIDEBAR_CARD_ABOVE_KEY = 'sm:!max-h-[calc(100vh-80px-var(--map-footer-h,2rem)-var(--map-key-h,0px))]';
 /** Phones: while the analytics prompt shows under the header (its bottom edge measured at 92px), the sidebar cards start
  *  below it instead of under the search bar, so it never covers a card's back link (CIV-1137). The gap is the cards' own
  *  8px (gap-2), so the prompt sits like one more card above them (Ryan). */

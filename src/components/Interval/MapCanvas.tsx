@@ -14,6 +14,7 @@ import { MAP_URL, linkUpdate } from '../../utils/urlSchema';
 import { useViewport } from '../../context/ViewportContext';
 import { useHistoryMapOverlay } from '../../context/HistoryMapOverlay';
 import { useLiveVehiclesMapOverlay } from '../../context/LiveVehiclesMapOverlay';
+import { PageMapOverlayLayer } from './map/PageMapLayer';
 import { useHistoryLayer } from './map/useHistoryLayer';
 import { addMapLayers } from './map/mapLayers';
 import { topMapHit } from './map/mapHitTargets';
@@ -233,6 +234,8 @@ interface MapCanvasProps {
   showMapControls?: boolean;
   /** Receives the MapLibre map once it has loaded (and null when it is removed), for camera sync. */
   onMapReady?: (map: maplibregl.Map | null) => void;
+  /** A page draws on this map (Studio, CIV-1828): the page overlay's layers show here, and the map's own clicks are off. */
+  pageView?: boolean;
   /** On-demand agency named in the opening URL (`?ondemand=`); frames its zones when the URL has no lat/lon. */
   initialOnDemandSlug?: string | null;
   onTileLoadingChange?: (loading: boolean) => void;
@@ -316,6 +319,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   secondary = false,
   showMapControls = !secondary,
   onMapReady,
+  pageView = false,
   initialOnDemandSlug = null,
   onTileLoadingChange,
   onBasemapLoadingChange,
@@ -824,10 +828,15 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     highlightRoutesRef.current = highlightRoutes;
   }, [highlightRoutes]);
 
+  const pageViewRef = useRef(pageView);
+  pageViewRef.current = pageView;
+
   useLayoutEffect(() => {
     handleMapClickRef.current = (e: maplibregl.MapMouseEvent) => {
       const map = mapRef.current;
       if (!map) return;
+      // A page on the map (Studio) handles its own clicks (PageMapLayer).
+      if (pageViewRef.current) return;
 
       // A Live vehicle dot belongs to Live's own click handler (vehicle card), not the route picker.
       if (pickLiveVehicles(deckOverlayRef.current, e.point).length > 0) return;
@@ -1096,6 +1105,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const map = mapRef.current;
     if (!map || !mapLoaded) return;
     const onMouseMove = (e: maplibregl.MapMouseEvent) => {
+      if (pageViewRef.current) return;
       map.getCanvas().style.cursor = topMapHit(map, e.point) ? 'pointer' : '';
     };
     map.on('mousemove', onMouseMove);
@@ -1302,6 +1312,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
       {FEATURES.modeTransitions && (
         <canvas ref={mapHoldRef} aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" style={{ visibility: 'hidden' }} />
       )}
+
+      {pageView && <PageMapOverlayLayer map={mapLoaded ? mapRef.current : null} light={lightMode} />}
 
       {LiveVehiclesLayer && liveLayerRequested && (
         <React.Suspense fallback={null}>
