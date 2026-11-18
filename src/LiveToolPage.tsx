@@ -50,17 +50,25 @@ import { CardBackLink } from './components/CardBack';
 import { PHONE_TAP_AREA } from './styles';
 import { DataUpTo, withNiceNames } from './LiveRoutePage';
 import { percentText, countText } from '../shared/numberText';
+import { STUDIO_LIVE_PENDING } from '../shared/liveWording';
+import { rankedTimeLoss, timeLossBySegment, timeLossReport, type TimeLossListRow, type TimeLossReport } from './utils/timeLossReport';
+import { useTimeLossData } from './components/Live/tool/useTimeLossReports';
+import FallsBehindWidget from './components/Live/tool/FallsBehindWidget';
 
 
 
 /** The measures, in the top bar with the other switchers (CIV-1732, Ryan's option A). "Delays start" (the CIV-942 heatmap) is one of the set. */
-const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
-function MeasurePills({ measure, setMeasure }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void }) {
-  return <MapPillGroup label={MEASURE_LABEL} options={MAP_MEASURES} value={measure} onChange={setMeasure} />;
+export const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
+/** CIV-1828: Studio's Live page leads with "Falls behind" (where vehicles fall behind the schedule, stop to stop). */
+export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['fallsBehind', STUDIO_LIVE_PENDING.fallsBehindPill], ...MAP_MEASURES];
+/** How many stop pairs the "Falls behind" lists show. */
+const FALLS_BEHIND_ROWS = 10;
+function MeasurePills({ measure, setMeasure, options = MAP_MEASURES }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void; options?: ReadonlyArray<readonly [MapMeasure, string]> }) {
+  return <MapPillGroup label={MEASURE_LABEL} options={options} value={measure} onChange={setMeasure} />;
 }
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
-function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
+export function PeriodMenu({ band, setBand }: { band: DashboardBand; setBand: (b: DashboardBand) => void }) {
   return <PillMenu label={TIME_OF_DAY_LABEL} value={band} options={PERIOD_BANDS_ONLY} onPick={k => setBand(k as DashboardBand)} />;
 }
 
@@ -85,6 +93,16 @@ function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, 
 function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string, fromStopId: string, uncertain: readonly UncertainStart[]): string[] {
   const p = delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(x => x.stopId === toStopId && x.fromStopId === fromStopId);
   return p ? [timeLostLine(p.addedMin)] : [];
+}
+
+/** CIV-1828: a stop pair's card lines under "Falls behind": the report's wording for its row, nothing when it is not listed. */
+function fallsBehindLines(report: TimeLossReport | undefined, band: DashboardBand, dir: number, from: string, to: string): string[] {
+  const d = report?.bands[band]?.find(x => x.directionId === dir);
+  const W = STUDIO_LIVE_PENDING;
+  const slow = d?.slower.find(r => r.fromStopId === from && r.toStopId === to);
+  if (slow) return [W.takesLonger(slow.typicalMin), ...(slow.showP90 ? [W.oneInTen(slow.p90MinDown)] : []), W.sample(slow.passes, slow.days)];
+  const loose = d?.looser.find(r => r.fromStopId === from && r.toStopId === to);
+  return loose ? [W.looserLine(-loose.typicalMin), W.sample(loose.passes, loose.days)] : [];
 }
 
 /** What the route's week figures cover (the Run time tile's own scope wording). */
@@ -140,9 +158,13 @@ function LoadingWidget() {
   );
 }
 
-/** The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. */
-function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick }: {
+/**
+ * The whole screen under the top bar: the map always, the overview on the left, the widgets on the right. Also the body
+ * of Studio's Live page (CIV-1828), which passes its own measures (STUDIO_MAP_MEASURES, "Falls behind" first).
+ */
+export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, dir, setDir, dirSlot, dataSlot, band, measure, setMeasure, pick, setPick, measures }: {
   agency: string; /** The agency's short name, for the back link. */ agencyName: string; pickSlot: HTMLElement | null; measureSlot: HTMLElement | null; dirSlot: HTMLElement | null; dataSlot: HTMLElement | null; s: AgencySummary; route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void; band: DashboardBand; measure: MapMeasure; setMeasure: (m: MapMeasure) => void; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+  /** The measure pills, in order (default: the Live tool's). */ measures?: ReadonlyArray<readonly [MapMeasure, string]>;
 }) {
   const wide = useMapAppWide();
   // On a phone the map sits above the widgets: a stop or stretch picked lower down (a "Stops most often late" row)
@@ -162,20 +184,25 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   const ready: ReadyRoute | null = route ? fresh ?? last.current : null;
   const v3 = useMemo(() => { if (!ready) return null; try { return withNiceNames(ready.v3); } catch { return ready.v3; } }, [ready]);
   const networkV3 = useMemo(() => new Map([...network].map(([r, b]) => [r, b.v3])), [network]);
+  // CIV-1828 "Falls behind": every route's stop pairs (the time-loss report), loaded only for that measure.
+  const fallsBehind = measure === 'fallsBehind';
+  const lossData = useTimeLossData(agency, routes, fallsBehind);
+  const lossReports = useMemo(() => new Map<string, TimeLossReport>([...lossData].map(([r, d]) => [r, timeLossReport(d, [band])])), [lossData, band]);
   const ids = v3 ? Object.keys(v3.directionLabels).map(Number).sort((a, b) => a - b) : [];
   const shown = v3 ? (dir != null && ids.includes(dir) ? dir : ids[0]) : 0;
   const uncertain = ready?.uncertainStart ?? [];
   const stops = useMemo(() => (v3 ? directionStopsById(v3, shown, band, uncertain) : new Map<string, RouteStripStop>()), [v3, shown, band]); // eslint-disable-line react-hooks/exhaustive-deps
   const model: RouteMapModel = useMemo(() => {
-    if (v3) return routeMapModel(v3, shown, band, measure, uncertain);
+    const loss = (r: string, d: number) => { const x = lossData.get(r); return x ? timeLossBySegment(x, band, d) : undefined; };
+    if (v3) return routeMapModel(v3, shown, band, measure, uncertain, route ? loss(route, shown) : undefined);
     const segments: MapSegment[] = [];
     for (const [r, nb] of network) {
       const n3 = nb.v3;
       const dirs = Object.keys(n3.directionLabels).map(Number).sort((a, b) => a - b);
-      dirs.forEach((d, k) => { for (const seg of routeMapModel(n3, d, band, measure).segments) segments.push({ ...seg, route: r, label: r, offset: dirs.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
+      dirs.forEach((d, k) => { for (const seg of routeMapModel(n3, d, band, measure, [], loss(r, d)).segments) segments.push({ ...seg, route: r, label: r, offset: dirs.length > 1 ? (k === 0 ? 2.5 : -2.5) : 0 }); });
     }
     return { directionId: 0, segments, stops: [] };
-  }, [v3, shown, band, measure, network]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [v3, shown, band, measure, network, lossData]); // eslint-disable-line react-hooks/exhaustive-deps
   const heat = useMemo(() => {
     if (measure !== 'delayStarts') return null;
     if (v3 && route) return delayHeatPoints(new Map([[route, v3]]), band, { only: { route, directionId: shown }, uncertain: () => uncertain });
@@ -187,16 +214,23 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
     : pick?.kind === 'segment' ? (() => { const c = model.segments.find(x => x.fromStopId === pick.fromStopId && x.toStopId === pick.toStopId)?.coordinates; return c ? c[Math.floor(c.length / 2)] : null; })() : null;
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
-    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={[...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
+    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
+  // CIV-1828: a "Falls behind" row opens its route, direction and stop pair.
+  const openLossRow = (x: TimeLossListRow) => { setRoute(x.route); setDir(x.directionId); setPick({ kind: 'segment', fromStopId: x.row.fromStopId, toStopId: x.row.toStopId }); };
+  const lossDates = (r?: string) => { const ds = r ? lossData.get(r)?.dates : [...lossData.values()].flatMap(d => d.dates); return [...new Set(ds ?? [])].sort(); };
+  const networkLoss = fallsBehind && !route ? rankedTimeLoss(lossReports, band, FALLS_BEHIND_ROWS) : null;
+  const routeLoss = fallsBehind && route && lossReports.has(route) ? rankedTimeLoss(new Map([[route, lossReports.get(route)!]]), band, FALLS_BEHIND_ROWS) : null;
+  const networkLossWidget: PanelWidget | null = networkLoss ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindAll} slower={networkLoss.slower} looser={networkLoss.looser} showRoute dates={lossDates()} onPick={openLossRow} /> } : null;
+  const routeLossWidget: PanelWidget | null = routeLoss && route ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindRoute(route)} slower={routeLoss.slower} looser={routeLoss.looser} showRoute={false} dates={lossDates(route)} onPick={openLossRow} /> } : null;
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
   const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routePanel: PanelWidget[] | null = !route ? null
-    : v3 && ready ? [back, ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
+    : v3 && ready ? [back, ...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
     : [back, ...(own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [])];
   // The map note sits over the map's bottom edge: the route is framed above it (its measured height plus its inset and a gap).
   const [noteH, setNoteH] = useState(0);
@@ -226,7 +260,7 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
   const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />;
   // The measures sit in the top bar with the other switchers; the map key sits in the regular map's key card and slot (CIV-1821).
-  const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} />, measureSlot) : null;
+  const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} options={measures} />, measureSlot) : null;
   const mapOverlay = <><MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>{note}</>;
   // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
   return (
@@ -236,10 +270,10 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
       narrowScrollRef={narrowScroll}
       map={mapEl}
       overlay={mapOverlay}
-      sidebar={routePanel ? <WidgetPanel widgets={routePanel} /> : <><WidgetPanel widgets={summary} />{overview}</>}
+      sidebar={routePanel ? <WidgetPanel widgets={routePanel} /> : networkLossWidget ? <WidgetPanel widgets={[networkLossWidget, ...summary]} /> : <><WidgetPanel widgets={summary} />{overview}</>}
       narrowPanels={<>
-        <WidgetPanel className="p-3" widgets={routePanel ?? summary} />
-        {!routePanel && <div className="flex p-3 pt-0">{overview}</div>}
+        <WidgetPanel className="p-3" widgets={routePanel ?? (networkLossWidget ? [networkLossWidget, ...summary] : summary)} />
+        {!routePanel && !networkLossWidget && <div className="flex p-3 pt-0">{overview}</div>}
       </>}
     />
   );
