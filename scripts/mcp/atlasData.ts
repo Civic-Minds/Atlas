@@ -29,8 +29,9 @@ import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { parentAgency } from '../../shared/parentAgencyList';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import { writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { basename, dirname } from 'node:path';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import type { StudioVehicleGroup, StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { GtfsData } from '../../types/gtfs';
 import { parseGtfsZip } from '../../pipeline/parseGtfs';
 import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
@@ -493,16 +494,29 @@ export function routeHistory(slug: string, routeQuery: string, day: DayType) {
   };
 }
 
+/** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
+export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', `${slug}-vehicles.json`); }
+
+/** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
+export function studioVehiclesCommand(slug: string, file: string): string {
+  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${slug}-vehicles.json`;
+}
+
+export type BusesNeeded =
+  | { cached: false; command: string | null }
+  | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
+
 /**
- * Buses needed to run a route in a period: Studio's own calculation (scripts/vehicles-needed.ts, CIV-1685), run on the
- * schedule file Atlas processed, so the answer is Studio's, not the assistant's arithmetic. Returns its report text.
+ * Buses needed to run a route in a period, from Studio's own buses-needed file (CIV-1693), the same figures Studio's page
+ * shows. It never runs the calculation itself: on a large agency that takes minutes and loads the Mac (manager,
+ * 2026-11-17: "buses_needed must not spawn an 8-minute calculation per question"). Where no file exists it says so.
  */
-export async function busesNeeded(slug: string, route: string, period: PeriodKey, every: number | null, recovery: string | null): Promise<{ report: string; file: string }> {
+export function busesNeeded(slug: string, route: string, period: PeriodKey): BusesNeeded {
+  const path = studioVehiclesPath(slug);
   const file = feedFile(slug);
-  if (!file) throw new Error(`No schedule file for ${slug} on this Mac.`);
-  const { execFile } = await import('node:child_process');
-  const tsx = join(ATLAS_ROOT, 'node_modules', 'tsx', 'dist', 'cli.mjs');
-  const args = [tsx, join(ATLAS_ROOT, 'scripts', 'vehicles-needed.ts'), file, '--slug', slug, '--route', route, '--period', period, ...(every ? ['--headway', String(every)] : []), ...(recovery ? ['--recovery', recovery] : [])];
-  const report = await new Promise<string>((ok, fail) => execFile(process.execPath, args, { cwd: ATLAS_ROOT, maxBuffer: 20 * 1024 * 1024, timeout: 10 * 60 * 1000 }, (err, stdout, stderr) => err ? fail(new Error(String(stderr || err.message).slice(-600))) : ok(stdout)));
-  return { report: report.split('\n').filter(l => !/^(Inferred direction_id|CIV\d+\t)/.test(l)).join('\n'), file };
+  if (!existsSync(path)) return { cached: false, command: file ? studioVehiclesCommand(slug, file) : null };
+  const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
+  const want = route.trim().toLowerCase();
+  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
+  return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
 }

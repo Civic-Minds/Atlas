@@ -14,6 +14,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.4.0 | 2026-11-17 | Peers match on kind (buses only or with rail) and leave out parts of a larger operator; agencies found by short name (HSR); a station matches its bays and platforms; trip times warn when the schedule file on this Mac is older than the map's |
 | 0.5.0 | 2026-11-17 | routes_near, route_history, buses_needed, branches in route_frequency, list_agencies near a place; "Blue" finds the Blue Line; a newer schedule file is read without a restart |
 | 0.5.1 | 2026-11-17 | route_history marks impossible old figures (3 min or less on a route now at 30 or more) as doubtful |
+| 0.5.2 | 2026-11-17 | buses_needed reads Studio's buses-needed file instead of running the calculation (8+ minutes per question on TTC); no file, it says so; targets 10/15/20/30/60 only; the recovery option is gone |
 
 ## Standing questions
 
@@ -150,3 +151,7 @@ Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl` (from "Which TTC routes run e
 | Is GO's schedule up to date | None (from an earlier answer) | Runs to Nov 27, 2026 | Right | None |
 | MiWay every 15 or better all weekday 6 AM–7 PM | routes_at_frequency (3 periods) | 12 routes, with each period's figure | Right | None |
 | 504 from King Station to Dufferin Gate | trip_time | About 26 min, 23–28 by hour; said only one branch goes there | Right, but from the October schedule | The server kept the schedule it had read before the new TTC file arrived. Fix: reread a schedule when a newer file appears |
+
+## 2026-11-17: round 4, first run (stopped)
+
+Version 0.5.1, one headless chat. Stopped about 8 minutes in, before the first answer finished. Each buses_needed call started Studio's whole calculation on TTC's schedule (8+ minutes at 35–50% CPU). Two ran at once, alongside Studio's own work, and the chat retried. Fix in 0.5.2: buses_needed reads Studio's buses-needed file and never runs the calculation itself. Round 4 runs again on 0.5.2.

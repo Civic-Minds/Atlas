@@ -15,6 +15,7 @@ import { DAY_TYPES } from '../../shared/rules/days';
 import { countryForRegion } from '../../shared/regionCountry';
 import type { IndexedAgency } from './atlasData';
 import { PUBLIC_TIER_MAXES } from '../../shared/frequencyRules';
+import { STUDIO_TARGETS } from '../../shared/studioVehicles';
 
 // Anything an imported module prints must not reach stdout, which is the protocol channel.
 console.log = (...args: unknown[]) => console.error(...args);
@@ -38,7 +39,7 @@ const TOOLS = [
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period, every, day }, required: ['agencies', 'period', 'every'] } },
   { name: 'routes_near', description: 'Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within 250 m by default, with the stops each uses there. Then use route_frequency for how often they run.', inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' } }, required: ['agency', 'place'] } },
   { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
-  { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, by Atlas Studio's own calculation from the schedule: scheduled now, needed at the current frequency, and needed at a target frequency if given. recovery sets the layover counted: the schedule's own (default), a percent of running time such as 10%, or minutes per leg. Can take a minute or two for a large agency.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period, every: { type: 'number', description: 'Optional target minutes between buses.' }, recovery: { type: 'string', description: 'Optional: "10%" or minutes per leg such as "8".' } }, required: ['agency', 'route', 'period'] } },
+  { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, from Atlas Studio's buses-needed file for the agency (the same figures Studio's page shows): buses scheduled now, buses needed at the schedule's own frequency, and buses needed every 10, 15, 20, 30 or 60 minutes. Routes that share buses are counted together. Counts use the schedule's own layover. Only agencies whose file has been built have an answer; for others it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period, every: { type: 'number', description: 'Optional target minutes between buses: 10, 15, 20, 30 or 60.' } }, required: ['agency', 'route', 'period'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency }, required: ['agency'] } },
@@ -168,8 +169,31 @@ const handlers: Record<string, (args: Args) => unknown> = {
   buses_needed: async (args) => {
     const a = needAgency(args.agency);
     const key = needPeriod(args.period);
-    const res = await data.busesNeeded(a.slug, String(args.route ?? ''), key, args.every != null ? Number(args.every) : null, args.recovery != null ? String(args.recovery) : null);
-    return { agency: a.name, route: args.route, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, ...staleNote(a, null), report: res.report, howToRead: "Atlas Studio's calculation from the schedule: 'scheduled now' is buses on the route at the middle of the period; 'implied' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once); with a target, the buses at that frequency. Trips to and from the garage are not in schedules and not counted.", source: "The agency's own schedule file that Atlas processed." };
+    const route = String(args.route ?? '');
+    const every = args.every != null ? Number(args.every) : null;
+    const res = data.busesNeeded(a.slug, route, key);
+    const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
+    if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.`, ...(res.command ? { toBuild: res.command } : {}) };
+    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].toLowerCase()}: it may not run then, or its number is written differently.` };
+    const missing = every != null && !STUDIO_TARGETS.includes(every);
+    const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
+    return {
+      agency: a.name, route, period,
+      ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
+      day: `A representative weekday in the week of ${res.referenceDate}.`,
+      groups: res.groups.map(g => ({
+        routesSharingBuses: g.routes,
+        scheduledNow: g.scheduled,
+        neededAtCurrentFrequency: g.implied,
+        roundTripRunningMinutes: g.runningMin,
+        roundTripLayoverMinutes: g.layoverMin,
+        neededAt: Object.fromEntries(targets.filter(t => g.atTarget[t] != null).map(t => [`every ${t} min`, g.atTarget[t]])),
+        ...(g.atTargetEven ? { neededAtWithBranchesEven: Object.fromEntries(targets.filter(t => g.atTargetEven![t] != null).map(t => [`every ${t} min`, g.atTargetEven![t]])) } : {}),
+      })),
+      ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),
+      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted.",
+      source: "Atlas Studio's buses-needed file, worked out from the agency's own schedule.",
+    };
   },
   trip_time: async (args) => {
     const a = needAgency(args.agency);
@@ -239,7 +263,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.1' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.2' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
