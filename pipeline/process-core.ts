@@ -3407,7 +3407,7 @@ export async function processGtfsBuffer(
         // Only a line with no evening service either (no departure 09:00-23:00): Marin 30 on
         // Saturday runs every 30 from 20:30 to 02:00, and its overnight gap to the Sunday 05:30 trip
         // is not its headline.
-        const overnightOnly = ![...stopMap.values()].some(times => times.some(t => t >= 540 && t < 1380));
+        const overnightOnly = ![...stopMap.values()].some(times => times.some(t => t >= PERIODS.midday.start && t < PERIODS.late.start));
         // A withheld sparse value (#897) still floors it: the period shows no value, the headline
         // keeps the floor it had.
         const overnightFloor = overnight.headway ?? overnight.withheld;

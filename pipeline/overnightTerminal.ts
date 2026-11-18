@@ -1,6 +1,6 @@
 import type { DayType } from '../shared/dayTypes.js';
 import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, forCrossMidnightWindow, HEADLINE_WINDOWS, sparseOvernightHeadway } from './headway-utils.js';
-import { asNextNight, MINUTES_PER_DAY, TIME_PERIODS } from '../shared/config.js';
+import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES, TIME_PERIODS } from '../shared/config.js';
 
 /**
  * The day type whose early-morning trips carry on a day type's night (#896): Saturday night runs
@@ -36,7 +36,7 @@ export function overnightWindowTimes(own: readonly number[], nextDay: readonly n
  */
 export function isNightRouteDirection(stopTimes: Iterable<readonly number[]>): boolean {
   const all = [...stopTimes];
-  return !all.some(times => times.some(t => t >= HEADLINE_WINDOWS.midday.start && t < HEADLINE_WINDOWS.pmPeak.end)) && all.some(times => times.some(t => t >= 1380));
+  return !all.some(times => times.some(t => t >= HEADLINE_WINDOWS.midday.start && t < HEADLINE_WINDOWS.pmPeak.end)) && all.some(times => times.some(t => t >= PERIOD_MINUTES.late.start));
 }
 
 /**
@@ -56,14 +56,14 @@ export function overnightPeriodValues(times: number[], nightStartedUpstream = fa
 const OVERNIGHT = TIME_PERIODS.find(p => p.key === 'overnight')!;
 const OVERNIGHT_START = OVERNIGHT.startHour * 60;
 /** A departure from 23:00 on is the night's (as isNightRouteDirection reads it). */
-const NIGHT_FROM = 1380;
+const NIGHT_FROM = PERIOD_MINUTES.late.start;
 
 /**
  * Whether the night's trips leave their first stops before the overnight window opens (#1121). A stop down the line then
  * gets its first night bus later only because of the ride there, not because the night starts later.
  */
 export function nightStartsBeforeWindow(tripStarts: readonly number[]): boolean {
-  return tripStarts.some(t => t >= 1380 && t < OVERNIGHT_START);
+  return tripStarts.some(t => t >= NIGHT_FROM && t < OVERNIGHT_START);
 }
 
 /**

@@ -10,6 +10,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { historyV2Enabled } from '../shared/rules/flags.js';
 
 export const HISTORY_CONFIG_KEY = 'atlas/history-config.json';
 export const HISTORY_AGENCIES_PATH = 'shared/data/history-agencies.json';
@@ -38,7 +39,7 @@ export function stampOf(now: Date): string {
 
 /** --write needs ATLAS_HISTORY_V2=1 in the environment (same exact-value rule as the build). */
 export function assertWriteGate(write: boolean, env: Env): void {
-  if (write && env.ATLAS_HISTORY_V2 !== '1') {
+  if (write && !historyV2Enabled(env.ATLAS_HISTORY_V2)) {
     throw new Error('--write refused: set ATLAS_HISTORY_V2=1 in the environment to publish History v2 data (dry run needs no flag).');
   }
 }

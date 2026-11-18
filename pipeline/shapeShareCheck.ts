@@ -7,8 +7,9 @@
  * switch back. Nothing here changes an artifact: it only reads them and the feed.
  */
 import type { GtfsTrip, GtfsStopTime } from '../types/gtfs.js';
+import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods.js';
 
-export const PERIOD_KEYS_DAYTIME = ['amPeak', 'midday', 'pmPeak', 'evening'] as const;
+export const PERIOD_KEYS_DAYTIME = DAYTIME_PERIOD_KEYS;
 
 /** The drawn shape carries "under half" when its trips are below this share of the headsign's. */
 export const MAX_DRAWN_SHARE = 0.5;

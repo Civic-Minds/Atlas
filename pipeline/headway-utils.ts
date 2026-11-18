@@ -2,6 +2,11 @@ import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
 import { headwayGradeOn, TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
+import {
+  FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS, NIGHT_SERVICE_WINDOW_END_MIN,
+  NIGHT_SERVICE_WINDOW_START_MIN, RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN,
+  RESEARCH_FREQUENT_SERVICE_START_MIN,
+} from '../shared/rules/periods.js';
 
 
 /**
@@ -132,15 +137,8 @@ function alternationReading(inRange: readonly number[], base: number): number | 
   return Math.max(median, total / inRange.length);
 }
 
-/**
- * The three windows the headline reads, in minutes from midnight: midday first, then PM peak,
- * then a sustained all-day (6-22h) value as the last resort.
- */
-export const HEADLINE_WINDOWS = {
-  midday: { start: 540, end: 900 },
-  pmPeak: { start: 900, end: 1140 },
-  allDay: { start: 360, end: 1320 },
-} as const;
+// The headline windows (midday, PM peak, all day) live in shared/rules/periods.ts (rules audit, move 4).
+export { HEADLINE_WINDOWS };
 
 /** A headline value needs at least this many departures in its window. */
 export const HEADLINE_MIN_DEPARTURES = 3;
@@ -573,11 +571,8 @@ export function hasSustainedServiceInWindow(
   return true;
 }
 
-// Night Service window: GTFS hour 26 (2am) to hour 30 (6am). This focuses the beta experiment on
-// the core overnight network after daytime routes wind down, which matches Toronto's 300-series
-// night network and avoids requiring night routes to cover the midnight-to-2am handoff.
-export const NIGHT_SERVICE_WINDOW_START_MIN = 26 * 60;
-export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
+// Night Service window: GTFS hour 26 (2am) to hour 30 (6am), in shared/rules/periods.ts (rules audit, move 4).
+export { NIGHT_SERVICE_WINDOW_END_MIN, NIGHT_SERVICE_WINDOW_START_MIN };
 export const NIGHT_SERVICE_MAX_GAP_MINUTES = 60;
 
 /**
@@ -600,13 +595,11 @@ export function nightServiceDepartureTimes(
 // was decided from). Weekday only -- process-core.ts only computes this for the Weekday day-type,
 // same as how Night Service's window sits outside TIME_PERIODS rather than reusing amPeak/midday/
 // pmPeak (7am cuts into amPeak's 6am start; 7pm lands exactly on pmPeak's own end).
-export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;
-export const FREQUENT_SERVICE_WINDOW_END_MIN = 19 * 60;
+// The windows themselves are in shared/rules/periods.ts (rules audit, move 4).
+export { FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN };
 export const FREQUENT_SERVICE_MAX_GAP_MINUTES = 15;
 
-export const RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN = 19 * 60;
-export const RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN = 24 * 60;
-export const RESEARCH_FREQUENT_SERVICE_START_MIN = 7 * 60;
+export { RESEARCH_FREQUENT_SERVICE_DAYTIME_END_MIN, RESEARCH_FREQUENT_SERVICE_EXTENDED_END_MIN, RESEARCH_FREQUENT_SERVICE_START_MIN };
 
 export type ResearchFrequentServiceFlags = {
   daytime15: boolean;
