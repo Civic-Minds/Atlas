@@ -1,4 +1,5 @@
 import { PERIOD_KEYS } from '../../shared/config';
+import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import type { DayType, TimePeriod } from '../hooks/useIntervalStats';
 import { DAY_TYPES } from '../../shared/dayTypes';
 import type { DashboardBand } from '../../shared/liveDashboard';
@@ -56,7 +57,7 @@ const direction: UrlParam<number> = {
 };
 
 /** Live's time bands in links: the four daytime periods (late night and overnight have too few trips). No All day (CIV-1097, CIV-1451). */
-export const LIVE_BAND_IDS: readonly DashboardBand[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+export const LIVE_BAND_IDS: readonly DashboardBand[] = DAYTIME_PERIOD_KEYS;
 export const LIVE_MEASURE_IDS: readonly MapMeasure[] = ['late', 'runTime', 'extraWait', 'bunching'];
 export const LIVE_SORT_IDS = ['late', 'runTime', 'bunching', 'delivered'] as const;
 export type LiveSort = typeof LIVE_SORT_IDS[number];

@@ -3,8 +3,9 @@
  * the analysis output's shape, time bands, sample minimums, rounding and stop names.
  */
 import { LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_SAMPLE } from '../../shared/rules/live';
+import type { DaytimePeriodKey } from '../../shared/rules/periods';
 
-export type SegmentBand = 'all' | 'amPeak' | 'midday' | 'pmPeak' | 'evening';
+export type SegmentBand = 'all' | DaytimePeriodKey;
 
 /** A stop pair needs at least this many observed trips, over this many days, to be shown. */
 export const MIN_SEGMENT_TRIPS = LIVE_MIN_SAMPLE;

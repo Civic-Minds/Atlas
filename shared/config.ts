@@ -1,6 +1,7 @@
 import { headwayTierLabel } from './headwayText';
 import { PUBLIC_TIER_MAXES } from './frequencyRules';
 import { hourRange, hourTime } from './timeText';
+import { TIME_PERIODS, type PeriodKey } from './rules/periods';
 import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
  * Shared configuration constants
@@ -256,41 +257,9 @@ export function getAgencyDataUrl(slug: string, variant: '' | '-stops' | '-corrid
   return `${R2_PUBLIC_URL}/atlas/${slug}${variant}.json`;
 }
 
-export interface PeriodConfig<K extends string = string> {
-  key: K;
-  label: string;
-  startHour: number;
-  endHour: number;
-}
-
-export const TIME_PERIODS = [
-  { key: 'amPeak',    label: 'AM peak',    startHour: 6,  endHour: 9  },
-  { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
-  { key: 'pmPeak',    label: 'PM peak',    startHour: 15, endHour: 19 },
-  { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 23 },
-  { key: 'late',      label: 'Late',       startHour: 23, endHour: 26 },
-  { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: 30 },
-] as const satisfies readonly PeriodConfig[];
-
-export type PeriodKey = (typeof TIME_PERIODS)[number]['key'];
-
-export const PERIOD_KEYS: PeriodKey[] = TIME_PERIODS.map(p => p.key);
-
-/** Each period's window in minutes after midnight, [start, end), the unit the pipeline reads departures in (CIV-986). */
-export const PERIOD_MINUTES = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),
-) as Record<PeriodKey, { start: number; end: number }>;
-
-/** Minutes in a day: a departure written at or past this belongs to the night after its service day. */
-export const MINUTES_PER_DAY = 1440;
-
-/** The day's times before midnight, moved to the following night (02:00 read as 26:00). */
-export const asNextNight = (times: readonly number[]): number[] =>
-  times.filter(t => t < MINUTES_PER_DAY).map(t => t + MINUTES_PER_DAY);
-
-export const PERIOD_LABELS: Record<PeriodKey, string> = Object.fromEntries(
-  TIME_PERIODS.map(p => [p.key, p.label]),
-) as Record<PeriodKey, string>;
+// The periods, their minutes and the sparkline hours moved to shared/rules/periods.ts (rules audit, move 4); this
+// re-export stays until no file imports them here.
+export * from './rules/periods';
 
 /** A period's hours for its filter chip, in the app's one time format (CIV-1095): "6–9 AM", "9 AM–3 PM". */
 export function formatPeriodRange(key: string): string {
@@ -307,36 +276,6 @@ export function formatPeriodHourLong(h: number): string {
 export function formatPeriodRangeLong(startHour: number, endHour: number): string {
   return hourRange(startHour, endHour);
 }
-
-/** Map clock/sparkline hour to GTFS extended hour for period lookup (matches filter chip logic). */
-export function toGtfsHour(h: number): number {
-  return h < 6 ? h + 24 : h;
-}
-
-export function periodKeyForHour(h: number): PeriodKey | null {
-  const gtfsH = toGtfsHour(h);
-  return TIME_PERIODS.find(p => gtfsH >= p.startHour && gtfsH < p.endHour)?.key ?? null;
-}
-
-export function isHourInPeriod(h: number, periodKey: string): boolean {
-  const gtfsH = toGtfsHour(h);
-  const p = TIME_PERIODS.find(t => t.key === periodKey);
-  return p != null && gtfsH >= p.startHour && gtfsH < p.endHour;
-}
-
-/** Sparkline data window: 6 AM–2 AM, then overnight tail 3 AM, 4 AM, 5 AM. */
-export const SPARKLINE_START_HOUR = 5;
-export const SPARKLINE_END_HOUR = 26;
-/** GTFS hours for 3 AM and 4 AM — omitted when #100 moved 5 AM to the tail. */
-export const SPARKLINE_OVERNIGHT_TAIL = [27, 28, SPARKLINE_START_HOUR] as const;
-/** Display order: 6 AM → 2 AM, then 3 AM, 4 AM, 5 AM (#100 overnight tail). */
-export const SPARKLINE_HOURS: readonly number[] = [
-  ...Array.from(
-    { length: SPARKLINE_END_HOUR - SPARKLINE_START_HOUR },
-    (_, i) => i + SPARKLINE_START_HOUR + 1,
-  ),
-  ...SPARKLINE_OVERNIGHT_TAIL,
-];
 
 /** Axis labels the sparkline puts under its bars (keyed by GTFS hour): 6 AM, 12 PM, 6 PM, 12 AM. Other charts reuse them. */
 export const SPARKLINE_HOUR_LABELS: Readonly<Record<number, string>> = Object.fromEntries([6, 12, 18, 24].map(h => [h, hourTime(h)]));

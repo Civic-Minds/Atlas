@@ -1,4 +1,5 @@
 import { PERIOD_KEYS, type HeadwayByPeriod, type HeadwayByPeriodSustained, type PeriodKey } from './config.js';
+import { DAYTIME_PERIOD_KEYS } from './rules/periods.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';
 
 /** #899: the longest midday wait at which a direction still runs at midday (the longest all-day threshold). */
@@ -102,7 +103,7 @@ function isSteadyInAnyPeriod(props: WorstDirectionFeature['properties']): boolea
 }
 
 /** Daytime periods: a route that stops before late night is still an all-day route. */
-const DAYTIME_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const DAYTIME_PERIODS: readonly PeriodKey[] = DAYTIME_PERIOD_KEYS;
 
 /** How many daytime periods the pattern runs in at all (any departure, so a full-window wait exists). */
 function periodsRunIn(props: WorstDirectionFeature['properties']): number {

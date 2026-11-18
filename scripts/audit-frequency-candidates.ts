@@ -6,6 +6,7 @@ import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { determineTier } from '../pipeline/transit-phase2';
 import { DEFAULT_CRITERIA } from '../pipeline/defaults';
+import { RAIL_TIER_WINDOW } from '../shared/rules/frequency';
 import { DAY_TO_TYPE, GtfsData, RawRouteDepartures } from '../types/gtfs';
 import { TIME_PERIODS } from '../shared/config';
 import {
@@ -223,7 +224,7 @@ const productionWindow = (raw: RawRouteDepartures): number[] => {
   let windowed = raw.departureTimes.filter(time => time >= start && time <= end);
   if (windowed.length < 2) windowed = [...raw.departureTimes].sort((a, b) => a - b);
   if (raw.railLike) {
-    const midday = windowed.filter(time => time >= 570 && time <= 870);
+    const midday = windowed.filter(time => time >= RAIL_TIER_WINDOW.start && time <= RAIL_TIER_WINDOW.end);
     if (midday.length >= 2) windowed = midday;
   }
   return windowed;

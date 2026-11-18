@@ -4,6 +4,7 @@ import { parseGtfsZip } from '../pipeline/parseGtfs';
 import { readWeekOf } from '../pipeline/readWeek';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { medianHeadwayInWindow } from '../pipeline/headway-utils';
+import { PERIOD_MINUTES } from '../shared/rules/periods';
 
 interface AgencyConfig {
   slug: string;
@@ -86,7 +87,7 @@ async function main() {
       const longName = routeObj?.route_long_name || '';
 
       // Calculate headway in midday window (9:00 AM - 3:00 PM -> 540 to 900 minutes)
-      const headway = medianHeadwayInWindow(dep.departureTimes, 540, 900, 3);
+      const headway = medianHeadwayInWindow(dep.departureTimes, PERIOD_MINUTES.midday.start, PERIOD_MINUTES.midday.end, 3);
       if (headway !== null && headway > 0) {
         allCombos.push({
           agencySlug: agency.slug,

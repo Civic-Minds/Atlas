@@ -49,13 +49,13 @@ import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
+import { DAYTIME_PERIOD_KEYS, STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN } from '../shared/rules/periods.js';
 
 /** A short turn (stops all on a longer regular pattern) under this share of trips is a variant (the spec's regular-pattern share). */
 export const SHORT_TURN_MIN_SHARE = 0.2;
 
-/** Night for the stretch fields (D7): 2-5am, GTFS 26:00 to 29:00. */
-export const STRETCH_NIGHT_START_MIN = 26 * 60;
-export const STRETCH_NIGHT_END_MIN = 29 * 60;
+/** Night for the stretch fields (D7): 2-5am, GTFS 26:00 to 29:00, in shared/rules/periods.ts (rules audit, move 4). */
+export { STRETCH_NIGHT_END_MIN, STRETCH_NIGHT_START_MIN };
 
 export interface TripVisit {
   stopId: string;
@@ -226,7 +226,7 @@ function runsSteadily(trips: readonly DirectionTrip[], stop: string, periods: re
 }
 
 /** The daytime periods (06:00-23:00) that shape a route's stretches; late and overnight only shape a night route's. */
-const DAYTIME_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const DAYTIME_PERIODS: readonly PeriodKey[] = DAYTIME_PERIOD_KEYS;
 const ALL_PERIODS: readonly PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight'];
 
 /**

@@ -11,6 +11,7 @@
  * writes files or changes a published artifact (scripts/compare-feed-dates.ts writes the report).
  */
 import { processGtfsBuffer, type ProcessOptions } from './process-core.js';
+import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods.js';
 import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_LABELS, SPARKLINE_START_HOUR, type PeriodKey } from '../shared/config.js';
 
 /** The quiet time before a trip that makes it a route's first of the day, rather than one more night trip (#1582). */
@@ -393,7 +394,7 @@ export function compareFeedSides(slug: string, before: FeedSide & { file: string
 
 // ---- Markdown ----
 
-const SHOWN_PERIODS: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
+const SHOWN_PERIODS: PeriodKey[] = [...DAYTIME_PERIOD_KEYS];
 const dash = '–';
 export const clockText = (m: number | null) => (m == null ? dash : `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.round(m) % 60).padStart(2, '0')}`);
 

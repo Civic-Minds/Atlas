@@ -13,6 +13,7 @@
  * route that passes N while some direction's sustained value is above N.
  */
 import { featureFilter } from '@maplibre/maplibre-gl-style-spec';
+import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods';
 import { HEADWAY_TIERS, PERIOD_KEYS, type PeriodKey } from '../shared/config';
 import { buildTileHeadwayFilterClause } from '../shared/tileFilterExprs';
 import { normalizeRouteFilterFeatures } from '../shared/routeHeadwayFilter';
@@ -125,7 +126,7 @@ function directionSustainedValue(features: Record<string, any>[], period: AuditP
     // in fewer daytime periods than the steady ones; a slow all-day destination runs in as many (#749).
     const isSteady = (p: Record<string, any>) => PERIOD_KEYS.some(pk => typeof p.headwayByPeriod?.[pk] === 'number'
       && p.headwayByPeriodSustained?.[pk] !== false);
-    const periodsRun = (p: Record<string, any>) => (['amPeak', 'midday', 'pmPeak', 'evening'] as const)
+    const periodsRun = (p: Record<string, any>) => DAYTIME_PERIOD_KEYS
       .filter(pk => p.periodCoverageHeadway?.[pk] != null).length;
     const steady = regularPool.filter(isSteady);
     const keptPeriods = steady.length ? Math.max(...steady.map(periodsRun)) : 0;
