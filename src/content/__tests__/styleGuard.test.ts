@@ -219,10 +219,13 @@ const APPROVED_TEXT: Record<string, string[]> = {
     'A 15-minute route', 'a 15-minute corridor', '15- and 30-minute service',
     // CIV-1179: the coverage section's prose as it shipped on main before the 2026-11-14 revert.
     'a 10-minute walk', 'The stricter 15-minute threshold', 'the broader 30-minute threshold', '30-minute service reaches', 'as 15-minute service',
-    // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
-    '“around every 15 minutes all day.”',
     // Ryan's CIV-1495 #6 wording, word for word (2026-11-15): the TTC's name for its network.
     'The TTC’s own 10-minute network',
+  ],
+  // The frequent-service story's cited sentences (shared/researchStories.ts, CIV-1626).
+  'shared/researchStories.ts': [
+    // Jarrett Walker's own words, quoted (Ryan approved, 2026-11-15).
+    '“around every 15 minutes all day.”',
     // CIV-1626 (Ryan approved word for word, 2026-11-17): two study sentences, the text after each link.
     'of bus routes in four US cities found that in three of them, “low-frequency routes are the most sensitive to changes in frequency.”',
     'of 169 bus routes found that 10% fewer weekday trips meant 13% fewer riders, and the STM’s “10-Minute Max” frequent network shrank from 31 routes to 8 before it was dropped in January 2023.',
