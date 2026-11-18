@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Opening Research no longer reloads the page**: the Research links on About, the header and the footer, and its story cards, switch pages inside the app, so entering Research is as smooth as the other views
 - **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
 - **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views
