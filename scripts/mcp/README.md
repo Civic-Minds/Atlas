@@ -46,7 +46,7 @@ claude mcp add -s user atlas-studio -- /opt/homebrew/bin/node /Users/ryan/Develo
 
 `waitMinutes` in the frequency tools is the typical wait on the route's slower direction: its main stretch plus its steady branches, the number the map colours and filters the route by. A branch end that runs unevenly shows only in `shown`, the route list's own words. A range like "every 5–16 min" means every 5 on the busiest part of the route and every 16 on the quietest.
 
-The standing test questions and every run's results: [TEST-LOG.md](TEST-LOG.md). Rerun them after every change to the server.
+The test questions, which any chat adds to: [QUESTIONS.md](QUESTIONS.md). Every round's results: [TEST-LOG.md](TEST-LOG.md). Rerun them after every change to the server.
 
 ## Data
 
@@ -57,6 +57,6 @@ The tools read through one async store (`shared/mcpStore.ts`): the disk store (`
 - **Agency index.** `rank_agencies` reads `_mcp-index.json` next to the route files: every route's wait per period and day type, made with the same functions. Rebuild it after the release cache changes: `nice -n 15 npx tsx scripts/mcp/buildIndex.ts`.
 - **History.** `route_history` reads Atlas's published History data, kept on this Mac at `tmp/history-cache/history-config.json` (the same file the History screen loads), with History's own snapshot rules.
 - **Buses needed.** `buses_needed` reads Studio's buses-needed file (`tmp/studio/<slug>-vehicles.json`, the one Studio's page reads). It never runs the calculation, which takes minutes on a large agency. Where an agency has no file, it says so and gives the command that builds one: `nice -n 15 npx tsx scripts/vehicles-needed.ts <feed.zip> --slug <slug> --json tmp/studio/<slug>-vehicles.json`. Run one at a time. Targets are the public scale only (10, 15, 20, 30, 60), with the schedule's own layover.
-- **Testing.** The Data chat runs the standing questions itself in fresh headless chats and logs the results in [TEST-LOG.md](TEST-LOG.md).
+- **Testing.** The MCP chat runs the questions in [QUESTIONS.md](QUESTIONS.md) itself in fresh headless chats and logs the results in [TEST-LOG.md](TEST-LOG.md).
 - **Public agencies only.** It answers only for agencies in `public/data/catalog-public.json`.
 - **Schedule changes.** These come from Studio's comparison files (`tmp/studio/<slug>-before-after.json`), ranked by the shared rule (`shared/frequencyChange.ts`).
