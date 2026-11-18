@@ -43,6 +43,8 @@ export const PAGE_NAMES = {
   studioVehicles: 'Buses Needed',
   /** CIV-1715: Studio's before/after schedule comparison. Proposed, waiting on Ryan's OK. */
   studioChanges: 'Schedule Changes',
+  /** CIV-1871: the local coverage table. Proposed, waiting on Ryan's OK. */
+  studioCoverage: 'Coverage',
 } as const;
 
 /** The footer's link-column headings (CIV-1699, Ryan: For Planners gets its own "Product" column, Studio joins it later). */

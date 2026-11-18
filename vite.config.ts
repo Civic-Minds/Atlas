@@ -1,10 +1,10 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { existsSync, statSync, createReadStream, readdirSync } from 'fs';
+import { existsSync, statSync, createReadStream, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
-import { STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
+import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
 /** Modules that import maplibre-gl, pmtiles or deck.gl (CIV-977: kept out of the shared chunk). */
@@ -189,6 +189,27 @@ export default defineConfig(({ mode, command, isPreview }) => {
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store');
           res.end(JSON.stringify({ agencies: studioAgenciesFromFiles(names) }));
+          return;
+        }
+        // CIV-1871: the coverage page's local facts: which agencies have each Studio file, and the Live coverage files
+        // (what scripts/mcp/releaseLivePrivate.ts writes under tmp/mcp-live-private/live/<slug>/coverage.json).
+        if ((req.url ?? '').split('?')[0] === STUDIO_COVERAGE_DEV_URL) {
+          const names = existsSync(STUDIO_DIR) ? readdirSync(STUDIO_DIR) : [];
+          const liveDir = resolve('tmp/mcp-live-private/live');
+          const coverage: Record<string, unknown> = {};
+          if (existsSync(liveDir)) {
+            for (const slug of readdirSync(liveDir)) {
+              const f = resolve(liveDir, slug, 'coverage.json');
+              if (existsSync(f)) { try { coverage[slug] = JSON.parse(readFileSync(f, 'utf8')); } catch { /* an unreadable file counts as none */ } }
+            }
+          }
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(JSON.stringify({
+            studio: studioAgenciesFromFiles(names),
+            vehicles: names.map(f => /^([\w-]+)-vehicles\.json$/.exec(f)?.[1]).filter(Boolean),
+            coverage,
+          }));
           return;
         }
         const m = /^\/dev-studio\/([\w-]+-(?:vehicles|before-after)\.json)$/.exec((req.url ?? '').split('?')[0]);

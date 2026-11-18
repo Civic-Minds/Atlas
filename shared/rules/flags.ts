@@ -4,7 +4,7 @@
  * The VITE_* reads stay literal import.meta.env reads so Vite can drop off features from each build. Flag docs:
  * docs/FEATURE_FLAGS.md.
  */
-import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
+import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './paths';
 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
@@ -193,6 +193,7 @@ export const FEATURE_ROUTES = {
   studio: STUDIO_PATH,
   studioVehicles: STUDIO_VEHICLES_PATH,
   studioChanges: STUDIO_CHANGES_PATH,
+  studioCoverage: STUDIO_COVERAGE_PATH,
   nightService: '/research/night',
   freeChildFares: '/research/free-child-fares',
   /** CIV-101: beta-only, not listed on /research yet. */
