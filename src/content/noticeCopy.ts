@@ -329,7 +329,7 @@ export const COMPARE_B_PICKER_NOTE = 'The frequency, day and time above are map 
 // K1 frequency-key heading
 export const MAP_KEY_FREQUENCY = 'Frequency';
 // K2 frequency-key selected
-export const MAP_KEY_SELECTED = 'Selected / qualifying';
+export const MAP_KEY_SELECTED = 'Selected or in your filters';
 // K3 frequency-key other
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
