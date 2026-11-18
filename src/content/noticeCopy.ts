@@ -674,7 +674,7 @@ export const EXPLAINERS = {
   'beta-rollout': { code: 'E4', title: 'Beta testing' },
   'route-data-quality': { code: 'E5', title: 'Route data quality' },
   'no-route-shape': { code: 'E6', title: 'Route map unavailable' },
-  'edge-gap-allowance': { code: 'E7', title: 'Frequency allowance' },
+  'edge-gap-allowance': { code: 'E7', title: 'First and last trips' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
   'route-rating': { code: 'E9', title: 'Route rating' },
 } as const;
