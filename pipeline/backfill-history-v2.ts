@@ -55,7 +55,10 @@ import { parseGtfsZip } from './parseGtfs.js';
 import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
-import { historyWeekendPeriodsFor } from './historyV2Flag.js';
+import { historyV2FromEnv, historyWeekendPeriodsFor } from './historyV2Flag.js';
+import { flagsFor, matchedRoutes, planSidecarNoTrip } from './historyV2NoTrip.js';
+import { historyNoTripPeriods } from './noTripPeriods.js';
+import { historyRouteKey } from './historyRouteKey.js';
 import { pinnedReadFor, readPinnedBodies, readPinnedSidecars } from './historyV2Pin.js';
 import { countAdded, mergeWeekendFields, type MergeSkip } from './historyV2Replace.js';
 import { buildMergedV2Routes, historyV2InputFor } from './historyRefreshSidecar.js';
@@ -101,6 +104,12 @@ async function main(): Promise<void> {
   const pinnedBodies = pinFrom ? readPinnedBodies(resolve(pinFrom), slug) : null;
   const fullSink = pinFrom ? localDirSink(resolve(outDir, 'full-rebuild'), { overwrite: process.argv.includes('--overwrite') }) : null;
   const mergeNotes: Array<{ periodKey: string; added: Record<string, number>; skipped: MergeSkip[] }> = [];
+  // CIV-1862: --notrip-out <dir> (with --pin-from) also plans the add-only no-trips flag for each pinned period.
+  const noTripOut = arg('--notrip-out');
+  if (noTripOut && !pinFrom) throw new Error('--notrip-out needs --pin-from');
+  if (noTripOut && !historyV2FromEnv()) throw new Error('--notrip-out needs ATLAS_HISTORY_V2=1 (the route keys must match the v2 sidecars)');
+  const noTripSink = noTripOut ? localDirSink(resolve(noTripOut, 'full-rebuild'), { overwrite: process.argv.includes('--overwrite') }) : null;
+  const noTripRows: Array<Record<string, unknown>> = [];
   if (pinned) console.log(`${slug}: pinning to ${pinned.size} published sidecar(s) from ${resolve(pinFrom!)}`);
 
   const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; supplemental?: Array<{ url: string; refDate: string; routes: number }>; collisions?: Array<{ key: string; droppedFrom: string }>; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
@@ -160,6 +169,17 @@ async function main(): Promise<void> {
         // 1: the published file plus ONLY the rebuilt weekend p / t / tp) stays in the main out dir for reference.
         sidecar = { ...published, routes: built.routes };
         await fullSink!.put(`history-v2/${slug}/${periodKey}.json`, JSON.stringify(sidecar));
+        if (noTripOut) {
+          // CIV-1862: the no-trips flag goes only on routes this rebuild reproduces exactly (per-route match).
+          const publishedBody = pinnedBodies!.get(periodKey)!;
+          const match = matchedRoutes(publishedBody, JSON.stringify(sidecar));
+          const flags = historyNoTripPeriods(features, p => historyRouteKey(p), processed.noTripPeriodsByRoute);
+          const plan = planSidecarNoTrip(publishedBody, flagsFor(flags, match.matched));
+          const flaggedMismatched = match.mismatched.filter(k => flags[k]?.length);
+          if (plan.kind === 'add') await noTripSink!.put(`history-v2/${slug}/${periodKey}.json`, plan.body);
+          noTripRows.push({ periodKey, refDate: published.refDate, routes: Object.keys(published.routes ?? {}).length, matched: match.matched.size, mismatched: match.mismatched, ...(match.reason ? { mismatchReason: match.reason } : {}), flaggedButMismatched: flaggedMismatched, outcome: plan.kind === 'skip' ? `skip: ${plan.reason}` : plan.kind, ...(plan.kind === 'add' ? { flaggedRoutes: plan.routes, byPeriod: plan.byPeriod } : plan.kind === 'disagree' ? { disagree: plan.routes.slice(0, 8) } : {}) });
+          console.log(`\n${periodKey}: no-trips ${plan.kind}, ${match.matched.size}/${Object.keys(published.routes ?? {}).length} routes match, ${flaggedMismatched.length} flagged route(s) skipped as mismatched`);
+        }
         const merged = mergeWeekendFields(pinnedBodies!.get(periodKey)!, built.routes as Record<string, unknown>);
         result = await sink.put(`history-v2/${slug}/${periodKey}.json`, merged.body);
         mergeNotes.push({ periodKey, added: countAdded(merged.added), skipped: merged.skipped });
@@ -198,6 +218,22 @@ async function main(): Promise<void> {
   for (const pk of missingZips) console.log(`${pk}: NOT PINNABLE (published sidecar, no zip ${pk}.zip in ${zipDir})`);
   writeFileSync(resolve(outDir, `${slug}-report.json`), JSON.stringify({ slug, ...(policy.busOnly ? { busOnly: true, supplementalExcluded: policy.supplementalExcluded, note: policy.note } : {}), ...(supplementalDirs.length ? { supplementalDirs: Object.fromEntries(supplementalDirs.map(([u, d]) => [u, resolve(d)])), ...(prefixArgs.length ? { supplementalIdPrefixes } : {}) } : {}), ...(pinned ? { pinnedFrom: resolve(pinFrom!), publishedWithoutZip: missingZips, weekendMerge: mergeNotes } : {}), rows }, null, 2));
   console.log(`\nReport: ${resolve(outDir, `${slug}-report.json`)}`);
+  if (noTripOut) {
+    const sum = (f: (r: Record<string, unknown>) => number) => noTripRows.reduce((n, r) => n + f(r), 0);
+    const totals = {
+      periodsRead: noTripRows.length,
+      periodsPublished: pinned!.size,
+      routeRecords: sum(r => r.routes as number),
+      routesMatched: sum(r => r.matched as number),
+      periodsToAdd: noTripRows.filter(r => r.outcome === 'add').length,
+      routesFlagged: sum(r => (r.flaggedRoutes as number) ?? 0),
+      flaggedButMismatched: sum(r => (r.flaggedButMismatched as string[]).length),
+      disagree: noTripRows.filter(r => r.outcome === 'disagree').length,
+    };
+    mkdirSync(resolve(noTripOut), { recursive: true });
+    writeFileSync(resolve(noTripOut, `${slug}-notrip-report.json`), JSON.stringify({ slug, totals, rows: noTripRows }, null, 2));
+    console.log(`No-trips plan: ${JSON.stringify(totals)}`);
+  }
   if (rows.some(r => r.error || r.result === 'conflict')) process.exitCode = 1;
   if (pinned) console.log(`Pinned: ${rows.filter(r => r.pin && !r.notPinnable && !r.error).length} rebuilt, ${rows.filter(r => r.notPinnable).length + missingZips.length} not pinnable, ${rows.filter(r => r.error).length} failed`);
 }

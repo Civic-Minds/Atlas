@@ -40,6 +40,13 @@ export const APPROVED_NOTRIP_ADDITIONS: Readonly<Record<string, readonly string[
     'nyct-bus-brooklyn', 'nyct-bus-manhattan', 'nyct-bus-queens', 'nyct-bus-si', 'nyct-subway', 'port-authority-pa',
     'septa', 'translink', 'trimet', 'ttc', 'votran', 'winnipeg',
   ],
+  // CIV-1862: the same agencies, each period re-read from a re-downloaded source feed; the flag goes only on routes the
+  // pinned rebuild reproduces exactly (manager, 2026-11-18). Same add-only check.
+  'CIV-1862': [
+    'bigbluebus', 'brampton', 'cta', 'hart', 'kingcountymetro', 'lynx', 'mbta', 'mta-bus-company', 'nyct-bus-bronx',
+    'nyct-bus-brooklyn', 'nyct-bus-manhattan', 'nyct-bus-queens', 'nyct-bus-si', 'nyct-subway', 'port-authority-pa',
+    'septa', 'translink', 'trimet', 'ttc', 'votran', 'winnipeg',
+  ],
 };
 
 /** Weekend fields a replacement may add. */

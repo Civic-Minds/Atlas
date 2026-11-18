@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planSidecarNoTrip, routeKeyMismatch } from '../historyV2NoTrip.js';
+import { flagsFor, matchedRoutes, planSidecarNoTrip, routeKeyMismatch } from '../historyV2NoTrip.js';
 import { assertReplacementApproved, checkNoTripAddition, checkReplacement } from '../historyV2Replace.js';
 import { buildRouteSnapshots, newBuildReport } from '../historyV2Build.js';
 import { parseHistoryV2Sidecar } from '../../shared/historyV2Reader.js';
@@ -52,6 +52,7 @@ describe('checkNoTripAddition (mode add-noTripPeriods)', () => {
     expect(assertReplacementApproved('CIV-1850', 'ttc')).toBe('add-noTripPeriods');
     expect(() => assertReplacementApproved('CIV-1850', 'stm')).toThrow(/does not cover/);
     expect(assertReplacementApproved('CIV-1430', 'mbta')).toBe('full');
+    expect(assertReplacementApproved('CIV-1862', 'mbta')).toBe('add-noTripPeriods');
   });
 });
 
@@ -87,5 +88,32 @@ describe('routeKeyMismatch (no-hash sidecars)', () => {
     const sc = { routes: { 1: {}, 2: {}, R: {} }, supplementalRoutes: { 'https://x/rail.zip': ['R'] } };
     expect(routeKeyMismatch(sc, new Set(['1', '2']))).toEqual([]);
     expect(routeKeyMismatch(sc, new Set(['1', '3']))).toEqual(['-2', '+3']);
+  });
+});
+
+describe('CIV-1862 per-route match', () => {
+  const rebuilt = (mut: (o: any) => void) => { const o = JSON.parse(pub); mut(o); return JSON.stringify(o); };
+
+  it('an identical rebuild matches every route', () => {
+    expect(matchedRoutes(pub, pub)).toEqual({ matched: new Set(['9', '81', '501']), mismatched: [] });
+  });
+
+  it('a route the rebuild changed is mismatched and loses its flag; the others keep theirs', () => {
+    const m = matchedRoutes(pub, rebuilt(o => { o.routes['501'].rep.p.amPeak = 10; }));
+    expect(m.mismatched).toEqual(['501']);
+    expect([...m.matched].sort()).toEqual(['81', '9']);
+    const plan = planSidecarNoTrip(pub, flagsFor({ 81: ['late'], 501: ['late'] }, m.matched));
+    expect(plan).toMatchObject({ kind: 'add', routes: 1 });
+    if (plan.kind !== 'add') throw new Error('expected add');
+    expect(JSON.parse(plan.body).routes['501'].noTripPeriods).toBeUndefined();
+  });
+
+  it('added weekend fields alone still match', () => {
+    expect(matchedRoutes(pub, rebuilt(o => { o.routes['501'].sat.p = { midday: 30 }; })).mismatched).toEqual([]);
+  });
+
+  it('a top-level difference matches nothing', () => {
+    const m = matchedRoutes(pub, rebuilt(o => { o.refDate = '20191121'; }));
+    expect(m.matched.size).toBe(0);
   });
 });

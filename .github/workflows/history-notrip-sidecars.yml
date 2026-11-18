@@ -14,6 +14,7 @@ on:
   push:
     tags:
       - 'dryrun/civ-1850-*'
+      - 'dryrun/civ-1862-*'
   workflow_dispatch:
     inputs:
       ref:
@@ -35,12 +36,14 @@ on:
           - dry-run
           - write
       ticket:
-        description: 'Write mode: the approval ticket (CIV-1850).'
+        description: 'The approval ticket: CIV-1850 (archived zips) or CIV-1862 (re-downloaded feeds, per-route match). A civ-1862 tag uses CIV-1862.'
         required: false
         default: ''
         type: string
 
 env:
+  # CIV-1862: dispatch with ticket CIV-1862, or a dryrun/civ-1862-* tag, picks the re-download path.
+  TICKET: ${{ inputs.ticket || (startsWith(github.ref_name, 'dryrun/civ-1862-') && 'CIV-1862') || 'CIV-1850' }}
   TZ: America/Toronto
   OUT: tmp/history-notrip
   ATLAS_HISTORY_V2: '1'
@@ -61,12 +64,13 @@ jobs:
       - id: list
         env:
           SLUGS_INPUT: ${{ inputs.slugs }}
+          LIST_TICKET: ${{ inputs.ticket || (startsWith(github.ref_name, 'dryrun/civ-1862-') && 'CIV-1862') || 'CIV-1850' }}
         run: |
           if [ -n "$SLUGS_INPUT" ]; then
             for s in $SLUGS_INPUT; do [[ "$s" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "bad slug: $s"; exit 1; }; done
             list=$(printf '%s\n' $SLUGS_INPUT | jq -R . | jq -sc .)
           else
-            list=$(node -e "const s=require('fs').readFileSync('pipeline/historyV2Replace.ts','utf8');const m=s.match(/'CIV-1850': \[([^\]]*)\]/);console.log(JSON.stringify([...m[1].matchAll(/'([a-z0-9-]+)'/g)].map(x=>x[1])))")
+            list=$(node -e "const s=require('fs').readFileSync('pipeline/historyV2Replace.ts','utf8');const m=s.match(new RegExp(\"'\"+process.env.LIST_TICKET+\"': \\\\[([^\\\\]]*)\\\\]\"));console.log(JSON.stringify([...m[1].matchAll(/'([a-z0-9-]+)'/g)].map(x=>x[1])))")
           fi
           echo "list=$list" >> "$GITHUB_OUTPUT"
           echo "$list"
@@ -108,15 +112,32 @@ jobs:
         run: |
           zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
           [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
-      - name: Plan (dry run)
+      - name: Plan (dry run, CIV-1850 archived zips)
+        if: env.TICKET == 'CIV-1850'
         run: |
           set -o pipefail
           mkdir -p "$OUT"
           npx tsx pipeline/history-v2-notrip-backfill.ts --slug "$SLUG" --out "$OUT" 2>&1 | tee "$OUT/$SLUG.log"
+      # CIV-1862: fetch each period's feed (archive, then the agency's own archive), rebuild it pinned at the published
+      # date, and add the flag only on routes the rebuild reproduces exactly. Supplemental feeds are left out
+      # (--bus-only), so their routes never match and never get the flag.
+      - name: Plan (dry run, CIV-1862 re-downloaded feeds, per-route match)
+        if: env.TICKET == 'CIV-1862'
+        env:
+          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ matrix.slug }}
+        run: |
+          set -o pipefail
+          mkdir -p "$OUT"
+          npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT/fetch" 2>&1 | tee "$OUT/$SLUG-fetch.log"
+          bus=(); node -e "const a=require('./public/data/index.json').agencies.find(a=>a.slug===process.env.SLUG);process.exit(a&&a.supplementalFeedUrls&&a.supplementalFeedUrls.length?0:1)" && bus=(--bus-only)
+          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/fetch/zips" --out-dir "$OUT/rebuilt" --pin-from "$OUT/fetch/published" --notrip-out "$OUT" "${bus[@]}" > "$OUT/$SLUG.log" 2>&1 || { tail -50 "$OUT/$SLUG.log"; exit 1; }
+          grep -E "no-trips|No-trips plan|NOT PINNABLE|FAILED" "$OUT/$SLUG.log" || true
+          node -e "const r=require('./$OUT/'+process.env.SLUG+'-notrip-report.json');const t=r.totals;console.log(['### '+r.slug+' (CIV-1862 dry run)','- Periods published: '+t.periodsPublished+'; read: '+t.periodsRead+'; to add the flag: '+t.periodsToAdd,'- Route records: '+t.routeRecords+'; matching exactly: '+t.routesMatched,'- Routes flagged: '+t.routesFlagged+'; flagged but skipped as mismatched: '+t.flaggedButMismatched+'; disagree: '+t.disagree,''].join('\\n'))" > "$OUT/$SLUG-summary.md" || true
       - name: Upload plan with the add-only check (dry run, read-only)
         run: |
           set -o pipefail
-          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/full-rebuild" --replace-approved CIV-1850 2>&1 | tee "$OUT/$SLUG-upload-plan.txt" || true
+          [ -d "$OUT/full-rebuild" ] || { echo "nothing planned"; exit 0; }
+          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/full-rebuild" --replace-approved "$TICKET" 2>&1 | tee "$OUT/$SLUG-upload-plan.txt" || true
       - name: Summary
         if: always()
         run: cat "$OUT/$SLUG-summary.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true

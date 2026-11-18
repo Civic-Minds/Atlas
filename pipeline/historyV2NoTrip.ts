@@ -10,6 +10,7 @@
  */
 import type { PeriodKey } from '../shared/config.js';
 import { checkNoTripAddition } from './historyV2Replace.js';
+import { diffPeriod } from './history-v2-diff.js';
 
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -62,4 +63,26 @@ export function routeKeyMismatch(published: Obj, readKeys: ReadonlySet<string>):
   for (const k of pub) if (!readKeys.has(k)) out.push(`-${k}`);
   for (const k of readKeys) if (!pub.has(k) && !supp.has(k)) out.push(`+${k}`);
   return out.slice(0, 6);
+}
+
+/**
+ * CIV-1862 (manager, 2026-11-18: per-route match): which published routes a pinned rebuild reproduces exactly, by the
+ * same comparison history-v2-diff.ts uses (diffPeriod: added weekend p / t / tp aside). A top-level difference, or
+ * bytes that differ with no field listed (key order, number format), matches nothing. Routes the rebuild changed are
+ * returned as mismatched and get no flag; the published numbers are never changed.
+ */
+export function matchedRoutes(publishedBody: string, rebuiltBody: string): { matched: Set<string>; mismatched: string[]; reason?: string } {
+  const published = JSON.parse(publishedBody) as Obj;
+  const all = Object.keys(isObj(published.routes) ? published.routes : {});
+  const d = diffPeriod('', publishedBody, rebuiltBody);
+  if (d.status === 'identical' || d.status === 'weekend-only') return { matched: new Set(all), mismatched: [] };
+  const changes = d.changes ?? {};
+  if (!Object.keys(changes).length || changes['']) return { matched: new Set(), mismatched: all, reason: d.reason ?? 'top-level fields differ' };
+  const bad = new Set(Object.keys(changes));
+  return { matched: new Set(all.filter(k => !bad.has(k))), mismatched: [...bad].sort() };
+}
+
+/** Keep only the flags of the given routes. */
+export function flagsFor(flags: Readonly<Record<string, readonly PeriodKey[]>>, routes: ReadonlySet<string>): Record<string, readonly PeriodKey[]> {
+  return Object.fromEntries(Object.entries(flags).filter(([k]) => routes.has(k)));
 }
