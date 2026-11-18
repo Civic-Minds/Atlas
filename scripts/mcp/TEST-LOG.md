@@ -26,6 +26,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
 | 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
 | 0.11.0 | 2026-11-18 | Live tools cover every agency Live records: each answer states the agency's limits (days kept, routes covered, earliest date figures can appear); figures switch on by themselves once a route has 4 good days in a week (CIV-1860) |
+| 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
 
 ## Questions
 
@@ -343,4 +344,11 @@ The pilot Worker on workers.dev (free plan), reached through a tester's private 
 
 - **Both runs:** no invented figures. Kingston route 2, Kingston bunching and Hamilton's B-Line were answered as "no figures yet", with the days kept (Kingston Nov 16–18, Hamilton Nov 18) and the 4-good-day rule. The TTC 29 and OC Transpo answers said what isn't recorded; the TTC streetcar answers were unchanged (510 late most often at 16.4%, 504 worst spaced at 39.9%).
 - **Fixed after the round:** the normal run guessed when figures would start and put Hamilton's at Nov 21, two days early. The limits now give the earliest date themselves (the first full days after recording began, built the next morning).
+
+## 2026-11-18: shared calculations (CIV-1864, 0.11.1), golden comparison
+
+No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with GOLDEN_EXTRA, which now also covers route lookup by name, routes_near, trip_time, buses_needed, combined_frequency, Kingston's changes and the Live tools), run against the disk store and the split store before and after each commit, with Live read from a fixed folder. Files: `_reports/mcp-tests/civ-1864/`.
+
+- **Changed on purpose:** routes_near's default radius, 250 m to the map's 500 m (2 answers: Bathurst and Bloor, Union Station gain nearby stops and routes); the Live tools' source line now says past service, not how the route is running right now.
+- **Unchanged:** every other answer, after each of the other steps (buses_needed through Studio's groupAtTarget, one protocol and file-reading helper for both servers, nearby stops and period trips from shared code, the shared route match, the shared schedule-change pairing, the tool-code split). The hosted Worker bundles to 80 KB gzipped.
 
