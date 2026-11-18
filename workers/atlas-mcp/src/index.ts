@@ -10,6 +10,7 @@ import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { linkToken } from './linkToken';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
@@ -35,7 +36,29 @@ async function sameSecret(a: string, b: string): Promise<boolean> {
 let activeRelease: { id: string; checkedAt: number } | null = null;
 
 /** Test deployments only (wrangler.pilot-test.jsonc): the split files ship inside the Worker as static assets, for a first test with nothing uploaded to R2. */
-type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string };
+type TestEnv = Env & { ASSETS?: Fetcher; DATA_FROM_ASSETS?: string; MCP_LIVE?: R2Bucket };
+
+/**
+ * The Live tools read the private bucket (CIV-1860; scripts/mcp/releaseLivePrivate.ts writes it daily), with a short
+ * per-isolate cache so a conversation's calls don't re-read the same few-KB files. Without the binding they read Live's
+ * public TTC files instead.
+ */
+const LIVE_TTL_MS = 5 * 60_000;
+let liveBucket: R2Bucket | undefined;
+const liveCache = new Map<string, { at: number; value: unknown }>();
+function useLiveBucket(env: TestEnv): void {
+  if (!env.MCP_LIVE || env.MCP_LIVE === liveBucket) return;
+  liveBucket = env.MCP_LIVE;
+  liveCache.clear();
+  useLiveReader(splitLiveReader(async key => {
+    const hit = liveCache.get(key);
+    if (hit && Date.now() - hit.at < LIVE_TTL_MS) return hit.value;
+    const obj = await liveBucket!.get(key);
+    const value = obj ? await obj.json() : null;
+    liveCache.set(key, { at: Date.now(), value });
+    return value;
+  }));
+}
 
 async function useCurrentRelease(env: TestEnv): Promise<string> {
   if (env.ASSETS && env.DATA_FROM_ASSETS) {
@@ -107,7 +130,7 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
       return rpcResult(id, { protocolVersion: PROTOCOL_VERSIONS.includes(params?.protocolVersion ?? '') ? params?.protocolVersion : PROTOCOL_VERSIONS[0], capabilities: { tools: {} }, serverInfo: SERVER, instructions: INSTRUCTIONS });
     case 'ping': return rpcResult(id, {});
     case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers && served(t.name, env)) });
-    case 'tools/call': return callTool(id, params ?? {}, env, ctx, tester);
+    case 'tools/call': useLiveBucket(env); return callTool(id, params ?? {}, env, ctx, tester);
     default: return rpcError(id, -32601, `Method not found: ${method}`);
   }
 }
