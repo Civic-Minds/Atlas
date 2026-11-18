@@ -50,10 +50,22 @@ const TOOL_LIST = [
  * assistant fills it, it isn't guaranteed, and the tools ignore it; the hosted server logs it to improve Atlas.
  */
 const QUESTION = { type: 'string', description: "Optional: the person's question, as you understood it. Used only to improve Atlas; leave it out if unsure." };
-export const TOOLS = TOOL_LIST.map(t => ({ ...t, inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
+/**
+ * Each tool's human-readable title, for the annotations directories ask for (CIV-1854: Claude's and ChatGPT's directories
+ * and Microsoft's connector gallery want a title and readOnlyHint on every tool).
+ */
+const TITLES: Record<string, string> = {
+  list_agencies: 'Find agencies', rank_agencies: 'Rank agencies by frequent routes', route_frequency: 'How often a route runs',
+  routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place',
+  route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
+  trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
+};
+/** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
+const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
+export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.7.0';
+export const SERVER_VERSION = '0.8.0';
 
 export type Args = Record<string, unknown>;
 
