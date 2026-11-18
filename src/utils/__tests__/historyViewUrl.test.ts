@@ -16,9 +16,9 @@ describe('History view in the link (map params h, p)', () => {
     expect(parseHistoryView('?h=-3&p=brunch', at(17))).toEqual({ maxHeadway: Infinity, period: 'pmPeak', day: 'Weekday' });
   });
 
-  it('writes h and p always, so the map reads neither as its own default', () => {
-    expect(encodeHistoryView({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' })).toEqual({ h: 'all', p: 'midday' });
-    expect(encodeHistoryView({ maxHeadway: 60, period: 'pmPeak', day: 'Weekday' })).toEqual({ h: '60', p: 'pmPeak' });
+  it('writes h and p always (picker off), so the map reads neither as its own default', () => {
+    expect(encodeHistoryView({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' }, false)).toEqual({ h: 'all', p: 'midday' });
+    expect(encodeHistoryView({ maxHeadway: 60, period: 'pmPeak', day: 'Weekday' }, false)).toEqual({ h: '60', p: 'pmPeak' });
   });
 
   it('round-trips', () => {

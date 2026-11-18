@@ -19,9 +19,6 @@ export const LIVE_ENABLED = envFlag('VITE_LIVE_ENABLED');
 // delay stay behind VITE_LIVE_ENABLED and the local-only endpoints (#867).
 export const LIVE_REPORTS_ENABLED = envFlag('VITE_LIVE_REPORTS_ENABLED');
 export const HISTORY_ENABLED = envFlag('VITE_HISTORY_ENABLED');
-// CIV-1425: History's Weekday/Saturday/Sunday picker. Off everywhere (beta included) until it is set;
-// only meaningful where History itself is on.
-export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && envFlag('VITE_HISTORY_DAY_PICKER_ENABLED');
 // Click-to-flag a specific value on a card (frequency, route name, etc.) to report it directly,
 // no typing required. New/unproven interaction -- beta only until it's been used for real.
 export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABLED');
@@ -47,6 +44,9 @@ export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
 export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// CIV-1425 / CIV-1646: History's Weekday/Saturday/Sunday picker. On in beta and dev (Boston's weekend values are
+// built); public stays off until Ryan turns it on, which the env var still does anywhere. Needs History on too.
+export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev' || envFlag('VITE_HISTORY_DAY_PICKER_ENABLED'));
 // Shared links and shared map images carry utm tags so analytics can count shared visits.
 // Beta-only until it's been seen working end to end.
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
