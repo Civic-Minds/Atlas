@@ -211,6 +211,25 @@ export function sameNameRoutes(agency: CatalogAgency & { file: string }, day: Da
     .map(o => ({ route: o.name, mode: o.mode, service: serviceSpan(o) }));
 }
 
+/**
+ * Routes by their hours on a day: those whose last trip leaves before `endsBefore`, or whose first leaves after
+ * `startsAfter` (minutes; the last trip of the night after midnight counts as 24:00 and later). Each with its first and last trips.
+ */
+export function routesByHours(agency: CatalogAgency & { file: string }, day: DayType, endsBefore: number | null, startsAfter: number | null) {
+  const out: Array<{ route: string; name: string | null; first: string | null; last: string | null }> = [];
+  for (const r of routesOn(agency, day)) {
+    const runs = routeRuns(r.rows as never, undefined);
+    if (!runs) continue;
+    const first = runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null);
+    const last = runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null);
+    if (endsBefore != null && !(last != null && last < endsBefore)) continue;
+    if (startsAfter != null && !(first != null && first > startsAfter)) continue;
+    const span = serviceSpan(r);
+    out.push({ route: r.name, name: r.longName, first: span?.first ?? null, last: span?.last ?? null });
+  }
+  return out.sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name));
+}
+
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export function routesMeeting(agency: CatalogAgency & { file: string }, day: DayType, period: PeriodKey, every: number) {
   const all = routesOn(agency, day);
@@ -292,8 +311,12 @@ export function feedFile(slug: string): string | null {
   const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
   const dir = join(root, slug);
   if (!existsSync(dir)) return null;
-  const zips = readdirSync(dir).filter(n => n.endsWith('.zip')).sort();
-  return zips.length ? join(dir, zips.sort((a, b) => statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs)[zips.length - 1]) : null;
+  // Files are named by the date their service runs to (20271008-fresh.zip): the latest date is the newest schedule.
+  // A copy made later can have a newer modified time than a newer schedule (Kingston), so the name decides, then the time.
+  const dateOf = (n: string) => /^(\d{8})/.exec(n)?.[1] ?? '';
+  const zips = readdirSync(dir).filter(n => n.endsWith('.zip'))
+    .sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs);
+  return zips.length ? join(dir, zips[zips.length - 1]) : null;
 }
 
 /**
