@@ -2,7 +2,7 @@ import PageShell from './components/ui/PageShell';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { ATLAS_INTRO_TEXT, RESEARCHERS_COPY } from './content/noticeCopy';
-import FeatureCard, { featureCardAsset } from './components/FeatureCard';
+import FeatureCard, { featureCardAsset, featureCardColours } from './components/FeatureCard';
 import RequestDemoCard from './components/RequestDemoCard';
 import { DataSourceSection, PageHero } from './components/FeaturePageSections';
 
@@ -19,7 +19,8 @@ const { cards } = RESEARCHERS_COPY;
 
 export default function ResearchersPage() {
   const tiers = useHeadwayTiers();
-  const color = (i: number) => tiers[i % tiers.length].color;
+  // CIV-1873: built cards take the frequency tints in order, a Beta card the one grey (featureCardColours).
+  const [cHistory, cCompare, cCite, cDemo] = featureCardColours(tiers, [!!cards.history.beta, false, false, false]);
   return (
     <PageShell variant="wide">
 
@@ -27,13 +28,13 @@ export default function ResearchersPage() {
 
       <div className="grid gap-5 py-16 sm:py-20">
         {/* History is beta only (FEATURES.history); no picture yet. */}
-        <FeatureCard title={cards.history.title} color={color(0)} picture={null} beta={cards.history.beta}>
+        <FeatureCard title={cards.history.title} color={cHistory} picture={null} beta={cards.history.beta}>
           <p>{cards.history.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.compareCities.title} color={color(1)} picture={featureCardAsset('card-compare')} flip>
+        <FeatureCard title={cards.compareCities.title} color={cCompare} picture={featureCardAsset('card-compare')} flip>
           <p>{cards.compareCities.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.cite.title} color={color(2)} picture={featureCardAsset('card-cite')}>
+        <FeatureCard title={cards.cite.title} color={cCite} picture={featureCardAsset('card-cite')}>
           <p>{cards.cite.text}</p>
         </FeatureCard>
       </div>
@@ -42,7 +43,7 @@ export default function ResearchersPage() {
 
       {/* Ryan, 2026-11-16 (CIV-1709): the page ends with the shared Request a demo card, the same as Planners. */}
       <div className="pb-16 sm:pb-20">
-        <RequestDemoCard color={color(4)} text={RESEARCHERS_COPY.demo} />
+        <RequestDemoCard color={cDemo} text={RESEARCHERS_COPY.demo} flip />
       </div>
 
     </PageShell>
