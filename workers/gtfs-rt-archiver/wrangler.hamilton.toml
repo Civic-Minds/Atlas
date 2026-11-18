@@ -10,5 +10,10 @@ ARCHIVE_SHARD = "hamilton"
 binding = "BUCKET"
 bucket_name = "atlas-live"
 
+# Hamilton (HSR) recorded every minute again from 2026-11-18 (Ryan). Writes positions/hamilton/ and hamilton/ in atlas-live,
+# kept 30 days by the bucket-wide lifecycle rule.
+[triggers]
+crons = ["* * * * *"]
+
 [observability]
 enabled = true
