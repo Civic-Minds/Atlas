@@ -39,7 +39,7 @@ claude mcp add -s user atlas-studio -- /opt/homebrew/bin/node /Users/ryan/Develo
 | `compare_agencies` | For several agencies, how many routes run every N minutes or better in a period |
 | `routes_near` | Routes that stop near a corner, station or stop, with the stops they use there |
 | `route_history` | How a route's frequency changed over the years, from Atlas's History data |
-| `buses_needed` | Buses needed for a route in a period, by Atlas Studio's own calculation (now, and at a target frequency) |
+| `buses_needed` | Buses needed for a route in a period, from Studio's buses-needed file (now, and every 10/15/20/30/60) |
 | `trip_time` | Scheduled trip time between two stops, per route, by the hour the trip leaves |
 | `combined_frequency` | Every route between two stops, and how often a trip leaves on any of them combined |
 | `schedule_changes` | Frequency changes between two schedules, where Studio has built the comparison |
@@ -54,7 +54,7 @@ The standing test questions and every run's results: [TEST-LOG.md](TEST-LOG.md).
 - **Trip times and combined frequency.** The agency's schedule file that Atlas processed (`Atlas-worktrees/_feeds/<slug>/`, newest; `ATLAS_MCP_FEEDS_DIR` overrides). It is read the way processing reads it (`pipeline/stopToStop.ts`): same week, same services, near-duplicate trips dropped, same representative weekday. Trip times are summarized with the running-time rules (`runningTimeSummary`). Combined frequency uses the stop-pool rule the map uses at a stop (`pooledReadingInWindow`).
 - **Agency index.** `rank_agencies` reads `_mcp-index.json` next to the route files: every route's wait per period and day type, made with the same functions. Rebuild it after the release cache changes: `nice -n 15 npx tsx scripts/mcp/buildIndex.ts`.
 - **History.** `route_history` reads Atlas's published History data, kept on this Mac at `tmp/history-cache/history-config.json` (the same file the History screen loads), with History's own snapshot rules.
-- **Buses needed.** `buses_needed` runs Studio's `scripts/vehicles-needed.ts` on the schedule file.
+- **Buses needed.** `buses_needed` reads Studio's buses-needed file (`tmp/studio/<slug>-vehicles.json`, the one Studio's page reads). It never runs the calculation, which takes minutes on a large agency. Where an agency has no file, it says so and gives the command that builds one: `nice -n 15 npx tsx scripts/vehicles-needed.ts <feed.zip> --slug <slug> --json tmp/studio/<slug>-vehicles.json`. Run one at a time. Targets are the public scale only (10, 15, 20, 30, 60), with the schedule's own layover.
 - **Testing.** The Data chat runs the standing questions itself in fresh headless chats and logs the results in [TEST-LOG.md](TEST-LOG.md).
 - **Public agencies only.** It answers only for agencies in `public/data/catalog-public.json`.
 - **Schedule changes.** These come from Studio's comparison files (`tmp/studio/<slug>-before-after.json`), ranked by the shared rule (`shared/frequencyChange.ts`).
