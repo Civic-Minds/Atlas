@@ -51,3 +51,24 @@ export const publishedLiveReader: LiveReader = {
 let reader: LiveReader = publishedLiveReader;
 export function useLiveReader(r: LiveReader): void { reader = r; cache.clear(); }
 export const liveReader = () => reader;
+
+/** Where the release's MCP folder keeps the Live files (CIV-1860): written by releaseMcpFiles.ts, read by splitLiveReader. */
+export const liveSplitPaths = {
+  manifest: (slug: string) => `live/${slug}/manifest.json`,
+  ranking: (slug: string) => `live/${slug}/ranking.json`,
+  route: (slug: string, route: string) => `live/${slug}/routes/${encodeURIComponent(route)}.json`,
+};
+
+/** The slim ranking kept in the release: the route rows a ranking answer reads, from Live's agency.json. */
+export function slimRanking(summary: AgencySummary): LiveRanking {
+  return { generatedAt: summary.generatedAt, covered: summary.covered, held: summary.held, routes: summary.routes.map(r => ({ route: r.route, titleLabel: r.titleLabel, lateShare: r.lateShare, lateN: r.lateN, lateLastWeek: r.lateLastWeek, bunchingShare: r.bunchingShare, bunchedShare: r.bunchedShare, gappedShare: r.gappedShare, deliveredShare: r.deliveredShare })) };
+}
+
+/** Reads the ready-made Live files in a release's MCP folder (a few KB each), for the hosted Worker's CPU budget. */
+export function splitLiveReader(read: (path: string) => Promise<unknown | null>): LiveReader {
+  return {
+    manifest: async slug => (await read(liveSplitPaths.manifest(slug))) as LiveManifest | null,
+    ranking: async slug => (await read(liveSplitPaths.ranking(slug))) as LiveRanking | null,
+    route: async (slug, route) => (await read(liveSplitPaths.route(slug, route))) as LiveReliabilityFile | null,
+  };
+}

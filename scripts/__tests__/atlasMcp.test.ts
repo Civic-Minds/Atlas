@@ -125,3 +125,18 @@ describe('Live tools (CIV-1860)', () => {
     await expect(handlers.route_reliability({ agency: 'TTC', route: '504', period: 'Noonish' })).rejects.toThrow(/Part of the day/);
   });
 });
+
+describe('Live files in the release folder (CIV-1860)', () => {
+  it('reads the slim files the release step writes, at the same paths', async () => {
+    const { splitLiveReader, liveSplitPaths, useLiveReader, publishedLiveReader } = await import('../mcp/liveData');
+    const { handlers } = await import('../mcp/tools');
+    const files = new Map<string, unknown>([
+      [liveSplitPaths.manifest('ttc'), { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504'] }],
+      [liveSplitPaths.ranking('ttc'), { generatedAt: 'x', covered: ['504'], held: [], routes: [{ route: '504', titleLabel: '504 King', lateShare: 0.073, lateN: 3377, lateLastWeek: 0.08, bunchingShare: 0.39, bunchedShare: 0.3, gappedShare: 0.09, deliveredShare: 0.989 }] }],
+    ]);
+    useLiveReader(splitLiveReader(async p => files.get(p) ?? null));
+    const r = await handlers.route_reliability({ agency: 'TTC' }) as { routes: Array<{ route: string; lateShare: number }> };
+    expect(r.routes).toEqual([expect.objectContaining({ route: '504', lateShare: 0.073 })]);
+    useLiveReader(publishedLiveReader);
+  });
+});

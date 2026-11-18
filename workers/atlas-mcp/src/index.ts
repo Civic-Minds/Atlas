@@ -7,7 +7,7 @@
  * found through the release pointer the map reads, so it is never staler than the map.
  */
 import * as data from '../../../scripts/mcp/atlasData';
-import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION } from '../../../scripts/mcp/tools';
+import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { linkToken } from './linkToken';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
 
@@ -106,15 +106,18 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
     case 'initialize':
       return rpcResult(id, { protocolVersion: PROTOCOL_VERSIONS.includes(params?.protocolVersion ?? '') ? params?.protocolVersion : PROTOCOL_VERSIONS[0], capabilities: { tools: {} }, serverInfo: SERVER, instructions: INSTRUCTIONS });
     case 'ping': return rpcResult(id, {});
-    case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers) });
+    case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers && served(t.name, env)) });
     case 'tools/call': return callTool(id, params ?? {}, env, ctx, tester);
     default: return rpcError(id, -32601, `Method not found: ${method}`);
   }
 }
 
+/** Live tools stay hidden on the hosted server unless the LIVE_TOOLS var is "on" (CIV-1860: waiting on Ryan's call on showing Live figures to pilot testers). */
+const served = (name: string, env: object) => !LIVE_TOOLS.includes(name) || (env as { LIVE_TOOLS?: string }).LIVE_TOOLS === 'on';
+
 async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: string): Promise<Response> {
   const name = params.name ?? '';
-  const handler = handlers[name];
+  const handler = served(name, env) ? handlers[name] : undefined;
   if (!handler) return rpcError(id, -32602, `Unknown tool ${name}`);
   const { success } = await env.TESTER_LIMIT.limit({ key: tester });
   // Said as a tool result, not a bare HTTP error, so the assistant can tell the person plainly.
