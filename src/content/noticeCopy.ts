@@ -429,7 +429,9 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 }
 // N4 new-schedule (route), N21 new-schedule (agency)
 /** The route card and the agency card word these for what they show (CIV-941). */
-export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route’s new schedule is still being verified.", agency: "This agency’s new schedule is still being verified." } as const;
+/** A new schedule's status note (cards and E2): data-specific, so not a disclaimer (TEXT.md, Words; Ryan, 2026-11-17). */
+const STILL_BEING_VERIFIED = 'is still being verified';
+export const NEW_SCHEDULE_DATA_NOTICE = { route: `This route’s new schedule ${STILL_BEING_VERIFIED}.`, agency: `This agency’s new schedule ${STILL_BEING_VERIFIED}.` } as const;
 // N5 corrected (route), N22 corrected (agency)
 export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route’s schedule.", agency: "We corrected an error in this agency’s schedule." } as const;
 // N23 routes-outside-show
@@ -692,9 +694,9 @@ export function listingEndedPanelLead(agencyName: string, date: string, ended: b
   const { primary } = agencyNames(agencyName).card;
   return `${agencyPossessiveSentenceStart(primary)} scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
 }
-// E2: the date is the day the schedule went on the map.
+// E2 (Ryan, CIV-1814 item 5, 2026-11-17): the day Atlas added the schedule, as on agency pages, and the cards' status note.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
-  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven’t found yet.`;
+  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule was added${onMapOn ? ` on ${onMapOn}` : ''}, and ${STILL_BEING_VERIFIED}.`;
 // E4
 export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencySentenceStart(agencyNames(agencyName).card.primary));
 // E5
