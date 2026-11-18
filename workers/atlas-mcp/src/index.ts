@@ -8,6 +8,7 @@
  */
 import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION } from '../../../scripts/mcp/tools';
+import { linkToken } from './linkToken';
 import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
 
 const MAX_BODY_BYTES = 64 * 1024;
@@ -179,15 +180,15 @@ export default {
     try {
       if (url.pathname === '/health') return json({ ok: true });
       if (url.pathname.startsWith('/admin/')) return await handleAdmin(request, env, url);
-      const m = /^\/t\/([A-Za-z0-9_-]{20,128})\/mcp\/?$/.exec(url.pathname);
-      if (m) {
-        const tester = await testerFor(m[1], env);
+      const token = linkToken(request, url);
+      if (token !== undefined) {
+        const tester = token ? await testerFor(token, env) : null;
         if (!tester) return json({ error: 'This link is not valid.' }, 401);
         return await handleMcp(request, env, ctx, tester);
       }
       return json({ error: 'Not found' }, 404);
     } catch (e) {
-      // The path of a tester's link holds their token, so it is never logged.
+      // A tester's link holds their token (in the path or the query), so neither is logged.
       console.error(JSON.stringify({ error: e instanceof Error ? e.message : String(e), path: url.pathname.replace(/^\/t\/[^/]+/, '/t/…') }));
       return json({ error: 'Something went wrong on our side.' }, 500);
     }
