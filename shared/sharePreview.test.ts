@@ -113,19 +113,26 @@ describe('shareCityForQuery', () => {
 });
 
 describe('sharePreviewHtml', () => {
-  it("shows the city's picture and links back to the same spot", () => {
+  // Attribute values escape the & between the two numbers.
+  const SPOT_IMAGE = `${SITE_URL}/api/share-image?lat=41.880&amp;lon=-87.630`;
+  it('shows the picture drawn for the exact spot and links back to the same spot (CIV-1393)', () => {
     const html = sharePreviewHtml({ search: '?lat=41.88&lon=-87.63&z=12&route=a"b', mode: 'public' });
-    expect(html).toContain(`<meta property="og:image" content="${SITE_URL}/assets/share/chicago.jpg" />`);
-    expect(html).toContain(`<meta name="twitter:image" content="${SITE_URL}/assets/share/chicago.jpg" />`);
-    expect(html).toContain('<meta property="og:image:type" content="image/jpeg" />');
+    expect(html).toContain(`<meta property="og:image" content="${SPOT_IMAGE}" />`);
+    expect(html).toContain(`<meta name="twitter:image" content="${SPOT_IMAGE}" />`);
+    expect(html).toContain('<meta property="og:image:type" content="image/png" />');
     expect(html).toContain(`<meta property="og:url" content="${SITE_URL}/?lat=41.88&amp;lon=-87.63&amp;z=12&amp;route=a%22b" />`);
     expect(html).toContain(`<title>${resolveSeo('/', { mode: 'public', flags: {} }).title}</title>`);
     expect(html).not.toContain('"b"');
   });
 
-  it('falls back to the default picture away from every city', () => {
-    const html = sharePreviewHtml({ search: '?lat=30&lon=-40', mode: 'public' });
-    expect(html).toContain(`${SITE_URL}${DEFAULT_SHARE_IMAGE.path}`);
+  it('rounds the spot so one place has one picture, and lets a location beat an area', () => {
+    const html = sharePreviewHtml({ search: '?lat=41.88049&lon=-87.63049&area=toronto', mode: 'public' });
+    expect(html).toContain(`content="${SPOT_IMAGE}"`);
+  });
+
+  it('keeps the city picture for an area-only link, and the default picture for a link with no place', () => {
+    expect(sharePreviewHtml({ search: '?area=chicago', mode: 'public' })).toContain(`${SITE_URL}/assets/share/chicago.jpg`);
+    expect(sharePreviewHtml({ search: '?lat=abc&lon=-87', mode: 'public' })).toContain(`${SITE_URL}${DEFAULT_SHARE_IMAGE.path}`);
   });
 
   it('tags staging builds, like their pages', () => {

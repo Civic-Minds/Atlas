@@ -13,6 +13,9 @@ export const TIER_COLOURS = ['#22863a', '#3da44d', '#f59e0b', '#e07b2a', '#92400
  */
 export const COLOR_VISION_TIER_COLOURS = ['#0072b2', '#009e73', '#56b4e9', '#e69f00', '#cc79a7', '#4d4d4d'] as const;
 
+/** The plain page colour (src/styles/index.css --bg-app, light theme; a test keeps them equal): the background of a drawn link-preview image (CIV-1393). */
+export const PAGE_BACKGROUND = '#f0f0f0';
+
 /** A colour for a value no palette covers (an unknown tier, a missing CSS variable). */
 export const FALLBACK_GREY = '#9ca3af';
 

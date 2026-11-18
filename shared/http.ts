@@ -1,7 +1,7 @@
 export type ApiResponse = {
   statusCode: number;
   setHeader(name: string, value: string): void;
-  end(body?: string): void;
+  end(body?: string | Uint8Array): void;
 };
 
 export function jsonResponse(
