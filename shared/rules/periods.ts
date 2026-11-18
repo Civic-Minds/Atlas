@@ -90,13 +90,10 @@ export const HEADLINE_WINDOWS = {
 } as const;
 
 /**
- * Two night windows, kept apart because they disagree (rules audit section 5, item 1; a decision for Ryan, not this
- * move). The Night Service gap check reads GTFS hour 26 (2am) to hour 30 (6am): the core overnight network after daytime
- * routes wind down, which matches Toronto's 300-series night network and avoids requiring night routes to cover the
- * midnight-to-2am handoff. The stretch fields (D7) read 2-5am, GTFS 26:00 to 29:00.
+ * The night window: 2-5am, GTFS 26:00 to 29:00 (FREQUENCY_RULES rule 10). Night Service and the Overnight period read
+ * it through the stretch fields (D7). The old 2-6am window was read by nothing but the cross-midnight fold, which only
+ * checks that a window ends after midnight, so it is gone (CIV-1812 item 1).
  */
-export const NIGHT_SERVICE_WINDOW_START_MIN = 26 * 60;
-export const NIGHT_SERVICE_WINDOW_END_MIN = 30 * 60;
 export const STRETCH_NIGHT_START_MIN = 26 * 60;
 export const STRETCH_NIGHT_END_MIN = 29 * 60;
 
