@@ -9,7 +9,8 @@ vi.mock('../../shared/config', async (importOriginal) => {
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioRouteTable, smallChangeParts } = await import('../StudioChangesPage');
+const { StudioRouteTable, periodFigure, smallChangeParts } = await import('../StudioChangesPage');
+const { STUDIO_CHANGES_TEXT } = await import('../../shared/studioWording');
 const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../StudioPage');
 
 const day = (headway: Record<string, number>, trips: number, first: number | null, last: number, runs: number[]) =>
@@ -100,7 +101,8 @@ describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-17
 describe('Studio map page (CIV-1731)', () => {
   it('groups the changes as the page did: frequency or trips, first or last trip, removed, small', () => {
     expect(changeGroups(FILE).map(g => [g.title, g.routes.map(c => c.route)])).toEqual([
-      ['Frequency or Trips Changed', ['10', '12']],
+      // CIV-1814 item 38: by the biggest move in grades, a start (12's AM peak) above 10's one-grade moves.
+      ['Frequency or Trips Changed', ['12', '10']],
       ['First or Last Trip or Trip Time Changed', ['2']],
       ['Route Removed', ['7B']],
       ['Small Changes', ['1']],
@@ -119,10 +121,18 @@ describe('Studio map page (CIV-1731)', () => {
     expect(periodChange(d({ evening: 30 }), d({}), 'evening')).toBe('less');
   });
 
-  it('shows the time of day\'s figure, older → newer where it changed', () => {
-    expect(rowFigure(change('10'), 'midday')).toBe('60 min → 30 min');
-    expect(rowFigure(change('10'), 'amPeak')).toBe('30 min');
-    expect(rowFigure(change('7B'), 'evening')).toBe('96 min → —');
+  it('shows the figure that changed, older and newer in their own columns (CIV-1806)', () => {
+    // The time of day's frequency where it changed, or where the route was removed: no name, the date columns say it.
+    expect(rowFigure(change('10'), 'midday')).toEqual({ label: null, before: '60 min', after: '30 min' });
+    expect(rowFigure(change('7B'), 'evening')).toEqual({ label: null, before: '96 min', after: '—' });
+    // A removed route with no figure at this time of day shows the time of day it ran, named.
+    expect(rowFigure(change('7B'), 'midday')).toEqual({ label: 'Evening', before: '96 min', after: '—' });
+    // Unchanged at this time of day: the figure that did change, named, never the unchanged one.
+    expect(rowFigure(change('10'), 'amPeak')).toEqual({ label: 'Midday', before: '60 min', after: '30 min' });
+    // A first or last trip or trip time row shows that figure, not the frequency.
+    const hours = rowFigure(change('2'), 'midday');
+    expect(hours.label).toMatch(/^(First trip|Last trip|Trip time)$/);
+    expect(hours.before).not.toBe(hours.after);
   });
 
   it('draws newer shapes, a removed route\'s older one dashed, and the picked route\'s older shape under it', () => {
@@ -136,5 +146,14 @@ describe('Studio map page (CIV-1731)', () => {
     expect(of('10:before:0')).toMatchObject({ dashed: true, color: CHANGE_COLOR.same });
     expect(of('12:before:0')).toBeUndefined();
     expect(of('801:after:0')!.color).toBe(CHANGE_COLOR.same);
+  });
+
+  it('reads a late start or early end in the route card\'s words, and counts the unchanged routes (CIV-1806)', () => {
+    // HSR 56 on May 27, 2026: midday starts at 10:42 AM, so the map's 102 min reads as the card does.
+    const d = { headway: { midday: 102 }, trips: 20, first: 642, last: 1200, runMinutes: [30], edge: { midday: { from: 642, every: 60 } } };
+    expect(periodFigure(d, 'midday')).toBe('every 60 min from 10:42 AM');
+    expect(periodFigure({ ...d, edge: undefined }, 'midday')).toBe('102 min');
+    expect(STUDIO_CHANGES_TEXT.unchangedCount(25)).toBe('25 other routes didn’t change');
+    expect(STUDIO_CHANGES_TEXT.unchangedCount(1)).toBe('1 other route didn’t change');
   });
 });

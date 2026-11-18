@@ -5,6 +5,7 @@
  * deployment. The input type is structural (a FeedComparison fits it) so nothing here pulls the pipeline into the app.
  */
 import { PERIOD_KEYS, type PeriodKey } from './config';
+import { frequencyChange } from './frequencyChange';
 import type { DayType } from './dayTypes';
 
 /** One route on the compared day, on one side. Minutes after midnight for first/last (past 1440 runs into the night). */
@@ -16,17 +17,21 @@ export interface StudioRouteDay {
   last: number | null;
   /** Midday median run time per direction, whole minutes, lowest first. */
   runMinutes: number[];
+  /** A period's late start or early end, as the route card reads it (CIV-1806); missing in older files. */
+  edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>;
 }
+
+/** A late start (`from`) or early end (`until`) in minutes after midnight, and the frequency where the period runs. */
+export interface StudioPeriodEdge { from?: number; until?: number; every: number }
 
 /**
  * How big a route's change is, which decides where the page puts it:
- * - `frequency`: a period's frequency starts, stops or moves by FREQUENCY_STEP_MIN or more, or the trip count moves by
- *   TRIP_STEP or more (and routes added or removed);
+ * - `frequency`: a period's frequency starts, stops or moves to another grade (frequencyChange, CIV-1814 item 38), or the
+ *   trip count moves by TRIP_STEP or more (and routes added or removed);
  * - `hours`: otherwise, the first or last trip moves by SPAN_STEP_MIN or more, or the trip time by RUN_STEP_MIN or more;
  * - `small`: everything else (a minute or two of span or trip time, a frequency a few minutes off, a trip or two).
  */
 export type StudioChangeSize = 'frequency' | 'hours' | 'small';
-export const FREQUENCY_STEP_MIN = 5;
 export const TRIP_STEP = 3;
 export const SPAN_STEP_MIN = 15;
 export const RUN_STEP_MIN = 5;
@@ -66,7 +71,7 @@ export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-be
 
 // ---- Building the file from a comparison ----
 
-interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number> }
+interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, StudioPeriodEdge>> }
 interface InputRoute { route: string; longName: string | null; days: Partial<Record<DayType, InputDay>> }
 /** The parts of pipeline/feedCompare.ts's FeedComparison this file reads. */
 export interface StudioComparisonInput {
@@ -90,29 +95,40 @@ const slim = (d: InputDay | null | undefined): StudioRouteDay | null => d ? {
   first: d.first,
   last: d.last,
   runMinutes: Object.values(d.runMinutes).map(Math.round).sort((a, b) => a - b),
+  ...(d.edge && Object.keys(d.edge).length ? { edge: d.edge } : {}),
 } : null;
 
 const movedBy = (a: number | null | undefined, b: number | null | undefined, step: number) =>
   (a == null) !== (b == null) || (a != null && b != null && Math.abs(a - b) >= step);
 
-/** Whether a period's frequency starts, stops or moves by FREQUENCY_STEP_MIN or more: these routes lead the page. */
+/**
+ * A route's frequency change across its periods (CIV-1814 item 38, Ryan "1", option a: the one shared rule,
+ * shared/frequencyChange.ts): the biggest move in grades (steps; a start or stop outranks any), and whether any period
+ * moved on the public scale. Null when no period changed grade. Moves inside the hidden 5 and 8 grades count, ranked
+ * below public ones.
+ */
+export function routeFrequencyChange(before: StudioRouteDay | null, after: StudioRouteDay | null): { steps: number; publicChange: boolean } | null {
+  const changes = PERIOD_KEYS.map(k => frequencyChange(before?.headway[k], after?.headway[k])).filter(c => c != null);
+  if (!changes.length) return null;
+  return { steps: Math.max(...changes.map(c => c.steps)), publicChange: changes.some(c => c.publicChange) };
+}
+
+/** Whether a period's frequency starts, stops or moves to another grade: these routes lead the page. */
 export function frequencyMoved(before: StudioRouteDay | null, after: StudioRouteDay | null): boolean {
-  return !!before && !!after && PERIOD_KEYS.some(k => movedBy(before.headway[k], after.headway[k], FREQUENCY_STEP_MIN));
+  return !!before && !!after && routeFrequencyChange(before, after) != null;
 }
 
 /**
- * How one time of day changed on a route, for the Studio map's colours (CIV-1731), by the same step as the page's
- * groups (FREQUENCY_STEP_MIN): `more` (service starts, or comes at least that much more often), `less` (it stops, or comes
- * at least that much less often), `same`, or `none` (no frequency on either side).
+ * How one time of day changed on a route, for the Studio map's colours (CIV-1731), by the same rule as the page's
+ * groups (frequencyChange): `more` (service starts, or moves to a more frequent grade), `less` (it stops, or moves to a
+ * less frequent grade), `same`, or `none` (no frequency on either side).
  */
 export type StudioPeriodChange = 'more' | 'less' | 'same' | 'none';
 export function periodChange(before: StudioRouteDay | null, after: StudioRouteDay | null, period: PeriodKey): StudioPeriodChange {
   const b = before?.headway[period] ?? null, a = after?.headway[period] ?? null;
   if (b == null && a == null) return 'none';
-  if (!movedBy(b, a, FREQUENCY_STEP_MIN)) return 'same';
-  if (b == null) return 'more';
-  if (a == null) return 'less';
-  return a < b ? 'more' : 'less';
+  const c = frequencyChange(b, a);
+  return !c ? 'same' : c.better ? 'more' : 'less';
 }
 
 /** Where a route's change goes on the page (see StudioChangeSize). */

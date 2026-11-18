@@ -8,6 +8,7 @@ import { headwayAmount, headwayEveryRange } from '../shared/headwayText';
 import { clockTime } from '../shared/timeText';
 import { countText } from '../shared/numberText';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { periodEdgeText } from './utils/effectiveHeadway';
 import type { StudioRouteChange, StudioRouteDay } from '../shared/studioBeforeAfter';
 import { STUDIO_CHANGES_TEXT } from '../shared/studioWording';
 
@@ -25,6 +26,15 @@ const T = STUDIO_CHANGES_TEXT;
 const MAIN_PERIODS: PeriodKey[] = ['amPeak', 'midday', 'pmPeak', 'evening'];
 
 const runText = (d: StudioRouteDay | null) => (d?.runMinutes.length ? headwayEveryRange(d.runMinutes[0], d.runMinutes[d.runMinutes.length - 1], true) : MISSING_VALUE);
+/**
+ * A time of day's figure: the route card's own words where the period starts late or ends early ("every 15 min from 10:12
+ * AM", periodEdgeText; CIV-1806), else the map's frequency.
+ */
+export function periodFigure(d: StudioRouteDay | null, k: PeriodKey): string {
+  if (!d) return MISSING_VALUE;
+  const edge = d.edge?.[k];
+  return edge ? periodEdgeText(edge) : headwayAmount(d.headway[k]);
+}
 const clockOrMissing = (m: number | null | undefined) => (m == null ? MISSING_VALUE : clockTime(m));
 
 interface FigureRow { key: string; label: string; before: string; after: string }
@@ -34,7 +44,7 @@ export function routeFigureRows(c: Pick<StudioRouteChange, 'before' | 'after'>):
   const { before: b, after: a } = c;
   const periods = PERIOD_KEYS.filter(k => MAIN_PERIODS.includes(k) || b?.headway[k] != null || a?.headway[k] != null);
   return [
-    ...periods.map(k => ({ key: k, label: PERIOD_LABELS[k], before: b ? headwayAmount(b.headway[k]) : MISSING_VALUE, after: a ? headwayAmount(a.headway[k]) : MISSING_VALUE })),
+    ...periods.map(k => ({ key: k, label: PERIOD_LABELS[k], before: periodFigure(b, k), after: periodFigure(a, k) })),
     { key: 'trips', label: T.trips, before: b ? countText(b.trips) : MISSING_VALUE, after: a ? countText(a.trips) : MISSING_VALUE },
     { key: 'first', label: T.firstTrip, before: clockOrMissing(b?.first), after: clockOrMissing(a?.first) },
     { key: 'last', label: T.lastTrip, before: clockOrMissing(b?.last), after: clockOrMissing(a?.last) },
@@ -50,11 +60,10 @@ export function smallChangeParts(c: StudioRouteChange): string[] {
 
 export const routeTitle = (c: Pick<StudioRouteChange, 'route' | 'name'>) => routeLabels({ shortName: c.route, longName: c.name });
 
-/** A route's before/after table: one row per figure, the after value in bold where it changed. */
+/** A route's before/after table: one row per figure, no bold (Ryan, CIV-1806: bold read as better frequency). */
 export function StudioRouteTable({ change }: { change: StudioRouteChange }) {
   const label = routeTitle(change);
   const rows = routeFigureRows(change);
-  const one = !change.before || !change.after;
   return (
     <div className="min-w-0" data-route={change.route}>
       <SubsectionTitle><RouteTitleName label={label} /></SubsectionTitle>
@@ -67,7 +76,7 @@ export function StudioRouteTable({ change }: { change: StudioRouteChange }) {
           columns={[
             { key: 'label', header: '', rowHeader: true, width: 8, className: 'font-normal', cell: r => r.label },
             ...(change.before ? [{ key: 'before', header: T.before, width: 6.5, cell: (r: FigureRow) => r.before }] : []),
-            ...(change.after ? [{ key: 'after', header: T.after, width: 6.5, cell: (r: FigureRow) => <span className={!one && r.before !== r.after ? 'font-bold' : ''}>{r.after}</span> }] : []),
+            ...(change.after ? [{ key: 'after', header: T.after, width: 6.5, cell: (r: FigureRow) => r.after }] : []),
           ]}
         />
       </PageTable>

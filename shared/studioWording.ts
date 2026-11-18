@@ -30,7 +30,8 @@ export const STUDIO_CHANGES_TEXT = {
   removedTitle: (n: number) => plural(n, 'Route Removed', 'Routes Removed'),
   smallTitle: 'Small Changes',
   smallIntro: 'Frequency or trip time moved by less than 5 min, first or last trip by less than 15 min, or trips by 1 or 2.',
-  unchangedTitle: 'No Change',
+  // Ryan (CIV-1806): "25 other routes didn't change", the agency's own count.
+  unchangedCount: (n: number) => `${n} other ${plural(n, 'route')} didn’t change`,
   before: 'Before',
   after: 'After',
   trips: 'Trips',

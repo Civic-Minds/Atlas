@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { FLOATING_CARD, GLASS_PILL, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_ACTIVE_GLASS, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE, CARD_SECTION, TOP_BAR_OUTLINE, COMPARE_GROUP } from '../../styles';
 import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
@@ -31,6 +31,7 @@ import { capitalizeFirst, headwayAmount, headwayOrBetter } from '../../utils/hea
 import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
+import { topBarChipClass } from '../ui/topBarChip';
 
 
 interface FilterChipsProps {
@@ -303,20 +304,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   // An empty set means no mode restriction, so every mode is active by default.
   const modeIsActive = (id: number) => selectedModes.size === 0 || selectedModes.has(id);
 
-  // CIV-1567 (beta): the selected fill is a layer that fades (a background image cannot ease), and the dot fades too,
-  // so a chip whose value a mode changes cross-fades instead of switching in one frame.
-  const chipClass = (active: boolean) => FEATURES.modeTransitions
-    ? `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors duration-300 ease-out whitespace-nowrap bg-[var(--bg-panel)] before:absolute before:inset-0 before:-z-10 before:rounded-full before:[background-image:linear-gradient(var(--control-active-bg),var(--control-active-bg))] before:transition-opacity before:duration-300 before:ease-out ${
-      active
-        ? 'border-[var(--control-active-border)] text-[var(--control-active-fg)] before:opacity-100'
-        : `${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)] before:opacity-0`
-    }`
-    : `relative h-8 px-3.5 flex items-center justify-center ${GLASS_PILL} border text-xs font-bold transition-colors whitespace-nowrap ${
-      active
-        ? CONTROL_ACTIVE_GLASS
-        : `bg-[var(--bg-panel)] ${TOP_BAR_OUTLINE} text-[var(--text-primary)] hover:text-[var(--accent)]`
-    }`;
-
+  // The top bar's chip, shared with the map apps' menus (topBarChipClass, CIV-1821).
+  const chipClass = topBarChipClass;
 
   const toggle = (id: ChipId) => setOpenChip(c => c === id ? null : id);
 

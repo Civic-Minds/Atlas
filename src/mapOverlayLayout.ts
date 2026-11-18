@@ -86,6 +86,9 @@ export const MAP_COUNTS_PHONE_SLOT = `max-sm:absolute ${R.phoneCounts} ${E.phone
 /** The map key (Settings, "Show map legend"): bottom-left above the footer row; phones one row higher, above the
  *  loading and count pills (CIV-1070: the loading pill covered its last row). */
 export const MAP_LEGEND_SLOT = `absolute ${R.phoneAboveCounts} ${R.aboveFooter} ${E.left}`;
+/** Map apps (Studio, the Live tool; CIV-1821): the sidebar column, at the map's left inset from just under the top bar
+ *  down to the row above the map key and the footer, as the notice pill stops (the key's height is 0 without a key). */
+export const MAP_APP_SIDEBAR_SLOT = `absolute top-3 ${E.left} bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]`;
 /** History's year scrubber: the bottom-right corner beside the controls (the overlap check covers it with the footer). */
 export const MAP_SCRUBBER_SLOT = `absolute ${R.edge} ${E.scrubberRight}`;
 export const MAP_SCRUBBER_WIDTH = 'w-[260px]';

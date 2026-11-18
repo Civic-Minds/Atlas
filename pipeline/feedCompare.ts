@@ -33,6 +33,11 @@ export interface RouteDay {
   last: number | null;
   /** Midday median run time per direction (another period's when the direction has no midday), by direction id. */
   runMinutes: Record<string, number>;
+  /**
+   * A period's late start or early end on the route's main stretch (stretchPeriodEdge), as the route card reads it: "every
+   * 15 min from 10:12 AM" (CIV-1806). Labels only; not compared.
+   */
+  edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
   /** Headsigns drawn, by direction id (labels only). */
   headsigns: Record<string, string[]>;
   /** The route's drawn lines that day, one per distinct pattern shape (for the Studio map; not compared). */
@@ -244,6 +249,14 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
       const v = (p.routeFilterHeadwayByPeriod ?? {})[k] ?? null;
       const cur = day.headway[k];
       day.headway[k] = cur == null ? v : v == null ? cur : Math.min(cur, v);
+    }
+    // The main stretch's edge, as the route card's main-stretch row reads it (rowReadsPeriodEdge): the first one found.
+    if (p.stretchRole === 'main') {
+      for (const k of PERIOD_KEYS) {
+        const e = (p.stretchPeriodEdge ?? {})[k] as { from?: number; until?: number; every: number; stretch?: 'main' | number } | undefined;
+        if (!e || (e.from == null && e.until == null) || (e.stretch !== undefined && e.stretch !== 'main') || day.edge?.[k]) continue;
+        (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every };
+      }
     }
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
     if (span?.first != null) day.first = day.first == null ? span.first : Math.min(day.first, span.first);

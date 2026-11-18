@@ -10,7 +10,7 @@ vi.mock('../../shared/config', async (importOriginal) => {
 });
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
-const { StudioGroupFigures } = await import('../StudioVehiclesPage');
+const { StudioGroupFigures, STUDIO_AGENCIES, studioAgencyFrom } = await import('../StudioVehiclesPage');
 const { groupFor } = await import('../StudioPage');
 
 describe('Studio link in the header (CIV-1694)', () => {
@@ -102,5 +102,14 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     const file = { slug: 'kingston', feed: 'f.zip', referenceDate: '20260917', periods: { midday: GROUPS } };
     expect(groupFor(file, '801', 'midday')!.routes).toEqual(['701', '702', '801', '802']);
     expect(groupFor(file, '801', 'evening')).toBeNull();
+  });
+});
+
+describe('Studio agencies (CIV-1806)', () => {
+  it('opens the agency the address names, when Studio has it, and Kingston otherwise', () => {
+    expect(STUDIO_AGENCIES).toEqual(['kingston', 'hamilton', 'rtd-denver']);
+    expect(studioAgencyFrom('hamilton')).toBe('hamilton');
+    expect(studioAgencyFrom(null)).toBe('kingston');
+    expect(studioAgencyFrom('ttc')).toBe('kingston');
   });
 });
