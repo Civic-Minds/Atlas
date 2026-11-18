@@ -37,7 +37,7 @@ import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
 import { type HistoryView } from './utils/historyYearMap';
-import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
+import { encodeHistoryView, historyDayPickerShown, historyDefaultView, historyEffectiveView, parseHistoryView } from './utils/historyViewUrl';
 import { openingDay, saveDayPref } from './utils/openingDay';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -393,7 +393,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (FEATURES.historyDayPicker && next.day !== historyView.day) saveDayPref(next.day);
     setHistoryView(next);
   }, [historyView.day]);
-  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryViewSavingDay }), [historyView, setHistoryViewSavingDay]);
+  // CIV-1646: an open agency whose History data has no weekend values hides the Day chip and keeps History on Weekday.
+  const [historyOpenAgencyWeekend, setHistoryOpenAgencyWeekend] = useState<boolean | null>(null);
+  const historyDayShown = historyDayPickerShown(historyOpenAgencyWeekend);
+  const historyViewShown = useMemo(() => historyEffectiveView(historyView, historyDayShown), [historyView, historyDayShown]);
+  const historyViewControl = useMemo(() => ({ view: historyViewShown, setView: setHistoryViewSavingDay, dayShown: historyDayShown }), [historyViewShown, setHistoryViewSavingDay, historyDayShown]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
   const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);
@@ -413,8 +417,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyMapFilterOn = inHistory && !historyEasing;
   // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
   useEffect(() => {
-    if (inHistory) syncUrlParams(encodeHistoryView(historyView));
-  }, [inHistory, historyView]);
+    if (inHistory) syncUrlParams(encodeHistoryView(historyView, historyDayShown));
+  }, [inHistory, historyView, historyDayShown]);
   // The open agency card in the link (CIV-919); History never carries it.
   useEffect(() => {
     syncUrlParams({ [AGENCY_CARD_PARAM]: inHistory ? null : selectedAgencySlug });
@@ -905,7 +909,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   )}
                 </ModeFadeInOnMount>
               ) : null}>
-                <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
