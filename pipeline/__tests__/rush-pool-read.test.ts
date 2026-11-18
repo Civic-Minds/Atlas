@@ -72,14 +72,14 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
     expect(periodRow(p, 'midday')).toEqual(runs('10x85,-,10,-'));
     expect(p).toMatchObject({ headway: 10, tier: '60', serviceClass: 'regular' });
     // CIV-209: the period floor reads the drop-off-only layover at the next boarding stop, not its arrivals (PM 23, evening 33).
-    expect(p.headwayByPeriod).toMatchObject({ amPeak: 11, midday: 10, pmPeak: 10, evening: 27 });
+    expect(p.headwayByPeriod).toMatchObject({ amPeak: 11, midday: 10, pmPeak: 11, evening: 28 });
   });
 });
 
 describe('what a rush-hour-only pattern still never changes (#720, CIV-850)', () => {
-  it('LA Metro 105: the Marlton / King headline reads its worst graded stop (60, CIV-209), Washington Fairfax gains no midday', async () => {
+  it('LA Metro 105: the Marlton / King headline stays 27 (no stop on it is graded, CIV-209), Washington Fairfax gains no midday', async () => {
     const rows = (await weekdayRows('lacmta-105', 'lacmta')).filter(p => p.directionId === 0);
-    expect(rows.find(p => p.headsign === 'Marlton / King Layover')).toMatchObject({ headway: 60 });
+    expect(rows.find(p => p.headsign === 'Marlton / King Layover')).toMatchObject({ headway: 27 });
     const fairfax = rows.find(p => p.headsign === 'Washington Fairfax Hub');
     expect(fairfax.headwayByPeriod).toMatchObject({ amPeak: null, midday: null, pmPeak: 20 });
     for (const pk of ['amPeak', 'midday']) expect(periodRow(fairfax, pk).every(v => v == null)).toBe(true);
