@@ -6,7 +6,7 @@
  * free of import.meta and DOM access so plain Node scripts can load it.
  */
 
-import { LIVE_VEHICLES_TITLE } from './liveWording';
+import { LIVE_MAP_TITLE } from './liveWording';
 import { ATLAS_MAP_CLAUSE, ATLAS_MAP_SUMMARY, PAGE_NAMES, SITE_NAME, tabTitle } from './pageNames';
 import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
@@ -146,7 +146,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     path: LIVE_PATH,
-    title: tabTitle(titleCase(LIVE_VEHICLES_TITLE)),
+    title: tabTitle(titleCase(LIVE_MAP_TITLE)),
     description: 'Compare live vehicle positions with scheduled service on the Atlas map.',
     indexable: false,
     gate: 'live',
