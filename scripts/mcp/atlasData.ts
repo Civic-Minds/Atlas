@@ -21,6 +21,7 @@ import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
+import { ROUTE_TEXT_MATCH_MAX, routeTextMatchRank } from '../../shared/routeMatch';
 import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
@@ -139,7 +140,7 @@ export async function routeWithRows(agency: CatalogAgency, day: DayType, s: Rout
 
 /**
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
- * not the 60 Blue Island bus), then any name containing them, rail first.
+ * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01), rail first on a tie.
  */
 export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
@@ -149,8 +150,10 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
   if (line.length) return line[0];
-  const contains = routes.filter(r => `${r.shortName} ${r.longName ?? ''}`.toLowerCase().includes(q)).sort((a, b) => rail(a) - rail(b));
-  return contains[0] ?? null;
+  // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, rail before bus on a tie.
+  const ranked = routes.map(r => ({ r, rank: routeTextMatchRank({ shortName: r.shortName, longName: r.longName }, q) }))
+    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || rail(a.r) - rail(b.r));
+  return ranked[0]?.r ?? null;
 }
 
 
