@@ -265,16 +265,12 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
 /**
  * CIV-1828, Studio's Live page: wording pending Ryan's OK, all in one place until he approves or changes it (Studio is
  * local only). The card lines are the glossary's ("## Live" card wording, docs/GLOSSARY.md), shown on screen for the
- * first time; the headings, the pill and the page name are new.
+ * first time; the pill's name is new. The list has no heading (Ryan, 2026-11-17: the menu already says "Live" and the map
+ * shows the rest).
  */
 export const STUDIO_LIVE_PENDING = {
-  /** The page's name in Studio's page menu. */
-  pageName: 'Live',
   /** The measure pill. */
   fallsBehindPill: 'Falls behind',
-  /** The list's heading with no route picked, and with one. */
-  fallsBehindAll: 'Where vehicles fall behind',
-  fallsBehindRoute: (route: string): string => `Where the ${route} falls behind`,
   /** A stop pair's lines: the typical extra running time, the 1-in-10 (only when greater), the sample. */
   takesLonger: (min: number): string => `Takes ${minutesText(min)} longer than scheduled`,
   oneInTen: (min: number): string => `1 in 10 take ${tenth(min)}+ min longer`,

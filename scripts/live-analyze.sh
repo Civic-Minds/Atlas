@@ -12,6 +12,7 @@
 set -u
 cd "$(dirname "$0")/.."
 DATA="${LIVE_DATA:-../_live-data}"
+# LIVE_WINDOW_DAYS (shared/rules/live.ts); a shell script can't import it, so liveRules.test.ts checks this copy.
 DAYS=7
 AGENCY=ttc
 ALL=0

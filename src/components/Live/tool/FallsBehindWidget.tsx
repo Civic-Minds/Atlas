@@ -9,8 +9,8 @@ import type { TimeLossListRow } from '../../../utils/timeLossReport';
  * rows), each a button that opens it on the map; under them, collapsed, the ones whose schedule is looser than needed.
  * `showRoute`: the network list names each row's route.
  */
-export default function FallsBehindWidget({ title, slower, looser, showRoute, dates, onPick }: {
-  title: string; slower: readonly TimeLossListRow[]; looser: readonly TimeLossListRow[]; showRoute: boolean;
+export default function FallsBehindWidget({ label, slower, looser, showRoute, dates, onPick }: {
+  /** The accessible name (the list has no heading: Ryan, 2026-11-17). */ label: string; slower: readonly TimeLossListRow[]; looser: readonly TimeLossListRow[]; showRoute: boolean;
   /** The days the figures cover, for the line under the title. */ dates: readonly string[];
   onPick: (r: TimeLossListRow) => void;
 }) {
@@ -25,7 +25,7 @@ export default function FallsBehindWidget({ title, slower, looser, showRoute, da
     </li>
   );
   return (
-    <Widget title={title} size="medium">
+    <Widget label={label} size="medium">
       {days && <p className="m-0 mb-1 text-xs leading-4 text-[var(--text-dim)]">{days}</p>}
       <ul className="m-0 p-0">
         {slower.map(x => item(x, [W.takesLonger(x.row.typicalMin), ...(x.row.showP90 ? [W.oneInTen(x.row.p90MinDown)] : []), W.sample(x.row.passes, x.row.days)]))}

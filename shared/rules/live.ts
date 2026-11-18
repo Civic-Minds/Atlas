@@ -39,6 +39,8 @@ export const LIVE_MIN_EVIDENCE_DAYS = 5;
  * minimum (LIVE_MIN_GOOD_DAYS) is used instead, so a new agency shows sooner: liveStudioMinDays.
  */
 export const LIVE_STUDIO_MIN_RECORDED_DAYS = 7;
+/** Live's figures cover the last this many service days, bad-recording days left out and named ("Rolling 7 days only", docs/product/DECISIONS.md; Studio's stop pairs too, CIV-1828). */
+export const LIVE_WINDOW_DAYS = 7;
 
 // ---- Bunching (shared/bunching.ts) ----
 

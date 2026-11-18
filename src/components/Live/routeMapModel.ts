@@ -20,6 +20,10 @@ export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayS
 export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', LATE_LABEL], ['runTime', TRIP_TIME_LABEL], ['extraWait', EXTRA_WAIT_LABEL], ['bunching', BUNCHING_LABEL]];
 /** "Delays start" is the CIV-942 heatmap: its own toggle on the map, not in the switch (the top bar has no room for a fifth pill). Its name is DELAY_STARTS_LABEL (CIV-1602). */
 export { DELAY_STARTS_LABEL };
+/** The Live tool's measure switch: the four measures, then Delays start. */
+export const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
+/** CIV-1828: Studio's Live page leads with "Falls behind" (where vehicles fall behind the schedule, stop to stop). */
+export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['fallsBehind', STUDIO_LIVE_PENDING.fallsBehindPill], ...MAP_MEASURES];
 export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : m === 'fallsBehind' ? STUDIO_LIVE_PENDING.fallsBehindPill : MEASURES.find(([k]) => k === m)![1]);
 
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */
