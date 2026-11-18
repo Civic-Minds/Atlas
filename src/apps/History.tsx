@@ -25,7 +25,7 @@ import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilterKey 
 import { useColorMode } from '../hooks/useColorMode';
 import { loadHistoryAgencyV2, loadHistoryShapesV2 } from '../utils/historyV2Loader';
 import { routesForYear, yearsAvailable, type HistoryShapesFile } from '../../shared/historyV2Reader';
-import { HISTORY_VIEW_ALL, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
+import { HISTORY_VIEW_ALL, agencyHasWeekendValues, historyDayHasPeriods, historyDayPeriodValue, historyDayTrunk, historyYearRoutes, passesHistoryLimit, type HistoryView } from '../utils/historyYearMap';
 import type { DayType } from '../../shared/dayTypes';
 import type { TimePeriod } from '../hooks/useIntervalStats';
 import { labelsThatFit } from '../utils/chartLabels';
@@ -108,6 +108,8 @@ interface Props {
   searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
   onOpenAgencyChange?: (name: string | null) => void;
+  /** CIV-1646: whether the open agency's History data has weekend values (null: none open), which decides if the Day chip shows. */
+  onOpenAgencyWeekendChange?: (hasWeekend: boolean | null) => void;
   /** Changes when the user dismisses the map's selection (empty-map click, Escape): the panel closes, as on the regular map (#1031). */
   dismissKey?: number;
   /** Whether History's panel is showing (so Escape has something to close). */
@@ -775,7 +777,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, view = HISTORY_VIEW_ALL, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, dismissKey = 0, onPanelOpenChange }: Props) {
+export default function History({ active, view = HISTORY_VIEW_ALL, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, onOpenAgencyWeekendChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -974,6 +976,13 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     return agency ? agencyNames(agency.name).name : null;
   }, [active, selectedSlug, historyData]);
   useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
+  // CIV-1646: decided from the config already loaded (each agency entry carries its v2 snapshots), no extra fetch.
+  const openAgencyHasWeekend = useMemo(() => {
+    if (!active || !selectedSlug) return null;
+    const agency = historyData?.find(a => a.slug === selectedSlug);
+    return agency ? agencyHasWeekendValues(agency) : null;
+  }, [active, selectedSlug, historyData]);
+  useEffect(() => { onOpenAgencyWeekendChange?.(openAgencyHasWeekend); }, [openAgencyHasWeekend, onOpenAgencyWeekendChange]);
   // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
   // user searches, picks something or reopens History, as the regular map's card does (#1031).
   const [dismissed, setDismissed] = useState(false);

@@ -66,6 +66,8 @@ interface FilterChipsProps {
    * without it History is weekday only.
    */
   variant?: 'full' | 'shared' | 'side' | 'history';
+  /** History's Day chip (CIV-1646): the flag, and the open agency having weekend values; defaults to the flag. */
+  historyDayPicker?: boolean;
   /** The connections top bar (CIV-1353, local only): replaces the filters while set. */
   connectionsBar?: ConnectionsBarControls | null;
 
@@ -267,6 +269,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
   nightServiceFrequency = 60,
   setNightServiceFrequency,
   variant = 'full',
+  historyDayPicker: historyDayPickerOn = FEATURES.historyDayPicker,
   connectionsBar = null,
 }) => {
   const compactTopBar = useMediaQuery(COMPACT_TOP_BAR_QUERY);
@@ -494,7 +497,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         {frequencyChip('')}
-        {FEATURES.historyDayPicker && dayChip('')}
+        {historyDayPickerOn && dayChip('')}
         {periodChip('')}
       </div>
     );
@@ -532,7 +535,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
           </div>
         </ModeCollapse>
         <ModeCollapse open={!shared}><div className="pr-2">{frequencyChip(coreClass)}</div></ModeCollapse>
-        <ModeCollapse open={full || (history && FEATURES.historyDayPicker)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
+        <ModeCollapse open={full || (history && historyDayPickerOn)}><div className="pr-2">{dayChip(coreClass)}</div></ModeCollapse>
         <ModeCollapse open={!shared}><div className="pr-2">{periodChip(coreClass)}</div></ModeCollapse>
         {/* The shared group's outline and padding are there in both, transparent and pulled back on the full row; the outline fades with "Both maps". */}
         <div

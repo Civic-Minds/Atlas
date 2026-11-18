@@ -93,6 +93,19 @@ export function historyDayHasPeriods(snapshot: Snapshot, day: 'Saturday' | 'Sund
 }
 
 /**
+ * Whether any route of an agency stores a weekend day's values by time of day (CIV-1425). The History config the
+ * app already loads carries them (v2 sat/sun `p`) only for agencies built with weekend values; for every other agency
+ * the Day chip would show blanks, so History hides it and stays on Weekday (CIV-1646). A day with no trips ({none})
+ * is not a value.
+ */
+export function agencyHasWeekendValues(agency: { routes: readonly { snapshots: readonly Snapshot[] }[] }): boolean {
+  return agency.routes.some(r => r.snapshots.some(s => (['sat', 'sun'] as const).some(day => {
+    const dayValue = s.v2?.[day];
+    return !!dayValue && !('none' in dayValue) && Object.values(dayValue.p ?? {}).some(min => typeof min === 'number' && Number.isFinite(min) && min > 0);
+  })));
+}
+
+/**
  * Whether a value passes the frequency limit (CIV-392), by the map filter's comparison (frequency at
  * or under the limit). A limited, no-trips or unknown value fails any limit. Under "All", a route with
  * no trips that day is dropped wherever the map's filter applies (headwayFilterApplies: a period is

@@ -108,7 +108,7 @@ interface Props {
   setSelectedAgencySlug?: (slug: string | null) => void;
   onAgencyCardClose?: () => void;
   /** History mode: the top bar shows History's own Frequency and Time chips, held by App, not the map's (CIV-389, CIV-392). */
-  historyView?: { view: HistoryView; setView: (view: HistoryView) => void };
+  historyView?: { view: HistoryView; setView: (view: HistoryView) => void; dayShown?: boolean };
   /** The map's selection was cleared by the user (empty-map click or Escape); another view's panel (History) closes with it (#1031). */
   onMapDismiss?: () => void;
   /** Another view's panel is open over the map (History), so Escape has something to close. */
@@ -1780,6 +1780,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 setSelectedAgencies={setSelectedAgenciesByUser}
                 bounds={bounds}
                 variant="history"
+                historyDayPicker={historyView.dayShown}
               />
             ) : (
             <FilterChips
