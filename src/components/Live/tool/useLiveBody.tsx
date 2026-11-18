@@ -214,10 +214,11 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     ? model.stops.find(x => x.stopId === pick.stopId)?.lonLat ?? null
     : pick?.kind === 'segment' ? (() => { const c = model.segments.find(x => x.fromStopId === pick.fromStopId && x.toStopId === pick.toStopId)?.coordinates; return c ? c[Math.floor(c.length / 2)] : null; })() : null;
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
-  const card = v3 && bandData
+  // Memoised: a frame that hands the card to a context (Studio's page overlay) must not see a new one every render.
+  const card = useMemo(() => v3 && bandData
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
-    : null;
+    : null, [v3, bandData, pick, picked, stops, band, shown, measure, uncertain, fallsBehind, route, lossReports]); // eslint-disable-line react-hooks/exhaustive-deps
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
   // CIV-1828: a "Falls behind" row opens its route, direction and stop pair.
   const openLossRow = (x: TimeLossListRow) => { setRoute(x.route); setDir(x.directionId); setPick({ kind: 'segment', fromStopId: x.row.fromStopId, toStopId: x.row.toStopId }); };
