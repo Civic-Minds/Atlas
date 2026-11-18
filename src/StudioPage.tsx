@@ -157,7 +157,8 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
       <div className="min-h-0 flex-1 overflow-y-auto">
         {groups.map(g => (
           <div key={g.key} className="mt-2">
-            <h3 className="m-0 px-2 text-xs font-bold text-[var(--text-muted)]">{g.title}</h3>
+            {/* The heading stays in the route columns and wraps there; nothing crosses the date columns (Ryan, CIV-1806). */}
+            <div className={`${ROW_GRID} px-2`}><h3 className="col-span-3 m-0 text-xs font-bold text-[var(--text-muted)]">{g.title}</h3></div>
             <ul className="m-0 p-0">
               {g.routes.map(c => {
                 const l = routeTitle(c);
@@ -165,12 +166,12 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
                 return (
                   <li key={c.route} className="list-none">
                     <button type="button" onClick={() => onPick(c.route)} aria-current={c.route === route ? 'true' : undefined}
-                      className={`${ROW_GRID} w-full rounded-xl px-2 py-0.5 text-left text-sm ${c.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
-                      <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }} />
+                      className={`${ROW_GRID} w-full items-start rounded-xl px-2 py-0.5 text-left text-sm ${c.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
+                      <span aria-hidden className="mt-1.5 h-2 w-2 rounded-full" style={{ background: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }} />
                       <span className="font-bold">{l.primary}</span>
                       <span className="min-w-0">
-                        <span className="block truncate text-[var(--text-secondary)]">{l.secondary}</span>
-                        {f.label && <span className="block truncate text-xs text-[var(--text-muted)]">{f.label}</span>}
+                        <span className="block text-[var(--text-secondary)]">{l.secondary}</span>
+                        {f.label && <span className="block text-xs text-[var(--text-muted)]">{f.label}</span>}
                       </span>
                       <span className="whitespace-nowrap text-right">{f.before}</span>
                       <span className={`whitespace-nowrap text-right ${f.before !== f.after ? 'font-bold' : ''}`}>{f.after}</span>
@@ -182,9 +183,11 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
           </div>
         ))}
         {file.unchanged.length > 0 && (
-          <div className="mt-2 px-2">
-            <h3 className="m-0 text-xs font-bold text-[var(--text-muted)]">{C.unchangedTitle}</h3>
-            <p className="m-0 text-sm text-[var(--text-secondary)]">{file.unchanged.join(', ')}</p>
+          <div className={`${ROW_GRID} mt-2 px-2`}>
+            <div className="col-span-3">
+              <h3 className="m-0 text-xs font-bold text-[var(--text-muted)]">{C.unchangedTitle}</h3>
+              <p className="m-0 text-sm text-[var(--text-secondary)]">{file.unchanged.join(', ')}</p>
+            </div>
           </div>
         )}
       </div>
