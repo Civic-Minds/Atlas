@@ -51,9 +51,9 @@ Read by: `pipeline/refresh.ts` (history and stop baselines), `pipeline/build-his
 
 Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are
 recorded every minute by the ttc-positions Worker (cron `* * * * *`, in
-`workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689) and kept 30 days. The other four
-Workers (ttc-trips, Hamilton, STM, Burlington/Halifax) are paused with no cron, and their
-data has expired: checked 2026-11-15, the bucket holds only `positions/ttc/`. Objects are
+`workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689) and kept 30 days. Hamilton is recorded every
+minute again from 2026-11-18. The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused
+with no cron, and their data has expired: checked 2026-11-15, the bucket held only `positions/ttc/`. Objects are
 retained until the bucket’s 30-day lifecycle removes them (a 90-day rule also exists).
 `npm run audit-live-state` shows the live crons, newest snapshots and lifecycle rules. Snapshot/replay for Live UI needs a
 restored provider contract before Live can be re-enabled.
@@ -91,9 +91,8 @@ Route configuration and feed credentials remain in `shared/livePollingConfig.ts`
 
 Hardcoded feed lists live in `shared/liveArchiveFeeds.ts` (not `LIVE_POLLING_ROUTES`).
 The five legacy archive Workers covered trip updates and vehicle positions for **ttc,
-burlington, hamilton, halifax, and stm**. TTC positions still run every minute on the
-cron set in Cloudflare (the repo config has no `[triggers]` block); the other shards'
-status is unverified (CIV-317). Any replacement should
+burlington, hamilton, halifax, and stm**. TTC and Hamilton positions run every minute
+(cron in each Worker's toml); the other shards are paused (CIV-1689). Any replacement should
 be designed after local validation and a new canary contract.
 
 ### 3. Future provider consumers (snapshot / replay)
