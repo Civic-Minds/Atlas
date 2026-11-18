@@ -22,7 +22,8 @@ import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, periodFigure, routeFigureRows, routeTitle } from './StudioChangesPage';
-import { STUDIO_AGENCIES, STUDIO_DEFAULT_AGENCY, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
+import { StudioGroupFigures } from './StudioVehiclesPage';
+import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, studioAgencyFrom } from '../shared/studioAgencies';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
 /**
@@ -287,13 +288,16 @@ function PortalInto({ slot, children }: { slot: HTMLElement; children: ReactNode
 export default function StudioPage() {
   // CIV-1806: the agency comes from the address (?agency=), picked in the header's menu.
   const [searchParams, setSearchParams] = useSearchParams();
-  const slug = studioAgencyFrom(searchParams.get('agency'));
+  // The agencies with built files (shared/studioAgencies.ts), listed by the dev server; the address picks among them.
+  const manifest = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
+  const studioAgencies = manifest && manifest !== 'missing' ? manifest.agencies : manifest === 'missing' ? [] : null;
+  const slug = studioAgencyFrom(searchParams.get('agency'), studioAgencies);
   const agency = useLiveAgencyName(slug);
   const { agencies } = useAgencies();
-  const agencyOptions = useMemo(() => STUDIO_AGENCIES.map(s => {
+  const agencyOptions = useMemo(() => (studioAgencies ?? [slug]).map(s => {
     const a = agencies.find(x => x.slug === s);
     return [s, a ? agencyNames(a).name : s] as const;
-  }), [agencies]);
+  }), [agencies, studioAgencies, slug]);
   const pickAgency = (s: string) => { setRoute(null); setSearchParams(p => { const n = new URLSearchParams(p); n.set('agency', s); return n; }); };
   const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
   const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
