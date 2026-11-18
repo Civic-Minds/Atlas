@@ -5,7 +5,7 @@ import { shortDate } from './dateText.js';
 import { MISSING_VALUE } from './missingValue.js';
 
 /**
- * The local coverage page's rows (CIV-1871): one per agency on the map, focus agencies first, each column read from
+ * The local coverage page's rows (CIV-1871): one per agency that has more than the map, focus agencies first, each column read from
  * the source that decides it (the focus list, History's agency list, Live's archive and map lists, Studio's files,
  * the Live coverage files). Nothing here is typed per agency. Pure, so a test can check it.
  */
@@ -13,13 +13,20 @@ import { MISSING_VALUE } from './missingValue.js';
 export const COVERAGE_COLUMNS = {
   agency: 'Agency',
   focus: 'Focus',
-  map: 'Map',
   history: 'History',
   liveRecorded: 'Live recorded',
   liveRealtime: 'Live real-time',
   studio: 'Studio',
   mcpFigures: 'MCP figures',
   figuresStart: 'Figures start',
+} as const;
+
+/** The page's own words (new UI text: Ryan signs it off). */
+export const COVERAGE_TEXT = {
+  intro: 'What each agency has beyond the map. Every agency is on the map, so only agencies with something more are listed.',
+  focusHeading: 'Focus Agencies',
+  othersHeading: 'Other Agencies',
+  factsFailed: 'The dev server didn’t list the Studio and Live files, so those columns are empty.',
 } as const;
 
 export interface CoverageSources {
@@ -43,7 +50,6 @@ export interface CoverageRow {
   slug: string;
   name: string;
   focus: boolean;
-  map: boolean;
   history: boolean;
   liveRecorded: string;
   liveRealtime: boolean;
@@ -73,6 +79,11 @@ function studioText(slug: string, s: CoverageSources): string {
   return changes && buses ? 'Changes and buses' : changes ? 'Changes' : buses ? 'Buses (no menu entry)' : MISSING_VALUE;
 }
 
+/** Whether an agency has anything beyond the map, which every agency has: History, Live, Studio, MCP figures or focus status. */
+export const hasMoreThanMap = (r: CoverageRow): boolean =>
+  r.focus || r.history || r.liveRecorded !== MISSING_VALUE || r.liveRealtime || r.studio !== MISSING_VALUE || r.mcpFigures !== MISSING_VALUE;
+
+/** One row for each agency that has more than the map (CIV-1871, Ryan: every agency is on the map, so the rest is noise). */
 export function coverageRows(s: CoverageSources): CoverageRow[] {
   const rows = s.agencies.map(a => {
     const mcp = mcpText(a.slug, s);
@@ -80,7 +91,6 @@ export function coverageRows(s: CoverageSources): CoverageRow[] {
       slug: a.slug,
       name: a.name,
       focus: isFocusAgency(a.slug),
-      map: true,
       history: s.historySlugs.includes(a.slug),
       liveRecorded: liveRecordedText(a.slug, s),
       liveRealtime: s.liveMapSlugs.includes(a.slug),
@@ -90,5 +100,5 @@ export function coverageRows(s: CoverageSources): CoverageRow[] {
     };
   });
   const order = (slug: string) => { const i = FOCUS_AGENCY_SLUGS.indexOf(slug); return i < 0 ? Infinity : i; };
-  return rows.sort((a, b) => order(a.slug) - order(b.slug) || a.name.localeCompare(b.name));
+  return rows.filter(hasMoreThanMap).sort((a, b) => order(a.slug) - order(b.slug) || a.name.localeCompare(b.name));
 }
