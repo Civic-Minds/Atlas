@@ -193,13 +193,18 @@ export function edgeWait(shown: string | null, waitMinutes: number | null): bool
 }
 
 /** The first and last departures of the day, and any break inside it, as clock times. */
+/** A clock time in the service day, said as a rider hears it: a trip at 28:23 leaves at 4:23 AM after midnight (CIV-1840: the 329's last trip read as before its first). */
+const serviceClock = (minutes: number) => `${clockTime(minutes)}${minutes >= 1440 ? ' (after midnight)' : ''}`;
+
+const duringHour = (h: number) => `during the ${clockTime(h * 60)} hour${h >= 24 ? ' after midnight' : ''}`;
+
 export function serviceSpan(r: RouteRows) {
   const runs = routeRuns(r.rows as never, undefined);
   if (!runs) return null;
   return {
-    first: runs.first != null ? clockTime(runs.first) : runs.hours.length ? `during the ${clockTime(runs.hours[0] * 60)} hour` : null,
-    last: runs.last != null ? clockTime(runs.last) : runs.hours.length ? `during the ${clockTime(runs.hours[runs.hours.length - 1] * 60)} hour` : null,
-    breaks: (runs.gaps ?? []).map(([a, b]) => `${clockTime(a)}–${clockTime(b)}`),
+    first: runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
+    last: runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
+    breaks: (runs.gaps ?? []).map(([a, b]) => `${serviceClock(a)}–${serviceClock(b)}`),
   };
 }
 
@@ -250,12 +255,26 @@ export async function routesMeeting(agency: CatalogAgency, day: DayType, period:
 export const scheduleComparison = (slug: string): Promise<StudioBeforeAfterFile | null> => store.comparison(slug);
 
 /** Frequency changes in a comparison, by the shared rule (a grade move on the one scale), biggest first. */
+/**
+ * Studio's comparison lists a route written differently in the two schedules (RTD's Bound, FreeRide and MetroRide in
+ * another case) as removed and added. Pair those by name, ignoring case and spaces, into one route with both figures.
+ */
+export function pairedChanges(file: StudioBeforeAfterFile): StudioBeforeAfterFile['changes'] {
+  const key = (c: { route: string }) => c.route.trim().toLowerCase();
+  const removed = new Map(file.changes.filter(c => !c.after && c.before).map(c => [key(c), c] as const));
+  const added = new Map(file.changes.filter(c => !c.before && c.after).map(c => [key(c), c] as const));
+  const merged = new Set([...removed.keys()].filter(k => added.has(k)));
+  const out = file.changes.filter(c => !merged.has(key(c)) || (c.before && c.after));
+  for (const k of merged) { const r = removed.get(k)!, a = added.get(k)!; out.push({ ...a, before: r.before, after: a.after }); }
+  return out;
+}
+
 export function frequencyChanges(file: StudioBeforeAfterFile) {
-  const out: Array<{ route: string; name: string | null; period: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
-  for (const c of file.changes) for (const period of PERIOD_KEYS) {
+  const out: Array<{ route: string; name: string | null; period: string; hours: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
+  for (const c of pairedChanges(file)) for (const period of PERIOD_KEYS) {
     const before = c.before?.headway[period] ?? null, after = c.after?.headway[period] ?? null;
     const change = frequencyChange(before, after);
-    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], before, after, steps: change.steps, better: change.better, publicChange: change.publicChange });
+    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], hours: formatPeriodRange(period), before, after, steps: change.steps, better: change.better, publicChange: change.publicChange });
   }
   return out.sort((a, b) => b.steps - a.steps || Number(b.publicChange) - Number(a.publicChange));
 }
@@ -343,12 +362,34 @@ export async function branchesOf(agency: CatalogAgency, r: RouteRows) {
   }).filter(b => b.trips > 0 && (b.towards || 'stops' in b)).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
+/**
+ * Trips each way on a day. Two branches of one direction that share a trunk each carry the trunk's trips (TTC 29: the
+ * two Wilson-bound branches both read 190), so adding the branches together double counts. Rows with the same
+ * departures by hour count once; rows with different ones add up.
+ */
+export function tripsByDirection(r: RouteRows) {
+  const byDir = new Map<string, Map<string, number>>();
+  for (const row of r.rows) {
+    const hours = (row.departuresByHour as Record<string, number> | undefined) ?? {};
+    const total = Object.values(hours).reduce((a, b) => a + b, 0);
+    if (!total) continue;
+    const dir = String(row.directionId ?? '0');
+    (byDir.get(dir) ?? byDir.set(dir, new Map()).get(dir)!).set(JSON.stringify(Object.entries(hours).sort(([a], [b]) => +a - +b)), total);
+  }
+  return [...byDir.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([direction, sets]) => ({ direction, trips: [...sets.values()].reduce((a, b) => a + b, 0) }));
+}
+
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
 /**
  * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
  * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
  */
+/** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
+const DAYTIME_PERIODS = TIME_PERIODS.slice(0, TIME_PERIODS.findIndex(t => t.key === 'late')).map(t => t.key as PeriodKey);
+export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIODS.every(k => r.figures[k]?.shown === 'no service');
+
 export async function routesNear(agency: CatalogAgency, place: string, metres = 250) {
+  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
   const parts = words(place);
   const stops = await stopsOf(agency);
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
@@ -358,7 +399,7 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
-  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => ({ route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4) })).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
 }
 
 /** Each route's names and route ids on a day: from the summaries where the store has them, else straight from the rows (no figures to work out). */
@@ -383,7 +424,8 @@ export async function agenciesNear(query: string, km = 60) {
 export const historyAgencies = (): Promise<McpHistoryAgency[] | null> => store.history();
 
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
-export async function routeHistory(slug: string, routeQuery: string, day: DayType) {
+export async function routeHistory(agency: CatalogAgency, routeQuery: string, day: DayType) {
+  const slug = agency.slug;
   const ag = (await historyAgencies())?.find(a => a.slug === slug);
   if (!ag) return null;
   const q = routeQuery.trim().toLowerCase();
@@ -399,13 +441,30 @@ export async function routeHistory(slug: string, routeQuery: string, day: DayTyp
   const nowBest = Math.min(...PERIOD_KEYS.map(k => valueOf(newest, k)).filter((v): v is number => v != null));
   const suspect = (s: typeof snaps[number], k: PeriodKey) => { const v = valueOf(s, k), now = valueOf(newest, k) ?? (Number.isFinite(nowBest) ? nowBest : null); return s !== newest && v != null && v <= 3 && now != null && now >= 30; };
   let flagged = 0;
+  // CIV-1840: History can end before the schedule on the map (Kingston 12's last snapshot is Aug 2026, midday only, while
+  // today's schedule runs every 30 from 6:30 AM). When the agency was refreshed after History's newest snapshot, end with
+  // today's schedule as a row, from the same figures route_frequency gives.
+  const monthOf = (label: string) => { const t = Date.parse(`1 ${label} UTC`); return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 7); };
+  const newestMonth = newest ? monthOf(newest.label) : null;
+  const refreshed = agency.lastRefreshedAt?.slice(0, 7) ?? null;
+  let current: Record<string, string> | null = null;
+  if (newestMonth && refreshed && refreshed > newestMonth) {
+    try {
+      const today = findRoute(await routeList(agency, day), route.routeShortName);
+      if (today) {
+        const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], `every ${f.waitMinutes} min`]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
+        const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
+        current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
+      }
+    } catch { /* no route data here: History alone */ }
+  }
   return {
     route: route.routeShortName, name: route.routeName ?? null,
-    schedules: snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
+    schedules: [...snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
       const v = historyDayPeriodValue(s as never, day, k);
       if (v.kind === 'value' && suspect(s, k)) { flagged++; return [PERIOD_LABELS[k], `every ${v.min} min (doubtful: likely a data error, being checked)`]; }
       return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null];
-    }).filter(([, v]) => v != null)) })),
+    }).filter(([, v]) => v != null)) })), ...(current ? [current] : [])],
     ...(flagged ? { warning: `${flagged} figure(s) marked doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more. These are most likely data errors, not real service; don't report them as fact.` } : {}),
   };
 }

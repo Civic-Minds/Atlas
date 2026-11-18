@@ -16,6 +16,7 @@ import { parseGtfsZip } from '../../pipeline/parseGtfs';
 import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
 import { runningTimeSummary } from '../../pipeline/runningTime';
 import { pooledReadingInWindow } from '../../pipeline/stopPools';
+import { BUNCHED_DEPARTURE_MINUTES } from '../../pipeline/headway-utils';
 import { ATLAS_ROOT, writeIndexFile } from './diskStore';
 import { RAIL_MODE_LABELS, availableAgencies, currentStore, forget, periodFigure, routesOn } from './atlasData';
 
@@ -213,4 +214,11 @@ export function busesNeeded(slug: string, route: string, period: PeriodKey): Bus
   const want = route.trim().toLowerCase();
   const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
   return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
+}
+
+export const BUNCHED_MINUTES = BUNCHED_DEPARTURE_MINUTES;
+/** How many departures in a window leave within the bunched minutes of the one before (another route's), and so count as one. */
+export function bunchedCount(starts: readonly number[], start: number, end: number): number {
+  const times = [...new Set(starts.filter(t => t >= start && t < end))].sort((a, b) => a - b);
+  return times.filter((t, i) => i > 0 && t - times[i - 1] <= BUNCHED_DEPARTURE_MINUTES).length;
 }

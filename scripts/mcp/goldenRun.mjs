@@ -14,6 +14,12 @@ const calls = [
   ['routes_by_hours', { agency: 'TTC', day: 'Sunday', ends_before: '22:00' }],
   ['schedule_changes', { agency: 'Hamilton Street Railway' }],
 ];
+// GOLDEN_EXTRA=1 adds the calls for the MCP chat's findings (CIV-1840): brand search, ferries, paging, night routes.
+if (process.env.GOLDEN_EXTRA) calls.push(
+  ['list_agencies', { query: 'Viva' }], ['rank_agencies', { period: 'Midday', every: 30, similar_to: 'BC Ferries' }],
+  ['schedule_changes', { agency: 'RTD' }], ['schedule_changes', { agency: 'RTD', offset: 40, limit: 10 }],
+  ['route_frequency', { agency: 'TTC', route: '329' }],
+);
 const p = spawn('/opt/homebrew/bin/node', [`${root}/node_modules/tsx/dist/cli.mjs`, `${root}/scripts/mcp/atlas-mcp.ts`], { stdio: ['pipe', 'pipe', 'inherit'], env: { ...process.env, ATLAS_ROOT: process.env.ATLAS_ROOT } });
 let buf = ''; const res = {};
 p.stdout.on('data', d => { buf += d; let i; while ((i = buf.indexOf('\n')) >= 0) { const l = buf.slice(0, i); buf = buf.slice(i + 1); if (l.trim()) { const m = JSON.parse(l); res[m.id] = m; } } });
