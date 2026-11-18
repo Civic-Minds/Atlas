@@ -28,7 +28,9 @@ describe('internal links (CIV-1872)', () => {
   it('puts the local-only links in their own nav, ending with More, and keeps Studio out of the public one', () => {
     render(<SiteHeader />);
     const internal = screen.getByRole('navigation', { name: 'Internal pages' });
-    expect([...internal.querySelectorAll('a')].map(a => a.textContent)).toEqual(INTERNAL_HEADER_LINKS.map(l => l.label));
+    expect([...internal.querySelectorAll('a')].map(a => a.textContent?.replace(/\s*→$/, ''))).toEqual(INTERNAL_HEADER_LINKS.map(l => l.label));
+    // More carries the same arrow as Go to Atlas.
+    expect(internal.querySelectorAll('a')[3].innerHTML).toBe(screen.getByRole('link', { name: /Go to Atlas/ }).innerHTML.replace('Go to Atlas', 'More'));
     expect(internal.querySelectorAll('a')[3]).toHaveAttribute('href', INTERNAL_PATH);
     expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Coverage/);
     expect(screen.getAllByRole('link', { name: /Go to Atlas/ })).toHaveLength(1);

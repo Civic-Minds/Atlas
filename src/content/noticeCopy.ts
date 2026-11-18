@@ -1057,3 +1057,42 @@ export const RECENTLY_SEEN_HERE = 'Recently seen here';
 /** CIV-1786 (Ryan picked 1): a region page's line under an agency that only partly serves it, "1 route in West Virginia · 68 total". */
 export const partOfAgencyRoutesNote = (here: number, place: string, total: number): string =>
   `${countOf(here, 'route', 'routes')} in ${place} · ${countText(total)} total`;
+
+// ---- Coverage page (CIV-1871, local only; new UI text, waiting on Ryan's OK) ----
+
+/**
+ * The coverage table's column headings. Live, Studio and MCP are each one column that lists what applies as small tags
+ * (Ryan: "one column for Live then have Recorded and or Real Time under it", "same with mcp"). Headings and tags are
+ * suggestions until Ryan approves them.
+ */
+export const COVERAGE_COLUMNS = {
+  agency: AGENCY_COLUMN,
+  history: 'History',
+  live: 'Live',
+  studio: 'Studio',
+  mcp: 'MCP',
+} as const;
+
+/** What a Live cell lists, as small tags in the agencies-page style. */
+export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', paused: 'Recording paused', realtime: 'Real-time' } as const;
+
+/**
+ * Studio's views in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
+ * menu doesn't carry them on main yet, so they are named here until it does, and then this reads them from there.
+ */
+export const COVERAGE_STUDIO_TAGS = { schedule: 'Schedule', vehicles: 'Vehicles' } as const;
+
+/** What an MCP cell lists: schedule answers, Live answers (from a date once recordings build up), real-time (none yet). */
+export const COVERAGE_MCP_TAGS = {
+  schedule: 'Schedule',
+  live: 'Live',
+  liveFrom: (date: string | null) => (date ? `Live from ${date}` : 'Live building'),
+  livePaused: 'Live paused',
+  liveUnread: 'Live not read',
+} as const;
+
+export const COVERAGE_TEXT = {
+  focusHeading: 'Focus Agencies',
+  othersHeading: 'Other Agencies',
+  factsFailed: 'The dev server didn’t list the Studio and Live files, so those columns are empty.',
+} as const;
