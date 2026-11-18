@@ -38,6 +38,13 @@ service date's timetable from the agency's own archived static GTFS (`live-gtfs-
 analyses every route in its archive (`live-analyze.sh all --agency <slug>`) and writes a time-loss report per route to
 `$LIVE_DATA/studio/time-loss/`. Kingston has enough recorded days from about 2026-12-28.
 
+One exception, for the hosted Atlas Studio MCP only (CIV-1860, Ryan approved 2026-11-18): the `mcp-live` job in
+`live-report-refresh.yml` analyses every recorded agency, Studio agencies included, and writes the MCP's small figure files
+(`scripts/mcp/releaseLivePrivate.ts`) to the private bucket `atlas-mcp-live`, which only the hosted MCP Worker binds. Its log
+shows counts only (no agency, route or figure) and it uploads no artifact or cache. A route gets figures once its latest week
+has the good days `liveFiguresReady` (shared/liveCoverage.ts) needs; until then the MCP states the agency's limits (days
+recorded, routes covered). Nothing else about Studio agencies changes: no report pages or files go public.
+
 ### Studio's schedule files (the Fleet page)
 
 Studio's Fleet page reads two files per agency, built on this Mac from static GTFS zips. Nothing goes to R2 and the files stay out of git (`tmp/` is ignored). The agency menu lists every agency that has a before-after file.

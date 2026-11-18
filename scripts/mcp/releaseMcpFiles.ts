@@ -20,9 +20,6 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { IMMUTABLE_CACHE_CONTROL, r2Get, r2PutFile } from '../../pipeline/r2';
 import { runWithConcurrency } from '../../pipeline/utils';
 import { splitPaths } from '../../shared/mcpSplitStore';
-import { LIVE_ARCHIVE_POSITION_FEEDS } from '../../shared/liveArchiveFeeds';
-import { liveReliabilityFile } from '../../shared/liveReliability';
-import { liveSplitPaths, slimRanking } from './liveData';
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
@@ -76,26 +73,7 @@ for (const [script, extra] of [['scripts/mcp/buildIndex.ts', []], ['scripts/mcp/
   if (run.status !== 0) throw new Error(`${script} failed (exit ${run.status}).`);
 }
 
-// 3b. Live reliability (CIV-1860): for each agency Live publishes, the small per-route files the MCP's Live tools read,
-// made with the shared functions from Live's own published summaries (atlas/live/<slug>/).
-const liveAgencies: string[] = [];
-for (const slug of [...new Set(LIVE_ARCHIVE_POSITION_FEEDS.map(f => f.slug))]) {
-  const manifestText = await r2Get(`atlas/live/${slug}/manifest.json`);
-  if (manifestText == null) continue;
-  const manifest = JSON.parse(manifestText) as { routes: string[] };
-  const put = (path: string, value: unknown) => { const file = join(out, path); mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, JSON.stringify(value)); };
-  put(liveSplitPaths.manifest(slug), manifest);
-  const agencyText = await r2Get(`atlas/live/${slug}/agency.json`);
-  const summary = agencyText ? (JSON.parse(agencyText) as { summary?: Parameters<typeof slimRanking>[0] }).summary : undefined;
-  if (summary) put(liveSplitPaths.ranking(slug), slimRanking(summary));
-  for (const route of manifest.routes) {
-    const text = await r2Get(`atlas/live/${slug}/${route}.json`);
-    const r = text ? JSON.parse(text) as { route: string; routeTitle: string; generatedAt: string; v3?: Parameters<typeof liveReliabilityFile>[4] } : null;
-    if (r?.v3) put(liveSplitPaths.route(slug, route), liveReliabilityFile(slug, r.route, r.routeTitle, r.generatedAt, r.v3));
-  }
-  liveAgencies.push(slug);
-}
-console.log(`Live reliability files: ${liveAgencies.length ? liveAgencies.join(', ') : 'none published'}.`);
+// Live figures (CIV-1860) are not in the release: they go to a private bucket (scripts/mcp/releaseLivePrivate.ts).
 
 // 4. Upload, manifest last.
 const files: string[] = [];
@@ -103,7 +81,7 @@ const walk = (dir: string) => { for (const name of readdirSync(dir)) { const p =
 walk(out);
 const bytes = files.reduce((n, f) => n + statSync(join(out, f)).size, 0);
 const prefix = `atlas/releases/${releaseId}/mcp`;
-const report = { releaseId, dryRun, prefix, files: files.length, megabytes: Math.round(bytes / 1e5) / 10, agencies: catalog.length - missing.length, missing: missing.sort(), liveAgencies };
+const report = { releaseId, dryRun, prefix, files: files.length, megabytes: Math.round(bytes / 1e5) / 10, agencies: catalog.length - missing.length, missing: missing.sort() };
 writeFileSync(join(work, 'report.json'), JSON.stringify(report, null, 2));
 if (dryRun) {
   console.log(`Dry run: ${files.length} MCP files (${report.megabytes} MB) built for ${releaseId}; would upload to ${prefix}/. Nothing uploaded.`);

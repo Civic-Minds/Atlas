@@ -19,6 +19,7 @@ import { MAP_URL } from '../../src/utils/urlSchema';
 import { AGENCIES_PARAM } from '../../src/utils/shareUrlState';
 import { buildRouteKey } from '../../src/utils/routeKey';
 import { liveReader } from './liveData';
+import { LIVE_ARCHIVE_SLUGS, coverageLimits } from '../../shared/liveCoverage';
 import { RELIABILITY_BANDS } from '../../shared/liveReliability';
 import { LATE_ABOVE_MIN, EARLY_AT_OR_BELOW_MIN, BUNCHED_GAP_SEC, GAPPED_FACTOR } from '../../shared/rules/live';
 
@@ -174,14 +175,21 @@ async function liveAgencyFor(q: unknown) {
   return a;
 }
 async function liveAgency(a: { slug: string; name: string }) {
-  const manifest = await liveReader().manifest(a.slug);
-  if (!manifest) return { none: { agency: a.name, live: null, note: `Atlas has no Live recordings published for ${a.name}, so it has no figures for how its routes actually ran. It has the published schedule (route_frequency).` } };
-  return { manifest };
+  const [manifest, coverage] = await Promise.all([liveReader().manifest(a.slug), liveReader().coverage(a.slug)]);
+  // Each answer states what Live has recorded for the agency (CIV-1860, Ryan: "mention the limits right now if applicable").
+  const limits = coverage ? coverageLimits(coverage, manifest?.routes.length ?? 0) : undefined;
+  if (!manifest) {
+    const note = !LIVE_ARCHIVE_SLUGS.includes(a.slug)
+      ? `Atlas does not record Live data for ${a.name}, so it has no figures for how its routes actually ran. It has the published schedule (route_frequency).`
+      : `Atlas records Live data for ${a.name} but has no figures for it yet. It has the published schedule (route_frequency).`;
+    return { none: { agency: a.name, live: null, note, ...(limits ? { limits } : {}) } };
+  }
+  return { manifest, limits };
 }
-async function liveRoute(a: { slug: string; name: string }, m: { routes: string[] }, route: unknown) {
+async function liveRoute(a: { slug: string; name: string }, m: { routes: string[] }, route: unknown, limits?: string[]) {
   const q = String(route ?? '').trim().toLowerCase();
   const id = m.routes.find(r => r.toLowerCase() === q) ?? m.routes.find(r => q.startsWith(`${r.toLowerCase()} `));
-  if (!id) return { none: { agency: a.name, live: null, recordedRoutes: m.routes, note: `Atlas's Live recordings for ${a.name} cover only these routes; "${route}" is not one of them.` } };
+  if (!id) return { none: { agency: a.name, live: null, routesWithFigures: m.routes, note: `Atlas has Live figures for ${a.name} only on these routes; "${route}" is not one of them.`, ...(limits ? { limits } : {}) } };
   const file = await liveReader().route(a.slug, id);
   if (!file) return { none: { agency: a.name, live: null, note: `Atlas has no Live figures for route ${id} yet.` } };
   return { file };
@@ -316,22 +324,22 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const r = await liveReader().ranking(a.slug);
       if (!r) return { agency: a.name, ranking: null, note: 'Atlas has no ranking of recorded routes for this agency.' };
       const routes = [...r.routes].sort((x, y) => (y.lateShare ?? -1) - (x.lateShare ?? -1)).map(x => ({ route: x.route, name: x.titleLabel, lateShare: x.lateShare, lateShareLastWeek: x.lateLastWeek, departures: x.lateN, bunchedOrGappedShare: x.bunchingShare, deliveredShare: x.deliveredShare }));
-      return { agency: a.name, ...liveWeeks(live.manifest), measured: 'Whole day, this week, most often late first.', routes, held: r.held.map(h => h.route), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+      return { agency: a.name, ...liveWeeks(live.manifest), measured: 'Whole day, this week, most often late first.', routes, held: r.held.map(h => h.route), ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
     }
-    const f = await liveRoute(a, live.manifest, route);
+    const f = await liveRoute(a, live.manifest, route, live.limits);
     if ('none' in f) return f.none;
     const bands = Object.fromEntries(Object.entries(f.file.reliability.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
-    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), directions: f.file.reliability.directions, weeksComparable: f.file.reliability.weeksComparable, byPartOfDay: bands, definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), directions: f.file.reliability.directions, weeksComparable: f.file.reliability.weeksComparable, byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
   },
   route_bunching: async ({ agency: q, route, period: p }) => {
     const band = liveBand(p);
     const a = await liveAgencyFor(q);
     const live = await liveAgency(a);
     if ('none' in live) return live.none;
-    const f = await liveRoute(a, live.manifest, route);
+    const f = await liveRoute(a, live.manifest, route, live.limits);
     if ('none' in f) return f.none;
     const bands = Object.fromEntries(Object.entries(f.file.bunching.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
-    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), byPartOfDay: bands, definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE, note: 'startShare is the share of bunched or gapped gaps where the route starts; formsAt is the stretch where it forms (pattern "forms") or rises most; risePoints is how many percentage points it rises across that stretch.' };
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE, note: 'startShare is the share of bunched or gapped gaps where the route starts; formsAt is the stretch where it forms (pattern "forms") or rises most; risePoints is how many percentage points it rises across that stretch.' };
   },
   schedule_changes: async ({ agency: q, offset, limit }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());

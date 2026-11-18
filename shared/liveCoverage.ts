@@ -5,6 +5,8 @@
  */
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds';
 import { LIVE_MIN_HEALTHY_DAYS_PER_WEEK } from './rules/live';
+import { HEALTHY_DAY_SHARE } from './routeMetrics';
+import { qualityHold, type LiveV3 } from './liveDashboard';
 
 export interface LiveCoverage {
   slug: string;
@@ -18,7 +20,7 @@ export interface LiveCoverage {
   daysRecorded: number | null;
   /** Whether a day's recordings exist within the last two days (otherwise recording is paused or stopped). */
   recordingNow: boolean | null;
-  /** Kept only for Studio and Ryan's Mac (CIV-1716): figures, when there are any, are not published. */
+  /** Recorded for Studio only (CIV-1716): its figures reach the hosted MCP through a private bucket, never the public site. */
   archiveOnly: boolean;
 }
 
@@ -54,17 +56,25 @@ export function liveCoverage(slug: string, dates: readonly string[] | null, toda
 /** Every agency Live's archivers know, each once. */
 export const LIVE_ARCHIVE_SLUGS: readonly string[] = [...new Set([...LIVE_ARCHIVE_POSITION_FEEDS, ...LIVE_ARCHIVE_TRIP_FEEDS].map(f => f.slug))];
 
-/** The plain limits an answer states for an agency, from its coverage. */
-export function coverageLimits(c: LiveCoverage, hasFigures: boolean): string[] {
+/**
+ * Whether a route's Live analysis has enough to state figures: this week has at least LIVE_MIN_HEALTHY_DAYS_PER_WEEK good
+ * days and Live's own quality check holds nothing back. The same rule for every agency, so figures switch on (and off)
+ * by themselves as recordings build up or lapse.
+ */
+export function liveFiguresReady(v3: LiveV3 | undefined | null): boolean {
+  return !!v3?.weekly && v3.weekly.thisWeek.healthyDates.length >= LIVE_MIN_HEALTHY_DAYS_PER_WEEK && !qualityHold(v3);
+}
+
+/** What a good day is, in words, from the shared values. */
+export const GOOD_DAY_DEFINITION = `a good day is one with at least ${Math.round(HEALTHY_DAY_SHARE * 100)}% of the recordings a typical day of the same kind has`;
+
+/** The plain limits an answer states for an agency, from its coverage and how many routes have figures. */
+export function coverageLimits(c: LiveCoverage, routesWithFigures: number): string[] {
   const out: string[] = [];
   out.push(c.routes === 'every route' ? `Live records ${c.feeds.join(' and ')} for every route.` : `Live records only routes ${c.routes.join(', ')}.`);
-  if (c.daysRecorded == null) out.push('How many days are recorded could not be checked here.');
+  if (c.daysRecorded == null) out.push('How many days are recorded could not be checked.');
   else if (c.daysRecorded === 0) out.push('No recordings are kept now.');
   else out.push(`Recordings kept: ${c.daysRecorded} service day${c.daysRecorded === 1 ? '' : 's'}, ${c.firstDay} to ${c.lastDay}${c.recordingNow === false ? ' (not recording now)' : ''}.`);
-  if (!hasFigures) {
-    out.push(c.archiveOnly
-      ? 'Its figures are made only for Atlas Studio on request and are not published.'
-      : `Figures need two weeks of recordings with at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days each.`);
-  }
+  if (routesWithFigures === 0) out.push(`No figures yet: a route needs at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days in the latest week (${GOOD_DAY_DEFINITION}).`);
   return out;
 }

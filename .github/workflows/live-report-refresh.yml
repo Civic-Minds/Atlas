@@ -12,8 +12,10 @@ name: Live report refresh
 # To undo a publish: download that run's live-report-backup artifact and upload it back with
 #   npx tsx scripts/live-publish-upload.ts ttc --from <backup dir> --backup <another dir> --allow-older --upload
 #
-# Atlas Studio agencies (Kingston) are not built here: Studio is local only and this repository is public, so their
-# report refresh runs on Ryan's Mac with `npm run studio:report` (CIV-1716).
+# Atlas Studio agencies (Kingston) get no report pages here: Studio is local only and this repository is public, so their
+# report refresh runs on Ryan's Mac with `npm run studio:report` (CIV-1716). The mcp-live job below builds the hosted
+# Atlas Studio MCP's Live files for every recorded agency into a PRIVATE bucket only the hosted MCP reads (Ryan approved
+# this route 2026-11-18, CIV-1860); its log shows counts only and it uploads no artifact.
 on:
   workflow_dispatch:
     inputs:
@@ -223,3 +225,38 @@ jobs:
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+  # ---------------------------------------------------------------------------------------
+  # The hosted Atlas Studio MCP's Live files (CIV-1860), after the report files are published. Every recorded agency;
+  # writes only the private bucket. The log shows counts only (no agency, route or figure), and nothing is uploaded as an
+  # artifact or cached: the analysis output stays on the runner. Failing here never touches the published report.
+  # ---------------------------------------------------------------------------------------
+  mcp-live:
+    needs: publish
+    if: github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 120
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      MCP_LIVE_BUCKET: atlas-mcp-live
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build and upload the MCP's Live files
+        run: npx tsx scripts/mcp/releaseLivePrivate.ts --days 15 --work "$RUNNER_TEMP/mcp-live"
+
