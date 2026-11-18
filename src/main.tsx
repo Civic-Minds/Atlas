@@ -39,6 +39,7 @@ const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 // Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
 const StudioPage = import.meta.env.DEV ? React.lazy(() => import('./StudioPage')) : () => null;
+const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
@@ -97,14 +98,16 @@ ReactDOM.createRoot(rootElement).render(
               {RESEARCH_DRAFTS.map(({ href, Component }) => <Route key={href} path={href} element={<Component />} />)}
             </>
           )}
-          {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
+          {/* Live report pages: on where FEATURES.liveReports is, which includes the dev server (docs/FEATURE_FLAGS.md). */}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
           {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). */}
           {/* CIV-1731: one map page; the two earlier pages' addresses open it. */}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studio} element={<StudioPage />} />}
           {/* CIV-1871: what each agency has, local only; its address only, no link to it yet. */}
+          {/* CIV-1872: the local-only home page; its "Internal" tag link and the header's internal links are dev only too. */}
+          {FEATURES.internal && <Route path={FEATURE_ROUTES.internal} element={<InternalHomePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioCoverage} element={<StudioCoveragePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}

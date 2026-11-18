@@ -873,6 +873,8 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
 export const GO_TO_ATLAS_LABEL = 'Go to Atlas';
 /** The page header's nav, for screen readers. */
 export const SITE_NAV_LABEL = 'Site navigation';
+/** CIV-1872: the local-only links beside it, for screen readers. */
+export const INTERNAL_NAV_LABEL = 'Internal pages';
 export const SITE_FOOTER_LABEL = 'Site footer';
 export const FOOTER_LINKS_LABEL = 'Footer links';
 export const LEGAL_LINKS_LABEL = 'Legal links';

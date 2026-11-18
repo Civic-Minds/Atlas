@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { MemoryRouter } from 'react-router';
 import SiteHeader from '../SiteHeader';
+import ModeTag from '../ModeTag';
+import { INTERNAL_GROUPS, INTERNAL_HEADER_LINKS } from '../../../shared/internalPages';
+import { INTERNAL_PATH } from '../../../shared/pagePaths';
 
 describe('SiteHeader on phones (CIV-1301)', () => {
   it('hides Docs below the sm breakpoint, so the other links fit on one line; it stays in the footer', () => {
@@ -17,5 +21,27 @@ describe('SiteHeader on phones (CIV-1301)', () => {
   it('has no Agencies link; Agencies is in the footer (CIV-1771)', () => {
     render(<SiteHeader />);
     expect(screen.queryByRole('link', { name: /Agencies/ })).toBeNull();
+  });
+});
+
+describe('internal links (CIV-1872)', () => {
+  it('puts the local-only links in their own nav, ending with More, and keeps Studio out of the public one', () => {
+    render(<SiteHeader />);
+    const internal = screen.getByRole('navigation', { name: 'Internal pages' });
+    expect([...internal.querySelectorAll('a')].map(a => a.textContent)).toEqual(INTERNAL_HEADER_LINKS.map(l => l.label));
+    expect(internal.querySelectorAll('a')[3]).toHaveAttribute('href', INTERNAL_PATH);
+    expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Coverage/);
+    expect(screen.getAllByRole('link', { name: /Go to Atlas/ })).toHaveLength(1);
+  });
+
+  it('lists every internal page once on the home page, and the header links are among them or More', () => {
+    const paths = INTERNAL_GROUPS.flatMap(g => g.pages.map(p => p.path));
+    expect(new Set(paths).size).toBe(paths.length);
+    for (const link of INTERNAL_HEADER_LINKS.filter(l => l.path !== INTERNAL_PATH)) expect(paths).toContain(link.path);
+  });
+
+  it('opens the home page from the Internal tag', () => {
+    render(<MemoryRouter><ModeTag word="Internal" /></MemoryRouter>);
+    expect(screen.getByRole('link', { name: 'Internal' })).toBeTruthy();
   });
 });

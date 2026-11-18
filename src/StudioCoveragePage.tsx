@@ -12,6 +12,7 @@ import { LIVE_ARCHIVE_SLUGS, type LiveCoverage } from '../shared/liveCoverage';
 import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
 import { COVERAGE_COLUMNS as H, coverageRows, type CoverageRow } from '../shared/coverageRows';
 import historyAgencyList from '../shared/data/history-agencies.json';
+import { loadingText } from './content/noticeCopy';
 import { agencyNames } from './utils/agencyName';
 
 interface LocalFacts { studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
@@ -67,7 +68,7 @@ export default function StudioCoveragePage() {
       </div>
       <div className="p-6">
         {agenciesLoadState === 'loading' ? (
-          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">Loading…</div>
+          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">{loadingText('the agencies')}</div>
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>

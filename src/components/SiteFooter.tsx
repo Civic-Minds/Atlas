@@ -5,7 +5,7 @@ import AtlasLogo from './AtlasLogo';
 import { ATLAS_BYLINE, FOOTER_LINKS_LABEL, LEGAL_LINKS_LABEL, SITE_FOOTER_LABEL } from '../content/noticeCopy';
 import { FOOTER_HEADINGS, PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
-import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCHERS_PATH, TERMS_PATH } from '../../shared/pagePaths';
+import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PRIVACY_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
 type FooterLink = { href: string; label: string };
 
@@ -25,7 +25,7 @@ const LEGAL_START: Record<number, readonly [string, string, string]> = {
 };
 
 // Only pages that exist in this deployment are linked (these routes are feature-gated in main.tsx); a column with no
-// links isn't shown, so public, where For Planners is off, keeps three columns.
+// links isn't shown. For Planners and For Researchers are local only and reached from /internal (CIV-1872), not here.
 export function footerGroups(): { title: string; links: FooterLink[] }[] {
   const groups = [
     {
@@ -40,16 +40,6 @@ export function footerGroups(): { title: string; links: FooterLink[] }[] {
       links: [
         { href: DOCS_PATH, label: PAGE_NAMES.docs },
         ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research }] : []),
-      ],
-    },
-    {
-      // CIV-1699: For Planners now, Studio later.
-      title: FOOTER_HEADINGS.product,
-      links: [
-        // CIV-1320: beta only for now (Ryan: "The beta can").
-        ...(FEATURES.plannersLink ? [{ href: PLANNERS_PATH, label: PAGE_NAMES.plannersLink }] : []),
-        // CIV-1709: local only, like For Planners.
-        ...(FEATURES.researchersLink ? [{ href: RESEARCHERS_PATH, label: PAGE_NAMES.researchers }] : []),
       ],
     },
     {
