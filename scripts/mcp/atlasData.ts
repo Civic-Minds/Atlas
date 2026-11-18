@@ -474,9 +474,22 @@ export function routeHistory(slug: string, routeQuery: string, day: DayType) {
     ?? ag.routes.find(r => `${r.routeShortName} ${r.routeName ?? ''}`.toLowerCase().includes(q));
   if (!route) return { route: null, routes: ag.routes.length };
   const snaps = [...snapshotsNewestFirst(usableSnapshots(route.snapshots))].reverse();
+  const newest = snaps[snaps.length - 1];
+  const valueOf = (s: typeof snaps[number] | undefined, k: PeriodKey) => { if (!s) return null; const v = historyDayPeriodValue(s as never, day, k); return v.kind === 'value' ? v.min : null; };
+  // GitHub #1580: some old schedules hold impossible values (1-3 min on routes that now run every 30 or more), most
+  // likely two copies of a service counted together. Until that is fixed, such a value is marked, not reported as real.
+  // "Now" is the newest schedule's figure in the same part of the day, or, where it has none there, its best figure.
+  const nowBest = Math.min(...PERIOD_KEYS.map(k => valueOf(newest, k)).filter((v): v is number => v != null));
+  const suspect = (s: typeof snaps[number], k: PeriodKey) => { const v = valueOf(s, k), now = valueOf(newest, k) ?? (Number.isFinite(nowBest) ? nowBest : null); return s !== newest && v != null && v <= 3 && now != null && now >= 30; };
+  let flagged = 0;
   return {
     route: route.routeShortName, name: route.routeName ?? null,
-    schedules: snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => { const v = historyDayPeriodValue(s as never, day, k); return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null]; }).filter(([, v]) => v != null)) })),
+    schedules: snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
+      const v = historyDayPeriodValue(s as never, day, k);
+      if (v.kind === 'value' && suspect(s, k)) { flagged++; return [PERIOD_LABELS[k], `every ${v.min} min (doubtful: likely a data error, being checked)`]; }
+      return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null];
+    }).filter(([, v]) => v != null)) })),
+    ...(flagged ? { warning: `${flagged} figure(s) marked doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more. These are most likely data errors, not real service; don't report them as fact.` } : {}),
   };
 }
 

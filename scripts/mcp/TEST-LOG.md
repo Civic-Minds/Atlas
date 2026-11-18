@@ -13,6 +13,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.3.0 | 2026-11-17 | rank_agencies, filtered list_agencies, schedule_changes dates up front (88f7e2bb8) |
 | 0.4.0 | 2026-11-17 | Peers match on kind (buses only or with rail) and leave out parts of a larger operator; agencies found by short name (HSR); a station matches its bays and platforms; trip times warn when the schedule file on this Mac is older than the map's |
 | 0.5.0 | 2026-11-17 | routes_near, route_history, buses_needed, branches in route_frequency, list_agencies near a place; "Blue" finds the Blue Line; a newer schedule file is read without a restart |
+| 0.5.1 | 2026-11-17 | route_history marks impossible old figures (3 min or less on a route now at 30 or more) as doubtful |
 
 ## Standing questions
 
@@ -35,6 +36,8 @@ Weak spots (no tool yet: a good answer says so instead of guessing):
 - How has the 504 changed since 2019?
 
 Ryan's test page for the next round: `Atlas-worktrees/_reports/mcp-tests/test-questions.html`.
+
+- How has Kingston Transit route 12 changed since 2018? (Its old schedules hold impossible 3-minute figures; a good answer calls them doubtful.)
 
 Ryan's second round:
 11. Which Mississauga routes run every 15 minutes or better on weekday evenings?
