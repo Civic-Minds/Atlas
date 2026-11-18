@@ -10,6 +10,7 @@ import { openAtlasProblemEmail } from '../../utils/reportIssue';
 import { trackEvent } from '../../lib/analytics';
 import { FEATURES } from '../../../shared/config';
 import { useColorMode } from '../../hooks/useColorMode';
+import { PHONE_MEDIA_QUERY } from '../../hooks/useMediaQuery';
 import ArrowLink from '../ui/ArrowLink';
 import { OutboundLink } from '../OutboundLink';
 import { CardBackLink } from '../CardBack';
@@ -186,13 +187,17 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
     const anchor = button.closest<HTMLElement>('[data-report-anchor]') ?? button;
     const rect = anchor.getBoundingClientRect();
     const edge = 16;
-    const cardWidth = Math.min(rect.width, window.innerWidth - edge * 2);
+    const fullWidth = window.innerWidth - edge * 2;
+    const isPhone = window.matchMedia?.(PHONE_MEDIA_QUERY).matches ?? false;
+    // On phones the anchor is often a narrow or collapsed bottom-sheet strip, so the form takes the full
+    // screen width there instead of the anchor's (#1583: it shrank to ~150px and the button label clipped).
+    const cardWidth = isPhone ? fullWidth : Math.min(rect.width, fullWidth);
     // Clamp against the form's actual rendered height, not a flat guess -- checking "Frequency is
     // wrong" (or any other content growth) can add 100s of px after the dialog first opens, and a
     // fixed offset let the submit button end up clipped below the viewport with no way to scroll to it.
     const formHeight = formRef.current?.getBoundingClientRect().height ?? 120;
     const top = Math.max(edge, Math.min(rect.top, window.innerHeight - edge - formHeight));
-    if (window.innerWidth < 640) {
+    if (isPhone) {
       setReportCardPosition({ top, left: edge, width: cardWidth });
       return;
     }

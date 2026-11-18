@@ -8,6 +8,8 @@
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { PERIOD_LABELS, type PeriodKey } from '../../shared/config';
+import { PEOPLE_MOVER_MODE, ROUTE_TYPE, VIRTUAL_LRT_MODE } from '../../shared/rules/modes';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
@@ -482,6 +484,30 @@ export const historyWeekendFrequencyChangeNote = (day: 'Saturday' | 'Sunday') =>
   `This compares the oldest and newest ${dayInSentence(day)} schedules available for this route.`;
 /** A History row whose weekend day has no trips at all: docs/style/TEXT.md's approved "a route that doesn't run reads 'no trips'" (CIV-1251). */
 export const HISTORY_NO_TRIPS_LABEL = 'no trips';
+/**
+ * N127 no-trips-in-period (CIV-471, Ryan approved word for word 2026-11-13: "No {period} {vehicles}"): a History row whose
+ * year ran no trip at all in the chosen period. The period is its shared name in lower sentence case (AM and PM stay
+ * capitals); the vehicle word is by the route's effective mode. A mode with no word here gets none: its row stays blank.
+ */
+const NO_TRIPS_VEHICLES: Record<number, string> = {
+  [ROUTE_TYPE.BUS]: 'buses',
+  [ROUTE_TYPE.SUBWAY]: 'trains',
+  [ROUTE_TYPE.RAIL]: 'trains',
+  [VIRTUAL_LRT_MODE]: 'trains',
+  [ROUTE_TYPE.FERRY]: 'ferries',
+  [ROUTE_TYPE.TRAM]: 'streetcars',
+  [ROUTE_TYPE.TROLLEYBUS]: 'trolleybuses',
+  [ROUTE_TYPE.MONORAIL]: 'monorail trains',
+  [PEOPLE_MOVER_MODE]: 'people movers',
+  [ROUTE_TYPE.CABLE_TRAM]: 'cable cars',
+  [ROUTE_TYPE.GONDOLA]: 'gondolas',
+  [ROUTE_TYPE.FUNICULAR]: 'funiculars',
+};
+export function noTripsInPeriodText(period: string, mode: number | null): string | null {
+  const vehicles = mode == null ? undefined : NO_TRIPS_VEHICLES[mode];
+  const name = PERIOD_LABELS[period as PeriodKey];
+  return vehicles && name ? `No ${name.replace(/^\p{Lu}(?=\p{Ll})/u, c => c.toLowerCase())} ${vehicles}` : null;
+}
 /** Above an agency's History list when no route has the picked weekend day's values by time of day (Ryan approved word for word, CIV-1436, 2026-11-13). */
 export const historyWeekendPeriodsMissingNote = (day: 'Saturday' | 'Sunday') =>
   `${day} values by time of day aren’t available for this agency yet.`;

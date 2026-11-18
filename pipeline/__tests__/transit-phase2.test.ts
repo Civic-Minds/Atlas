@@ -248,6 +248,33 @@ describe('applyAnalysisCriteria', () => {
     expect(weekday).toMatchObject({ tier: '30', weekdayTierVariation: true });
   });
 
+  describe('weekday variation is read on the public scale (CIV-1846, #1584)', () => {
+    const weekdayWith = (route: string, headwayFor: (day: string) => number) => {
+      const results = applyAnalysisCriteria(WEEKDAYS.map(day => raw({
+        route,
+        day,
+        departureTimes: Array.from({ length: Math.floor(900 / headwayFor(day)) + 1 }, (_, trip) => 420 + trip * headwayFor(day)),
+      })));
+      return results.find(item => item.route === route && item.day === 'Weekday');
+    };
+
+    it('does not flag weekdays that differ only as every 8 vs every 10 (Lawrence KU 43)', () => {
+      const weekday = weekdayWith('lawrence-43', day => (day === 'Friday' ? 10 : 8));
+      expect(weekday?.tier).toBe('10');
+      expect(weekday?.weekdayTierVariation).toBeUndefined();
+    });
+
+    it('still flags weekdays whose public grades differ (every 10 vs every 15)', () => {
+      const weekday = weekdayWith('ten-vs-fifteen', day => (day === 'Friday' ? 15 : 10));
+      expect(weekday).toMatchObject({ tier: '15', weekdayTierVariation: true });
+    });
+
+    it('still flags every 8 vs every 15, since 8 shows as every 10', () => {
+      const weekday = weekdayWith('eight-vs-fifteen', day => (day === 'Friday' ? 15 : 8));
+      expect(weekday).toMatchObject({ tier: '15', weekdayTierVariation: true });
+    });
+  });
+
   describe('one weekday that reads one-off does not decide the Weekday (CIV-1084)', () => {
     // Pierce County Ferries 18987 to Steilacoom: alternate Mondays drop the 11:10 sailing, leaving
     // two departures 09:00-15:00, so that Monday alone reads split-peak (one-off).

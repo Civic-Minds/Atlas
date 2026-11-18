@@ -149,3 +149,14 @@ describe('History weekend days (CIV-1425)', () => {
     expect(historyYearRoutes(weekend, 2024, 'default', { period: 'midday', maxHeadway: Infinity, day: 'Weekday' })[0].headway).toBe(10);
   });
 });
+describe('historyPeriodValue: no trips (CIV-471)', () => {
+  it('reads none only for a blank period the build recorded with no trip', () => {
+    const s = { label: 'Oct 2019', year: 2019, weekdayHeadwayMin: 30, headwayByPeriod: { midday: null, amPeak: 30 }, noTripPeriods: ['midday' as const, 'amPeak' as const] };
+    expect(historyPeriodValue(s, 'midday')).toEqual({ kind: 'none' });
+    // A value wins over the record, and All day never reads it.
+    expect(historyPeriodValue(s, 'amPeak')).toEqual({ kind: 'value', min: 30 });
+    expect(historyPeriodValue(s, 'all')).toEqual({ kind: 'value', min: 30 });
+    expect(historyPeriodValue({ ...s, noTripPeriods: undefined }, 'midday')).toEqual({ kind: 'blank' });
+  });
+});
+
