@@ -33,6 +33,12 @@ export const LIVE_MIN_HEALTHY_DAYS_PER_WEEK = 4;
 export const LIVE_MIN_SAME_TYPE_DAYS = 2;
 /** A stop, stretch or stop pair is shown only with evidence from at least this many days. */
 export const LIVE_MIN_EVIDENCE_DAYS = 5;
+/**
+ * An agency joins Studio's Live page once one of its routes has this many days of recordings (Ryan, CIV-1828: "How about
+ * 7 days but since this is internal we could make it less"). On the dev server, which is internal, the shortest section
+ * minimum (LIVE_MIN_GOOD_DAYS) is used instead, so a new agency shows sooner: liveStudioMinDays.
+ */
+export const LIVE_STUDIO_MIN_RECORDED_DAYS = 7;
 
 // ---- Bunching (shared/bunching.ts) ----
 

@@ -27,8 +27,10 @@ import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, route
 import { studioVehiclesDevUrl, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, periodFigure, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { StudioGroupFigures } from './StudioVehiclesPage';
-import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, studioAgencyFrom } from '../shared/studioAgencies';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, vehiclesTitleText } from '../shared/studioWording';
+import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioPageFrom } from '../shared/studioAgencies';
+import { LIVE_STUDIO_AGENCIES_URL } from '../shared/liveStudioAgencies';
+import StudioLiveBody, { type StudioLiveSlots } from './components/Live/StudioLiveBody';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, STUDIO_PAGE_NAMES, vehiclesTitleText } from '../shared/studioWording';
 
 /**
  * Atlas Studio (CIV-1731): one map-and-sidebar page on the shared layout Live uses (CIV-1732), desktop only. The map draws
@@ -305,41 +307,82 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
 
 function PortalInto({ slot, children }: { slot: HTMLElement; children: ReactNode }) { return createPortal(children, slot); }
 
+/**
+ * Studio's shell (CIV-1828): the top bar with the page menu (Live, Fleet), the agency menu and each page's own switchers,
+ * then the page. The shell owns the page (?page=), the agency (?agency=) and the route (?route=); a page owns the rest.
+ * Each page lists only the agencies it has data for: Live's from the recordings (LIVE_STUDIO_AGENCIES_URL), Fleet's from
+ * the built Studio files (STUDIO_MANIFEST_DEV_URL).
+ */
 export default function StudioPage() {
-  // CIV-1806: the agency comes from the address (?agency=), picked in the header's menu.
   const [searchParams, setSearchParams] = useSearchParams();
-  // The agencies with built files (shared/studioAgencies.ts), listed by the dev server; the address picks among them.
-  const manifest = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
-  const studioAgencies = manifest && manifest !== 'missing' ? manifest.agencies : manifest === 'missing' ? [] : null;
-  const slug = studioAgencyFrom(searchParams.get('agency'), studioAgencies);
+  const page = studioPageFrom(searchParams.get('page'));
+  const set = (changes: Record<string, string | null>) => setSearchParams(p => {
+    const n = new URLSearchParams(p);
+    for (const [k, v] of Object.entries(changes)) { if (v == null) n.delete(k); else n.set(k, v); }
+    return n;
+  });
+  const liveList = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
+  const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
+  const listed = page === 'live' ? liveList : fleetList;
+  const pageAgencies = listed && listed !== 'missing' ? listed.agencies : listed === 'missing' ? [] : null;
+  // Live opens on its first agency (TTC), Fleet on Kingston.
+  const slug = studioAgencyFrom(searchParams.get('agency'), pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
+  const route = searchParams.get('route');
+  const setRoute = (r: string | null) => set({ route: r });
   const agency = useLiveAgencyName(slug);
   const { agencies } = useAgencies();
-  const agencyOptions = useMemo(() => (studioAgencies ?? [slug]).map(s => {
+  const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => {
     const a = agencies.find(x => x.slug === s);
     return [s, a ? agencyNames(a).name : s] as const;
-  }), [agencies, studioAgencies, slug]);
-  const pickAgency = (s: string) => { setRoute(null); setSearchParams(p => { const n = new URLSearchParams(p); n.set('agency', s); return n; }); };
-  const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
-  const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
-  const [route, setRoute] = useState<string | null>(null);
-  const [period, setPeriod] = useState<PeriodKey>(DEFAULT_PERIOD);
-  const [routeSlot, setRouteSlot] = useState<HTMLElement | null>(null);
+  }), [agencies, pageAgencies, slug]);
+  // A new page or agency starts with no route open.
+  const pickAgency = (s: string) => set({ agency: s, route: null });
+  const pickPage = (k: string) => set({ page: k, agency: null, route: null });
+  const pageOptions = STUDIO_PAGES.map(k => [k, STUDIO_PAGE_NAMES[k]] as const);
+  const [slots, setSlots] = useState<StudioLiveSlots>({ route: null, measure: null, direction: null, data: null });
+  // One ref callback per slot, made once: a new callback each render would clear and reset the slot every time.
+  const slotRefs = useMemo(() => Object.fromEntries((['route', 'measure', 'direction', 'data'] as const).map(k => [k, (el: HTMLElement | null) => {
+    if (el) setSlots(s => (s[k] === el ? s : { ...s, [k]: el }));
+  }])) as Record<keyof StudioLiveSlots, (el: HTMLElement | null) => void>, []);
+  const slot = (k: keyof StudioLiveSlots) => slotRefs[k];
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
-  // The times of day either file has figures for.
-  const periods = PERIOD_KEYS.filter(k => (vehicles && vehicles !== 'missing' && vehicles.periods[k]?.length)
-    || (file && file !== 'missing' && file.changes.some(c => c.before?.headway[k] != null || c.after?.headway[k] != null)));
   return (
     <MapAppShell>
       <MapAppHeader>
         <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
-        <PillMenu label={AGENCY_COLUMN} active={slug !== STUDIO_DEFAULT_AGENCY} value={slug} options={agencyOptions} onPick={pickAgency} />
+        <PillMenu label={PAGE_NAMES.studio} value={page} options={pageOptions} onPick={pickPage} />
+        {slug && <PillMenu label={AGENCY_COLUMN} value={slug} options={agencyOptions} onPick={pickAgency} />}
+        {page === 'live' && <><div ref={slot('direction')} className="contents" /><span aria-hidden className="mx-1 h-5 w-px bg-[var(--border-primary)]" /><div ref={slot('measure')} className="contents" /></>}
         <div className="ml-auto flex items-center gap-3">
-          <div ref={setRouteSlot} className="contents" />
-          {periods.length > 0 && <PillMenu label={TIME_OF_DAY_LABEL} value={period} options={periods.map(k => [k, PERIOD_LABELS[k]] as const)} onPick={k => setPeriod(k as PeriodKey)} />}
+          {/* Live: its data date, then the route menu (its time of day sits in the data row). Fleet: the route menu, then the time of day. */}
+          {page === 'live' && <div ref={slot('data')} className="contents" />}
+          <div ref={slot('route')} className="contents" />
+          {page === 'fleet' && <div ref={slot('data')} className="contents" />}
         </div>
       </MapAppHeader>
-      {file === 'missing' && <p className="p-6 text-sm text-[var(--text-muted)]">{C.noData}</p>}
-      {file && file !== 'missing' && <Body key={slug} file={file} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} routeSlot={routeSlot} />}
+      {page === 'live'
+        ? slug && <StudioLiveBody key={slug} agency={slug} route={route} setRoute={setRoute} slots={slots} />
+        : slug && <FleetPage key={slug} slug={slug} agency={agency} route={route} setRoute={setRoute} routeSlot={slots.route} periodSlot={slots.data} />}
     </MapAppShell>
+  );
+}
+
+/** Fleet (CIV-1828, a placeholder name): the schedule changes and buses needed built for CIV-1806 and CIV-1827, as they were. */
+function FleetPage({ slug, agency, route, setRoute, routeSlot, periodSlot }: { slug: string; agency: string; route: string | null; setRoute: (r: string | null) => void; routeSlot: HTMLElement | null; periodSlot: HTMLElement | null }) {
+  const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
+  const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
+  const [period, setPeriod] = useState<PeriodKey>(DEFAULT_PERIOD);
+  // The times of day either file has figures for.
+  const periods = PERIOD_KEYS.filter(k => (vehicles && vehicles !== 'missing' && vehicles.periods[k]?.length)
+    || (file && file !== 'missing' && file.changes.some(c => c.before?.headway[k] != null || c.after?.headway[k] != null)));
+  const periodMenu = periodSlot && periods.length > 0
+    ? <PortalInto slot={periodSlot}><PillMenu label={TIME_OF_DAY_LABEL} value={period} options={periods.map(k => [k, PERIOD_LABELS[k]] as const)} onPick={k => setPeriod(k as PeriodKey)} /></PortalInto>
+    : null;
+  return (
+    <>
+      {file === 'missing' && <p className="p-6 text-sm text-[var(--text-muted)]">{C.noData}</p>}
+      {file && file !== 'missing' && <Body file={file} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} routeSlot={routeSlot} />}
+      {periodMenu}
+    </>
   );
 }

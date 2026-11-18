@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG, LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_GOOD_DAYS, LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS, LIVE_POLL_SEC } from '../live';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG, LIVE_MIN_EVIDENCE_DAYS, LIVE_MIN_GOOD_DAYS, LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS, LIVE_POLL_SEC, LIVE_STUDIO_MIN_RECORDED_DAYS } from '../live';
 
 // Rules move 2: Live's thresholds live in shared/rules/live.ts. Values pinned as they were before the move.
 describe("Live's thresholds (shared/rules/live.ts)", () => {
@@ -13,6 +13,11 @@ describe("Live's thresholds (shared/rules/live.ts)", () => {
   it('keeps each minimum-day rule under its own name', () => {
     expect({ LIVE_MIN_GOOD_DAYS, LIVE_MIN_SPREAD_DAYS, LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_MIN_EVIDENCE_DAYS })
       .toEqual({ LIVE_MIN_GOOD_DAYS: 3, LIVE_MIN_SPREAD_DAYS: 3, LIVE_MIN_HEALTHY_DAYS_PER_WEEK: 4, LIVE_MIN_SAME_TYPE_DAYS: 2, LIVE_MIN_EVIDENCE_DAYS: 5 });
+  });
+
+  // CIV-1828: Studio's Live page lists an agency after 7 days of recordings (Ryan).
+  it("keeps Studio's Live minimum at 7 days", () => {
+    expect(LIVE_STUDIO_MIN_RECORDED_DAYS).toBe(7);
   });
 
   // Each archiver's wrangler file binds the bucket the app reads that agency from (Kingston its own, the rest atlas-live).
