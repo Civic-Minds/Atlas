@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
+- **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views
 - **The agency list and Live use plain words instead of internal terms**: "GTFS schedule feeds", "Linked", "Near a limit" and similar labels read as jargon to planners
 - **State and province pages say when an agency only partly serves the place**: "1 route in West Virginia · 68 total" under its name, so a cross-border agency's small count isn't mistaken for its size
 - **Two buses sent together no longer read as a 1-minute longest gap**: [LA Metro 217](https://github.com/Civic-Minds/Atlas/issues/1548)'s doubled school trip to Washington Fairfax Hub read a PM peak longest gap of 1, the spacing of the pair rather than any wait

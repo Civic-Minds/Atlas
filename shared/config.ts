@@ -88,9 +88,10 @@ export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'de
 export const SHARE_UTM_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
 // While a mode (Live, History, Compare) is active, the other mode tabs shrink to icons. Beta-only.
 export const COLLAPSE_MODE_TABS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
-// CIV-1567: one gentle transition for entering a mode (Compare first): the new view fades in once its map has drawn,
-// and a map's label changes only when the map has redrawn. Beta and dev only until Ryan signs off.
-export const MODE_TRANSITIONS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// CIV-1567: one gentle transition for entering and leaving a mode (Compare, History): the new view fades in once its
+// map has drawn, and a map's label changes only when the map has redrawn. On in every mode since Ryan's OK on beta
+// (2026-11-17, "Looks pretty good yes ty"); Live stays without it.
+export const MODE_TRANSITIONS_ENABLED = true;
 // #690: route lines drawn in segments coloured by the pooled per-stop tier (every trip at each
 // stop), with the route-level tier still deciding the filter. Beta and dev only until the
 // segment colours have been looked at on real routes.
