@@ -3,6 +3,8 @@
  * schedule files on this Mac), buses needed (Studio's file on this Mac) and the index build (writes next to the route
  * files). The hosted server never imports this module; the tools in atlasData.ts are pure.
  */
+import { stopMatchText } from '../../shared/stopNameText';
+import { headwayAmount, headwayEvery } from '../../shared/headwayText';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { PERIOD_KEYS, type PeriodKey } from '../../shared/config';
@@ -66,7 +68,7 @@ export async function schedules(slug: string): Promise<GtfsData[]> {
   return Promise.all(files.map(f => readSchedule(f, slug)));
 }
 
-const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
+const norm = stopMatchText;
 /** The places (stations, or stops without one) whose stop names match the text, with the names matched. */
 export function findPlaces(gtfs: GtfsData, query: string): { places: Set<string>; names: string[] } {
   const q = norm(query);
@@ -162,7 +164,7 @@ export async function combinedDepartures(agencies: ReadonlyArray<{ slug: string;
   const reading = (starts: number[], start: number, end: number) => {
     const r = pooledReadingInWindow(starts, start, end);
     const n = new Set(starts.filter(s => s >= start && s < end)).size;
-    return { departures: n, every: r.value != null ? `every ${Math.round(r.value)} min` : r.worstWait != null ? `uneven: waits up to ${Math.round(r.worstWait)} min` : n ? 'too few trips for a regular frequency' : 'no trips' };
+    return { departures: n, every: r.value != null ? headwayEvery(Math.round(r.value)) : r.worstWait != null ? `uneven: waits up to ${headwayAmount(r.worstWait)}` : n ? 'too few trips for a regular frequency' : 'no trips' };
   };
   return { ...t, reading };
 }

@@ -26,6 +26,10 @@ import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySn
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import { headwayEvery } from '../../shared/headwayText';
+import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
+import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
+import { placeParts } from '../../shared/stopNameText';
 
 
 type Feature = McpFeature;
@@ -166,7 +170,7 @@ function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
 export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
-  const waitMinutes = filter.headway != null && filter.headway < 999 ? filter.headway : null;
+  const waitMinutes = filter.headway != null && filter.headway < HEADWAY_NO_SERVICE_FROM ? filter.headway : null;
   const trips = departuresIn(r.rows, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
   return {
@@ -328,7 +332,7 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?
     towards,
     byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
       .map(([h, v]) => [+h, v] as const).filter(([h]) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end).sort((a, b) => a[0] - b[0])
-      .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : `every ${v} min` })),
+      .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : headwayEvery(v) })),
   }));
 }
 
@@ -388,14 +392,7 @@ export async function agenciesWithRouteName(text: string): Promise<Array<{ agenc
   });
 }
 
-/** Country names as the catalog's regions map them, matched loosely ("US", "USA", "United States"). */
-export function sameCountry(country: string | null, query: string): boolean {
-  if (!country) return false;
-  const q = query.trim().toLowerCase().replace(/\./g, '');
-  const c = country.toLowerCase();
-  const aliases: Record<string, string[]> = { 'united states': ['us', 'usa', 'america', 'united states of america'], canada: ['ca'] };
-  return c === q || (aliases[c] ?? []).includes(q);
-}
+export { sameCountry } from '../../shared/regionCountry';
 
 // ---- Branches, places, nearby agencies, history and buses needed (0.5.0) ----
 
@@ -462,18 +459,16 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
   }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
-const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
 /**
  * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
  * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
  */
 /** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
-const DAYTIME_PERIODS = TIME_PERIODS.slice(0, TIME_PERIODS.findIndex(t => t.key === 'late')).map(t => t.key as PeriodKey);
-export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIODS.every(k => r.figures[k]?.shown === 'no service');
+export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIOD_KEYS.every(k => r.figures[k]?.shown === 'no service');
 
-export async function routesNear(agency: CatalogAgency, place: string, metres = 250) {
+export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
   const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
-  const parts = words(place);
+  const parts = placeParts(place);
   const stops = await stopsOf(agency);
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
   // A stop can only be in range if it is within the range's degrees of latitude and longitude of a seed: check that first, the exact distance after.
@@ -546,7 +541,7 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
     try {
       const today = findRoute(await routeList(agency, day), route.routeShortName);
       if (today) {
-        const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], `every ${f.waitMinutes} min`]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
+        const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], headwayEvery(f.waitMinutes)]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
         const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
         current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
       }
@@ -557,7 +552,7 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
     schedules: [...snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
       const v = historyDayPeriodValue(s as never, day, k);
       if (v.kind === 'value' && suspect(s, k)) { flagged++; return [PERIOD_LABELS[k], `every ${v.min} min (doubtful: likely a data error, being checked)`]; }
-      return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null];
+      return [PERIOD_LABELS[k], v.kind === 'value' ? headwayEvery(v.min) : v.kind === 'none' ? 'no service' : null];
     }).filter(([, v]) => v != null)) })), ...(current ? [current] : [])],
     ...(flagged ? { warning: `${flagged} figure(s) marked doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more. These are most likely data errors, not real service; don't report them as fact.` } : {}),
   };
