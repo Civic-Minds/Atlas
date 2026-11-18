@@ -10,6 +10,7 @@ import { DEFAULT_R2_PUBLIC_URL } from '../../shared/config';
 import { liveReliabilityFile, type LiveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
 import type { AgencySummary } from '../../shared/liveAgency';
+import type { LiveCoverage } from '../../shared/liveCoverage';
 
 export interface LiveManifest { agency: string; generatedAt?: string; thisWeek: { from: string; to: string } | null; lastWeek: { from: string; to: string } | null; routes: string[] }
 export type LiveRanking = Pick<AgencySummary, 'generatedAt' | 'covered' | 'held'> & { routes: Array<Pick<AgencySummary['routes'][number], 'route' | 'titleLabel' | 'lateShare' | 'lateN' | 'lateLastWeek' | 'bunchingShare' | 'bunchedShare' | 'gappedShare' | 'deliveredShare'>> };
@@ -21,6 +22,8 @@ export interface LiveReader {
   ranking(slug: string): Promise<LiveRanking | null>;
   /** One route's reliability and bunching figures. */
   route(slug: string, route: string): Promise<LiveReliabilityFile | null>;
+  /** What Live has recorded for the agency (days, routes, feeds), or null when this reader has no coverage files. */
+  coverage(slug: string): Promise<LiveCoverage | null>;
 }
 
 const base = () => ((globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.ATLAS_MCP_LIVE_BASE ?? DEFAULT_R2_PUBLIC_URL).replace(/\/$/, '');
@@ -46,14 +49,22 @@ export const publishedLiveReader: LiveReader = {
     const r = await getJson<{ status: string; route: string; routeTitle: string; generatedAt: string; v3?: LiveV3 }>(`atlas/live/${slug}/${encodeURIComponent(route)}.json`);
     return r?.v3 ? liveReliabilityFile(slug, r.route, r.routeTitle, r.generatedAt, r.v3) : null;
   },
+  // Coverage is written only to the private bucket (releaseLivePrivate.ts); the public files don't carry it.
+  coverage: async () => null,
 };
 
 let reader: LiveReader = publishedLiveReader;
 export function useLiveReader(r: LiveReader): void { reader = r; cache.clear(); }
 export const liveReader = () => reader;
 
-/** Where the release's MCP folder keeps the Live files (CIV-1860): written by releaseMcpFiles.ts, read by splitLiveReader. */
+/**
+ * Where the private Live bucket keeps the MCP's files (CIV-1860): written by releaseLivePrivate.ts, read by splitLiveReader.
+ * live/index.json goes up after the rest and lists each agency; a reader trusts only what it lists.
+ */
+export const liveIndexPath = 'live/index.json';
+export interface LiveIndex { generatedAt: string; agencies: Record<string, { figures: boolean; routes: number; /** The last build failed; these are the files from before it. */ refreshFailed?: true }> }
 export const liveSplitPaths = {
+  coverage: (slug: string) => `live/${slug}/coverage.json`,
   manifest: (slug: string) => `live/${slug}/manifest.json`,
   ranking: (slug: string) => `live/${slug}/ranking.json`,
   route: (slug: string, route: string) => `live/${slug}/routes/${encodeURIComponent(route)}.json`,
@@ -64,10 +75,15 @@ export function slimRanking(summary: AgencySummary): LiveRanking {
   return { generatedAt: summary.generatedAt, covered: summary.covered, held: summary.held, routes: summary.routes.map(r => ({ route: r.route, titleLabel: r.titleLabel, lateShare: r.lateShare, lateN: r.lateN, lateLastWeek: r.lateLastWeek, bunchingShare: r.bunchingShare, bunchedShare: r.bunchedShare, gappedShare: r.gappedShare, deliveredShare: r.deliveredShare })) };
 }
 
-/** Reads the ready-made Live files in a release's MCP folder (a few KB each), for the hosted Worker's CPU budget. */
+/**
+ * Reads the ready-made Live files in the private bucket (a few KB each), for the hosted Worker's CPU budget. `read` gets a
+ * key and returns the parsed JSON or null. An agency's figures are read only when live/index.json says it has them.
+ */
 export function splitLiveReader(read: (path: string) => Promise<unknown | null>): LiveReader {
+  const listed = async (slug: string) => ((await read(liveIndexPath)) as LiveIndex | null)?.agencies[slug]?.figures === true;
   return {
-    manifest: async slug => (await read(liveSplitPaths.manifest(slug))) as LiveManifest | null,
+    coverage: async slug => (await read(liveSplitPaths.coverage(slug))) as LiveCoverage | null,
+    manifest: async slug => (await listed(slug)) ? (await read(liveSplitPaths.manifest(slug))) as LiveManifest | null : null,
     ranking: async slug => (await read(liveSplitPaths.ranking(slug))) as LiveRanking | null,
     route: async (slug, route) => (await read(liveSplitPaths.route(slug, route))) as LiveReliabilityFile | null,
   };

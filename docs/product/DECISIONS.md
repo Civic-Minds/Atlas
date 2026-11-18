@@ -265,6 +265,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-18 — Planners can set their own late, early and bunching cut-offs
+Ryan, 2026-11-18: "But should they be able to custimize thebunching threshold", then "How about late buses?", then picked "1": in Studio and the MCP a planner can ask with their own agency's cut-off for late (e.g. 3 minutes), early and bunched. This changes "one definition of late": more than 5½ minutes stays the default and the only cut-off used in rankings and comparisons between routes, and any answer using a custom cut-off names it beside the figure. Bunching follows the same rule (2-minute default), by the manager's call for consistency (Ryan was offered the same option for bunching and moved on to late). Needs Live's analysis to keep each departure's lateness and each gap's size.
+
+### 2026-11-18 — The MCP answers Live questions for every recorded agency
+Ryan, 2026-11-18 (CIV-1860): "Why not all Live agencies", then "Then just have it mention the limits right now if applicable for each one", then "So should we add Kingston now" / "Because then we can see how the MCP works with different levels of data availability too". The Atlas Studio MCP's Live tools cover every agency Live records. Each answer states that agency's limits (days recorded, routes covered, whether figures exist yet), and a route's figures switch on by themselves once its latest week has enough good days (`liveFiguresReady`). Studio agencies (Kingston) still never go public (CIV-1716): their MCP files are built in the cloud into the private bucket `atlas-mcp-live`, which only the hosted MCP reads, with logs that show counts only.
+
 ### 2026-11-17 — The MCP server is part of Atlas Studio
 Ryan, 2026-11-17: "I think the MCP would be part of that right?", of Atlas Studio, the planner toolkit. The private MCP server (CIV-1650) is named Atlas Studio for the AI assistants that use it (`atlas-studio` in their settings). A public version still waits on the data licence (ROADMAP, Future).
 

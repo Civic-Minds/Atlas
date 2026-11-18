@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { hourlyFrequency, edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
@@ -113,30 +115,68 @@ describe('hourly figures by branch (CIV-1840)', () => {
 });
 
 describe('Live tools (CIV-1860)', () => {
-  it('say plainly when an agency has no Live recordings, and which routes are recorded', async () => {
+  it('say plainly when an agency has no Live recordings, and which routes have figures', async () => {
     const { useLiveReader } = await import('../mcp/liveData');
     const { handlers } = await import('../mcp/tools');
-    useLiveReader({ manifest: async slug => (slug === 'ttc' ? { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504', '510'] } : null), ranking: async () => null, route: async () => null });
+    useLiveReader({ manifest: async slug => (slug === 'ttc' ? { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504', '510'] } : null), ranking: async () => null, route: async () => null, coverage: async () => null });
     const none = await handlers.route_reliability({ agency: 'OC Transpo', route: '1' }) as { live: null; note: string };
     expect(none.live).toBeNull();
-    expect(none.note).toMatch(/no Live recordings/);
-    const other = await handlers.route_bunching({ agency: 'TTC', route: '29' }) as { recordedRoutes: string[] };
-    expect(other.recordedRoutes).toEqual(['504', '510']);
+    expect(none.note).toMatch(/does not record Live data/);
+    const other = await handlers.route_bunching({ agency: 'TTC', route: '29' }) as { routesWithFigures: string[] };
+    expect(other.routesWithFigures).toEqual(['504', '510']);
     await expect(handlers.route_reliability({ agency: 'TTC', route: '504', period: 'Noonish' })).rejects.toThrow(/Part of the day/);
   });
 });
 
-describe('Live files in the release folder (CIV-1860)', () => {
-  it('reads the slim files the release step writes, at the same paths', async () => {
-    const { splitLiveReader, liveSplitPaths, useLiveReader, publishedLiveReader } = await import('../mcp/liveData');
+describe('Live files in the private bucket (CIV-1860)', () => {
+  const week = (healthy: number) => ({ days: 7, dates: ['2026-11-10', '2026-11-16'], healthyDates: Array.from({ length: healthy }, (_, i) => `2026-11-1${i}`), late: null, tripTime: null, extraWait: null, bunching: null, delivered: null });
+
+  it('reads the files the builder writes, only for agencies the index lists', async () => {
+    const { splitLiveReader, liveSplitPaths, liveIndexPath, useLiveReader, publishedLiveReader } = await import('../mcp/liveData');
     const { handlers } = await import('../mcp/tools');
     const files = new Map<string, unknown>([
+      [liveIndexPath, { generatedAt: 'x', agencies: { ttc: { figures: true, routes: 1 } } }],
       [liveSplitPaths.manifest('ttc'), { agency: 'ttc', thisWeek: { from: '2026-11-10', to: '2026-11-16' }, lastWeek: null, routes: ['504'] }],
       [liveSplitPaths.ranking('ttc'), { generatedAt: 'x', covered: ['504'], held: [], routes: [{ route: '504', titleLabel: '504 King', lateShare: 0.073, lateN: 3377, lateLastWeek: 0.08, bunchingShare: 0.39, bunchedShare: 0.3, gappedShare: 0.09, deliveredShare: 0.989 }] }],
+      // Left from an older run but no longer listed in the index: never served.
+      [liveSplitPaths.manifest('hamilton'), { agency: 'hamilton', thisWeek: null, lastWeek: null, routes: ['1'] }],
     ]);
     useLiveReader(splitLiveReader(async p => files.get(p) ?? null));
     const r = await handlers.route_reliability({ agency: 'TTC' }) as { routes: Array<{ route: string; lateShare: number }> };
     expect(r.routes).toEqual([expect.objectContaining({ route: '504', lateShare: 0.073 })]);
+    const h = await handlers.route_reliability({ agency: 'Hamilton', route: '1' }) as { live: null };
+    expect(h.live).toBeNull();
     useLiveReader(publishedLiveReader);
+  });
+
+  it('states the limits until a route has enough good days, then switches figures on', async () => {
+    const { liveFiguresReady, liveCoverage, coverageLimits } = await import('../../shared/liveCoverage');
+    const { LIVE_MIN_HEALTHY_DAYS_PER_WEEK } = await import('../../shared/rules/live');
+    const v3 = (n: number) => ({ schema: 3, weekly: { minHealthyDays: LIVE_MIN_HEALTHY_DAYS_PER_WEEK, health: [], thisWeek: week(n), lastWeek: week(0), comparable: false } }) as never;
+    expect(liveFiguresReady(v3(LIVE_MIN_HEALTHY_DAYS_PER_WEEK - 1))).toBe(false);
+    expect(liveFiguresReady(v3(LIVE_MIN_HEALTHY_DAYS_PER_WEEK))).toBe(true);
+    const c = liveCoverage('kingston', ['2026-11-15', '2026-11-16', '2026-11-17'], '2026-11-18');
+    const before = coverageLimits(c, 0);
+    expect(before.join(' ')).toMatch(/3 service days, 2026-11-15 to 2026-11-17/);
+    expect(before.join(' ')).toMatch(new RegExp(`at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days`));
+    expect(before.join(' ')).toMatch(new RegExp(`earliest figures are on 2026-11-${15 + LIVE_MIN_HEALTHY_DAYS_PER_WEEK + 1}`));
+    expect(coverageLimits(c, 5).join(' ')).not.toMatch(/No figures yet/);
+
+    const { useLiveReader, publishedLiveReader } = await import('../mcp/liveData');
+    const { handlers } = await import('../mcp/tools');
+    useLiveReader({ manifest: async () => null, ranking: async () => null, route: async () => null, coverage: async slug => (slug === 'kingston' ? c : null) });
+    const k = await handlers.route_reliability({ agency: 'Kingston Transit', route: '501' }) as { live: null; note: string; limits: string[] };
+    expect(k.live).toBeNull();
+    expect(k.note).toMatch(/records Live data .* no figures for it yet/);
+    expect(k.limits.join(' ')).toMatch(/No figures yet/);
+    useLiveReader(publishedLiveReader);
+  });
+
+  it('the builder prints counts only: no agency, route or figure in its log lines', () => {
+    const src = readFileSync(resolve(__dirname, '../mcp/releaseLivePrivate.ts'), 'utf8');
+    const logs = src.match(/console\.(log|error|warn)\([^;]*\);/g) ?? [];
+    expect(logs.length).toBeGreaterThan(0);
+    for (const line of logs) expect(line).not.toMatch(/\$\{(slug|route|coverage|built|manifest|summary|title|e)\b/);
+    expect(src).not.toMatch(/stdio:\s*'inherit'/);
   });
 });
