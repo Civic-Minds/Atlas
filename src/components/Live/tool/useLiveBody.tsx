@@ -70,7 +70,7 @@ function fallsBehindLines(report: TimeLossReport | undefined, band: DashboardBan
   const d = report?.bands[band]?.find(x => x.directionId === dir);
   const W = STUDIO_LIVE_PENDING;
   const slow = d?.slower.find(r => r.fromStopId === from && r.toStopId === to);
-  if (slow) return [W.takesLonger(slow.typicalMin), ...(slow.showP90 ? [W.oneInTen(slow.p90MinDown)] : []), W.sample(slow.passes, slow.days)];
+  if (slow) return [timeLostLine(slow.typicalMin), W.sample(slow.passes, slow.days)];
   const loose = d?.looser.find(r => r.fromStopId === from && r.toStopId === to);
   return loose ? [W.looserLine(-loose.typicalMin), W.sample(loose.passes, loose.days)] : [];
 }

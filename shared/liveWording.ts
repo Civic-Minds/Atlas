@@ -3,7 +3,7 @@ import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText } from './numberText';
-import { minutesText, tenth } from './liveFormat';
+import { minutesText } from './liveFormat';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -271,9 +271,7 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
 export const STUDIO_LIVE_PENDING = {
   /** The measure pill. */
   fallsBehindPill: 'Falls behind',
-  /** A stop pair's lines: the typical extra running time, the 1-in-10 (only when greater), the sample. */
-  takesLonger: (min: number): string => `Takes ${minutesText(min)} longer than scheduled`,
-  oneInTen: (min: number): string => `1 in 10 take ${tenth(min)}+ min longer`,
+  /** A stop pair's lines: its time lost (timeLostLine, the Delays start cards' own), then the sample. */
   sample: (trips: number, days: number): string => `${countText(trips)} trips, ${countText(days)} days`,
   /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
   looserTitle: 'Where the schedule is looser than needed',

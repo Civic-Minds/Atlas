@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Widget from './Widget';
-import { STUDIO_LIVE_PENDING as W, serviceDaysText } from '../../../../shared/liveWording';
+import { STUDIO_LIVE_PENDING as W, serviceDaysText, timeLostLine } from '../../../../shared/liveWording';
 import { stretchLabel } from '../../../utils/stopLabel';
 import type { TimeLossListRow } from '../../../utils/timeLossReport';
 
@@ -28,7 +28,7 @@ export default function FallsBehindWidget({ label, slower, looser, showRoute, da
     <Widget label={label} size="medium">
       {days && <p className="m-0 mb-1 text-xs leading-4 text-[var(--text-dim)]">{days}</p>}
       <ul className="m-0 p-0">
-        {slower.map(x => item(x, [W.takesLonger(x.row.typicalMin), ...(x.row.showP90 ? [W.oneInTen(x.row.p90MinDown)] : []), W.sample(x.row.passes, x.row.days)]))}
+        {slower.map(x => item(x, [timeLostLine(x.row.typicalMin), W.sample(x.row.passes, x.row.days)]))}
       </ul>
       {looser.length > 0 && (
         <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
