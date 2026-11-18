@@ -18,6 +18,7 @@ import { ColorVisionProvider } from './context/ColorVisionContext';
 import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
+import ScrollToTop from './components/ScrollToTop';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { withoutMapPosition } from './lib/analytics';
@@ -83,6 +84,7 @@ ReactDOM.createRoot(rootElement).render(
         <AnalyticsConsent />
         <RouteTracker />
         <RouteSeo />
+        <ScrollToTop />
         <React.Suspense fallback={prerenderedHtml ? <div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: prerenderedHtml }} /> : null}>
           <Routes>
           {/* Maintainer-only research page; it is never included in built bundles. */}
