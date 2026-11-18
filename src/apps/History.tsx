@@ -342,7 +342,6 @@ function RouteHistoryCard({
             title={`History: ${agencyName} ${route.routeShortName}`}
             details={reportDetails([
               [REPORT_DETAIL_LABELS.agency, agencyName],
-              [REPORT_DETAIL_LABELS.agencySlug, agencySlug],
               ['Route', `${route.routeShortName}${route.routeName ? ` ${route.routeName}` : ''}`],
               ['Snapshots', snaps.map(s => s.label).join(', ')],
               ...(day !== 'Weekday' ? [['Day', day] as [string, string]] : []),
@@ -728,7 +727,7 @@ function HistoryAgencyPanel({
           report={(
             <CardReportButton
               title={`History: ${agencyHistory.name}`}
-              details={reportDetails([[REPORT_DETAIL_LABELS.agency, agencyHistory.name], [REPORT_DETAIL_LABELS.agencySlug, agencyHistory.slug]])}
+              details={reportDetails([[REPORT_DETAIL_LABELS.agency, agencyHistory.name]])}
               excludeReasons={[REPORT_REASON.stop, REPORT_REASON.line]}
             />
           )}

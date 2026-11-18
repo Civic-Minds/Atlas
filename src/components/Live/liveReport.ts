@@ -17,7 +17,6 @@ function vehicleLine(v: LiveVehicle): string {
 export function liveRouteReportDetails(args: { agencySlug: string; agencyName: string; routeShortName: string; direction?: string | null; vehicles: readonly LiveVehicle[]; now?: Date }): string {
   return reportDetails([
     [REPORT_DETAIL_LABELS.agency, args.agencyName],
-    [REPORT_DETAIL_LABELS.agencySlug, args.agencySlug],
     ['Route', args.routeShortName],
     [DIRECTION_LABEL, args.direction ?? 'all'],
     ['Reported at', (args.now ?? new Date()).toISOString()],
@@ -30,7 +29,6 @@ export function liveRouteReportDetails(args: { agencySlug: string; agencyName: s
 export function liveVehicleReportDetails(args: { agencySlug: string; agencyName: string; routeShortName: string; vehicle: LiveVehicle; now?: Date }): string {
   return reportDetails([
     [REPORT_DETAIL_LABELS.agency, args.agencyName],
-    [REPORT_DETAIL_LABELS.agencySlug, args.agencySlug],
     ['Route', args.routeShortName],
     ['Reported at', (args.now ?? new Date()).toISOString()],
     '**Vehicle:**',

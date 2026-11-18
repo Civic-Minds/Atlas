@@ -18,7 +18,6 @@ export function currentAtlasUrl(): string {
 /** Labels on report details shared by several cards (CIV-1599). */
 export const REPORT_DETAIL_LABELS = {
   agency: 'Agency',
-  agencySlug: 'Agency slug',
   // CIV-1814 item 11 (Ryan, "1"): plain labels; the dates stay machine values (YYYY-MM-DD).
   scheduleAdded: 'Schedule added',
   scheduleCoversUntil: 'Schedule covers service until',
