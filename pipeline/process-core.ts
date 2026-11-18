@@ -860,7 +860,7 @@ export async function processGtfsBuffer(
   const feedCalendarDates = gtfs.calendarDates;
   // CIV-1101: the live map reads one model, the week riders face (readWeekOf, pickRiderWeek), for
   // every agency. The run-date and next-service-dates opt-ins below are read only by the old
-  // picker: the kill switch (ATLAS_LEGACY_REFERENCE_DATE=1), History backfills and direct callers.
+  // picker: History backfills and direct callers.
   const useRiderWeek = !!options?.riderWeek && !options.referenceDate;
   // Old picker, feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read
   // from one typical real weekday, Saturday and Sunday after the run date. See serviceDates.ts.
@@ -877,7 +877,7 @@ export async function processGtfsBuffer(
   // Stage 4 (CIV-1011): the week riders face, written back as that week's calendar so every reader
   // below (phase 1, corridors, converging origins, part-week counts) reads it.
   const riderWeek = useRiderWeek
-    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate, legacy: false }).riderWeek
+    ? readWeekOf(gtfs, { anchor: options!.serviceAnchor, fileDate: options!.fileDate }).riderWeek
     : null;
   // CIV-1076: routes with trips in the file but none in the read week, and the date each runs again.
   const resumingRoutes = riderWeek

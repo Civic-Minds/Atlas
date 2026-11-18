@@ -463,8 +463,8 @@ async function refreshAgency(
     zipDate: newFile || agency.feedObtainedAt ? null : await zipFileDate(buf, runDate),
   });
   // CIV-1011 stage 4: the week the map reads moves with the run date, so an unchanged zip whose
-  // picked week moved is reprocessed (the old picker's kill switch leaves the check as it was).
-  const serviceWeek = process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? null : await serviceWeekKey(buf);
+  // picked week moved is reprocessed.
+  const serviceWeek = await serviceWeekKey(buf);
   const skipDecision = decideRefreshSkipUnchanged({
     forceRefresh,
     hasSupplementals,
