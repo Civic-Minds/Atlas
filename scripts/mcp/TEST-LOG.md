@@ -19,6 +19,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.5.4 | 2026-11-17 | A time window can run past midnight (10 PM to 4 AM); route_frequency names routes with the same name (510 and its night 310); rows with no stop list (night rows) show where they head |
 | 0.6.0 | 2026-11-17 | trip_time and combined_frequency read an agency's supplemental schedules too (LA Metro's rail lines) and take also_agencies, matching a place on another agency's stops within a 500 m walk (downtown LA to Santa Monica: E Line, 720, 20 and Big Blue Bus R10 together) |
 | 0.6.1 | 2026-11-17 | routes_by_hours (routes that end early or start late); the newest schedule file is picked by the date in its name, not when it was copied; buses_needed says not to work out other frequencies |
+| 0.6.2 | 2026-11-17 | Instructions sent at start: answer from the tools, say where anything else comes from, don't estimate unasked, no shell work-arounds |
 
 ## Standing questions
 
@@ -242,3 +243,17 @@ Ryan: "This next round of questions can be the last round for now", and "Not all
 | 32 | TransLink stops near frequent routes | None | Can't from Atlas; listed the 11 frequent routes | Right to decline | Idea: a coverage tool (stops within a walk of frequent routes) |
 
 Ideas left for later (not built): shuttle buses for a closure (needs road travel times), a departures list at a stop, coverage within a walk of frequent routes.
+
+## 2026-11-17: the final round on Gemini
+
+Ryan approved running the same 32 questions through Gemini ("1"; "You need to use agy for Gemini"). Gemini 3.8 Flash (High) in Antigravity's CLI (`agy`), one conversation, one question at a time, on 0.6.1, with only the Atlas Studio tools allowed (a temporary `atlas-studio-test` server, removed after). Chat: `_reports/mcp-tests/2026-11-17-final-round-gemini.jsonl`.
+
+| Compared with Claude | Questions |
+|---|---|
+| Same answer, same figures | 2, 6, 7, 8, 10, 11, 12, 14, 16, 19, 20, 23, 24, 28, 29, 30 |
+| Gemini better | 1 (kept to Atlas's figures, didn't work out a 3-minute bus count); 27 (used routes_by_hours, new in 0.6.1, which Claude's run didn't have) |
+| Gemini stricter, less useful | 25 (declined the shuttle question outright; Claude gave a labelled estimate) |
+| Gemini worse | 3 (said as fact that Calgary runs a Sunday schedule on Christmas; didn't say the schedule ends Dec 20); 13 (gave a cause for the 504's cuts from memory); 9, 17, 22 (ridership and crowding from memory, not labelled); 31 (said the 3 Bloor runs every 20–30+, Atlas has 15); 26 (gaps "up to 12 minutes", not from a tool) |
+| No answer | 5 and 21 (tried the shell, which was blocked, and returned nothing); 32 (Antigravity sign-in error) |
+
+What it shows: the tools' answers read the same on both. The difference is what each model adds. Gemini follows "don't estimate" more strictly but adds unlabelled facts from memory and reaches for the shell. Fixed in 0.6.2: the server now sends instructions at the start (answer from the tools; say where anything else comes from; no estimates unless asked; no shell work-arounds). Not rerun on Gemini.

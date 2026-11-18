@@ -57,7 +57,7 @@ describe('switching modes (#888)', () => {
   it('switches Live, History and Compare in place, both ways, on one map', async () => {
     render(<BrowserRouter><App /></BrowserRouter>);
     await screen.findByTestId('map', undefined, { timeout: 5000 });
-    const live = await screen.findByRole('button', { name: 'Live vehicles' });
+    const live = await screen.findByRole('button', { name: 'Live' });
     agencyLists.clear(); // count lists from here, once the catalog has loaded
     const historyTab = () => screen.getByRole('button', { name: /^History$|Back to frequency map/ });
     await waitFor(() => historyTab());
@@ -68,10 +68,10 @@ describe('switching modes (#888)', () => {
 
     const steps: [() => HTMLElement, string][] = [
       [() => live, '/apps/live'],
-      [() => screen.getByRole('button', { name: 'Live vehicles' }), '/'],
+      [() => screen.getByRole('button', { name: 'Live' }), '/'],
       [historyTab, '/apps/history'],
       [historyTab, '/'],
-      [() => screen.getByRole('button', { name: 'Live vehicles' }), '/apps/live'],
+      [() => screen.getByRole('button', { name: 'Live' }), '/apps/live'],
       [historyTab, '/apps/history'],
       [historyTab, '/'],
     ];
@@ -82,7 +82,7 @@ describe('switching modes (#888)', () => {
       expect(screen.queryByText('Loading map…')).toBeNull();
     }
     // Compare from Live opens Compare's own address in one step, still on the same map.
-    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Live vehicles' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Live' })); });
     await waitFor(() => expect(window.location.pathname).toBe('/apps/live'));
     const entries = window.history.length;
     await act(async () => { fireEvent.click(screen.getAllByRole('button', { name: 'Compare two maps' })[0]); });
@@ -100,7 +100,7 @@ describe('switching modes (#888)', () => {
     const historyTab = () => screen.getByRole('button', { name: /^History$|Back to frequency map/ });
     await waitFor(() => historyTab());
 
-    for (const open of [() => screen.getByRole('button', { name: 'Live vehicles' }), historyTab]) {
+    for (const open of [() => screen.getByRole('button', { name: 'Live' }), historyTab]) {
       await act(async () => { fireEvent.click(open()); });
       await waitFor(() => expect(window.location.pathname).not.toBe('/'));
       await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Atlas home' })); });

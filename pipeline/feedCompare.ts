@@ -187,24 +187,38 @@ export function routeLines(geometry: Geometry | null | undefined): RouteLine[] {
   return out;
 }
 
-/** Reads one side. Options are the agency's process options (slug, preprocess...); the date replaces the picked week. */
+/**
+ * Reads one side: the week riders face around the date (riderWeek, anchored on it), the way the map and Studio's
+ * buses-needed file read a schedule (#1581: a fixed date sent getActiveServiceIds to its old rule, which counted HSR's
+ * summer service in May). The check that the read holds the date's trips uses the feed's own calendar, not the week
+ * the pipeline wrote back, so it still compares against the feed.
+ */
 export async function readFeedSide(buf: Buffer, date: string, options: ProcessOptions = {}): Promise<FeedSide> {
   const ymd = normalizeYmd(date);
-  let seen: { gtfs: GtfsData; active: ReadonlyMap<DayName, ReadonlySet<string>>; ref: string } | null = null;
+  type Seen = { gtfs: GtfsData; active: ReadonlyMap<DayName, ReadonlySet<string>>; ref: string; listed: Pick<GtfsData, 'calendar' | 'calendarDates' | 'calendarSynthesized'> };
+  let seen: Seen | null = null;
   const result = await processGtfsBuffer(buf, undefined, {
     ...options,
-    riderWeek: false,
-    referenceDate: ymd,
-    onServiceDays: ({ gtfs, referenceDate, activeServiceIdsByCalendarDay }) => { seen = { gtfs, active: activeServiceIdsByCalendarDay, ref: referenceDate }; },
+    riderWeek: true,
+    referenceDate: undefined,
+    serviceAnchor: ymd,
+    onServiceDays: ({ gtfs, referenceDate, activeServiceIdsByCalendarDay, feedCalendar, feedCalendarDates }) => {
+      seen = { gtfs, active: activeServiceIdsByCalendarDay, ref: referenceDate, listed: { calendar: feedCalendar ?? gtfs.calendar, calendarDates: feedCalendarDates ?? gtfs.calendarDates, calendarSynthesized: gtfs.calendarSynthesized } };
+    },
   });
   if (!seen) throw new Error('processGtfsBuffer did not report its service days');
-  const { gtfs, active, ref } = seen as { gtfs: GtfsData; active: ReadonlyMap<DayName, ReadonlySet<string>>; ref: string };
-  if (result.referenceDate !== ymd || ref !== ymd) throw new Error(`Asked for ${ymd}, but the pipeline read ${result.referenceDate}`);
+  const { gtfs, active, ref, listed } = seen as Seen;
+  if (dateInWeek(ref, 'Monday') !== dateInWeek(ymd, 'Monday')) {
+    // The week riders face around the date is another week: the feed has no service that week, or the date is outside it.
+    const tripsOn = (ids: ReadonlySet<string>) => (gtfs.trips ?? []).filter(t => ids.has(t.service_id)).length;
+    const listedHere = tripsOn(servicesListedOn(listed, ymd));
+    throw new DateNotReadError(dateReadProblem(listedHere, 0, ymd) ?? `Asked for the week of ${fmtDate(ymd)}, but the pipeline read the week of ${fmtDate(ref)}.`);
+  }
 
   const dayName = dayNameOf(ymd);
   const tripsByService = new Map<string, number>();
   for (const t of gtfs.trips ?? []) tripsByService.set(t.service_id, (tripsByService.get(t.service_id) ?? 0) + 1);
-  const { listedTrips, readListedTrips } = dayCoverage(servicesListedOn(gtfs, ymd), active.get(dayName) ?? new Set<string>(), tripsByService);
+  const { listedTrips, readListedTrips } = dayCoverage(servicesListedOn(listed, ymd), active.get(dayName) ?? new Set<string>(), tripsByService);
   const problem = dateReadProblem(listedTrips, readListedTrips, ymd);
   if (problem) throw new DateNotReadError(problem);
 
@@ -222,7 +236,7 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   const notRead: Partial<Record<DayType, string>> = {};
   for (const dayType of DAY_TYPES) {
     const date = dayType === 'Weekday' && WEEKDAYS.includes(dayName) ? ymd : dateInWeek(ymd, countedDay[dayType]);
-    const c = dayCoverage(servicesListedOn(gtfs, date), active.get(countedDay[dayType]) ?? new Set<string>(), tripsByService);
+    const c = dayCoverage(servicesListedOn(listed, date), active.get(countedDay[dayType]) ?? new Set<string>(), tripsByService);
     if (c.listedTrips === 0 && c.unlistedTrips === 0) continue;
     if (c.readListedTrips < NOT_READ_SHARE * c.listedTrips || c.unlistedTrips > (1 - NOT_READ_SHARE) * Math.max(c.listedTrips, 1)) {
       notRead[dayType] = `${fmtDate(date)} lists ${c.listedTrips} trips; the pipeline's ${countedDay[dayType]} services hold ${c.readListedTrips} of them plus ${c.unlistedTrips} not listed that day`;

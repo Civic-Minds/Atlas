@@ -576,7 +576,11 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * Read-only view of the feed and the service ids active on each calendar day of the read week,
    * after the near-duplicate drop, for local tools (CIV-1685 vehicles-needed script). Does not change the output.
    */
-  onServiceDays?: (input: { gtfs: GtfsData; referenceDate: string; activeServiceIdsByCalendarDay: ReadonlyMap<DayName, ReadonlySet<string>> }) => void;
+  /**
+   * Reports the service days read. feedCalendar/feedCalendarDates are the feed's own calendar, before the rider week
+   * replaces it, so a caller can check the read against what the feed lists (Studio's comparison, #1581).
+   */
+  onServiceDays?: (input: { gtfs: GtfsData; referenceDate: string; activeServiceIdsByCalendarDay: ReadonlyMap<DayName, ReadonlySet<string>>; feedCalendar?: GtfsData['calendar']; feedCalendarDates?: GtfsData['calendarDates'] }) => void;
 }
 
 /** Thrown when validateGtfs reports errors and options.force is not set. */
@@ -917,7 +921,7 @@ export async function processGtfsBuffer(
   // Converging origins (TTC 29 northbound) get a route variant so each origin draws its own
   // row, judged on the same active service sets the rest of the pipeline draws.
   labelConvergingOrigins(gtfs, activeServiceIdsByCalendarDay);
-  options?.onServiceDays?.({ gtfs, referenceDate: refDate, activeServiceIdsByCalendarDay });
+  options?.onServiceDays?.({ gtfs, referenceDate: refDate, activeServiceIdsByCalendarDay, feedCalendar, feedCalendarDates });
   const activeServiceIdsByDay = new Map<DayType, Set<string>>();
   const calendarDaysForType = (dayType: DayType): DayName[] =>
     dayType === 'Weekday' ? [...WEEKDAYS] : [dayType as DayName];
