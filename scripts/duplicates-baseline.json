@@ -1,0 +1,20 @@
+{
+  "note": "Copied code that exists today (2026-11-17). May only shrink: see scripts/check-duplicates.mjs.",
+  "pairs": {
+    "src/apps/Interval.tsx <> src/apps/Interval.tsx": 47,
+    "shared/livePollingConfig.ts <> shared/livePollingConfig.ts": 31,
+    "src/components/Live/BranchStrip.tsx <> src/components/Live/RouteStrip.tsx": 27,
+    "src/utils/mapExport.ts <> src/utils/mapExport.ts": 15,
+    "src/components/Interval/SidebarControls.tsx <> src/hooks/useIntervalStats.ts": 14,
+    "src/App.tsx <> src/hooks/useAgencies.ts": 13,
+    "src/components/InfoPanel.tsx <> src/components/InfoPanel.tsx": 13,
+    "src/apps/LiveVehicles.tsx <> src/apps/LiveVehicles.tsx": 12,
+    "src/components/Live/BranchStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
+    "src/components/Live/RouteStrip.tsx <> src/components/charts/RunTimeChart.tsx": 12,
+    "shared/agencyCatalog.ts <> src/App.tsx": 11,
+    "src/components/Interval/AgencyCard.tsx <> src/components/Interval/AgencyCard.tsx": 11,
+    "shared/feedQuality.ts <> shared/feedQuality.ts": 10,
+    "src/LiveExplorePage.tsx <> src/LiveRoutePage.tsx": 10,
+    "src/utils/agencyName.ts <> src/utils/agencyName.ts": 10
+  }
+}

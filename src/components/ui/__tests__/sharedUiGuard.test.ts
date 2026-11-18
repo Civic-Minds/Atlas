@@ -61,6 +61,8 @@ const RULES: Array<{ name: string; pattern: RegExp; use: string }> = [
   { name: 'hand-rolled section label', pattern: /text-xs font-black text-\[var\(--text-dim\)\]/, use: 'CARD_SECTION or CardSectionLabel' },
   // CIV-1011 #4: the outlined segmented group (Night 30/60, Frequent Service) and the active-filter corner dot.
   { name: 'hand-rolled segmented group', pattern: /rounded-full border border-\[var\(--border-primary\)\] p-0\.5/, use: 'PillGroup outlined' },
+  // 2026-11-17 (Ryan, on a pill group copied from PillGroup): a row of segment pills mapped from options is PillGroup.
+  { name: 'hand-rolled pill group', pattern: /=>\s*<Pill\b[^>]*size="segment"/, use: 'PillGroup' },
   { name: 'hand-rolled active-filter dot', pattern: /-top-0\.5 -right-0\.5 w-2 h-2 rounded-full bg-\[var\(--accent\)\]/, use: 'ActiveDot' },
   // CIV-1117: the item heading inside a page section, and a static info chip.
   { name: 'hand-rolled item heading', pattern: /<h3 className="text-base font-black/, use: 'SectionTitle' },
@@ -83,6 +85,8 @@ const ALLOWED: Record<string, string[]> = {
   'components/Interval/cardUi.tsx': ['hand-drawn frequency dot', 'hand-rolled card title', 'hand-rolled card facts line'],
   'components/CardBack.tsx': ['hand-written back arrow'],
   'components/RouteListRow.tsx': ['hand-drawn frequency dot'],
+  // MapPillGroup copies PillGroup (2026-11-17); Studio's frame rebuild replaces it with PillGroup. Remove this line then.
+  'components/MapApp/PillMenu.tsx': ['hand-rolled pill group'],
   // Live copies listed in CIV-1117, waiting for Ryan's call on the visible change each move makes.
   'components/Live/LiveRoutePerformance.tsx': ['hand-rolled grey note'],
   // Live sidebars never scroll, so LiveVehicles keeps its own height (CIV-1117 LV2, dropped).
@@ -121,6 +125,7 @@ describe('card piece rules catch hand-built copies', () => {
     'hand-rolled card title': '<p className="text-sm font-black text-[var(--text-primary)] leading-tight">{name}</p>',
     'hand-rolled card facts line': '<p className="text-xs font-medium text-[var(--text-dim)] mt-1 leading-snug">12 routes</p>',
     'report details written by hand': 'details={`**Agency:** ${name}`}',
+    'hand-rolled pill group': '{options.map(([k, text]) => <Pill key={k} size="segment" selected={value === k} onClick={() => onChange(k)}>{text}</Pill>)}',
   };
   for (const [name, sample] of Object.entries(samples)) {
     it(name, () => {
