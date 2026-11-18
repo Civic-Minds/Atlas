@@ -10,6 +10,9 @@ import { PAGE_NAMES } from './pageNames';
 /** "Routes": the route list's heading on the map page and the group's routes row under Buses Needed. */
 const ROUTES = 'Routes';
 
+/** The page menu's entries (CIV-1828): Live, and Fleet, a placeholder name (Ryan, 2026-11-17). */
+export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet' } as const;
+
 export const STUDIO_MAP_TEXT = {
   route: 'Route',
   allRoutes: 'All routes',

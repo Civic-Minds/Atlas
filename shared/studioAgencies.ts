@@ -26,8 +26,19 @@ export function studioAgenciesFromFiles(fileNames: readonly string[]): string[] 
  * The agency an address asks for (?agency=, the one source of truth). With the list loaded: the asked-for agency when
  * Studio has it, else the default when it has that, else the first. Before the list loads, the address as written.
  */
-export function studioAgencyFrom(param: string | null, agencies: readonly string[] | null): string {
-  if (!agencies) return param || STUDIO_DEFAULT_AGENCY;
+export function studioAgencyFrom(param: string | null, agencies: readonly string[] | null, preferred: string = STUDIO_DEFAULT_AGENCY): string {
+  if (!agencies) return param || preferred;
   if (param && agencies.includes(param)) return param;
-  return agencies.includes(STUDIO_DEFAULT_AGENCY) ? STUDIO_DEFAULT_AGENCY : agencies[0] ?? STUDIO_DEFAULT_AGENCY;
+  return agencies.includes(preferred) ? preferred : agencies[0] ?? preferred;
 }
+
+/**
+ * Studio's pages (CIV-1828), in the page menu's order; the first opens by default. Live is the first page (ROADMAP,
+ * Ryan 2026-11-17); Fleet is a placeholder name (Ryan: "We can add Fleet as a placeholder perhaps") showing the
+ * buses-needed and schedule work until the second page is decided.
+ */
+export const STUDIO_PAGES = ['live', 'fleet'] as const;
+export type StudioPageKey = (typeof STUDIO_PAGES)[number];
+/** The page an address asks for (?page=); Live otherwise. */
+export const studioPageFrom = (param: string | null): StudioPageKey =>
+  (STUDIO_PAGES as readonly string[]).includes(param ?? '') ? (param as StudioPageKey) : STUDIO_PAGES[0];

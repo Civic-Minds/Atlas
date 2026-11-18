@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom } from '../../shared/studioAgencies';
+import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFrom } from '../../shared/studioAgencies';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
@@ -120,5 +120,18 @@ describe('Studio agencies, from the built files (CIV-1806, CIV-1827)', () => {
     // Before the list loads, the address as written.
     expect(studioAgencyFrom('rtd-denver', null)).toBe('rtd-denver');
     expect(studioAgencyFrom(null, null)).toBe(STUDIO_DEFAULT_AGENCY);
+  });
+});
+
+describe('Studio pages (CIV-1828)', () => {
+  it('opens Live unless the address asks for Fleet', () => {
+    expect(studioPageFrom(null)).toBe('live');
+    expect(studioPageFrom('fleet')).toBe('fleet');
+    expect(studioPageFrom('vehicles')).toBe('live');
+  });
+
+  it('opens each page on its own first agency when the address names one it lacks', () => {
+    expect(studioAgencyFrom('kingston', ['ttc'], 'ttc')).toBe('ttc');
+    expect(studioAgencyFrom(null, ['kingston', 'hamilton'])).toBe('kingston');
   });
 });
