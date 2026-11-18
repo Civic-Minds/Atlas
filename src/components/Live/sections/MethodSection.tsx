@@ -3,7 +3,7 @@ import { dateRange } from '../../../../shared/dateText';
 import { goodDayCounts, goodDayLimits } from '../../../../shared/liveDashboard';
 import type { AgencySummary } from '../../../../shared/liveAgency';
 import { joinList } from '../../../../shared/overflowText';
-import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, builtText, coveredRoutesText } from '../../../../shared/liveWording';
+import { DELAY_STARTS_TITLE, LINKED_TO_TITLE, METHOD_GROUPS, NEAR_CUTOFF_TERM, builtText, coveredRoutesText, serviceDaysText } from '../../../../shared/liveWording';
 import { weekWindowParts } from '../../../utils/liveKpi';
 import ArrowLink from '../../ui/ArrowLink';
 import MethodFootnote, { Term } from '../MethodFootnote';
@@ -56,7 +56,7 @@ export default function MethodSection(props: MethodSectionProps): ReactNode {
         <Term t={LINKED_TO_TITLE}>shows what was measured in the same stretch. It is not the cause.</Term>,
       ] },
       { label: METHOD_GROUPS.data, items: [
-        `Last ${good.days} service days, ${dateRange(first, last)}: ${countText(good.runs)} trips and ${countText(good.stopPassages)} stop departures.`,
+        `${serviceDaysText(good.days, first, last)}: ${countText(good.runs)} trips and ${countText(good.stopPassages)} stop departures.`,
         ...(v3.weekly ? weekWindowItems(v3.weekly, props.namedAbove) : []),
         positionsLine,
         tripMatchLine(true),

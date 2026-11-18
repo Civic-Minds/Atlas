@@ -3,7 +3,7 @@ import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText } from './numberText';
-import { minutesText } from './liveFormat';
+import { minutesText, tenth } from './liveFormat';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -261,3 +261,28 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
   if (!days.length) return null;
   return `Excluding ${days.length === 1 ? days[0] : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`}`;
 }
+
+/**
+ * CIV-1828, Studio's Live page: wording pending Ryan's OK, all in one place until he approves or changes it (Studio is
+ * local only). The card lines are the glossary's ("## Live" card wording, docs/GLOSSARY.md), shown on screen for the
+ * first time; the headings, the pill and the page name are new.
+ */
+export const STUDIO_LIVE_PENDING = {
+  /** The page's name in Studio's page menu. */
+  pageName: 'Live',
+  /** The measure pill. */
+  fallsBehindPill: 'Falls behind',
+  /** The list's heading with no route picked, and with one. */
+  fallsBehindAll: 'Where vehicles fall behind',
+  fallsBehindRoute: (route: string): string => `Where the ${route} falls behind`,
+  /** A stop pair's lines: the typical extra running time, the 1-in-10 (only when greater), the sample. */
+  takesLonger: (min: number): string => `Takes ${minutesText(min)} longer than scheduled`,
+  oneInTen: (min: number): string => `1 in 10 take ${tenth(min)}+ min longer`,
+  sample: (trips: number, days: number): string => `${countText(trips)} trips, ${countText(days)} days`,
+  /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
+  looserTitle: 'Where the schedule is looser than needed',
+  looserLine: (min: number): string => `The schedule allows ${minutesText(min)} more than vehicles need`,
+} as const;
+
+/** "Last 17 service days, Sep 30 – Oct 16": the days a route's figures cover (the method note's own words, CIV-910). */
+export const serviceDaysText = (days: number, first: string, last: string): string => `Last ${days} service days, ${dateRange(first, last)}`;
