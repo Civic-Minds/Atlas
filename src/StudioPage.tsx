@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { ATLAS_BYLINE, MAP_COLOURS_LABEL } from './content/noticeCopy';
+import { AGENCY_COLUMN, ATLAS_BYLINE, MAP_COLOURS_LABEL } from './content/noticeCopy';
+import { useSearchParams } from 'react-router';
+import { useAgencies } from './hooks/useAgencies';
+import { agencyNames } from './utils/agencyName';
 import AtlasLogo from './components/AtlasLogo';
 import RouteRowName from './components/RouteRowName';
 import MapKey from './components/ui/MapKey';
@@ -19,7 +22,7 @@ import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, routeTitle } from './StudioChangesPage';
-import { STUDIO_DEFAULT_AGENCY, StudioGroupFigures } from './StudioVehiclesPage';
+import { STUDIO_AGENCIES, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
 /**
@@ -227,9 +230,16 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
 function PortalInto({ slot, children }: { slot: HTMLElement; children: ReactNode }) { return createPortal(children, slot); }
 
 export default function StudioPage() {
-  // One demo agency for now (Kingston); a picker waits until Studio has more than one.
-  const slug = STUDIO_DEFAULT_AGENCY;
+  // CIV-1806: the agency comes from the address (?agency=), picked in the header's menu.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const slug = studioAgencyFrom(searchParams.get('agency'));
   const agency = useLiveAgencyName(slug);
+  const { agencies } = useAgencies();
+  const agencyOptions = useMemo(() => STUDIO_AGENCIES.map(s => {
+    const a = agencies.find(x => x.slug === s);
+    return [s, a ? agencyNames(a).name : s] as const;
+  }), [agencies]);
+  const pickAgency = (s: string) => { setRoute(null); setSearchParams(p => { const n = new URLSearchParams(p); n.set('agency', s); return n; }); };
   const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
   const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
   const [route, setRoute] = useState<string | null>(null);
@@ -243,14 +253,14 @@ export default function StudioPage() {
     <MapAppShell>
       <MapAppHeader>
         <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
-        <button type="button" onClick={() => setRoute(null)} className="text-sm font-bold hover:underline">{agency}</button>
+        <PillMenu label={AGENCY_COLUMN} value={slug} options={agencyOptions} onPick={pickAgency} />
         <div className="ml-auto flex items-center gap-3">
           <div ref={setRouteSlot} className="contents" />
           {periods.length > 0 && <PillMenu label={TIME_OF_DAY_LABEL} value={period} options={periods.map(k => [k, PERIOD_LABELS[k]] as const)} onPick={k => setPeriod(k as PeriodKey)} />}
         </div>
       </MapAppHeader>
       {file === 'missing' && <p className="p-6 text-sm text-[var(--text-muted)]">{C.noData}</p>}
-      {file && file !== 'missing' && <Body file={file} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} routeSlot={routeSlot} />}
+      {file && file !== 'missing' && <Body key={slug} file={file} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} routeSlot={routeSlot} />}
     </MapAppShell>
   );
 }
