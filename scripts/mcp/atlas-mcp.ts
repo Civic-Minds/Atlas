@@ -24,6 +24,7 @@ const data = await import('./atlasData');
 const PERIODS = PERIOD_KEYS.map(k => PERIOD_LABELS[k]);
 const day = { type: 'string', enum: [...DAY_TYPES], description: 'Day type; Weekday when left out.' };
 const agency = { type: 'string', description: 'Agency name or short name, e.g. "TTC" or "Toronto Transit Commission".' };
+const alsoAgencies = { type: 'array', items: { type: 'string' }, description: 'Optional other agencies serving the same trip, counted together (e.g. LA Metro with Big Blue Bus between downtown LA and Santa Monica). Use list_agencies near a place to find them.' };
 const period = { type: 'string', enum: PERIODS, description: `Part of the day: ${PERIOD_KEYS.map(k => `${PERIOD_LABELS[k]} ${formatPeriodRange(k)}`).join(', ')}.` };
 const every = { type: 'number', description: `Minutes: routes that run this often or better. Atlas's map uses ${PUBLIC_TIER_MAXES.join(', ')}.` };
 const fromTime = { type: 'string', description: 'Optional start of a time window, such as "10:00" or "10 AM".' };
@@ -40,8 +41,8 @@ const TOOLS = [
   { name: 'routes_near', description: 'Routes that stop near a place: a corner ("Bathurst and Bloor"), a station or a stop name, within 250 m by default, with the stops each uses there. Then use route_frequency for how often they run.', inputSchema: { type: 'object', properties: { agency, place: { type: 'string', description: 'Corner, station or stop name, e.g. "Bathurst and Bloor".' }, metres: { type: 'number' } }, required: ['agency', 'place'] } },
   { name: 'route_history', description: "How a route's frequency has changed over the years, from Atlas's History: each schedule Atlas has kept for it, oldest first, with how often it ran in each part of the day. Coverage depends on the agency; the answer says when Atlas has none.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day }, required: ['agency', 'route'] } },
   { name: 'buses_needed', description: "Buses needed to run a route in a part of the day, from Atlas Studio's buses-needed file for the agency (the same figures Studio's page shows): buses scheduled now, buses needed at the schedule's own frequency, and buses needed every 10, 15, 20, 30 or 60 minutes. Routes that share buses are counted together. Counts use the schedule's own layover. Only agencies whose file has been built have an answer; for others it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string' }, period, every: { type: 'number', description: 'Optional target minutes between buses: 10, 15, 20, 30 or 60.' } }, required: ['agency', 'route', 'period'] } },
-  { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
-  { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
+  { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
+  { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency }, required: ['agency'] } },
 ];
 
@@ -67,6 +68,11 @@ function window(args: Args): { start: number; end: number; label: string; period
   const end = clockEnd != null && start != null && clockEnd <= start && clockEnd + 1440 - start <= 1440 ? clockEnd + 1440 : clockEnd;
   if (start == null || end == null || end <= start) throw new Error('Give the window as from_time and to_time, such as "10:00" and "18:00", or "22:00" and "04:00" past midnight.');
   return { start, end, label: `${clockTime(start)}–${clockTime(end)}`, periods: data.periodsIn(start, end) };
+}
+/** The asked agency plus any also_agencies, each once. */
+function withAlso(a: ReturnType<typeof needAgency>, args: Args) {
+  const more = (Array.isArray(args.also_agencies) ? args.also_agencies : []).map(q => needAgency(q));
+  return [a, ...more].filter((x, i, all) => all.findIndex(y => y.slug === x.slug) === i);
 }
 /** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
 const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) => (ends && a.lastFeedExpiry && ends < a.lastFeedExpiry
@@ -202,7 +208,8 @@ const handlers: Record<string, (args: Args) => unknown> = {
     const a = needAgency(args.agency);
     const dayType = data.parseDay(args.day);
     const w = window(args);
-    const t = await data.tripTimes(a.slug, String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType, Array.isArray(args.routes) ? args.routes.map(String) : []);
+    const ags = withAlso(a, args);
+    const t = await data.tripTimes(ags.map(x => ({ slug: x.slug, label: data.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType, Array.isArray(args.routes) ? args.routes.map(String) : []);
     const routes = [...t.byRoute.entries()].map(([route, runs]) => {
       const inWindow = w ? runs.filter(x => x.start >= w.start && x.start < w.end) : runs;
       const s = data.runningTimeSummary(inWindow);
@@ -216,7 +223,8 @@ const handlers: Record<string, (args: Args) => unknown> = {
     }).sort((x, y) => (x.typicalMinutes ?? 1e9) - (y.typicalMinutes ?? 1e9));
     return {
       ...staleNote(a, t.scheduleEnds),
-      agency: a.name, from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
+      agency: ags.map(x => data.agencyLabel(x.slug, x.name)).join(', '), from: t.from, to: t.to, day: dayType, scheduleRead: t.readOn, ...(w ? { window: w.label, windowNote: windowNote(w) } : {}),
+      ...(t.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes, note: 'Scheduled minutes from leaving the first stop to arriving at the second; an hour needs at least two trips.', source: "The agency's own schedule file that Atlas processed.",
     };
   },
@@ -224,12 +232,14 @@ const handlers: Record<string, (args: Args) => unknown> = {
     const a = needAgency(args.agency);
     const dayType = data.parseDay(args.day);
     const w = window(args);
-    const c = await data.combinedDepartures(a.slug, String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
+    const ags = withAlso(a, args);
+    const c = await data.combinedDepartures(ags.map(x => ({ slug: x.slug, label: data.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
     const windows = w ? [{ name: w.label, start: w.start, end: w.end }] : PERIOD_KEYS.map(k => ({ name: `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`, start: PERIOD_MINUTES[k].start, end: PERIOD_MINUTES[k].end }));
     const all = [...c.byRoute.values()].flat().map(x => x.start);
     return {
       ...staleNote(a, c.scheduleEnds),
-      agency: a.name, from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
+      agency: ags.map(x => data.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
+      ...(c.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes: [...c.byRoute.keys()],
       byWindow: windows.map(win => ({
         window: win.name,
@@ -266,7 +276,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.4' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.6.0' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
