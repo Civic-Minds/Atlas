@@ -7,10 +7,7 @@
  */
 import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
-import { detectReferenceDate } from './transit-calendar.js';
-import { legacyReferenceDateEnabled } from './readWeek.js';
 import { pickRiderWeek, serviceAnchor } from './serviceDays.js';
-import { synthesizeCalendarFromDates } from './parseGtfs.js';
 import { historyRouteKey } from './historyRouteKey.js';
 import { addDaysYmd } from './serviceDates.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
@@ -102,15 +99,10 @@ export function computeFeedEvidence(rows: FeedRows, opts: EvidenceOptions = {}):
   return { refDate, calendar, calendarDates, servicesByKey, allServices, descByKey };
 }
 
-/** The week the one service-day model picks for these rows (the old picker under the kill switch). */
+/** The week the one service-day model picks for these rows. */
 function pickedReferenceDate(rows: FeedRows, anchor?: string): string {
   const realCalendar = rows.calendar ?? [];
   const calendarDates = rows.calendarDates ?? [];
-  if (legacyReferenceDateEnabled()) {
-    // Mirrors parseGtfsZip: a feed with no calendar.txt gets one synthesized from calendar_dates.
-    const forRef = realCalendar.length === 0 && calendarDates.length > 0 ? synthesizeCalendarFromDates(calendarDates) : realCalendar;
-    return detectReferenceDate(forRef, calendarDates, rows.trips);
-  }
   return pickRiderWeek({ calendar: realCalendar, calendarDates, trips: rows.trips, routes: rows.routes, anchor: anchor ?? serviceAnchor() }).referenceDate;
 }
 

@@ -138,8 +138,8 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     force: overrides.force ?? false,
     ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
     // Stage 4 of the reference-date plan (CIV-1011): the live map reads the week from the run date
-    // (pickRiderWeek). ATLAS_LEGACY_REFERENCE_DATE=1 is the kill switch back to the old picker.
-    ...(overrides.legacyReferenceDate || process.env.ATLAS_LEGACY_REFERENCE_DATE === '1' ? {} : { riderWeek: true }),
+    // (pickRiderWeek).
+    ...(overrides.legacyReferenceDate ? {} : { riderWeek: true }),
     ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
     ...(overrides.serviceAnchor ? { serviceAnchor: overrides.serviceAnchor } : {}),
   };

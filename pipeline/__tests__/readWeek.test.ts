@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readWeekOf } from '../readWeek';
 import { pickRiderWeek } from '../serviceDays';
-import { detectReferenceDate, getActiveServiceIds } from '../transit-calendar';
+import { getActiveServiceIds } from '../transit-calendar';
 import { computeRawDepartures } from '../transit-phase1';
 import type { GtfsData } from '../../types/gtfs';
 
@@ -53,15 +53,6 @@ describe('readWeekOf (CIV-1101)', () => {
     expect([...getActiveServiceIds(week.calendar, week.calendarDates, 'Monday', week.referenceDate)]).toEqual(['FALL']);
     const winter = readWeekOf(gtfs, { anchor: '20270113' });
     expect([...getActiveServiceIds(winter.calendar, winter.calendarDates, 'Monday', winter.referenceDate)]).toEqual(['WINTER']);
-  });
-
-  it('falls back to the old picker only behind the kill switch', () => {
-    const gtfs = feed();
-    vi.stubEnv('ATLAS_LEGACY_REFERENCE_DATE', '1');
-    const legacy = readWeekOf(gtfs, { anchor: '20261021' });
-    expect(legacy.riderWeek).toBeNull();
-    expect(legacy.referenceDate).toBe(detectReferenceDate(gtfs.calendar, gtfs.calendarDates, gtfs.trips));
-    expect(legacy.calendar).toBe(gtfs.calendar);
   });
 
   it('is what phase 1 reads when no date is passed in', () => {
