@@ -6,6 +6,8 @@
 import { LIVE_ARCHIVE_POSITION_FEEDS, LIVE_ARCHIVE_TRIP_FEEDS } from './liveArchiveFeeds';
 import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live';
 import { HEALTHY_DAY_SHARE } from './routeMetrics';
+import { percentText } from './numberText';
+import { countOf, plural } from './overflowText';
 import { qualityHold, type LiveV3 } from './liveDashboard';
 
 export interface LiveCoverage {
@@ -66,7 +68,7 @@ export function liveFiguresReady(v3: LiveV3 | undefined | null): boolean {
 }
 
 /** What a good day is, in words, from the shared values. */
-export const GOOD_DAY_DEFINITION = `a good day is one with at least ${Math.round(HEALTHY_DAY_SHARE * 100)}% of the recordings a typical day of the same kind has`;
+export const GOOD_DAY_DEFINITION = `a good day is one with at least ${percentText(HEALTHY_DAY_SHARE)} of the recordings a typical day of the same kind has`;
 
 /**
  * The earliest morning figures can appear while recording continues: the first day may be partial, so it counts the next
@@ -82,10 +84,10 @@ export function earliestFiguresDay(c: LiveCoverage, today = new Date().toISOStri
 /** The plain limits an answer states for an agency, from its coverage and how many routes have figures. */
 export function coverageLimits(c: LiveCoverage, routesWithFigures: number, today?: string): string[] {
   const out: string[] = [];
-  out.push(c.routes === 'every route' ? `Live records ${c.feeds.join(' and ')} for every route.` : `Live records only routes ${c.routes.join(', ')}.`);
+  out.push(c.routes === 'every route' ? `Live records ${c.feeds.join(' and ')} for every route.` : `Live records only ${plural(c.routes.length, 'route')} ${c.routes.join(', ')}.`);
   if (c.daysRecorded == null) out.push('How many days are recorded could not be checked.');
   else if (c.daysRecorded === 0) out.push('No recordings are kept now.');
-  else out.push(`Recordings kept: ${c.daysRecorded} service day${c.daysRecorded === 1 ? '' : 's'}, ${c.firstDay} to ${c.lastDay}${c.recordingNow === false ? ' (not recording now)' : ''}.`);
+  else out.push(`Recordings kept: ${countOf(c.daysRecorded, 'service day')}, ${c.firstDay} to ${c.lastDay}${c.recordingNow === false ? ' (not recording now)' : ''}.`);
   if (routesWithFigures === 0) {
     out.push(`No figures yet: a route needs at least ${LIVE_MIN_DAYS_TO_SHOW} good days in the latest week (${GOOD_DAY_DEFINITION}).`);
     const from = earliestFiguresDay(c, today);
