@@ -1,4 +1,5 @@
 import type { CSSProperties, Key, MouseEvent, ReactNode } from 'react';
+import { useOpenPath } from './AppLink';
 
 export interface DataTableColumn<T> {
   key: string;
@@ -124,12 +125,12 @@ export const PAGE_FIGURE_COLUMN_REM = 5.5;
  * A click anywhere on a linked row follows its link, and a middle, Cmd or Ctrl click opens it in a new tab. A click on a
  * link or button inside keeps its own behaviour, and so does selecting text in the row.
  */
-function openRow(e: MouseEvent<HTMLTableRowElement>, href: string) {
+function openRow(e: MouseEvent<HTMLTableRowElement>, href: string, open: (path: string) => void) {
   if ((e.target as HTMLElement).closest('a, button') || window.getSelection()?.toString()) return;
   // Row links are Atlas paths only ("/agency/ttc"): anything else, including protocol-relative "//host", is ignored.
   if (!/^\/(?!\/)[\w\-./?=&%#~]*$/.test(href)) return;
   if (e.button === 1 || e.metaKey || e.ctrlKey) window.open(href, '_blank', 'noopener');
-  else if (e.button === 0) window.location.assign(href);
+  else if (e.button === 0) open(href);
 }
 
 export type DataTableLayout = 'content' | 'fixed' | 'fill' | 'page';
@@ -139,6 +140,7 @@ const SELECTION_ROW = 'bg-[var(--selection-active-bg)] shadow-[inset_2px_0_0_var
 
 /** Plain data table. Wrap it in an overflow-x-auto element where it may be wider than its container. */
 export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact', caption, layout = 'content', narrowFit = false, rowHref, rowCurrent, rowTitle, sort, onSort }: DataTableProps<T>) {
+  const openPath = useOpenPath();
   const fixed = layout !== 'content';
   const fill = layout === 'fill';
   const v = VARIANTS[variant];
@@ -219,8 +221,8 @@ export default function DataTable<T>({ columns, rows, rowKey, variant = 'compact
             className={`${v.row}${rowHref ? ' cursor-pointer hover:bg-[var(--bg-btn-hover)] transition-colors' : ''}${rowCurrent?.(row) ? ` ${SELECTION_ROW}` : ''}`}
             aria-current={rowCurrent?.(row) ? 'true' : undefined}
             title={rowTitle?.(row)}
-            onClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
-            onAuxClick={rowHref ? e => openRow(e, rowHref(row)) : undefined}
+            onClick={rowHref ? e => openRow(e, rowHref(row), openPath) : undefined}
+            onAuxClick={rowHref ? e => openRow(e, rowHref(row), openPath) : undefined}
           >
             {columns.map((col, i) => {
               const className = `${v.td}${cellPad(i)}${rowEdge(i)}${hide(i)}${fixed && i === 0 ? ' break-words' : ''}${col.className ? ` ${col.className}` : ''}`;

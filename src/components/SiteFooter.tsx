@@ -1,5 +1,5 @@
-import AppLink from './ui/AppLink';
 import { ATLAS_MODE, FEATURE_ROUTES, FEATURES } from '../../shared/config';
+import AppLink from './ui/AppLink';
 import { BETA_SITE_URL } from '../../shared/seo';
 import AtlasLogo from './AtlasLogo';
 import { ATLAS_BYLINE, FOOTER_LINKS_LABEL, LEGAL_LINKS_LABEL, SITE_FOOTER_LABEL } from '../content/noticeCopy';
@@ -7,8 +7,7 @@ import { FOOTER_HEADINGS, PAGE_NAMES } from '../../shared/pageNames';
 import { ABOUT_HOME_PATH } from './SiteHeader';
 import { ABOUT_PATH, AGENCY_INDEX_PATH, CHANGELOG_PATH, DOCS_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCHERS_PATH, TERMS_PATH } from '../../shared/pagePaths';
 
-/** `inApp`: opens inside the app through the router, without reloading the page (CIV-1619). */
-type FooterLink = { href: string; label: string; inApp?: boolean };
+type FooterLink = { href: string; label: string };
 
 const LINK = 'text-[var(--accent)] hover:underline';
 
@@ -40,7 +39,7 @@ export function footerGroups(): { title: string; links: FooterLink[] }[] {
       title: FOOTER_HEADINGS.learn,
       links: [
         { href: DOCS_PATH, label: PAGE_NAMES.docs },
-        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research, inApp: true }] : []),
+        ...(FEATURES.researchApps ? [{ href: FEATURE_ROUTES.research, label: PAGE_NAMES.research }] : []),
       ],
     },
     {
@@ -83,9 +82,7 @@ export default function SiteFooter() {
               <div className="mb-2 text-xs font-black text-[var(--text-muted)]">{group.title}</div>
               <ul className="space-y-1.5">
                 {group.links.map(link => (
-                  <li key={link.href}>{link.inApp
-                    ? <AppLink className={`whitespace-nowrap ${LINK}`} to={link.href}>{link.label}</AppLink>
-                    : <a className={`whitespace-nowrap ${LINK}`} href={link.href}>{link.label}</a>}</li>
+                  <li key={link.href}><AppLink className={`whitespace-nowrap ${LINK}`} to={link.href}>{link.label}</AppLink></li>
                 ))}
               </ul>
             </div>
@@ -95,8 +92,8 @@ export default function SiteFooter() {
         <nav className={`col-span-3 ${SPAN_COLS[columns]} grid grid-cols-subgrid`} aria-label={LEGAL_LINKS_LABEL}>
           {/* CIV-1630 (Ryan, option 1): "Beta · Terms · Privacy", on the public site only; beta doesn't link to itself. */}
           {ATLAS_MODE === 'public' && <a className={`col-start-1 ${legal1} justify-self-start whitespace-nowrap ${LINK}`} href={BETA_SITE_URL}>{PAGE_NAMES.betaLink}</a>}
-          <a className={`col-start-2 ${legal2} justify-self-start whitespace-nowrap ${LINK}`} href={TERMS_PATH}>{PAGE_NAMES.termsLink}</a>
-          <a className={`col-start-3 ${legal3} justify-self-start whitespace-nowrap ${LINK}`} href={PRIVACY_PATH}>{PAGE_NAMES.privacyLink}</a>
+          <AppLink className={`col-start-2 ${legal2} justify-self-start whitespace-nowrap ${LINK}`} to={TERMS_PATH}>{PAGE_NAMES.termsLink}</AppLink>
+          <AppLink className={`col-start-3 ${legal3} justify-self-start whitespace-nowrap ${LINK}`} to={PRIVACY_PATH}>{PAGE_NAMES.privacyLink}</AppLink>
         </nav>
       </div>
     </footer>

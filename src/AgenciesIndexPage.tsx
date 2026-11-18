@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AppLink from './components/ui/AppLink';
 import {
   AGENCY_INDEX_DATA_SCRIPT_ID,
   agencyIndexDescription,
@@ -82,7 +83,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
             <section className="mt-12" aria-labelledby="index-regions">
               <SectionTitle id="index-regions">{AREAS_HEADING}</SectionTitle>
               <ul className={`mt-3 text-sm ${INDEX_COLUMNS}`}>
-                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><a className={UNDERLINED_LINK} href={areaPagePath(a.slug)}>{a.shortName}</a></li>)}
+                {areas.map(a => <li key={a.slug} className="break-inside-avoid py-1"><AppLink className={UNDERLINED_LINK} to={areaPagePath(a.slug)}>{a.shortName}</AppLink></li>)}
               </ul>
             </section>
           )}
@@ -92,7 +93,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <a className={UNDERLINED_LINK} href={regionPagePath(r.region)}>{r.region}</a> : r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <AppLink className={UNDERLINED_LINK} to={regionPagePath(r.region)}>{r.region}</AppLink> : r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{countText(a.routes)}{'\u00A0'}{plural(a.routes, 'route')}</span>;
@@ -107,14 +108,14 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                         const { text, title } = fitAgencyName(a.name, a.shortName);
                         return (
                           <li key={a.slug} className="flex min-w-0 items-baseline break-inside-avoid py-[3px]">
-                            <a className={`${LINK} min-w-0 truncate underline underline-offset-2`} href={href} title={title ?? a.name}>{text}</a>
+                            <AppLink className={`${LINK} min-w-0 truncate underline underline-offset-2`} to={href} title={title ?? a.name}>{text}</AppLink>
                             <span className="shrink-0 whitespace-nowrap">{routes}<AgencyTags live={live} history={history} /></span>
                           </li>
                         );
                       }
                       return (
                         <li key={a.slug} className="break-inside-avoid py-[3px]">
-                          <a className={UNDERLINED_LINK} href={href}>{a.name}</a>
+                          <AppLink className={UNDERLINED_LINK} to={href}>{a.name}</AppLink>
                           {routes}
                         </li>
                       );

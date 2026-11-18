@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { Z_MODAL_TOP } from '../styles';
 import Panel from './ui/Panel';
@@ -58,7 +59,7 @@ export function WhatsNewPanel({ onClose, includeBeta, releases }: Props) {
               </ul>
             </section>
           ))}
-          <a href={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">{SEE_ALL_CHANGES_LABEL}</a>
+          <AppLink to={CHANGELOG_PATH} className="block text-xs font-bold text-[var(--accent)] hover:underline">{SEE_ALL_CHANGES_LABEL}</AppLink>
         </div>
       </Panel>
     </div>

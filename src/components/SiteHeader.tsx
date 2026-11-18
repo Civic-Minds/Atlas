@@ -23,8 +23,8 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
       <nav aria-label={SITE_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
         {FEATURES.researchApps && <AppLink to={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</AppLink>}
         {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
-        <a href={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</a>
-        {FEATURES.studio && <a href={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</a>}
+        <AppLink to={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</AppLink>
+        {FEATURES.studio && <AppLink to={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</AppLink>}
         <ArrowLink tone="quiet" href="/">{GO_TO_ATLAS_LABEL}</ArrowLink>
       </nav>
     </header>
