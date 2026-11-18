@@ -268,7 +268,8 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
       map={<MapAppMap
         layer={{ kind: 'lines', lines }} selected={null} highlightRoute={route}
         onPick={p => { if (p?.kind === 'line' && p.route) setRoute(p.route); }}
-        frameKey={route ? `route-${route}-${footH}` : `network-${footH}`}
+        // The agency is in the key: switching agencies must frame the new network, not keep the last one's view.
+        frameKey={`${file.slug}:${route ? `route-${route}` : 'network'}-${footH}`}
         padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)}
         ariaLabel={PAGE_NAMES.studio}
       />}
