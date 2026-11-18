@@ -64,7 +64,7 @@ The main map covers every agency it can. The deeper products (Live, History, Stu
 | Greater Golden Horseshoe | TTC, Hamilton (HSR), Burlington, Brampton, MiWay, Durham Region Transit, YRT, GRT, GO Transit | Where Atlas started. The first pilot planners for the Atlas Studio MCP are here (CIV-1841). |
 | Kingston | Kingston Transit | The Studio demo agency: a mid-sized agency (the buyer in "Who pays"), recorded every minute for Studio. |
 | Denver | RTD | Already in Studio and History. |
-| A small Ontario city | Guelph or Barrie (one, not yet picked; CIV-1806) | Shows the vehicles-needed figures on a small agency. Both are on the map already. |
+| A small Ontario city | Guelph Transit | Shows the vehicles-needed figures on a small agency (CIV-1806). Picked on 2026-11-18 (Barrie is the fallback): every Guelph trip has a vehicle assignment in its feed, and its figures match the schedule, with scheduled and needed vehicles agreeing on every route at midday. |
 
 ### Per product
 
@@ -74,7 +74,7 @@ The main map covers every agency it can. The deeper products (Live, History, Stu
 | Live | Recording every minute: TTC streetcars and Hamilton, plus Kingston for Studio only. Switched off on every site (`shared/liveArchiveFeeds.ts`, [Live polling](../operations/LIVE_POLLING.md); check with `npm run audit-live-state`) | TTC, Hamilton and Kingston. Other configured feeds stay paused until an agency or consultant asks, or a paid pilot starts. |
 | History | Agencies with 10 or more years of schedules, mostly large US systems; from the focus areas, TTC, Burlington, Brampton, GRT and RTD Denver (`shared/data/history-agencies.json`, [History coverage](../data/DATA_HISTORY.md)) | Eligibility stays automatic. Among new candidates, focus agencies go first: Kingston (one more year needed) and Hamilton, which is in Live and Studio but not History. |
 | Studio | Kingston (opens first), Hamilton, RTD Denver: the agencies with a Schedule Changes file (`tmp/studio/<slug>-before-after.json`, local only and not in git; `shared/studioAgencies.ts`) | The same three until an agency says yes to the demo (CIV-1680). |
-| Vehicles needed (Studio) | Kingston, Hamilton, RTD Denver (`tmp/studio/<slug>-vehicles.json`). TTC has a vehicles file on main but no Schedule Changes file, so Studio doesn't list it. | Add the small Ontario city next. Local and regional bus only (rule below). |
+| Vehicles needed (Studio) | Kingston, Hamilton, RTD Denver (`tmp/studio/<slug>-vehicles.json`). TTC has a vehicles file on main but no Schedule Changes file, so Studio doesn't list it. | Add Guelph next. Local and regional bus only (rule below). |
 | Atlas Studio for AI assistants (MCP) | Every published agency for schedule questions; Live questions only where Live records ([MCP server](../../scripts/mcp/README.md)) | Pilot planners from the Greater Golden Horseshoe (CIV-1841). |
 
 ### Rules
