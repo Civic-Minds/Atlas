@@ -20,6 +20,20 @@ export const LATE_ABOVE_MIN = 5.5;
 /** A stop, stretch, hour or route needs at least this many departures, gaps or trips before Live states a figure for it. */
 export const LIVE_MIN_SAMPLE = 30;
 
+// ---- Minimum days (CIV-1812 item 9) ----
+// Five rules, each its own meaning and value; they are not one number set five ways, so each keeps its own name.
+
+/** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text (Late by hour). */
+export const LIVE_MIN_GOOD_DAYS = 3;
+/** A measure needs daily values on at least this many days for a day-to-day spread; with fewer, FIXED_NOISE stands in. */
+export const LIVE_MIN_SPREAD_DAYS = 3;
+/** Each of two weeks needs this many healthy days before they are compared. */
+export const LIVE_MIN_HEALTHY_DAYS_PER_WEEK = 4;
+/** A day is compared with the median of at least this many other days of its own type; with fewer, with every other day. */
+export const LIVE_MIN_SAME_TYPE_DAYS = 2;
+/** A stop, stretch or stop pair is shown only with evidence from at least this many days. */
+export const LIVE_MIN_EVIDENCE_DAYS = 5;
+
 // ---- Bunching (shared/bunching.ts) ----
 
 /** A gap under this many seconds is bunched. */

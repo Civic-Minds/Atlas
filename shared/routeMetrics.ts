@@ -4,11 +4,12 @@
  * feeds them. The same functions describe this week and last week, so a comparison never mixes two ways of counting.
  */
 import { median, percentile } from './segmentDelay.js';
+import { LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS } from './rules/live.js';
 
 /** A day counts only when the archive holds at least this share of the snapshots a normal day has. */
 export const HEALTHY_DAY_SHARE = 0.9;
 /** A week needs this many healthy days to be compared. */
-export const MIN_HEALTHY_DAYS = 4;
+export const MIN_HEALTHY_DAYS = LIVE_MIN_HEALTHY_DAYS_PER_WEEK;
 
 export interface RunTimeRow {
   date: string;
@@ -82,7 +83,7 @@ export function snapshotsPerDate(snapshots: ReadonlyArray<{ ts: number; vehicles
 export interface DayHealth { date: string; snapshots: number; healthy: boolean }
 
 /** A day is compared with the median of at least this many other days of its own type; with fewer, with every other day. */
-export const MIN_SAME_TYPE_DAYS = 2;
+export const MIN_SAME_TYPE_DAYS = LIVE_MIN_SAME_TYPE_DAYS;
 
 /**
  * A day is healthy when the archive has at least HEALTHY_DAY_SHARE of the snapshots a typical day of its type has.

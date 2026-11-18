@@ -18,12 +18,12 @@ import { LIVE_FEW_MEASUREMENTS, LIVE_NO_DEPARTURES_IN_PERIOD, LIVE_TOO_FEW_DEPAR
 import { percentText, countText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
 import Card from '../../ui/Card';
-import { LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
+import { LIVE_MIN_GOOD_DAYS, LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 
 /** Fewer departures than this and an hour's bar is faded. */
 const MIN_N = LIVE_MIN_SAMPLE;
 /** A figure resting on fewer good days than this reads as thin: dimmed, with the tile's hover text. */
-export const MIN_GOOD_DAYS = 3;
+export const MIN_GOOD_DAYS = LIVE_MIN_GOOD_DAYS;
 export const THIN_HINT = LIVE_FEW_MEASUREMENTS;
 /** The top of a row's shared scale: the highest bar among hours with enough departures, at least 10%, rounded up to a tenth. */
 export const rowMax = (hours: readonly HourValue[]): number => Math.ceil(Math.max(0.1, ...hours.filter(h => h.n >= MIN_N).map(h => h.value)) * 10) / 10;
