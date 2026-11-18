@@ -39,8 +39,8 @@ export const PAGE_NAMES = {
   researchers: 'For Researchers',
   /** CIV-1694: the header link to Atlas Studio (local only). Proposed, waiting on Ryan's OK. */
   studio: 'Studio',
-  /** CIV-1693: Studio's buses-needed calculator. Proposed, waiting on Ryan's OK. */
-  studioVehicles: 'Buses Needed',
+  /** CIV-1693: Studio's vehicles-needed card. Named by Atlas Strategy (CIV-1834; Ryan, 2026-11-17, gave Strategy the call after rejecting "Vehicles Needed" and "Buses Needed"). */
+  studioVehicles: 'Vehicles',
   /** CIV-1715: Studio's before/after schedule comparison. Proposed, waiting on Ryan's OK. */
   studioChanges: 'Schedule Changes',
 } as const;

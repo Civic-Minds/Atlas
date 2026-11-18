@@ -7,11 +7,11 @@ import { joinList, plural } from './overflowText';
 import { devPlaceholder } from './devPlaceholder';
 import { PAGE_NAMES } from './pageNames';
 
-/** "Routes": the route list's heading on the map page and the group's routes row under Buses Needed. */
+/** "Routes": the route list's heading on the map page and the group's routes row under Vehicles. */
 const ROUTES = 'Routes';
 
-/** The page menu's entries (CIV-1828): Live (Ryan and Strategy, 2026-11-17), and Fleet, a placeholder name (Ryan, 2026-11-17). */
-export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet' } as const;
+/** The page menu's entries (CIV-1828): Live and Schedule, Ryan's picks for Studio's two views (CIV-1807, 2026-11-18). */
+export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Schedule' } as const;
 
 export const STUDIO_MAP_TEXT = {
   route: 'Route',
@@ -63,5 +63,5 @@ export const STUDIO_VEHICLES_TEXT = {
 export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder(`${ends[0]} – ${ends[1]}`);
 /** Why the buses cover more than the open route: "12, 31, 601 and 602 share buses, so these numbers cover all four." */
 export const groupSharesText = (routes: readonly string[]) => devPlaceholder(`${joinList([...routes])} share buses, so these numbers cover all ${routes.length}.`);
-/** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17". */
+/** The vehicles section's title with the newer schedule's date: "Vehicles · Sep 17". */
 export const vehiclesTitleText = (date: string) => devPlaceholder(`${PAGE_NAMES.studioVehicles} · ${date}`);
