@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { OutboundLink } from './OutboundLink';
 import { agencyInSentence } from '../../shared/agencyArticle';
 
 /**
  * How long each map shows: a quick flick through the pictures, 180 ms. CIV-1495 #2 (2026-11-15) slowed it to a second;
  * Ryan, 2026-11-18, reversed that: "Feel like the point of this was that it changed through pics fast ... but then u made
- * us slow it down now it looks dumb". Reduced motion and pause still stop it.
+ * us slow it down now it looks dumb". Reduced motion shows one still frame.
  */
 export const MONTAGE_FRAME_MS = 180;
 
@@ -32,7 +31,6 @@ export const publishedMapFrames: MapFrame[] = [
 
 export default function FrequentServicePublishedMapMontage() {
   const [activeFrame, setActiveFrame] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -45,10 +43,10 @@ export default function FrequentServicePublishedMapMontage() {
   }, []);
 
   useEffect(() => {
-    if (reducedMotion || !isPlaying) return;
+    if (reducedMotion) return;
     const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % publishedMapFrames.length), MONTAGE_FRAME_MS);
     return () => window.clearInterval(timer);
-  }, [isPlaying, reducedMotion]);
+  }, [reducedMotion]);
 
   const current = publishedMapFrames[activeFrame];
 
@@ -66,17 +64,7 @@ export default function FrequentServicePublishedMapMontage() {
           />
         ))}
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-black/60 to-transparent px-4 pb-4 pt-12 text-white sm:px-6 sm:pb-5">
-          <OutboundLink href={current.source} kind="published_map" className="text-sm font-bold underline decoration-white/60 underline-offset-4">
-            {current.agency}
-          </OutboundLink>
-          <button
-            type="button"
-            onClick={() => setIsPlaying(playing => !playing)}
-            className="rounded-full border border-white/70 bg-black/30 px-3 py-1.5 text-xs font-bold backdrop-blur-sm"
-            aria-label={isPlaying ? 'Pause published map montage' : 'Play published map montage'}
-          >
-            {isPlaying ? 'Pause' : 'Play'}
-          </button>
+          <span className="text-sm font-bold">{current.agency}</span>
         </div>
       </div>
       <figcaption className="px-4 py-3 text-xs text-[var(--text-muted)] sm:px-6">
