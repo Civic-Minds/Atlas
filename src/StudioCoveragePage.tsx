@@ -9,6 +9,7 @@ import { LINK } from './pageStyles';
 import { useAgencies } from './hooks/useAgencies';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { MISSING_VALUE } from '../shared/missingValue';
+import { FEATURES } from '../shared/config';
 import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { LIVE_ARCHIVE_SLUGS, type LiveCoverage } from '../shared/liveCoverage';
 import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
@@ -89,7 +90,8 @@ export default function StudioCoveragePage() {
     agencies: agencies.map(a => { const n = agencyNames(a).list; return { slug: a.slug, name: n.primary, place: n.secondary }; }),
     historySlugs: (historyAgencyList as { slugs: string[] }).slugs,
     liveArchiveSlugs: LIVE_ARCHIVE_SLUGS,
-    liveMapSlugs: LIVE_AGENCY_SLUGS,
+    // Real-time only where Live itself is on in this build (LIVE_ENABLED) and the agency has a usable Live feed.
+    liveMapSlugs: FEATURES.live ? LIVE_AGENCY_SLUGS : [],
     studioSlugs: facts?.studio ?? [],
     vehiclesSlugs: facts?.vehicles ?? [],
     coverage: { ...(facts?.coverage ?? {}), ...mcpCoverage },
