@@ -22,6 +22,9 @@ import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { routeRuns } from '../build-agency-page-summaries';
+import { countryForRegion } from '../../shared/regionCountry';
+import { writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
 import type { GtfsData } from '../../types/gtfs';
 import { parseGtfsZip } from '../../pipeline/parseGtfs';
@@ -299,3 +302,52 @@ export async function combinedDepartures(slug: string, fromQuery: string, toQuer
 }
 
 export { runningTimeSummary };
+
+// ---- Agency index for peers and rankings (CIV-1650 round 2) ----
+
+/** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
+export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; days: Partial<Record<DayType, Array<{ route: string; name: string | null; wait: Partial<Record<PeriodKey, number | null>> }>>> }
+
+/** Where the index sits: next to the route files it was built from, so a new release gets a new index. */
+export function indexFile(): string | null {
+  const any = availableAgencies()[0];
+  return any ? join(dirname(any.file), '_mcp-index.json') : null;
+}
+
+/** Build the index from every available route file, with the same functions route_frequency uses. Takes a few minutes. */
+export function buildIndex(onProgress?: (done: number, total: number) => void): IndexedAgency[] {
+  const list = availableAgencies();
+  const out: IndexedAgency[] = [];
+  list.forEach((a, i) => {
+    const days: IndexedAgency['days'] = {};
+    for (const d of DAY_TYPES) {
+      const routes = routesOn(a, d);
+      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
+    }
+    out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), days });
+    loaded.delete(a.slug); // one agency in memory at a time
+    onProgress?.(i + 1, list.length);
+  });
+  const file = indexFile();
+  if (file) writeFileSync(file, JSON.stringify(out));
+  return out;
+}
+
+let index: IndexedAgency[] | null = null;
+/** The index, or null when it hasn't been built for the current data (scripts/mcp/buildIndex.ts). */
+export function agencyIndex(): IndexedAgency[] | null {
+  if (index) return index;
+  const file = indexFile();
+  if (!file || !existsSync(file)) return null;
+  index = JSON.parse(readFileSync(file, 'utf8')) as IndexedAgency[];
+  return index;
+}
+
+/** Country names as the catalog's regions map them, matched loosely ("US", "USA", "United States"). */
+export function sameCountry(country: string | null, query: string): boolean {
+  if (!country) return false;
+  const q = query.trim().toLowerCase().replace(/\./g, '');
+  const c = country.toLowerCase();
+  const aliases: Record<string, string[]> = { 'united states': ['us', 'usa', 'america', 'united states of america'], canada: ['ca'] };
+  return c === q || (aliases[c] ?? []).includes(q);
+}

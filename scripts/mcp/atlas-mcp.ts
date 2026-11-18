@@ -12,6 +12,8 @@ import { createInterface } from 'node:readline';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange } from '../../shared/config';
 import { clockTime, hourRange } from '../../shared/timeText';
 import { DAY_TYPES } from '../../shared/rules/days';
+import { countryForRegion } from '../../shared/regionCountry';
+import type { IndexedAgency } from './atlasData';
 import { PUBLIC_TIER_MAXES } from '../../shared/frequencyRules';
 
 // Anything an imported module prints must not reach stdout, which is the protocol channel.
@@ -29,7 +31,8 @@ const stop = (which: string) => ({ type: 'string', description: `${which} stop o
 
 const WAIT = 'waitMinutes is the typical wait on the route\'s least frequent part (its slowest branch or direction), the number Atlas colours and filters the route by; "shown" is what the route list says, with a range where parts of the route differ.';
 const TOOLS = [
-  { name: 'list_agencies', description: 'Find transit agencies Atlas covers, by name, city or region. Without a search it returns only the count.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Name, city or region to search for.' } } } },
+  { name: 'list_agencies', description: 'Find transit agencies Atlas covers, filtered by name or city, region (state or province) and country. Returns at most 40 compact rows; with no filter, only the count.', inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'Name or city to search for.' }, region: { type: 'string', description: 'State or province, e.g. "Ontario", "Ohio".' }, country: { type: 'string', description: 'Country, e.g. "Canada", "United States".' } } } },
+  { name: 'rank_agencies', description: `Rank agencies by how many of their routes run every N minutes or better in a part of the day (by waitMinutes). Filter by country or region, and by size: weekday route count between min_routes and max_routes, or similar_to an agency (half to double its weekday routes). Returns each agency's routes on the day, routes meeting the bar, and the list of those routes. ${WAIT}`, inputSchema: { type: 'object', properties: { period, every, day, country: { type: 'string' }, region: { type: 'string' }, similar_to: { type: 'string', description: 'An agency whose size to match: half to double its weekday route count.' }, min_routes: { type: 'number' }, max_routes: { type: 'number' }, limit: { type: 'number', description: 'How many agencies to return; 15 when left out.' } }, required: ['period', 'every'] } },
   { name: 'route_frequency', description: `How often a route runs in each part of the day on a day type, with its first and last trips. ${WAIT} With a time window it also gives the frequency hour by hour.`, inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'route'] } },
   { name: 'routes_at_frequency', description: `Routes in an agency that run every N minutes or better in a part of the day (by waitMinutes: ${WAIT})`, inputSchema: { type: 'object', properties: { agency, period, every, day }, required: ['agency', 'period', 'every'] } },
   { name: 'compare_agencies', description: 'For several agencies, how many routes run every N minutes or better in a part of the day.', inputSchema: { type: 'object', properties: { agencies: { type: 'array', items: { type: 'string' } }, period, every, day }, required: ['agencies', 'period', 'every'] } },
@@ -62,12 +65,42 @@ function window(args: Args): { start: number; end: number; label: string; period
 const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
 
 const handlers: Record<string, (args: Args) => unknown> = {
-  list_agencies: ({ query }) => {
-    const q = String(query ?? '').trim().toLowerCase();
+  list_agencies: ({ query, region, country }) => {
+    const q = String(query ?? '').trim().toLowerCase(), reg = String(region ?? '').trim().toLowerCase(), ctry = String(country ?? '').trim();
     const all = data.availableAgencies();
-    if (!q) return { agencies: all.length, note: 'Search by name, city or region to list them.' };
-    return all.filter(a => [a.slug, a.name, a.region ?? '', ...(a.cities ?? [])].some(s => s.toLowerCase().includes(q)))
-      .slice(0, 25).map(a => ({ name: a.name, region: a.region ?? null, scheduleValidThrough: validThrough(a) }));
+    if (!q && !reg && !ctry) return { agencies: all.length, note: 'Filter by name or city, region or country to list them.' };
+    const hits = all.filter(a => (!q || [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q)))
+      && (!reg || (a.region ?? '').toLowerCase() === reg)
+      && (!ctry || data.sameCountry(countryForRegion(a.region), ctry)));
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', validThrough(a) ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+  },
+  rank_agencies: (args) => {
+    const idx = data.agencyIndex();
+    if (!idx) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
+    const dayType = data.parseDay(args.day), key = needPeriod(args.period), minutes = Number(args.every);
+    const weekdayRoutes = (a: IndexedAgency) => a.days.Weekday?.length ?? 0;
+    let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
+    let like: string | null = null;
+    if (args.similar_to != null) {
+      const a = needAgency(args.similar_to);
+      const self = idx.find(x => x.slug === a.slug);
+      if (!self) throw new Error(`${a.name} is not in the index.`);
+      like = `${a.name} (${weekdayRoutes(self)} weekday routes)`;
+      lo = Math.ceil(weekdayRoutes(self) / 2); hi = weekdayRoutes(self) * 2;
+    }
+    const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
+    const pool = idx.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && weekdayRoutes(a) >= lo && weekdayRoutes(a) <= hi);
+    const rows = pool.map(a => {
+      const routes = a.days[dayType] ?? [];
+      const meeting = routes.filter(r => r.wait[key] != null && r.wait[key]! <= minutes).sort((x, y) => x.wait[key]! - y.wait[key]!);
+      return { agency: a.name, region: a.region, weekdayRoutes: weekdayRoutes(a), routesOnDay: routes.length, routesMeeting: meeting.length, routes: meeting.map(r => `${r.route}${r.name ? ` ${r.name}` : ''} (every ${r.wait[key]})`) };
+    }).sort((x, y) => y.routesMeeting - x.routesMeeting || x.agency.localeCompare(y.agency));
+    const limit = args.limit != null ? Number(args.limit) : 15;
+    return {
+      day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
+      ...(like ? { sizedLike: like } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      agenciesCompared: rows.length, ranking: rows.slice(0, limit), source: SOURCE,
+    };
   },
   route_frequency: (args) => {
     const a = needAgency(args.agency);
@@ -144,8 +177,10 @@ const handlers: Record<string, (args: Args) => unknown> = {
     const file = data.scheduleComparison(a.slug);
     if (!file) return { agency: a.name, comparison: null, note: 'Atlas has not built a schedule comparison for this agency.' };
     const changes = data.frequencyChanges(file);
+    const date = (ymd: string) => `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
     return {
-      agency: a.name, day: file.day, before: file.before.date, after: file.after.date,
+      compares: `${file.day ?? 'one day'} service on ${date(file.before.date)} (before) with ${date(file.after.date)} (after)`,
+      agency: a.name,
       routesAdded: file.changes.filter(c => !c.before).map(c => c.route), routesRemoved: file.changes.filter(c => !c.after).map(c => c.route),
       frequencyChanges: changes.slice(0, 40).map(c => ({ route: c.route, name: c.name, period: c.period, before: c.before == null ? 'no service' : `every ${c.before} min`, after: c.after == null ? 'no service' : `every ${c.after} min`, better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length,
@@ -162,7 +197,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.2.0' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.3.0' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
