@@ -81,6 +81,18 @@ const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | null) =
   : {});
 const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
 
+/**
+ * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of
+ * the final round (2026-11-17) gave reasons and figures from memory as if they were Atlas's, and tried the shell when a
+ * tool had no answer.
+ */
+const INSTRUCTIONS = [
+  "Atlas Studio answers from Atlas's published schedules. Give the figures its tools return, with the hours and the schedule's end date.",
+  "Anything not from these tools (ridership, crowding, causes of a change, holiday plans, history before Atlas's data) is outside Atlas: leave it out, or say plainly where it comes from.",
+  "When a tool says Atlas has no figure, say so; don't work one out or estimate it unless the person asks for an estimate, and then call it yours.",
+  "Don't run shell commands or read files to get around a missing tool.",
+].join(' ');
+
 const handlers: Record<string, (args: Args) => unknown> = {
   list_agencies: ({ query, region, country, near, km }) => {
     if (near != null) {
@@ -287,7 +299,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.6.1' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.6.2' }, instructions: INSTRUCTIONS });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
