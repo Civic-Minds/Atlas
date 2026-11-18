@@ -31,7 +31,9 @@ describe('getVehicleStatus', () => {
     expect(getVehicleStatus(-1.4)).toBe('on_time');
     expect(getVehicleStatus(0)).toBe('on_time');
     expect(getVehicleStatus(5.4)).toBe('on_time');
-    expect(getVehicleStatus(5.5)).toBe('late');
+    // CIV-1812 item 7: late is more than 5½ min.
+    expect(getVehicleStatus(5.5)).toBe('on_time');
+    expect(getVehicleStatus(5.6)).toBe('late');
     expect(getVehicleStatus(10)).toBe('late');
   });
 });
