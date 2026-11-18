@@ -1,0 +1,251 @@
+name: History no-trips sidecars
+
+# CIV-1850: add the CIV-471 no-trips flag (noTripPeriods) to published History v2 sidecars, add-only, each period
+# read pinned at its own date (pipeline/history-v2-notrip-backfill.ts plans; history-v2-upload.ts
+# --replace-approved CIV-1850 is the only writer, backing up each file under history-v2-replaced/CIV-1850/).
+#
+#   gh workflow run history-notrip-sidecars.yml -f ref=<ref> -f slugs="ttc septa"                 (dry run)
+#   gh workflow run history-notrip-sidecars.yml -f ref=main -f mode=write -f ticket=CIV-1850     (needs Ryan's go)
+#
+# A workflow not on the default branch cannot be dispatched, so pushing a tag dryrun/civ-1850-* starts a DRY RUN of
+# every CIV-1850 slug plus the build proof (History built at the tag and at its merge base with main must be
+# byte-identical while no sidecar holds the field). Never write mode.
+on:
+  push:
+    tags:
+      - 'dryrun/civ-1850-*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or SHA. Write mode only accepts the current tip of main.'
+        required: false
+        default: main
+        type: string
+      slugs:
+        description: 'Space-separated agency slugs (empty: every slug CIV-1850 approves).'
+        required: false
+        default: ''
+        type: string
+      mode:
+        description: 'dry-run writes nothing (read-only keys). write adds the flag (needs Ryan''s go).'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - write
+      ticket:
+        description: 'Write mode: the approval ticket (CIV-1850).'
+        required: false
+        default: ''
+        type: string
+
+env:
+  TZ: America/Toronto
+  OUT: tmp/history-notrip
+  ATLAS_HISTORY_V2: '1'
+
+permissions:
+  contents: read
+
+jobs:
+  slugs:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.list.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - id: list
+        env:
+          SLUGS_INPUT: ${{ inputs.slugs }}
+        run: |
+          if [ -n "$SLUGS_INPUT" ]; then
+            for s in $SLUGS_INPUT; do [[ "$s" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "bad slug: $s"; exit 1; }; done
+            list=$(printf '%s\n' $SLUGS_INPUT | jq -R . | jq -sc .)
+          else
+            list=$(node -e "const s=require('fs').readFileSync('pipeline/historyV2Replace.ts','utf8');const m=s.match(/'CIV-1850': \[([^\]]*)\]/);console.log(JSON.stringify([...m[1].matchAll(/'([a-z0-9-]+)'/g)].map(x=>x[1])))")
+          fi
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+          echo "$list"
+
+  dry-run:
+    needs: slugs
+    if: github.event_name == 'push' || inputs.mode == 'dry-run'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        slug: ${{ fromJSON(needs.slugs.outputs.list) }}
+    timeout-minutes: 345
+    env:
+      SLUG: ${{ matrix.slug }}
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # Read-only keys: this job runs the code of any ref, so it never sees a write-capable credential.
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check the read-only keys
+        run: |
+          [ -n "$R2_ACCESS_KEY_ID" ] && [ -n "$R2_SECRET_ACCESS_KEY" ] || { echo "Missing the read-only R2 keys."; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
+      - name: Plan (dry run)
+        run: |
+          set -o pipefail
+          mkdir -p "$OUT"
+          npx tsx pipeline/history-v2-notrip-backfill.ts --slug "$SLUG" --out "$OUT" 2>&1 | tee "$OUT/$SLUG.log"
+      - name: Upload plan with the add-only check (dry run, read-only)
+        run: |
+          set -o pipefail
+          npx tsx pipeline/history-v2-upload.ts --slug "$SLUG" --dir "$OUT/full-rebuild" --replace-approved CIV-1850 2>&1 | tee "$OUT/$SLUG-upload-plan.txt" || true
+      - name: Summary
+        if: always()
+        run: cat "$OUT/$SLUG-summary.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-notrip-sidecars-${{ matrix.slug }}-${{ github.run_id }}
+          path: ${{ env.OUT }}/
+          retention-days: 30
+          if-no-files-found: warn
+
+  # The build reads noTripPeriods from a sidecar when no change file has it. While no sidecar holds the field, the
+  # History build at this ref must equal the build at its merge base with main, byte for byte.
+  build-proof:
+    if: github.event_name == 'push' || inputs.mode == 'dry-run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build History at this ref and at the merge base (dry run)
+        run: |
+          set -e
+          base=$(git merge-base HEAD origin/main)
+          echo "fix $(git rev-parse --short HEAD), base $(git rev-parse --short "$base")"
+          npm run build-history -- --dry-run > tmp-fix.log 2>&1 || { tail -30 tmp-fix.log; exit 1; }
+          mkdir -p proof/fix proof/base
+          cp tmp/history-config.dry-run.json proof/fix/
+          git worktree add -q ../base "$base"
+          (cd ../base && ln -s "$GITHUB_WORKSPACE/node_modules" node_modules && npm run build-history -- --dry-run > ../base.log 2>&1) || { tail -30 ../base.log; exit 1; }
+          cp ../base/tmp/history-config.dry-run.json proof/base/
+          node -e "
+            const fs=require('fs');
+            const strip=o=>{if(Array.isArray(o))return o.map(strip);if(o&&typeof o==='object'){const r={};for(const[k,v]of Object.entries(o))if(!['generatedAt','builtAt','buildTime'].includes(k))r[k]=strip(v);return r;}return o;};
+            const a=JSON.stringify(strip(JSON.parse(fs.readFileSync('proof/base/history-config.dry-run.json','utf8'))));
+            const b=JSON.stringify(strip(JSON.parse(fs.readFileSync('proof/fix/history-config.dry-run.json','utf8'))));
+            const raw=fs.readFileSync('proof/base/history-config.dry-run.json')+''===fs.readFileSync('proof/fix/history-config.dry-run.json')+'';
+            console.log('bytes identical:',raw,'| identical without build timestamps:',a===b,'| size',a.length);
+            if(a!==b)process.exit(1);
+          " | tee proof/result.txt
+      - name: Upload the proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-notrip-build-proof-${{ github.run_id }}
+          path: proof/
+          retention-days: 30
+          if-no-files-found: warn
+
+  # Write. Only the tip of main, only with the CIV-1850 ticket, and only after Ryan's go-ahead.
+  write:
+    needs: slugs
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'write'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: atlas-data-release
+      cancel-in-progress: false
+    timeout-minutes: 345
+    env:
+      TICKET: ${{ inputs.ticket }}
+      REF_INPUT: ${{ inputs.ref }}
+      SLUG_LIST: ${{ needs.slugs.outputs.list }}
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Check the inputs
+        run: |
+          [ "$TICKET" = "CIV-1850" ] || { echo "write mode needs ticket CIV-1850, got: '$TICKET'"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || 'main' }}
+          persist-credentials: false
+      - name: Build main only
+        run: |
+          git fetch --no-tags --depth=1 origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "Refusing to write: ref '$REF_INPUT' is $(git rev-parse --short HEAD), main is $(git rev-parse --short FETCH_HEAD)."
+            exit 1
+          fi
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
+      # Per slug: plan again from the live files, then the approved add-only replacement (backup, read-back, re-read,
+      # write, read-back). Any refusal stops the run.
+      - name: Add the flag (write)
+        run: |
+          set -o pipefail
+          mkdir -p "$OUT"
+          for s in $(echo "$SLUG_LIST" | jq -r '.[]'); do
+            npx tsx pipeline/history-v2-notrip-backfill.ts --slug "$s" --out "$OUT/$s" --max-disagree-pct 20 2>&1 | tee -a "$OUT/write.log"
+            if ls "$OUT/$s/full-rebuild/history-v2/$s/"*.json > /dev/null 2>&1; then
+              npx tsx pipeline/history-v2-upload.ts --slug "$s" --dir "$OUT/$s/full-rebuild" --replace-approved "$TICKET" --write 2>&1 | tee -a "$OUT/write.log"
+            else
+              echo "$s: nothing to add" | tee -a "$OUT/write.log"
+            fi
+          done
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-notrip-sidecars-write-${{ github.run_id }}
+          path: ${{ env.OUT }}/
+          retention-days: 90
+          if-no-files-found: warn

@@ -265,8 +265,9 @@ export function buildRouteSnapshots(
       headwayByPeriod: v2 ? v2.rep.p : c.change?.headwayByPeriod,
       ...(() => { const t = v2 ? v2.rep.t : c.change?.trunkHeadway; return t != null && h != null && t < h ? { trunkHeadwayMin: t } : {}; })(),
       ...(() => { const tp = v2 ? v2.rep.tp : c.change?.trunkHeadwayByPeriod; return tp ? { trunkHeadwayByPeriod: tp } : {}; })(),
-      // Route-level, read from the same feed as the sidecar, so it holds for either source (CIV-471).
-      ...(c.change?.noTripPeriods ? { noTripPeriods: c.change.noTripPeriods } : {}),
+      // Route-level, read from the same feed as the sidecar, so it holds for either source (CIV-471). A period with no
+      // change file takes it from the sidecar, where the add-only backfill records it (CIV-1850).
+      ...(() => { const nt = c.change?.noTripPeriods ?? c.v2?.noTripPeriods; return nt ? { noTripPeriods: nt } : {}; })(),
       geometry: c.change?.geometry,
       v2,
       processedAt: c.change?.processedAt,
