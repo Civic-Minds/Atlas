@@ -50,6 +50,8 @@ The standing test questions and every run's results: [TEST-LOG.md](TEST-LOG.md).
 
 ## Data
 
+The tools read through one async store (`shared/mcpStore.ts`): the disk store (`scripts/mcp/diskStore.ts`) for this local server, an in-memory store for tests, and later the published release on R2 for the hosted server. A test checks that the disk and memory stores give equal answers.
+
 - **Frequencies.** Each agency's published route file. The server reads the newest release cache first (`tmp/agency-pages-cache/<release>/`, written by `build-agency-page-summaries.ts`), then local dry-run output (`tmp/process-preview/<slug>/`). `ATLAS_MCP_DATA_DIR` points it at another folder. Every number comes from the map's own functions: `routeListFilterDisplay`, `routeListDisplay`, `routeRuns` and the hourly chart values.
 - **Trip times and combined frequency.** The agency's schedule files that Atlas processed (`Atlas-worktrees/_feeds/<slug>/` and any `<slug>--supplemental-N/`, newest of each; `ATLAS_MCP_FEEDS_DIR` overrides). With `also_agencies`, other agencies count together; a place named on one agency is found on another by stops within a 500 m walk (`SAME_PLACE_METRES`). It is read the way processing reads it (`pipeline/stopToStop.ts`): same week, same services, near-duplicate trips dropped, same representative weekday. Trip times are summarized with the running-time rules (`runningTimeSummary`). Combined frequency uses the stop-pool rule the map uses at a stop (`pooledReadingInWindow`).
 - **Agency index.** `rank_agencies` reads `_mcp-index.json` next to the route files: every route's wait per period and day type, made with the same functions. Rebuild it after the release cache changes: `nice -n 15 npx tsx scripts/mcp/buildIndex.ts`.

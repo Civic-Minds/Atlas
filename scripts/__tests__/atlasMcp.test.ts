@@ -10,9 +10,10 @@ describe('Atlas MCP server data (CIV-1650)', () => {
     expect([parsePeriod('Midday'), parsePeriod('AM peak'), parsePeriod('pm_peak'), parsePeriod('lunch')]).toEqual(['midday', 'amPeak', 'pmPeak', null]);
   });
 
-  it('answers only for public agencies', () => {
-    expect(publicAgencies().length).toBeGreaterThan(100);
-    expect(publicAgencies().some(a => a.betaOnly)).toBe(false);
+  it('answers only for public agencies', async () => {
+    const agencies = await publicAgencies();
+    expect(agencies.length).toBeGreaterThan(100);
+    expect(agencies.some(a => a.betaOnly)).toBe(false);
   });
 
   it('lists schedule changes by the shared rule: a move inside a grade is none (Hamilton 44, 30 → 29)', () => {
