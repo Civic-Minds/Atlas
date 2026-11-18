@@ -51,7 +51,7 @@ The shared components live in `src/components/ui/`.
 
 - No dark fills.
   - Selected and "on" states use a flat, pale tonal tint with darker text (the `--control-active-*` and `--accent-selected-*` tokens, `CONTROL_ACTIVE` in `src/styles.ts`).
-  - No solid near-black pills with white text.
+  - No solid near-black pills with white text. (checked: only the accent fill with white text)
 - Nothing has a shadow. Keep the flat look. (checked)
 - Case (Ryan, 2026-11-15; it replaces CIV-1160's sentence case everywhere):
   - Titles are title case: page headings, section headings, header nav links, footer column names and links, and browser tab titles ("What’s New", "All Agencies and Areas", "Terms of Service"). Section headings are cased by `SectionTitle` and `SubsectionTitle` themselves; page titles that aren't a proper name use `titleCase` (`shared/titleCase.ts`).

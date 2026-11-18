@@ -164,6 +164,7 @@ const RULES: Rule[] = [
   // How Atlas looks
   { name: 'text set in capitals (uppercase class or textTransform)', doc: 'VISUAL.md', pattern: /\buppercase\b|textTransform/, slip: '<span className="uppercase">' },
   { name: 'wide letter spacing (tracking-wide or letterSpacing)', doc: 'VISUAL.md', pattern: /\btracking-wide(r|st)?\b|letterSpacing|letter-spacing/, slip: '<span className="tracking-wider">' },
+  { name: 'a near-black accent fill with white text (use the pale CONTROL_ACTIVE tint)', doc: 'VISUAL.md', pattern: /bg-\[var\(--accent\)\][^'"`]*\btext-white\b|\btext-white\b[^'"`]*bg-\[var\(--accent\)\]/, slip: '<span className="bg-[var(--accent)] text-white">' },
   { name: 'a <table> outside DataTable', doc: 'VISUAL.md', pattern: /<table\b/, slip: '<table className="w-full">',
     allowed: ['src/components/ui/DataTable.tsx'] },
   // Ryan, 2026-11-15: normal (proportional) digits everywhere, charts included.
