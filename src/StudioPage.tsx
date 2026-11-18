@@ -153,7 +153,8 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
         <span className="text-right">{dateRange(file.before.date, file.before.date)}</span>
         <span className="text-right">{dateRange(file.after.date, file.after.date)}</span>
       </div>
-      <div className="min-h-0 flex-1 overflow-hidden">
+      {/* Only the rows scroll; the header and the summary above stay put (Studio is a planner tool, not a Live sidebar). */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {groups.map(g => (
           <div key={g.key} className="mt-2">
             <h3 className="m-0 px-2 text-xs font-bold text-[var(--text-muted)]">{g.title}</h3>
