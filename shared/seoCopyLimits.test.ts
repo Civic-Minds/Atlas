@@ -22,7 +22,8 @@ describe('search result copy fits', () => {
       expect(seo.description.length, `${a.slug} description is too short: ${seo.description}`).toBeGreaterThanOrEqual(40);
       expect(seo.title, a.slug).not.toMatch(/frequent routes/i);
     }
-  });
+    // Builds every agency's page data, about 5 s alone: more than the default timeout on a busy machine.
+  }, 60_000);
 
   it('every area page title is 60 characters or fewer and every description 160 or fewer', () => {
     const bySlug = new Map(agencies.map(a => [a.slug, a]));
