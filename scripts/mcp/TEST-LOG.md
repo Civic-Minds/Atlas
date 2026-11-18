@@ -130,3 +130,19 @@ Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl`. Version 0.4.0, with TTC's cu
 | OC Transpo midday every 10 | routes_at_frequency | Only Line 1 (every 6) | Right | None |
 | YRT Sunday midday every 15 | routes_at_frequency, route_frequency | Only 20 Jane; explained why Viva misses | Right | None |
 | Agencies around Hamilton (asked twice) | list_agencies (Ontario) | Picked the nearby ones from all of Ontario's | Right, but the nearness was the assistant's own | Fix: find agencies near a place or another agency |
+
+## 2026-11-17: Ryan's extra probes, same chat
+
+Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl` (from "Which TTC routes run every 10 minutes or better between 11 PM and 2 AM"). Version 0.4.0.
+
+| Question | Tools used | Answer | Right? | Gap or fix |
+|---|---|---|---|---|
+| TTC routes every 10 or better, Saturday 11 PM–2 AM | routes_at_frequency | 34 of 151, by subway, streetcar and bus | Right | None |
+| Chicago Blue Line, Sunday evenings, O'Hare to Clark/Lake | route_frequency, trip_time | Every 10; 39 min, with a note that the trip time comes from an older schedule (to Nov 30) | Right after a retry | "Blue" first matched the 60 Blue Island bus. Fix: prefer the route whose name is the match ("Blue Line"). CTA's schedule file on this Mac is older than the map's |
+| TTC route 999 | route_frequency (3 days) | No such route | Right | None |
+| (extra) How has Cleveland's HealthLine changed over time | schedule_changes, route_frequency | Said Atlas has no history, gave today's figures, then history from memory marked unchecked | Admitted the gap | Atlas's History data covers Cleveland. Fix: the route-history tool |
+| Is the 29 running late right now | Web fetch of TTC alerts | Said Atlas has schedules only; the alerts page didn't load | Right | None |
+| TTC fare | Web search | $3.30 PRESTO, $3.35 cash, with sources | Right, from the TTC's site, not Atlas | Atlas has no fares; it said where the answer came from |
+| Is GO's schedule up to date | None (from an earlier answer) | Runs to Nov 27, 2026 | Right | None |
+| MiWay every 15 or better all weekday 6 AM–7 PM | routes_at_frequency (3 periods) | 12 routes, with each period's figure | Right | None |
+| 504 from King Station to Dufferin Gate | trip_time | About 26 min, 23–28 by hour; said only one branch goes there | Right, but from the October schedule | The server kept the schedule it had read before the new TTC file arrived. Fix: reread a schedule when a newer file appears |
