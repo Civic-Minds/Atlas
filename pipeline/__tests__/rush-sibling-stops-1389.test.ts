@@ -44,10 +44,9 @@ describe('a sibling counts the rush-hour-only trips at the stops they share (CIV
     expect(periodRow(warden, 'pmPeak')).toEqual(runs('19x2,10x3,30x2,10x8,15x38'));
     // Nothing else of the row moves: midday, headline, tier, row periods, route fields, labels.
     expect(warden.stopPeriodHeadways['4220']).toMatchObject({ amPeak: 12, midday: 14, evening: 8, late: 10, overnight: 12 });
-    // CIV-209: 4220 has no grade (refused as uneven), so it no longer holds the headline at 15.
-    expect(warden).toMatchObject({ headway: 10, tier: 'infrequent', serviceClass: 'regular' });
-    // CIV-209: AM 12 -> 8 and midday 15 -> 10 for the same reason (4220 is ungraded).
-    expect(warden.headwayByPeriod).toEqual({ amPeak: 8, midday: 10, pmPeak: 30, evening: 8, late: 10, overnight: 13 });
+    expect(warden).toMatchObject({ headway: 15, tier: 'infrequent', serviceClass: 'regular' });
+    // CIV-209: the AM floor's ungraded first stops (12) are read at the next graded stop, 13668, every 8 in the AM peak.
+    expect(warden.headwayByPeriod).toEqual({ amPeak: 8, midday: 15, pmPeak: 30, evening: 8, late: 10, overnight: 13 });
     expect(warden.routeFilterHeadwayByPeriod).toEqual({ amPeak: 24, midday: 30, pmPeak: 30, evening: 30, late: 20, overnight: null });
     // The shared-stretch label still names only pool members: 102C is not one.
     expect(warden.sharedStretches).toEqual([{ from: 0, to: 13, with: ['Sheppard'] }]);
@@ -115,8 +114,8 @@ describe('what the rush-hour-only trips still never change (#720)', () => {
   it('LA Metro 105: Marlton / King keeps its headline and row values; only its PM stop values count Fairfax', async () => {
     const rows = (await fixtureRows('lacmta-105')).filter(p => p.directionId === 0);
     const marlton = rows.find(p => p.day === 'Weekday' && p.headsign === 'Marlton / King Layover');
-    // CIV-209: its headline now reads its worst graded stop (60, the line's own colour), not 27.
-    expect(marlton).toMatchObject({ headway: 60, tier: '60', serviceClass: 'regular' });
+    // CIV-209: no stop on the line is graded, so it keeps today's rule (27).
+    expect(marlton).toMatchObject({ headway: 27, tier: '60', serviceClass: 'regular' });
     expect(Object.values(marlton.headwayByPeriod).every(v => v == null)).toBe(true);
     // 8128 weekday PM: every 9-13 from 15:03 to 18:55 (GTFS 2026-10-21, all 105 trips). The pool this
     // pattern reads there leaves out 105 trips that board there, so the Washington Fairfax trips are
