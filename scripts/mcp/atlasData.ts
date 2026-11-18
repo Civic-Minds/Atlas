@@ -11,19 +11,23 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../shared/config';
+import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, TIME_PERIODS, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
 import { frequencyChange } from '../../shared/frequencyChange';
-import { PUBLIC_TIER_MAXES, headwayGradeOn } from '../../shared/frequencyRules';
-import { clockTime } from '../../shared/timeText';
+import { clockTime, hourRange } from '../../shared/timeText';
 import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
 import { routeRuns } from '../build-agency-page-summaries';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import type { GtfsData } from '../../types/gtfs';
+import { parseGtfsZip } from '../../pipeline/parseGtfs';
+import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
+import { runningTimeSummary } from '../../pipeline/runningTime';
+import { pooledReadingInWindow } from '../../pipeline/stopPools';
 
 /** The Atlas checkout the server reads (this file's repo by default). */
 export const ATLAS_ROOT = resolve(process.env.ATLAS_ROOT ?? join(import.meta.dirname, '..', '..'));
@@ -111,19 +115,32 @@ export function findRoute(routes: RouteRows[], query: string): RouteRows | null 
     ?? routes.find(r => (r.longName ?? '').toLowerCase() === q) ?? routes.find(r => `${r.shortName} ${r.longName ?? ''}`.toLowerCase().includes(q)) ?? null;
 }
 
+/** The hours a row's trips depart in a period, from its departures by hour (GTFS hours, so 25 is 1 AM). */
+function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
+  const p = TIME_PERIODS.find(t => t.key === period)!;
+  let n = 0;
+  for (const row of rows) for (const [h, c] of Object.entries((row.departuresByHour as Record<string, number> | undefined) ?? {})) if (+h >= p.startHour && +h < p.endHour) n += c;
+  return n;
+}
+
 /**
- * One period's figure as the map shows it: the filter's number (what the frequency filter compares) and the route list's
- * words, which name a long gap where the card does ("every 15 min, with one 32 min gap").
+ * One period's figure as the map shows it. `waitMinutes` is the number the map colours and filters the route by: the
+ * typical wait on the route's least frequent part (its slowest branch or direction). `shown` is the route list's words,
+ * which give a range where parts of the route differ ("every 5–16 min": every 5 on the busiest part, every 16 on the
+ * quietest) and name a long gap where the route card does.
  */
 export function periodFigure(r: RouteRows, period: PeriodKey) {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
-  const minutes = filter.headway != null && filter.headway < 999 ? filter.headway : null;
+  const waitMinutes = filter.headway != null && filter.headway < 999 ? filter.headway : null;
+  const trips = departuresIn(r.rows, period);
+  const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
   return {
     period: PERIOD_LABELS[period],
-    minutes,
-    shown: shown ?? (filter.limited ? 'limited service' : 'no service'),
-    publicGrade: minutes == null ? null : headwayGradeOn(minutes, PUBLIC_TIER_MAXES),
+    hours: formatPeriodRange(period),
+    waitMinutes,
+    shown: shown ?? (trips > 0 ? `some trips (${trips}), but no regular frequency` : 'no service'),
+    ...(range ? { meaning: `every ${range[1]} min on the busiest part of the route, every ${range[2]} min on the quietest part` } : {}),
   };
 }
 
@@ -148,8 +165,8 @@ export const parsePeriod = (period: unknown): PeriodKey | null => {
 export function routesMeeting(agency: CatalogAgency & { file: string }, day: DayType, period: PeriodKey, every: number) {
   const all = routesOn(agency, day);
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...periodFigure(r, period) }));
-  const running = figures.filter(f => f.minutes != null);
-  const meeting = running.filter(f => f.minutes! <= every).sort((a, b) => a.minutes! - b.minutes!);
+  const running = figures.filter(f => f.waitMinutes != null);
+  const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
   return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
 }
 
@@ -173,3 +190,112 @@ export function frequencyChanges(file: StudioBeforeAfterFile) {
   }
   return out.sort((a, b) => b.steps - a.steps || Number(b.publicChange) - Number(a.publicChange));
 }
+
+// ---- Hours, trip times and combined frequency (CIV-1650 follow-up) ----
+
+/** A clock time ("10:00", "10 AM", "6:30 pm", "18") as minutes after midnight; null when unreadable. */
+export function parseClock(text: unknown): number | null {
+  const m = /^\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?\s*$/i.exec(String(text ?? ''));
+  if (!m) return null;
+  let h = +m[1];
+  const min = m[2] ? +m[2] : 0;
+  const ap = m[3]?.[0].toLowerCase();
+  if (ap === 'p' && h < 12) h += 12;
+  if (ap === 'a' && h === 12) h = 0;
+  return h > 30 || min > 59 ? null : h * 60 + min;
+}
+
+/** The Atlas periods a time window overlaps, with their own hours. */
+export function periodsIn(start: number, end: number): string[] {
+  return PERIOD_KEYS.filter(k => PERIOD_MINUTES[k].start < end && PERIOD_MINUTES[k].end > start).map(k => `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`);
+}
+
+/**
+ * A route's hour-by-hour frequency in a time window, per branch (each drawn pattern: direction and destination), from
+ * the hourly chart data on the route's rows (headwayByHour: the typical wait for trips leaving that hour). Branches of
+ * one direction can differ (TTC 29's Dufferin Gate and Princes' Gates ends), so each is listed; patterns with under a
+ * tenth of their direction's trips are left out.
+ */
+export function hourlyFrequency(r: RouteRows, start: number, end: number) {
+  const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
+  const dirTrips = new Map<string, number>();
+  for (const row of r.rows) dirTrips.set(String(row.directionId ?? '0'), (dirTrips.get(String(row.directionId ?? '0')) ?? 0) + trips(row));
+  return r.rows
+    .filter(row => trips(row) >= 0.1 * (dirTrips.get(String(row.directionId ?? '0')) ?? 0))
+    .sort((a, b) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a))
+    .map(row => ({
+      towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null,
+      byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
+        .map(([h, v]) => [+h, v] as const).filter(([h]) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end).sort((a, b) => a[0] - b[0])
+        .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : `every ${v} min` })),
+    }));
+}
+
+/** The feed file Atlas processed for an agency, newest first: Atlas-worktrees/_feeds/<slug>/*.zip, or ATLAS_MCP_FEEDS_DIR. */
+export function feedFile(slug: string): string | null {
+  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
+  const dir = join(root, slug);
+  if (!existsSync(dir)) return null;
+  const zips = readdirSync(dir).filter(n => n.endsWith('.zip')).sort();
+  return zips.length ? join(dir, zips[zips.length - 1]) : null;
+}
+
+const feeds = new Map<string, Promise<GtfsData>>();
+/** The agency's schedule, read once per session (a large feed takes a few seconds). */
+export function schedule(slug: string): Promise<GtfsData> {
+  const file = feedFile(slug);
+  if (!file) return Promise.reject(new Error(`No schedule file for ${slug} on this Mac.`));
+  if (!feeds.has(slug)) {
+    const buf = readFileSync(file);
+    feeds.set(slug, parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }));
+  }
+  return feeds.get(slug)!;
+}
+
+const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
+/** The places (stations, or stops without one) whose stop names match the text, with the names matched. */
+export function findPlaces(gtfs: GtfsData, query: string): { places: Set<string>; names: string[] } {
+  const q = norm(query);
+  const place = placeOf(gtfs);
+  const exact = (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '') === q);
+  const hits = exact.length ? exact : (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q));
+  return { places: new Set(hits.map(s => place(s.stop_id))), names: [...new Set(hits.map(s => s.stop_name ?? s.stop_id))].slice(0, 6) };
+}
+
+/** Route ids by the names riders use (short name, else long name). */
+export function routeIdsNamed(gtfs: GtfsData, names: readonly string[]): Map<string, string> {
+  const want = new Set(names.map(n => n.trim().toLowerCase()));
+  const out = new Map<string, string>();
+  for (const r of gtfs.routes ?? []) {
+    const name = (r.route_short_name || r.route_long_name || r.route_id).trim();
+    if (!want.size || want.has(name.toLowerCase()) || want.has((r.route_long_name ?? '').toLowerCase())) out.set(r.route_id, name);
+  }
+  return out;
+}
+
+/** Scheduled trip time from one stop to another, per route, by hour of departure and by period. */
+export async function tripTimes(slug: string, fromQuery: string, toQuery: string, day: DayType, routes: readonly string[]) {
+  const gtfs = await schedule(slug);
+  const from = findPlaces(gtfs, fromQuery), to = findPlaces(gtfs, toQuery);
+  if (!from.places.size) throw new Error(`No stop matching "${fromQuery}".`);
+  if (!to.places.size) throw new Error(`No stop matching "${toQuery}".`);
+  const named = routeIdsNamed(gtfs, routes);
+  const { runs, calendarDay } = stopToStopRuns(gtfs, from.places, to.places, day, routes.length ? new Set(named.keys()) : undefined);
+  const byRoute = new Map<string, Array<{ start: number; minutes: number }>>();
+  const nameOf = routeIdsNamed(gtfs, []);
+  for (const r of runs) { const n = nameOf.get(r.routeId) ?? r.routeId; (byRoute.get(n) ?? byRoute.set(n, []).get(n)!).push(r); }
+  return { from: from.names, to: to.names, readOn: calendarDay, byRoute };
+}
+
+/** Departures from the first stop towards the second, per route and combined, read with the map's stop-pool rule. */
+export async function combinedDepartures(slug: string, fromQuery: string, toQuery: string, day: DayType) {
+  const t = await tripTimes(slug, fromQuery, toQuery, day, []);
+  const reading = (starts: number[], start: number, end: number) => {
+    const r = pooledReadingInWindow(starts, start, end);
+    const n = new Set(starts.filter(s => s >= start && s < end)).size;
+    return { departures: n, every: r.value != null ? `every ${Math.round(r.value)} min` : r.worstWait != null ? `uneven: waits up to ${Math.round(r.worstWait)} min` : n ? 'too few trips for a regular frequency' : 'no trips' };
+  };
+  return { ...t, reading };
+}
+
+export { runningTimeSummary };
