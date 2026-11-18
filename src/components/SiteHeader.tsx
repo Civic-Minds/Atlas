@@ -5,6 +5,7 @@ import AtlasLogo from './AtlasLogo';
 import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, INTERNAL_NAV_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import { ABOUT_PATH, DOCS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { HEADER_TAG_INTERNAL } from '../../shared/siteMode';
 import { INTERNAL_HEADER_LINKS } from '../../shared/internalPages';
 
 /** Where the shared header's and footer's logo goes: the About home page (#1509). */
@@ -21,10 +22,14 @@ export default function SiteHeader({ showWordmark = true }: { showWordmark?: boo
       {/* CIV-1872 : the local-only links, in the same text style, on their
           own row above the public ones; dev server only. */}
       {FEATURES.internal && (
-        <nav aria-label={INTERNAL_NAV_LABEL} className="flex items-center justify-end gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
-          {INTERNAL_HEADER_LINKS.map(link => link.arrow
-            ? <ArrowLink key={link.path} tone="quiet" href={link.path}>{link.label}</ArrowLink>
-            : <AppLink key={link.path} to={link.path} className="hover:text-[var(--text-primary)]">{link.label}</AppLink>)}
+        <nav aria-label={INTERNAL_NAV_LABEL} className="-mx-3 flex items-center justify-between gap-4 rounded-lg bg-[var(--control-active-bg)] px-3 py-1.5 text-sm font-bold text-[var(--text-muted)]">
+          {/* The word on the left lines up with the Atlas wordmark below (the band's padding sits outside it). */}
+          <span className="text-[var(--control-active-fg)]">{HEADER_TAG_INTERNAL}</span>
+          <span className="flex items-center gap-3 whitespace-nowrap sm:gap-4">
+            {INTERNAL_HEADER_LINKS.map(link => link.arrow
+              ? <ArrowLink key={link.path} tone="quiet" href={link.path}>{link.label}</ArrowLink>
+              : <AppLink key={link.path} to={link.path} className="hover:text-[var(--text-primary)]">{link.label}</AppLink>)}
+          </span>
         </nav>
       )}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">

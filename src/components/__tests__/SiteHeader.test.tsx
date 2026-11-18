@@ -34,6 +34,9 @@ describe('internal links (CIV-1872)', () => {
     expect(internal.querySelectorAll('a')[3]).toHaveAttribute('href', INTERNAL_PATH);
     expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Coverage/);
     expect(screen.getAllByRole('link', { name: /Go to Atlas/ })).toHaveLength(1);
+    // The row carries the word Internal on the left, in the pale selected tint (never a dark fill).
+    expect(internal.firstElementChild?.textContent).toBe('Internal');
+    expect(internal.className).toContain('bg-[var(--control-active-bg)]');
   });
 
   it('lists every internal page once on the home page, and the header links are among them or More', () => {
