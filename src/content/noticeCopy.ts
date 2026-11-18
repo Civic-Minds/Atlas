@@ -228,7 +228,7 @@ export const ABOUT_CLOSER_HEADING = 'Built for looking closer.';
 /** The "Where the Data Comes From" section on the For Transit Planners and For Researchers pages (CIV-1724). */
 export const DATA_SOURCE_TITLE = 'Where the Data Comes From';
 export const dataSourceText = (agencies: string, countries: string) =>
-  `Atlas covers ${agencies} transit agencies in ${countries}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.`;
+  `Atlas covers ${agencies} transit agencies in ${countries}. It reads each agency’s published GTFS feed and checks most feeds for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.`;
 /** For Transit Planners: the hero's line (CIV-1788), the seven cards in a planner's workflow order (CIV-1710) and the demo card. */
 export const PLANNERS_COPY = {
   intro: 'See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.',
