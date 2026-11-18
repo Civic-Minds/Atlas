@@ -113,9 +113,6 @@ html.map-page .overflow-y-scroll {
   --selection-active-bg: var(--accent-selected-bg);
   --selection-active-border: var(--accent);
   --selection-active-fg: var(--text-primary);
-  --action-primary-bg: var(--accent);
-  --action-primary-border: var(--accent);
-  --action-primary-fg: #ffffff;
   --status-positive: #10b981;
   --status-negative: #ef4444;
   --status-caution: #f59e0b;
@@ -227,9 +224,6 @@ html.map-page .overflow-y-scroll {
   --selection-active-bg: #e5e7eb;
   --selection-active-border: #111827;
   --selection-active-fg: #111827;
-  --action-primary-bg: #111827;
-  --action-primary-border: #111827;
-  --action-primary-fg: #ffffff;
   --status-positive: #009e73;
   --status-negative: #d55e00;
   /* No change, neither better nor worse (History's chart line): a grey apart from the two status colours. */
@@ -264,9 +258,6 @@ html.map-page .overflow-y-scroll {
   --selection-active-bg: #374151;
   --selection-active-border: #f0f0f0;
   --selection-active-fg: #ffffff;
-  --action-primary-bg: #f0f0f0;
-  --action-primary-border: #f0f0f0;
-  --action-primary-fg: #111827;
   --strip-delay-early: #56b4e9;
   --strip-delay-1: #e69f00;
   --strip-delay-2: #e0581c;
