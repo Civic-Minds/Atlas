@@ -147,10 +147,12 @@ describe('tile rules fingerprint', () => {
   // for #899: older tiles lack the key and evaluate on their 30/60 flags, and older apps ignore it. Hash only.
   // CIV-1579 adds the tv_<period> keys (the trunk's filter value, shadow: nothing reads them yet). No version bump, as for
   // #710: older tiles lack the keys and older apps ignore them; rv_ and every other tile value are unchanged. Hash only.
+  // CIV-1822: the beta and dev filter reads tv_ (TRUNK_FILTER_ENABLED). No version bump: the tiles are unchanged, tiles
+  // without tv_ fall back to rv_, and public reads rv_ as before. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '5afebd1f62f12073f9667a140bb9c4510ca00f9ad027f4e22c72469264312a7a',
+      fingerprint: '3201085952a9f674d465d42b88e6318bf5f0f2113e7bafe44a1987d5c10b64b4',
     });
   });
 });

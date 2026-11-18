@@ -100,10 +100,11 @@ export interface RouteProperties {
   /** Each direction's own filter value. */
   directionFilterHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
   /**
-   * CIV-1579 shadow, nothing reads it yet: routeFilterHeadwayByPeriod read on each direction's main stretch alone (the
+   * CIV-1579: routeFilterHeadwayByPeriod read on each direction's main stretch alone (the
    * trunk), every direction passing; tiles carry it as tv_. Where a trunk is under 5 stops or 1 km (no trunk value),
    * it is routeFilterHeadwayByPeriod's own value; null only where that is null. Same all-or-none rule. Overnight is the
-   * night value, as in routeFilterHeadwayByPeriod.
+   * night value, as in routeFilterHeadwayByPeriod. CIV-1822: the frequency filter reads it (tiles tv_) where
+   * TRUNK_FILTER_ENABLED is on (beta and dev, with section colours); public still reads routeFilterHeadwayByPeriod.
    */
   routeTrunkHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
   /** CIV-1579 shadow: aligned to this row's stopOrder (never fullStopOrder), "1" where the stop is on the direction's main stretch, empty where off it (shared/stopRuns decodeStopRuns). */
