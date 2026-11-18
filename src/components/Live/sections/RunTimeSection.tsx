@@ -10,6 +10,7 @@ import { MIN_PATTERN_TRIPS, placeRowLabels, rowPercent, runTimeRowScale, runTime
 import { liveTooFewTrips, USUALLY_COLUMN, SCHEDULED_COLUMN, LIVE_RUN_TIME_INTRO } from '../../../content/noticeCopy';
 import { TRIP_TIME_LABEL } from '../../../../shared/liveWording';
 import { SubsectionTitle } from '../../ui/PageTitle';
+import { LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 
 /** The one derivation of the run-time figures, so every surface draws the same numbers. */
 export function runTimeModel(v3: LiveV3, band: DashboardBand, dir: number | null) {
@@ -153,7 +154,7 @@ export default function RunTimeSection({ v3, band, dir, detail, id, shrink, boun
         const hours = hoursOf(d);
         const f = rt?.bands[band]?.[String(d)];
         const sentence = runningTimeSentence(label, f);
-        const mainThin = !f || f.n < 30;
+        const mainThin = !f || f.n < LIVE_MIN_SAMPLE;
         // Full and dashboard say what the main row covers once, above it; Explore's rows carry it in their label.
         const stretch = compact ? null : runTimeStretchOf(v3, d);
         return (

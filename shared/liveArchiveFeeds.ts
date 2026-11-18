@@ -51,8 +51,8 @@ export const LIVE_ARCHIVE_SHARDS = [
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'] },
 ] as const;
 
-/** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30). */
-export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { kingston: 'atlas-live-kingston' };
+/** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30): shared/rules/live.ts. */
+export { LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
 
 /** Trip-update archives → atlas-live/{slug}/{date}/{ts}.json (every ~5 min). */
 export const LIVE_ARCHIVE_TRIP_FEEDS: readonly LiveArchiveTripFeed[] = [

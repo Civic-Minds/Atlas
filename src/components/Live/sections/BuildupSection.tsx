@@ -14,6 +14,7 @@ import { ADDS_MOST_TITLE, BY_TIME_OF_DAY_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS
 import { mins } from './figures';
 import { countText, percentText } from '../../../../shared/numberText';
 import { SubsectionTitle } from '../../ui/PageTitle';
+import { LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 
 /** The one derivation of where delay builds up, so every surface draws the same numbers. */
 export function buildupModel(data: DashboardBandData, dir: number | null, uncertain: UncertainStart[]) {
@@ -55,7 +56,7 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
           const points = pointsOf(b);
           const marked = b.forms ? points.findIndex(p => p.label === b.forms!.toName) : -1;
           // The five stretches that add the most; the Full analysis lists the top three (all five are in the Explore table).
-          const worst = [...b.stretches].filter(s => s.n >= 30).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
+          const worst = [...b.stretches].filter(s => s.n >= LIVE_MIN_SAMPLE).sort((a, c) => c.medianAddedMin - a.medianAddedMin).slice(0, 5);
           return (
             <div key={b.directionId} className="min-w-0">
               <SubsectionTitle>{label}</SubsectionTitle>

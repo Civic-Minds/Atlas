@@ -12,6 +12,7 @@ import { runTimeAmount } from './headwayText.js';
 import { NO_DATA_YET, NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.js';
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
+import { LIVE_MIN_SAMPLE } from './rules/live.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -250,8 +251,8 @@ export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string
   // The start is read at the first stop measured well (510 northbound's first stops are in the tunnel).
   // Terminal stretches (the run out of and into a loop) are left out of the start and end figures.
   const inner = b.stretches.filter(s => !s.terminal);
-  const first = b.stretches.find((s, i) => s.n >= 30 && !s.terminal && i >= Math.max(0, lessExactStops - 1)) ?? inner[0];
-  const last = [...inner].reverse().find(s => s.n >= 30) ?? inner[inner.length - 1];
+  const first = b.stretches.find((s, i) => s.n >= LIVE_MIN_SAMPLE && !s.terminal && i >= Math.max(0, lessExactStops - 1)) ?? inner[0];
+  const last = [...inner].reverse().find(s => s.n >= LIVE_MIN_SAMPLE) ?? inner[inner.length - 1];
   const ends = first && last ? ` (${min(first.medianDelayMin)} at the start, ${min(last.medianDelayMin)} at the end)` : '';
   if (b.kind === 'forms' && b.forms) return `Delay jumps by ${min(b.forms.medianAddedMin)} between ${b.forms.fromName} and ${b.forms.toName}, and stays up${ends}.`;
   if (b.kind === 'gradual') return `Delay builds slowly along the route; no single stretch stands out${ends}.`;
@@ -262,12 +263,12 @@ export function buildupTakeaway(b: DashboardBuildup, lessExactStops = 0): string
 /** B4: one sentence per direction and period. "Linked to", never "caused by". */
 export function bunchingSentence(label: string, b: DashboardBunchingBand): string {
   if (b.kind == null) return `${label}: too few measured stops to say where bunching forms.`;
-  const first = b.stops.find(s => s.n >= 30);
+  const first = b.stops.find(s => s.n >= LIVE_MIN_SAMPLE);
   if (b.kind === 'forms' && b.forms) {
     return `${label}: bunching forms between ${b.forms.fromName} and ${b.forms.toName}: gaps that are too short or too long go from ${percentText(b.forms.fromBadShare)} to ${percentText(b.forms.toBadShare)} (${Math.round(b.forms.rise * 100)} points) and stay up.`;
   }
   if (b.kind === 'gradual') {
-    const top = b.stops.filter(s => s.n >= 30).reduce((m, s) => Math.max(m, s.badShare), 0);
+    const top = b.stops.filter(s => s.n >= LIVE_MIN_SAMPLE).reduce((m, s) => Math.max(m, s.badShare), 0);
     return `${label}: bunching builds gradually, from ${first ? percentText(first.badShare) : 'the start'} at the first measured stop to ${percentText(top)} at its highest. No single stretch steps up by 10 points.`;
   }
   return `${label}: gaps stay close to the schedule along the route.`;
@@ -330,7 +331,7 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
 /** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
   if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
-  if (r.n < 30) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
+  if (r.n < LIVE_MIN_SAMPLE) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
   return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourTime(atHour)}` : ''}.`;
 }
 

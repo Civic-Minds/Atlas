@@ -3,6 +3,7 @@ import DataTable from '../ui/DataTable';
 import { LESS_EXACT_LABEL, fadedNoteText } from '../../../shared/liveWording';
 import { pickAxisLabels } from '../../utils/stopLabel';
 import { countText } from '../../../shared/numberText';
+import { LIVE_MIN_SAMPLE } from '../../../shared/rules/live';
 
 export interface ProfilePoint {
   /** Stop or stretch name: shown in the tooltip and the table. */
@@ -128,7 +129,7 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = 30, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, everyLabel = false, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = LIVE_MIN_SAMPLE, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, everyLabel = false, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
   const tableId = useId();
   if (points.length < 2) return null;

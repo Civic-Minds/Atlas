@@ -6,6 +6,7 @@
  */
 import { delayStatus } from './liveDelayStatus.js';
 import { median, percentile } from './segmentDelay.js';
+import { LIVE_MIN_SAMPLE } from './rules/live.js';
 
 export interface RunStopDelay {
   stopId: string;
@@ -31,7 +32,7 @@ export interface RunDelays {
 }
 
 /** A stop needs this many passages before it is ranked or a stretch before its start is called. */
-export const MIN_SAMPLES = 30;
+export const MIN_SAMPLES = LIVE_MIN_SAMPLE;
 /** A stretch "adds" delay when the delay grows by more than this many minutes between two stops. */
 export const ADDED_DELAY_MIN = 1;
 /** ...and it is where delays start when that happens in at least this share of runs. */

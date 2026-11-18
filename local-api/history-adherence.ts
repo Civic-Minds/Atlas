@@ -5,6 +5,7 @@ import { R2_PUBLIC_URL } from '../shared/config.js';
 import { isRateLimited, rateLimitWebResponse } from '../shared/rateLimit.js';
 import { requestHeader } from '../shared/request.js';
 import { mapWithConcurrency } from './concurrency.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET } from '../shared/rules/live.js';
 
 export const config = { maxDuration: 60 };
 const HISTORY_SNAPSHOT_CONCURRENCY = 15;
@@ -43,7 +44,7 @@ async function listKeysForDate(client: S3Client, slug: string, date: string): Pr
   let cursor: string | undefined;
   do {
     const res = await client.send(new ListObjectsV2Command({
-      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
+      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET,
       Prefix: `${slug}/${date}/`,
       ContinuationToken: cursor,
     }));
@@ -58,7 +59,7 @@ async function listKeysForDate(client: S3Client, slug: string, date: string): Pr
 async function fetchSnapshot(client: S3Client, key: string): Promise<Snapshot | null> {
   try {
     const res = await client.send(new GetObjectCommand({
-      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
+      Bucket: process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET,
       Key: key,
     }));
     const text = await res.Body!.transformToString();

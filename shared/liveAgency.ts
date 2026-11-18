@@ -5,9 +5,10 @@
  * Pure: the builder script (scripts/live-agency-summary.ts) reads the files, this turns them into the page's numbers.
  */
 import { directionLabel as dirLabel, runTimeDiffMin, withMainPatternTrip, dailyValuesOf, healthyLateByHour, rankStops, type DailyValues, type LiveV3, type UncertainStart, type WeekBands, type WeekMetrics } from './liveDashboard.js';
+import { LIVE_MIN_SAMPLE } from './rules/live.js';
 
 /** Stops and stretches need this many measurements to be ranked (the route page's rule). */
-export const AGENCY_MIN_N = 30;
+export const AGENCY_MIN_N = LIVE_MIN_SAMPLE;
 /** Worst stops: no more than this many from one route direction. */
 export const STOPS_PER_DIRECTION = 3;
 

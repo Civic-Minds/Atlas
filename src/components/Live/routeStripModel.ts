@@ -10,6 +10,7 @@ import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STARTS_LABEL, DELAY_NOT_MEASU
 import { countOf } from '../../../shared/overflowText';
 import { DEPARTURES_COLUMN, LIVE_LESS_EXACT_HERE, STOP_COLUMN } from '../../content/noticeCopy';
 import { percentText } from '../../../shared/numberText';
+import { LIVE_MIN_SAMPLE } from '../../../shared/rules/live';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -53,7 +54,7 @@ export const EARLY_STEP_MIN = 1;
 export { EARLY_STEP_LABEL };
 /** Bunching steps: share of gaps too short or too long. */
 export const BUNCHING_STEP_LIMITS = [0.15, 0.25] as const;
-export const MIN_N = 30;
+export const MIN_N = LIVE_MIN_SAMPLE;
 
 export const STEP_LABELS: Record<RouteStripMode, readonly [string, string, string]> = {
   delay: DELAY_STEP_LABELS,

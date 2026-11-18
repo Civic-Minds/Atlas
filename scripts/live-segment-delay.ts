@@ -36,6 +36,7 @@ import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
+import { LIVE_MIN_SAMPLE } from '../shared/rules/live.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -1030,7 +1031,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
         .filter((s): s is { fromStopId: string; toStopId: string; gainedSec: number } => s.gainedSec != null)
         .sort((x, y) => y.gainedSec - x.gainedSec)[0] ?? null;
       // The first stop with enough gaps stands for the terminal end (no gaps are measured at the very first stop).
-      const term = stops.find(x => x.n >= 30);
+      const term = stops.find(x => x.n >= LIVE_MIN_SAMPLE);
       return {
         terminalBadShare: term ? term.badShare : null,
         standStill: { eventsPerDay: perDay(evs.length), minutesPerDay: perDay(evs.reduce((m, h) => m + (h.end - h.start) / 60, 0)) },
