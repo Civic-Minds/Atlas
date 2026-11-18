@@ -361,16 +361,7 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section id="pipeline-changes">
-            <p>Changes to the pipeline are treated as changes to published data, not only as code changes. The first step is to identify the narrowest affected layer: one agency, a feed family or shared processing used by every agency.</p>
-            <ol className="list-decimal pl-5 space-y-1">
-              <li>Reproduce the problem against the source feed and identify the first stage where the result diverges.</li>
-              <li>Add a regression test for the reported case and a legitimate case that a broader fix could accidentally change.</li>
-              <li>Prefer an agency-specific override or narrow transform when the evidence does not support a global rule.</li>
-              <li>For a shared pipeline change, run the full test suite, dry-run the affected feed and compare the output before and after.</li>
-              <li>Check at least six additional trusted agencies, spanning two countries when applicable, and investigate every unexplained output change.</li>
-              <li>Record the agencies, commands, output diff and validation result with the change before it is committed.</li>
-            </ol>
-            <p>Publishing is a separate step. A refresh or processing command can write directly to the live public data bucket, so it requires explicit maintainer approval. Before anything goes live, every agency’s new data is compared with what is live. A release stops for review if an agency loses more than a fifth of its routes or a whole mode, shows another agency’s routes, goes empty, has its weekday frequencies shift broadly, or has expired. The map and route cards always come from the same release. New or materially changed map data also needs the required tile rebuild, upload and coverage verification; a successful code build alone does not prove that the public artifacts are correct.</p>
+            <p>Every fix is tested against other agencies before it goes in. New data is compared with what’s live before it publishes.</p>
             <p>When a source feed changes, Atlas rechecks the correction against the new source. A past exception is not treated as permanent truth, and a newer file is not promoted merely because its date is newer if it fails processing or validation.</p>
           </Section>
 
