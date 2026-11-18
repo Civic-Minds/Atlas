@@ -268,8 +268,6 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
  * first time; the headings, the pill and the page name are new.
  */
 export const STUDIO_LIVE_PENDING = {
-  /** The page's name in Studio's page menu. */
-  pageName: 'Live',
   /** The measure pill. */
   fallsBehindPill: 'Falls behind',
   /** The list's heading with no route picked, and with one. */
