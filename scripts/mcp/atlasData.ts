@@ -9,8 +9,7 @@
  * - tmp/process-preview/<slug>/<slug>.json: a local `npm run process -- --dry-run` of the agency.
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpHistoryAgency, McpStop, PeriodFigure, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, TIME_PERIODS, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
@@ -21,90 +20,54 @@ import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
-import { routeRuns } from '../build-agency-page-summaries';
-import { countryForRegion } from '../../shared/regionCountry';
+import { routeRuns } from '../../shared/routeRuns';
 import { metresBetween } from '../../shared/geoDistance';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
-import { parentAgency } from '../../shared/parentAgencyList';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
-import { writeFileSync } from 'node:fs';
-import { basename, dirname } from 'node:path';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
-import type { StudioVehicleGroup, StudioVehiclesFile } from '../../shared/studioVehicles';
-import type { GtfsData } from '../../types/gtfs';
-import { parseGtfsZip } from '../../pipeline/parseGtfs';
-import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
-import { runningTimeSummary } from '../../pipeline/runningTime';
-import { pooledReadingInWindow } from '../../pipeline/stopPools';
 
-/** The Atlas checkout the server reads (this file's repo by default). */
-export const ATLAS_ROOT = resolve(process.env.ATLAS_ROOT ?? join(import.meta.dirname, '..', '..'));
 
-type Feature = { geometry: { type: string } | null; properties: Record<string, unknown> };
-interface CatalogAgency { slug: string; name: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean }
+type Feature = McpFeature;
+type CatalogAgency = McpAgency;
+export type { IndexedAgency };
 
-let catalog: CatalogAgency[] | null = null;
+/** Where the tools read from (CIV-1840): the store a caller sets (disk for the local server, R2 for the hosted one, memory in tests). This module is pure: no files, no network, so a Worker can import it. */
+let current: AtlasStore | null = null;
+const store: AtlasStore = new Proxy({} as AtlasStore, { get: (_t, k) => { if (!current) throw new Error('No store set: call useStore() first.'); return (current as unknown as Record<string | symbol, unknown>)[k]; } });
+export function useStore(s: AtlasStore): void { current = s; loaded.clear(); summaries.clear(); daySummaries.clear(); index = null; }
+export const currentStore = () => store;
+/** Frees one agency's loaded route lines (the index build holds one agency at a time). */
+export function forget(slug: string): void { loaded.delete(slug); for (const k of [...daySummaries.keys()]) if (k.startsWith(`${slug}|`)) daySummaries.delete(k); store.evict?.(slug); }
+export type { RouteSummary };
+
 /** The public catalog: the agencies the public site shows. */
-export function publicAgencies(): CatalogAgency[] {
-  catalog ??= (JSON.parse(readFileSync(join(ATLAS_ROOT, 'public/data/catalog-public.json'), 'utf8')) as { agencies: CatalogAgency[] }).agencies.filter(a => !a.betaOnly);
-  return catalog;
-}
-
-/** Each agency with a route file on disk, and where it is. */
-export function routeFiles(): Map<string, string> {
-  const out = new Map<string, string>();
-  const add = (slug: string, file: string) => { if (!out.has(slug) && existsSync(file)) out.set(slug, file); };
-  const override = process.env.ATLAS_MCP_DATA_DIR;
-  const dirs: Array<{ dir: string; nested: boolean }> = [];
-  if (override) dirs.push({ dir: resolve(override), nested: false }, { dir: resolve(override), nested: true });
-  const cache = join(ATLAS_ROOT, 'tmp/agency-pages-cache');
-  if (existsSync(cache)) {
-    const newest = readdirSync(cache).map(d => join(cache, d)).filter(d => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
-    if (newest) dirs.push({ dir: newest, nested: false });
-  }
-  dirs.push({ dir: join(ATLAS_ROOT, 'tmp/process-preview'), nested: true });
-  for (const { dir, nested } of dirs) {
-    if (!existsSync(dir)) continue;
-    for (const name of readdirSync(dir)) {
-      if (nested) add(name, join(dir, name, `${name}.json`));
-      else if (/^[a-z0-9-]+\.json$/.test(name) && !/-(stops|corridors|trips|stops-meta|sections|shape-anomalies)\.json$/.test(name)) add(name.slice(0, -5), join(dir, name));
-    }
-  }
-  return out;
-}
+export const publicAgencies = (): Promise<CatalogAgency[]> => store.catalog();
 
 /** The public agencies Atlas can answer for here. */
-export function availableAgencies(): Array<CatalogAgency & { file: string }> {
-  const files = routeFiles();
-  return publicAgencies().filter(a => files.has(a.slug)).map(a => ({ ...a, file: files.get(a.slug)! }));
+export async function availableAgencies(): Promise<CatalogAgency[]> {
+  const have = await store.available();
+  return (await store.catalog()).filter(a => have.has(a.slug));
 }
 
 /** An agency by slug or name (case-insensitive), among those available. */
 /** The short names riders use for an agency (config shortName, such as "HSR" or "TTC"), lower case. */
-const shortNames = new Map<string, string>();
-function shortNameOf(slug: string): string {
-  if (!shortNames.has(slug)) {
-    let name = '';
-    try { name = String((JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }).shortName ?? '').toLowerCase(); } catch { /* no config */ }
-    shortNames.set(slug, name);
-  }
-  return shortNames.get(slug)!;
-}
-
-export function findAgency(query: string, list: Array<CatalogAgency & { file: string }> = availableAgencies()): (CatalogAgency & { file: string }) | null {
+export async function findAgency(query: string, list?: CatalogAgency[]): Promise<CatalogAgency | null> {
+  list ??= await availableAgencies();
+  const meta = await store.meta();
   const q = query.trim().toLowerCase();
-  const byShort = list.filter(a => shortNameOf(a.slug) === q);
+  const byShort = list.filter(a => (meta.get(a.slug)?.shortName ?? '').toLowerCase() === q);
   if (byShort.length === 1) return byShort[0];
   return list.find(a => a.slug === q) ?? list.find(a => a.name.toLowerCase() === q) ?? list.find(a => a.name.toLowerCase().includes(q)) ?? null;
 }
 
-interface RouteRows { key: string; name: string; shortName: string; longName: string | null; mode: string; rows: ShapeProperties[] }
+export interface RouteRows { key: string; name: string; shortName: string; longName: string | null; mode: string; rows: ShapeProperties[] }
 const loaded = new Map<string, Feature[]>();
 
-function lines(slug: string, file: string): Feature[] {
+async function lines(slug: string): Promise<Feature[]> {
   if (!loaded.has(slug)) {
-    const features = (JSON.parse(readFileSync(file, 'utf8')) as { features: Feature[] }).features.filter(f => f.geometry?.type === 'LineString');
+    const features = await store.routeFeatures(slug);
+    if (!features) throw new Error(`No route data for ${slug}.`);
     normalizeRouteFilterFeatures(features);
     loaded.set(slug, features);
   }
@@ -112,9 +75,9 @@ function lines(slug: string, file: string): Feature[] {
 }
 
 /** Each route's rows on one day type, grouped as the map groups them. */
-export function routesOn(agency: CatalogAgency & { file: string }, day: DayType): RouteRows[] {
+export async function routesOn(agency: CatalogAgency, day: DayType): Promise<RouteRows[]> {
   const byKey = new Map<string, RouteRows>();
-  for (const f of lines(agency.slug, agency.file)) {
+  for (const f of await lines(agency.slug)) {
     const p = f.properties;
     if (p.day !== day) continue;
     const key = routeGroupKey(p.routeShortName as string, p.routeId as string);
@@ -130,14 +93,60 @@ export function routesOn(agency: CatalogAgency & { file: string }, day: DayType)
   return [...byKey.values()].sort((a, b) => compareRouteNumber(a.name, b.name, a.longName, b.longName));
 }
 
+/** A route's summary: what the list tools read, made with the same functions route_frequency uses. */
+export function summarize(r: RouteRows): RouteSummary {
+  const runs = routeRuns(r.rows as never, undefined);
+  return {
+    key: r.key, name: r.name, shortName: r.shortName, longName: r.longName, mode: r.mode,
+    routeIds: [...new Set(r.rows.map(row => String(row.routeId)))],
+    figures: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k)])) as Record<PeriodKey, PeriodFigure>,
+    span: serviceSpan(r),
+    bounds: runs ? { first: runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null), last: runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null) } : null,
+  };
+}
+
+const summaries = new Map<string, Promise<Partial<Record<DayType, RouteSummary[]>> | null>>();
+/** A store's ready-made summaries for an agency (the split release), or null when it makes them on the fly. */
+function readySummaries(slug: string) {
+  if (!store.summaries) return null;
+  if (!summaries.has(slug)) summaries.set(slug, store.summaries(slug));
+  return summaries.get(slug)!;
+}
+const daySummaries = new Map<string, RouteSummary[]>();
+
+/** Each route on a day as a summary: read ready-made where the store has them, else made from its rows. */
+export async function routeList(agency: CatalogAgency, day: DayType): Promise<RouteSummary[]> {
+  const ready = readySummaries(agency.slug);
+  if (ready) {
+    const all = await ready;
+    if (!all) throw new Error(`No route data for ${agency.slug}.`);
+    return all[day] ?? [];
+  }
+  const id = `${agency.slug}|${day}`;
+  if (!daySummaries.has(id)) daySummaries.set(id, (await routesOn(agency, day)).map(summarize));
+  return daySummaries.get(id)!;
+}
+
+/** One route's rows on a day (what route_frequency's branches and hourly figures read). */
+export async function routeWithRows(agency: CatalogAgency, day: DayType, s: RouteSummary): Promise<RouteRows> {
+  if (store.routeRows) {
+    const rows = await store.routeRows(agency.slug, day, s.key);
+    if (!rows) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
+    return { key: s.key, name: s.name, shortName: s.shortName, longName: s.longName, mode: s.mode, rows: rows as unknown as ShapeProperties[] };
+  }
+  const r = (await routesOn(agency, day)).find(x => x.key === s.key);
+  if (!r) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
+  return r;
+}
+
 /**
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
  * not the 60 Blue Island bus), then any name containing them, rail first.
  */
-export function findRoute(routes: RouteRows[], query: string): RouteRows | null {
+export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
-  const names = (r: RouteRows) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
-  const rail = (r: RouteRows) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
+  const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
+  const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
   const exact = routes.find(r => names(r).includes(q));
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
@@ -160,7 +169,7 @@ function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
  * which give a range where parts of the route differ ("every 5–16 min": every 5 on the busiest part, every 16 on the
  * quietest) and name a long gap where the route card does.
  */
-export function periodFigure(r: RouteRows, period: PeriodKey) {
+export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
   const waitMinutes = filter.headway != null && filter.headway < 999 ? filter.headway : null;
@@ -184,13 +193,18 @@ export function edgeWait(shown: string | null, waitMinutes: number | null): bool
 }
 
 /** The first and last departures of the day, and any break inside it, as clock times. */
+/** A clock time in the service day, said as a rider hears it: a trip at 28:23 leaves at 4:23 AM after midnight (CIV-1840: the 329's last trip read as before its first). */
+const serviceClock = (minutes: number) => `${clockTime(minutes)}${minutes >= 1440 ? ' (after midnight)' : ''}`;
+
+const duringHour = (h: number) => `during the ${clockTime(h * 60)} hour${h >= 24 ? ' after midnight' : ''}`;
+
 export function serviceSpan(r: RouteRows) {
   const runs = routeRuns(r.rows as never, undefined);
   if (!runs) return null;
   return {
-    first: runs.first != null ? clockTime(runs.first) : runs.hours.length ? `during the ${clockTime(runs.hours[0] * 60)} hour` : null,
-    last: runs.last != null ? clockTime(runs.last) : runs.hours.length ? `during the ${clockTime(runs.hours[runs.hours.length - 1] * 60)} hour` : null,
-    breaks: (runs.gaps ?? []).map(([a, b]) => `${clockTime(a)}–${clockTime(b)}`),
+    first: runs.first != null ? serviceClock(runs.first) : runs.hours.length ? duringHour(runs.hours[0]) : null,
+    last: runs.last != null ? serviceClock(runs.last) : runs.hours.length ? duringHour(runs.hours[runs.hours.length - 1]) : null,
+    breaks: (runs.gaps ?? []).map(([a, b]) => `${serviceClock(a)}–${serviceClock(b)}`),
   };
 }
 
@@ -204,58 +218,63 @@ export const parsePeriod = (period: unknown): PeriodKey | null => {
  * Other routes of the agency with the same long name as this one (TTC 510 and its night 310, both "Spadina"), each with
  * its first and last trips, so a question about a street's service can include the night route that takes over.
  */
-export function sameNameRoutes(agency: CatalogAgency & { file: string }, day: DayType, r: RouteRows) {
+export async function sameNameRoutes(agency: CatalogAgency, day: DayType, r: Pick<RouteRows, 'name' | 'longName'>) {
   const name = (r.longName ?? '').trim().toLowerCase();
   if (!name) return [];
-  return routesOn(agency, day).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
-    .map(o => ({ route: o.name, mode: o.mode, service: serviceSpan(o) }));
+  return (await routeList(agency, day)).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
+    .map(o => ({ route: o.name, mode: o.mode, service: o.span }));
 }
 
 /**
  * Routes by their hours on a day: those whose last trip leaves before `endsBefore`, or whose first leaves after
  * `startsAfter` (minutes; the last trip of the night after midnight counts as 24:00 and later). Each with its first and last trips.
  */
-export function routesByHours(agency: CatalogAgency & { file: string }, day: DayType, endsBefore: number | null, startsAfter: number | null) {
+export async function routesByHours(agency: CatalogAgency, day: DayType, endsBefore: number | null, startsAfter: number | null) {
   const out: Array<{ route: string; name: string | null; first: string | null; last: string | null }> = [];
-  for (const r of routesOn(agency, day)) {
-    const runs = routeRuns(r.rows as never, undefined);
-    if (!runs) continue;
-    const first = runs.first ?? (runs.hours.length ? runs.hours[0] * 60 : null);
-    const last = runs.last ?? (runs.hours.length ? runs.hours[runs.hours.length - 1] * 60 + 59 : null);
+  for (const r of await routeList(agency, day)) {
+    if (!r.bounds) continue;
+    const { first, last } = r.bounds;
     if (endsBefore != null && !(last != null && last < endsBefore)) continue;
     if (startsAfter != null && !(first != null && first > startsAfter)) continue;
-    const span = serviceSpan(r);
+    const span = r.span;
     out.push({ route: r.name, name: r.longName, first: span?.first ?? null, last: span?.last ?? null });
   }
   return out.sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name));
 }
 
 /** The routes at or under `every` minutes in a period on a day, best first. */
-export function routesMeeting(agency: CatalogAgency & { file: string }, day: DayType, period: PeriodKey, every: number) {
-  const all = routesOn(agency, day);
-  const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...periodFigure(r, period) }));
+export async function routesMeeting(agency: CatalogAgency, day: DayType, period: PeriodKey, every: number) {
+  const all = await routeList(agency, day);
+  const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
   const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
   return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
 }
 
 /** Studio's schedule comparison for an agency, if one was built (tmp/studio/<slug>-before-after.json). */
-export function scheduleComparison(slug: string): StudioBeforeAfterFile | null {
-  const candidates = [join(ATLAS_ROOT, 'tmp/studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees/bundle/tmp/studio')];
-  for (const dir of candidates) {
-    const file = join(dir, `${slug}-before-after.json`);
-    if (existsSync(file)) return JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile;
-  }
-  return null;
-}
+export const scheduleComparison = (slug: string): Promise<StudioBeforeAfterFile | null> => store.comparison(slug);
 
 /** Frequency changes in a comparison, by the shared rule (a grade move on the one scale), biggest first. */
+/**
+ * Studio's comparison lists a route written differently in the two schedules (RTD's Bound, FreeRide and MetroRide in
+ * another case) as removed and added. Pair those by name, ignoring case and spaces, into one route with both figures.
+ */
+export function pairedChanges(file: StudioBeforeAfterFile): StudioBeforeAfterFile['changes'] {
+  const key = (c: { route: string }) => c.route.trim().toLowerCase();
+  const removed = new Map(file.changes.filter(c => !c.after && c.before).map(c => [key(c), c] as const));
+  const added = new Map(file.changes.filter(c => !c.before && c.after).map(c => [key(c), c] as const));
+  const merged = new Set([...removed.keys()].filter(k => added.has(k)));
+  const out = file.changes.filter(c => !merged.has(key(c)) || (c.before && c.after));
+  for (const k of merged) { const r = removed.get(k)!, a = added.get(k)!; out.push({ ...a, before: r.before, after: a.after }); }
+  return out;
+}
+
 export function frequencyChanges(file: StudioBeforeAfterFile) {
-  const out: Array<{ route: string; name: string | null; period: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
-  for (const c of file.changes) for (const period of PERIOD_KEYS) {
+  const out: Array<{ route: string; name: string | null; period: string; hours: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
+  for (const c of pairedChanges(file)) for (const period of PERIOD_KEYS) {
     const before = c.before?.headway[period] ?? null, after = c.after?.headway[period] ?? null;
     const change = frequencyChange(before, after);
-    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], before, after, steps: change.steps, better: change.better, publicChange: change.publicChange });
+    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], hours: formatPeriodRange(period), before, after, steps: change.steps, better: change.better, publicChange: change.publicChange });
   }
   return out.sort((a, b) => b.steps - a.steps || Number(b.publicChange) - Number(a.publicChange));
 }
@@ -300,205 +319,16 @@ export function hourlyFrequency(r: RouteRows, start: number, end: number) {
     }));
 }
 
-/** The feed file Atlas processed for an agency, newest first: Atlas-worktrees/_feeds/<slug>/*.zip, or ATLAS_MCP_FEEDS_DIR. */
-/** The last service date in a schedule (calendar end dates, else calendar_dates), as YYYYMMDD. */
-export function scheduleEnds(gtfs: GtfsData): string | null {
-  const dates = [...(gtfs.calendar ?? []).map(c => c.end_date), ...(gtfs.calendarDates ?? []).filter(d => d.exception_type === '1').map(d => d.date)].filter(Boolean).sort();
-  return dates[dates.length - 1] ?? null;
-}
-
-export function feedFile(slug: string): string | null {
-  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
-  const dir = join(root, slug);
-  if (!existsSync(dir)) return null;
-  // Files are named by the date their service runs to (20271008-fresh.zip): the latest date is the newest schedule.
-  // A copy made later can have a newer modified time than a newer schedule (Kingston), so the name decides, then the time.
-  const dateOf = (n: string) => /^(\d{8})/.exec(n)?.[1] ?? '';
-  const zips = readdirSync(dir).filter(n => n.endsWith('.zip'))
-    .sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs);
-  return zips.length ? join(dir, zips[zips.length - 1]) : null;
-}
-
-/**
- * The agency's schedule files: its own feed, then any supplemental feeds processing adds to it (LA Metro's rail lines
- * come only from lacmta--supplemental-1). Each is the newest file in its folder.
- */
-export function feedFiles(slug: string): string[] {
-  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
-  const extra = existsSync(root) ? readdirSync(root).filter(n => n.startsWith(`${slug}--supplemental-`)).sort() : [];
-  return [slug, ...extra].map(feedFile).filter((f): f is string => !!f);
-}
-
-const feeds = new Map<string, { key: string; gtfs: Promise<GtfsData> }>();
-/** One schedule file, read once: a newer file (or a changed one) is read again. */
-function readSchedule(file: string, slug: string): Promise<GtfsData> {
-  const key = `${file}:${statSync(file).mtimeMs}`;
-  if (feeds.get(file)?.key !== key) {
-    const buf = readFileSync(file);
-    feeds.set(file, { key, gtfs: parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }) });
-  }
-  return feeds.get(file)!.gtfs;
-}
-/** Every schedule file of the agency (its own and its supplemental ones). */
-export async function schedules(slug: string): Promise<GtfsData[]> {
-  const files = feedFiles(slug);
-  if (!files.length) throw new Error(`No schedule file for ${slug} on this Mac.`);
-  return Promise.all(files.map(f => readSchedule(f, slug)));
-}
-
-const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
-/** The places (stations, or stops without one) whose stop names match the text, with the names matched. */
-export function findPlaces(gtfs: GtfsData, query: string): { places: Set<string>; names: string[] } {
-  const q = norm(query);
-  const place = placeOf(gtfs);
-  // Every stop whose name contains the words: a station's platforms and bus bays are named after it ("Finch Station - Bay 3").
-  const hits = (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q));
-  return { places: new Set(hits.map(s => place(s.stop_id))), names: [...new Set(hits.map(s => s.stop_name ?? s.stop_id))].slice(0, 6) };
-}
-
-/** Route ids by the names riders use (short name, else long name). */
-export function routeIdsNamed(gtfs: GtfsData, names: readonly string[]): Map<string, string> {
-  const want = new Set(names.map(n => n.trim().toLowerCase()));
-  const out = new Map<string, string>();
-  for (const r of gtfs.routes ?? []) {
-    const name = (r.route_short_name || r.route_long_name || r.route_id).trim();
-    if (!want.size || want.has(name.toLowerCase()) || want.has((r.route_long_name ?? '').toLowerCase())) out.set(r.route_id, name);
-  }
-  return out;
-}
-
-/** Scheduled trip time from one stop to another, per route, by hour of departure and by period. */
-/**
- * Trips from one place to another on one or more agencies, each read from every schedule file it has. With more than
- * one agency, routes are named with their agency ("Big Blue Bus 10").
- */
-/** A short label for an agency in a list of several: its config short name, else the shorter of its name and its bracketed name. */
-export function agencyLabel(slug: string, name: string): string {
-  try { const c = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }; if (c.shortName) return c.shortName; } catch { /* no config */ }
-  const m = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(name);
-  return m ? (m[2].length < m[1].length ? m[2] : m[1]) : name;
-}
-
-/** A route named with its agency, without repeating a word ("LA Metro" and "Metro E Line": "LA Metro E Line"). */
-export function withAgency(label: string, route: string): string {
-  const last = label.split(' ').pop()!;
-  return route.toLowerCase().startsWith(`${last.toLowerCase()} `) ? `${label} ${route.slice(last.length + 1)}` : `${label} ${route}`;
-}
-
-/** Stops of a schedule within `metres` of any of the points, as places. */
-function placesNear(gtfs: GtfsData, points: ReadonlyArray<{ lat: number; lon: number }>, metres: number) {
-  const place = placeOf(gtfs);
-  const hits = (gtfs.stops ?? []).filter(s => s.stop_lat != null && s.stop_lon != null && points.some(p => metresBetween(p, { lat: Number(s.stop_lat), lon: Number(s.stop_lon) }) <= metres));
-  return { places: new Set(hits.map(s => place(s.stop_id))), names: [...new Set(hits.map(s => s.stop_name ?? s.stop_id))].slice(0, 6) };
-}
-const pointsOf = (gtfs: GtfsData, query: string) => {
-  const q = norm(query);
-  return (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q) && s.stop_lat != null && s.stop_lon != null).map(s => ({ lat: Number(s.stop_lat), lon: Number(s.stop_lon) }));
-};
-/**
- * How near a stop on another schedule must be to the matched stops to count as the same place: a short walk. Big Blue
- * Bus's Rapid 10 ends at 6th and Santa Monica, about 450 m from Downtown Santa Monica Station.
- */
-export const SAME_PLACE_METRES = 500;
-
-/**
- * Trips from one place to another on one or more agencies, each read from every schedule file it has. A place is
- * matched by stop name; on a schedule where the name matches nothing (agencies name stops differently: "Downtown Santa
- * Monica Station" against "4TH SB & COLORADO", or LA Metro's rail feed against its bus feed), by stops within
- * SAME_PLACE_METRES of the stops matched on another schedule. With
- * more than one agency, routes are named with their agency ("Big Blue Bus 10").
- */
-export async function tripTimes(agencies: ReadonlyArray<{ slug: string; label: string }>, fromQuery: string, toQuery: string, day: DayType, routes: readonly string[]) {
-  const feedsOf = await Promise.all(agencies.map(async a => ({ a, list: await schedules(a.slug) })));
-  const fromPts = feedsOf.flatMap(f => f.list.flatMap(g => pointsOf(g, fromQuery)));
-  const toPts = feedsOf.flatMap(f => f.list.flatMap(g => pointsOf(g, toQuery)));
-  const many = agencies.length > 1;
-  const byRoute = new Map<string, Array<{ start: number; minutes: number }>>();
-  const from: string[] = [], to: string[] = [], ends: string[] = [];
-  let readOn: string | null = null;
-  for (const { a, list } of feedsOf) {
-    for (const gtfs of list) {
-      let f = findPlaces(gtfs, fromQuery), t = findPlaces(gtfs, toQuery);
-      if (!f.places.size && fromPts.length) f = placesNear(gtfs, fromPts, SAME_PLACE_METRES);
-      if (!t.places.size && toPts.length) t = placesNear(gtfs, toPts, SAME_PLACE_METRES);
-      if (!f.places.size || !t.places.size) continue;
-      const named = routeIdsNamed(gtfs, routes);
-      if (routes.length && !named.size) continue;
-      const { runs, calendarDay } = stopToStopRuns(gtfs, f.places, t.places, day, routes.length ? new Set(named.keys()) : undefined);
-      if (!runs.length) continue;
-      from.push(...f.names); to.push(...t.names); readOn ??= calendarDay;
-      const e = scheduleEnds(gtfs); if (e) ends.push(e);
-      const nameOf = routeIdsNamed(gtfs, []);
-      for (const r of runs) { const n = many ? withAgency(a.label, nameOf.get(r.routeId) ?? r.routeId) : (nameOf.get(r.routeId) ?? r.routeId); (byRoute.get(n) ?? byRoute.set(n, []).get(n)!).push(r); }
-    }
-  }
-  const names = agencies.map(a => a.label).join(', ');
-  if (!fromPts.length) throw new Error(`No stop matching "${fromQuery}" in ${names}. Try a station or stop name as the agency writes it.`);
-  if (!toPts.length) throw new Error(`No stop matching "${toQuery}" in ${names}. Try a station or stop name as the agency writes it.`);
-  return { from: [...new Set(from)].slice(0, 8), to: [...new Set(to)].slice(0, 8), readOn, byRoute, scheduleEnds: ends.sort()[0] ?? null, noDirectTrip: !byRoute.size };
-}
-export async function combinedDepartures(agencies: ReadonlyArray<{ slug: string; label: string }>, fromQuery: string, toQuery: string, day: DayType) {
-  const t = await tripTimes(agencies, fromQuery, toQuery, day, []);
-  const reading = (starts: number[], start: number, end: number) => {
-    const r = pooledReadingInWindow(starts, start, end);
-    const n = new Set(starts.filter(s => s >= start && s < end)).size;
-    return { departures: n, every: r.value != null ? `every ${Math.round(r.value)} min` : r.worstWait != null ? `uneven: waits up to ${Math.round(r.worstWait)} min` : n ? 'too few trips for a regular frequency' : 'no trips' };
-  };
-  return { ...t, reading };
-}
-
-export { runningTimeSummary };
-
 // ---- Agency index for peers and rankings (CIV-1650 round 2) ----
 
-/** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
-export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
 
 /** Mode labels that are rail, from the shared mode list (shared/rules/modes.ts) by the rail-like ids and streetcar. */
-const RAIL_MODE_LABELS = new Set([...RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE.TRAM, PEOPLE_MOVER_MODE].map(id => modeLabel(id)));
-
-/** The parent agency an agency's config names (config/agencies/<slug>.json parentAgency), by its name. */
-function partOf(slug: string): string | null {
-  try {
-    const cfg = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { parentAgency?: string };
-    return cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null;
-  } catch { return null; }
-}
-
-/** Where the index sits: next to the route files it was built from, so a new release gets a new index. */
-export function indexFile(): string | null {
-  const any = availableAgencies()[0];
-  return any ? join(dirname(any.file), '_mcp-index.json') : null;
-}
-
-/** Build the index from every available route file, with the same functions route_frequency uses. Takes a few minutes. */
-export function buildIndex(onProgress?: (done: number, total: number) => void): IndexedAgency[] {
-  const list = availableAgencies();
-  const out: IndexedAgency[] = [];
-  list.forEach((a, i) => {
-    const days: IndexedAgency['days'] = {};
-    for (const d of DAY_TYPES) {
-      const routes = routesOn(a, d);
-      if (routes.length) days[d] = routes.map(r => ({ route: r.name, name: r.longName, mode: r.mode, wait: Object.fromEntries(PERIOD_KEYS.map(k => [k, periodFigure(r, k).waitMinutes])) }));
-    }
-    const railRoutes = (routesOn(a, 'Weekday')).filter(r => RAIL_MODE_LABELS.has(r.mode)).length;
-    out.push({ slug: a.slug, name: a.name, region: a.region ?? null, country: countryForRegion(a.region), partOf: partOf(a.slug), railRoutes, days });
-    loaded.delete(a.slug); // one agency in memory at a time
-    onProgress?.(i + 1, list.length);
-  });
-  const file = indexFile();
-  if (file) writeFileSync(file, JSON.stringify(out));
-  return out;
-}
+export const RAIL_MODE_LABELS = new Set([...RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE.TRAM, PEOPLE_MOVER_MODE].map(id => modeLabel(id)));
 
 let index: IndexedAgency[] | null = null;
 /** The index, or null when it hasn't been built for the current data (scripts/mcp/buildIndex.ts). */
-export function agencyIndex(): IndexedAgency[] | null {
-  if (index) return index;
-  const file = indexFile();
-  if (!file || !existsSync(file)) return null;
-  index = JSON.parse(readFileSync(file, 'utf8')) as IndexedAgency[];
-  return index;
+export async function agencyIndex(): Promise<IndexedAgency[] | null> {
+  return (index ??= await store.index());
 }
 
 /** Country names as the catalog's regions map them, matched loosely ("US", "USA", "United States"). */
@@ -512,29 +342,51 @@ export function sameCountry(country: string | null, query: string): boolean {
 
 // ---- Branches, places, nearby agencies, history and buses needed (0.5.0) ----
 
-type Stop = { id: string; name: string; lat: number; lon: number; routeIds: string[] };
-const stopsCache = new Map<string, Stop[]>();
+type Stop = McpStop;
 /** An agency's stops from its route file: name, place and the routes that stop there. */
-export function stopsOf(agency: CatalogAgency & { file: string }): Stop[] {
-  if (!stopsCache.has(agency.slug)) {
-    const j = JSON.parse(readFileSync(agency.file, 'utf8')) as { features: Array<{ geometry: { type: string; coordinates: [number, number] } | null; properties: Record<string, unknown> }> };
-    stopsCache.set(agency.slug, j.features.filter(f => f.geometry?.type === 'Point').map(f => ({
-      id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates[0], lat: f.geometry!.coordinates[1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String),
-    })));
-  }
-  return stopsCache.get(agency.slug)!;
+export async function stopsOf(agency: CatalogAgency): Promise<Stop[]> {
+  const stops = await store.stops(agency.slug);
+  if (!stops) throw new Error(`No stops for ${agency.slug}.`);
+  return stops;
 }
 
-/** Each branch of a route on a day: its direction, where it goes, its first and last stops and its trips. */
-export function branchesOf(agency: CatalogAgency & { file: string }, r: RouteRows) {
-  const name = new Map(stopsOf(agency).map(s => [s.id, s.name]));
-  const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
-  return r.rows.map(row => {
+/**
+ * Each branch of a route on a day: its direction, where it goes, its first and last stops and its trips. Branches of one
+ * direction that end at the same stop are one row (TTC 29 northbound runs to Wilson Station from either of two loops):
+ * their trips are counted once where they carry the same departures (a shared trunk), and added where they differ.
+ */
+export async function branchesOf(agency: CatalogAgency, r: RouteRows) {
+  const name = new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
+  type Branch = { direction: string; towards: string | null; from?: string | null; to?: string | null; stops?: number; trips: number; startsAt?: string[] };
+  const groups = new Map<string, { rows: ShapeProperties[]; branch: Branch; hours: Map<string, number>; from: string[]; headsigns: Set<string> }>();
+  const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
+  const total = (h: Record<string, number>) => Object.values(h).reduce((a, b) => a + b, 0);
+  for (const row of r.rows) {
     const order = (row.stopOrder as string[] | undefined) ?? [];
     const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+    const direction = String(row.directionId ?? '0');
+    const trips = total(hoursOf(row));
+    if (trips <= 0 || !(towards || order.length)) continue;
     // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
-    return order.length ? { direction: String(row.directionId ?? '0'), towards, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) } : { direction: String(row.directionId ?? '0'), towards, trips: trips(row) };
-  }).filter(b => b.trips > 0 && (b.towards || 'stops' in b)).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
+    const to = order.length ? name.get(order[order.length - 1]) ?? null : null;
+    const key = order.length ? `${direction}|to:${to}` : `${direction}|towards:${towards}`;
+    const sig = JSON.stringify(Object.entries(hoursOf(row)).sort(([a], [b]) => +a - +b));
+    const g = groups.get(key) ?? groups.set(key, { rows: [], branch: { direction, towards, ...(order.length ? { from: name.get(order[0]) ?? null, to, stops: order.length } : {}), trips: 0 }, hours: new Map(), from: [], headsigns: new Set() }).get(key)!;
+    g.rows.push(row);
+    g.hours.set(sig, trips); // the same departures count once
+    const from = order.length ? name.get(order[0]) : null;
+    if (from && !g.from.includes(from)) g.from.push(from);
+    if (row.headsign) g.headsigns.add(String(row.headsign));
+  }
+  return [...groups.values()].map(g => {
+    const merged = g.rows.length > 1 && g.from.length > 1;
+    return {
+      ...g.branch,
+      trips: [...g.hours.values()].reduce((a, b) => a + b, 0),
+      // Rows that start at different stops but end at the same one are a single way to the end.
+      ...(merged ? { towards: g.headsigns.size === 1 ? [...g.headsigns][0] : g.branch.towards, from: g.from.join(' or '), startsAt: g.from } : {}),
+    };
+  }).filter(b => b.trips > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
@@ -542,24 +394,35 @@ const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').repl
  * Routes near a place: stops whose names hold every part of the place ("Bathurst and Bloor": a stop named with both
  * streets, or the station), then every stop within `metres` of those. Each route gets the stops it uses there.
  */
-export function routesNear(agency: CatalogAgency & { file: string }, place: string, metres = 250) {
+/** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
+const DAYTIME_PERIODS = TIME_PERIODS.slice(0, TIME_PERIODS.findIndex(t => t.key === 'late')).map(t => t.key as PeriodKey);
+export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIODS.every(k => r.figures[k]?.shown === 'no service');
+
+export async function routesNear(agency: CatalogAgency, place: string, metres = 250) {
+  const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
   const parts = words(place);
-  const stops = stopsOf(agency);
+  const stops = await stopsOf(agency);
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
   const near = stops.filter(s => seeds.some(t => metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres));
   const routeNames = new Map<string, { name: string; longName: string | null; mode: string }>();
-  for (const d of DAY_TYPES) for (const r of routesOn(agency, d)) for (const row of r.rows) routeNames.set(String(row.routeId), { name: r.name, longName: r.longName, mode: r.mode });
+  for (const d of DAY_TYPES) for (const r of await namesOn(agency, d)) for (const id of r.routeIds) routeNames.set(id, { name: r.name, longName: r.longName, mode: r.mode });
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
-  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => ({ route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4) })).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+}
+
+/** Each route's names and route ids on a day: from the summaries where the store has them, else straight from the rows (no figures to work out). */
+async function namesOn(agency: CatalogAgency, day: DayType): Promise<Array<Pick<RouteSummary, 'name' | 'longName' | 'mode' | 'routeIds'>>> {
+  if (store.summaries) return routeList(agency, day);
+  return (await routesOn(agency, day)).map(r => ({ name: r.name, longName: r.longName, mode: r.mode, routeIds: r.rows.map(row => String(row.routeId)) }));
 }
 
 /** Agencies whose centre is within `km` of a place: another agency, or a city an agency lists. */
-export function agenciesNear(query: string, km = 60) {
+export async function agenciesNear(query: string, km = 60) {
   const q = query.trim().toLowerCase();
-  const all = publicAgencies() as Array<CatalogAgency & { center?: [number, number] }>;
-  const anchor = findAgency(query, all.map(a => ({ ...a, file: '' }))) as (CatalogAgency & { center?: [number, number] }) | null;
+  const all = await publicAgencies();
+  const anchor = await findAgency(query, all);
   const byCity = all.find(a => (a.cities ?? []).some(c => c.toLowerCase().split(',')[0] === q));
   const centre = (anchor?.center ?? byCity?.center) ?? null;
   if (!centre) return null;
@@ -567,21 +430,13 @@ export function agenciesNear(query: string, km = 60) {
   return { near: anchor?.name ?? query, km, agencies: all.map(a => ({ a, d: dist(a.center) })).filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.a.name, region: x.a.region ?? null, km: Math.round(x.d) })) };
 }
 
-type HistoryRoute = { routeShortName: string; routeName?: string; snapshots: Array<{ label: string; year: number } & Record<string, unknown>> };
-let history: Array<{ slug: string; routes: HistoryRoute[] }> | null = null;
-/** Atlas's published History data (atlas/history-config.json), kept on this Mac in tmp/history-cache. */
-export function historyAgencies(): Array<{ slug: string; routes: HistoryRoute[] }> | null {
-  if (history) return history;
-  const file = process.env.ATLAS_MCP_HISTORY_FILE ?? join(ATLAS_ROOT, 'tmp/history-cache/history-config.json');
-  if (!existsSync(file)) return null;
-  const j = JSON.parse(readFileSync(file, 'utf8'));
-  history = (Array.isArray(j) ? j : j.agencies) as Array<{ slug: string; routes: HistoryRoute[] }>;
-  return history;
-}
+/** Atlas's published History data (atlas/history-config.json). */
+export const historyAgencies = (): Promise<McpHistoryAgency[] | null> => store.history();
 
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
-export function routeHistory(slug: string, routeQuery: string, day: DayType) {
-  const ag = historyAgencies()?.find(a => a.slug === slug);
+export async function routeHistory(agency: CatalogAgency, routeQuery: string, day: DayType) {
+  const slug = agency.slug;
+  const ag = (await historyAgencies())?.find(a => a.slug === slug);
   if (!ag) return null;
   const q = routeQuery.trim().toLowerCase();
   const route = ag.routes.find(r => r.routeShortName.toLowerCase() === q) ?? ag.routes.find(r => (r.routeName ?? '').toLowerCase() === q)
@@ -596,40 +451,30 @@ export function routeHistory(slug: string, routeQuery: string, day: DayType) {
   const nowBest = Math.min(...PERIOD_KEYS.map(k => valueOf(newest, k)).filter((v): v is number => v != null));
   const suspect = (s: typeof snaps[number], k: PeriodKey) => { const v = valueOf(s, k), now = valueOf(newest, k) ?? (Number.isFinite(nowBest) ? nowBest : null); return s !== newest && v != null && v <= 3 && now != null && now >= 30; };
   let flagged = 0;
+  // CIV-1840: History can end before the schedule on the map (Kingston 12's last snapshot is Aug 2026, midday only, while
+  // today's schedule runs every 30 from 6:30 AM). When the agency was refreshed after History's newest snapshot, end with
+  // today's schedule as a row, from the same figures route_frequency gives.
+  const monthOf = (label: string) => { const t = Date.parse(`1 ${label} UTC`); return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 7); };
+  const newestMonth = newest ? monthOf(newest.label) : null;
+  const refreshed = agency.lastRefreshedAt?.slice(0, 7) ?? null;
+  let current: Record<string, string> | null = null;
+  if (newestMonth && refreshed && refreshed > newestMonth) {
+    try {
+      const today = findRoute(await routeList(agency, day), route.routeShortName);
+      if (today) {
+        const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], `every ${f.waitMinutes} min`]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
+        const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
+        current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
+      }
+    } catch { /* no route data here: History alone */ }
+  }
   return {
     route: route.routeShortName, name: route.routeName ?? null,
-    schedules: snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
+    schedules: [...snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
       const v = historyDayPeriodValue(s as never, day, k);
       if (v.kind === 'value' && suspect(s, k)) { flagged++; return [PERIOD_LABELS[k], `every ${v.min} min (doubtful: likely a data error, being checked)`]; }
       return [PERIOD_LABELS[k], v.kind === 'value' ? `every ${v.min} min` : v.kind === 'none' ? 'no service' : null];
-    }).filter(([, v]) => v != null)) })),
+    }).filter(([, v]) => v != null)) })), ...(current ? [current] : [])],
     ...(flagged ? { warning: `${flagged} figure(s) marked doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more. These are most likely data errors, not real service; don't report them as fact.` } : {}),
   };
-}
-
-/** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
-export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', `${slug}-vehicles.json`); }
-
-/** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
-export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${slug}-vehicles.json`;
-}
-
-export type BusesNeeded =
-  | { cached: false; command: string | null }
-  | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
-
-/**
- * Buses needed to run a route in a period, from Studio's own buses-needed file (CIV-1693), the same figures Studio's page
- * shows. It never runs the calculation itself: on a large agency that takes minutes and loads the Mac (manager,
- * 2026-11-17: "buses_needed must not spawn an 8-minute calculation per question"). Where no file exists it says so.
- */
-export function busesNeeded(slug: string, route: string, period: PeriodKey): BusesNeeded {
-  const path = studioVehiclesPath(slug);
-  const file = feedFile(slug);
-  if (!existsSync(path)) return { cached: false, command: file ? studioVehiclesCommand(slug, file) : null };
-  const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
-  const want = route.trim().toLowerCase();
-  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
-  return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
 }

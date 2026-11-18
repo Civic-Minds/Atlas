@@ -1,0 +1,25 @@
+{
+  // Atlas Studio MCP, hosted pilot (CIV-1840). Read-only: it reads the published release over HTTP and writes only its
+  // own tester list and call log. Run locally with `wrangler dev`; nothing here is deployed yet.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "atlas-studio-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "vars": {
+    // Where the published data lives (the release pointer is DATA_ORIGIN/atlas/release.json).
+    "DATA_ORIGIN": "https://data.transitatlas.fyi",
+    // Fair use per tester (placeholders for the manager to confirm): calls a day, and the burst limit below.
+    "DAILY_CALL_CAP": "300"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "atlas-studio-mcp", "database_id": "local-only-until-created", "migrations_dir": "migrations" }
+  ],
+  "ratelimits": [
+    // 30 calls a minute per tester, per Cloudflare location (approximate). The namespace id is a placeholder.
+    { "name": "TESTER_LIMIT", "namespace_id": "184001", "simple": { "limit": 30, "period": 60 } }
+  ]
+  // Secret, set with `wrangler secret put ADMIN_TOKEN` (locally in .dev.vars): ADMIN_TOKEN guards /admin/*.
+  // Local testing only: MCP_DATA_BASE (in .dev.vars) points the data reader at a folder served over HTTP.
+}
