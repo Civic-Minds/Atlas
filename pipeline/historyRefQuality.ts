@@ -12,6 +12,7 @@ import JSZip from 'jszip';
 import { parseCsv } from './parseGtfs.js';
 import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
 import type { HistoryV2Sidecar, RefDateQuality } from '../shared/historyV2.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 export type { RefDateQuality };
 
@@ -26,7 +27,6 @@ export interface QualityRows {
   trips: Array<{ service_id: string }>;
 }
 
-const DOW = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 const day = (ymd: string) => Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8))) / 86400000;
 const ymdOf = (n: number) => { const d = new Date(n * 86400000); return `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`; };
 const dowOf = (n: number) => new Date(n * 86400000).getUTCDay();
@@ -57,7 +57,7 @@ export function tripsByDate(rows: QualityRows): Map<string, number> {
   const out = new Map<string, number>();
   if (!Number.isFinite(lo) || hi - lo > 1500) return out;
   for (let n = lo; n <= hi; n++) {
-    const d = ymdOf(n), dow = DOW[dowOf(n)];
+    const d = ymdOf(n), dow = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[dowOf(n)];
     const active = new Set<string>();
     for (const c of cal) if (c[dow] === '1' && c.start_date <= d && d <= c.end_date) active.add(c.service_id);
     for (const s of adds.get(d) ?? []) active.add(s);

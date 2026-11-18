@@ -17,6 +17,7 @@ import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { TIME_PERIODS } from '../shared/config.js';
 import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 import { PUBLIC_TIER_MAXES } from '../shared/frequencyRules';
+import { ROUTE_TYPE } from '../shared/rules/modes.js';
 
 const SEED = Number(process.argv.find(a => a.startsWith('--seed='))?.slice(7) ?? '20260926');
 const OUTPUT = resolve(process.argv.find(a => a.startsWith('--out='))?.slice(6) ?? 'docs/audits/route-accuracy-spot-check-2026-09.md');
@@ -80,7 +81,7 @@ const CLOCK_FACE_HEADWAYS = new Set([...PUBLIC_TIER_MAXES, 5, 6, 12]);
 
 function category(group: RouteGroup, all: RouteGroup[]): 'branch' | 'rail' | 'sparse' | 'clock-face' | 'other' {
   if (hasBranchEvidence(group, all)) return 'branch';
-  if (group.routeType === 2 || group.routeType === 0) return 'rail';
+  if (group.routeType === ROUTE_TYPE.RAIL || group.routeType === ROUTE_TYPE.TRAM) return 'rail';
   if (group.features.some(p => p.serviceClass !== 'regular' || p.tier === 'span' || p.tier === 'infrequent')) return 'sparse';
   if (group.features.some(p => CLOCK_FACE_HEADWAYS.has(Number(p.headway)))) return 'clock-face';
   return 'other';

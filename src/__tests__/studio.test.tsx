@@ -107,7 +107,7 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
 
 describe('Studio agencies (CIV-1806)', () => {
   it('opens the agency the address names, when Studio has it, and Kingston otherwise', () => {
-    expect(STUDIO_AGENCIES).toEqual(['kingston', 'hamilton']);
+    expect(STUDIO_AGENCIES).toEqual(['kingston', 'hamilton', 'rtd-denver']);
     expect(studioAgencyFrom('hamilton')).toBe('hamilton');
     expect(studioAgencyFrom(null)).toBe('kingston');
     expect(studioAgencyFrom('ttc')).toBe('kingston');

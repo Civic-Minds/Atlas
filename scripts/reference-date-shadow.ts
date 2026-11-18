@@ -32,6 +32,7 @@ import { filterGtfsByAgencyId, filterGtfsByAgencyName, filterGtfsByExcludedShort
 import { mergeLetterSuffixBranches } from '../pipeline/transforms/letter-suffix-branches.js';
 import { resolveAgencyCountry } from '../pipeline/countryLaunchGate.js';
 import type { GtfsCalendar, GtfsCalendarDate, GtfsData } from '../types/gtfs.js';
+import { DAY_TYPES, WEEKDAYS } from '../shared/rules/days.js';
 
 // ---- arguments ----
 const args = process.argv.slice(2);
@@ -131,8 +132,6 @@ interface FeedResult {
   days?: Record<DayKey, DayDiff>;
 }
 type DayKey = DayName | 'Weekday';
-const MAP_DAYS: DayKey[] = ['Weekday', 'Saturday', 'Sunday'];
-const WEEKDAY_NAMES: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 interface DayDiff {
   sameServices: boolean;
   routesGained: string[]; routesLost: string[];
@@ -227,7 +226,7 @@ async function compareFeed(path: string, feedLabel: string, agency: Agency, feed
   }
   routesByServiceCache.set(`${agency.slug}|${feedLabel}`, byService);
   const days = {} as Record<DayKey, DayDiff>;
-  const union = (byDay: ByDay) => [...new Set(WEEKDAY_NAMES.flatMap(d => byDay[d]))].sort();
+  const union = (byDay: ByDay) => [...new Set(WEEKDAYS.flatMap(d => byDay[d]))].sort();
   for (const day of [...DAY_NAMES, 'Weekday'] as DayKey[]) {
     const oldByDay = (result.old as { services: ByDay }).services;
     const newByDay = (result.new as { services: ByDay }).services;
@@ -306,7 +305,7 @@ for (const a of results) {
       }
       if (d.tripChanges.length) tripChange = true;
     }
-    for (const day of MAP_DAYS) { mapGained += f.days[day].routesGained.length; mapLost += f.days[day].routesLost.length; }
+    for (const day of DAY_TYPES) { mapGained += f.days[day].routesGained.length; mapLost += f.days[day].routesLost.length; }
     for (const p of f.new.periodChanges) {
       const read = f.new.period ? `reads the period from ${f.new.period.start}` : '';
       periodRows.push({ slug: a.slug, feed: f.feed, date: p.date, days: p.daysFromAnchor, kind: p.kind, read });

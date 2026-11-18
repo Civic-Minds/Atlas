@@ -18,7 +18,7 @@ import { STUDIO_VEHICLES_TEXT } from '../shared/studioWording';
  * The agencies Studio has files for (CIV-1806), in the agency menu's order; the first opens by default. Each needs its
  * tmp/studio/<slug>-before-after.json and <slug>-vehicles.json (scripts/compare-feed-dates.ts, scripts/vehicles-needed.ts).
  */
-export const STUDIO_AGENCIES = ['kingston', 'hamilton'] as const;
+export const STUDIO_AGENCIES = ['kingston', 'hamilton', 'rtd-denver'] as const;
 export const STUDIO_DEFAULT_AGENCY: string = STUDIO_AGENCIES[0];
 /** The agency an address asks for (?agency=), when Studio has it; otherwise the default. */
 export const studioAgencyFrom = (param: string | null): string =>

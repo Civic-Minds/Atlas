@@ -7,6 +7,7 @@
  * Returns plain strings; the caller applies title case (`routeLabels` in src/utils/format.ts does).
  */
 import { effectiveMode } from './modes.js';
+import { ROUTE_TYPE } from './rules/modes.js';
 
 // The card title's naming rules (moved here from cleanHeadsign.ts, CIV-984 #3), so every route-name rule lives in this file.
 
@@ -162,9 +163,9 @@ export function shouldHideNumericRouteShortName(
   if (!shortName || !longName || !/^\d+$/.test(shortName.trim())) return false;
   const named = /(?:line|seabus)$/i.test(longName.trim());
   const internalId = shortName.trim().length >= 5;
-  if (mode === 0) return false;
+  if (mode === ROUTE_TYPE.TRAM) return false;
   // Demand-responsive extended types (15xx) are named like buses: their zone numbers are public (exo-laurentides 303).
-  if (mode === undefined || mode === 3 || mode === 11 || (mode >= 1500 && mode < 1600)) return internalId && named;
+  if (mode === undefined || mode === ROUTE_TYPE.BUS || mode === ROUTE_TYPE.TROLLEYBUS || (mode >= 1500 && mode < 1600)) return internalId && named;
   // Rail, subway and ferry: a short number is the public name (NYC subway 1-7, O-Train 1, 2 and 4); a number of three or
   // more digits is an internal id (UTA 701 Blue Line, Calgary 201 Red Line, HRT 800 Light Rail Tide, HRT 090 ferry).
   return shortName.trim().length >= 3;

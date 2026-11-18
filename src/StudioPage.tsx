@@ -9,19 +9,19 @@ import RouteRowName from './components/RouteRowName';
 import MapKey from './components/ui/MapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, SidebarPanel, SidebarWidget, MAP_APP_PADDING, framePadding, useMapAppWide, type MapLine, type PanelWidget } from './components/MapApp';
-import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
+import { MapLegendCard } from './components/ui/MapLegendCard';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { PAGE_NAMES, tabTitle } from '../shared/pageNames';
 import { headwayAmount, capitalizeFirst } from '../shared/headwayText';
-import { shortDate } from '../shared/dateText';
+import { dateRange, shortDate } from '../shared/dateText';
 import { dayInSentence, dayPlural } from '../shared/dayTypes';
 import { joinList } from '../shared/overflowText';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
-import { frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
+import { FREQUENCY_STEP_MIN, RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
-import { StudioRouteTable, routeTitle } from './StudioChangesPage';
+import { StudioRouteTable, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { STUDIO_AGENCIES, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
@@ -89,21 +89,56 @@ export function studioMapLines(file: StudioBeforeAfterFile, period: PeriodKey, p
   return out;
 }
 
-/** The figure a list row shows for the time of day: older → newer where it changed, else the one value. */
-export function rowFigure(c: StudioRouteChange, period: PeriodKey): string {
-  const b = c.before ? headwayAmount(c.before.headway[period]) : MISSING_VALUE;
-  const a = c.after ? headwayAmount(c.after.headway[period]) : MISSING_VALUE;
-  return b === a ? a : `${b} → ${a}`;
+/** What a list row shows (CIV-1806): one figure, older and newer, and its name when it isn't the time of day's frequency. */
+export interface RowFigure { label: string | null; before: string; after: string }
+
+/** The figures each group's rows choose from: a frequency or trips change, its frequencies and trips; a first or last
+ * trip or trip time change, those; a small change, any. */
+const GROUP_KEYS: Record<StudioRouteChange['size'], ReadonlyArray<string> | null> = {
+  frequency: [...PERIOD_KEYS, 'trips'],
+  hours: ['first', 'last', 'run'],
+  small: null,
+};
+
+/** How far a figure moved, in its own step (shared/studioBeforeAfter.ts changeSize's): 1 or more is the move that puts a
+ * route in its group; a frequency that starts or stops counts as any. */
+function movedSteps(c: StudioRouteChange, key: string): number {
+  const b = c.before!, a = c.after!;
+  const by = (x: number | null | undefined, y: number | null | undefined, step: number) => (x == null && y == null ? 0 : x == null || y == null ? Infinity : Math.abs(x - y) / step);
+  if (key === 'trips') return by(b.trips, a.trips, TRIP_STEP);
+  if (key === 'first' || key === 'last') return by(b[key], a[key], SPAN_STEP_MIN);
+  if (key === 'run') return Math.max(by(b.runMinutes[0], a.runMinutes[0], RUN_STEP_MIN), by(b.runMinutes.at(-1), a.runMinutes.at(-1), RUN_STEP_MIN));
+  return by(b.headway[key as PeriodKey], a.headway[key as PeriodKey], FREQUENCY_STEP_MIN);
 }
+
+/**
+ * The figure a list row shows (Ryan, CIV-1806: "the dates u are comparing are not by the actual numbers"): the time of
+ * day's frequency where the route was added or removed, or where that frequency moved enough to count; otherwise the
+ * figure that moved most among its group's own kind (an hours row shows its first or last trip or trip time), named by
+ * the route table's own label. CIV-1814 item 38's shared grade rule replaces the frequency steps when it lands.
+ */
+export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
+  const here = { before: c.before ? headwayAmount(c.before.headway[period]) : MISSING_VALUE, after: c.after ? headwayAmount(c.after.headway[period]) : MISSING_VALUE };
+  if (!c.before || !c.after || (here.before !== here.after && movedSteps(c, period) >= 1)) return { label: null, ...here };
+  const keys = GROUP_KEYS[c.size];
+  const changed = routeFigureRows(c).filter(r => r.before !== r.after && (!keys || keys.includes(r.key)));
+  const pick = changed.reduce<(typeof changed)[number] | null>((best, r) => (!best || movedSteps(c, r.key) > movedSteps(c, best.key) ? r : best), null);
+  return pick ? { label: pick.key === period ? null : pick.label, before: pick.before, after: pick.after } : { label: null, ...here };
+}
+
+/** The list's columns: change dot, route, name, then the older and newer dates' figures, each under its date. */
+const ROW_GRID = 'grid grid-cols-[0.5rem_2.75rem_minmax(0,1fr)_4.75rem_4.75rem] items-center gap-x-2';
 
 /** The change list: every changed route by group, Live's route list rows (OverviewList); a click picks the route. */
 function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; route: string | null; onPick: (r: string) => void }) {
   const groups = useMemo(() => changeGroups(file), [file]);
   return (
     <section aria-label={T.routes} className="flex min-h-0 flex-initial flex-col overflow-hidden rounded-3xl border border-[var(--border-primary)] bg-[var(--bg-header)]/90 p-3 backdrop-blur">
-      <div className="flex shrink-0 items-baseline justify-between text-xs font-bold text-[var(--text-muted)]">
-        <span>{T.routes}</span>
-        <span>{PERIOD_LABELS[period]}</span>
+      {/* One column per compared date, each value under its date (CIV-1806); the time of day is the top bar's. */}
+      <div className={`${ROW_GRID} shrink-0 px-2 text-xs font-bold text-[var(--text-muted)]`}>
+        <span className="col-span-3">{T.routes}</span>
+        <span className="text-right">{dateRange(file.before.date, file.before.date)}</span>
+        <span className="text-right">{dateRange(file.after.date, file.after.date)}</span>
       </div>
       <div className="min-h-0 flex-1 overflow-hidden">
         {groups.map(g => (
@@ -112,14 +147,19 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
             <ul className="m-0 p-0">
               {g.routes.map(c => {
                 const l = routeTitle(c);
+                const f = rowFigure(c, period);
                 return (
                   <li key={c.route} className="list-none">
                     <button type="button" onClick={() => onPick(c.route)} aria-current={c.route === route ? 'true' : undefined}
-                      className={`grid w-full grid-cols-[0.5rem_2.75rem_minmax(0,1fr)_auto] items-center gap-x-2 rounded-xl px-2 py-0.5 text-left text-sm ${c.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
+                      className={`${ROW_GRID} w-full rounded-xl px-2 py-0.5 text-left text-sm ${c.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
                       <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }} />
                       <span className="font-bold">{l.primary}</span>
-                      <span className="truncate text-[var(--text-secondary)]">{l.secondary}</span>
-                      <span className="whitespace-nowrap">{rowFigure(c, period)}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-[var(--text-secondary)]">{l.secondary}</span>
+                        {f.label && <span className="block truncate text-xs text-[var(--text-muted)]">{f.label}</span>}
+                      </span>
+                      <span className="whitespace-nowrap text-right">{f.before}</span>
+                      <span className={`whitespace-nowrap text-right ${f.before !== f.after ? 'font-bold' : ''}`}>{f.after}</span>
                     </button>
                   </li>
                 );
@@ -138,14 +178,14 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
   );
 }
 
-/** The map key: one pill at the map's top left, as Live's. */
+/** The map key in the regular map's key card and slot, bottom left above the footer (CIV-1821). */
 function StudioMapKey() {
-  const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{T[k]}</span> }));
+  const steps = (['more', 'less', 'same', 'none'] as const).map(k => ({ color: CHANGE_COLOR[k], label: T[k], className: 'text-xs text-[var(--text-primary)]' }));
   return (
-    <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
-      <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{T.keyTitle}<span className="font-normal text-[var(--text-muted)]"> · {T.dashed}</span></span>
-      <MapKey steps={steps} />
-    </div>
+    <MapLegendCard label={MAP_COLOURS_LABEL}>
+      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{T.keyTitle}<span className="font-normal"> · {T.dashed}</span></p>
+      <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={steps} />
+    </MapLegendCard>
   );
 }
 
@@ -214,10 +254,10 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
         layer={{ kind: 'lines', lines }} selected={null} highlightRoute={route}
         onPick={p => { if (p?.kind === 'line' && p.route) setRoute(p.route); }}
         frameKey={route ? `route-${route}-${footH}` : `network-${footH}`}
-        padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)} controlsRight={12}
+        padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, footH)}
         ariaLabel={PAGE_NAMES.studio}
       />}
-      overlay={<><div className="pointer-events-auto absolute left-0 top-0 max-w-full"><StudioMapKey /></div><MapAppFooter onHeight={setFootH} /></>}
+      overlay={<><StudioMapKey /><MapAppFooter onHeight={setFootH} /></>}
       sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel widgets={summary} />{list}</>}
       narrowPanels={<>
         <SidebarPanel className="p-3" widgets={routePanel ?? summary} />

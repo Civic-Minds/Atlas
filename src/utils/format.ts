@@ -5,7 +5,7 @@ import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 import { countOf } from '../../shared/overflowText';
 import { feedPlaceName, nameCase } from './nameCase';
-import { VIRTUAL_LRT_MODE } from '../../shared/modes';
+import { ROUTE_TYPE, VIRTUAL_LRT_MODE } from '../../shared/rules/modes';
 export { cleanHeadsign, getRouteLabel };
 // Name casing lives in nameCase.ts (CIV-1001); these keep the older import path working.
 export { nameCase, ROUTE_NAME_ACRONYMS } from './nameCase';
@@ -135,12 +135,12 @@ const GENERIC_VEHICLE = 'Vehicle';
  */
 export function vehicleModeWord(routeType: number | null | undefined): string {
   switch (routeType) {
-    case 0: return GENERIC_VEHICLE;
-    case 1:
-    case 2:
-    case 12:
+    case ROUTE_TYPE.TRAM: return GENERIC_VEHICLE;
+    case ROUTE_TYPE.SUBWAY:
+    case ROUTE_TYPE.RAIL:
+    case ROUTE_TYPE.MONORAIL:
     case VIRTUAL_LRT_MODE: return 'Train';
-    case 4: return 'Ferry';
+    case ROUTE_TYPE.FERRY: return 'Ferry';
     default: return 'Bus';
   }
 }

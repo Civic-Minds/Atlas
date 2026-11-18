@@ -115,7 +115,7 @@ const RULES: Rule[] = [
   { name: 'a date formatted outside shared/dateText.ts (toLocaleDateString or a month list)', doc: 'TEXT.md', pattern: /toLocaleDateString|\['Jan', 'Feb'/, slip: 'd.toLocaleDateString()',
     allowed: ['shared/dateText.ts'] },
   { name: 'a day plural built by hand (use dayPlural / dayInSentence)', doc: 'TEXT.md', pattern: /\$\{(day|d|dayType)\}s\b|Saturday: ['"]Saturdays['"]|['"]Weekday['"] \? ['"]weekdays['"]/, slip: '`on ${day}s`',
-    allowed: ['shared/dayTypes.ts'] },
+    allowed: ['shared/rules/days.ts'] },
   { name: 'a lone dash typed for an empty value (use MISSING_VALUE)', doc: 'TEXT.md', pattern: /['"`][—–]['"`]|>[—–]<|=["'][—–]["']/, slip: "value ?? '—'",
     skipLine: /\.(split|join|replace)\(/, allowed: ['shared/missingValue.ts'] },
   // format.ts holds the builders; cleanRouteDisplayName rewrites "Route 01" inside a feed's own name.

@@ -1,4 +1,5 @@
 import type { PeriodKey } from '../shared/config.js';
+import { type DayType } from '../shared/rules/days.js';
 
 /**
  * #1514 (Ryan, 2026-11-15, option 1 after two failed shared-rule attempts): a named route-period whose figure is
@@ -12,7 +13,7 @@ export interface BranchReadCorrection {
   routeShortName: string;
   /** The direction whose branch is overstated; every direction of the route-day when left out. */
   directionId?: number;
-  day: 'Weekday' | 'Saturday' | 'Sunday';
+  day: DayType;
   period: PeriodKey;
   /** Why, with the departures that show it (shown in review, not on the map). */
   reason: string;

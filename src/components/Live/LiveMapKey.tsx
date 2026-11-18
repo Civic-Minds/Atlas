@@ -26,12 +26,21 @@ const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min la
  * The Live map's key, as a row of pills (the regular map's legend pills): the measure's definition, then its three colour
  * steps. Shared by the Live map and the "Stops most often late" map (CIV-1405); the caller places it.
  */
-export default function LiveMapKey({ measure, notMeasured = true, variant = 'pills' }: { measure: MapMeasure; /** Whether the key lists NOT_MEASURED_LABEL (a map whose every mark is measured leaves it out). */ notMeasured?: boolean; /** `one`: the definition and the steps in one pill (the Live tool's map, CIV-1732); `pills`: two pills. */ variant?: 'pills' | 'one' }) {
+export default function LiveMapKey({ measure, notMeasured = true, variant = 'pills' }: { measure: MapMeasure; /** Whether the key lists NOT_MEASURED_LABEL (a map whose every mark is measured leaves it out). */ notMeasured?: boolean; /** `card`: the definition and the steps for the regular map's key card (the Live tool's map, CIV-1821); `one`: in one pill; `pills`: two pills. */ variant?: 'pills' | 'one' | 'card' }) {
   const labels = stepLabels(measure);
   const steps = [
     ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{l}</span> })),
     ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: <span className={`${MAP_BADGE_LABEL} whitespace-nowrap`}>{NOT_MEASURED_LABEL}</span> }] : []),
   ];
+  if (variant === 'card') return (
+    <>
+      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{measureLabel(measure)}{KEY_DEFINITION[measure] && <span className="font-normal"> · {KEY_DEFINITION[measure]}</span>}</p>
+      <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={[
+        ...labels.map((l, i) => ({ color: stepColor(measure === 'bunching' ? 'bunching' : 'delay', i as Step), label: l, className: 'text-xs text-[var(--text-primary)]' })),
+        ...(notMeasured ? [{ color: 'var(--strip-delay-0)', swatchClassName: 'opacity-45', label: NOT_MEASURED_LABEL, className: 'text-xs text-[var(--text-primary)]' }] : []),
+      ]} />
+    </>
+  );
   if (variant === 'one') return (
     <div className={`${MAP_BADGE} min-h-8 max-w-full flex-wrap gap-x-3 gap-y-1.5 py-1.5`} role="group" aria-label={MAP_COLOURS_LABEL}>
       <span className="whitespace-nowrap text-xs font-bold leading-none text-[var(--text-secondary)]">{measureLabel(measure)}{KEY_DEFINITION[measure] && <span className="font-normal text-[var(--text-muted)]"> · {KEY_DEFINITION[measure]}</span>}</span>

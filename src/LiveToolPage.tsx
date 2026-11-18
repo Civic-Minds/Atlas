@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadingText, ATLAS_BYLINE, LOADING_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from './content/noticeCopy';
+import { loadingText, ATLAS_BYLINE, LOADING_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION, MAP_COLOURS_LABEL } from './content/noticeCopy';
 import RouteRowName from './components/RouteRowName';
 import { routeLabels } from './utils/format';
 import { createPortal } from 'react-dom';
@@ -22,6 +22,7 @@ import { DIRECTION_LABEL, GROWS_LABEL, LATE_STOPS_TITLE, TIME_OF_DAY_LABEL, excl
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, MapPillGroup, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
+import { MapLegendCard } from './components/ui/MapLegendCard';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { TYPICAL_ADDED, timeLostLine } from '../shared/liveWording';
 import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
@@ -204,7 +205,6 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   const mapEl = (
     <MapAppMap
       layer={{ kind: 'segments', model, measure, heat }} selected={pick} anchor={anchor} card={card} padding={framePadding(wide ? MAP_APP_PADDING.wide : MAP_APP_PADDING.narrow, noteH)}
-      controlsRight={12}
       onPick={p => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); }}
       frameKey={ready && route ? `route-${ready.route}-${noteH}` : `network-${network.size === routes.length ? 'all' : 'loading'}`}
     />
@@ -223,9 +223,9 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
   const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />;
-  // The measures sit in the top bar with the other switchers; the map key is one pill at the map's top left (CIV-1732).
+  // The measures sit in the top bar with the other switchers; the map key sits in the regular map's key card and slot (CIV-1821).
   const measureBar = measureSlot ? createPortal(<MeasurePills measure={measure} setMeasure={setMeasure} />, measureSlot) : null;
-  const mapOverlay = <><div className="pointer-events-auto absolute left-0 top-0 max-w-full"><LiveMapKey measure={measure} variant="one" /></div>{note}</>;
+  const mapOverlay = <><MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>{note}</>;
   // Narrow screens: the map on top, the widgets under it; the page scrolls, no panel does.
   return (
     <MapAppLayout

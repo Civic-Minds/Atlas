@@ -1,6 +1,7 @@
 import { dayInSentence, dayPlural, type DayType } from './dayTypes.js';
 import { TIME_PERIODS, type PeriodKey } from './config.js';
 import { clockTime, timeRange } from './timeText.js';
+import { DAY_TYPES, SHORT_DAY_LABELS } from './rules/days.js';
 
 export type OnDemandPeriod = 'all' | PeriodKey;
 export interface OnDemandHours {
@@ -35,7 +36,6 @@ export function isOnDemandActive(
   );
 }
 
-const DAY_TYPE_ORDER: readonly DayType[] = ['Weekday', 'Saturday', 'Sunday'];
 
 /** How riders are picked up, stated only where the agency's data says so. */
 export type OnDemandPickupMethod = 'door-to-door' | 'curb-to-curb' | 'virtual-stops' | 'fixed-stops' | 'connection-points' | 'transfer-point-trips';
@@ -301,7 +301,7 @@ export function formatOnDemandHoursLines(availability: OnDemandAvailability | un
   // A separate Friday splits the weekday row into Mon–Thu and Fri (#1440); without one, rows read as before.
   if (availability.Friday) return formatHoursLinesWithFriday(availability);
   const groups = new Map<string, DayType[]>();
-  for (const day of DAY_TYPE_ORDER) {
+  for (const day of DAY_TYPES) {
     const windows = availability[day];
     if (!windows) continue;
     groups.set(windowsKey(windows), [...(groups.get(windowsKey(windows)) ?? []), day]);
@@ -324,7 +324,6 @@ function hoursLine(key: string, dayTypes: DayType[], label: string, windows: rea
 }
 
 /** Days of the week in order, Monday first, and the short names a run of them reads as ("Fri–Sat"). */
-const WEEK_DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 const FRIDAY_SLOTS = [
   { slot: 'Weekday', dayType: 'Weekday', days: [0, 1, 2, 3] },
   { slot: 'Friday', dayType: 'Weekday', days: [4] },
@@ -341,7 +340,7 @@ function weekDaysLabel(days: readonly number[]): string {
     if (run && run[run.length - 1] === day - 1) run.push(day); else runs.push([day]);
   }
   if (sorted.length === 7) return 'Daily';
-  return runs.map(run => run.length === 1 ? WEEK_DAY_NAMES[run[0]] : `${WEEK_DAY_NAMES[run[0]]}–${WEEK_DAY_NAMES[run[run.length - 1]]}`).join(', ');
+  return runs.map(run => run.length === 1 ? SHORT_DAY_LABELS[run[0]] : `${SHORT_DAY_LABELS[run[0]]}–${SHORT_DAY_LABELS[run[run.length - 1]]}`).join(', ');
 }
 
 function formatHoursLinesWithFriday(availability: OnDemandAvailability): OnDemandHoursLine[] {

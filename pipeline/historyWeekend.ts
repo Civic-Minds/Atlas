@@ -17,6 +17,7 @@ import type { GtfsCalendar, GtfsCalendarDate } from '../types/gtfs.js';
 import type { HistoryDayValue } from '../shared/historyV2.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import { periodsOf } from './historyRoutePeriods.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 export type WeekendDayName = 'Saturday' | 'Sunday';
 
@@ -46,7 +47,6 @@ export interface FeedEvidence {
   descByKey?: Map<string, string>;
 }
 
-const DOW_FIELDS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 const DAY_INDEX: Record<WeekendDayName, number> = { Sunday: 0, Saturday: 6 };
 
 function toDate(ymd: string): Date {
@@ -91,7 +91,7 @@ export function computeFeedEvidence(rows: FeedRows, opts: EvidenceOptions = {}):
     if (!servicesByKey.has(key)) servicesByKey.set(key, new Set());
     servicesByKey.get(key)!.add(t.service_id);
   }
-  const calendar = realCalendar.filter(c => allServices.has(c.service_id) && DOW_FIELDS.some(f => c[f] === '1'));
+  const calendar = realCalendar.filter(c => allServices.has(c.service_id) && CALENDAR_DAY_FIELDS_SUNDAY_FIRST.some(f => c[f] === '1'));
   if (!opts.routeDesc) return { refDate, calendar, calendarDates, servicesByKey, allServices };
   const descByKey = new Map<string, string>();
   for (const r of rows.routes) {
@@ -131,7 +131,7 @@ export async function readFeedEvidence(buf: Buffer, opts: EvidenceOptions = {}):
 
 /** Do any of `services` run on `day` according to calendar.txt, for this reference week? */
 function servicesFlagDay(ev: FeedEvidence, services: Set<string>, dayIdx: number, dates: string[], anchors: string[]): boolean {
-  const field = DOW_FIELDS[dayIdx];
+  const field = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[dayIdx];
   for (const c of ev.calendar) {
     if (!services.has(c.service_id) || c[field] !== '1') continue;
     if (c.start_date === c.end_date) {

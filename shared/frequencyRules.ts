@@ -26,6 +26,11 @@ const FINER_TIER_MAXES = [5, 8];
 /** INTERNAL: the one grading scale, every mode: the release gate, TIER_RANK, the near-miss shares, audits. */
 export const TIER_MAXES: number[] = [...FINER_TIER_MAXES, ...PUBLIC_TIER_MAXES];
 
+/** A headway's grade on a scale: the first grade at or above it, or null past the last (Infrequent). */
+export function headwayGradeOn(headway: number, tiers: readonly number[]): number | null {
+  return tiers.find(t => headway <= t) ?? null;
+}
+
 /** The public grade a tier counts as: the next public grade at or above it (5 and 8 count as 10). */
 export function publicTierOf(tier: number): number | null {
   return PUBLIC_TIER_MAXES.find(t => tier <= t) ?? null;

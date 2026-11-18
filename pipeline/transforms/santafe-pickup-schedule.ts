@@ -1,4 +1,5 @@
 import type { GtfsCalendar, GtfsCalendarDate, GtfsData, GtfsStopTime, GtfsTrip } from '../../types/gtfs.js';
+import { CALENDAR_DAY_FIELDS } from '../../shared/rules/days.js';
 
 /**
  * Santa Fe Pick-Up shuttle (santafetrails, #1076). The city's published schedule runs it every
@@ -32,7 +33,6 @@ const FILL_UNTIL = minutes('17:00:00');
 const STEP = 30;
 const SERVICE_SUFFIX = '::sfpu-weekend';
 const TRIP_PREFIX = 'sfpu15-';
-const WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 
 const shift = (time: string | undefined, offset: number): string | undefined => {
   if (!time) return time;
@@ -53,7 +53,7 @@ export function addSantaFePickUpWeekendFrequency(gtfs: GtfsData): { gtfs: GtfsDa
   const serviceId = [...serviceIds][0];
   if (gtfs.calendar.some(c => c.service_id === `${serviceId}${SERVICE_SUFFIX}`)) return unchanged;
   const calendarRows = gtfs.calendar.filter(c => c.service_id === serviceId);
-  if (calendarRows.length !== 1 || !WEEK.every(day => calendarRows[0][day] === '1')) return unchanged;
+  if (calendarRows.length !== 1 || !CALENDAR_DAY_FIELDS.every(day => calendarRows[0][day] === '1')) return unchanged;
 
   const tripIds = new Set(trips.map(t => t.trip_id));
   const stopTimesByTrip = new Map<string, GtfsStopTime[]>();

@@ -119,10 +119,16 @@ describe('Studio map page (CIV-1731)', () => {
     expect(periodChange(d({ evening: 30 }), d({}), 'evening')).toBe('less');
   });
 
-  it('shows the time of day\'s figure, older → newer where it changed', () => {
-    expect(rowFigure(change('10'), 'midday')).toBe('60 min → 30 min');
-    expect(rowFigure(change('10'), 'amPeak')).toBe('30 min');
-    expect(rowFigure(change('7B'), 'evening')).toBe('96 min → —');
+  it('shows the figure that changed, older and newer in their own columns (CIV-1806)', () => {
+    // The time of day's frequency where it changed, or where the route was removed: no name, the date columns say it.
+    expect(rowFigure(change('10'), 'midday')).toEqual({ label: null, before: '60 min', after: '30 min' });
+    expect(rowFigure(change('7B'), 'evening')).toEqual({ label: null, before: '96 min', after: '—' });
+    // Unchanged at this time of day: the figure that did change, named, never the unchanged one.
+    expect(rowFigure(change('10'), 'amPeak')).toEqual({ label: 'Midday', before: '60 min', after: '30 min' });
+    // A first or last trip or trip time row shows that figure, not the frequency.
+    const hours = rowFigure(change('2'), 'midday');
+    expect(hours.label).toMatch(/^(First trip|Last trip|Trip time)$/);
+    expect(hours.before).not.toBe(hours.after);
   });
 
   it('draws newer shapes, a removed route\'s older one dashed, and the picked route\'s older shape under it', () => {

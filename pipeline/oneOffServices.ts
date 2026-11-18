@@ -17,11 +17,10 @@
 import type { GtfsCalendar, GtfsCalendarDate, GtfsData } from '../types/gtfs.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { isSynthesizedCalendar } from './transit-calendar.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 /** A service on this many dates or fewer is one-off. */
 export const MAX_ONE_OFF_DATES = 2;
-
-const DOW_FIELDS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
 
 function ymdToUtc(ymd: string): number {
   return Date.UTC(Number(ymd.slice(0, 4)), Number(ymd.slice(4, 6)) - 1, Number(ymd.slice(6, 8)));
@@ -50,7 +49,7 @@ export function serviceDates(calendar: GtfsCalendar[] | undefined, calendarDates
     if (!/^\d{8}$/.test(row.start_date ?? '') || !/^\d{8}$/.test(row.end_date ?? '')) continue;
     const end = ymdToUtc(row.end_date);
     for (let t = ymdToUtc(row.start_date); t <= end; t += 86_400_000) {
-      if (row[DOW_FIELDS[new Date(t).getUTCDay()]] === '1') set.add(utcToYmd(t));
+      if (row[CALENDAR_DAY_FIELDS_SUNDAY_FIRST[new Date(t).getUTCDay()]] === '1') set.add(utcToYmd(t));
     }
   }
   for (const row of calendarDates ?? []) {

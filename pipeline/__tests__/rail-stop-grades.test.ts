@@ -25,7 +25,7 @@ describe('rail stop grades (#756)', () => {
     const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.directionId === 0);
     // The stop grade is the rail rule's every-gap grade of the midday window, never better than
     // the typical wait: the trunk runs every 8 on Saturday and every 8 with 9 to 11-minute gaps
-    // on Sunday (10), and each branch every 16 (30 on the rail scale).
+    // on Sunday (10), and each branch every 16 (20 since CIV-1813: one scale for every mode, which has a 20).
     for (const [day, trunk] of [['Saturday', '8'], ['Sunday', '10']] as const) {
       const mvs = rows.find((p: any) => p.day === day && p.headsign === 'Mount Vernon Square');
       const gb = rows.find((p: any) => p.day === day && p.headsign === 'Greenbelt');
@@ -35,8 +35,8 @@ describe('rail stop grades (#756)', () => {
       expect(new Set(Object.values(mvs.stopTiers))).toEqual(new Set([trunk]));
       const gbTiers = gb.stopOrder.map((s: string) => gb.stopTiers[s] ?? null);
       expect(gbTiers.slice(0, 26).every((t: string) => t === trunk)).toBe(true);
-      expect(gbTiers.slice(26).every((t: string) => t === '30')).toBe(true);
-      // The client colours the trunk at the trunk's grade on both rows against their route tier of 30.
+      expect(gbTiers.slice(26).every((t: string) => t === '20')).toBe(true);
+      // The client colours the trunk at the trunk's grade on both rows against their route tier of 20.
       expect(sectionRuns(mvs.stopOrder.map((s: string) => mvs.stopTiers[s] ?? null), mvs.tier)[0]).toMatchObject({ from: 0, to: 25, tier: trunk });
       expect(sectionRuns(gbTiers, gb.tier)[0]).toMatchObject({ from: 0, to: 25, tier: trunk });
     }

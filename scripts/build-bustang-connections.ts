@@ -23,6 +23,7 @@ import { connectionWaits, countsAsConnection, departuresWithin, distanceMeters, 
 import type { StopEvent } from '../pipeline/connectionTimetables.js';
 import { agencyShortLabel } from '../shared/agencyPages.js';
 import { effectiveFeedExpiry, todayUtcYmd } from '../shared/feedAvailability.js';
+import { DAY_TYPES, DAYS_SUNDAY_FIRST, type DayType } from '../shared/rules/days.js';
 
 const arg = (name: string): string | undefined => {
   const i = process.argv.indexOf(name);
@@ -83,20 +84,17 @@ async function zipFor(c: AgencyConfig): Promise<Buffer> {
 }
 
 const displayName = (c: AgencyConfig) => c.officialName ?? c.slug;
-const DAY_TYPES = [
-  { key: 'Weekday', dow: 3 },
-  { key: 'Saturday', dow: 6 },
-  { key: 'Sunday', dow: 0 },
-] as const;
+/** Each day type read on one sample day: a Wednesday for weekdays. */
+const DAY_SAMPLES = DAY_TYPES.map(key => ({ key, dow: key === 'Weekday' ? 3 : DAYS_SUNDAY_FIRST.indexOf(key) }));
 
 const hubFeed = await loadConnectionFeed(await zipFor(hub), hub);
 const hubExpiry = effectiveFeedExpiry(hub);
 const start = addDaysYmd(FROM, 1);
-const dates = Object.fromEntries(DAY_TYPES.map(d => [d.key, nextDateWithDow(start, d.dow)])) as Record<(typeof DAY_TYPES)[number]['key'], string>;
+const dates = Object.fromEntries(DAY_SAMPLES.map(d => [d.key, nextDateWithDow(start, d.dow)])) as Record<DayType, string>;
 // The hub's own schedule is read the same way as a local one: past its end, its last same-weekday timetable
 // (labelled outdated on the page), never a date it doesn't cover.
-const hubReadDates = Object.fromEntries(DAY_TYPES.map(d => [d.key, readDateFor(hubFeed, dates[d.key], hubExpiry)])) as typeof dates;
-for (const { key } of DAY_TYPES) {
+const hubReadDates = Object.fromEntries(DAY_SAMPLES.map(d => [d.key, readDateFor(hubFeed, dates[d.key], hubExpiry)])) as typeof dates;
+for (const { key } of DAY_SAMPLES) {
   if (!runsOn(hubFeed, hubReadDates[key])) console.warn(`${hub.slug} has no service on ${key} ${hubReadDates[key]}`);
 }
 
@@ -138,7 +136,7 @@ for (const [groupId, hubStops] of groups) {
   const agenciesWithin = Object.fromEntries(NEARBY_CHOICES.map(m => [m, agenciesHere
     .filter(a => nearby.some(n => n.agency === a && n.distanceM <= m)).map(a => a.config.slug)]));
   const days: Record<string, unknown> = {};
-  for (const { key } of DAY_TYPES) {
+  for (const { key } of DAY_SAMPLES) {
     const hubDate = hubReadDates[key];
     const hubEvents = hubFeed.eventsOn(hubDate, new Set(hubStops.map(s => s.stopId)));
     const arrivals: HubArrival[] = hubEvents.filter(e => e.canAlight).map(e => ({ time: Math.round(e.arrival), routeName: e.routeName }));
@@ -222,7 +220,7 @@ function sideWaits(time: number, local: LocalDeparture[], side: 'after' | 'befor
   });
 }
 const tripsOut: Record<string, unknown[]> = {};
-for (const { key } of DAY_TYPES) {
+for (const { key } of DAY_SAMPLES) {
   const events = hubFeed.eventsOn(hubReadDates[key], new Set([...stopOfHubStop.keys()]));
   const byTrip = new Map<string, StopEvent[]>();
   for (const e of events) byTrip.set(e.tripId, [...(byTrip.get(e.tripId) ?? []), e]);

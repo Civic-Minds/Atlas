@@ -35,6 +35,7 @@ import { LIVE_DASHBOARD_UNCERTAIN_START } from '../shared/liveDashboard.js';
 import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
+import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -249,7 +250,6 @@ for (const feed of FEEDS) {
   for (const c of existsSync(join(feed.dir, 'calendar_dates.txt')) ? readCsv(join(feed.dir, 'calendar_dates.txt')) : []) calDates.push({ ...c, service_id: prefixedId(FEEDS, feed, c.service_id), _feed: feed.key });
 }
 const routeServices = new Set(trips.map(t => t.service_id));
-const DOW = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 function activeServices(date: string): string[] | null {
   const ymd = date.replace(/-/g, '');
   const feed = MULTI ? feedForDate(FEEDS, date) : null;
@@ -258,7 +258,7 @@ function activeServices(date: string): string[] | null {
   const exceptions = feed ? calDates.filter(c => c._feed === feed.key) : calDates;
   // Covered by a calendar row spanning the date, or by service added on it (the same rule as readFeedCoverage).
   if (!cal.some(c => c.start_date <= ymd && c.end_date >= ymd) && !exceptions.some(c => c.date === ymd && c.exception_type === '1')) return null;
-  const dow = DOW[new Date(`${date}T12:00:00Z`).getUTCDay()];
+  const dow = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[new Date(`${date}T12:00:00Z`).getUTCDay()];
   const on = new Set(cal.filter(c => c.start_date <= ymd && c.end_date >= ymd && c[dow] === '1').map(c => c.service_id));
   for (const cd of exceptions) {
     if (cd.date !== ymd) continue;

@@ -1,4 +1,5 @@
 import { effectiveMode, knownModeLabel, sortModes } from '../../shared/modes';
+import { ROUTE_TYPE } from '../../shared/rules/modes';
 
 /**
  * The mode chips over an agency's route list, one builder for every list that has them: the map's agency card and
@@ -25,7 +26,7 @@ export interface RouteModeFilter {
 
 export function routeModeFilterLabel(route: RouteModeFilterRoute): string | null {
   const mode = effectiveMode(route);
-  return mode === 3 ? null : knownModeLabel(mode);
+  return mode === ROUTE_TYPE.BUS ? null : knownModeLabel(mode);
 }
 
 export function buildRouteModeFilters(routes: RouteModeFilterRoute[]): RouteModeFilter[] {

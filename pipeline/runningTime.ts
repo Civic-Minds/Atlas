@@ -12,8 +12,9 @@ import type { DayName, GtfsData, GtfsRoute } from '../types/gtfs.js';
 import { SPARKLINE_HOURS, TIME_PERIODS, type PeriodKey } from '../shared/config.js';
 import { expandTripFrequencyWindows, parseFrequencyWindow, t2m, type FrequencyWindow } from './transit-utils.js';
 import { pickRepresentativeWeekday } from './representativeWeekday.js';
+import { WEEKDAYS, type DayType } from '../shared/rules/days.js';
 
-export type RunningTimeDayType = 'Weekday' | 'Saturday' | 'Sunday';
+export type RunningTimeDayType = DayType;
 
 export interface RunningTimeRange {
   median: number;
@@ -29,7 +30,6 @@ export interface RunningTimeSummary {
   loop?: true;
 }
 
-const WEEKDAY_NAMES: readonly DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const MIN_TRIPS = 2;
 /** A scheduled trip longer than this is treated as bad data, not a real run. */
 const MAX_TRIP_MINUTES = 600;
@@ -222,8 +222,8 @@ export function computeRunningTimes(
     const servicesOn = (day: DayName) => activeServiceIdsByCalendarDay.get(day) ?? new Set<string>();
     const runsOn = (day: DayName) => full.filter(run => servicesOn(day).has(run.serviceId));
     // Weekday: the same representative weekday rule the Weekday stop data uses.
-    const weekdayRuns = WEEKDAY_NAMES.map(runsOn);
-    const routeWeekdays = WEEKDAY_NAMES.filter(day => list.some(run => servicesOn(day).has(run.serviceId))).length;
+    const weekdayRuns = WEEKDAYS.map(runsOn);
+    const routeWeekdays = WEEKDAYS.filter(day => list.some(run => servicesOn(day).has(run.serviceId))).length;
     const weekdayIndex = pickRepresentativeWeekday(weekdayRuns.map(r => r.length), routeWeekdays >= 3);
     const days: [RunningTimeDayType, TripRun[]][] = [
       ['Saturday', runsOn('Saturday')],

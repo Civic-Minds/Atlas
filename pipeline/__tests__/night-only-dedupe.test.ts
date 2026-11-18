@@ -44,12 +44,12 @@ describe('feature dedupe between a daytime and a night-only pattern', () => {
     // Real TTC fresh feed (20261031), route 320, Sunday service 3 only, shapes thinned. Southbound
     // to Queens Quay runs every 5 overnight (shapes 1122411/1122412, 25:12-27:27) and shape
     // 1122410 adds 31 trips 03:47-07:52 that reach the AM peak but never the midday. The night
-    // route keeps its overnight pattern (5, tier 10); before the rule was limited to patterns
+    // route keeps its overnight pattern (5, tier 5 inside, read as 10 since CIV-1813's one scale); before the rule was limited to patterns
     // with midday service, the morning trips took the slot (6, infrequent).
     const result = await processGtfsBuffer(await fixtureZip('ttc-320-sunday-night'), undefined, { slug: 'ttc' });
     const queensQuay = JSON.parse(result.geojson).features
       .map((feature: any) => feature.properties)
       .find((p: any) => p.routeId === '320' && p.day === 'Sunday' && p.directionId === 0 && p.stopId == null);
-    expect([queensQuay.headway, queensQuay.tier]).toEqual([5, '10']);
+    expect([queensQuay.headway, queensQuay.tier]).toEqual([5, '5']);
   });
 });

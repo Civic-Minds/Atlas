@@ -1,5 +1,6 @@
 import type { GtfsData, GtfsShape } from '../../types/gtfs.js';
 import { haversineDistance } from '../utils.js';
+import { ROUTE_TYPE } from '../../shared/rules/modes.js';
 
 const SAMPLE_COUNT = 24;
 const MAX_SAMPLE_DISTANCE_METERS = 25;
@@ -78,7 +79,7 @@ export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes
     if (!trip.shape_id || !shapeById.has(trip.shape_id)) continue;
     const route = routeById.get(trip.route_id);
     if (!route) continue;
-    const merges = options.routeTypes ? options.routeTypes.includes(route.route_type) : options.allModes || route.route_type === '0';
+    const merges = options.routeTypes ? options.routeTypes.includes(route.route_type) : options.allModes || route.route_type === String(ROUTE_TYPE.TRAM);
     if (!merges) continue;
     const groupKey = `${trip.route_id}::${trip.direction_id ?? '0'}::${trip.trip_headsign ?? ''}`;
     let shapeIds = groups.get(groupKey);

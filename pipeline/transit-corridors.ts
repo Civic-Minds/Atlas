@@ -2,6 +2,7 @@ import { GtfsData, CorridorResult, DayName } from '../types/gtfs';
 import { t2m } from './transit-utils';
 import { getActiveServiceIds } from './transit-calendar';
 import { readWeekOf } from './readWeek';
+import { WEEKDAYS } from '../shared/rules/days';
 
 /**
  * Identifies shared road segments (links) between consecutive stops and
@@ -21,7 +22,7 @@ export const calculateCorridors = (
         : readWeekOf(gtfs);
 
     const dayNames: DayName[] = day === 'Weekday'
-        ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        ? WEEKDAYS
         : day === 'Saturday' ? ['Saturday'] : ['Sunday'];
 
     const activeServiceIds = new Set<string>();

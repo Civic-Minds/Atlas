@@ -2,6 +2,7 @@ import './pipelineTimeZone.js';
 import { GtfsCalendar, GtfsCalendarDate, DayName } from '../types/gtfs';
 import { DAY_FIELD_MAP } from './transit-utils';
 import { runNow } from '../shared/runClock';
+import { ALL_DAYS, CALENDAR_DAY_FIELDS, CALENDAR_DAY_FIELDS_SUNDAY_FIRST, DAYS_SUNDAY_FIRST } from '../shared/rules/days';
 
 /**
  * Auto-detect a reference date from the feed's calendar data.
@@ -245,7 +246,7 @@ export function detectReferenceDate(
                 const date = addDaysYmd(ref, k);
                 const removed = removalsByDate.get(date);
                 if (!removed) continue;
-                const field = DOW_FIELDS[ymdToDate(date).getDay()];
+                const field = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[ymdToDate(date).getDay()];
                 const running = bestGroup.filter(c => c[field] === '1');
                 if (running.length > 0 && running.every(c => removed.has(c.service_id))) return false;
             }
@@ -280,7 +281,7 @@ export function detectReferenceDate(
             for (let k = -3; k <= 3; k++) {
                 const date = addDaysYmd(ref, k);
                 if (oneDayDates.has(date)) return false;
-                const field = DOW_FIELDS[ymdToDate(date).getDay()];
+                const field = CALENDAR_DAY_FIELDS_SUNDAY_FIRST[ymdToDate(date).getDay()];
                 const running = multiDay.filter(c => c[field] === '1' && c.start_date <= date && date <= c.end_date);
                 // getActiveServiceIds reads calendar.txt ranges at the reference itself, so a day
                 // with a running service whose block does not cover the reference (Calgary's
@@ -320,7 +321,7 @@ export function detectReferenceDate(
         // by calendar_dates additions): getActiveServiceIds admits those by a ±90-day occurrence
         // count, so near the run date a school-holiday block later in the window pools with the
         // term timetable (Auch, cal2-43). They keep the midpoint.
-        const hasPlaceholderServices = effectiveCalendar.some(c => DOW_FIELDS.every(f => c[f] !== '1'));
+        const hasPlaceholderServices = effectiveCalendar.some(c => CALENDAR_DAY_FIELDS_SUNDAY_FIRST.every(f => c[f] !== '1'));
         const calendarRef = periodRunning && !hasPlaceholderServices && !typicalWeek(midpointRef) ? nearRunRef() : midpointRef;
         const mid = ymdToDate(calendarRef);
 
@@ -473,14 +474,14 @@ function outsideHolidayWeek(
     if (!trips || trips.length === 0 || !isSynthesizedCalendar(calendar, calendarDates)) return ref;
     const tripsByService = new Map<string, number>();
     for (const t of trips) tripsByService.set(t.service_id, (tripsByService.get(t.service_id) ?? 0) + 1);
-    const tripsByDay = (date: string): number[] => ALL_DAY_NAMES.map(day => {
+    const tripsByDay = (date: string): number[] => ALL_DAYS.map(day => {
         let n = 0;
         for (const id of getActiveServiceIds(calendar, calendarDates ?? [], day, date)) n += tripsByService.get(id) ?? 0;
         return n;
     });
     const weeks = new Map<number, number[]>();
     for (let k = -HOLIDAY_WEEK_WINDOW; k <= HOLIDAY_WEEK_WINDOW; k++) weeks.set(k, tripsByDay(addDaysYmd(ref, 7 * k)));
-    const busiest = ALL_DAY_NAMES.map((_, i) => Math.max(...[...weeks.values()].map(w => w[i])));
+    const busiest = ALL_DAYS.map((_, i) => Math.max(...[...weeks.values()].map(w => w[i])));
     const thin = (k: number) => weeks.get(k)!.some((n, i) => busiest[i] > 0 && n < busiest[i] * HOLIDAY_WEEK_TRIP_SHARE);
     if (!thin(0)) return ref;
     for (let k = 1; k <= HOLIDAY_WEEK_WINDOW; k++) {
@@ -510,8 +511,7 @@ function outsideHolidayWeek(
  * weekday's own exceptions whenever referenceDate lands on a different day.
  */
 function nearestDateForDayName(referenceDate: string, day: DayName): string {
-    const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const targetDow = DOW_NAMES.indexOf(day);
+    const targetDow = DAYS_SUNDAY_FIRST.indexOf(day);
     const ry = parseInt(referenceDate.substring(0, 4));
     const rm = parseInt(referenceDate.substring(4, 6)) - 1;
     const rd = parseInt(referenceDate.substring(6, 8));
@@ -523,7 +523,6 @@ function nearestDateForDayName(referenceDate: string, day: DayName): string {
     return `${result.getFullYear()}${String(result.getMonth() + 1).padStart(2, '0')}${String(result.getDate()).padStart(2, '0')}`;
 }
 
-const DOW_FIELDS: Array<keyof GtfsCalendar> = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 function ymdToDate(ymd: string): Date {
     return new Date(parseInt(ymd.substring(0, 4)), parseInt(ymd.substring(4, 6)) - 1, parseInt(ymd.substring(6, 8)));
@@ -537,7 +536,6 @@ function addDaysYmd(ymd: string, days: number): string {
 
 /** Same-weekday dates looked at on each side of the reference week. */
 const TYPICAL_WINDOW_WEEKS = 4;
-const ALL_DAY_NAMES: DayName[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 interface RepresentativeWeek {
     /** Days added to every day's nearest date to reach the representative week (multiple of 7). */
@@ -599,7 +597,7 @@ function representativeWeek(
     };
     const insideAll = (info: DayInfo, date: string) => info.ranges.every(r => date >= r.start && date <= r.end);
 
-    for (const day of ALL_DAY_NAMES) {
+    for (const day of ALL_DAYS) {
         const field = DAY_FIELD_MAP[day];
         const rangeById = new Map<string, { id: string; start: string; end: string }>();
         for (const c of calendar) {
@@ -672,9 +670,8 @@ export function getActiveServiceIds(
     // Only services with at least one active day-of-week block Step 2.
     // All-zero placeholder entries (Wellington Metlink pattern) are treated
     // as calendar_dates-only so their exception_type=1 dates are processed.
-    const DOW_FIELDS: (keyof GtfsCalendar)[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     const calendarServiceIds = new Set(
-        calendar.filter(c => DOW_FIELDS.some(f => c[f] === '1')).map(c => c.service_id)
+        calendar.filter(c => CALENDAR_DAY_FIELDS.some(f => c[f] === '1')).map(c => c.service_id)
     );
 
     // Step 1: calendar.txt — two passes, same logic as Step 2's holiday handling.
@@ -689,14 +686,13 @@ export function getActiveServiceIds(
     //   nothing — otherwise the holiday trips get merged with the regular weekday
     //   pool, halving the apparent headway (Burlington Route 1: 30m→10m).
     const singleDayCalEntries: GtfsCalendar[] = [];
-    const DOW_NAMES_B: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     for (const cal of calendar) {
         if (cal[field] !== '1') continue;
         if (cal.start_date === cal.end_date) {
             // A one-day service only counts for the weekday its date falls on: a holiday row
             // flagged for every day of the week (Burlington's Victoria Day Monday) must not
             // answer a Saturday query (#744).
-            if (DOW_NAMES_B[ymdToDate(cal.start_date).getDay()] !== day) continue;
+            if (DAYS_SUNDAY_FIRST[ymdToDate(cal.start_date).getDay()] !== day) continue;
             if (referenceDate) {
                 const sy = parseInt(cal.start_date.substring(0, 4)), sm = parseInt(cal.start_date.substring(4, 6)) - 1, sd = parseInt(cal.start_date.substring(6, 8));
                 const ry = parseInt(referenceDate.substring(0, 4)), rm = parseInt(referenceDate.substring(4, 6)) - 1, rd = parseInt(referenceDate.substring(6, 8));
@@ -821,7 +817,6 @@ export function getActiveServiceIds(
     //      replacements like Thanksgiving/Christmas/New Year's (gaps: 28,7).
     const MIN_OCCURRENCES = 4;
     const MIN_WEEKLY_OCCURRENCES = 3;
-    const DOW_NAMES: DayName[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const candidateDates = new Map<string, number[]>();
     const addedOnHoliday = new Set<string>();
     const addedOnTypical = new Set<string>();
@@ -846,7 +841,7 @@ export function getActiveServiceIds(
         const y = parseInt(cd.date.substring(0, 4));
         const m = parseInt(cd.date.substring(4, 6)) - 1;
         const d = parseInt(cd.date.substring(6, 8));
-        if (DOW_NAMES[new Date(y, m, d).getDay()] === day) {
+        if (DAYS_SUNDAY_FIRST[new Date(y, m, d).getDay()] === day) {
             const ts = new Date(y, m, d).getTime();
             const existing = candidateDates.get(cd.service_id) ?? [];
             existing.push(ts);
