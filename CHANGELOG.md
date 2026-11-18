@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
 - **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views
 - **The agency list and Live use plain words instead of internal terms**: "GTFS schedule feeds", "Linked", "Near a limit" and similar labels read as jargon to planners

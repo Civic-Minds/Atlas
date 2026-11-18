@@ -3,7 +3,7 @@
  * like the area pages (shared/areaPages.ts) with the place swapped. Every number is added up from the per-agency
  * summaries; nothing new is measured.
  */
-import { agencyPlaces, agencyStats, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, type AgencyPageSummary } from './agencyPages';
+import { agencyPlaces, agencyStats, areaAgencySummaries, areaPageStatus, formatIso, regionMembers, regionRushHourOnly, type AgencyPageSummary } from './agencyPages';
 import { AREA_INDEX } from './areaIndex';
 import { areaRegionName } from './areaRegions';
 import { countryForRegion } from './regionCountry';
@@ -162,7 +162,7 @@ export function buildRegionPageData(region: RegionRef, all: readonly AgencyPageS
     region: { ...region, kind: regionKind(region.country, region.name) },
     areas: regionAreas(region, all),
     bbox,
-    ...withAllRoutes(agencyGroupData(members, new Map(all.map(a => [a.slug, a])), releaseDate), all),
+    ...withAllRoutes(agencyGroupData(members, new Map(all.map(a => [a.slug, a])), releaseDate, regionRushHourOnly(region.country, region.name, all)), all),
   };
 }
 

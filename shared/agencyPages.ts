@@ -476,6 +476,29 @@ export function hasMiddayService(a: { routes: ReadonlyArray<{ midday: number | n
 }
 
 /**
+ * CIV-1814 item 15 (Ryan "1", 2026-11-17): an agency with no regular weekday midday service that runs only at rush hour:
+ * its routes run in the morning or afternoon peak and nowhere else in the weekday (no midday cadence, no evening or
+ * overnight trips). Area and state pages name these in their own line (VRE in Washington, DC and Virginia); their
+ * figures and counts stay midday-based (hasMiddayService). The one place this rule is written.
+ */
+export function rushHourOnlyAgency(a: { routes: ReadonlyArray<Pick<AgencyPageRoute, 'am' | 'midday' | 'pm' | 'evening' | 'overnight' | 'limited' | 'noRegular'>> }): boolean {
+  if (hasMiddayService(a)) return false;
+  const periods = new Set<string>();
+  for (const r of a.routes) {
+    for (const k of ['am', 'midday', 'pm', 'evening', 'overnight'] as const) {
+      if (r[k] != null || r.limited?.includes(k) || r.noRegular?.includes(k)) periods.add(k);
+    }
+  }
+  return periods.size > 0 && [...periods].every(k => k === 'am' || k === 'pm');
+}
+
+/** The rush-hour-only agencies (rushHourOnlyAgency) whose routes stop in a state or province, by the state pages' rule (agencyPlaces). */
+export function regionRushHourOnly<T extends Pick<AgencyPageSummary, 'region' | 'routes'>>(country: string, region: string, all: readonly T[]): T[] {
+  if (countryForRegion(region) !== country) return [];
+  return all.filter(a => rushHourOnlyAgency(a) && agencyPlaces(a).regions.some(r => r.name === region));
+}
+
+/**
  * The agencies a state or province page lists (CIV-976), with the area pages' rule (hasMiddayService): every agency
  * whose routes stop in it (agencyPlaces, #1283), each with only the routes counted there, as on the area pages.
  * The one place this rule is written; a state or province with none has no page.
@@ -536,6 +559,13 @@ export function areaAgencySummaries(area: { slug: string; agencies: readonly str
     if (routes.length > 0) out.push({ ...a, routes, routeCount: routes.length });
   }
   return withParents(out, all.values());
+}
+
+/** The rush-hour-only agencies (rushHourOnlyAgency) in an area, by the area pages' rule (areaAgencySummaries). */
+export function areaRushHourOnly(area: { slug: string; agencies: readonly string[] }, all: ReadonlyMap<string, AgencyPageSummary>, betaBuild: boolean = BETA_BUILD): AgencyPageSummary[] {
+  const tagged = [...all.values()].some(a => a.routes.some(r => r.areas !== undefined));
+  return [...all.values()].filter(a => !(a.betaOnly && !betaBuild) && rushHourOnlyAgency(a)
+    && (tagged ? agencyPlaces(a).areas.some(x => x.slug === area.slug) : area.agencies.includes(a.slug)));
 }
 
 /** Ryan (2026-11-01): an area page needs at least two agencies; with one, its URL redirects to that agency's page. */
