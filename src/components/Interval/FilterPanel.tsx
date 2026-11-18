@@ -617,7 +617,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         )}
                         {id === 'quality' && (
                           <ArrowLink as="button" tone="inline" size="xs" onClick={() => setView('degraded-feeds')} className="mt-1">
-                            See all degraded {plural(hiddenFeedAgencies.length, 'feed')}
+                            {/* CIV-1814 item 30: the list's own title (Ryan's words), with its count. */}
+                            {DATA_QUALITY_AGENCIES_TITLE}
                             {hiddenFeedAgencies.length ? ` (${countText(hiddenFeedAgencies.length)})` : ''}
                           </ArrowLink>
                         )}
