@@ -200,6 +200,17 @@ export const parsePeriod = (period: unknown): PeriodKey | null => {
   return PERIOD_KEYS.find(k => k.toLowerCase() === q || PERIOD_LABELS[k].toLowerCase().replace(/\s/g, '') === q) ?? null;
 };
 
+/**
+ * Other routes of the agency with the same long name as this one (TTC 510 and its night 310, both "Spadina"), each with
+ * its first and last trips, so a question about a street's service can include the night route that takes over.
+ */
+export function sameNameRoutes(agency: CatalogAgency & { file: string }, day: DayType, r: RouteRows) {
+  const name = (r.longName ?? '').trim().toLowerCase();
+  if (!name) return [];
+  return routesOn(agency, day).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
+    .map(o => ({ route: o.name, mode: o.mode, service: serviceSpan(o) }));
+}
+
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export function routesMeeting(agency: CatalogAgency & { file: string }, day: DayType, period: PeriodKey, every: number) {
   const all = routesOn(agency, day);
@@ -285,17 +296,31 @@ export function feedFile(slug: string): string | null {
   return zips.length ? join(dir, zips.sort((a, b) => statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs)[zips.length - 1]) : null;
 }
 
+/**
+ * The agency's schedule files: its own feed, then any supplemental feeds processing adds to it (LA Metro's rail lines
+ * come only from lacmta--supplemental-1). Each is the newest file in its folder.
+ */
+export function feedFiles(slug: string): string[] {
+  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
+  const extra = existsSync(root) ? readdirSync(root).filter(n => n.startsWith(`${slug}--supplemental-`)).sort() : [];
+  return [slug, ...extra].map(feedFile).filter((f): f is string => !!f);
+}
+
 const feeds = new Map<string, { key: string; gtfs: Promise<GtfsData> }>();
-/** The agency's schedule, read once per file: a newer file (or a changed one) is read again. */
-export function schedule(slug: string): Promise<GtfsData> {
-  const file = feedFile(slug);
-  if (!file) return Promise.reject(new Error(`No schedule file for ${slug} on this Mac.`));
+/** One schedule file, read once: a newer file (or a changed one) is read again. */
+function readSchedule(file: string, slug: string): Promise<GtfsData> {
   const key = `${file}:${statSync(file).mtimeMs}`;
-  if (feeds.get(slug)?.key !== key) {
+  if (feeds.get(file)?.key !== key) {
     const buf = readFileSync(file);
-    feeds.set(slug, { key, gtfs: parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }) });
+    feeds.set(file, { key, gtfs: parseGtfsZip(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer, undefined, { agencySlug: slug }) });
   }
-  return feeds.get(slug)!.gtfs;
+  return feeds.get(file)!.gtfs;
+}
+/** Every schedule file of the agency (its own and its supplemental ones). */
+export async function schedules(slug: string): Promise<GtfsData[]> {
+  const files = feedFiles(slug);
+  if (!files.length) throw new Error(`No schedule file for ${slug} on this Mac.`);
+  return Promise.all(files.map(f => readSchedule(f, slug)));
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -320,22 +345,77 @@ export function routeIdsNamed(gtfs: GtfsData, names: readonly string[]): Map<str
 }
 
 /** Scheduled trip time from one stop to another, per route, by hour of departure and by period. */
-export async function tripTimes(slug: string, fromQuery: string, toQuery: string, day: DayType, routes: readonly string[]) {
-  const gtfs = await schedule(slug);
-  const from = findPlaces(gtfs, fromQuery), to = findPlaces(gtfs, toQuery);
-  if (!from.places.size) throw new Error(`No stop matching "${fromQuery}".`);
-  if (!to.places.size) throw new Error(`No stop matching "${toQuery}".`);
-  const named = routeIdsNamed(gtfs, routes);
-  const { runs, calendarDay } = stopToStopRuns(gtfs, from.places, to.places, day, routes.length ? new Set(named.keys()) : undefined);
-  const byRoute = new Map<string, Array<{ start: number; minutes: number }>>();
-  const nameOf = routeIdsNamed(gtfs, []);
-  for (const r of runs) { const n = nameOf.get(r.routeId) ?? r.routeId; (byRoute.get(n) ?? byRoute.set(n, []).get(n)!).push(r); }
-  return { from: from.names, to: to.names, readOn: calendarDay, byRoute, scheduleEnds: scheduleEnds(gtfs) };
+/**
+ * Trips from one place to another on one or more agencies, each read from every schedule file it has. With more than
+ * one agency, routes are named with their agency ("Big Blue Bus 10").
+ */
+/** A short label for an agency in a list of several: its config short name, else the shorter of its name and its bracketed name. */
+export function agencyLabel(slug: string, name: string): string {
+  try { const c = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }; if (c.shortName) return c.shortName; } catch { /* no config */ }
+  const m = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(name);
+  return m ? (m[2].length < m[1].length ? m[2] : m[1]) : name;
 }
 
-/** Departures from the first stop towards the second, per route and combined, read with the map's stop-pool rule. */
-export async function combinedDepartures(slug: string, fromQuery: string, toQuery: string, day: DayType) {
-  const t = await tripTimes(slug, fromQuery, toQuery, day, []);
+/** A route named with its agency, without repeating a word ("LA Metro" and "Metro E Line": "LA Metro E Line"). */
+export function withAgency(label: string, route: string): string {
+  const last = label.split(' ').pop()!;
+  return route.toLowerCase().startsWith(`${last.toLowerCase()} `) ? `${label} ${route.slice(last.length + 1)}` : `${label} ${route}`;
+}
+
+/** Stops of a schedule within `metres` of any of the points, as places. */
+function placesNear(gtfs: GtfsData, points: ReadonlyArray<{ lat: number; lon: number }>, metres: number) {
+  const place = placeOf(gtfs);
+  const hits = (gtfs.stops ?? []).filter(s => s.stop_lat != null && s.stop_lon != null && points.some(p => metresBetween(p, { lat: Number(s.stop_lat), lon: Number(s.stop_lon) }) <= metres));
+  return { places: new Set(hits.map(s => place(s.stop_id))), names: [...new Set(hits.map(s => s.stop_name ?? s.stop_id))].slice(0, 6) };
+}
+const pointsOf = (gtfs: GtfsData, query: string) => {
+  const q = norm(query);
+  return (gtfs.stops ?? []).filter(s => norm(s.stop_name ?? '').includes(q) && s.stop_lat != null && s.stop_lon != null).map(s => ({ lat: Number(s.stop_lat), lon: Number(s.stop_lon) }));
+};
+/**
+ * How near a stop on another schedule must be to the matched stops to count as the same place: a short walk. Big Blue
+ * Bus's Rapid 10 ends at 6th and Santa Monica, about 450 m from Downtown Santa Monica Station.
+ */
+export const SAME_PLACE_METRES = 500;
+
+/**
+ * Trips from one place to another on one or more agencies, each read from every schedule file it has. A place is
+ * matched by stop name; on a schedule where the name matches nothing (agencies name stops differently: "Downtown Santa
+ * Monica Station" against "4TH SB & COLORADO", or LA Metro's rail feed against its bus feed), by stops within
+ * SAME_PLACE_METRES of the stops matched on another schedule. With
+ * more than one agency, routes are named with their agency ("Big Blue Bus 10").
+ */
+export async function tripTimes(agencies: ReadonlyArray<{ slug: string; label: string }>, fromQuery: string, toQuery: string, day: DayType, routes: readonly string[]) {
+  const feedsOf = await Promise.all(agencies.map(async a => ({ a, list: await schedules(a.slug) })));
+  const fromPts = feedsOf.flatMap(f => f.list.flatMap(g => pointsOf(g, fromQuery)));
+  const toPts = feedsOf.flatMap(f => f.list.flatMap(g => pointsOf(g, toQuery)));
+  const many = agencies.length > 1;
+  const byRoute = new Map<string, Array<{ start: number; minutes: number }>>();
+  const from: string[] = [], to: string[] = [], ends: string[] = [];
+  let readOn: string | null = null;
+  for (const { a, list } of feedsOf) {
+    for (const gtfs of list) {
+      let f = findPlaces(gtfs, fromQuery), t = findPlaces(gtfs, toQuery);
+      if (!f.places.size && fromPts.length) f = placesNear(gtfs, fromPts, SAME_PLACE_METRES);
+      if (!t.places.size && toPts.length) t = placesNear(gtfs, toPts, SAME_PLACE_METRES);
+      if (!f.places.size || !t.places.size) continue;
+      const named = routeIdsNamed(gtfs, routes);
+      if (routes.length && !named.size) continue;
+      const { runs, calendarDay } = stopToStopRuns(gtfs, f.places, t.places, day, routes.length ? new Set(named.keys()) : undefined);
+      if (!runs.length) continue;
+      from.push(...f.names); to.push(...t.names); readOn ??= calendarDay;
+      const e = scheduleEnds(gtfs); if (e) ends.push(e);
+      const nameOf = routeIdsNamed(gtfs, []);
+      for (const r of runs) { const n = many ? withAgency(a.label, nameOf.get(r.routeId) ?? r.routeId) : (nameOf.get(r.routeId) ?? r.routeId); (byRoute.get(n) ?? byRoute.set(n, []).get(n)!).push(r); }
+    }
+  }
+  const names = agencies.map(a => a.label).join(', ');
+  if (!fromPts.length) throw new Error(`No stop matching "${fromQuery}" in ${names}. Try a station or stop name as the agency writes it.`);
+  if (!toPts.length) throw new Error(`No stop matching "${toQuery}" in ${names}. Try a station or stop name as the agency writes it.`);
+  return { from: [...new Set(from)].slice(0, 8), to: [...new Set(to)].slice(0, 8), readOn, byRoute, scheduleEnds: ends.sort()[0] ?? null, noDirectTrip: !byRoute.size };
+}
+export async function combinedDepartures(agencies: ReadonlyArray<{ slug: string; label: string }>, fromQuery: string, toQuery: string, day: DayType) {
+  const t = await tripTimes(agencies, fromQuery, toQuery, day, []);
   const reading = (starts: number[], start: number, end: number) => {
     const r = pooledReadingInWindow(starts, start, end);
     const n = new Set(starts.filter(s => s >= start && s < end)).size;
@@ -428,8 +508,10 @@ export function branchesOf(agency: CatalogAgency & { file: string }, r: RouteRow
   const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
   return r.rows.map(row => {
     const order = (row.stopOrder as string[] | undefined) ?? [];
-    return { direction: String(row.directionId ?? '0'), towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) };
-  }).filter(b => b.trips > 0 && b.stops > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
+    const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+    // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
+    return order.length ? { direction: String(row.directionId ?? '0'), towards, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) } : { direction: String(row.directionId ?? '0'), towards, trips: trips(row) };
+  }).filter(b => b.trips > 0 && (b.towards || 'stops' in b)).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);
