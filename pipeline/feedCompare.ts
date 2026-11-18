@@ -11,9 +11,13 @@
  * writes files or changes a published artifact (scripts/compare-feed-dates.ts writes the report).
  */
 import { processGtfsBuffer, type ProcessOptions } from './process-core.js';
-import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config.js';
+import { MINUTES_PER_DAY, PERIOD_KEYS, PERIOD_LABELS, SPARKLINE_START_HOUR, type PeriodKey } from '../shared/config.js';
+
+/** The quiet time before a trip that makes it a route's first of the day, rather than one more night trip (#1582). */
+const DAY_BREAK_MIN = 120;
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../shared/dayTypes.js';
 import type { GtfsData } from '../types/gtfs.js';
+import { gtfsTimeToMinutes } from '../shared/connections.js';
 import { ALL_DAYS, DAYS_SUNDAY_FIRST } from '../shared/rules/days.js';
 
 export type PeriodFigures = Partial<Record<PeriodKey, number | null>>;
@@ -245,6 +249,31 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     tripsOn.set(dayType, counts);
   }
 
+  // Each trip's departure from its first stop, for a route's first trip where the hours bar has none (#1582).
+  const firstDeparture = new Map<string, number>();
+  const seqOf = new Map<string, number>();
+  for (const st of gtfs.stopTimes ?? []) {
+    const seq = Number(st.stop_sequence), raw = gtfsTimeToMinutes(st.departure_time) ?? gtfsTimeToMinutes(st.arrival_time), t = raw == null ? null : Math.floor(raw);
+    if (t == null || !Number.isFinite(seq)) continue;
+    if (!seqOf.has(st.trip_id) || seq < seqOf.get(st.trip_id)!) { seqOf.set(st.trip_id, seq); firstDeparture.set(st.trip_id, t); }
+  }
+  // The bar covers 5 AM on, so this looks only at trips leaving before then. A trip there is the day's first only after
+  // a break of DAY_BREAK_MIN with no trip in either direction, around the clock: RTD 0's 4:01 AM trip, after the 1:09 AM
+  // last one, starts the day; a night route's hourly 4:28 AM trip ends the night (Kingston N1), and a route that runs all
+  // night has no first trip here.
+  const earliestStart = (routeId: string, dir: string, dayType: DayType): number | null => {
+    const ids = active.get(countedDay[dayType]) ?? new Set<string>();
+    const all: Array<{ t: number; own: boolean }> = [];
+    for (const t of gtfs.trips ?? []) {
+      if (t.route_id !== routeId || !ids.has(t.service_id)) continue;
+      const m = firstDeparture.get(t.trip_id);
+      if (m != null) all.push({ t: ((m % MINUTES_PER_DAY) + MINUTES_PER_DAY) % MINUTES_PER_DAY, own: String(t.direction_id ?? '0') === dir });
+    }
+    const opensDay = (t: number) => !all.some(s => { const back = (t - s.t + MINUTES_PER_DAY) % MINUTES_PER_DAY; return back > 0 && back < DAY_BREAK_MIN; });
+    const early = all.filter(s => s.own && s.t < SPARKLINE_START_HOUR * 60 && opensDay(s.t)).map(s => s.t).sort((a, b) => a - b);
+    return early[0] ?? null;
+  };
+
   const routes: Record<string, RouteSide> = {};
   for (const p of rows) {
     const label = String(p.routeShortName || p.routeLongName || p.routeId);
@@ -272,10 +301,13 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
         (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every };
       }
     }
-    const span = p.departureSpan as { first?: number; last?: number } | undefined;
-    if (span?.first != null) day.first = day.first == null ? span.first : Math.min(day.first, span.first);
-    if (span?.last != null) day.last = day.last == null ? span.last : Math.max(day.last, span.last);
     const dir = String(p.directionId ?? '0');
+    const span = p.departureSpan as { first?: number; last?: number } | undefined;
+    // The map's hours bar leaves "first" out when a trip leaves before 5 AM (no same-day 4 AM hour, by design for the
+    // bar, CIV-1605). The comparison needs it: the trip of this route and direction that opens the day (#1582).
+    const first = span?.first ?? earliestStart(routeId, dir, dayType);
+    if (first != null) day.first = day.first == null ? first : Math.min(day.first, first);
+    if (span?.last != null) day.last = day.last == null ? span.last : Math.max(day.last, span.last);
     if (p.headsign && !(day.headsigns[dir] ??= []).includes(p.headsign)) day.headsigns[dir].push(p.headsign);
     const run = runMinutesOf(parsed.runningTimes?.[`${routeId}::${dir}::${dayType}`]);
     if (run != null && day.runMinutes[dir] == null) day.runMinutes[dir] = run;
