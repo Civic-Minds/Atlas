@@ -1,7 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
+import { headwayGradeOn, TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
 
 
 /**
@@ -19,8 +19,8 @@ export const TIER_RANK: Record<string, number> = Object.fromEntries([
 
 /** A headway's tier on a given tier scale. */
 export function headwayToTierOn(h: number, tiers: readonly number[]): string {
-  for (const max of tiers) if (h <= max) return String(max);
-  return 'infrequent';
+  const grade = headwayGradeOn(h, tiers);
+  return grade == null ? 'infrequent' : String(grade);
 }
 
 /** A headway's tier on the one grading scale every mode uses (TIER_MAXES, CIV-1813). */
