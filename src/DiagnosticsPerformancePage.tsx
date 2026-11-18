@@ -1,12 +1,12 @@
-import { BACK_PLACES, backLinkLabel } from './content/backLinks';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import AtlasLogo from './components/AtlasLogo';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useAgencies } from './hooks/useAgencies';
 import { ATLAS_MODE } from '../shared/config';
 import { getAtlasMark, markAtlasOnce } from './lib/performance';
-import { FLOATING_CARD } from './styles';
-import Panel from './components/ui/Panel';
-import ListRow from './components/ui/ListRow';
+import DocsPageLayout from './components/ui/DocsPageLayout';
+import PageSection, { PageTable } from './components/ui/PageSection';
+import { PageTitle } from './components/ui/PageTitle';
+import DataTable, { type DataTableColumn } from './components/ui/DataTable';
+import { DIAGNOSTICS_PERFORMANCE_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
 import Pill from './components/ui/Pill';
 
 interface PerformanceMetric {
@@ -78,40 +78,42 @@ export default function DiagnosticsPerformancePage() {
     [metrics, lcp],
   );
 
+  const page = INTERNAL_GROUPS.flatMap(g => g.pages).find(x => x.path === DIAGNOSTICS_PERFORMANCE_PATH)!;
+  useEffect(() => { document.title = `${page.title} | Atlas`; }, [page.title]);
+  const facts: Array<{ label: string; value: ReactNode }> = [
+    { label: 'Mode', value: ATLAS_MODE },
+    { label: 'Visible agencies', value: agenciesLoadState === 'ready' ? agencies.length : 'Loading…' },
+    // A long path has no spaces to wrap at: it shortens with "…", full path on hover (#1101).
+    { label: 'URL', value: <span className="block max-w-[24rem] truncate" title={window.location.pathname}>{window.location.pathname}</span> },
+    { label: 'Captured', value: new Date().toLocaleTimeString() },
+  ];
+  const factColumns: DataTableColumn<(typeof facts)[number]>[] = [
+    { key: 'label', header: 'This page', rowHeader: true, width: 16, className: 'font-normal', cell: f => f.label },
+    { key: 'value', header: 'Value', cell: f => f.value },
+  ];
+  const metricColumns: DataTableColumn<PerformanceMetric>[] = [
+    { key: 'label', header: 'Measurement', rowHeader: true, width: 16, className: 'font-normal whitespace-nowrap', cell: m => m.label },
+    { key: 'detail', header: 'Note', align: 'left', grow: true, cell: m => m.detail ?? '' },
+    { key: 'value', header: 'Time', className: 'whitespace-nowrap', cell: m => m.value },
+  ];
+
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-app)] text-[var(--text-primary)] font-sans">
-      <div className="sticky top-0 z-10 bg-[var(--bg-app)]/95 backdrop-blur-md border-b border-[var(--border-primary)] px-6 py-4 flex flex-wrap items-center gap-x-2 gap-y-3">
-        <AtlasLogo href="/" ariaLabel={backLinkLabel(BACK_PLACES.frequencyMap)} />
-        <span className="w-px h-4 bg-[var(--border-primary)] shrink-0 ml-1" aria-hidden="true" />
-        <span className="text-xl sm:text-2xl font-black text-[var(--text-primary)] leading-none">Performance</span>
-        <Pill tone="outline" size="segment" className="ml-auto" onClick={() => window.location.reload()}>
-          Reload and measure
-        </Pill>
+    <DocsPageLayout width="wide">
+      <PageTitle>{page.title}</PageTitle>
+      <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{page.description}</p>
+      <div className="mt-6">
+        <Pill tone="outline" size="segment" onClick={() => window.location.reload()}>Reload and measure</Pill>
       </div>
-
-      <main className="p-6 max-w-4xl mx-auto space-y-5">
-        <div className={`${FLOATING_CARD} p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm`}>
-          <div><div className="text-xs text-[var(--text-dim)]">Mode</div><div className="font-black">{ATLAS_MODE}</div></div>
-          <div><div className="text-xs text-[var(--text-dim)]">Visible agencies</div><div className="font-black">{agenciesLoadState === 'ready' ? agencies.length : 'Loading…'}</div></div>
-          {/* A long path has no spaces to wrap at: it shortens with "…" in its own column, full path on hover (#1101). */}
-          <div className="min-w-0"><div className="text-xs text-[var(--text-dim)]">URL</div><div className="font-black truncate" title={window.location.pathname}>{window.location.pathname}</div></div>
-          <div><div className="text-xs text-[var(--text-dim)]">Captured</div><div className="font-black">{new Date().toLocaleTimeString()}</div></div>
-        </div>
-
-        <Panel aria-labelledby="performance-metrics-heading" role="region">
-          <h1 id="performance-metrics-heading" className="px-5 py-4 text-lg font-black border-b border-[var(--border-primary)]">Load Measurements</h1>
-          <div>
-            {rows.map(metric => (
-              <ListRow as="div" key={metric.label} className="gap-4">
-                <div><div className="text-sm font-bold">{metric.label}</div>{metric.detail && <div className="text-xs text-[var(--text-dim)]">{metric.detail}</div>}</div>
-                <div className="text-sm font-black text-right whitespace-nowrap">{metric.value}</div>
-              </ListRow>
-            ))}
-          </div>
-        </Panel>
-
-        <p className="text-xs text-[var(--text-dim)]">Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights.</p>
-      </main>
-    </div>
+      <PageSection id="performance-page" title="This page">
+        <PageTable>
+          <DataTable layout="page" caption="This page" columns={factColumns} rows={facts} rowKey={f => f.label} />
+        </PageTable>
+      </PageSection>
+      <PageSection id="performance-metrics-heading" title="Timings" intro="Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights.">
+        <PageTable>
+          <DataTable layout="page" caption="Timings" columns={metricColumns} rows={rows} rowKey={m => m.label} />
+        </PageTable>
+      </PageSection>
+    </DocsPageLayout>
   );
 }
