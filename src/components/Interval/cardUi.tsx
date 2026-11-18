@@ -25,7 +25,7 @@ export const CARD_LIST_ROUTE = 'text-xs font-bold text-[var(--text-primary)] lea
 // The section label lives in styles.ts with the other shared text styles (CIV-395), so non-card panels use it too.
 import { CARD_NOTE, CARD_SECTION } from '../../styles';
 import { PanelCloseButton } from '../ui/PanelHeader';
-import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, REPORT_FORM_HINT, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, CORRECTED_DATA_NOTICE, explainerFor, NEW_SCHEDULE_DATA_NOTICE, reportFormHint, REPORT_NEEDS_FREQUENCY_DETAIL, REPORT_NEEDS_REASON, CANCEL_LABEL, CHANGE_LABEL, LIVE_DATA_AVAILABLE_LABEL, OPENS_IN_NEW_TAB_HINT, SOURCE_LINK_ARIA_LABEL, SOURCE_LINK_LABEL } from '../../content/noticeCopy';
 /** A list card's header block (agency card, History's agency view): one divider under it. */
 export const CARD_HEADER_BLOCK = 'shrink-0 px-4 pt-4 pb-3 border-b border-[var(--border-primary)]';
 /** The same header spacing for a card that is only a header (no divider sitting on the card's own edge). */
@@ -332,7 +332,7 @@ export const CardReportButton = React.forwardRef<CardReportButtonHandle, { title
             <div className={`${CARD_HEADER_BLOCK} flex items-center justify-between`}>
               <div>
                 <h2 id={dialogTitleId} className={CARD_TITLE}>{REPORT_A_PROBLEM}</h2>
-                <p className={`${CARD_NOTICE} mt-0.5`}>{REPORT_FORM_HINT}</p>
+                <p className={`${CARD_NOTICE} mt-0.5`}>{reportFormHint(FEATURES.cardClickToFlag)}</p>
               </div>
               <PanelCloseButton onClick={reset} label={closeLabel(CLOSE_PLACES.reportForm)} />
             </div>

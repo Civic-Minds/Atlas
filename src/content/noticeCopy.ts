@@ -441,7 +441,9 @@ export const ON_DEMAND_NOT_MAPPED_NOTE = "This agency’s on-demand service runs
 /** "This service's north zone isn't on the map yet." */
 export const notOnMapYetNotice = (missing: string) => `This service’s ${missing.replace(/^the /, '')} isn’t on the map yet.`;
 // N70 report-form-hint
-export const REPORT_FORM_HINT = 'Choose a category, or click a card value to preselect its reason.';
+/** The report form's line under its title (CIV-1814 item 6, Ryan): where a card's numbers can be clicked to flag them (beta,
+ * FEATURES.cardClickToFlag), it says so; elsewhere it doesn't promise what the card can't do. */
+export const reportFormHint = (cardClickToFlag: boolean) => (cardClickToFlag ? 'Choose what’s wrong, or click the number on the card that’s wrong.' : 'Choose what’s wrong.');
 // N69 report-needs-detail
 export const REPORT_NEEDS_FREQUENCY_DETAIL = 'Select at least one frequency detail.';
 // N69 report-needs-reason
