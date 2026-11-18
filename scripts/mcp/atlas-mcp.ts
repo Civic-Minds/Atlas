@@ -30,6 +30,15 @@ if (splitDir) {
   const { join } = await import('node:path');
   data.useStore(splitStore(async path => { const f = join(splitDir, path); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; }));
 } else data.useStore(diskStore());
+// Testing only (CIV-1860): ATLAS_MCP_LIVE_DIR points the Live tools at a folder laid out like the private Live bucket
+// (scripts/mcp/releaseLivePrivate.ts --dry-run writes one under <work>/dry-run).
+const liveDir = process.env.ATLAS_MCP_LIVE_DIR;
+if (liveDir) {
+  const { splitLiveReader, useLiveReader } = await import('./liveData');
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  useLiveReader(splitLiveReader(async path => { const f = join(liveDir, path); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; }));
+}
 
 const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   buses_needed: async (args) => {
