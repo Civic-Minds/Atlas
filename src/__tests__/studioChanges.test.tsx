@@ -9,7 +9,8 @@ vi.mock('../../shared/config', async (importOriginal) => {
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioRouteTable, smallChangeParts } = await import('../StudioChangesPage');
+const { StudioRouteTable, periodFigure, smallChangeParts } = await import('../StudioChangesPage');
+const { STUDIO_CHANGES_TEXT } = await import('../../shared/studioWording');
 const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../StudioPage');
 
 const day = (headway: Record<string, number>, trips: number, first: number | null, last: number, runs: number[]) =>
@@ -145,5 +146,14 @@ describe('Studio map page (CIV-1731)', () => {
     expect(of('10:before:0')).toMatchObject({ dashed: true, color: CHANGE_COLOR.same });
     expect(of('12:before:0')).toBeUndefined();
     expect(of('801:after:0')!.color).toBe(CHANGE_COLOR.same);
+  });
+
+  it('reads a late start or early end in the route card\'s words, and counts the unchanged routes (CIV-1806)', () => {
+    // HSR 56 on May 27, 2026: midday starts at 10:42 AM, so the map's 102 min reads as the card does.
+    const d = { headway: { midday: 102 }, trips: 20, first: 642, last: 1200, runMinutes: [30], edge: { midday: { from: 642, every: 60 } } };
+    expect(periodFigure(d, 'midday')).toBe('every 60 min from 10:42 AM');
+    expect(periodFigure({ ...d, edge: undefined }, 'midday')).toBe('102 min');
+    expect(STUDIO_CHANGES_TEXT.unchangedCount(25)).toBe('25 other routes didn’t change');
+    expect(STUDIO_CHANGES_TEXT.unchangedCount(1)).toBe('1 other route didn’t change');
   });
 });

@@ -14,15 +14,14 @@ import { frequencyChange } from '../shared/frequencyChange';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { PAGE_NAMES, tabTitle } from '../shared/pageNames';
-import { headwayAmount, capitalizeFirst } from '../shared/headwayText';
+import { capitalizeFirst } from '../shared/headwayText';
 import { dateRange, shortDate } from '../shared/dateText';
 import { dayInSentence, dayPlural } from '../shared/dayTypes';
 import { joinList } from '../shared/overflowText';
-import { MISSING_VALUE } from '../shared/missingValue';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
-import { StudioRouteTable, routeFigureRows, routeTitle } from './StudioChangesPage';
+import { StudioRouteTable, periodFigure, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { STUDIO_AGENCIES, STUDIO_DEFAULT_AGENCY, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
@@ -123,7 +122,7 @@ function movedSteps(c: StudioRouteChange, key: string): number {
  * the route table's own label.
  */
 export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
-  const here = { before: c.before ? headwayAmount(c.before.headway[period]) : MISSING_VALUE, after: c.after ? headwayAmount(c.after.headway[period]) : MISSING_VALUE };
+  const here = { before: periodFigure(c.before, period), after: periodFigure(c.after, period) };
   if (!c.before || !c.after) {
     // Added or removed: this time of day's figure, or where it has none, the first time of day the route ran.
     if (here.before !== here.after) return { label: null, ...here };
@@ -173,8 +172,9 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
                         <span className="block text-[var(--text-secondary)]">{l.secondary}</span>
                         {f.label && <span className="block text-xs text-[var(--text-muted)]">{f.label}</span>}
                       </span>
-                      <span className="whitespace-nowrap text-right">{f.before}</span>
-                      <span className={`whitespace-nowrap text-right ${f.before !== f.after ? 'font-bold' : ''}`}>{f.after}</span>
+                      <span className="text-right">{f.before}</span>
+                      {/* No bold on the newer figure (Ryan, CIV-1806: "Does bold mean better frequency?"). */}
+                      <span className="text-right">{f.after}</span>
                     </button>
                   </li>
                 );
@@ -184,10 +184,7 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
         ))}
         {file.unchanged.length > 0 && (
           <div className={`${ROW_GRID} mt-2 px-2`}>
-            <div className="col-span-3">
-              <h3 className="m-0 text-xs font-bold text-[var(--text-muted)]">{C.unchangedTitle}</h3>
-              <p className="m-0 text-sm text-[var(--text-secondary)]">{file.unchanged.join(', ')}</p>
-            </div>
+            <p className="col-span-3 m-0 text-sm text-[var(--text-secondary)]">{C.unchangedCount(file.unchanged.length)}</p>
           </div>
         )}
       </div>

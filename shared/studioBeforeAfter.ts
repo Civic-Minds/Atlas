@@ -17,7 +17,12 @@ export interface StudioRouteDay {
   last: number | null;
   /** Midday median run time per direction, whole minutes, lowest first. */
   runMinutes: number[];
+  /** A period's late start or early end, as the route card reads it (CIV-1806); missing in older files. */
+  edge?: Partial<Record<PeriodKey, StudioPeriodEdge>>;
 }
+
+/** A late start (`from`) or early end (`until`) in minutes after midnight, and the frequency where the period runs. */
+export interface StudioPeriodEdge { from?: number; until?: number; every: number }
 
 /**
  * How big a route's change is, which decides where the page puts it:
@@ -66,7 +71,7 @@ export const studioBeforeAfterDevUrl = (slug: string) => `/dev-studio/${slug}-be
 
 // ---- Building the file from a comparison ----
 
-interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number> }
+interface InputDay { headway: Partial<Record<PeriodKey, number | null>>; trips: number; first: number | null; last: number | null; runMinutes: Record<string, number>; edge?: Partial<Record<PeriodKey, StudioPeriodEdge>> }
 interface InputRoute { route: string; longName: string | null; days: Partial<Record<DayType, InputDay>> }
 /** The parts of pipeline/feedCompare.ts's FeedComparison this file reads. */
 export interface StudioComparisonInput {
@@ -90,6 +95,7 @@ const slim = (d: InputDay | null | undefined): StudioRouteDay | null => d ? {
   first: d.first,
   last: d.last,
   runMinutes: Object.values(d.runMinutes).map(Math.round).sort((a, b) => a - b),
+  ...(d.edge && Object.keys(d.edge).length ? { edge: d.edge } : {}),
 } : null;
 
 const movedBy = (a: number | null | undefined, b: number | null | undefined, step: number) =>
