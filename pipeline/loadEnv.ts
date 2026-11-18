@@ -40,8 +40,29 @@ export function envFileProblem(envFile: string | undefined, fileExists: boolean)
   return envFile && !fileExists ? `ATLAS_ENV_FILE ${envFile} does not exist` : null;
 }
 
-/** Load env file into process.env. Returns the path used. Refuses a staging run that would reach production. */
-export function loadPipelineEnv(): string {
+/** The R2 write keys: a dry run never has them (#1587). */
+export const R2_WRITE_ENV_KEYS = ['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY'] as const;
+
+/** What a dry run reports as its env instead of a file: nothing was loaded. */
+export const DRY_RUN_ENV_LABEL = 'none loaded (--dry-run) [DRY RUN]';
+
+/**
+ * Scripts whose --dry-run never touches R2, so it loads no env file and drops any R2 write keys the shell exports:
+ * a dry run can't upload or report the production bucket (#1587). Other CLIs' --dry-run flags keep loading the file.
+ */
+const DRY_RUN_WITHOUT_ENV = new Set(['process-gtfs.ts', 'process-gtfs.js']);
+
+export function dryRunWithoutEnv(argv: readonly string[] = process.argv): boolean {
+  const script = (argv[1] ?? '').split(/[\\/]/).pop() ?? '';
+  return DRY_RUN_WITHOUT_ENV.has(script) && argv.slice(2).includes('--dry-run');
+}
+
+/** Load env file into process.env. Returns the path used. Refuses a staging run that would reach production. A dry run loads none. */
+export function loadPipelineEnv(opts: { dryRun?: boolean } = {}): string {
+  if (opts.dryRun) {
+    for (const key of R2_WRITE_ENV_KEYS) delete process.env[key];
+    return DRY_RUN_ENV_LABEL;
+  }
   const file = resolvePipelineEnvFile();
   const path = resolve(file);
   const fileExists = existsSync(path);
@@ -54,7 +75,7 @@ export function loadPipelineEnv(): string {
 }
 
 // Side-effect: load on import so later imports of shared/config see staging/prod correctly.
-const _loaded = loadPipelineEnv();
+const _loaded = loadPipelineEnv({ dryRun: dryRunWithoutEnv() });
 export const LOADED_ENV_FILE = _loaded;
 
 /**
@@ -62,6 +83,7 @@ export const LOADED_ENV_FILE = _loaded;
  * targets — country-launch hard gate does not apply there.
  */
 export function isProductionPublicR2Bucket(): boolean {
+  if (LOADED_ENV_FILE === DRY_RUN_ENV_LABEL) return false;
   const bucket = (process.env.R2_BUCKET_NAME ?? 'atlas').replace(/^["']|["']$/g, '');
   return bucket === 'atlas';
 }
