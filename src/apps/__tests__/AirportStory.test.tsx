@@ -49,9 +49,9 @@ describe('AirportStory (CIV-1550, dev only)', () => {
 
   it('shows the scroll story draft: title placeholder, the weekday map section, the follow-up sections and the method', () => {
     render(<AirportStory />);
-    expect(screen.getByRole('heading', { level: 1, name: "[Ryan’s wording: title]" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: '[Placeholder: title]' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'One weekday at the airports' })).toBeInTheDocument();
-    for (const name of ['[Ryan’s wording: week grid heading]', 'The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
+    for (const name of ['[Placeholder: week grid heading]', 'The weekend gap', 'Not quite downtown', 'How far you can get', 'Find your airport']) expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     expect(screen.queryByText(/Before publishing/)).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Method' })).toBeInTheDocument();
   });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
+import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
 import { P90_LATER_LABEL, p90LateText, timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
@@ -110,7 +110,8 @@ describe('route labels and setting definitions (CIV-957)', () => {
     expect(IRREGULAR_PERIOD_SHORT_LABEL).toBe('Irregular');
     expect(HIDE_ONE_OFF_SETTING).toEqual({ label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' });
     expect(HIDE_PART_TIME_SETTING).toEqual({ label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' });
-    expect(HIDE_DEGRADED_FEEDS_SETTING.label).toBe('Hide degraded feeds');
+    expect(HIDE_DEGRADED_FEEDS_SETTING.label).toBe('Hide agencies with data-quality problems');
+    expect(DATA_QUALITY_AGENCIES_TITLE).toBe('Agencies with data-quality problems');
   });
 });
 

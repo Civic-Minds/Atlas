@@ -30,7 +30,10 @@ describe('route metadata table', () => {
       expect(r.path.startsWith('/')).toBe(true);
       expect(r.title.length).toBeGreaterThan(10);
       expect(r.title.length).toBeLessThanOrEqual(65);
-      expect(r.description.length).toBeGreaterThan(40);
+      // A search snippet's minimum is for pages search engines index; a page kept out of search (What's New, CIV-1814
+      // item 12: Ryan's "What's changed in Atlas.") only needs a link preview.
+      if (r.indexable !== false) expect(r.description.length).toBeGreaterThan(40);
+      else expect(r.description.length).toBeGreaterThan(10);
       expect(r.description.length).toBeLessThanOrEqual(200);
     }
   });
@@ -139,7 +142,7 @@ describe('head tag rewriting', () => {
     const out = applySeoToHtml(html, resolveSeo('/research/night', BETA));
     expect(out).toContain('<title>[Beta] Overnight Service | Transit Atlas</title>');
     expect(out).toContain('<meta property="og:title" content="[Beta] Overnight Service | Transit Atlas" />');
-    expect(out).toContain('<meta property="og:description" content="Find routes with sustained scheduled service from 2–5 AM." />');
+    expect(out).toContain('<meta property="og:description" content="Find routes with consistent scheduled service from 2–5 AM." />');
     expect(out).toContain(`<meta property="og:image" content="${SITE_URL}/assets/research/share/night.png" />`);
     expect(out).toContain(`<meta name="twitter:image" content="${SITE_URL}/assets/research/share/night.png" />`);
     expect(out).toContain('<meta property="og:image:type" content="image/png" />');

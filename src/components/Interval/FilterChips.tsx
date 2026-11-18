@@ -32,6 +32,7 @@ import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGEN
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 import { topBarChipClass } from '../ui/topBarChip';
+import { devPlaceholder } from '../../content/devPlaceholder';
 
 
 interface FilterChipsProps {
@@ -86,8 +87,8 @@ export interface ConnectionsBarControls {
   setTripId: (id: string) => void;
 }
 
-/** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353). */
-const CONNECTION_SIDE_LABELS = [['after', '[Placeholder: arriving]'], ['before', '[Placeholder: leaving]']] as const;
+/** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353); the bar is dev-only (FEATURES.connectionsBar). */
+const CONNECTION_SIDE_LABELS = [['after', devPlaceholder('arriving')], ['before', devPlaceholder('leaving')]] as const;
 
 /**
  * A chip's "filter is on" dot. Declared out here, not inside FilterChips, so it is the same component on every render

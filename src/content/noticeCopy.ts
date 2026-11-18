@@ -201,8 +201,10 @@ export const IRREGULAR_PERIOD_SHORT_LABEL = 'Irregular';
 export const HIDE_ONE_OFF_SETTING = { label: 'Hide occasional routes', description: 'School runs, a few trips a day, on-demand.' } as const;
 // D5 setting-hide-part-time
 export const HIDE_PART_TIME_SETTING = { label: 'Hide part-time routes', description: 'Only at rush hour, evenings or some days.' } as const;
-// D6 setting-hide-degraded-feeds
-export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide degraded feeds', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
+// D6 setting-hide-degraded-feeds (Ryan, CIV-1814 item 30: "1")
+export const HIDE_DEGRADED_FEEDS_SETTING = { label: 'Hide agencies with data-quality problems', description: 'Hides agencies with known data-quality problems. Feeds still being reviewed remain visible.' } as const;
+/** The list the setting opens (CIV-1814 item 30). */
+export const DATA_QUALITY_AGENCIES_TITLE = 'Agencies with data-quality problems';
 
 // ---- Shared labels and card sentences (CIV-1160): moved here with the same words; no review-page codes yet ----
 // The back link from an agency or stop card to the map (CIV-1462: the words live in backLinks.ts).
@@ -228,7 +230,7 @@ export const ABOUT_CLOSER_HEADING = 'Built for looking closer.';
 /** The "Where the Data Comes From" section on the For Transit Planners and For Researchers pages (CIV-1724). */
 export const DATA_SOURCE_TITLE = 'Where the Data Comes From';
 export const dataSourceText = (agencies: string, countries: string) =>
-  `Atlas covers ${agencies} transit agencies in ${countries}. It reads each agency’s published GTFS feed and checks for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.`;
+  `Atlas covers ${agencies} transit agencies in ${countries}. It reads each agency’s published GTFS feed and checks most feeds for updates every week, so a service change shows up soon after the agency publishes it. If an agency’s schedule has run out, Atlas says so on the map.`;
 /** For Transit Planners: the hero's line (CIV-1788), the seven cards in a planner's workflow order (CIV-1710) and the demo card. */
 export const PLANNERS_COPY = {
   intro: 'See how often every route runs, at every hour, across every agency in the region. It’s built for agency planners, consultants and city and regional staff.',
@@ -329,7 +331,7 @@ export const COMPARE_B_PICKER_NOTE = 'The frequency, day and time above are map 
 // K1 frequency-key heading
 export const MAP_KEY_FREQUENCY = 'Frequency';
 // K2 frequency-key selected
-export const MAP_KEY_SELECTED = 'Selected / qualifying';
+export const MAP_KEY_SELECTED = 'Selected or in your filters';
 // K3 frequency-key other
 export const MAP_KEY_OTHER = 'Other routes';
 // K4 night-key (also the exported image's key)
@@ -427,7 +429,9 @@ export function getRolloutNotice(agency: { betaOnly?: boolean; rolloutNotice?: s
 }
 // N4 new-schedule (route), N21 new-schedule (agency)
 /** The route card and the agency card word these for what they show (CIV-941). */
-export const NEW_SCHEDULE_DATA_NOTICE = { route: "This route’s new schedule is still being verified.", agency: "This agency’s new schedule is still being verified." } as const;
+/** A new schedule's status note (cards and E2): data-specific, so not a disclaimer (TEXT.md, Words; Ryan, 2026-11-17). */
+const STILL_BEING_VERIFIED = 'is still being verified';
+export const NEW_SCHEDULE_DATA_NOTICE = { route: `This route’s new schedule ${STILL_BEING_VERIFIED}.`, agency: `This agency’s new schedule ${STILL_BEING_VERIFIED}.` } as const;
 // N5 corrected (route), N22 corrected (agency)
 export const CORRECTED_DATA_NOTICE = { route: "We corrected an error in this route’s schedule.", agency: "We corrected an error in this agency’s schedule." } as const;
 // N23 routes-outside-show
@@ -441,7 +445,9 @@ export const ON_DEMAND_NOT_MAPPED_NOTE = "This agency’s on-demand service runs
 /** "This service's north zone isn't on the map yet." */
 export const notOnMapYetNotice = (missing: string) => `This service’s ${missing.replace(/^the /, '')} isn’t on the map yet.`;
 // N70 report-form-hint
-export const REPORT_FORM_HINT = 'Choose a category, or click a card value to preselect its reason.';
+/** The report form's line under its title (CIV-1814 item 6, Ryan): where a card's numbers can be clicked to flag them (beta,
+ * FEATURES.cardClickToFlag), it says so; elsewhere it doesn't promise what the card can't do. */
+export const reportFormHint = (cardClickToFlag: boolean) => (cardClickToFlag ? 'Choose what’s wrong, or click the number on the card that’s wrong.' : 'Choose what’s wrong.');
 // N69 report-needs-detail
 export const REPORT_NEEDS_FREQUENCY_DETAIL = 'Select at least one frequency detail.';
 // N69 report-needs-reason
@@ -674,7 +680,7 @@ export const EXPLAINERS = {
   'beta-rollout': { code: 'E4', title: 'Beta testing' },
   'route-data-quality': { code: 'E5', title: 'Route data quality' },
   'no-route-shape': { code: 'E6', title: 'Route map unavailable' },
-  'edge-gap-allowance': { code: 'E7', title: 'Frequency allowance' },
+  'edge-gap-allowance': { code: 'E7', title: 'First and last trips' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
   'route-rating': { code: 'E9', title: 'Route rating' },
 } as const;
@@ -688,9 +694,9 @@ export function listingEndedPanelLead(agencyName: string, date: string, ended: b
   const { primary } = agencyNames(agencyName).card;
   return `${agencyPossessiveSentenceStart(primary)} scheduled service for most routes ${ended ? 'ended' : 'ends'} ${date}, and they have not released updated data. The map shows the last full week in their schedule, for every route.`;
 }
-// E2: the date is the day the schedule went on the map.
+// E2 (Ryan, CIV-1814 item 5, 2026-11-17): the day Atlas added the schedule, as on agency pages, and the cards' status note.
 export const newScheduleDataLead = (agencyName: string, onMapOn?: string | null) =>
-  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule went on the map${onMapOn ? ` on ${onMapOn}` : ''}. It may have errors we haven’t found yet.`;
+  `${agencyPossessiveSentenceStart(agencyNames(agencyName).card.primary)} new schedule was added${onMapOn ? ` on ${onMapOn}` : ''}, and ${STILL_BEING_VERIFIED}.`;
 // E4
 export const betaRolloutLead = (agencyName: string) => onlyOnBetaText(agencySentenceStart(agencyNames(agencyName).card.primary));
 // E5
@@ -704,7 +710,7 @@ export const routeRatingLead = (filterNotice: string) => `${filterNotice} A part
 
 // ---- Explainer pieces (CIV-1061): every paragraph 2 and 3 sentence, written once ----
 /** Where a paragraph-3 piece's links go, in order. */
-export type ExplainerLink = 'agency-website' | 'report-schedule' | 'technical-details' | 'report-data';
+export type ExplainerLink = 'agency-website' | 'report-schedule' | 'report-data';
 type ExplainerPieceDef = {
   /** Permanent code (X1, X2…), never reused, like N and E codes. */
   code: string;
@@ -730,7 +736,7 @@ export const EXPLAINER_PIECES = {
   AGENCY_WEBSITE_NEWER: { code: 'X10', text: "A newer schedule may be on the agency’s website.", links: ['agency-website', 'report-schedule'] },
   AGENCY_WEBSITE_CURRENT: { code: 'X11', text: "The agency’s website has its current schedule.", links: ['agency-website'], needsWebsite: true },
   AGENCY_WEBSITE_EACH_DAY: { code: 'X12', text: "The agency’s website has each day’s schedule.", links: ['agency-website'], needsWebsite: true },
-  REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['technical-details', 'report-data'] },
+  REPORT_BELOW: { code: 'X13', text: "If something still looks wrong, report it below.", links: ['report-data'] },
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
   // Paragraph 2 of E9 (CIV-1199), after X9.
   STRETCH_AND_BRANCHES_SEPARATE: { code: 'X15', text: "We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is." },

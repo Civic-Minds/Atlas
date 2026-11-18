@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { AIRPORT_STORY_DRAFT, RESEARCH_STORIES, RESEARCH_STORY_DRAFTS, type ResearchStoryText } from '../../../shared/researchStories';
+import { RESEARCH_STORIES, RESEARCH_STORY_DRAFTS, type ResearchStoryText } from '../../../shared/researchStories';
 import { SEO_ROUTES } from '../../../shared/seo';
 import { RESEARCH } from '../../data/research';
 import { NIGHT_INFO_HEADING, NIGHT_LIST_TITLE } from '../researchRules';
@@ -67,6 +67,5 @@ describe('research stories: one entry holds every text (CIV-1629)', () => {
     const overnight = RESEARCH_STORIES.find(s => s.path === '/research/night')!;
     expect(NIGHT_INFO_HEADING).toBe(overnight.heading);
     expect(NIGHT_LIST_TITLE).toBe(overnight.cardTitle);
-    expect(AIRPORT_STORY_DRAFT.heading).toMatch(/^\[/);
   });
 });
