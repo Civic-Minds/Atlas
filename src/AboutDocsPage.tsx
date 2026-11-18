@@ -137,7 +137,7 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
   },
 ];
 
-/** The near-miss table, from the pipeline's own settings (shared/frequencyRules.ts, CIV-1612). */
+/** The near-miss table, from the pipeline's own settings (shared/rules/frequency.ts, CIV-1612). */
 const NEAR_MISS_ROWS: [string, string, string][] = PUBLIC_TIER_MAXES.map(tier => [
   headwayAmount(tier),
   headwayAmount(tier + nearMissGrace(tier)),

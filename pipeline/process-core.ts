@@ -26,7 +26,7 @@ import { validateGtfs, type ValidationReport } from './validation.js';
 import { resolveDisplayHeadsign } from '../shared/headsignDisplay.js';
 import { routeGroupKey } from '../shared/routeGroupKey.js';
 import { LIVE_POLLING_ROUTES } from '../shared/livePollingConfig.js';
-import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
+import { PERIOD_KEYS, PERIOD_MINUTES as PERIODS, periodKeyForHour, MINUTES_PER_DAY, SPARKLINE_HOURS, type PeriodKey, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodSustained } from '../shared/config.js';
 import { ROUTE_ARTIFACT_SCHEMA_VERSION } from '../shared/artifactSchema.js';
 import { DAY_TYPES, WEEKDAYS, type DayName, type DayType } from '../types/gtfs.js';
 import { ALL_DAYS } from '../shared/dayTypes.js';
@@ -1748,8 +1748,8 @@ export async function processGtfsBuffer(
             if (rushKey && grp.inGroup && pooledOk && boardsAt(st)) pushDep(stopDepsByRushMember, rushKey, stopId, mins);
             // Night-service-only shift (#297) -- see stopDepsByGroupNight declaration above.
             if (night) {
-              if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + 1440);
-              if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + 1440);
+              if (grp.inGroup && pooledOk) pushDep(stopDepsByGroupNight, gKey, stopId, mins + MINUTES_PER_DAY);
+              if (hsKey && grp.inHeadsign && headsignOk) pushDep(stopDepsByHeadsignGroupNight, hsKey, stopId, mins + MINUTES_PER_DAY);
             }
           };
           // CIV-1071: the departure twins take each (trip, stop)'s first BOARDING visit only (boardsAt), under
@@ -1960,7 +1960,7 @@ export async function processGtfsBuffer(
     const rushKey = rushMemberKey(grp);
     if (rushKey && grp.inGroup && pickupAllowed) pushUnique(stopDepsByRushMember, rushKey, stopId, mins);
     if (mins < SERVICE_DAY_CUTOFF_MIN && (serviceIdMaxMinute.get(grp.serviceId) ?? Infinity) < SERVICE_DAY_CUTOFF_MIN) {
-      const shifted = mins + 1440;
+      const shifted = mins + MINUTES_PER_DAY;
       if (grp.inGroup) pushUnique(stopDepsByGroupNight, groupKey, stopId, shifted);
       if (grp.headsign && grp.inHeadsign) pushUnique(stopDepsByHeadsignGroupNight, `${grp.shortName}::${grp.dirId}::${grp.dayType}::${grp.headsign}`, stopId, shifted);
     }
@@ -2379,10 +2379,10 @@ export async function processGtfsBuffer(
         }
       }
     };
-    if (next == null) add(day, t => (t < 24 * 60 ? t + 24 * 60 : null));
+    if (next == null) add(day, t => (t < MINUTES_PER_DAY ? t + MINUTES_PER_DAY : null));
     else {
       add(day, t => (t >= 24 * 60 ? t : null));
-      add(next, t => (t < 24 * 60 ? t + 24 * 60 : null));
+      add(next, t => (t < MINUTES_PER_DAY ? t + MINUTES_PER_DAY : null));
     }
     handoverTimesByDay.set(cacheKey, byStop);
     return byStop;
@@ -4056,7 +4056,7 @@ export async function processGtfsBuffer(
         // most of those stops see only its few trips and read the all-day fallback (337, 240).
         const main = stretches.main;
         const board = gatedRiderWait([main.refStop], () => main.times, dropOff,
-          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: DEFAULT_CRITERIA.dayTypes[slot.day as DayType]?.timeWindow ?? { start: 420, end: 1320 } });
+          { middayRuns: rollup.midday.runs, limited: rollup.limitedOnly, gradingWindow: (DEFAULT_CRITERIA.dayTypes[slot.day as DayType] ?? DEFAULT_CRITERIA.dayTypes.Weekday!).timeWindow });
         if (!board || board.wait < headline + OVERSTATED_HEADLINE_MARGIN) continue;
         const tierBefore = p.tier as string | undefined;
         if (board.passes) {

@@ -7,6 +7,7 @@ import { resolve } from 'path';
 import { agencyHasLiveAnalysis } from '../shared/livePollingConfig.js';
 import type { AgencySummary } from '../shared/liveAgency.js';
 import { liveAgencyName } from './agencyName.js';
+import { liveNoAgencyAnalysis } from '../src/content/noticeCopy';
 
 export type LiveAgencyResponse =
   | { status: 'ready'; summary: AgencySummary }
@@ -20,7 +21,7 @@ async function handler(req: Request): Promise<Response> {
   const agency = new URL(req.url, 'http://localhost').searchParams.get('agency')?.trim().toLowerCase();
   if (!agency) return json({ status: 'unknown_agency', reason: 'Give an agency, for example ?agency=ttc.' }, 400);
   // Whitelist: only agencies with Live analysis map to a file name (no path input reaches the filesystem).
-  if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: `Live has no route analysis for ${await liveAgencyName(agency)}.` }, 404);
+  if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: liveNoAgencyAnalysis(await liveAgencyName(agency)) }, 404);
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
   try {
     const file = resolve(dir, `${agency}-agency.json`);

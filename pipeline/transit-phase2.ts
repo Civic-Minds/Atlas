@@ -12,7 +12,7 @@ import {
 import { computeMedian } from './transit-utils';
 import { computePeriodHeadways, RAIL_TIER_WINDOW, TIER_RANK, typicalOfGaps } from './headway-utils';
 import { DEFAULT_CRITERIA } from './defaults';
-import { TIME_PERIODS } from '../shared/config.js';
+import { MINUTES_PER_DAY, TIME_PERIODS } from '../shared/config.js';
 import { TIER_MAXES } from '../shared/frequencyRules.js';
 import { isRailLikeRoute } from '../shared/modes.js';
 import { computeRawDepartures } from './transit-phase1';
@@ -41,7 +41,7 @@ export type TierDeterminer = (
     preCountedGraceViolations?: number,
 ) => string;
 
-// The near-miss settings live in shared/frequencyRules.ts (CIV-1612), so the Docs page states the same numbers.
+// The near-miss settings live in shared/rules/frequency.ts (CIV-1612), so the Docs page states the same numbers.
 export { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS };
 
 /** Departures packed into this many minutes or fewer are a burst, not a schedule. */
@@ -402,7 +402,7 @@ export function previousNightTailDays(rawData: readonly RawRouteDepartures[]): S
         if (!previous) continue;
         // A negative gap means the previous day already runs past this day's first departure in
         // 24:00+ times; these trips are then not its continuation.
-        const gap = first + 1440 - previous.last;
+        const gap = first + MINUTES_PER_DAY - previous.last;
         if (gap >= 0 && gap <= PREVIOUS_NIGHT_TAIL_MAX_GAP_MIN) tails.add(key);
     }
     return tails;

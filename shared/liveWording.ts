@@ -106,13 +106,13 @@ export const LIVE_VEHICLES_TITLE = 'Live vehicles';
 
 /**
  * The line under "Stops most often late", the same on the agency page and the route's Full analysis (CIV-1448):
- * "The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across all analysed routes." on the
+ * "The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across every route Live covers." on the
  * agency page; "… late (stops with 30+ departures)." on a route. With no dates, the days are left out.
  */
 export const lateStopsIntro = (count: number, o: { scope: 'agency' | 'route'; dates?: readonly string[] }): string => {
   const d = o.dates ?? [];
   const days = d.length ? `, ${dateRange(d[0], d[d.length - 1])}` : '';
-  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across all analysed routes' : ` ${RANKED_STOPS_NOTE}`}.`;
+  return `The ${countOf(count, 'stop')} where vehicles most often leave ${LATE_THRESHOLD}${days}${o.scope === 'agency' ? ', across every route Live covers' : ` ${RANKED_STOPS_NOTE}`}.`;
 };
 
 /** Which stops a route's late-stops list ranks, after the sentence it ends. */

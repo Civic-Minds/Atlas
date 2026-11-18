@@ -14,7 +14,7 @@ import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
-import { countText } from '../../shared/numberText';
+import { countText, countWord } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
 import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
@@ -583,8 +583,12 @@ export const ON_DEMAND_NOT_FOUND = "This on-demand service couldn’t be found."
 export const liveDrawError = (what: string) => `${what} could not be drawn.`;
 export const LIVE_METHOD_DRAW_ERROR = `${METHOD_TITLE} could not be drawn.`;
 /** `agency`: the agency's short name (useLiveAgencyName), never the address in capitals (CIV-1160 question 7). */
-export const liveNoAgencyAnalysis = (agency: string) => `Live has no route analysis for ${agency}.`;
-export const liveNoRoute = (route: string, agency: string) => `Live has no route ${route} for ${agency}.`;
+/** Live covers none of an agency's routes: the Live map's line, also the report page's (Ryan, item 40, 2026-11-17). */
+const liveCoversNoRoutes = (agency: string) => `Live doesn’t cover any ${agency} routes.`;
+/** Live doesn't cover this route: the Live map's line, also the report page's (Ryan, item 40, 2026-11-17). */
+const liveDoesNotCover = (agency: string, route: string) => `Live doesn’t cover ${agency} ${route}.`;
+export const liveNoAgencyAnalysis = (agency: string) => liveCoversNoRoutes(agency);
+export const liveNoRoute = (route: string, agency: string) => liveDoesNotCover(agency, route);
 export const LIVE_API_NO_ANSWER = 'The Live API did not answer. Start Live with "npm run live" and open this page on the address it prints.';
 export const LIVE_OFF_TITLE = 'Live is switched off in this copy of Atlas';
 /** The switched-off page's line, in parts around its two code snippets. */
@@ -594,8 +598,8 @@ export const LIVE_OFF_BODY = { start: 'Live only runs on your own computer. Star
 export function liveRouteEmptyNotice(agencyName: string, routeShortName: string, polled: boolean, followed: readonly string[]): string {
   if (!polled) {
     return followed.length > 0
-      ? `Live doesn’t cover ${agencyName} ${routeShortName}. It covers ${agencyName} routes ${joinList(followed)}.`
-      : `Live doesn’t cover any ${agencyName} routes.`;
+      ? `${liveDoesNotCover(agencyName, routeShortName)} It covers ${agencyName} routes ${joinList(followed)}.`
+      : liveCoversNoRoutes(agencyName);
   }
   return `No ${agencyName} ${routeShortName} vehicles are running right now.`;
 }
@@ -998,7 +1002,8 @@ export const EXTRA_MINUTES_AXIS = 'Extra minutes';
 export const LIVE_EXTRA_WAIT_CHART_CAPTION = 'How much longer riders wait than the schedule says, at each stop.';
 export const LIVE_EXTRA_WAIT_STOPS_CAPTION = 'Stops where riders wait longest compared with the schedule';
 export const LIVE_LATE_STOPS_CAPTION = 'Stops ranked by the share of late departures';
-export const LIVE_LATE_STOPS_TOP_CAPTION = 'The five stops with the highest share of late departures';
+/** The short list's caption, from the number of stops it lists (the dashboard's five). */
+export const liveLateStopsTopCaption = (n: number): string => `The ${countWord(n)} stops with the highest share of late departures`;
 export const LATE_PERCENT_LEGEND = 'Late %';
 /** The Service delivered table and tile: trips that ran, by day. */
 export const RAN_COLUMN = 'Ran';

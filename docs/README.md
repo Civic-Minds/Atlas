@@ -53,6 +53,7 @@ Read first: [Decisions](product/DECISIONS.md), then [Reprocessing shared route d
 | [Updating the map](data/MAP_UPDATES.md) | Open when you refresh many agencies at once or publish the result (`refresh-release`). |
 | [Staging R2](operations/STAGING.md) | Open when you rehearse a publish before touching the live bucket. |
 | [Catalog scan](../scripts/catalog-scan/README.md) | Open when you compare the catalog before and after a change. |
+| [Atlas MCP server](../scripts/mcp/README.md) | Open when you set up or extend the private local server that answers planner questions from Atlas data. |
 | [Performance benchmark](engineering/PERFORMANCE_BENCHMARK.md) | Open when a change might slow the site and you need a repeatable load test. |
 
 ## Adding or fixing an agency or feed

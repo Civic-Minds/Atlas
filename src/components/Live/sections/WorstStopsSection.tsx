@@ -12,7 +12,7 @@ import Section from './Section';
 import { mins } from './figures';
 import { lateShareColor } from '../lateShare';
 import LegendItem from '../../ui/LegendItem';
-import { LIVE_NO_STOP_TO_RANK, DEPARTURES_COLUMN, STOPS_MOST_OFTEN_LATE_LABEL, STOP_COLUMN, LIVE_LATE_STOPS_CAPTION, LIVE_LATE_STOPS_TOP_CAPTION } from '../../../content/noticeCopy';
+import { LIVE_NO_STOP_TO_RANK, DEPARTURES_COLUMN, STOPS_MOST_OFTEN_LATE_LABEL, STOP_COLUMN, LIVE_LATE_STOPS_CAPTION, liveLateStopsTopCaption } from '../../../content/noticeCopy';
 import LateStopsMap from '../LateStopsMapLazy';
 import { LATE_MAP_HINT, lateStopSpots } from '../lateStopsMapModel';
 import { countOf } from '../../../../shared/overflowText';
@@ -63,7 +63,7 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
       <SortableDataTable
         narrowFit
         rowTitle={s => `${s.name}: ${countText(s.n)} departures`}
-        caption={full ? LIVE_LATE_STOPS_CAPTION : LIVE_LATE_STOPS_TOP_CAPTION}
+        caption={full ? LIVE_LATE_STOPS_CAPTION : liveLateStopsTopCaption(limit)}
         defaultSort="late"
         rows={top}
         rowKey={s => `${s.stopId}-${s.directionId}`}

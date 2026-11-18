@@ -7,7 +7,7 @@ describe('GitHub release notes', () => {
     expect(releaseNotes('3.4.0')).toBe([
       '- **Compare mode**: now on the public map on desktop and tablet, each map with its own place, day and time',
       '- **Route cards on phones**: slide up from the bottom, with the route shown above',
-      '- **Agency and area pages**: every agency, metro area, state and province has its own frequency page',
+      '- **Agency and area pages**: agencies, metro areas, states and provinces have their own frequency pages',
       '- **Simpler route filters**: two switches hide occasional and part-time routes',
       '',
       'Full list of changes: [CHANGELOG.md](https://github.com/Civic-Minds/Atlas/blob/v3.4.0/CHANGELOG.md)',

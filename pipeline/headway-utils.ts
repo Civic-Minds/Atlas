@@ -155,7 +155,7 @@ export function headlineDeparturesInWindow(times: readonly number[], start: numb
   return t.length >= HEADLINE_MIN_DEPARTURES ? t : null;
 }
 
-/** Rail's own midday window (09:30 to 14:30); the constant lives in shared/frequencyRules.ts so the Docs page reads it too. */
+/** Rail's own midday window (09:30 to 14:30); the constant lives in shared/rules/frequency.ts so the Docs page reads it too. */
 export { RAIL_TIER_WINDOW };
 
 export function medianHeadwayInWindow(

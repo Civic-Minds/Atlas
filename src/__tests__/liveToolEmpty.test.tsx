@@ -19,7 +19,7 @@ describe('Live map without figures (CIV-1413 C)', () => {
   afterEach(() => vi.unstubAllGlobals());
   it('keeps the Atlas logo and the way back to the agency, not one bare line', async () => {
     render(<MemoryRouter initialEntries={['/apps/live/miway/tool']}><Routes><Route path="/apps/live/:agency/tool" element={<LiveToolPage />} /></Routes></MemoryRouter>);
-    expect(await screen.findByText(/no route analysis for/i)).toBeTruthy();
+    expect(await screen.findByText(/doesn’t cover any .* routes/i)).toBeTruthy();
     expect(screen.getByRole('link', { name: /← /, hidden: false }).getAttribute('href')).toBe('/apps/live/miway');
     expect(screen.getByLabelText('Atlas by Civic Minds')).toBeTruthy();
   });
