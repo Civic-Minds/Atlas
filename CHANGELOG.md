@@ -12,6 +12,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; cities without weekend data hide the Day chip and stay on Weekday
 - **Opening Research no longer reloads the page**: the Research links on About, the header and the footer, and its story cards, switch pages inside the app, so entering Research is as smooth as the other views
 - **Moving between Atlas pages no longer reloads the page**: links to Research, Docs, About, agencies, areas and the rest, and clicking a table row, switch pages inside the app, so each opens as smoothly as the other views
+- **The Filters count badge and the report-a-problem button no longer use solid dark fills**: they use the pale selected tint like the rest of the app, and the badge was hard to read in dark mode
 - **Area and state pages name agencies that only run at rush hour**: "Rush hour only: VRE." on the Washington, DC and Virginia pages (ACE in California, San Francisco and San Jose), each linking to its agency page; they were left out because the pages count weekday midday service
 - **History's frequency change box shows when a route's frequency moves to another grade (beta)**: a 2-minute shift such as 30 to 28 min no longer counts, while 20 to 15 always does, by the same rule Studio uses
 - **Opening and closing Compare and History is smooth**: the second map slides in and out and History fades, instead of the screen jumping between views

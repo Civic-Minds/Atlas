@@ -90,7 +90,6 @@ export const APP_TAB_INACTIVE = appTabInactive('border-[var(--border-primary)]')
 export const TOP_BAR_TAB_INACTIVE = appTabInactive(TOP_BAR_OUTLINE);
 export const SELECTION_ACTIVE = 'bg-[var(--selection-active-bg)] border-l-2 border-[var(--selection-active-border)]';
 export const SELECTION_ACTIVE_TEXT = 'text-[var(--selection-active-fg)]';
-export const ACTION_PRIMARY = 'bg-[var(--action-primary-bg)] border-[var(--action-primary-border)] text-[var(--action-primary-fg)]';
 
 /** Bottom map HUD badge (routes, coverage, loading, attribution) */
 export const MAP_BADGE = 'flex items-center gap-1.5 bg-[var(--bg-panel)] backdrop-blur-md border border-[var(--border-primary)] rounded-full px-3';
