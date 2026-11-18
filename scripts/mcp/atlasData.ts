@@ -200,6 +200,17 @@ export const parsePeriod = (period: unknown): PeriodKey | null => {
   return PERIOD_KEYS.find(k => k.toLowerCase() === q || PERIOD_LABELS[k].toLowerCase().replace(/\s/g, '') === q) ?? null;
 };
 
+/**
+ * Other routes of the agency with the same long name as this one (TTC 510 and its night 310, both "Spadina"), each with
+ * its first and last trips, so a question about a street's service can include the night route that takes over.
+ */
+export function sameNameRoutes(agency: CatalogAgency & { file: string }, day: DayType, r: RouteRows) {
+  const name = (r.longName ?? '').trim().toLowerCase();
+  if (!name) return [];
+  return routesOn(agency, day).filter(o => o.name !== r.name && (o.longName ?? '').trim().toLowerCase() === name)
+    .map(o => ({ route: o.name, mode: o.mode, service: serviceSpan(o) }));
+}
+
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export function routesMeeting(agency: CatalogAgency & { file: string }, day: DayType, period: PeriodKey, every: number) {
   const all = routesOn(agency, day);
@@ -428,8 +439,10 @@ export function branchesOf(agency: CatalogAgency & { file: string }, r: RouteRow
   const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
   return r.rows.map(row => {
     const order = (row.stopOrder as string[] | undefined) ?? [];
-    return { direction: String(row.directionId ?? '0'), towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) };
-  }).filter(b => b.trips > 0 && b.stops > 0).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
+    const towards = [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
+    // Some rows carry no stop list (night rows, short turns): give where they head, not empty ends.
+    return order.length ? { direction: String(row.directionId ?? '0'), towards, from: name.get(order[0]) ?? null, to: name.get(order[order.length - 1]) ?? null, stops: order.length, trips: trips(row) } : { direction: String(row.directionId ?? '0'), towards, trips: trips(row) };
+  }).filter(b => b.trips > 0 && (b.towards || 'stops' in b)).sort((a, b) => a.direction.localeCompare(b.direction) || b.trips - a.trips);
 }
 
 const words = (s: string) => s.toLowerCase().replace(/\bstn\b/g, 'station').replace(/\bst\b\.?/g, 'street').split(/\s*(?:\band\b|&|\bat\b|\/|,|\+)\s*/).map(w => w.replace(/[^a-z0-9 ]+/g, ' ').trim()).filter(Boolean);

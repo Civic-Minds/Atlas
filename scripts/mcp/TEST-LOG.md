@@ -16,6 +16,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.5.1 | 2026-11-17 | route_history marks impossible old figures (3 min or less on a route now at 30 or more) as doubtful |
 | 0.5.2 | 2026-11-17 | buses_needed reads Studio's buses-needed file instead of running the calculation (8+ minutes per question on TTC); no file, it says so; targets 10/15/20/30/60 only; the recovery option is gone |
 | 0.5.3 | 2026-11-17 | A wait Atlas counts to a period's edge (every 61 min for service every 10 until 1 AM) says it is the rule, in route_frequency and route_history; branches with no stops are dropped |
+| 0.5.4 | 2026-11-17 | A time window can run past midnight (10 PM to 4 AM); route_frequency names routes with the same name (510 and its night 310); rows with no stop list (night rows) show where they head |
 
 ## Standing questions
 
@@ -178,3 +179,13 @@ Chat: `_reports/mcp-tests/2026-11-17-round4.jsonl`. One headless chat, 4.5 minut
 | TTC 999 | route_frequency | No such route | Right | None |
 | Is the 29 late now | None | Schedules only, no live positions | Right | None |
 | 504 King Station to Dufferin Gate | trip_time | The 504 no longer goes to Dufferin Gate (December schedule) | Right | None |
+
+## 2026-11-17: Ryan's probe, day route to night route (510 and 310)
+
+Ryan asked how Atlas Studio handles the hand-over from a day route to its night route, since the 510 and 310 follow the same street ("Mostly - 510 half them turn back"). Checked by calling the tools directly on 0.5.3:
+
+| Check | Answer | Right? | Gap or fix |
+|---|---|---|---|
+| 510, weekday | Every 5–10 (busiest part, where the short turns overlap), every 10 late, last 1:47 AM; branches to Union, Queens Quay and King | Right | It didn't mention the 310. Fixed in 0.5.4: same-name routes listed with their hours |
+| 310, weekday | Every 20 from 2 to 6 AM, first 1:23 AM | Right | Its branches were dropped (night rows have no stop list). Fixed in 0.5.4 |
+| Spadina Station to Union, 10 PM to 4 AM | Refused "10 PM" to "4 AM"; "22:00" to "28:00" worked: 510, 310 and Line 1 counted together, waits up to 20 | Right once asked as 28:00 | Fixed in 0.5.4: a window may cross midnight. Only trips that go on to Union count, so the 510's short turns are left out |

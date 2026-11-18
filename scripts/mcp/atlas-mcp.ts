@@ -62,8 +62,10 @@ function needPeriod(p: unknown) {
 /** A time window from from_time/to_time, or null when neither is given. */
 function window(args: Args): { start: number; end: number; label: string; periods: string[] } | null {
   if (args.from_time == null && args.to_time == null) return null;
-  const start = data.parseClock(args.from_time ?? '0:00'), end = data.parseClock(args.to_time ?? '24:00');
-  if (start == null || end == null || end <= start) throw new Error('Give the window as from_time and to_time, such as "10:00" and "18:00".');
+  const start = data.parseClock(args.from_time ?? '0:00'), clockEnd = data.parseClock(args.to_time ?? '24:00');
+  // A window that ends earlier on the clock runs past midnight (10 PM to 4 AM), read as the schedule writes it (to 28:00).
+  const end = clockEnd != null && start != null && clockEnd <= start && clockEnd + 1440 - start <= 1440 ? clockEnd + 1440 : clockEnd;
+  if (start == null || end == null || end <= start) throw new Error('Give the window as from_time and to_time, such as "10:00" and "18:00", or "22:00" and "04:00" past midnight.');
   return { start, end, label: `${clockTime(start)}–${clockTime(end)}`, periods: data.periodsIn(start, end) };
 }
 /** Trip times read the schedule file on this Mac, which can be older than the schedule behind the map's figures: say so first. */
@@ -132,6 +134,7 @@ const handlers: Record<string, (args: Args) => unknown> = {
       periods: PERIOD_KEYS.map(p => data.periodFigure(r, p)),
       service: data.serviceSpan(r),
       branches: data.branchesOf(a, r),
+      ...(() => { const same = data.sameNameRoutes(a, dayType, r); return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end), windowNote: windowNote(w) } : {}),
       scheduleValidThrough: validThrough(a), source: SOURCE,
     };
@@ -263,7 +266,7 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.3' } });
+  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: '0.5.4' } });
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
