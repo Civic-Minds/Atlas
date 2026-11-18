@@ -23,7 +23,8 @@ export function memoryStore(d: MemoryData): AtlasStore {
       return all ? all.filter(f => f.geometry?.type === 'Point').map((f): McpStop => ({ id: String(f.properties.stopId), name: String(f.properties.stopName ?? ''), lon: f.geometry!.coordinates![0], lat: f.geometry!.coordinates![1], routeIds: ((f.properties.routeIds as string[] | undefined) ?? []).map(String) })) : null;
     },
     async index() { return d.index ?? null; },
-    async history() { return d.history ?? null; },
+    async historyIndex(slug) { const ag = d.history?.find(a => a.slug === slug); return ag ? ag.routes.map(r => [r.routeShortName, r.routeName ?? null]) : null; },
+    async historyRoute(slug, i) { return d.history?.find(a => a.slug === slug)?.routes[i] ?? null; },
     async comparison(slug) { return d.comparisons?.[slug] ?? null; },
   };
 }

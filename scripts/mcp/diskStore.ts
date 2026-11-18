@@ -58,11 +58,19 @@ export function writeIndexFile(index: IndexedAgency[]): string | null {
   return file;
 }
 
-export function diskStore(): AtlasStore {
+export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgency[] | null> } {
   let catalog: McpAgency[] | null = null;
   let meta: Map<string, McpAgencyMeta> | null = null;
   let index: IndexedAgency[] | null = null;
   let history: McpHistoryAgency[] | null = null;
+  const allHistory = async (): Promise<McpHistoryAgency[] | null> => {
+    if (history) return history;
+    const file = process.env.ATLAS_MCP_HISTORY_FILE ?? join(ATLAS_ROOT, 'tmp/history-cache/history-config.json');
+    if (!existsSync(file)) return null;
+    const j = JSON.parse(readFileSync(file, 'utf8'));
+    history = (Array.isArray(j) ? j : j.agencies) as McpHistoryAgency[];
+    return history;
+  };
   const features = new Map<string, RouteFile['features']>();
   /** A route file read once. Features and stops come from one read, as before. */
   const read = (slug: string): RouteFile['features'] | null => {
@@ -105,14 +113,11 @@ export function diskStore(): AtlasStore {
       index = JSON.parse(readFileSync(file, 'utf8')) as IndexedAgency[];
       return index;
     },
-    async history() {
-      if (history) return history;
-      const file = process.env.ATLAS_MCP_HISTORY_FILE ?? join(ATLAS_ROOT, 'tmp/history-cache/history-config.json');
-      if (!existsSync(file)) return null;
-      const j = JSON.parse(readFileSync(file, 'utf8'));
-      history = (Array.isArray(j) ? j : j.agencies) as McpHistoryAgency[];
-      return history;
+    async historyIndex(slug) {
+      const ag = (await allHistory())?.find(a => a.slug === slug);
+      return ag ? ag.routes.map(r => [r.routeShortName, r.routeName ?? null]) : null;
     },
+    async historyRoute(slug, i) { return (await allHistory())?.find(a => a.slug === slug)?.routes[i] ?? null; },
     async comparison(slug) {
       for (const dir of [join(ATLAS_ROOT, 'tmp/studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees/bundle/tmp/studio')]) {
         const file = join(dir, `${slug}-before-after.json`);
@@ -120,6 +125,7 @@ export function diskStore(): AtlasStore {
       }
       return null;
     },
+    allHistory,
     evict(slug) { features.delete(slug); },
   };
 }

@@ -82,6 +82,9 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   return releaseId;
 }
 
+/** A tester behind a link, with their calls in the last 24 hours. */
+type Tester = { name: string; used: number };
+
 type JsonRpc = { jsonrpc?: string; id?: string | number | null; method?: string; params?: { name?: string; arguments?: Record<string, unknown>; protocolVersion?: string } };
 const rpcResult = (id: unknown, result: unknown) => json({ jsonrpc: '2.0', id, result });
 const rpcError = (id: unknown, code: number, message: string, status = 200) => json({ jsonrpc: '2.0', id: id ?? null, error: { code, message } }, status);
@@ -93,7 +96,7 @@ async function readBody(request: Request): Promise<string | null> {
   return text.length > MAX_BODY_BYTES ? null : text;
 }
 
-async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, tester: string): Promise<Response> {
+async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, tester: Tester): Promise<Response> {
   if (request.method !== 'POST') return json({ error: 'Use POST for MCP requests.' }, 405, { Allow: 'POST' });
   const text = await readBody(request);
   if (text == null) return rpcError(null, -32600, 'Request too large.', 413);
@@ -115,17 +118,15 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
 /** Live tools stay hidden on the hosted server unless the LIVE_TOOLS var is "on" (CIV-1860: waiting on Ryan's call on showing Live figures to pilot testers). */
 const served = (name: string, env: object) => !LIVE_TOOLS.includes(name) || (env as { LIVE_TOOLS?: string }).LIVE_TOOLS === 'on';
 
-async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: string): Promise<Response> {
+async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env: TestEnv, ctx: ExecutionContext, tester: Tester): Promise<Response> {
   const name = params.name ?? '';
   const handler = served(name, env) ? handlers[name] : undefined;
   if (!handler) return rpcError(id, -32602, `Unknown tool ${name}`);
-  const { success } = await env.TESTER_LIMIT.limit({ key: tester });
+  const { success } = await env.TESTER_LIMIT.limit({ key: tester.name });
   // Said as a tool result, not a bare HTTP error, so the assistant can tell the person plainly.
   const limited = (message: string, retryAfter: string) => json({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: message }], isError: true } }, 200, { 'Retry-After': retryAfter });
   if (!success) return limited('Too many requests in a short time. Wait a minute and try again.', '60');
-  const since = new Date(Date.now() - 86_400_000).toISOString();
-  const used = await env.DB.prepare('SELECT COUNT(*) AS n FROM calls WHERE tester = ? AND at >= ?').bind(tester, since).first<{ n: number }>();
-  if ((used?.n ?? 0) >= Number(env.DAILY_CALL_CAP)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
+  if (tester.used >= Number(env.DAILY_CALL_CAP)) return limited("You've reached the daily fair-use limit for Atlas Studio (it counts the last 24 hours). Try again later.", '3600');
 
   const { question, ...args } = params.arguments ?? {};
   const started = Date.now();
@@ -140,14 +141,16 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
   const ms = Date.now() - started;
   const logged = text.length > MAX_LOGGED_RESULT ? `${text.slice(0, MAX_LOGGED_RESULT)}\n[cut: the answer was ${text.length} characters]` : text;
   ctx.waitUntil(env.DB.prepare('INSERT INTO calls (at, tester, tool, args, question, ok, result, ms, release_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(new Date().toISOString(), tester, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, ok ? 1 : 0, logged, ms, releaseId).run());
+    .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, ok ? 1 : 0, logged, ms, releaseId).run());
   return rpcResult(id, { content: [{ type: 'text', text }], ...(ok ? {} : { isError: true }) });
 }
 
 /** The tester behind a link's token, or null (unknown or revoked). */
-async function testerFor(token: string, env: Env): Promise<string | null> {
-  const row = await env.DB.prepare('SELECT name FROM testers WHERE token_hash = ? AND revoked_at IS NULL').bind(await sha256(token)).first<{ name: string }>();
-  return row?.name ?? null;
+async function testerFor(token: string, env: Env): Promise<Tester | null> {
+  // One round trip: who the link belongs to, and how many calls they made in the last 24 hours (the daily cap reads it).
+  const since = new Date(Date.now() - 86_400_000).toISOString();
+  const row = await env.DB.prepare('SELECT t.name, (SELECT COUNT(*) FROM calls c WHERE c.tester = t.name AND c.at >= ?) AS used FROM testers t WHERE t.token_hash = ? AND t.revoked_at IS NULL').bind(since, await sha256(token)).first<{ name: string; used: number }>();
+  return row ? { name: row.name, used: row.used } : null;
 }
 
 async function handleAdmin(request: Request, env: Env, url: URL): Promise<Response> {
