@@ -15,6 +15,7 @@ import { percentText } from '../../../../shared/numberText';
 
 import { BUNCHING_FORMS_TITLE, BY_TIME_OF_DAY_TITLE, GAPS_OFF_SCHEDULE_LABEL, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../../shared/liveWording';
 import { SubsectionTitle } from '../../ui/PageTitle';
+import { LIVE_MIN_SAMPLE } from '../../../../shared/rules/live';
 /** The one derivation of where bunching forms, so every surface draws the same numbers. */
 export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBand) {
   const rows = v3.bunching.filter(b => dir == null || b.directionId === dir).sort((a, b) => a.directionId - b.directionId);
@@ -25,7 +26,7 @@ export function bunchingModel(v3: LiveV3, dir: number | null, band: DashboardBan
 
 /** Gaps through the day at one stop of one direction: where bunching forms by default, any measured stop on request. */
 function GapsBlock({ data, gaps, label }: { data: DashboardBunchingBand; gaps: Record<string, StopGaps> | undefined; label: string }) {
-  const options = data.stops.filter(s => s.n >= 30 && gaps?.[s.stopId]);
+  const options = data.stops.filter(s => s.n >= LIVE_MIN_SAMPLE && gaps?.[s.stopId]);
   const preferred = [data.forms?.toStopId, data.biggestRise?.toStopId].find(id => id && options.some(o => o.stopId === id))
     ?? [...options].sort((a, b) => b.badShare - a.badShare)[0]?.stopId;
   const [picked, setPicked] = useState<string | null>(null);

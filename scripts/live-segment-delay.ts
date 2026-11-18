@@ -26,7 +26,7 @@ import {
 } from '../shared/segmentDelay.js';
 import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
 import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
-import { EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../shared/liveDelayStatus.js';
+import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
 import { branchOnlyStops, branchPatterns, mainStretchStops, regularPatterns, reliableStretch, stationOrLoop, RELIABLE_STOP_MIN_SHARE } from '../shared/mainStretch.js';
@@ -36,6 +36,7 @@ import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
+import { LIVE_MIN_SAMPLE } from '../shared/rules/live.js';
 
 const args: Record<string, string> = {};
 process.argv.slice(2).forEach((a, i, all) => { if (a.startsWith('--')) args[a.slice(2)] = all[i + 1]; });
@@ -932,7 +933,7 @@ const r3 = (x: number | null) => (x == null ? null : Math.round(x * 1000) / 1000
 // The Limits counts (unscheduled trips, mismatched trip numbers, near a limit) over the whole window, and over the good days
 // only, which the pages show so these shares leave out a bad-recording day like every other figure (CIV-910).
 const limitInput = { leftOut: leftOutRuns, kept: keptRuns, swaps: swapLog, runs: windowRuns };
-const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, withinMin: 0.75 };
+const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_ABOVE_MIN, withinMin: 0.75 };
 const windowLimits = limitCounts(limitInput, inWindow, limitCutoffs);
 const goodLimits = limitCounts(limitInput, inGoodDays, limitCutoffs);
 const nearCutoffShare = windowLimits.nearCutoffShare;
@@ -1030,7 +1031,7 @@ const bunchingV3 = [...stopOrder].map(([dir, order]) => ({
         .filter((s): s is { fromStopId: string; toStopId: string; gainedSec: number } => s.gainedSec != null)
         .sort((x, y) => y.gainedSec - x.gainedSec)[0] ?? null;
       // The first stop with enough gaps stands for the terminal end (no gaps are measured at the very first stop).
-      const term = stops.find(x => x.n >= 30);
+      const term = stops.find(x => x.n >= LIVE_MIN_SAMPLE);
       return {
         terminalBadShare: term ? term.badShare : null,
         standStill: { eventsPerDay: perDay(evs.length), minutesPerDay: perDay(evs.reduce((m, h) => m + (h.end - h.start) / 60, 0)) },
@@ -1292,7 +1293,7 @@ const lateByStopHour = new Map<string, { n: number; late: number }>();
 for (const r of goodRuns) for (const st of r.stops) {
   const k = `${r.directionId}|${st.stopId}|${st.hour % 24}`;
   const c = lateByStopHour.get(k) ?? { n: 0, late: 0 };
-  c.n++; if (st.delaySec / 60 >= LATE_AT_OR_ABOVE_MIN) c.late++;
+  c.n++; if (delayStatus(st.delaySec / 60) === 'late') c.late++;
   lateByStopHour.set(k, c);
 }
 const stopHoursV3: Record<string, Record<string, Array<[number, number | null, number, number | null, number | null, number | null] | null>>> = {};
@@ -1330,7 +1331,7 @@ for (const [d, ps] of Object.entries(patternsV3)) {
 const v3 = {
   schema: 3,
   window: { days: windowDates.length, dates: windowDates, requestedDays: DAYS, goodDates: goodWindowDates },
-  thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_AT_OR_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
+  thresholds: { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMin: LATE_ABOVE_MIN, bunchedGapSec: BUNCHED_GAP_SEC },
   method: 'Delay at a stop = the time the car left it (interpolated between archived positions, at the point 25 m past the stop on the trip\'s shape) minus the timetable\'s departure for that trip at that stop. Departure, not arrival: at terminals a car arrives and waits, which would look early. Trips are matched by trip number; a run 15+ min off its own trip is reassigned when another scheduled trip on the same pattern fits within 3 min at 80% of stops, otherwise dropped; passages over an hour off are dropped. Estimated from positions: the ' + LIVE.shortName + ' feed has no delay values. Positions come about every minute, so each time is interpolated; ' + Math.round(nearCutoffShare * 100) + '% of timepoint departures fall within 0.75 min of an on-time cutoff, where a small error can change the label. "Early" means the car left before the timetable\'s time; cars often wait to leave on time, so lateness is the reliable figure and the headline is the share that is not late.',
   leftOut: {
     /** Runs seen in the window under a trip number that is not in the timetable (unscheduled buses, extra moves). */

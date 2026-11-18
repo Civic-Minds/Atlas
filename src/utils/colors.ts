@@ -1,3 +1,4 @@
+import { delayStatus } from '../../shared/liveDelayStatus';
 import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, type HeadwayTier } from '../../shared/config';
 import type { NightServiceFrequency } from '../../shared/nightService';
 import {
@@ -47,11 +48,10 @@ export function headwayToTierColor(h: number | null | undefined, mode: ColorVisi
   return getTierColor('infrequent', mode);
 }
 
+/** The map's vehicle status: Live's one late/early rule (shared/liveDelayStatus.ts), or no data. */
 export function getVehicleStatus(delayMin: number | null): 'no_data' | 'early' | 'late' | 'on_time' {
   if (delayMin === null) return 'no_data';
-  if (delayMin <= -1.5) return 'early';
-  if (delayMin >= 5.5) return 'late';
-  return 'on_time';
+  return delayStatus(delayMin);
 }
 
 export function getVehicleColors(status: 'early' | 'late' | 'on_time' | 'no_data', mode: ColorVisionMode = 'default'): StatusColor {

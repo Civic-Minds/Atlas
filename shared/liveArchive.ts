@@ -1,4 +1,5 @@
 import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET } from './rules/live.js';
 
 export function liveArchiveClient(): S3Client | null {
   const accountId = process.env.R2_ACCOUNT_ID;
@@ -47,7 +48,7 @@ export function datesForWindow(nowMs: number, sinceMinutes: number): string[] {
 export async function fetchRecentPositions(
   slug: string,
   sinceMinutes: number,
-  bucket = process.env.R2_LIVE_BUCKET_NAME ?? 'atlas-live',
+  bucket = process.env.R2_LIVE_BUCKET_NAME ?? DEFAULT_LIVE_ARCHIVE_BUCKET,
 ): Promise<{ capturedAt: number; vehicles: ArchivedVehicle[] }[]> {
   const client = liveArchiveClient();
   if (!client) return [];

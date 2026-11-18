@@ -6,10 +6,10 @@
  * Everything TTC-specific (streetcar carhouses, the Dufferin Gate loop, "Eastbound"-style direction labels) lives in
  * the TTC entry here, not in the scripts. Other agencies get none of it.
  */
-import { LIVE_ARCHIVE_BUCKET_BY_SLUG } from './liveArchiveFeeds.js';
+import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
 
-/** The R2 bucket every archived agency uses unless LIVE_ARCHIVE_BUCKET_BY_SLUG gives it its own. */
-export const DEFAULT_LIVE_ARCHIVE_BUCKET = 'atlas-live';
+/** The default archive bucket: shared/rules/live.ts. */
+export { DEFAULT_LIVE_ARCHIVE_BUCKET };
 
 /** GTFS service days run past midnight; a position before this local hour belongs to the previous service date. */
 export const DEFAULT_SERVICE_DAY_END_HOUR = 4;

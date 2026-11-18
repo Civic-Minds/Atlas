@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { liveVehiclesEqual } from '../utils/liveVehiclesFingerprint';
+import { LIVE_POLL_SEC } from '../../shared/rules/live';
 
-export const POLL_INTERVAL_MS = 15_000;
+export const POLL_INTERVAL_MS = LIVE_POLL_SEC * 1000;
 
 /** The entries of a per-agency record for the agencies in `keep`; the same object when nothing goes. */
 export function keepSlugs<T>(prev: Record<string, T>, keep: ReadonlySet<string>): Record<string, T> {

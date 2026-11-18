@@ -6,6 +6,7 @@ import {
 import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
+import { LIVE_POLL_SEC } from '../shared/rules/live.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** CIV-1770: speeds from movement between polls, across requests. */
@@ -19,7 +20,7 @@ type FeedFailure = 'timeout' | 'http-error' | 'decode-error';
 
 // Vehicles are shared across viewers for ~15 s at the edge, so repeat calls
 // don't each hit the agency's API (and spend its key).
-const LIVE_CACHE_OK = 'public, max-age=0, s-maxage=15, stale-while-revalidate=15';
+const LIVE_CACHE_OK = `public, max-age=0, s-maxage=${LIVE_POLL_SEC}, stale-while-revalidate=${LIVE_POLL_SEC}`;
 // A brief edge cache on upstream failures stops retries from hammering a struggling feed.
 const LIVE_CACHE_UPSTREAM_ERROR = 'public, max-age=0, s-maxage=5';
 

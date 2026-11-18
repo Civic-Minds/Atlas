@@ -7,21 +7,12 @@
  */
 import { median, percentile } from './segmentDelay.js';
 
-export const BUNCHED_GAP_SEC = 120;
-export const GAPPED_FACTOR = 2;
+import { BASELINE_STOPS, BUNCHED_GAP_SEC, GAPPED_FACTOR, GRADUAL_CLIMB, LIVE_MIN_SAMPLE, RISE, STAYS_UP_M, STAYS_UP_SHARE, STAYS_UP_STOPS } from './rules/live.js';
+
+/** The bunching thresholds live in shared/rules/live.ts (rules move 2). */
+export { BASELINE_STOPS, BUNCHED_GAP_SEC, GAPPED_FACTOR, GRADUAL_CLIMB, RISE, STAYS_UP_M, STAYS_UP_SHARE, STAYS_UP_STOPS };
 /** A stop needs this many gaps before it counts. */
-export const MIN_GAPS = 30;
-/** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */
-export const RISE = 0.1;
-/** ...and the stops after it stay up: each is at least half the rise above where it started... */
-export const STAYS_UP_SHARE = 0.5;
-/** ...for at least the next 3 stops or about 1 km, whichever is longer. Recovering later (terminal regulation, short turns) does not undo where it formed. */
-export const STAYS_UP_STOPS = 3;
-export const STAYS_UP_M = 1000;
-/** The baseline is the mean bad share over this many first stops with enough gaps. */
-export const BASELINE_STOPS = 3;
-/** Smaller climbs than RISE that add up to at least this much over the route are called gradual. */
-export const GRADUAL_CLIMB = 0.05;
+export const MIN_GAPS = LIVE_MIN_SAMPLE;
 
 export interface GapWindow {
   /** Seconds between consecutive vehicles passing the stop, in one (date, band) window. */

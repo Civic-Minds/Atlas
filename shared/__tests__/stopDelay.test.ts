@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { adherenceReport, delayBuildup, MIN_SAMPLES, stopDelayStats, type RunDelays } from '../stopDelay';
-import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN } from '../liveDelayStatus';
+import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../liveDelayStatus';
 
 /** A run on direction 0 through stops A, B, C, D with the given delays in minutes. */
 const run = (date: string, delays: number[], hour = 8, directionId = 0): RunDelays => ({
@@ -9,9 +9,11 @@ const run = (date: string, delays: number[], hour = 8, directionId = 0): RunDela
 });
 
 describe('on-time thresholds (shared with the map)', () => {
-  it('uses -1.5 and +5.5 minutes, inclusive', () => {
-    expect([EARLY_AT_OR_BELOW_MIN, LATE_AT_OR_ABOVE_MIN]).toEqual([-1.5, 5.5]);
-    expect([-2, -1.5, -1.4, 0, 5.4, 5.5, 9].map(delayStatus)).toEqual(['early', 'early', 'on_time', 'on_time', 'on_time', 'late', 'late']);
+  it('uses -1.5 (inclusive) and more than +5.5 minutes', () => {
+    expect([EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN]).toEqual([-1.5, 5.5]);
+    // CIV-1812 item 7: "more than 5½ min" late, so exactly 5.5 is on time.
+    expect([delayStatus(5.5), delayStatus(5.51), delayStatus(-1.5)]).toEqual(['on_time', 'late', 'early']);
+    expect([-2, -1.5, -1.4, 0, 5.4, 5.5, 9].map(delayStatus)).toEqual(['early', 'early', 'on_time', 'on_time', 'on_time', 'on_time', 'late']);
   });
 });
 

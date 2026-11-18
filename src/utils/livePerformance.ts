@@ -5,15 +5,16 @@
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 import { lonLatPoint, metresBetween, projectOntoSegment } from '../../shared/geoDistance';
+import { LIVE_MIN_SAMPLE, LIVE_STALE_SEC } from '../../shared/rules/live';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
-export const MIN_STRIP_GAPS = 30;
+export const MIN_STRIP_GAPS = LIVE_MIN_SAMPLE;
 /** Rows in the card's gap strip; every stop is listed on the Details screen. */
 export const STRIP_ROWS = 8;
 /** A live vehicle more than this far from the line isn't placed. */
 const MAX_PLACE_M = 60;
-/** Positions older than this aren't used for "Right now". */
-export const LIVE_STALE_SEC = 180;
+/** Positions older than this aren't used for "Right now": shared/rules/live.ts. */
+export { LIVE_STALE_SEC };
 
 export type GapStat = HeadwayBandStat & { gapP10Sec: number; gapP90Sec: number };
 
