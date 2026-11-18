@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import JSZip from 'jszip';
 import { describe, expect, it } from 'vitest';
+import { publicTierOf } from '../../shared/frequencyRules';
 import { processGtfsBuffer } from '../process-core';
 import { oppositeSharedStops, pairOppositeStop } from '../../shared/sharedStops';
 import { alignedSharedRuns, qualifyingSharedRuns, SHARED_STRETCH_KEYS } from '../sharedStretch';
@@ -324,8 +325,10 @@ describe('shared stretch pooling (real feeds)', () => {
     expect(tail.length).toBeGreaterThan(0);
     expect(shared.map((s: string) => c.stopHeadways[s])).toEqual(shared.map(() => 8));
     for (const s of tail) expect(c.stopHeadways[s]).toBe(16);
-    // The stop grades change where the service does (CIV-152): the shared stops grade 10, the tail 20.
-    expect(new Set(shared.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['10']));
+    // The stop grades change where the service does (CIV-152): the shared stops grade 10 publicly, the tail 20. Since
+    // CIV-1813 a bus grades on the one scale too, so a shared stop grades 8 or 10 inside (its every-gap grade); both read
+    // as 10 (publicTierOf).
+    expect(new Set(shared.map((s: string) => publicTierOf(Number(c.stopTiers[s]))))).toEqual(new Set([10]));
     expect(new Set(tail.map((s: string) => c.stopTiers[s]))).toEqual(new Set(['20']));
     expectStretchesSound(routes);
     // Northbound starts at Dufferin Gate or Princes' Gates and every bus runs to Wilson. This
