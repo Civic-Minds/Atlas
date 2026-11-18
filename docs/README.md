@@ -121,7 +121,7 @@ Read first: [Architecture](ARCHITECTURE.md) for where data lives, then the [Rese
 | [Platform roadmap](roadmap/PLATFORM.md) | Open when you look for platform to-dos on History, change analysis or public tools. |
 | [Technical roadmap](roadmap/TECHNICAL.md) | Open when you look for technical to-dos on Live providers, rendering or analysis. |
 | [Vision](product/VISION.md) | Open when a product choice needs the underlying philosophy. |
-| [Strategy](product/STRATEGY.md) | Open when wording or priorities depend on competitors or positioning. |
+| [Strategy](product/STRATEGY.md) | Open when wording or priorities depend on competitors or positioning, or to see which cities and agencies each product focuses on. |
 | [Product research](product/RESEARCH.md) | Open when you need evidence of what agencies struggle with. |
 | [Experiment ideas](roadmap/EXPERIMENT_IDEAS.md) | Open when you look for ideas not yet committed to; implemented ones are in the root EXPERIMENTS.md. |
 | [Factbook proposal](roadmap/experiments/FACTBOOK.md) | Open when you consider building the Factbook; it is only a proposal. |
