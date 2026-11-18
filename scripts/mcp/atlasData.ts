@@ -9,7 +9,7 @@
  * - tmp/process-preview/<slug>/<slug>.json: a local `npm run process -- --dry-run` of the agency.
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
-import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpHistoryAgency, McpStop, PeriodFigure, RouteSummary } from '../../shared/mcpStore';
+import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, TIME_PERIODS, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
@@ -105,24 +105,18 @@ export function summarize(r: RouteRows): RouteSummary {
   };
 }
 
-const summaries = new Map<string, Promise<Partial<Record<DayType, RouteSummary[]>> | null>>();
-/** A store's ready-made summaries for an agency (the split release), or null when it makes them on the fly. */
-function readySummaries(slug: string) {
-  if (!store.summaries) return null;
-  if (!summaries.has(slug)) summaries.set(slug, store.summaries(slug));
-  return summaries.get(slug)!;
-}
+const summaries = new Map<string, Promise<RouteSummary[] | null>>();
 const daySummaries = new Map<string, RouteSummary[]>();
 
 /** Each route on a day as a summary: read ready-made where the store has them, else made from its rows. */
 export async function routeList(agency: CatalogAgency, day: DayType): Promise<RouteSummary[]> {
-  const ready = readySummaries(agency.slug);
-  if (ready) {
-    const all = await ready;
-    if (!all) throw new Error(`No route data for ${agency.slug}.`);
-    return all[day] ?? [];
-  }
   const id = `${agency.slug}|${day}`;
+  if (store.summaries) {
+    if (!summaries.has(id)) summaries.set(id, store.summaries(agency.slug, day));
+    const ready = await summaries.get(id)!;
+    if (!ready) throw new Error(`No route data for ${agency.slug}.`);
+    return ready;
+  }
   if (!daySummaries.has(id)) daySummaries.set(id, (await routesOn(agency, day)).map(summarize));
   return daySummaries.get(id)!;
 }
@@ -350,6 +344,50 @@ export async function agencyIndex(): Promise<IndexedAgency[] | null> {
   return (index ??= await store.index());
 }
 
+const FERRY = modeLabel(ROUTE_TYPE.FERRY);
+/** What an agency runs, for the bus, rail and ferry filters: rail when it has rail routes, ferry when every weekday route is a ferry, else bus. */
+export function kindOfAgency(a: Pick<IndexedAgency, 'railRoutes' | 'days'>): 'bus' | 'rail' | 'ferry' {
+  const weekday = a.days.Weekday ?? [];
+  return a.railRoutes > 0 ? 'rail' : weekday.length > 0 && weekday.every(r => r.mode === FERRY) ? 'ferry' : 'bus';
+}
+/** The ranking list's row for an indexed agency. */
+export const rankAgencyOf = (a: IndexedAgency): RankAgency => ({ slug: a.slug, name: a.name, region: a.region, country: a.country, partOf: a.partOf, railRoutes: a.railRoutes, weekdayRoutes: a.days.Weekday?.length ?? 0, kind: kindOfAgency(a) });
+/** Each route's wait in each part of the day, in the shared PERIOD_KEYS order. */
+export const waitsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): Array<Array<number | null>> => routes.map(r => PERIOD_KEYS.map(k => r.wait[k] ?? null));
+export const labelsOf = (routes: NonNullable<IndexedAgency['days'][DayType]>): RouteLabel[] => routes.map(r => [r.route, r.name]);
+
+/** The agencies ranking reads, or null when the index hasn't been built. A hosted store gives them ready-made, without any agency's routes. */
+export async function rankAgencies(): Promise<RankAgency[] | null> {
+  if (store.rankAgencies) return store.rankAgencies();
+  return (await agencyIndex())?.map(rankAgencyOf) ?? null;
+}
+/** Each agency's route waits on a day. */
+export async function rankWaits(day: DayType): Promise<Record<string, Array<Array<number | null>>>> {
+  if (store.rankWaits) return (await store.rankWaits(day)) ?? {};
+  return Object.fromEntries(((await agencyIndex()) ?? []).map(a => [a.slug, waitsOf(a.days[day] ?? [])]));
+}
+/** An agency's route names on a day, in the order of its waits. */
+export async function rankLabels(slug: string, day: DayType): Promise<RouteLabel[]> {
+  if (store.rankLabels) return (await store.rankLabels(slug))?.[day] ?? [];
+  return labelsOf(((await agencyIndex())?.find(a => a.slug === slug))?.days[day] ?? []);
+}
+/** Agencies with a weekday route whose name holds the text, each with up to six of those routes' names (finding a service brand such as Viva). */
+export async function agenciesWithRouteName(text: string): Promise<Array<{ agency: string; routes: string[] }>> {
+  const q = text.trim().toLowerCase();
+  const labelOf = ([route, name]: RouteLabel) => `${route}${name ? ` ${name}` : ''}`;
+  if (store.routeNameText) {
+    const [agencies, texts] = await Promise.all([rankAgencies(), store.routeNameText()]);
+    return (agencies ?? []).flatMap(a => {
+      const names = [...new Set((texts?.[a.slug] ?? '').split('\n').filter(line => line && line.toLowerCase().includes(q)))];
+      return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
+    });
+  }
+  return ((await agencyIndex()) ?? []).flatMap(a => {
+    const names = [...new Set((a.days.Weekday ?? []).filter(r => `${r.route} ${r.name ?? ''}`.toLowerCase().includes(q)).map(r => labelOf([r.route, r.name])))];
+    return names.length ? [{ agency: a.name, routes: names.slice(0, 6) }] : [];
+  });
+}
+
 /** Country names as the catalog's regions map them, matched loosely ("US", "USA", "United States"). */
 export function sameCountry(country: string | null, query: string): boolean {
   if (!country) return false;
@@ -369,9 +407,19 @@ export async function stopsOf(agency: CatalogAgency): Promise<Stop[]> {
   return stops;
 }
 
+/** The names of the stops a route's rows use: from the store's ready-made list for the route, else from the agency's stops. */
+async function stopNamesFor(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<Map<string, string>> {
+  if (store.stopNames) {
+    const names = await store.stopNames(agency.slug, day, r.key);
+    if (!names) throw new Error(`No stop names for route ${r.name} of ${agency.slug}.`);
+    return new Map(Object.entries(names));
+  }
+  return new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
+}
+
 /** Where each row of an agency's route ends (its last stop's name), for grouping branches that end at the same place. */
-export async function endOfRows(agency: CatalogAgency): Promise<(row: ShapeProperties) => string | null> {
-  const name = new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
+export async function endOfRows(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<(row: ShapeProperties) => string | null> {
+  const name = await stopNamesFor(agency, day, r);
   return row => { const order = (row.stopOrder as string[] | undefined) ?? []; return order.length ? name.get(order[order.length - 1]) ?? null : null; };
 }
 
@@ -380,8 +428,8 @@ export async function endOfRows(agency: CatalogAgency): Promise<(row: ShapePrope
  * direction that end at the same stop are one row (TTC 29 northbound runs to Wilson Station from either of two loops):
  * their trips are counted once where they carry the same departures (a shared trunk), and added where they differ.
  */
-export async function branchesOf(agency: CatalogAgency, r: RouteRows) {
-  const name = new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
+export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRows) {
+  const name = await stopNamesFor(agency, day, r);
   type Branch = { direction: string; towards: string | null; from?: string | null; to?: string | null; stops?: number; trips: number; startsAt?: string[] };
   const groups = new Map<string, { rows: ShapeProperties[]; branch: Branch; hours: Map<string, number>; from: string[]; headsigns: Set<string> }>();
   const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
@@ -428,19 +476,31 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   const parts = words(place);
   const stops = await stopsOf(agency);
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
-  const near = stops.filter(s => seeds.some(t => metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres));
-  const routeNames = new Map<string, { name: string; longName: string | null; mode: string }>();
-  for (const d of DAY_TYPES) for (const r of await namesOn(agency, d)) for (const id of r.routeIds) routeNames.set(id, { name: r.name, longName: r.longName, mode: r.mode });
+  // A stop can only be in range if it is within the range's degrees of latitude and longitude of a seed: check that first, the exact distance after.
+  const dLat = (metres / 111_000) * 1.5;
+  const near = stops.filter(s => seeds.some(t => {
+    if (Math.abs(s.lat - t.lat) > dLat) return false;
+    if (Math.abs(s.lon - t.lon) > dLat / Math.max(0.05, Math.cos((t.lat * Math.PI) / 180))) return false;
+    return metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres;
+  }));
+  const routeNames = await routeIdNames(agency);
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
   return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
 }
 
-/** Each route's names and route ids on a day: from the summaries where the store has them, else straight from the rows (no figures to work out). */
-async function namesOn(agency: CatalogAgency, day: DayType): Promise<Array<Pick<RouteSummary, 'name' | 'longName' | 'mode' | 'routeIds'>>> {
-  if (store.summaries) return routeList(agency, day);
-  return (await routesOn(agency, day)).map(r => ({ name: r.name, longName: r.longName, mode: r.mode, routeIds: r.rows.map(row => String(row.routeId)) }));
+/** Each route id's names and mode (the last day a route appears wins, as the map's days run Weekday, Saturday, Sunday): from the store's ready-made list, else from the rows. */
+async function routeIdNames(agency: CatalogAgency): Promise<Map<string, { name: string; longName: string | null; mode: string }>> {
+  const out = new Map<string, { name: string; longName: string | null; mode: string }>();
+  if (store.routeNames) {
+    const list = await store.routeNames(agency.slug);
+    if (!list) throw new Error(`No route data for ${agency.slug}.`);
+    for (const [id, name, longName, mode] of list) out.set(id, { name, longName, mode });
+    return out;
+  }
+  for (const d of DAY_TYPES) for (const r of await routesOn(agency, d)) for (const row of r.rows) out.set(String(row.routeId), { name: r.name, longName: r.longName, mode: r.mode });
+  return out;
 }
 
 /** Agencies whose centre is within `km` of a place: another agency, or a city an agency lists. */
@@ -455,18 +515,17 @@ export async function agenciesNear(query: string, km = 60) {
   return { near: anchor?.name ?? query, km, agencies: all.map(a => ({ a, d: dist(a.center) })).filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.a.name, region: x.a.region ?? null, km: Math.round(x.d) })) };
 }
 
-/** Atlas's published History data (atlas/history-config.json). */
-export const historyAgencies = (): Promise<McpHistoryAgency[] | null> => store.history();
-
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
 export async function routeHistory(agency: CatalogAgency, routeQuery: string, day: DayType) {
   const slug = agency.slug;
-  const ag = (await historyAgencies())?.find(a => a.slug === slug);
-  if (!ag) return null;
+  const names = await store.historyIndex(slug);
+  if (!names) return null;
   const q = routeQuery.trim().toLowerCase();
-  const route = ag.routes.find(r => r.routeShortName.toLowerCase() === q) ?? ag.routes.find(r => (r.routeName ?? '').toLowerCase() === q)
-    ?? ag.routes.find(r => `${r.routeShortName} ${r.routeName ?? ''}`.toLowerCase().includes(q));
-  if (!route) return { route: null, routes: ag.routes.length };
+  let at = names.findIndex(([short]) => short.toLowerCase() === q);
+  if (at < 0) at = names.findIndex(([, name]) => (name ?? '').toLowerCase() === q);
+  if (at < 0) at = names.findIndex(([short, name]) => `${short} ${name ?? ''}`.toLowerCase().includes(q));
+  const route = at >= 0 ? await store.historyRoute(slug, at) : null;
+  if (!route) return { route: null, routes: names.length };
   const snaps = [...snapshotsNewestFirst(usableSnapshots(route.snapshots))].reverse();
   const newest = snaps[snaps.length - 1];
   const valueOf = (s: typeof snaps[number] | undefined, k: PeriodKey) => { if (!s) return null; const v = historyDayPeriodValue(s as never, day, k); return v.kind === 'value' ? v.min : null; };

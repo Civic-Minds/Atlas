@@ -4,6 +4,8 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "atlas-studio-mcp",
   "main": "src/index.ts",
+  // The business account (Ryan, 2026-11-18): wrangler may be logged in to a second one.
+  "account_id": "334f99db1478f9e95eaea65b3b9e1fdd",
   "compatibility_date": "2026-11-18",
   "compatibility_flags": ["nodejs_compat"],
   // Invocation logs would record each request URL, and a tester's link carries their token in the path: keep them off.

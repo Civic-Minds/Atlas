@@ -7,11 +7,11 @@
  * Summaries are made with the same functions route_frequency uses, rows are the map's normalised rows, so the hosted
  * tools answer as the local ones do (scripts/mcp/goldenRun.mjs checks it).
  */
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { splitPaths, type SplitManifest } from '../../shared/mcpSplitStore';
-import { cachedReleaseId, diskStore, indexFile } from './diskStore';
-import { agencyFiles } from './splitBuild';
+import { cachedReleaseId, diskStore } from './diskStore';
+import { agencyFiles, historyFiles, rankFiles, slimCatalog } from './splitBuild';
 console.log = (...args: unknown[]) => console.error(...args);
 const data = await import('./atlasData');
 
@@ -30,12 +30,12 @@ for (const q of only) { const a = await data.findAgency(q); if (!a) throw new Er
 const agencies = have.filter(a => !wanted.size || wanted.has(a.slug));
 console.error(`${agencies.length} agencies to split into ${out}`);
 
-put(splitPaths.catalog, catalog);
+put(splitPaths.catalog, slimCatalog(catalog));
 put(splitPaths.meta, Object.fromEntries(meta));
-const idx = indexFile();
-if (idx && existsSync(idx)) copyFileSync(idx, join(out, splitPaths.index));
-const hist = await store.history();
-if (hist) put(splitPaths.history, hist);
+const index = await store.index();
+if (index) for (const [path, value] of rankFiles(index)) put(path, value);
+const history = await store.allHistory();
+if (history) for (const [path, value] of historyFiles(history)) put(path, value);
 
 for (const [i, a] of agencies.entries()) {
   for (const [path, value] of await agencyFiles(a)) put(path, value);

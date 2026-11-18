@@ -29,7 +29,7 @@ async function results(data: typeof import('./atlasData')) {
     routes: rows.map(x => x.name),
     periods: PERIOD_KEYS.map(k => data.periodFigure(r, k)),
     service: data.serviceSpan(r),
-    branches: await data.branchesOf(a, r),
+    branches: await data.branchesOf(a, 'Weekday', r),
     meeting: await data.routesMeeting(a, 'Weekday', 'midday', 20),
     byHours: await data.routesByHours(a, 'Weekday', 1320, null),
     near: await data.routesNear(a, 'Dufferin'),

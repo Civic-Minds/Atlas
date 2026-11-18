@@ -38,6 +38,11 @@ export interface RouteSummary {
   bounds: { first: number | null; last: number | null } | null;
 }
 
+/** One agency in the ranking list: what the size and kind filters read, without its routes. */
+export interface RankAgency { slug: string; name: string; region: string | null; country: string | null; partOf: string | null; railRoutes: number; weekdayRoutes: number; kind: 'bus' | 'rail' | 'ferry' }
+/** A route's name as ranking and search list it: [route, name]. */
+export type RouteLabel = [route: string, name: string | null];
+
 export interface McpHistoryRoute { routeShortName: string; routeName?: string; snapshots: Array<{ label: string; year: number } & Record<string, unknown>> }
 export interface McpHistoryAgency { slug: string; routes: McpHistoryRoute[] }
 
@@ -54,17 +59,32 @@ export interface AtlasStore {
   stops(slug: string): Promise<McpStop[] | null>;
   /** The ranking index, or null when it hasn't been built for the current data. */
   index(): Promise<IndexedAgency[] | null>;
-  /** Atlas's published History data, or null. */
-  history(): Promise<McpHistoryAgency[] | null>;
+  /** The routes History has for an agency, in order, as [short name, name]; null when it has none. */
+  historyIndex(slug: string): Promise<Array<[string, string | null]> | null>;
+  /** One of those routes' History, by its place in historyIndex. */
+  historyRoute(slug: string, i: number): Promise<McpHistoryRoute | null>;
   /** Studio's schedule comparison for an agency, or null when none was built. */
   comparison(slug: string): Promise<StudioBeforeAfterFile | null>;
   /**
-   * Optional: an agency's route summaries by day, ready made (the split release). A store without it is read through
-   * its route features and summarised on the fly, with the same function.
+   * Optional, from here on: ready-made pieces a hosted store reads in small files (the split release). A store without
+   * them is read through its route features and index and made on the fly, with the same functions.
    */
-  summaries?(slug: string): Promise<Partial<Record<DayType, RouteSummary[]>> | null>;
-  /** Optional: one route's rows on a day, already normalised as the map normalises them (the split release). */
+  /** An agency's route summaries on one day. */
+  summaries?(slug: string, day: DayType): Promise<RouteSummary[] | null>;
+  /** One route's rows on a day, already normalised as the map normalises them. */
   routeRows?(slug: string, day: DayType, key: string): Promise<Array<Record<string, unknown>> | null>;
+  /** The names of the stops one route's rows use, by stop id. */
+  stopNames?(slug: string, day: DayType, key: string): Promise<Record<string, string> | null>;
+  /** Each route id's names and mode, on whichever day the route last appears: [id, name, long name, mode]. */
+  routeNames?(slug: string): Promise<Array<[string, string, string | null, string]> | null>;
+  /** The agencies ranking reads. */
+  rankAgencies?(): Promise<RankAgency[] | null>;
+  /** Each agency's route waits on a day: per route, the wait in each part of the day (shared PERIOD_KEYS order). */
+  rankWaits?(day: DayType): Promise<Record<string, Array<Array<number | null>>> | null>;
+  /** An agency's route names by day, in the order of its waits. */
+  rankLabels?(slug: string): Promise<Partial<Record<DayType, RouteLabel[]>> | null>;
+  /** Each agency's weekday route names as one text, a line per route, for finding a service brand in route names. */
+  routeNameText?(): Promise<Record<string, string> | null>;
   /** Frees an agency's loaded route data (the index build holds one agency at a time). */
   evict?(slug: string): void;
 }

@@ -1,27 +1,40 @@
 /**
  * The split release store (CIV-1840): the hosted Atlas Studio MCP reads small files instead of an agency's whole route
- * file (TTC's is 25 MB). Per agency: a summary of every route per day (what the list tools read), one rows file per
- * route and day (what route_frequency reads), and a stops file. Beside them: the manifest, the public catalog, the
- * agency short names, the ranking index and History. `read` fetches one file by its path under the release's mcp folder
- * and gives null when there is none, so the same store reads a folder on disk (tests, the build check), an R2 binding or a URL.
+ * file (TTC's is 25 MB) and the whole ranking index and History, so each call parses little (the free plan allows 10 ms
+ * of CPU a request). Per agency and day: a summary of every route (what the list tools read); per route and day: its rows
+ * with the names of the stops they use (route_frequency); per agency: its stops and each route id's names. Release-wide:
+ * the manifest, the public catalog (only the fields the tools use), agency short names, the ranking lists (agencies,
+ * route waits per day, route names per agency), a text of weekday route names, and History per agency and route.
+ * `read` fetches one file by its path under the release's mcp folder and gives null when there is none, so the same
+ * store reads a folder on disk (tests, the build check), an R2 binding, static assets or a URL.
  */
 import type { DayType } from './rules/days';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
-import type { AtlasStore, IndexedAgency, McpAgency, McpAgencyMeta, McpHistoryAgency, McpStop, RouteSummary } from './mcpStore';
+import type { AtlasStore, McpAgency, McpAgencyMeta, McpHistoryRoute, McpStop, RankAgency, RouteLabel, RouteSummary } from './mcpStore';
 
 export type SplitRead = (path: string) => Promise<unknown | null>;
 
 export interface SplitManifest { releaseId: string; builtAt: string; agencies: string[] }
+
+/** A stop as the stops file writes it: [id, name, longitude, latitude, route ids]. */
+export type SplitStop = [string, string, number, number, string[]];
+/** A route's rows file: the rows, and the names of the stops they use by stop id. */
+export interface SplitRows { rows: Array<Record<string, unknown>>; names: Record<string, string> }
 
 /** Where each file sits under the release's mcp folder. One place, used by the build and the store. */
 export const splitPaths = {
   manifest: 'manifest.json',
   catalog: 'catalog.json',
   meta: 'meta.json',
-  index: 'index.json',
-  history: 'history.json',
-  summary: (slug: string) => `agencies/${slug}/summary.json`,
+  rankAgencies: 'rank/agencies.json',
+  rankWaits: (day: DayType) => `rank/waits-${day}.json`,
+  rankLabels: (slug: string) => `rank/labels/${slug}.json`,
+  routeNameText: 'rank/route-names.json',
+  historyIndex: (slug: string) => `history/${slug}/index.json`,
+  historyRoute: (slug: string, i: number) => `history/${slug}/${i}.json`,
+  summary: (slug: string, day: DayType) => `agencies/${slug}/summary-${day}.json`,
   stops: (slug: string) => `agencies/${slug}/stops.json`,
+  routeNames: (slug: string) => `agencies/${slug}/routes.json`,
   rows: (slug: string, day: DayType, key: string) => `agencies/${slug}/rows/${day}/${encodeURIComponent(key)}.json`,
   comparison: (slug: string) => `agencies/${slug}/comparison.json`,
 };
@@ -47,12 +60,22 @@ export function splitStore(read: SplitRead): AtlasStore {
     async available() { return new Set((await manifest()).agencies); },
     async meta() { return new Map(Object.entries((await get<Record<string, McpAgencyMeta>>(splitPaths.meta)) ?? {})); },
     async routeFeatures() { return null; },
-    async stops(slug) { return get<McpStop[]>(splitPaths.stops(slug)); },
-    async index() { return get<IndexedAgency[]>(splitPaths.index); },
-    async history() { return get<McpHistoryAgency[]>(splitPaths.history); },
+    async stops(slug) {
+      const stops = await get<SplitStop[]>(splitPaths.stops(slug));
+      return stops ? stops.map(([id, name, lon, lat, routeIds]): McpStop => ({ id, name, lon, lat, routeIds })) : null;
+    },
+    async index() { return null; },
+    async historyIndex(slug) { return get<Array<[string, string | null]>>(splitPaths.historyIndex(slug)); },
+    async historyRoute(slug, i) { return get<McpHistoryRoute>(splitPaths.historyRoute(slug, i)); },
     async comparison(slug) { return get<StudioBeforeAfterFile>(splitPaths.comparison(slug)); },
-    async summaries(slug) { return get<Partial<Record<DayType, RouteSummary[]>>>(splitPaths.summary(slug)); },
-    async routeRows(slug, day, key) { return get<Array<Record<string, unknown>>>(splitPaths.rows(slug, day, key)); },
+    async summaries(slug, day) { return get<RouteSummary[]>(splitPaths.summary(slug, day)); },
+    async routeRows(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.rows ?? null; },
+    async stopNames(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.names ?? null; },
+    async routeNames(slug) { return get<Array<[string, string, string | null, string]>>(splitPaths.routeNames(slug)); },
+    async rankAgencies() { return get<RankAgency[]>(splitPaths.rankAgencies); },
+    async rankWaits(day) { return get<Record<string, Array<Array<number | null>>>>(splitPaths.rankWaits(day)); },
+    async rankLabels(slug) { return get<Partial<Record<DayType, RouteLabel[]>>>(splitPaths.rankLabels(slug)); },
+    async routeNameText() { return get<Record<string, string>>(splitPaths.routeNameText); },
     evict(slug) { for (const k of [...memo.keys()]) if (k.startsWith(`agencies/${slug}/`)) memo.delete(k); },
   };
 }
