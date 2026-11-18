@@ -57,7 +57,7 @@ describe('route metadata table', () => {
       .concat(constantPaths(main, /<Route path={([A-Z_]+)}/g))
       .filter(p => !p.startsWith('/dev/') && p !== '/apps/night' && p !== '/docs' && p !== '/agencies' && p !== '/agency/:slug' && p !== '/area/:slug' && p !== '/region/:slug' && p !== '/apps/live/:agency/:route' && p !== '/apps/live/:agency' && p !== '/apps/live/:agency/tool'); // /apps/night and /docs only redirect; the agency index is prerendered per build; the Live route and agency dashboards are local-only
     const appPaths = [...app.matchAll(/'(\/apps\/[a-z]+)':/g)].map(m => m[1]).concat(constantPaths(app, /^\s*\[([A-Z_]+)\]:/gm));
-    const research = [...readFileSync('shared/config.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]).concat(PAGE_PATHS.RESEARCH_PATH);
+    const research = [...readFileSync('shared/rules/flags.ts', 'utf8').matchAll(/: '(\/research[^']*)'/g)].map(m => m[1]).concat(PAGE_PATHS.RESEARCH_PATH);
     const known = new Set([...SEO_ROUTES.map(r => r.path), ...UNREACHABLE_APP_PATHS]);
     for (const p of [...routePaths, ...appPaths, ...research, '/']) expect(known.has(p), p).toBe(true);
     const served = new Set([...routePaths, ...appPaths, ...research, '/']);

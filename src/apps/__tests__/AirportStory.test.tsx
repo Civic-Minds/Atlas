@@ -44,7 +44,7 @@ describe('AirportStory (CIV-1550, dev only)', () => {
     // Nothing imports the page directly.
     expect(main).not.toContain('AirportStory');
     // Not in the site's route lists (sitemap, prerender) or the published research list.
-    for (const f of ['shared/config.ts', 'shared/seo.ts', 'src/data/research.ts']) expect(readFileSync(f, 'utf8')).not.toContain('/research/airports');
+    for (const f of ['shared/config.ts', 'shared/rules/flags.ts', 'shared/seo.ts', 'src/data/research.ts']) expect(readFileSync(f, 'utf8')).not.toContain('/research/airports');
   });
 
   it('shows the scroll story draft: title placeholder, the weekday map section, the follow-up sections and the method', () => {
