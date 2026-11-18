@@ -21,6 +21,11 @@ describe('coverage rows (CIV-1871)', () => {
     expect(more.find(r => r.slug === 'zeta')!.focus).toBe(false);
   });
 
+  it('keeps the place beside a name shared by several feeds, so they can be told apart', () => {
+    const two = coverageRows({ ...base, agencies: [{ slug: 'ttc', name: 'MTA NYCT Bus', place: 'Bronx' }, { slug: 'kingston', name: 'MTA NYCT Bus', place: 'Queens Village' }] });
+    expect(two.map(r => `${r.name} · ${r.place}`)).toEqual(['MTA NYCT Bus · Bronx', 'MTA NYCT Bus · Queens Village']);
+  });
+
   it('reads each column from its source', () => {
     expect(row('ttc')).toMatchObject({ history: true, liveRecorded: true, liveReport: true, liveRealtime: true, studioSchedule: false, studioVehicles: true });
     expect(row('kingston')).toMatchObject({ history: false, liveRealtime: false, studioSchedule: true, studioVehicles: true });

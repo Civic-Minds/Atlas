@@ -15,7 +15,7 @@ export const MCP_COVERAGE_PREFIX = 'live';
 
 export interface CoverageSources {
   /** The agencies on the map (the public catalog). */
-  agencies: ReadonlyArray<{ slug: string; name: string }>;
+  agencies: ReadonlyArray<{ slug: string; name: string; /** The place beside the name when the name alone isn't unique ("MTA NYCT Bus", Manhattan), as the agencies page shows it. */ place?: string }>;
   /** History's agencies (shared/data/history-agencies.json). */
   historySlugs: readonly string[];
   /** Every agency Live's archivers know (LIVE_ARCHIVE_SLUGS). */
@@ -33,6 +33,7 @@ export interface CoverageSources {
 export interface CoverageRow {
   slug: string;
   name: string;
+  place: string | null;
   focus: boolean;
   history: boolean;
   /** Live: recorded now, on Live's own map, and whether it has a Live report page (a paused recorder gives nothing usable, so it isn't shown). */
@@ -77,6 +78,7 @@ export function coverageRows(s: CoverageSources): CoverageRow[] {
     return {
       slug: a.slug,
       name: a.name,
+      place: a.place ?? null,
       focus: isFocusAgency(a.slug),
       history: s.historySlugs.includes(a.slug),
       liveRecorded: recordedNow(a.slug, s),
