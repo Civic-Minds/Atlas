@@ -1,5 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom } from '../../shared/studioAgencies';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 vi.mock('../components/MapApp/MapAppMap', () => ({ default: () => null }));
@@ -10,7 +14,7 @@ vi.mock('../../shared/config', async (importOriginal) => {
 });
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
-const { StudioGroupFigures, STUDIO_AGENCIES, studioAgencyFrom } = await import('../StudioVehiclesPage');
+const { StudioGroupFigures } = await import('../StudioVehiclesPage');
 const { groupFor } = await import('../StudioPage');
 
 describe('Studio link in the header (CIV-1694)', () => {
@@ -92,11 +96,29 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
   });
 });
 
-describe('Studio agencies (CIV-1806)', () => {
+describe('Studio agencies, from the built files (CIV-1806, CIV-1827)', () => {
+  it('lists every agency with a Schedule Changes file, Kingston first, and nothing typed by hand', () => {
+    expect(studioAgenciesFromFiles(['rtd-denver-before-after.json', 'hamilton-before-after.json', 'kingston-before-after.json', 'kingston-vehicles.json', 'hamilton-vehicles.json']))
+      .toEqual(['kingston', 'hamilton', 'rtd-denver']);
+  });
+
+  it('adds a newly built file to the menu with no code change; a buses file alone adds nothing', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'studio-'));
+    for (const f of ['kingston-before-after.json', 'hamilton-before-after.json', 'ttc-vehicles.json']) writeFileSync(join(dir, f), '{}');
+    expect(studioAgenciesFromFiles(readdirSync(dir))).toEqual(['kingston', 'hamilton']);
+    writeFileSync(join(dir, 'ttc-before-after.json'), '{}');
+    expect(studioAgenciesFromFiles(readdirSync(dir))).toEqual(['kingston', 'hamilton', 'ttc']);
+    rmSync(dir, { recursive: true });
+  });
+
   it('opens the agency the address names, when Studio has it, and Kingston otherwise', () => {
-    expect(STUDIO_AGENCIES).toEqual(['kingston', 'hamilton', 'rtd-denver']);
-    expect(studioAgencyFrom('hamilton')).toBe('hamilton');
-    expect(studioAgencyFrom(null)).toBe('kingston');
-    expect(studioAgencyFrom('ttc')).toBe('kingston');
+    const list = ['kingston', 'hamilton', 'rtd-denver'];
+    expect(studioAgencyFrom('hamilton', list)).toBe('hamilton');
+    expect(studioAgencyFrom(null, list)).toBe('kingston');
+    expect(studioAgencyFrom('ttc', list)).toBe('kingston');
+    expect(studioAgencyFrom('ttc', ['hamilton'])).toBe('hamilton');
+    // Before the list loads, the address as written.
+    expect(studioAgencyFrom('rtd-denver', null)).toBe('rtd-denver');
+    expect(studioAgencyFrom(null, null)).toBe(STUDIO_DEFAULT_AGENCY);
   });
 });

@@ -9,6 +9,12 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 - **[Platform](./PLATFORM.md)**: History & change analysis, public tools (shareable views, multi-agency merges).
 - **[Technical](./TECHNICAL.md)**: Future engineering direction for live data, rendering, and analysis infrastructure.
 
+### Atlas Studio
+
+The planner toolkit, local only for now (DECISIONS.md, 2026-11-15).
+- **First page: Live** (CIV-1828): the Live tool's route performance views, in the Studio shell (page menu, agency menu, address). Ryan, 2026-11-17: "1 but second page is to be determined later".
+- **Second page: open.** Candidates are in the Studio plan; Schedule Changes isn't a page of its own.
+
 ### Future (not now)
 
 Both depend on a licence decision for Atlas's data (Ryan, 2026-11-17).

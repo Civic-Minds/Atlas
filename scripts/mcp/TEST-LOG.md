@@ -15,6 +15,10 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.5.0 | 2026-11-17 | routes_near, route_history, buses_needed, branches in route_frequency, list_agencies near a place; "Blue" finds the Blue Line; a newer schedule file is read without a restart |
 | 0.5.1 | 2026-11-17 | route_history marks impossible old figures (3 min or less on a route now at 30 or more) as doubtful |
 | 0.5.2 | 2026-11-17 | buses_needed reads Studio's buses-needed file instead of running the calculation (8+ minutes per question on TTC); no file, it says so; targets 10/15/20/30/60 only; the recovery option is gone |
+| 0.5.3 | 2026-11-17 | A wait Atlas counts to a period's edge (every 61 min for service every 10 until 1 AM) says it is the rule, in route_frequency and route_history; branches with no stops are dropped |
+| 0.5.4 | 2026-11-17 | A time window can run past midnight (10 PM to 4 AM); route_frequency names routes with the same name (510 and its night 310); rows with no stop list (night rows) show where they head |
+| 0.6.0 | 2026-11-17 | trip_time and combined_frequency read an agency's supplemental schedules too (LA Metro's rail lines) and take also_agencies, matching a place on another agency's stops within a 500 m walk (downtown LA to Santa Monica: E Line, 720, 20 and Big Blue Bus R10 together) |
+| 0.6.1 | 2026-11-17 | routes_by_hours (routes that end early or start late); the newest schedule file is picked by the date in its name, not when it was copied; buses_needed says not to work out other frequencies |
 
 ## Standing questions
 
@@ -155,3 +159,86 @@ Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl` (from "Which TTC routes run e
 ## 2026-11-17: round 4, first run (stopped)
 
 Version 0.5.1, one headless chat. Stopped about 8 minutes in, before the first answer finished. Each buses_needed call started Studio's whole calculation on TTC's schedule (8+ minutes at 35–50% CPU). Two ran at once, alongside Studio's own work, and the chat retried. Fix in 0.5.2: buses_needed reads Studio's buses-needed file and never runs the calculation itself. Round 4 runs again on 0.5.2.
+
+## 2026-11-17: round 4, on 0.5.2
+
+Chat: `_reports/mcp-tests/2026-11-17-round4.jsonl`. One headless chat, 4.5 minutes. All 15 questions went in at once and were answered in one reply.
+
+| Question | Tools used | Answer | Right? | Gap or fix |
+|---|---|---|---|---|
+| TTC 29 on Saturday | route_frequency | Busiest and quietest figures by period; 5:46 AM to 2:08 AM | Right | None |
+| 29 branches | route_frequency | Dufferin Gate Loop and Princes' Gates, from Wilson | Right | None |
+| Buses for the 29, AM peak, and with 10% | buses_needed | Said Atlas has no TTC figures yet and didn't estimate | Right to decline | TTC's buses-needed file isn't built; the 10% option is gone in 0.5.2. Build TTC's file once, at low priority |
+| Other routes, Dufferin to Wilson | combined_frequency | The 929; every 4–6 together on weekdays; the 329 has no daytime trips | Right | None |
+| 929 vs 29 | trip_time | 4 min faster typical, 8 in the morning rush | Right (weekday) | None |
+| US bus peers of HSR | rank_agencies | Lubbock 6, LADOT DASH 5, Grand Rapids 4 … | Right | None |
+| Routes near Bathurst and Bloor | routes_near | Line 2, 7, 511, 300, 307 | Right | None |
+| The 504 since 2019 | route_history | Roughly halved, with a table by period | Right, except it called 2026 late night "every 61" a counting error | That is Atlas's rule for service ending partway through a period. Fixed in 0.5.3 |
+| HealthLine over time | route_history | 7–9 in 2015, 10 in 2018, 15 from 2021 | Right | None |
+| The Cherry streetcar | route_frequency, routes_near | No route by that name; the 504's Distillery branch | Right | route_frequency listed a branch with no stops. Fixed in 0.5.3 |
+| Agencies around Hamilton | list_agencies near | 12 within 60 km, nearest first | Right | None |
+| Blue Line, Sunday evening | route_frequency, trip_time | Every 10; 39 min, older schedule noted | Right | None |
+| TTC 999 | route_frequency | No such route | Right | None |
+| Is the 29 late now | None | Schedules only, no live positions | Right | None |
+| 504 King Station to Dufferin Gate | trip_time | The 504 no longer goes to Dufferin Gate (December schedule) | Right | None |
+
+## 2026-11-17: Ryan's probe, day route to night route (510 and 310)
+
+Ryan asked how Atlas Studio handles the hand-over from a day route to its night route, since the 510 and 310 follow the same street ("Mostly - 510 half them turn back"). Checked by calling the tools directly on 0.5.3:
+
+| Check | Answer | Right? | Gap or fix |
+|---|---|---|---|
+| 510, weekday | Every 5–10 (busiest part, where the short turns overlap), every 10 late, last 1:47 AM; branches to Union, Queens Quay and King | Right | It didn't mention the 310. Fixed in 0.5.4: same-name routes listed with their hours |
+| 310, weekday | Every 20 from 2 to 6 AM, first 1:23 AM | Right | Its branches were dropped (night rows have no stop list). Fixed in 0.5.4 |
+| Spadina Station to Union, 10 PM to 4 AM | Refused "10 PM" to "4 AM"; "22:00" to "28:00" worked: 510, 310 and Line 1 counted together, waits up to 20 | Right once asked as 28:00 | Fixed in 0.5.4: a window may cross midnight. Only trips that go on to Union count, so the 510's short turns are left out |
+
+## 2026-11-17: Ryan's probe, LA across agencies
+
+Ryan: "Might be interesting to ask questions about somewhere like LA, where service by multiple agencies can sometimes overlap depending on where you're headed. For example, between DTLA and Santa Monica." Checked by calling the tools directly on 0.5.4:
+
+| Check | Answer | Right? | Gap or fix |
+|---|---|---|---|
+| 7th Street / Metro Center to Downtown Santa Monica, LA Metro | No stop matching | Wrong | LA Metro's rail lines are only in its supplemental schedule (lacmta--supplemental-1), which the tools never read. Fixed in 0.6.0 |
+| Same, Big Blue Bus | No stop matching | Wrong | Big Blue Bus names its stops "4TH NB & COLORADO (Downtown SM Station)". Fixed in 0.6.0: a place matched on one agency is found on another by stops within 500 m |
+| Same, both agencies, 0.6.0 | E Line every 10 at midday, 720 every 15, together every 7; R10 3 PM trips only; E Line 47 min, R10 46–66, 720 about 88 | Right | LA's rail schedule on this Mac ended Oct 21; the answer says so |
+
+## 2026-11-17: final round, on 0.6.0
+
+Ryan: "This next round of questions can be the last round for now", and "Not all our questions need to be about Toronto too". 32 questions, one headless chat, asked one at a time (each waits for the answer before the next goes in), 22 minutes. The round-5 trick questions, LA across agencies, and planners' questions. Chat: `_reports/mcp-tests/2026-11-17-final-round.jsonl`; questions in `2026-11-17-final-round-questions.txt`.
+
+| # | Question (short) | Tools | Answer | Right? | Gap or fix |
+|---|---|---|---|---|---|
+| 1 | 29 "every 3 min all day", buses? | route_frequency, buses_needed | Corrected the premise (every 8, 16 per branch); worked out ~40 buses itself | Premise right; the bus count is its own arithmetic | buses_needed now says not to work out other frequencies (0.6.1) |
+| 2 | How often does route 2 run? | route_frequency | Took the TTC from the chat; Line 2 every 3 | Right | None |
+| 3 | Calgary 3 on Christmas | route_frequency | Schedule ends Dec 20, no holidays listed; Sunday figures as a likely guide | Right | None |
+| 4 | Hamilton LRT open? | web | Not open; under construction, with sources | Right | Not Atlas data; said so |
+| 5 | Chicago buses on the road now | None | No live positions; offered scheduled count | Right | None |
+| 6 | Most frequent HSR route | routes_at_frequency | 2 Barton, every 6 midday | Right | Looked at weekday morning and midday only, and said so |
+| 7 | Chicago every 4 at 3 AM | routes_at_frequency | None; Red Line every 15 is best; 19 of 132 run overnight | Right | None |
+| 8 | MAX Blue, 6:30–7:15 AM | route_frequency (window) | Every 7–8 until 7, then 14–15 | Right, by hour | Hourly only; it said so |
+| 9 | Best transit in Canada | rank_agencies | Toronto leads on frequency; said what frequency leaves out | Right | One line on reliability came from memory |
+| 10 | 99 B-Line vs 52 | route_frequency, buses_needed | Every 5 both on the busiest stretch; 52's branches every 20; TransLink buses not built | Right | TransLink's buses file not built (by design) |
+| 11 | 12 an hour = every 12? | None | No, every 5; and the 29 isn't 12 an hour | Right | None |
+| 12 | Lakeshore West "on the TTC" | route_frequency | It's GO, not TTC; every 30 midday; schedule to Nov 27 | Right | None |
+| 13 | 504 every 4 in 2017, still? | route_history | No; table 2017 vs now | Right | None |
+| 14 | Is Edmonton 4 frequent? | route_frequency | Yes, every 15 or better 9 AM–11 PM, one 22-min gap at rush | Right | None |
+| 15 | "So it's every 16?" | None | No; 16 was the TTC 29's branch figure | Right | None |
+| 16 | Most frequent route in Canada | rank_agencies | Expo Line every 2 at the AM peak | Right | None |
+| 17 | Calgary better than Edmonton? | compare_agencies | Edmonton more routes every 15 at every period checked | Right on frequency | Ridership claim from memory, labelled |
+| 18 | "Dufferen station" | routes_near, route_frequency | Read as Dufferin; 29 and 929 every 8, about every 4 together | Right | Assumed even spacing instead of calling combined_frequency; said so |
+| 19 | "Missisauga" every 10 at rush | routes_at_frequency | 2 and 66 at the PM peak only | Right | None |
+| 20 | Wilson to Union on the 29 | trip_time | The 29 doesn't go there; Line 1, about 30 min | Right | None |
+| 21 | Every route every 5 at midday | rank_agencies | 27 routes at 21 agencies; explained why famous lines drop out | Right | None |
+| 22 | "Just estimate" RapidRide E crowding | route_frequency, web | Estimate from published boardings and trips, labelled as its own | Fair | Atlas has no crowding data; said so |
+| 23 | DTLA to Santa Monica, every agency | combined_frequency + also_agencies | Every 7 together: E Line 10, 720 15; R10 none midday | Right | LA rail schedule on this Mac ended Oct 21; said so |
+| 24 | E Line vs Big Blue Bus R10 | trip_time | E Line 47 min; R10 46–66, 3 trips | Right | None |
+| 25 | Blue Line closure, shuttle buses | route_frequency, trip_time | ~19 buses at every 6, labelled as its own estimate, with a table | Fair | Atlas has no shuttle tool (no road travel time). Idea for later |
+| 26 | 510 and 310 late at night | combined_frequency | They take turns; 10 then 20 min | Right | Can't list exact departures at the hand-over. Idea: a departures tool |
+| 27 | OC Transpo routes ending before 10 PM Sunday | routes_at_frequency, 7 × route_frequency | 14 routes, unfinished; listed 138 as ending by 7 (it runs to 9:16) and missed 110 | Partly wrong | New tool routes_by_hours (0.6.1): 13 routes, exact last trips |
+| 28 | Kingston 12 slowest hours | trip_time | 2–5 PM, 3–4 min longer | Right for the file it read | It read the Sep 13 file, not the Oct 8 one: files were picked by copy time. Fixed in 0.6.1. Kingston's current schedule (Nov 14) isn't on this Mac |
+| 29 | Kingston routes worse in the last change | schedule_changes | 7B removed; 12 and 32 30 → 31 | Right | None |
+| 30 | Kingston 12 buses at every 15 | buses_needed | 9 buses for 12 and 31 together, 4 now | Right | None |
+| 31 | Kipling, subway to MiWay | routes_near, routes_at_frequency | Each MiWay route's frequency and typical wait | Right | Typical wait (half the gap) is its own arithmetic, labelled |
+| 32 | TransLink stops near frequent routes | None | Can't from Atlas; listed the 11 frequent routes | Right to decline | Idea: a coverage tool (stops within a walk of frequent routes) |
+
+Ideas left for later (not built): shuttle buses for a closure (needs road travel times), a departures list at a stop, coverage within a walk of frequent routes.
