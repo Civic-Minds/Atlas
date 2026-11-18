@@ -30,8 +30,8 @@ describe('internal links (CIV-1872)', () => {
     const internal = screen.getByRole('navigation', { name: 'Internal pages' });
     expect([...internal.querySelectorAll('a')].map(a => a.textContent?.replace(/\s*→$/, ''))).toEqual(INTERNAL_HEADER_LINKS.map(l => l.label));
     // More carries the same arrow as Go to Atlas.
-    expect(internal.querySelectorAll('a')[3].innerHTML).toBe(screen.getByRole('link', { name: /Go to Atlas/ }).innerHTML.replace('Go to Atlas', 'More'));
-    expect(internal.querySelectorAll('a')[3]).toHaveAttribute('href', INTERNAL_PATH);
+    expect(internal.querySelectorAll('a')[INTERNAL_HEADER_LINKS.length - 1].innerHTML).toBe(screen.getByRole('link', { name: /Go to Atlas/ }).innerHTML.replace('Go to Atlas', 'More'));
+    expect(internal.querySelectorAll('a')[INTERNAL_HEADER_LINKS.length - 1]).toHaveAttribute('href', INTERNAL_PATH);
     expect(screen.getByRole('navigation', { name: 'Site navigation' }).textContent).not.toMatch(/Studio|Coverage/);
     expect(screen.getAllByRole('link', { name: /Go to Atlas/ })).toHaveLength(1);
     // The row carries the word Internal on the left, in the pale selected tint (never a dark fill).
@@ -40,8 +40,10 @@ describe('internal links (CIV-1872)', () => {
   });
 
   it('lists every internal page once on the home page, and the header links are among them or More', () => {
-    const paths = INTERNAL_GROUPS.flatMap(g => g.pages.map(p => p.path));
-    expect(new Set(paths).size).toBe(paths.length);
+    const pages = INTERNAL_GROUPS.flatMap(g => g.pages);
+    const paths = pages.map(p => p.path);
+    // Live reports has no page of its own: its card opens Coverage, which links each report.
+    expect(new Set(pages.map(p => p.title)).size).toBe(pages.length);
     for (const link of INTERNAL_HEADER_LINKS.filter(l => l.path !== INTERNAL_PATH)) expect(paths).toContain(link.path);
   });
 

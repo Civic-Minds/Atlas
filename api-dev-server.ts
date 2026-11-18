@@ -34,6 +34,8 @@ async function loadHandlers() {
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/live-stop'] = liveStop.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
+  const { default: mcpCoverage } = await import('./local-api/mcp-coverage.js');
+  handlers['/api/mcp-coverage'] = mcpCoverage.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
 }
 
