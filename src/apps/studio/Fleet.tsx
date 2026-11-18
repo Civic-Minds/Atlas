@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { MAP_COLOURS_LABEL } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import Panel, { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
@@ -14,7 +14,6 @@ import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
 import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
-import { TIME_OF_DAY_LABEL } from '../../../shared/liveWording';
 import { studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, vehiclesTitleText } from '../../../shared/studioWording';
@@ -132,7 +131,7 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
     ready ? { key: 'route', label: T.route, value: route ?? '', options: routeOptions, onPick: r => setRoute(r || null), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' } : null,
-    periods.length ? { key: 'period', label: TIME_OF_DAY_LABEL, value: period, options: periods.map(k => [k, PERIOD_LABELS[k]] as const), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-40' } : null,
+    periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periods.map(k => [k, PERIOD_LABELS[k]] as const), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-40' } : null,
   ];
   return (
     <>
@@ -173,7 +172,7 @@ function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
       {route && routeLabel ? (
         // CIV-1827: one card for the open route, as the main map's route card: the way back, the route's name, what
         // changed between the two dates, then what running it at other frequencies takes.
-        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={routeLabel.text}>
+        <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={routeLabel.text}>
           <PanelBody className="px-4 pt-4 pb-2">
             <SidebarCardShell>
               <SidebarCardHeaderBlock>

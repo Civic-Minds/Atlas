@@ -591,12 +591,18 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     const measure = () => {
       const search = searchBarRef.current?.getBoundingClientRect();
-      if (search) {
+      // A hidden box (Studio) measures zero: the cards keep their own width, left where the box would start.
+      if (search && search.width > 0) {
         setSidebarLeft(search.left);
         setSearchBarWidth(search.width);
         return;
       }
-      const header = headerLeftRef.current?.getBoundingClientRect();
+      setSearchBarWidth(undefined);
+      // Where the search box would start: just right of the logo, by the row's own gap.
+      const row = headerLeftRef.current;
+      const logo = row?.firstElementChild?.getBoundingClientRect();
+      if (row && logo && logo.width > 0) { setSidebarLeft(logo.right + (parseFloat(getComputedStyle(row).columnGap) || 0)); return; }
+      const header = row?.getBoundingClientRect();
       if (header) setSidebarLeft(header.left + 138);
     };
     measure();
@@ -737,8 +743,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         <div className="flex-1 min-w-0 sm:flex">
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
-        {/* Studio (CIV-1828) searches nothing yet: the box keeps its place, which places the sidebar card under it, unseen. */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''} ${inStudio ? 'invisible' : ''}`} aria-hidden={inStudio || undefined}>
+        {/* Studio (CIV-1828) searches nothing yet: the box is left out, as the phone's resting search is, and the tabs close up. */}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed || inStudio ? 'hidden' : ''}`}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input

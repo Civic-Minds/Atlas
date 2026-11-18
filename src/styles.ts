@@ -67,6 +67,10 @@ export const SEARCH_BAR_WIDTH = 'w-full sm:w-72 xl:w-80';
 /** Width constant for panels and cards; matches the responsive search bar on desktop. */
 export const SIDEBAR_PANEL_WIDTH = 'w-[calc(100vw-3rem)] sm:w-72 lg:w-72 xl:w-80 max-w-sm';
 
+/** The wide sidebar card, for a card whose tables need more room than the search bar's width (Studio's route card,
+ *  CIV-1828): the width Studio's old frame gave its sidebar, never past the window. */
+export const SIDEBAR_PANEL_WIDE_WIDTH = 'w-[calc(100vw-3rem)] sm:w-[24.5rem] max-w-[calc(100vw-3rem)]';
+
 /** Shared glass pill geometry; surfaces and borders are supplied by each state. */
 export const GLASS_PILL = 'backdrop-blur-md rounded-full';
 

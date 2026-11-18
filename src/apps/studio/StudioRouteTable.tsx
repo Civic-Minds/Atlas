@@ -97,14 +97,14 @@ export function StudioRouteTable({ change, beforeDate, afterDate, period }: { ch
     <ScrollX className="-mx-2">
       <DataTable
         caption={label.text}
-        layout="fixed"
+        layout="fill"
         rows={rows}
         rowKey={r => r.key}
         rowCurrent={r => r.key === period}
         columns={[
           { key: 'label', header: '', rowHeader: true, width: 6, className: 'font-normal', cell: r => r.label },
-          { key: 'before', header: dateRange(beforeDate, beforeDate), width: 6.5, cell: (r: FigureRow) => r.before },
-          { key: 'after', header: dateRange(afterDate, afterDate), width: 6.5, cell: (r: FigureRow) => r.after },
+          { key: 'before', header: dateRange(beforeDate, beforeDate), cell: (r: FigureRow) => r.before },
+          { key: 'after', header: dateRange(afterDate, afterDate), cell: (r: FigureRow) => r.after },
         ]}
       />
     </ScrollX>

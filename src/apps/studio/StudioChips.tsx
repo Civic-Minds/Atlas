@@ -5,7 +5,7 @@ import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/Ch
 /** One of Studio's menus in the top bar: what its chip shows, its choices and the current one. */
 export interface StudioMenu {
   key: string;
-  /** The menu's name, for screen readers (the chip shows the current choice). */
+  /** The menu's name, which its chip shows, as the main map's Frequency, Day and Time chips do. */
   label: string;
   value: string;
   /** Each choice: its key, what its row shows, and its plain-text name when that isn't plain text. */
@@ -27,7 +27,7 @@ export default function StudioChips({ container, menus }: { container: Element |
   return createPortal(
     <div ref={rowRef} className="hidden sm:flex items-center gap-2 pointer-events-auto">
       {menus.map(m => m && (
-        <ChipMenu key={m.key} label={m.options.find(([k]) => k === m.value)?.[1]} ariaLabel={m.label} active={m.active ?? true}
+        <ChipMenu key={m.key} label={m.label} active={m.active ?? true}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
           {m.options.map(([k, text, plain]) => (
             <button key={k} type="button" aria-pressed={k === m.value} aria-label={plain}
