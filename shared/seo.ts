@@ -188,7 +188,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     path: FEATURE_ROUTES.frequentService.map,
     title: tabTitle('Frequent Service Map'),
-    description: 'Routes that meet Atlas sustained-frequency thresholds, mapped across agencies.',
+    description: 'Routes that meet Atlas consistent-frequency thresholds, mapped across agencies.',
     indexable: false,
     gate: 'researchApps',
   },

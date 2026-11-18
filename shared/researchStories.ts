@@ -43,7 +43,7 @@ export const OVERNIGHT_STORY: ResearchStoryText = {
   cardLink: 'Find routes running all night',
   heading: 'Which routes run overnight?',
   tabTitle: tabTitle(titleCase(OVERNIGHT_TITLE)),
-  description: 'Find routes with sustained scheduled service from 2–5 AM.',
+  description: 'Find routes with consistent scheduled service from 2–5 AM.',
   shareImageAlt: OVERNIGHT_TITLE,
 };
 
