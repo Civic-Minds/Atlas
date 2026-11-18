@@ -4,7 +4,7 @@ import type { ShapeProperties, DayType, TimePeriod } from './useIntervalStats';
 import { routeListDisplay } from '../utils/effectiveHeadway';
 import { routeLabels } from '../utils/format';
 import { compareHeadwayThenNumber } from '../utils/sortCompare';
-import { metresBetween } from '../../shared/geoDistance';
+import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 
 
@@ -56,8 +56,8 @@ export function useNearbyRoutes(
       for (const f of fc.features) {
         if (f.geometry.type !== 'Point') continue;
         const [flon, flat] = (f.geometry as GeoJSON.Point).coordinates;
+        if (!withinMetres({ lat: flat, lon: flon }, { lat, lon }, NEARBY_ROUTES_RADIUS_M)) continue;
         const d = metresBetween({ lat, lon }, { lat: flat, lon: flon });
-        if (d > NEARBY_ROUTES_RADIUS_M) continue;
         const p = f.properties as unknown as ShapeProperties;
         if (!p.stopId || !(p as any).routeIds?.length) continue;
         nearbyStops.push({

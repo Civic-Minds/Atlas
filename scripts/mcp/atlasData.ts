@@ -10,7 +10,7 @@
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
 import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RouteLabel, RouteSummary } from '../../shared/mcpStore';
-import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, TIME_PERIODS, formatPeriodRange, type PeriodKey } from '../../shared/config';
+import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
 import { routeGroupKey } from '../../shared/routeGroupKey';
 import { normalizeRouteFilterFeatures } from '../../shared/routeHeadwayFilter';
@@ -20,8 +20,8 @@ import { compareRouteNumber } from '../../shared/sortCompare';
 import { modeLabel, effectiveMode } from '../../shared/modes';
 import { routeListCellText, routeListDisplay, routeListFilterDisplay } from '../../src/utils/effectiveHeadway';
 import type { ShapeProperties } from '../../src/hooks/useIntervalStats';
-import { routeRuns } from '../../shared/routeRuns';
-import { metresBetween } from '../../shared/geoDistance';
+import { departuresInPeriod, routeRuns } from '../../shared/routeRuns';
+import { metresBetween, withinMetres } from '../../shared/geoDistance';
 import { snapshotsNewestFirst, usableSnapshots } from '../../src/utils/historySnapshots';
 import { historyDayPeriodValue } from '../../src/utils/historyYearMap';
 import { PEOPLE_MOVER_MODE, RAIL_LIKE_ROUTE_TYPES, ROUTE_TYPE } from '../../shared/rules/modes';
@@ -153,13 +153,6 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   return contains[0] ?? null;
 }
 
-/** The trips a route's rows run in a period, from their departures by hour (GTFS hours, so 25 is 1 AM). */
-function departuresIn(rows: ShapeProperties[], period: PeriodKey): number {
-  const p = TIME_PERIODS.find(t => t.key === period)!;
-  let n = 0;
-  for (const row of rows) for (const [h, c] of Object.entries((row.departuresByHour as Record<string, number> | undefined) ?? {})) if (+h >= p.startHour && +h < p.endHour) n += c;
-  return n;
-}
 
 /**
  * One period's figure as the map shows it. `waitMinutes` is the number the map colours and filters the route by: the
@@ -171,7 +164,7 @@ export function periodFigure(r: RouteRows, period: PeriodKey): PeriodFigure {
   const filter = routeListFilterDisplay(r.rows, period);
   const shown = routeListCellText(routeListDisplay(r.rows, period), false);
   const waitMinutes = filter.headway != null && filter.headway < HEADWAY_NO_SERVICE_FROM ? filter.headway : null;
-  const trips = departuresIn(r.rows, period);
+  const trips = departuresInPeriod(r.rows as Array<{ departuresByHour?: Record<string, number> | null }>, period);
   const range = shown ? /every (\d+(?:\.\d+)?)–(\d+(?:\.\d+)?) min/.exec(shown) : null;
   return {
     period: PERIOD_LABELS[period],
@@ -471,13 +464,7 @@ export async function routesNear(agency: CatalogAgency, place: string, metres = 
   const parts = placeParts(place);
   const stops = await stopsOf(agency);
   const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
-  // A stop can only be in range if it is within the range's degrees of latitude and longitude of a seed: check that first, the exact distance after.
-  const dLat = (metres / 111_000) * 1.5;
-  const near = stops.filter(s => seeds.some(t => {
-    if (Math.abs(s.lat - t.lat) > dLat) return false;
-    if (Math.abs(s.lon - t.lon) > dLat / Math.max(0.05, Math.cos((t.lat * Math.PI) / 180))) return false;
-    return metresBetween({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }) <= metres;
-  }));
+  const near = stops.filter(s => seeds.some(t => withinMetres({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }, metres)));
   const routeNames = await routeIdNames(agency);
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }

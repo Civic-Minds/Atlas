@@ -3,6 +3,7 @@
  * schedule files on this Mac), buses needed (Studio's file on this Mac) and the index build (writes next to the route
  * files). The hosted server never imports this module; the tools in atlasData.ts are pure.
  */
+import { agencyNames } from '../../src/utils/agencyName';
 import { stopMatchText } from '../../shared/stopNameText';
 import { headwayAmount, headwayEvery } from '../../shared/headwayText';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -94,11 +95,10 @@ export function routeIdsNamed(gtfs: GtfsData, names: readonly string[]): Map<str
  * Trips from one place to another on one or more agencies, each read from every schedule file it has. With more than
  * one agency, routes are named with their agency ("Big Blue Bus 10").
  */
-/** A short label for an agency in a list of several: its config short name, else the shorter of its name and its bracketed name. */
+/** A short label for an agency in a list of several: its config short name, else the app's short name (agencyNames). */
 export function agencyLabel(slug: string, name: string): string {
   try { const c = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${slug}.json`), 'utf8')) as { shortName?: string }; if (c.shortName) return c.shortName; } catch { /* no config */ }
-  const m = /^(.*?)\s*\(([^)]+)\)\s*$/.exec(name);
-  return m ? (m[2].length < m[1].length ? m[2] : m[1]) : name;
+  return agencyNames(name).short;
 }
 
 /** A route named with its agency, without repeating a word ("LA Metro" and "Metro E Line": "LA Metro E Line"). */
