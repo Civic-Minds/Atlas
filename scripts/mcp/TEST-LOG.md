@@ -25,6 +25,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.7.0 | 2026-11-18 | Hosted-version tool code (CIV-1840): schedule end date on every answer, map links, merged same-destination branches, midnight windows, routes_near hours, route_history ends with today's schedule, paged schedule_changes, ferries as their own kind, the optional question field |
 | 0.8.0 | 2026-11-18 | Every tool has a title and read-only annotations, as the connector directories ask (CIV-1854); the hosted server also takes the tester's token as a header or ?key= |
 | 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
+| 0.11.0 | 2026-11-18 | Live tools cover every agency Live records: each answer states the agency's limits (days kept, routes covered, earliest date figures can appear); figures switch on by themselves once a route has 4 good days in a week (CIV-1860) |
 
 ## Standing questions
 
@@ -361,3 +362,11 @@ The pilot Worker on workers.dev (free plan), reached through a tester's private 
 - **No Live data:** OC Transpo Line 1 and the TTC 29 were answered as "no Live recordings" with the recorded routes listed. The 29 answer also gave its schedule from route_frequency.
 - **Right now:** "Is the 504 late right now?" was declined (past recordings only), and the past week was given instead.
 - **Fixed after the round:** both runs wrote shares as "4 in 10", which Ryan's numbers rule rules out. The tools' definitions now say to give percentages, never "1 in N".
+
+## 2026-11-18: Live limits for every recorded agency (CIV-1860, 0.11.0 before the earliest-date line), Claude both ways
+
+8 questions on Kingston, Hamilton, the TTC and OC Transpo (local server on feat/civ-1860-all-live-agencies, reading a dry run of the private Live files: TTC figures, Kingston 3 days kept, Hamilton 1 day). Chats: `_reports/mcp-tests/2026-11-18-limits-claude-*`.
+
+- **Both runs:** no invented figures. Kingston route 2, Kingston bunching and Hamilton's B-Line were answered as "no figures yet", with the days kept (Kingston Nov 16–18, Hamilton Nov 18) and the 4-good-day rule. The TTC 29 and OC Transpo answers said what isn't recorded; the TTC streetcar answers were unchanged (510 late most often at 16.4%, 504 worst spaced at 39.9%).
+- **Fixed after the round:** the normal run guessed when figures would start and put Hamilton's at Nov 21, two days early. The limits now give the earliest date themselves (the first full days after recording began, built the next morning).
+
