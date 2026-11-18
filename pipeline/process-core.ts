@@ -2580,6 +2580,64 @@ export async function processGtfsBuffer(
     // CIV-209: a drawn stop's per-stop answers (boards, has a reading, grades) come from stopReading (drawnStops.ts). It reads
     // stopMetricMap live, so a stop's reading follows the list the line reads once pooling settles.
     const readStop = (stopId: string) => stopReading(stopId, { times: stopMetricMap.get(stopId), dropOffOnly: dropOffOnlyStops });
+    // CIV-209 (Ryan, 2026-11-18, option 1): the one rule for which drawn stops count. A stop counts where it has a
+    // grade: riders can board there (stopReading's gradeable) and its departures pass the every-gap grade, spread
+    // through the day. The map colour (stopTiers) is this grade, and the headline, period and hourly floors, the
+    // pooled skip floor count only stops that have one, so the headline and the colour never disagree about which stop
+    // sets the line's value. Whether a line has a headline at all still reads stopReading's count (hasReading). Memoised per stop list: it reads stopMetricMap and allStopHw live, which pooling
+    // replaces once.
+    let stopGradeMemo: { list: Map<string, number[]>; hw: Record<string, number>; grades: Map<string, string | null> } | null = null;
+    const stopGrade = (stopId: string): string | null => {
+      if (!stopGradeMemo || stopGradeMemo.list !== stopMetricMap || stopGradeMemo.hw !== allStopHw) stopGradeMemo = { list: stopMetricMap, hw: allStopHw, grades: new Map() };
+      const memo = stopGradeMemo.grades;
+      if (!memo.has(stopId)) memo.set(stopId, gradeStop(stopId));
+      return memo.get(stopId)!;
+    };
+    const stopCounts = (stopId: string): boolean => stopGrade(stopId) != null;
+    function gradeStop(stopId: string): string | null {
+      // A drop-off-only stop has arrivals, not departures: its value stays on the stop
+      // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
+      // arrivals while all 37 trips of the destination end there every 30).
+      if (!readStop(stopId).gradeable) return null;
+      const times = stopMetricMap.get(stopId);
+      if (!times || times.length === 0) return null;
+      const headway = allStopHw[stopId];
+      if (headway == null) return null;
+      // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
+      // the grading scale, the midday-window reading rail's own tier rule uses. A short-turn
+      // pattern that runs entirely on a shared trunk (WMATA Yellow to Mount Vernon Square on
+      // weekends, every 16 under a trunk every 8 with the Greenbelt trains) then colours that
+      // trunk at the trunk's service, as a bus trunk does, instead of the row's own tier.
+      // Graded like the route tier (#756 review): the rail rule's every-gap grade of the stop's
+      // list in the midday window, never better than its headway's tier, and no grade where the
+      // rule gives none (under three midday departures, limited service, span). The typical
+      // wait alone read an hourly stop with a multi-hour hole as 60 and a peak-only commuter
+      // station at its peak wait; the client then fills an ungraded stop from its neighbours.
+      if (railFeature) {
+        const railGraded = railMiddayTier(times, day as DayType, featureRoute?.route_type ?? '', TIER_MAXES);
+        if (railGraded == null) return null;
+        const byHeadway = headwayToTierOn(headway, TIER_MAXES);
+        return (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
+      }
+      const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
+      // More service never lowers a grade: the own pattern's list is graded too and the
+      // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
+      // 20:00 to 22:00 merged to a list with a 19:00-20:00 hole and graded 60; that hole is
+      // the edge of the own service, not a gap in it.
+      const ownTimes = metricStopMap.get(stopId);
+      const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature) : null;
+      const best = [graded?.tier, ownGraded?.tier].filter((t): t is string => t != null)
+        .sort((a, b) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99))[0];
+      // No every-gap grade (a hole breaks the sustained sample, or rail): no stop grade. The
+      // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
+      // graded 20 on its usual wait.
+      if (best == null) return null;
+      // The headway cap reads the grading scale, 5 and 8 included: a 4-minute people mover
+      // graded 5 at every stop was capped to the public scale's 10 and the worst-stop rule
+      // took the line from 5 to 10.
+      const byHeadway = headwayToTierOn(headway, TIER_MAXES);
+      return (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
+    }
 
     // Night Service must be evaluated before the daytime stop-headway bail-outs below: a
     // genuinely overnight-only route has no 9am–7pm data, so allStopHw would otherwise be empty
@@ -2984,7 +3042,7 @@ export async function processGtfsBuffer(
       // line then never reads better than the skipped stop. Used only when every stop a pool
       // trip skips is one the floor counts (served by fewer departures than the pool).
       const floorStops = new Set(drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(id => id !== terminalId && readStop(id).hasReading && !ownFallbackHw.has(id) && allStopHw[id] != null));
+        .filter(id => id !== terminalId && stopCounts(id) && !ownFallbackHw.has(id) && allStopHw[id] != null));
       const strictPool = branchTerminalTimes(hsKey, coverageIds, terminalId, true);
       let pool = strictPool;
       if (floorStops.size > 0) {
@@ -3151,9 +3209,9 @@ export async function processGtfsBuffer(
     // Every headway-to-tier step on the route reads the one grading scale (TIER_MAXES, every mode,
     // CIV-1813), so a 4-minute people mover graded 5 is never degraded to the public scale's 10
     // (settleTier, the rescue, the worst reading stop and the stop grades' headway cap).
-    // That count is stopReading's hasReading (CIV-209). A stop grades (gradeable) where riders can board and it has
-    // that reading (CIV-1071 step A); the headline floor below still reads hasReading alone, so a drop-off-only stop
-    // counts there. Aligning the two is CIV-209 step 1, a data change.
+    // That count is stopReading's hasReading. The floors below count a stop only where it has a map grade
+    // (stopCounts, CIV-209): riders board there and its departures pass the every-gap grade, so a drop-off-only stop or
+    // a bunched handful of departures never sets the headline.
     // The line runs by day when at least half of its stop departures fall in 6-22h; a night
     // route (actransit 800 Sunday) keeps its overnight headline and is never "limited" here.
     const lineRunsByDay = (): boolean => {
@@ -3164,9 +3222,19 @@ export async function processGtfsBuffer(
     const servedByFewerTrips = (pool: readonly number[] | null): string[] => {
       if (!pool) return [];
       const poolCount = new Set(pool).size;
-      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994).
-      return drawnStopsBeforeTerminal(drawnPatternStops().map(p => p.stopId), dropOffOnlyStops)
-        .filter(stopId => new Set(stopMetricMap.get(stopId) ?? []).size < poolCount);
+      // The terminal and the drop-off-only stops that run up to it are left out (#1116, CIV-994). Any other drop-off-only
+      // stop (a layover first stop no rider boards) is read at the next stop riders can board, where its trips leave
+      // (CIV-209 with CIV-224's stand-in): LA Metro 40's Division 13 layover reads as Patsaouras (every 30 in the evening,
+      // not the far end's 15), LA Metro 105's Division 7 layover as the stop its trips and the others share.
+      const drawn = drawnPatternStops().map(p => p.stopId);
+      const floor = new Set<string>();
+      for (const stopId of drawnStopsBeforeTerminal(drawn, dropOffOnlyStops)) {
+        if (!readStop(stopId).boards) {
+          const next = drawn.slice(drawn.indexOf(stopId) + 1, -1).find(s => readStop(s).boards);
+          if (next) floor.add(next);
+        } else if (new Set(stopMetricMap.get(stopId) ?? []).size < poolCount) floor.add(stopId);
+      }
+      return [...floor];
     };
     // Steps 2-3 and the line's segments (#690), shared by the thin-own-sample path below and
     // the full path: stop data is published from the pooled values whenever any stop has one.
@@ -3251,55 +3319,14 @@ export async function processGtfsBuffer(
         // CIV-152: each drawn stop's every-gap grade, the method the route tier uses, on the
         // stop's own (pooled) list, never better than its headway's tier. The client colours the
         // line section by section from these and the route tier is their worst (settleTier
-        // below); a stop with no all-day reading (readStop().hasReading) is left out, so a limited
+        // below); a stop with no all-day reading (stopGrade, CIV-209) is left out, so a limited
         // tail or a valueless stop never grades the line (ttc 17 weekday Steeles via
         // Wintermute: a tail its own trips reach once at midday graded 30 on that departure).
         const stopTiers: Record<string, string> = {};
         publishedStopTiers = stopTiers;
         for (const { stopId } of drawnPatternStops()) {
-          // A drop-off-only stop has arrivals, not departures: its value stays on the stop
-          // card, but it is not graded (#879: RFTA L's terminal read the drawn shape's hourly
-          // arrivals while all 37 trips of the destination end there every 30).
-          if (!readStop(stopId).gradeable) continue;
-          const times = stopMetricMap.get(stopId);
-          if (!times || times.length === 0) continue;
-          const headway = allStopHw[stopId];
-          if (headway == null) continue;
-          // Rail (#756): no every-gap grade, so each drawn stop's grade is its pooled headway on
-          // the grading scale, the midday-window reading rail's own tier rule uses. A short-turn
-          // pattern that runs entirely on a shared trunk (WMATA Yellow to Mount Vernon Square on
-          // weekends, every 16 under a trunk every 8 with the Greenbelt trains) then colours that
-          // trunk at the trunk's service, as a bus trunk does, instead of the row's own tier.
-          // Graded like the route tier (#756 review): the rail rule's every-gap grade of the stop's
-          // list in the midday window, never better than its headway's tier, and no grade where the
-          // rule gives none (under three midday departures, limited service, span). The typical
-          // wait alone read an hourly stop with a multi-hour hole as 60 and a peak-only commuter
-          // station at its peak wait; the client then fills an ungraded stop from its neighbours.
-          if (railFeature) {
-            const railGraded = railMiddayTier(times, day as DayType, featureRoute?.route_type ?? '', TIER_MAXES);
-            if (railGraded == null) continue;
-            const byHeadway = headwayToTierOn(headway, TIER_MAXES);
-            stopTiers[stopId] = (TIER_RANK[railGraded] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? railGraded : byHeadway;
-            continue;
-          }
-          const graded = scopedTerminalHeadline(times, day as DayType, featureRoute?.route_type ?? '', railFeature);
-          // More service never lowers a grade: the own pattern's list is graded too and the
-          // better grade stands. Own every 15 from 07:00 to 19:00 plus a sibling every 15 from
-          // 20:00 to 22:00 merged to a list with a 19:00-20:00 hole and graded 60; that hole is
-          // the edge of the own service, not a gap in it.
-          const ownTimes = metricStopMap.get(stopId);
-          const ownGraded = ownTimes && ownTimes !== times ? scopedTerminalHeadline(ownTimes, day as DayType, featureRoute?.route_type ?? '', railFeature) : null;
-          const best = [graded?.tier, ownGraded?.tier].filter((t): t is string => t != null)
-            .sort((a, b) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99))[0];
-          // No every-gap grade (a hole breaks the sustained sample, or rail): no stop grade. The
-          // headway's own tier never stands in for it, so a stop with a 100-minute hole is not
-          // graded 20 on its usual wait.
-          if (best == null) continue;
-          // The headway cap reads the grading scale, 5 and 8 included: a 4-minute people mover
-          // graded 5 at every stop was capped to the public scale's 10 and the worst-stop rule
-          // took the line from 5 to 10.
-          const byHeadway = headwayToTierOn(headway, TIER_MAXES);
-          stopTiers[stopId] = (TIER_RANK[best] ?? 99) > (TIER_RANK[byHeadway] ?? 99) ? best : byHeadway;
+          const grade = stopGrade(stopId);
+          if (grade != null) stopTiers[stopId] = grade;
         }
         if (Object.keys(stopTiers).length > 0) feature.properties.stopTiers = stopTiers;
         // The drawn stops with no boardable stop time (#879): the client colours them from
@@ -3427,8 +3454,9 @@ export async function processGtfsBuffer(
         feature.properties.headway = null;
       } else if (!rescued && !railFeature && !isMapless && lineRunsByDay()
         && feature.properties.serviceClass !== 'irregular' && feature.properties.tier !== 'span') {
+        // Whether the line has a reading at all stays the count; which stops set its value is stopCounts (CIV-209).
         const reading = drawnPatternStops().filter(p => readStop(p.stopId).hasReading);
-        const vals = reading.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        const vals = reading.filter(p => stopCounts(p.stopId)).map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
         if (vals.length) {
           const headway = Math.max(...vals);
           feature.properties.headway = headway;
@@ -3521,7 +3549,7 @@ export async function processGtfsBuffer(
       // under segments every 10; nine lines read no headline at all for one such stop).
       const worstDrawnStopHw = (): number | undefined => {
         const vals = servedByFewerTrips(headlinePool)
-          .filter(stopId => !ownFallbackHw.has(stopId) && readStop(stopId).hasReading)
+          .filter(stopId => !ownFallbackHw.has(stopId) && stopCounts(stopId))
           .map(stopId => allStopHw[stopId])
           .filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
@@ -3547,7 +3575,9 @@ export async function processGtfsBuffer(
       // the worst reading among those stops, never the sparse own value (455), unless the pool or
       // the thin-shape rescue already speaks for the terminal.
       const worstReadingStop = (): number | undefined => {
-        const vals = readingStops.map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
+        // CIV-209: only stops that count (stopCounts) set the worst reading; whether the line or its terminal has a
+        // reading at all (readingStops, terminalHasReading) stays the count, so no line loses its headline here.
+        const vals = readingStops.filter(p => stopCounts(p.stopId)).map(p => allStopHw[p.stopId]).filter((v): v is number => v != null);
         return vals.length ? Math.max(...vals) : undefined;
       };
       // Step 4.2 and 4.3 (routeGrading.ts): the headline, then the tier it supports.
@@ -3750,7 +3780,7 @@ export async function processGtfsBuffer(
       let worstDrawnStop: PeriodValue | null = null;
       if (periodsFromPool) {
         for (const stopId of servedByFewerTrips(periodPoolTimes)) {
-          if (!readStop(stopId).hasReading) continue;
+          if (!stopCounts(stopId)) continue;
           const thin = thinPoolFallbackPeriodHw.get(stopId)?.get(pk);
           if (ownFallbackPeriodHw.get(stopId)?.has(pk) && !thin) continue;
           const stopH = allStopPeriodHw[stopId]?.[pk] ?? (pk === 'overnight' ? sparseOvernightStopHw[stopId] : undefined);
@@ -3842,7 +3872,7 @@ export async function processGtfsBuffer(
     // card's chart and its rows rate the same line. An hourly stop has no hour value (the hour
     // window needs three departures), so its period value stands in (TriMet 35's deviation
     // stops: every 60 under a trunk every 30).
-    const hourFloorStops = periodsFromPool ? servedByFewerTrips(periodPoolTimes).filter(stopId => readStop(stopId).hasReading) : [];
+    const hourFloorStops = periodsFromPool ? servedByFewerTrips(periodPoolTimes).filter(stopId => stopCounts(stopId)) : [];
     const hourFloor = (h: number): { headway: number; stopId: string; standIn: boolean } | null => {
       const pk = periodKeyForHour(h);
       let floor: { headway: number; stopId: string; standIn: boolean } | null = null;

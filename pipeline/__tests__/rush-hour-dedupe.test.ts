@@ -36,7 +36,8 @@ describe('a rush-hour-only pattern never takes an all-day slot (#720, dedupe Ste
     // LA Metro 105 to Marlton / King: a thin line read 27 (worst pooled reading on its stops).
     // Once the PM pattern to Washington Fairfax Hub was rated, its trips pooled at the shared
     // stops and the line read 10, the trunk's peak.
-    expect(await weekdayLine('lacmta-105', 'lacmta', 0, 'Marlton / King Layover')).toMatchObject({ headway: 27 });
+    // CIV-209: its headline now reads its worst graded stop (60, the line's own colour), not 27.
+    expect(await weekdayLine('lacmta-105', 'lacmta', 0, 'Marlton / King Layover')).toMatchObject({ headway: 60 });
     // CDTA 233 to Pearl & Hudson: three trips a day (04:13, 05:27, 17:02) read 34 once the
     // rush-hour pattern to ESP/Downtown Albany pooled with it, against 385 before.
     expect(await weekdayLine('cdta-233', 'cdta', 1, 'Pearl & Hudson')).toMatchObject({ headway: 385 });
