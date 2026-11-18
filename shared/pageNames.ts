@@ -1,3 +1,4 @@
+import { TAB_TITLE_MAX } from './rules/limits';
 /**
  * Every page's one name (Ryan, 2026-11-15, the page-names refactor): the header, the footer, back and close links, the
  * page's own heading and the start of its browser tab all read these, so a page is never called two things. Names are
@@ -5,6 +6,9 @@
  * "About" (the page is "About Atlas").
  */
 export const SITE_NAME = 'Transit Atlas';
+/** What Atlas is, in one clause; ATLAS_MAP_SUMMARY is the sentence (the About hero, the Researchers search description). */
+export const ATLAS_MAP_CLAUSE = 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place';
+export const ATLAS_MAP_SUMMARY = `${ATLAS_MAP_CLAUSE}.`;
 
 export const PAGE_NAMES = {
   map: 'Map',
@@ -50,8 +54,8 @@ export const FOOTER_HEADINGS = {
   atlas: 'Atlas',
 } as const;
 
-/** Browser tab titles stay within this many characters (search results cut the rest). */
-export const TAB_TITLE_MAX = 60;
+/** Browser tab titles stay within this many characters (shared/rules/limits.ts). */
+export { TAB_TITLE_MAX };
 
 /**
  * The one browser tab format: "<page name> | Transit Atlas", with an optional detail after the name

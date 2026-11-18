@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, relative, resolve } from 'node:path';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { LIVE_GLOSSARY } from '../../../../shared/liveGlossary';
@@ -9,7 +11,18 @@ const text = (node: unknown) => {
   return (el.textContent ?? '').trim();
 };
 
-/** The Docs glossary must say the same as the Live agency page's "How this is measured". */
+const ROOT = resolve(__dirname, '../../../..');
+function files(dir: string): string[] {
+  return readdirSync(dir).flatMap(name => {
+    const path = join(dir, name);
+    if (statSync(path).isDirectory()) return name === '__tests__' || name === 'node_modules' ? [] : files(path);
+    return /\.tsx?$/.test(name) && !/\.test\.tsx?$/.test(name) ? [path] : [];
+  });
+}
+/** Where a Live term's words may be written: the glossary, and the Live label files it reads. */
+const HOMES = new Set(['shared/liveGlossary.ts', 'shared/liveWording.ts', 'shared/liveDashboard.ts']);
+
+/** The Docs glossary and the Live agency page's "How this is measured" read from one home (shared/liveGlossary). */
 describe('Live glossary', () => {
   const lines: Record<string, unknown> = {
     Late: lateLine, 'Trip time': runTimeLine(), 'Extra wait': extraWaitLine, Bunching: bunchingLine(), Delivered: deliveredLine(),
@@ -25,5 +38,14 @@ describe('Live glossary', () => {
   it('shows the delay legend in its own words (E22)', () => {
     const legend = LIVE_GLOSSARY.find(g => g.legend);
     expect(`${legend?.term}: ${legend?.text}`).toBe('Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind');
+  });
+  it('types each definition only in its home, never again in a page', () => {
+    // The opening words of each definition; a second copy anywhere in src or shared fails (rules audit 2.9).
+    const openings = LIVE_GLOSSARY.filter(g => !g.legend).map(g => g.text.slice(0, 30));
+    const copies = [...files(join(ROOT, 'src')), ...files(join(ROOT, 'shared'))]
+      .map(f => relative(ROOT, f))
+      .filter(f => !HOMES.has(f))
+      .flatMap(f => { const src = readFileSync(join(ROOT, f), 'utf8'); return openings.filter(o => src.includes(o)).map(o => `${f}: ${o}`); });
+    expect(copies).toEqual([]);
   });
 });

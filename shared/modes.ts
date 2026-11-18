@@ -226,13 +226,17 @@ export function getGtfsModeName(routeType: string | number): string {
   if (Number.isNaN(n)) return 'Transit';
   if (n >= 100 && n < 200) return 'Commuter Rail';
   if (n >= 200 && n < 400) return 'Bus';
-  if (n >= 400 && n < 600) return 'Tram/Light Rail';
-  if (n >= 600 && n < 700) return 'Subway/Metro';
+  // Extended codes (Google's list, plus the HVT 500 Metro and 600 Underground ranges it leaves out).
+  if (n === 401 || n === 402) return 'Subway/Metro'; // Metro, Underground
+  if (n >= 400 && n < 500) return 'Tram/Light Rail';
+  if (n >= 500 && n < 700) return 'Subway/Metro';
   if (n >= 700 && n < 900) return 'Bus';
   if (n >= 900 && n < 1000) return 'Tram/Light Rail';
-  if (n >= 1000 && n < 1200) return 'Ferry';
-  if (n >= 1300 && n < 1500) return 'Gondola';
-  return 'Transit';
+  if (n >= 1000 && n < 1100) return 'Ferry'; // 1000 Water Transport
+  if (n >= 1200 && n < 1300) return 'Ferry';
+  if (n >= 1300 && n < 1400) return 'Gondola'; // Aerial Lift
+  if (n >= 1400 && n < 1500) return 'Funicular';
+  return 'Transit'; // 1100 Air, 1500 Taxi, 1700 Miscellaneous and unknown codes
 }
 
 const startsWith = (s: unknown[], prefix: string): unknown[] => ['==', ['slice', s, 0, prefix.length], prefix];

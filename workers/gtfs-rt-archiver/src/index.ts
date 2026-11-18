@@ -11,6 +11,7 @@
  */
 
 import { LIVE_SNAPSHOT_SCHEMA_VERSION } from '../../../shared/liveContract';
+import { SITE_URL } from '../../../shared/rules/paths';
 import {
   LIVE_ARCHIVE_SHARDS,
   LIVE_ARCHIVE_POSITION_FEEDS,
@@ -53,7 +54,8 @@ const POSITION_FEEDS: PositionFeedConfig[] = LIVE_ARCHIVE_POSITION_FEEDS.map(f =
 }));
 
 const MIN_FEED_BYTES = 5_000;
-const USER_AGENT = 'atlas-gtfs-rt-archiver/1.0 (https://atlas-gamma-two.vercel.app)';
+// The site it names is today's, from shared/rules/paths.ts (rules audit 5 #10; it named an old Vercel address).
+const USER_AGENT = `atlas-gtfs-rt-archiver/1.0 (${SITE_URL})`;
 
 // ---------------------------------------------------------------------------
 // Minimal protobuf decoder (no dependencies)

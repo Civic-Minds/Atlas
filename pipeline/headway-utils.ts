@@ -1,34 +1,31 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
-import { asNextNight, HEADWAY_TIERS, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
-import { RAIL_TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
+import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
+import { TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/frequencyRules.js';
 
 
 /**
- * Tier order for comparisons, best first: every numeric tier any mode grades on (the surface
- * tiers of HEADWAY_TIERS plus rail's 5 and 8, pipeline/defaults.ts modeTierOverrides) by value,
+ * Tier order for comparisons, best first: every numeric tier of the one grading scale
+ * (TIER_MAXES: the public tiers of HEADWAY_TIERS plus the internal 5 and 8) by value,
  * then infrequent, then span. Built from the numbers, not HEADWAY_TIERS' positions: a streetcar
  * graded 8 ranked as unknown (worst), so TTC 504 read tier 8 beside 16 stops graded 15 (CIV-152).
  */
-export { RAIL_TIER_MAXES };
-const NUMERIC_TIERS = [...new Set([...HEADWAY_TIERS.map(t => t.max).filter(m => m !== Infinity), ...RAIL_TIER_MAXES])].sort((a, b) => a - b);
+const NUMERIC_TIERS = TIER_MAXES;
 export const TIER_RANK: Record<string, number> = Object.fromEntries([
   ...NUMERIC_TIERS.map((max, i) => [String(max), i]),
   ['infrequent', NUMERIC_TIERS.length],
   ['span', NUMERIC_TIERS.length + 1],
 ]);
 
-/** headwayToTier on a given tier scale (the surface tiers, or rail's 5-8-10-15-30-60). */
+/** A headway's tier on a given tier scale. */
 export function headwayToTierOn(h: number, tiers: readonly number[]): string {
   for (const max of tiers) if (h <= max) return String(max);
   return 'infrequent';
 }
 
+/** A headway's tier on the one grading scale every mode uses (TIER_MAXES, CIV-1813). */
 export function headwayToTier(h: number): string {
-  for (const { max } of HEADWAY_TIERS) {
-    if (h <= max) return max === Infinity ? 'infrequent' : String(max);
-  }
-  return 'infrequent';
+  return headwayToTierOn(h, TIER_MAXES);
 }
 
 /** True median of an already-sorted gap array: the middle value, or the average of the two

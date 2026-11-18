@@ -10,6 +10,7 @@
 import { inferLiveDirection } from '../src/utils/liveDirection';
 import { DIRECTION_UNCLEAR, groupVehiclesByDirection, routeDirectionLabels } from '../src/utils/liveGrouping';
 import type { LiveVehicle } from '../src/context/LiveVehiclesMapOverlay';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 
 const TIER_1: Record<string, string[]> = { ttc: ['501', '503', '504', '505', '506', '507', '509', '510', '511', '512'] };
 const args = process.argv.slice(2);
@@ -17,7 +18,7 @@ const opt = (name: string, fallback: string) => args.find(a => a.startsWith(`--$
 const API = opt('api', `http://localhost:${process.env.ATLAS_API_PORT ?? 5001}`).replace(/\/$/, '');
 const agency = opt('agency', 'ttc');
 const routes = opt('routes', '') ? opt('routes', '').split(',') : TIER_1[agency] ?? [];
-const DATA = 'https://data.transitatlas.fyi';
+const DATA = DEFAULT_R2_PUBLIC_URL;
 
 function die(message: string): never { console.error(`live:check: ${message}`); process.exit(1); }
 

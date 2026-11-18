@@ -4,6 +4,7 @@ import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, ShapeAnomaly } from '../types/gtfs';
 import { haversineDistance, bearing, bearingDiff } from './utils.js';
 import { isRailRoute } from './routeMode.js';
+import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 
 /**
  * Parse a CSV string into an array of typed objects.
@@ -79,7 +80,7 @@ function distanceToPolyline(p: [number, number], points: [number, number][], las
         const dx = (points[j + 1][1] - p[1]) * k - ax, dy = points[j + 1][0] - p[0] - ay;
         const len2 = dx * dx + dy * dy;
         const t = len2 > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len2)) : 0;
-        best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy) * (Math.PI / 180) * 6371000);
+        best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy) * (Math.PI / 180) * EARTH_RADIUS_M);
     }
     return best;
 }

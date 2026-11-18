@@ -117,7 +117,8 @@ describe('applyAnalysisCriteria', () => {
       }),
     ]);
     const r = results.find(x => x.route === '986');
-    expect(r).toMatchObject({ tier: '10', serviceClass: 'time-limited', rushHourOnly: true });
+    // Every 6 grades 8 on the one scale (CIV-1813), which riders see as 10.
+    expect(r).toMatchObject({ tier: '8', serviceClass: 'time-limited', rushHourOnly: true });
     // A peak block without a steady cadence keeps the pattern one-off.
     const ragged = applyAnalysisCriteria([raw({ route: 'r', departureTimes: [362, 368, 470, 906, 912, 1010] })]);
     expect(ragged.find(x => x.route === 'r')).toMatchObject({ serviceClass: 'irregular', tier: 'span' });

@@ -23,7 +23,7 @@
  *                        destination pool, never better than the worst drawn stop, whose own
  *                        reading and companions it then takes (#771)
  */
-import { SURFACE_TIER_MAXES } from '../shared/config.js';
+import { TIER_MAXES } from '../shared/frequencyRules.js';
 import { HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineDeparturesInWindow, headlineWindowValue, headwayToTierOn, medianHeadwayInWindow, resolveTerminalHeadline, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from './headway-utils.js';
 
 const { midday: MIDDAY, pmPeak: PM_PEAK, allDay: ALL_DAY } = HEADLINE_WINDOWS;
@@ -184,7 +184,7 @@ export function decideHeadline(i: HeadlineInputs): number | null {
  * Halifax 330), except that a thin shape phase 2 put in no finite tier (capmetro 2: gaps 32,
  * 80, 32) takes its rescue sample's finite tier.
  */
-export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null, tiers: readonly number[] = SURFACE_TIER_MAXES): string {
+export function settleTier(currentTier: string, headway: number | null, scoped: { tier: string | null } | null, tiers: readonly number[] = TIER_MAXES): string {
   let tier = currentTier;
   // No headline (a drawn stop without an all-day value, #771): nothing to degrade to. The
   // headline's tier is read on the route's own scale (rail 5 and 8).
@@ -217,10 +217,10 @@ export function liftTierOnDestinationPool(args: {
   /** The pool's every-gap tier at a drawn stop (on another weekday's trips when given), null when ungraded. */
   gradeAt: (stopId: string, weekday?: WeekdayPool) => string | null;
   otherWeekdays: () => readonly WeekdayPool[];
-  /** The route's tier scale (rail 5-8-10-15-30-60, or the surface tiers), as settleTier reads it. */
+  /** The tier scale settleTier reads (the one grading scale, TIER_MAXES). */
   tiers?: readonly number[];
 }): string {
-  const { currentTier, headway, day, drawnStopIds, gradeAt, otherWeekdays, tiers = SURFACE_TIER_MAXES } = args;
+  const { currentTier, headway, day, drawnStopIds, gradeAt, otherWeekdays, tiers = TIER_MAXES } = args;
   const worse = (a: string | null, b: string) => a == null || rank(b) > rank(a) ? b : a;
   const gradePool = (weekday?: WeekdayPool): string | null => {
     let worst: string | null = null;

@@ -12,6 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { handleCartoTiles } from '../../local-api/carto-tiles';
+import { getTierColor } from '../../src/utils/colors';
 
 const BASE = process.env.ATLAS_URL ?? 'http://localhost:5300';
 const WORK = resolve(process.argv[2] ?? 'tmp-planner-pictures');
@@ -67,15 +68,15 @@ type Card = {
   path?: string;
   /** The one label, proposed for Ryan's word-for-word OK. */
   label: string;
-  /** A frequency colour dot before the label (the tier's index), as the map's own key pills have. */
-  dot?: number;
+  /** A frequency colour dot before the label, as the map's own key pills have: the tier whose colour it takes (getTierColor). */
+  dot?: string;
 };
 
 // One map treatment for every picture: the same zoom offset, the same faded basemap without place names.
 const DAY = { p: 'midday', day: 'Weekday' };
 const CARD_PICTURES: Record<string, Card> = {
   // For Planners: See Frequency, Not Just Routes. Only the routes every 15 min or better stay on.
-  frequency: { view: { lat: 43.6555, lon: -79.3925, z: 12, ...DAY, h: 15 }, label: 'Every 15 min or better', dot: 1 },
+  frequency: { view: { lat: 43.6555, lon: -79.3925, z: 12, ...DAY, h: 15 }, label: 'Every 15 min or better', dot: '15' },
   // For Planners: Service by Day, Time and Span. One time of day's own map: owl service.
   dayweek: { view: { lat: 41.8835, lon: -87.6528, z: 12, p: 'overnight', day: 'Weekday', h: 60 }, label: 'Weekday · Overnight' },
   // For Planners: Every Agency on One Map. Milpitas, where BART, VTA and others meet.
@@ -100,7 +101,6 @@ await b.close();
 
 // Compose: every picture is its map plus one label at the bottom left, in the map's own pill (MAP_BADGE): the panel
 // surface, its border, bold 12-13 px text, a frequency colour dot where the label names a frequency.
-const TIER = ['#22863a', '#3da44d', '#f59e0b', '#e07b2a', '#92400e', '#6b7280'];
 const pal = (t: Theme) => t === 'dark'
   ? { bg: '#0a0a0a', panel: 'rgba(23,23,23,0.92)', border: 'rgba(255,255,255,0.12)', text: '#f4f4f5' }
   : { bg: '#f0f0f0', panel: 'rgba(255,255,255,0.94)', border: 'rgba(0,0,0,0.10)', text: '#111827' };
@@ -108,7 +108,7 @@ const f = (n: string) => `file://${WORK}/${n}.png`;
 const MARGIN = (size: Size) => size === 'phone' ? 10 : 14;
 const scene = (name: string, t: Theme, size: Size) => {
   const c = pal(t), card = CARD_PICTURES[name], small = size === 'phone';
-  const dot = card.dot != null ? `<span style="display:inline-block;width:${small ? 8 : 10}px;height:${small ? 8 : 10}px;border-radius:50%;background:${TIER[card.dot]}"></span>` : '';
+  const dot = card.dot != null ? `<span style="display:inline-block;width:${small ? 8 : 10}px;height:${small ? 8 : 10}px;border-radius:50%;background:${getTierColor(card.dot)}"></span>` : '';
   return `<img src="${f(`map-${name}-${size}-${t}`)}" style="position:absolute;inset:0;width:100%;height:100%">`
     + `<div style="position:absolute;left:${MARGIN(size)}px;bottom:${MARGIN(size)}px;display:flex;align-items:center;gap:${small ? 6 : 8}px;height:${small ? 24 : 30}px;padding:0 ${small ? 10 : 12}px;border-radius:999px;background:${c.panel};border:1px solid ${c.border};color:${c.text};font:700 ${small ? 11 : 13}px Inter,ui-sans-serif,system-ui,sans-serif;white-space:nowrap">${dot}${card.label}</div>`;
 };

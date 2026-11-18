@@ -7,7 +7,8 @@
  */
 import { r2Put } from './r2.js';
 
-export const DATA_VERSION_KEY = 'atlas/data-version.json';
+import { DATA_VERSION_KEY } from '../shared/rules/paths.js';
+export { DATA_VERSION_KEY };
 
 export interface PublicDataVersion {
   /** Opaque stamp used as the client cache key. */

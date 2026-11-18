@@ -1,4 +1,5 @@
 import type { GtfsData, GtfsShape, GtfsStopTime, GtfsTrip } from '../../types/gtfs.js';
+import { EARTH_RADIUS_M } from '../../shared/rules/limits.js';
 
 /**
  * #1119: WVU's PRT feed lists every ordered pair of its five stations as its own route (20 routes), each a two-stop trip
@@ -26,7 +27,7 @@ function metres(a: [number, number], b: [number, number]): number {
   const rad = Math.PI / 180;
   const dLat = (b[0] - a[0]) * rad;
   const dLon = (b[1] - a[1]) * rad * Math.cos(((a[0] + b[0]) / 2) * rad);
-  return Math.sqrt(dLat * dLat + dLon * dLon) * 6_371_000;
+  return Math.sqrt(dLat * dLat + dLon * dLon) * EARTH_RADIUS_M;
 }
 
 const toMinutes = (t: string) => { const [h, m, s] = t.split(':').map(Number); return h * 60 + m + (s || 0) / 60; };

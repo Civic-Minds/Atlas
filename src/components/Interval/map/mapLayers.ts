@@ -6,8 +6,8 @@ import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
 import { ROUTE_LINE_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 import { stopDotPaint } from './stopStyle';
+import { MAP_HALO, ON_DEMAND_AREA_COLOR, ROUTE_LINE_PLACEHOLDER } from '../../../../shared/rules/colours';
 
-const ON_DEMAND_AREA_COLOR = '#64748b';
 // Selected on-demand features keep their normal paint; the rest fade like routes behind a selection.
 const ON_DEMAND_FOCUS_MATCH = ['!=', ['get', ON_DEMAND_FOCUSED_PROP], false];
 // Zone fills are already faint (0.12), so fade them proportionally instead of to the shared 0.18.
@@ -107,7 +107,7 @@ function addOnDemandLayers(map: maplibregl.Map) {
     paint: {
       'circle-color': ON_DEMAND_AREA_COLOR,
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 1.25, 12, 3.5, 15, 5],
-      'circle-stroke-color': '#ffffff',
+      'circle-stroke-color': MAP_HALO.light,
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 12, 1.25, 15, 1.5],
       // Light at regional zoom like the zone outlines (CIV-89), full strength by street zoom.
       'circle-opacity': onDemandByZoom(onDemandOpacity(0.35, 0.15, FOCUS_DIM_OPACITY / 2), onDemandOpacity(1, 0.4, FOCUS_DIM_OPACITY)) as any,
@@ -157,7 +157,7 @@ function addRouteLayers(map: maplibregl.Map) {
     'source-layer': 'routes',
     maxzoom: 8,
     paint: {
-      'line-color': '#555555',
+      'line-color': ROUTE_LINE_PLACEHOLDER,
       'line-width': ['interpolate', ['linear'], ['zoom'], 0, 1.0, 7, 1.8],
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.65, 7, 0.8],
     },
@@ -180,7 +180,7 @@ function addRouteLayers(map: maplibregl.Map) {
     'source-layer': 'routes',
     minzoom: 8,
     paint: {
-      'line-color': '#555555',
+      'line-color': ROUTE_LINE_PLACEHOLDER,
       'line-width': ROUTE_LINE_WIDTH_BY_ZOOM as any,
       'line-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.7, 11, 0.8, 14, 0.9],
     },
@@ -325,7 +325,7 @@ function addSelectedRouteLayers(map: maplibregl.Map) {
     'source-layer': 'routes',
     minzoom: 8,
     paint: {
-      'line-color': '#555555',
+      'line-color': ROUTE_LINE_PLACEHOLDER,
       'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
       'line-opacity': 1,
     },

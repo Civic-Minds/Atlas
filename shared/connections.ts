@@ -115,6 +115,8 @@ function firstAtOrAfter(sorted: readonly number[], time: number): number {
 /** The groups a route is placed in (Ryan, 2026-11-04: "within 15 mins, 30 mins, 60 mins"). */
 export const CONNECTION_WINDOWS = [15, 30, 60] as const;
 export type ConnectionWindow = (typeof CONNECTION_WINDOWS)[number];
+/** The widest window: a route past it is "not within" any. */
+export const MAX_CONNECTION_WINDOW: ConnectionWindow = CONNECTION_WINDOWS[CONNECTION_WINDOWS.length - 1];
 
 /** One local route at a Bustang stop, on one side: how many Bustang trips it meets within each window. */
 export interface RouteConnection {

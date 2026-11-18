@@ -321,7 +321,7 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
     ? MAP_KEY_NIGHT
     : selectedPeriod && `${selectedPeriod.label} (${formatPeriodRangeLong(selectedPeriod.startHour, selectedPeriod.endHour)})`;
   const details = reportDetails([
-    ['Agency', routeAgency?.name ?? routeSlug ?? 'Unknown'],
+    [REPORT_DETAIL_LABELS.agency, routeAgency?.name ?? routeSlug ?? 'Unknown'],
     ['Route', `${routeTitle || 'Unknown'} (feed short name: ${currentRoute.routeShortName ?? 'none'}; long name: ${currentRoute.routeLongName ?? 'none'})`],
     ...(reportPeriod ? [['Period', reportPeriod] as const] : []),
     [REPORT_DETAIL_LABELS.dataRefreshed, routeAgency?.lastRefreshedAt ?? 'unknown'],

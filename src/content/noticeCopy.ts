@@ -12,6 +12,7 @@ import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
 import { metresText } from '../../shared/unitText';
+import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { joinList, plural, countOf } from '../../shared/overflowText';
 import { countText } from '../../shared/numberText';
 import { LIVE_VEHICLES_TITLE, METHOD_TITLE } from '../../shared/liveWording';
@@ -154,7 +155,7 @@ export const NO_MATCHING_AGENCIES = NO_AGENCIES_MATCH;
 // N42 in-view-no-routes: N29 with no mode pill.
 export const NO_MATCHING_ROUTES = noRoutesMatchText();
 // N37 no-routes-nearby
-export const NO_ROUTES_NEARBY = `No routes within ${metresText(500)}.`;
+export const NO_ROUTES_NEARBY = `No routes within ${metresText(NEARBY_ROUTES_RADIUS_M)}.`;
 // N44 no-suggestions
 export const NO_ROUTE_SUGGESTIONS = 'No route suggestions in this area.';
 // N43 no-agencies-in-view
@@ -220,8 +221,10 @@ export const REQUEST_DEMO_LABEL = 'Request a demo';
 export type FeatureCardCopy = { title: string; text: string; /** Shows the Beta tag beside the title. */ beta?: boolean };
 /** The About page's headline (CIV-1206 D), a sentence, so it stays sentence case. */
 export const ABOUT_HEADLINE = 'Find the transit service that actually runs.';
-/** What Atlas is, in one line: the About page's hero. */
-export const ATLAS_MAP_SUMMARY = 'Atlas turns published agency schedules into a map you can explore by frequency, time of day, agency and place.';
+/** What Atlas is, in one line: the About page's hero. Its home is shared/pageNames, so the search descriptions use it too. */
+export { ATLAS_MAP_SUMMARY } from '../../shared/pageNames';
+/** The About page's closing section heading, above ATLAS_INTRO_TEXT (CIV-1733). */
+export const ABOUT_CLOSER_HEADING = 'Built for looking closer.';
 /** The "Where the Data Comes From" section on the For Transit Planners and For Researchers pages (CIV-1724). */
 export const DATA_SOURCE_TITLE = 'Where the Data Comes From';
 export const dataSourceText = (agencies: string, countries: string) =>
@@ -236,7 +239,7 @@ export const PLANNERS_COPY = {
     agencies: { title: 'Every Agency on One Map', text: 'Transit doesn’t stop at an agency’s border, and neither does the map. See every agency’s routes together, or filter to just one.' },
     beforeAfter: { title: 'Before and After a Schedule Change', text: 'Compare two versions of a schedule route by route: frequency, trips, span and trip time. Routes are grouped by how much they changed.', beta: true },
     vehiclesNeeded: { title: 'Vehicles Needed at Every Frequency', text: 'Pick a route and a time of day to see how many vehicles it runs now, and how many it would need for more frequent service. Routes that share vehicles are counted together.', beta: true },
-    delays: { title: 'Where Delays Build Up', text: 'Every TTC vehicle’s position is recorded each minute and checked against the schedule. Each route’s page shows where delays start, which stops run late most often and how this week compares with last.', beta: true },
+    delays: { title: 'Where Delays Build Up', text: 'Every TTC streetcar’s position is recorded each minute and checked against the schedule. Each route’s page shows where delays start, which stops run late most often and how this week compares with last.', beta: true },
     share: { title: 'Share What You Find', text: 'Send a link that opens the same place and settings, with the latest schedules. Or export a map image with a dated source line, ready for a slide deck or a report.' },
   } satisfies Record<string, FeatureCardCopy>,
   demo: 'We’ll explore your network with you and show how the map can back up your next service review.',
@@ -890,6 +893,8 @@ export const AGENCIES_IN_VIEW_LABEL = 'Agencies in view';
 /** The top bar's logo and views menu. */
 export const ATLAS_HOME_LABEL = 'Atlas home';
 export const MORE_VIEWS_LABEL = 'More Atlas views';
+/** The phone views menu's name when no named view is on. */
+export const MORE_LABEL = 'More';
 export const LIVE_TAB_LABEL = 'Live';
 /** Tags beside an agency or a What's New item. */
 export const LIVE_TAG = 'Live';
@@ -905,6 +910,9 @@ export const SOURCES_FALLBACK = 'When we can’t rely on an agency’s own copy,
 export const NEW_TAG = 'New';
 export const DRAFT_TAG = 'Draft';
 export const LOCAL_STOP_WITHIN_LABEL = 'Local stop within';
+/** Bustang's card where no local route connects within its widest window (60 min). */
+export const noLocalRouteWithinText = (window: string) => `No local route within ${window}.`;
+export const notWithinLead = (window: string) => `Not within ${window}: `;
 /** The analytics prompt. */
 export const TOGGLE_ANALYTICS_LABEL = 'Toggle Google Analytics';
 export const ANALYTICS_CONSENT_LABEL = 'Analytics consent';

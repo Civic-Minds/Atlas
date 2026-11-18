@@ -208,21 +208,23 @@ describe('release diff gate: red flags', () => {
     expect(evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY)).toEqual([]);
   });
 
-  it('flags a rail line that drops two steps on its own scale with the headway unchanged (#871)', () => {
+  it('counts route-shift steps on the public scale: internal 5/8 moves stay quiet, 8 -> 20 flags (#871, CIV-1813)', () => {
     const line = (routeId: string, tier: string, headway: number | null) => ({
       type: 'Feature',
       geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] },
       properties: { routeId, day: 'Weekday', tier, headway },
     });
     const artifact = (features: unknown[]) => JSON.stringify({ type: 'FeatureCollection', features });
-    // valleymetro SKYT every 5: tier 5 -> 10 is two steps (5, 8, 10), hidden before because the
-    // gate only knew the surface scale and the headway did not double.
-    const live = summarizeArtifact(artifact([line('SKYT', '5', 5), line('1', '8', 6)]), null);
-    const next = summarizeArtifact(artifact([line('SKYT', '10', 5), line('1', '15', 6)]), null);
+    // valleymetro SKYT every 5: 5 -> 10 and a bus 10 -> 5 are both 10 publicly, so no flag; 8 -> 15
+    // is one public step. 8 -> 20 is two public steps (10 -> 20) with the headway unchanged.
+    const quietLive = summarizeArtifact(artifact([line('SKYT', '5', 5), line('1', '8', 6), line('2', '10', 6)]), null);
+    const quietNext = summarizeArtifact(artifact([line('SKYT', '10', 5), line('1', '15', 6), line('2', '5', 6)]), null);
+    expect(evaluateAgency({ slug: 'x', live: quietLive, next: quietNext, allowMissingLive: true }, [], TODAY)).toEqual([]);
+    const live = summarizeArtifact(artifact([line('1', '8', 6)]), null);
+    const next = summarizeArtifact(artifact([line('1', '20', 6)]), null);
     const flags = evaluateAgency({ slug: 'x', live, next, allowMissingLive: true }, [], TODAY);
     expect(names(flags)).toEqual(['x:route-shift:yellow']);
-    expect(flags[0].message).toContain('SKYT tier 5->10');
-    expect(flags[0].message).toContain('1 tier 8->15');
+    expect(flags[0].message).toContain('1 tier 10->20');
   });
 
   it('flags already-expired service as red when the output changes, yellow when unchanged', () => {

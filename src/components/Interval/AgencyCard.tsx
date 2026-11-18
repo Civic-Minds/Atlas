@@ -513,7 +513,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       title={`Agency issue: ${agency.name}`}
       // The data dates the route card's report sends too (CIV-932), so an agency report says how fresh its data is.
       details={reportDetails([
-        ['Agency', agency.name],
+        [REPORT_DETAIL_LABELS.agency, agency.name],
         [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
         ['Day', day],
         ['Period', period],
@@ -553,7 +553,7 @@ export const AgencyCard = forwardRef<HTMLDivElement, Props>(function AgencyCard(
       <CardReportButton
         title={`On-demand issue: ${onDemandCardName(agency.onDemandServiceArea, onDemandZoneId, agencyNamePrimary)}`}
         details={reportDetails([
-          ['Agency', agency.name],
+          [REPORT_DETAIL_LABELS.agency, agency.name],
           [REPORT_DETAIL_LABELS.agencySlug, agency.slug],
           [ON_DEMAND_SERVICE_LABEL, zone.serviceName ?? service.serviceName ?? 'unknown'],
           ['Zone', zoneName ?? 'whole service'],

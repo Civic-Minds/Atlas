@@ -1,3 +1,6 @@
+import { FALLBACK_GREY, MAP_HALO } from '../../../shared/rules/colours';
+// The map's own default view, [lat, lon], so MapLibre's [lon, lat] swaps it (CIV-1812).
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../../../shared/rules/limits';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../Live/MapCard';
 import * as maplibregl from 'maplibre-gl';
@@ -67,7 +70,7 @@ interface Props {
 
 const EMPTY_MODEL: RouteMapModel = { directionId: 0, segments: [], stops: [] };
 
-const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#9ca3af';
+const css = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || FALLBACK_GREY;
 /** A line's colour: a `var(--token)` is read from the page, anything else is used as given. */
 const lineColor = (c: string) => { const m = c.match(/^var\((--[^)]+)\)$/); return m ? css(m[1]) : c; };
 /** The colour of a step: delay colours for the time-based measures, the bunching purples for bunching, grey when not measured. */
@@ -168,11 +171,11 @@ export default function MapAppMap({ layer, selected, onPick, anchor = null, card
   useEffect(() => {
     if (!box.current) return;
     const light = document.documentElement.getAttribute('data-theme') !== 'dark';
-    const map = new maplibregl.Map({ container: box.current, style: getMapStyle(light), center: [-79.38, 43.65], zoom: 11, attributionControl: false });
+    const map = new maplibregl.Map({ container: box.current, style: getMapStyle(light), center: [DEFAULT_MAP_CENTER[1], DEFAULT_MAP_CENTER[0]], zoom: DEFAULT_MAP_ZOOM, attributionControl: false });
     mapRef.current = map;
     if (import.meta.env.DEV) (window as unknown as { __routeMap?: maplibregl.Map }).__routeMap = map;
     map.on('load', () => {
-      const halo = light ? '#ffffff' : '#111827';
+      const halo = light ? MAP_HALO.light : MAP_HALO.dark;
       // Static route lines (a `lines` layer), under everything else.
       map.addSource('lines', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       const lineWidth = (k: number) => ['interpolate', ['linear'], ['zoom'], 10, ['*', ['get', 'w'], 0.4 * k], 15, ['*', ['get', 'w'], k]] as unknown as maplibregl.ExpressionSpecification;

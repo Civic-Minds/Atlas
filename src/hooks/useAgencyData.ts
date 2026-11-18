@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Agency } from '../App';
 import { fetchAgencyGeo, getCachedAgencyGeo, fetchAgencyCorridors, getCachedAgencyCorridors } from '../lib/agencyGeo';
 import { getAgencyArtifactUrls, DEFAULT_MAP_CENTER, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD } from '../../shared/config';
+import { DETAIL_GEOJSON_MIN_ZOOM } from '../../shared/rules/limits';
 import type { HeadwayByPeriod } from '../../shared/config';
 import type { HeadwayByHour, RouteProperties } from '../../shared/routeProperties';
 import type { ViewportBounds } from './useIntervalStats';
@@ -32,7 +33,7 @@ const MAX_CONCURRENT_AGENCY_FETCHES = 6;
 /** Viewport agencies that wait for the tiles go one at a time until the first settles, then this many at once. */
 const LOW_PRIORITY_CONCURRENCY_FIRST = 1;
 const LOW_PRIORITY_CONCURRENCY = 3;
-export const DETAIL_GEOJSON_MIN_ZOOM = 8;
+export { DETAIL_GEOJSON_MIN_ZOOM };
 
 export function shouldLoadAgencyDetails(zoom: number | undefined, searchQuery: string): boolean {
   return zoom === undefined || zoom >= DETAIL_GEOJSON_MIN_ZOOM || searchQuery.trim().length > 0;

@@ -134,7 +134,7 @@ const RULES: Rule[] = [
   // projection (CIV-1597).
   { name: 'a distance or projection of its own (use metresBetween / projectOntoSegment from shared/geoDistance.ts)', doc: 'TEXT.md',
     pattern: /\*\* 2 \+\s*Math\.cos|(?<![\d.])(111_?(000|111|195|320)|110_?540|40_?07[05]_?0\d\d|6_?371_?000|6_?378_?137)(?![\d])/, slip: 'const maxDLat = OPPOSITE_STOP_MAX_M / 111000;',
-    allowed: ['shared/geoDistance.ts'] },
+    allowed: ['shared/geoDistance.ts', 'shared/rules/limits.ts'] },
   // CIV-1593: "1 route" / "3 routes" come from plural / countOf (shared/overflowText.ts).
   { name: 'a plural built by hand (use plural / countOf)', doc: 'TEXT.md', pattern: /===\s*1\s*\?\s*(['"])[\w ’']*\1\s*:\s*(['"])[\w ’']*\2|===\s*1\s*\?\s*''\s*:\s*'s'/, slip: "`${n} ${n === 1 ? 'agency' : 'agencies'}`",
     allowed: ['shared/overflowText.ts'] },
@@ -152,10 +152,10 @@ const RULES: Rule[] = [
   // CIV-1790 (Ryan: "Did we refactor our contact info"): one address, one mailto builder.
   { name: 'the contact address typed by hand (use CONTACT_EMAIL or mailto from shared/contact.ts)', doc: 'TEXT.md', pattern: /ryanisnota\.pro/, slip: "href=\"mailto:hey@ryanisnota.pro\"",
     allowed: ['shared/contact.ts'] },
-  // CIV-1615: each fixed page's path is one constant in shared/pagePaths.ts, read by its route, prerender, SEO entry and links.
-  { name: 'a page path typed by hand (use shared/pagePaths.ts)', doc: 'TEXT.md',
+  // CIV-1615: each fixed page's path is one constant in shared/rules/paths.ts, read by its route, prerender, SEO entry and links.
+  { name: 'a page path typed by hand (use shared/rules/paths.ts)', doc: 'TEXT.md',
     pattern: /['"`](\/about|\/about\/docs|\/agencies|\/changelog|\/terms|\/privacy|\/apps\/live|\/research)['"`]/, slip: '<a href="/about/docs">',
-    allowed: ['shared/pagePaths.ts'] },
+    allowed: ['shared/rules/paths.ts'] },
   // A research page's own path is one constant too: FEATURE_ROUTES in shared/config.ts (a draft story's in shared/researchStories.ts).
   { name: 'a research page path typed by hand (use FEATURE_ROUTES in shared/config.ts)', doc: 'TEXT.md',
     pattern: /['"`]\/research(\/[a-z][a-z-]*)+['"`]/, slip: '<Route path="/research/free-child-fares" />',

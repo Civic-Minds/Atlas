@@ -4,9 +4,10 @@ import RouteRowName from '../RouteRowName';
 import { CARD_SUMMARY, SidebarCardSection } from '../Interval/cardUi';
 import { clockTime } from '../../../shared/timeText';
 import { shortDate } from '../../../shared/dateText';
-import { bestWindow, CONNECTION_WINDOWS, windowOf, type NearbyChoice, type RouteConnection } from '../../../shared/connections';
+import { bestWindow, CONNECTION_WINDOWS, MAX_CONNECTION_WINDOW, windowOf, type NearbyChoice, type RouteConnection } from '../../../shared/connections';
 import type { DayType } from '../../../shared/dayTypes';
-import { EXPLAINERS, NO_BUSTANG_TRIPS } from '../../content/noticeCopy';
+import { EXPLAINERS, NO_BUSTANG_TRIPS, noLocalRouteWithinText, notWithinLead } from '../../content/noticeCopy';
+import { headwayAmount } from '../../../shared/headwayText';
 import { compareRouteNumber } from '../../utils/sortCompare';
 import { metresText } from '../../../shared/unitText';
 import {
@@ -58,7 +59,7 @@ function TripSide({ data, rows, within, side, nameAgency }: { data: BustangData;
     <div className="mt-1.5">
       <p className="text-xs font-bold text-[var(--text-primary)]">{SIDE_LABEL[side]}</p>
       {routes.length === 0
-        ? <p className={CARD_SUMMARY}>No local route within 60 min.</p>
+        ? <p className={CARD_SUMMARY}>{noLocalRouteWithinText(headwayAmount(MAX_CONNECTION_WINDOW))}</p>
         : CONNECTION_WINDOWS.map(w => {
           const inGroup = routes.filter(r => windowOf(r.wait) === w);
           if (inGroup.length === 0) return null;
@@ -152,7 +153,7 @@ function StopSide({ data, routes, trips, side, nameAgency }: { data: BustangData
       {trips === 0
         ? <p className={CARD_SUMMARY}>{side === 'after' ? 'Bustang drops nobody off here this day.' : 'Bustang picks nobody up here this day.'}</p>
         : <>
-          {placed.every(p => p.best === null) && <p className={CARD_SUMMARY}>No local route within 60 min.</p>}
+          {placed.every(p => p.best === null) && <p className={CARD_SUMMARY}>{noLocalRouteWithinText(headwayAmount(MAX_CONNECTION_WINDOW))}</p>}
           {CONNECTION_WINDOWS.filter(w => placed.some(p => p.best?.window === w)).map((w, i) => {
             const inGroup = placed.filter(p => p.best?.window === w);
             return (
@@ -175,7 +176,7 @@ function StopSide({ data, routes, trips, side, nameAgency }: { data: BustangData
           })}
           {notWithin.length > 0 && (
             <p className={CARD_SUMMARY}>
-              Not within 60 min: {notWithin.map((r, i) => <span key={`${r.agencySlug} ${r.routeName}`}>{i > 0 && ', '}<LocalRoute data={data} agencySlug={r.agencySlug} routeName={r.routeName} nameAgency={nameAgency} /></span>)}
+              {notWithinLead(headwayAmount(MAX_CONNECTION_WINDOW))}{notWithin.map((r, i) => <span key={`${r.agencySlug} ${r.routeName}`}>{i > 0 && ', '}<LocalRoute data={data} agencySlug={r.agencySlug} routeName={r.routeName} nameAgency={nameAgency} /></span>)}
             </p>
           )}
         </>}

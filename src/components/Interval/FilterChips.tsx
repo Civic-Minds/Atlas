@@ -18,8 +18,8 @@ import { filterModeOptions, ON_DEMAND_MODE } from '../../../shared/modes';
 import { modesForView } from '../../../shared/viewLayers';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { CONNECTION_WINDOWS } from '../../../shared/connections';
-import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
-import type { NightServiceFrequency } from '../../../shared/nightService';
+import { FREQUENT_GRADES, FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../../shared/frequentService';
+import { NIGHT_GRADES, type NightServiceFrequency } from '../../../shared/nightService';
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
@@ -360,7 +360,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
     return (
       <div ref={rowRef} className="flex items-center gap-2">
         <PillGroup outlined label={OVERNIGHT_FREQUENCY_LABEL} value={String(nightServiceFrequency)} onChange={v => setNightServiceFrequency(Number(v) as NightServiceFrequency)}
-          options={([30, 60, 90] as const).map(value => [String(value), headwayAmount(value)] as const)} />
+          options={NIGHT_GRADES.map(value => [String(value), headwayAmount(value)] as const)} />
       </div>
     );
   }
@@ -381,8 +381,8 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             {DAY_TYPES.map(dayType => <button key={dayType} onClick={() => toggleResearchDay(dayType)} className={researchButton(researchDays.includes(dayType))}>{dayType}</button>)}
           </div>}
         </div>
-        <PillGroup outlined label={FREQUENCY_LABEL} value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as 15 | 30)}
-          options={([15, 30] as const).map(value => [String(value), headwayAmount(value)] as const)} />
+        <PillGroup outlined label={FREQUENCY_LABEL} value={String(researchFrequency)} onChange={v => setResearchFrequency(Number(v) as FrequentServiceFrequency)}
+          options={FREQUENT_GRADES.map(value => [String(value), headwayAmount(value)] as const)} />
         <PillGroup outlined label={TIME_WINDOW_LABEL} value={researchWindow} onChange={v => setResearchWindow(v as FrequentServiceWindow)}
           options={(['daytime', 'extended'] as const).map(w => [w, FREQUENT_WINDOW_LABELS[w]] as const)} />
         <div className="relative">
@@ -594,7 +594,7 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
         <div
           className={`flex items-center rounded-full border p-0.5 ${shared ? `${TOP_BAR_OUTLINE} ${FOLD_OUTLINE_OPEN}` : `-mx-[3px] border-transparent ${FOLD_OUTLINE_SHUT}`}`}
           role={shared ? 'group' : undefined}
-          aria-label={shared ? 'Filters for both maps' : undefined}
+          aria-label={shared ? FILTERS_BOTH_MAPS_LABEL : undefined}
         >
           <ModeCollapse open={shared}>
             <span title={compactTopBar ? 'Both maps' : undefined} className="flex items-center gap-1.5 pl-1.5 pr-2.5 text-xs font-bold text-[var(--text-primary)] whitespace-nowrap cursor-default select-none">

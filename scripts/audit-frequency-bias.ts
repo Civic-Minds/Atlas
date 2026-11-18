@@ -13,7 +13,7 @@ import Papa from 'papaparse';
 import { computeRawDepartures } from '../pipeline/transit-phase1';
 import { GTFS_FILES_DIR } from '../pipeline/gtfsArchivePath';
 import { determineTier } from '../pipeline/transit-phase2';
-import { DEFAULT_CRITERIA, getTiersForCriteria } from '../pipeline/defaults';
+import { DEFAULT_CRITERIA } from '../pipeline/defaults';
 import { DAY_TO_TYPE, type GtfsData, type RawRouteDepartures } from '../types/gtfs';
 
 const DATA_DIR = GTFS_FILES_DIR;
@@ -74,7 +74,7 @@ const tierFor = (times: number[], raw: RawRouteDepartures): string => {
   const dayType = DAY_TO_TYPE[raw.day];
   const dayConfig = DEFAULT_CRITERIA.dayTypes[dayType];
   if (!dayConfig || times.length < 2) return 'span';
-  const tiers = getTiersForCriteria(raw.routeType, dayConfig.tiers, DEFAULT_CRITERIA.modeTierOverrides);
+  const tiers = dayConfig.tiers;
   const gaps = times.slice(1).map((time, index) => time - times[index]);
   return determineTier(
     gaps,

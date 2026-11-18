@@ -1,13 +1,16 @@
 import { headwayTierLabel } from './headwayText';
+import { PUBLIC_TIER_MAXES } from './frequencyRules';
 import { hourRange, hourTime } from './timeText';
 import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_PATH, STUDIO_VEHICLES_PATH } from './pagePaths';
 /**
  * Shared configuration constants
  */
 
-export const DEFAULT_R2_PUBLIC_URL = 'https://data.transitatlas.fyi';
-/** Staged artifacts used by beta-only agencies while a country rollout is being validated. */
-export const DEFAULT_BETA_R2_PUBLIC_URL = 'https://pub-5f1c48f86b024c42a8d174a4a5dd69ca.r2.dev';
+import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './rules/paths';
+import { TIER_COLOURS } from './rules/colours';
+// The bucket origins are in shared/rules/paths.ts (rules audit, move 6). The beta bucket holds staged artifacts used by
+// beta-only agencies while a country rollout is being validated.
+export { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL };
 
 const getR2PublicUrl = (): string => {
   if (typeof process !== 'undefined' && process.env?.R2_PUBLIC_URL) {
@@ -364,34 +367,20 @@ export interface HeadwayTier {
   label: string;
 }
 
+/**
+ * The frequency tiers, best first, in their colours (shared/rules/colours.ts): one per PUBLIC_TIER_MAXES step
+ * (shared/frequencyRules.ts, the scales' one home), then Infrequent.
+ */
 export const HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#22863a', label: headwayTierLabel(10) },
-  { max: 15, color: '#3da44d', label: headwayTierLabel(15) },
-  { max: 20, color: '#f59e0b', label: headwayTierLabel(20) },
-  { max: 30, color: '#e07b2a', label: headwayTierLabel(30) },
-  { max: 60, color: '#92400e', label: headwayTierLabel(60) },
-  { max: Infinity, color: '#6b7280', label: 'Infrequent' },
+  ...PUBLIC_TIER_MAXES.map((max, i) => ({ max, color: TIER_COLOURS[i], label: headwayTierLabel(max) })),
+  { max: Infinity, color: TIER_COLOURS[PUBLIC_TIER_MAXES.length], label: 'Infrequent' },
 ];
 
-/** Finite headway tier breakpoints derived from HEADWAY_TIERS (pipeline analysis). */
-export const SURFACE_TIER_MAXES: number[] = HEADWAY_TIERS
-  .filter(t => t.max !== Infinity)
-  .map(t => t.max);
+/** The public scale, re-exported here for its many readers; defined in shared/frequencyRules.ts. */
+export { PUBLIC_TIER_MAXES };
 
-/** Default map center when no saved view (GTHA). */
-export const DEFAULT_MAP_CENTER: [number, number] = [43.65, -79.45];
-export const DEFAULT_MAP_ZOOM = 11;
-
-/** Bbox padding from agency center when index.json has no explicit bbox. */
-export const AGENCY_BBOX_PAD = { lat: 0.4, lon: 0.5 } as const;
-/** Initial viewport padding around center. */
-export const VIEWPORT_BBOX_PAD = { lat: 0.5, lon: 0.6 } as const;
-/** Agency chip visibility check padding. */
-export const AGENCY_CHIP_PAD = 0.5;
-
-/** Runtime map zoom gate: [zoom threshold, max headway] steps after the sub-zoom-7 default (10 min). */
-export const MAP_ZOOM_HEADWAY_STEPS: ReadonlyArray<readonly [zoom: number, maxHeadway: number]> = [
-  [7, 20],
-  [9, 9999],
-];
-export const MAP_ZOOM_DEFAULT_MAX_HEADWAY = 10;
+/** The default map view, its padding and the zoom steps (shared/rules/limits.ts). */
+export {
+  DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, AGENCY_BBOX_PAD, VIEWPORT_BBOX_PAD, AGENCY_CHIP_PAD,
+  MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY,
+} from './rules/limits';

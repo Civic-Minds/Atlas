@@ -105,8 +105,8 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
   const last = lastRun ? lastRun[lastRun.length - 1] : pts[pts.length - 1];
   const ends = last ? spread([
     { key: 'band', y: y(last.p90Min), h: 30, lines: ['1 in 10 trips take', 'longer than this'], color: 'var(--text-muted)', weight: 400 },
-    { key: 'usual', y: y(last.typicalMin), h: 15, lines: ['Usually'], color: 'var(--text-primary)', weight: 700 },
-    { key: 'sched', y: y(last.scheduledMin), h: 15, lines: ['Scheduled'], color: 'var(--text-secondary)', weight: 400 },
+    { key: 'usual', y: y(last.typicalMin), h: 15, lines: [USUALLY_COLUMN], color: 'var(--text-primary)', weight: 700 },
+    { key: 'sched', y: y(last.scheduledMin), h: 15, lines: [SCHEDULED_COLUMN], color: 'var(--text-secondary)', weight: 400 },
   ], PAD_TOP - 8, H - PAD_BOTTOM) : [];
   const colW = plotW / Math.max(1, axis.length - 1);
   return (

@@ -1,4 +1,5 @@
 import type { GtfsData } from '../../types/gtfs.js';
+import { EARTH_RADIUS_M } from '../../shared/rules/limits.js';
 
 /**
  * CIV-1334: the City of St. George's own SunTran feed (GTFS_2025-10-13) labels every route
@@ -21,7 +22,7 @@ function meters(aLat: number, aLon: number, bLat: number, bLon: number): number 
   const rad = Math.PI / 180;
   const x = (bLon - aLon) * rad * Math.cos(((aLat + bLat) / 2) * rad);
   const y = (bLat - aLat) * rad;
-  return Math.sqrt(x * x + y * y) * 6_371_000;
+  return Math.sqrt(x * x + y * y) * EARTH_RADIUS_M;
 }
 
 export interface StGeorgeLabelResult {

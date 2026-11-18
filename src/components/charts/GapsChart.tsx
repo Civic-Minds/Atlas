@@ -7,6 +7,7 @@ import { useWidth } from './RunTimeChart';
 import { TOO_CLOSE_LABEL, TOO_FAR_LABEL } from '../../../shared/liveWording';
 import { ACTIVE_BG, FADED_OPACITY, useActivePart } from './useActivePart';
 import { countOf } from '../../../shared/overflowText';
+import { SCHEDULED_COLUMN } from '../../content/noticeCopy';
 
 const PAD_TOP = 22;
 const PAD_BOTTOM = 22;
@@ -92,7 +93,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
             </button>
           );
         })}
-        <span className="inline-flex items-center gap-1.5"><svg width="14" height="4" aria-hidden="true"><line x1="0" x2="14" y1="2" y2="2" stroke="var(--text-secondary)" strokeWidth="1.5" strokeDasharray="4 3" /></svg>Scheduled</span>
+        <span className="inline-flex items-center gap-1.5"><svg width="14" height="4" aria-hidden="true"><line x1="0" x2="14" y1="2" y2="2" stroke="var(--text-secondary)" strokeWidth="1.5" strokeDasharray="4 3" /></svg>{SCHEDULED_COLUMN}</span>
       </div>
     </figure>
   );

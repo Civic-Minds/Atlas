@@ -17,6 +17,7 @@ export function currentAtlasUrl(): string {
 /** One line of a report's details: a labelled field ("**Agency:** TTC") or a line as written (a list item, a blank line). */
 /** Labels on report details shared by several cards (CIV-1599). */
 export const REPORT_DETAIL_LABELS = {
+  agency: 'Agency',
   agencySlug: 'Agency slug',
   dataRefreshed: 'Agency data refreshed',
   feedExpiry: 'Feed expiry',

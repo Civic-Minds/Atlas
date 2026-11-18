@@ -3,12 +3,13 @@
  * Points are always `{ lat, lon }` objects, so a caller can't swap latitude and longitude the way the old
  * positional and [lon, lat] / [lat, lon] tuple versions invited.
  */
+import { EARTH_RADIUS_M } from './rules/limits';
+
 export interface LatLon {
   lat: number;
   lon: number;
 }
 
-const EARTH_RADIUS_M = 6_371_000;
 const RAD = Math.PI / 180;
 
 /** Metres between two points. */

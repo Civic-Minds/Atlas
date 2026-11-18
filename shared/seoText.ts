@@ -1,7 +1,7 @@
-/** Search-result text limits: titles are cut at about 60 characters, descriptions at about 155 to 160. */
-export const TITLE_MAX = 60;
-export const DESCRIPTION_MAX = 155;
-export const DESCRIPTION_MIN = 110;
+import { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX } from './rules/limits';
+
+/** Search-result text limits (shared/rules/limits.ts). */
+export { DESCRIPTION_MAX, DESCRIPTION_MIN, TITLE_MAX };
 
 /** Cut at the last word boundary that fits, with no trailing punctuation. */
 export function truncateAtWord(text: string, max: number): string {

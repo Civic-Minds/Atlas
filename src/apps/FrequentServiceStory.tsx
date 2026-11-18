@@ -41,8 +41,8 @@ type CoverageRow = (typeof frequentServiceCoverageStats)[number];
 const COVERAGE_COLUMNS: DataTableColumn<CoverageRow>[] = [
   // Same classes as the agency and area tables (compact variant): regular-weight names, plain digits, default text colour.
   { key: 'country', header: 'Country', cell: row => row.country, rowHeader: true, className: 'font-normal' },
-  { key: 'fifteen', header: '15 min', cell: row => row.fifteenMinute },
-  { key: 'thirty', header: '30 min', cell: row => row.thirtyMinute },
+  { key: 'fifteen', header: headwayAmount(15), cell: row => row.fifteenMinute },
+  { key: 'thirty', header: headwayAmount(30), cell: row => row.thirtyMinute },
   { key: 'scope', header: 'Scope', cell: row => `${row.metros} · ${row.fifteenMinuteMetros} at 15 min` },
 ];
 

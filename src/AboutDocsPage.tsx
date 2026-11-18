@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react';
-import { FEATURES, PERIOD_LABELS, SURFACE_TIER_MAXES, TIME_PERIODS } from '../shared/config';
+import { FEATURES, PERIOD_LABELS, PUBLIC_TIER_MAXES, TIME_PERIODS } from '../shared/config';
 import { headwayAmount, headwayEvery, headwayEveryRange } from '../shared/headwayText';
-import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_MAXES, RAIL_TIER_WINDOW, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
+import { EDGE_GAP_ALLOWANCE_MINUTES, GRACE_FLOOR_MIN_GAPS, GRACE_MINUTES, GRACE_PERCENT, nearMissGrace, RAIL_TIER_WINDOW, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/frequencyRules';
 import { countText, percentText } from '../shared/numberText';
 import { MIN_HISTORY_DISTINCT_YEARS } from '../shared/historyEligibility';
 import { metresText } from '../shared/unitText';
@@ -41,7 +41,7 @@ import {
 /** Each period's hours ("6–9 AM"), from TIME_PERIODS so the page can't drift from the app (CIV-1610). */
 const PERIOD_TIMES = Object.fromEntries(TIME_PERIODS.map(p => [p.key, hourRange(p.startHour, p.endHour)])) as Record<(typeof TIME_PERIODS)[number]['key'], string>;
 /** The frequency tiers as the page lists them: "≤10, ≤15, ≤20, ≤30 and ≤60 min" (the tier breakpoints, CIV-1610; the page needs no colours). */
-const TIER_LIST = `${joinList(SURFACE_TIER_MAXES.map(max => `≤${max}`))} min`;
+const TIER_LIST = `${joinList(PUBLIC_TIER_MAXES.map(max => `≤${max}`))} min`;
 /** The agency table's period columns, in AgencyPage.tsx's order. */
 const AGENCY_TABLE_PERIODS = joinList([PERIOD_LABELS.amPeak, PERIOD_LABELS.midday, PERIOD_LABELS.pmPeak, PERIOD_LABELS.evening, PERIOD_LABELS.overnight]);
 /** The research pages, counted and named from RESEARCH so the page can't drift from the /research index (CIV-1610, CIV-1440). */
@@ -138,7 +138,7 @@ const NOTICE_GROUPS: { title: string; text: string; examples: string[]; onDemand
 ];
 
 /** The near-miss table, from the pipeline's own settings (shared/frequencyRules.ts, CIV-1612). */
-const NEAR_MISS_ROWS: [string, string, string][] = SURFACE_TIER_MAXES.map(tier => [
+const NEAR_MISS_ROWS: [string, string, string][] = PUBLIC_TIER_MAXES.map(tier => [
   headwayAmount(tier),
   headwayAmount(tier + nearMissGrace(tier)),
   `${percentText(VIOLATION_PERCENT_BY_TIER[tier] ?? VIOLATION_PERCENT)} of gaps`,
@@ -194,7 +194,6 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Data quality:</strong> expose source dates, stale schedules, review states, corrections, geometry repairs and known limitations.</li>
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand:</strong> represent on-demand and GTFS-Flex service as zones or virtual stops where a fixed route is the wrong model.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> an overnight-service view and a frequent-service story, which sit under Research.</li>}
-              <li><strong className="text-[var(--text-primary)]">Open data:</strong> publish route, stop, map and freshness data that other transit tools can build on.</li>
             </ul>
             <p>Some surfaces are public, some are in beta and some remain research or validation tools. The same processed data model supports all of them without making every experimental feature part of the main map.</p>
             {showLive && <p>Live is a separate GTFS-Realtime path: it polls configured agency feeds for vehicle positions, trip updates and selected observed headways. Coverage is route-specific, may be partial and is never treated as proof that the scheduled frequency calculation is current.</p>}
@@ -290,7 +289,7 @@ export default function AboutDocsPage() {
               />
             </ScrollX>
             <p>Atlas rounds the percentage down, but allows at least one near miss once there are {GRACE_FLOOR_MIN_GAPS} or more gaps, and never more than three. A first or last gap that is genuinely at the edge of service may receive a separate allowance up to <code className="text-xs text-[var(--text-primary)]">T + {headwayAmount(EDGE_GAP_ALLOWANCE_MINUTES)}</code>. That edge allowance also uses one of the same near-miss slots, and at least four departures must remain after the edge treatment is applied. A gap beyond the relevant limit, or too many near misses, disqualifies the band and Atlas tests the next slower one.</p>
-            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Rail uses the same tolerance logic with {joinList(RAIL_TIER_MAXES.map(String))} min bands, and is tested on midday service from {timeRange(RAIL_TIER_WINDOW.start, RAIL_TIER_WINDOW.end)}; the 5 and 8 min bands are not separate options in the main map filter.</p>
+            <p>These allowances handle ordinary schedule rounding and small deviations without turning a genuinely uneven route into a frequent one. A large gap is still a failure even if the median looks good, and the final tier is the fastest band that survives the full check. Every mode, bus, rail and streetcar alike, is graded on the same {joinList(TIER_MAXES.map(String))} min bands; the 5 and 8 min bands count as 10 and are not separate options in the main map filter. Rail is tested on midday service from {timeRange(RAIL_TIER_WINDOW.start, RAIL_TIER_WINDOW.end)}.</p>
             <Subsection title="Frequency Bands">
               <p>The main Frequency control currently exposes service at {TIER_LIST}. The filter and the line colour use the route’s worst-direction cadence, so a route whose slowest direction runs less often than {headwayEvery(60)} appears as infrequent. Occasional service is hidden by default.</p>
             </Subsection>

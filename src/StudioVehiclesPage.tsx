@@ -3,7 +3,7 @@ import { PageTable } from './components/ui/PageSection';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { runTimeAmount } from '../shared/headwayText';
 import { MISSING_VALUE } from '../shared/missingValue';
-import { groupAtTarget, studioGroupTargets, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles';
+import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../shared/studioVehicles';
 import PillGroup from './components/ui/PillGroup';
 import { STUDIO_VEHICLES_TEXT } from '../shared/studioWording';
 
@@ -14,7 +14,15 @@ import { STUDIO_VEHICLES_TEXT } from '../shared/studioWording';
  * see shared/studioVehicles.ts. Its words are in shared/studioWording.ts.
  */
 
-export const STUDIO_DEFAULT_AGENCY = 'kingston';
+/**
+ * The agencies Studio has files for (CIV-1806), in the agency menu's order; the first opens by default. Each needs its
+ * tmp/studio/<slug>-before-after.json and <slug>-vehicles.json (scripts/compare-feed-dates.ts, scripts/vehicles-needed.ts).
+ */
+export const STUDIO_AGENCIES = ['kingston', 'hamilton'] as const;
+export const STUDIO_DEFAULT_AGENCY: string = STUDIO_AGENCIES[0];
+/** The agency an address asks for (?agency=), when Studio has it; otherwise the default. */
+export const studioAgencyFrom = (param: string | null): string =>
+  param && (STUDIO_AGENCIES as readonly string[]).includes(param) ? param : STUDIO_DEFAULT_AGENCY;
 
 
 const T = STUDIO_VEHICLES_TEXT;
@@ -28,7 +36,7 @@ export function groupFigureRows(g: StudioVehicleGroup, split: StudioBranchSplit 
     { key: 'routes', label: T.routes, value: g.routes.join(', ') },
     { key: 'scheduled', label: T.scheduled, value: g.scheduled },
     { key: 'needed', label: T.needed, value: g.implied },
-    ...studioGroupTargets(g).map(hw => ({ key: `at-${hw}`, label: T.neededAt(hw), value: atTarget[hw] ?? MISSING_VALUE })),
+    ...STUDIO_TARGETS.map(hw => ({ key: `at-${hw}`, label: T.neededAt(hw), value: atTarget[hw] ?? MISSING_VALUE })),
     { key: 'running', label: T.running, value: runTimeAmount(g.runningMin) },
     { key: 'layover', label: T.layover, value: runTimeAmount(g.layoverMin) },
   ];

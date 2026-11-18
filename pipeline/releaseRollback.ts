@@ -9,7 +9,8 @@
  */
 import { manifestShapeError, releasePrefixOf, type ReleaseManifest } from './releaseGuard.js';
 
-export const RELEASE_POINTER_KEY = 'atlas/release.json';
+import { RELEASE_POINTER_KEY } from '../shared/rules/paths.js';
+export { RELEASE_POINTER_KEY };
 
 export interface RollbackEvidence {
   /** The manifest to restore: atlas/releases/<id>/manifest.json, or a saved copy of an earlier release.json. */

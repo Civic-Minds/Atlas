@@ -11,6 +11,7 @@ import { readWeekOf } from '../pipeline/readWeek.js';
 import { computeRawDepartures } from '../pipeline/transit-phase1.js';
 import { computePeriodSustained, computePeriodSustainedWithEdgeTransitionGap } from '../pipeline/headway-utils.js';
 import { TIME_PERIODS, type PeriodKey } from '../shared/config.js';
+import { DEFAULT_R2_PUBLIC_URL } from '../shared/rules/paths';
 
 type Feature = { properties?: Record<string, any> };
 type Artifact = { features?: Feature[] };
@@ -19,7 +20,7 @@ const root = resolve(import.meta.dirname, '..');
 const output = resolve(process.argv.find(arg => arg.startsWith('--out='))?.slice(6) ?? 'tmp/edge-transition-omaha-2026-09.json');
 const agency = JSON.parse(readFileSync(resolve(root, 'public/data/index.json'), 'utf8'))
   .agencies.find((item: { slug: string }) => item.slug === 'omahametro') as { feedUrl: string; lastFeedVersion?: string };
-const artifactUrl = 'https://data.transitatlas.fyi/atlas/omahametro.json';
+const artifactUrl = `${DEFAULT_R2_PUBLIC_URL}/atlas/omahametro.json`;
 
 async function fetchBuffer(url: string): Promise<Buffer> {
   const response = await fetch(url, { headers: { 'User-Agent': 'atlas-edge-transition-experiment/1.0' } });

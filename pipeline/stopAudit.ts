@@ -1,3 +1,4 @@
+import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 export interface AuditedStop {
   id: string;
   name: string;
@@ -24,7 +25,7 @@ function distanceM(a: AuditedStop, b: AuditedStop): number | null {
   const dLat = (b.lat - a.lat) * Math.PI / 180;
   const dLon = (b.lon - a.lon) * Math.PI / 180;
   const x = dLon * Math.cos(lat);
-  return 6_371_000 * Math.sqrt(dLat * dLat + x * x);
+  return EARTH_RADIUS_M * Math.sqrt(dLat * dLat + x * x);
 }
 
 export function compareStopSnapshots(previous: AuditedStop[], current: AuditedStop[]): StopAuditResult {

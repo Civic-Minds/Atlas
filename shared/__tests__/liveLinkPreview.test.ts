@@ -9,14 +9,14 @@ const summary = {
 
 describe('liveLinkPreview', () => {
   it('uses the approved title and the Late tile and subtitle wording', () => {
-    expect(liveLinkPreview('TTC', '504', summary)).toEqual({ title: '504 King · Live · Atlas', description: '9% of trips left the end of the line more than 5½ min late · Week of Oct 8–14' });
+    expect(liveLinkPreview('TTC', '504', summary)).toEqual({ title: 'Live: 504 King | Transit Atlas', description: '9% of trips left the end of the line more than 5½ min late · Week of Oct 8–14' });
     expect(liveLinkPreview('TTC', null, summary).description).toBe('8% of trips left the end of the line more than 5½ min late · Week of Oct 8–14');
   });
   it('names the agency by its own short name, never its address in capitals (CIV-1160)', () => {
-    expect(liveLinkPreview('MiWay', null, null).title).toBe('MiWay · Live · Atlas');
+    expect(liveLinkPreview('MiWay', null, null).title).toBe('Live: MiWay | Transit Atlas');
   });
   it('falls back to the title alone without data', () => {
-    expect(liveLinkPreview('TTC', '512', null)).toEqual({ title: 'TTC 512 · Live · Atlas', description: '' });
+    expect(liveLinkPreview('TTC', '512', null)).toEqual({ title: 'Live: TTC 512 | Transit Atlas', description: '' });
   });
 });
 

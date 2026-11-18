@@ -5,6 +5,7 @@ import { directionBranchFallback, isRedundantWithRouteName } from '../../shared/
 import { headwayAbout, headwayAboutRange, headwayAmount } from './headwayText';
 import { countOf } from '../../shared/overflowText';
 import { feedPlaceName, nameCase } from './nameCase';
+import { VIRTUAL_LRT_MODE } from '../../shared/modes';
 export { cleanHeadsign, getRouteLabel };
 // Name casing lives in nameCase.ts (CIV-1001); these keep the older import path working.
 export { nameCase, ROUTE_NAME_ACRONYMS } from './nameCase';
@@ -128,14 +129,17 @@ export function withRouteWord(label: string): string {
 const GENERIC_VEHICLE = 'Vehicle';
 
 /**
- * Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry). A streetcar route says "Vehicle":
- * buses replace streetcars on it and the feed does not say which is which (CIV-926, Ryan's pick).
+ * Vehicle word for a GTFS route_type (0 tram, 1 metro, 2 rail, 3 bus, 4 ferry, 12 monorail) or Atlas's LRT mode. A
+ * streetcar route says "Vehicle": buses replace streetcars on it and the feed does not say which is which (CIV-926,
+ * Ryan's pick). LRT and monorail are trains (CIV-1812).
  */
 export function vehicleModeWord(routeType: number | null | undefined): string {
   switch (routeType) {
     case 0: return GENERIC_VEHICLE;
     case 1:
-    case 2: return 'Train';
+    case 2:
+    case 12:
+    case VIRTUAL_LRT_MODE: return 'Train';
     case 4: return 'Ferry';
     default: return 'Bus';
   }

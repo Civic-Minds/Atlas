@@ -1,36 +1,19 @@
 import { HEADWAY_TIERS, MAP_ZOOM_HEADWAY_STEPS, MAP_ZOOM_DEFAULT_MAX_HEADWAY, type HeadwayTier } from '../../shared/config';
-import { headwayTierLabel } from './headwayText';
+import type { NightServiceFrequency } from '../../shared/nightService';
+import {
+  BRANCH_STACK_COLORS, COLOR_VISION_NIGHT_SERVICE_COLOR, COLOR_VISION_STATUS_COLORS, COLOR_VISION_TIER_COLOURS, FALLBACK_GREY,
+  NIGHT_SERVICE_COLOR, NIGHT_SERVICE_TIER_COLORS as NIGHT_SERVICE_TIER_COLORS_SOURCE, STATUS_COLORS, TEXT_ON_DARK, TEXT_ON_LIGHT,
+  type StatusColor,
+} from '../../shared/rules/colours';
 export { HEADWAY_TIERS };
 
-export interface StatusColor {
-  bg: string;
-  border: string;
-  text: string;
-}
+export type { StatusColor };
+export { BRANCH_STACK_COLORS, COLOR_VISION_NIGHT_SERVICE_COLOR, COLOR_VISION_STATUS_COLORS, NIGHT_SERVICE_COLOR, STATUS_COLORS };
 
 export type ColorVisionMode = 'default' | 'friendly';
 
-/**
- * A high-contrast palette based on Okabe-Ito's colour-universal design work.
- * Frequency order is carried by the legend and line weight as well as colour;
- * the palette is not intended to be the only cue.
- */
-export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = [
-  { max: 10, color: '#0072b2', label: headwayTierLabel(10) },
-  { max: 15, color: '#009e73', label: headwayTierLabel(15) },
-  { max: 20, color: '#56b4e9', label: headwayTierLabel(20) },
-  { max: 30, color: '#e69f00', label: headwayTierLabel(30) },
-  { max: 60, color: '#cc79a7', label: headwayTierLabel(60) },
-  { max: Infinity, color: '#4d4d4d', label: 'Infrequent' },
-];
-
-export const COLOR_VISION_STATUS_COLORS: Record<'early' | 'late' | 'on_time' | 'no_data', StatusColor> = {
-  early: { bg: '#0072b2', border: '#005a8d', text: '#005a8d' },
-  late: { bg: '#c44516', border: '#9e3510', text: '#9e3510' },
-  on_time: { bg: '#009e73', border: '#007a59', text: '#007a59' },
-  no_data: { bg: '#6b7280', border: '#4b5563', text: '#4b5563' },
-};
-
+/** The tiers in colour-vision-friendly mode: the same maxes and labels as HEADWAY_TIERS, in COLOR_VISION_TIER_COLOURS. */
+export const COLOR_VISION_HEADWAY_TIERS: HeadwayTier[] = HEADWAY_TIERS.map((t, i) => ({ ...t, color: COLOR_VISION_TIER_COLOURS[i] }));
 
 function palette(mode: ColorVisionMode): HeadwayTier[] {
   return mode === 'friendly' ? COLOR_VISION_HEADWAY_TIERS : HEADWAY_TIERS;
@@ -44,13 +27,6 @@ function statusPalette(mode: ColorVisionMode) {
   return mode === 'friendly' ? COLOR_VISION_STATUS_COLORS : STATUS_COLORS;
 }
 
-export const STATUS_COLORS: Record<'early' | 'late' | 'on_time' | 'no_data', StatusColor> = {
-  early: { bg: '#3182ce', border: '#2b6cb0', text: '#2b6cb0' },
-  late: { bg: '#e53e3e', border: '#9b2c2c', text: '#9b2c2c' },
-  on_time: { bg: '#38a169', border: '#276749', text: '#276749' },
-  no_data: { bg: '#718096', border: '#4a5568', text: '#718096' },
-};
-
 export const getTierColor = (tier: string | null, mode: ColorVisionMode = 'default'): string => {
   const tiers = palette(mode);
   if (!tier || tier === 'span' || tier === 'infrequent') return tiers[tiers.length - 1].color;
@@ -58,7 +34,7 @@ export const getTierColor = (tier: string | null, mode: ColorVisionMode = 'defau
   for (const { max, color } of tiers) {
     if (t <= max) return color;
   }
-  return '#9ca3af';
+  return FALLBACK_GREY;
 };
 
 /** Map a numeric headway (minutes) to its tier color hex. */
@@ -91,56 +67,30 @@ export function getVehicleRgb(status: 'early' | 'late' | 'on_time' | 'no_data', 
 /** Dark or white text, whichever reads better (WCAG contrast) on a hex background. */
 export function readableTextOn(hex: string): string {
   const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());
-  if (!m) return '#ffffff';
+  if (!m) return TEXT_ON_DARK;
   const lin = (i: number) => {
     const c = parseInt(m[1].slice(i, i + 2), 16) / 255;
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   };
   const l = 0.2126 * lin(0) + 0.7152 * lin(2) + 0.0722 * lin(4);
   // Contrast with white is 1.05 / (l + 0.05); with near-black (#111827, luminance ~0.009) it is (l + 0.05) / 0.059.
-  return 1.05 / (l + 0.05) >= (l + 0.05) / 0.059 ? '#ffffff' : '#111827';
+  return 1.05 / (l + 0.05) >= (l + 0.05) / 0.059 ? TEXT_ON_DARK : TEXT_ON_LIGHT;
 }
 
 /** Flat line color for Night Service view — every visible route already passed the
  * nightService filter, so (unlike headway) there's no tier to express, just one color. */
-/**
- * Branch colours for the route card's stacked hourly chart. The chart stacks every branch
- * of a direction (no cap); 8 covers the most branches any one direction has in the data,
- * so no two legend entries share a colour. Hues avoid the headway-tier greens, oranges,
- * brown and grey.
- */
-export const BRANCH_STACK_COLORS = [
-  '#2563eb', // blue
-  '#db2777', // pink
-  '#059669', // emerald
-  '#d97706', // amber
-  '#7c3aed', // violet
-  '#dc2626', // red
-  '#0891b2', // cyan
-  '#65a30d', // lime
-] as const;
-
 export function branchStackColor(index: number): string {
   return BRANCH_STACK_COLORS[index % BRANCH_STACK_COLORS.length];
 }
-
-export const NIGHT_SERVICE_COLOR = '#818cf8';
-export const COLOR_VISION_NIGHT_SERVICE_COLOR = '#0072b2';
 
 export function getNightServiceColor(mode: ColorVisionMode = 'default'): string {
   return mode === 'friendly' ? COLOR_VISION_NIGHT_SERVICE_COLOR : NIGHT_SERVICE_COLOR;
 }
 
-/**
- * CIV-1329 (Ryan, 2026-11-03): Night Service in three shades of the night colour, darker = more frequent. 60 keeps
- * the night colour; 30 is darker and 90 lighter.
- */
-export const NIGHT_SERVICE_TIER_COLORS: Record<'default' | 'friendly', Record<30 | 60 | 90, string>> = {
-  default: { 30: '#4f46e5', 60: NIGHT_SERVICE_COLOR, 90: '#c7d2fe' },
-  friendly: { 30: '#004a75', 60: COLOR_VISION_NIGHT_SERVICE_COLOR, 90: '#56b4e9' },
-};
+/** CIV-1329: the night grades' three shades (shared/rules/colours.ts). */
+export const NIGHT_SERVICE_TIER_COLORS: Record<'default' | 'friendly', Record<NightServiceFrequency, string>> = NIGHT_SERVICE_TIER_COLORS_SOURCE;
 
-export function getNightServiceTierColor(grade: 30 | 60 | 90, mode: ColorVisionMode = 'default'): string {
+export function getNightServiceTierColor(grade: NightServiceFrequency, mode: ColorVisionMode = 'default'): string {
   return NIGHT_SERVICE_TIER_COLORS[mode === 'friendly' ? 'friendly' : 'default'][grade];
 }
 
