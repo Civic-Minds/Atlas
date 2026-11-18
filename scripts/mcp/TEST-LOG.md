@@ -324,3 +324,5 @@ Other findings:
 | 36 | Claude | Read RTD's FX routes as "FlexRide zones", unlabelled | Its own reading of the names |
 
 Spot checks against the tools: Gemini's R4 every 3 at the AM peak and the 929 every 8 all day are right.
+
+Gemini plan (manager, 2026-11-18): rounds run on Claude only until Gemini's quota resets (about 2026-11-25). Then the 7 missing Gemini questions (30 to 36 above) run on the same server code.
