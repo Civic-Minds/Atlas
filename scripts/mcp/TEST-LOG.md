@@ -257,3 +257,35 @@ Ryan approved running the same 32 questions through Gemini ("1"; "You need to us
 | No answer | 5 and 21 (tried the shell, which was blocked, and returned nothing); 32 (Antigravity sign-in error) |
 
 What it shows: the tools' answers read the same on both. The difference is what each model adds. Gemini follows "don't estimate" more strictly but adds unlabelled facts from memory and reaches for the shell. Fixed in 0.6.2: the server now sends instructions at the start (answer from the tools; say where anything else comes from; no estimates unless asked; no shell work-arounds). Not rerun on Gemini.
+
+## 2026-11-18: standing questions, locked down and normal (CIV-1845)
+
+Version 0.6.2, from the main checkout. The 16 standing questions above (question 13 is the same as 9, so it was asked once; "our size" named Hamilton Street Railway in the question). Each run is one headless chat from ~/Desktop, one question at a time, each waiting for the answer. Driver: `_reports/mcp-tests/run-round.py`; chats: `2026-11-18-locked.jsonl` and `2026-11-18-normal.jsonl`; a figure check (`judge-figures.py`) lists every number in an answer that appears in no tool result, and each was checked by hand.
+
+- **Locked down**: `--bare` refuses to start without an API key (it never reads the Claude sign-in), so the run used the same lock-down without it: `--strict-mcp-config` with only atlas-studio, `--tools ""` (no built-in tools at all), `--allowedTools "mcp__atlas-studio__*"`, `--setting-sources ""` and auto-memory off. Checked before the round: the chat listed only the 12 Atlas tools and saw no CLAUDE.md or memory.
+- **Normal**: the usual setup, permission mode auto. It used no web search, shell or files; only ToolSearch and the Atlas tools.
+
+The two runs called the same tools and gave the same figures on every question. Every figure came from a tool, except those listed under "Added by the assistant".
+
+| # | Question (short) | Tools | Answer | Right? | Added by the assistant | Gap or fix |
+|---|---|---|---|---|---|---|
+| 1 | TTC 29, Saturday | route_frequency | 5:46 AM to 2:08 AM; every 5–16 midday, 10–20 early; the 329 covers 1:50–6 AM | Right | None | None |
+| 2 | Saturday vs Sunday, 10 AM–6 PM | route_frequency (window) | Same before noon; Dufferin Gate branch every 5 south, 8 north on Sunday from 1 PM against 10 on Saturday | Right per Atlas data | None | None |
+| 3 | Other routes, Dufferin to Wilson | combined_frequency (Sat, Sun) | 929; together every 3 Saturday (137 trips), every 5 Sunday (138 trips); 329 none | Right per the tool | Both runs guessed why Sunday reads every 5 from the same number of trips (buses leaving together), labelled as a guess | The tool gives no reason when "every" differs from trips per hour. List for the manager |
+| 4 | How much faster is the 929 | trip_time | Saturday 37 vs 44 min (7 faster); Sunday 34–36 vs 40 | Right | The "take the 929 only if it leaves within 7 min" advice (locked run) is its own, from tool figures | None |
+| 5 | 29 vs 929 through the day | None (reused question 4's call) | Flat through the day; Saturday 29 is 45 min at 11 AM | Right | None | None |
+| 6 | OC Transpo, every 10, midday | routes_at_frequency | Only Line 1, every 6, of 76 running | Right | None | Normal run also listed every-15 routes unasked: the 12 shows "every 17" yet counts at 15. List for the manager (why the route list and the filter differ) |
+| 7 | Five agencies, every 15, evenings | compare_agencies | TTC 64, CTA 34, MBTA 33, TransLink 32, SEPTA 10 | Right: same as 2026-11-17 | Shares of evening routes (38%, 37% …), labelled as its own | None |
+| 8 | YRT, every 15, Sunday midday | routes_at_frequency, list_agencies "Viva" | Only 20 Jane of 31 running | Right | None | Both runs said they couldn't tell whether Viva is in Atlas. It is (Viva Blue every 10–21 at Sunday midday, inside YRT). List for the manager: list_agencies "Viva" should say it is part of YRT |
+| 9 | Hamilton's spring schedule | schedule_changes | April 15 vs May 27: 51 University removed, 44 AM peak 15 → 30, 01 AM peak 16 → 15; none added | Right per Studio's current file | Why the 51 stopped (a term route), labelled as a guess | The 56 and 99 no longer show as added: Studio's comparison now reads the real week (#1581), which settles the earlier 56/99 question |
+| 10 | Agencies around Hamilton | list_agencies near | 12 within 60 km, nearest first | Right | None | None |
+| 11 | Mississauga, every 15, evenings | routes_at_frequency | 6 of 43: 2, 61, 66, 109, 1, 42 | Right: same as 2026-11-17 | None | None |
+| 12 | Calgary, Edmonton, Winnipeg, Sunday midday | compare_agencies, routes_at_frequency | Edmonton 13, Calgary 2 (Red and Blue Lines, every 10), Winnipeg 0 | Right | None | None |
+| 13 | US agencies HSR's size, every 10, midday | rank_agencies, routes_at_frequency | Lubbock 6, LADOT DASH 5, Grand Rapids 4 … of 153; HSR 2 (02 Barton, 51 University) | Right | Which leaders rely on campus routes, from route names | None |
+| 14 | Routes near Bathurst and Bloor | routes_near | Line 2, 511, 7, 300, 307 | Right | Both runs called the 300 and 307 night buses from memory, labelled | routes_near gives no hours. List for the manager: say when each route runs (or mark night routes) |
+| 15 | The 504 since 2019 | route_history | Table 2019 to 2026; AM peak 6 → 13; 2026 late "every 61" explained as the rule | Right | None | None |
+| 16 | Kingston 12 since 2018 | route_history (+ route_frequency in the locked run) | Doubtful 3-minute figures left out; evening service gone | Locked: right. Normal: partly wrong | Both runs distrusted the Jan 2019 midday "every 5" on their own | (a) The normal run didn't call route_frequency and said the latest schedule has midday service only: History's newest Kingston snapshot (Aug 2026) has only a midday figure, but today's schedule runs every 30 from 6:30 AM to 6:26 PM. route_history should end with today's schedule when History is older, as it does for the 504. (b) The doubtful rule (3 min or less) misses the Jan 2019 "every 5". Both listed for the manager |
+
+Not covered by the standing questions: buses_needed, routes_by_hours and also_agencies. The final round's trick questions are where models added figures of their own; they are worth adding to the standing set.
+
+Fixes: none made in this round. Every gap is in `atlasData.ts` or `atlas-mcp.ts`, which the hosted-version work (CIV-1840) is rewriting, so they went to the manager as a list.
