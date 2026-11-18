@@ -2,6 +2,8 @@
 
 The standing questions for the Atlas Studio MCP server ([README](README.md)), and what it answered each time. Rerun all of them after every change to the server, and add a dated section with the results checked against Atlas data.
 
+The quick check comes first: `node scripts/mcp/figureCheck.mjs` asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
+
 ## Versions
 
 Atlas Studio MCP has its own version, separate from the Atlas app's, shown to clients in the server info. The minor version goes up for any tool or answer change, and the patch version for fixes. It stays below 1.0 until there is a public version.
