@@ -78,6 +78,39 @@ export function assessFeedQuality(input: FeedQualityInput): FeedQuality {
   return input.routeCount === undefined ? assessByCounts(input) : assessByShares(input);
 }
 
+/** Both rating rules: no routes or a validation error makes a feed unusable, before any score. */
+function unusableRating(input: FeedQualityInput, checkedAt: string): FeedQuality | null {
+  if (input.featureCount !== 0 && input.validationErrors <= 0) return null;
+  return {
+    status: 'unusable',
+    score: 0,
+    reasons: [input.featureCount === 0 ? FEED_QUALITY_NO_ROUTES_REASON : FEED_QUALITY_VALIDATION_ERROR_REASON],
+    metrics: metricsFrom(input),
+    checkedAt,
+  };
+}
+
+/** Both rating rules: validation warnings cost 10 points each, up to 30, with their reason. */
+function validationWarningPenalty(input: FeedQualityInput, reasons: string[]): number {
+  if (input.validationWarnings <= 0) return 0;
+  reasons.push(feedQualityReasonForValidationWarnings(input.validationWarnings));
+  return Math.min(30, input.validationWarnings * 10);
+}
+
+/** Both rating rules: an expired feed loses 35 points and reads degraded; then the status from the score and reasons. */
+function finishRating(input: FeedQualityInput, checkedAt: string, score: number, reasons: string[]): FeedQuality {
+  if (isExpired(input.feedExpiry, checkedAt)) {
+    score -= 35;
+    reasons.push(FEED_QUALITY_EXPIRED_REASON);
+  }
+  const status: FeedQualityStatus = isExpired(input.feedExpiry, checkedAt) || score < 60
+    ? 'degraded'
+    : reasons.length > 0
+      ? 'review'
+      : 'healthy';
+  return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
+}
+
 /** Share of the agency's routes, as a penalty of one point per percent, capped like the count rules. */
 function sharePenalty(routes: number, routeCount: number): number {
   return routeCount > 0 ? Math.min(30, Math.round((100 * routes) / routeCount)) : 0;
@@ -98,20 +131,9 @@ function assessByShares(input: FeedQualityInput): FeedQuality {
   if (input.validationErrors === 0 && input.featureCount === 0 && input.resumesOn && checkedAt.replaceAll('-', '') < input.resumesOn) {
     return { status: 'paused', score: 0, reasons: [], metrics: metricsFrom(input), checkedAt };
   }
-  if (input.featureCount === 0 || input.validationErrors > 0) {
-    return {
-      status: 'unusable',
-      score: 0,
-      reasons: [input.featureCount === 0 ? FEED_QUALITY_NO_ROUTES_REASON : FEED_QUALITY_VALIDATION_ERROR_REASON],
-      metrics: metricsFrom(input),
-      checkedAt,
-    };
-  }
-
-  if (input.validationWarnings > 0) {
-    score -= Math.min(30, input.validationWarnings * 10);
-    reasons.push(feedQualityReasonForValidationWarnings(input.validationWarnings));
-  }
+  const unusable = unusableRating(input, checkedAt);
+  if (unusable) return unusable;
+  score -= validationWarningPenalty(input, reasons);
   if ((input.problemShapes ?? 0) > 0) {
     score -= sharePenalty(input.problemShapeRoutes ?? 0, routeCount);
     reasons.push(feedQualityReasonForShapeAnomalies(input.problemShapes!));
@@ -120,18 +142,7 @@ function assessByShares(input: FeedQualityInput): FeedQuality {
     score -= sharePenalty(input.mismatchRoutes!, routeCount);
     reasons.push(feedQualityReasonForHeadwayMismatches(input.mismatchRoutes!));
   }
-  if (isExpired(input.feedExpiry, checkedAt)) {
-    score -= 35;
-    reasons.push(FEED_QUALITY_EXPIRED_REASON);
-  }
-
-  const status: FeedQualityStatus = isExpired(input.feedExpiry, checkedAt) || score < 60
-    ? 'degraded'
-    : reasons.length > 0
-      ? 'review'
-      : 'healthy';
-
-  return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
+  return finishRating(input, checkedAt, score, reasons);
 }
 
 /** The count rules every rating made before CIV-533's share rules was scored with. */
@@ -140,20 +151,9 @@ export function assessByCounts(input: FeedQualityInput): FeedQuality {
   let score = 100;
   const checkedAt = input.checkedAt ?? new Date().toISOString().slice(0, 10);
 
-  if (input.featureCount === 0 || input.validationErrors > 0) {
-    return {
-      status: 'unusable',
-      score: 0,
-      reasons: [input.featureCount === 0 ? FEED_QUALITY_NO_ROUTES_REASON : FEED_QUALITY_VALIDATION_ERROR_REASON],
-      metrics: metricsFrom(input),
-      checkedAt,
-    };
-  }
-
-  if (input.validationWarnings > 0) {
-    score -= Math.min(30, input.validationWarnings * 10);
-    reasons.push(feedQualityReasonForValidationWarnings(input.validationWarnings));
-  }
+  const unusable = unusableRating(input, checkedAt);
+  if (unusable) return unusable;
+  score -= validationWarningPenalty(input, reasons);
   if (input.shapeAnomalies > 0) {
     score -= Math.min(30, input.shapeAnomalies * 10);
     reasons.push(feedQualityReasonForShapeAnomalies(input.shapeAnomalies));
@@ -162,18 +162,7 @@ export function assessByCounts(input: FeedQualityInput): FeedQuality {
     score -= Math.min(30, input.routeHeadwayMismatches * 10);
     reasons.push(feedQualityReasonForHeadwayMismatches(input.routeHeadwayMismatches));
   }
-  if (isExpired(input.feedExpiry, checkedAt)) {
-    score -= 35;
-    reasons.push(FEED_QUALITY_EXPIRED_REASON);
-  }
-
-  const status: FeedQualityStatus = isExpired(input.feedExpiry, checkedAt) || score < 60
-    ? 'degraded'
-    : reasons.length > 0
-      ? 'review'
-      : 'healthy';
-
-  return { status, score: Math.max(0, score), reasons, metrics: metricsFrom(input), checkedAt };
+  return finishRating(input, checkedAt, score, reasons);
 }
 
 /**

@@ -33,7 +33,7 @@ import type { OpenInfoFn } from '../InfoPanel';
 import { SearchSuggestionsPanel } from './SearchSuggestionsPanel';
 import { SearchResultsList } from './SearchResultsList';
 import { buildRouteFacts, labelShortNameOf, type RouteLabel } from '../../utils/routeFacts';
-import { collectStopHubSiblings, nearbyRouteClosestStops } from '../../utils/stopHub';
+import { collectStopHubSiblings, nearbyRouteClosestStops, stopHubCandidates } from '../../utils/stopHub';
 import { splitRouteKey } from '../../utils/routeKey';
 import { effectiveFeedExpiry, isAgencyFeedExpired } from '../../../shared/feedAvailability';
 import { trackEvent } from '../../lib/analytics';
@@ -463,21 +463,7 @@ export const SidebarControls: React.FC<SidebarControlsProps> = ({
         }
       }
     } else {
-      const candidates = allFeatures
-        .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
-          f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
-        .map(f => {
-          const p = f.properties as any;
-          const [lon, lat] = f.geometry.coordinates;
-          return {
-            stopId: p.stopId as string,
-            agencySlug: p.agencySlug as string,
-            stopName: p.stopName as string | undefined,
-            lat,
-            lon,
-            routeIds: p.routeIds as string[] | undefined,
-          };
-        });
+      const candidates = stopHubCandidates(allFeatures);
 
       const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
       siblingIdsByAgency = hub.siblingIdsByAgency;

@@ -6,7 +6,7 @@ import { PERIOD_LABELS as PERIOD_LABELS_BY_KEY, PERIOD_KEYS, type PeriodKey } fr
 import { buildRouteTileFilter, routeFeaturePassesMapFilter } from '../../shared/routeTileFilter';
 import { effectiveMode } from '../../shared/modes';
 import { featurePassesHeadwayFilter } from '../../shared/routeHeadwayFilter';
-import { collectStopHubSiblings } from '../utils/stopHub';
+import { collectStopHubSiblings, stopHubCandidates } from '../utils/stopHub';
 import { isHiddenByIrregularFilter, isLimitedService } from '../../shared/irregularRoutes';
 import { buildRouteKey } from '../utils/routeKey';
 import { type DayType } from '../../shared/rules/days';
@@ -296,21 +296,7 @@ export function useIntervalStats(layers: AgencyLayers, filters: IntervalFilters)
     const slug = props.agencySlug;
     const [clickLon, clickLat] = stopFeature.geometry.coordinates;
 
-    const candidates = allFeatures
-      .filter((f): f is typeof f & { geometry: GeoJSON.Point } =>
-        f.geometry.type === 'Point' && !!(f.properties as any)?.stopId)
-      .map(f => {
-        const p = f.properties as any;
-        const [lon, lat] = f.geometry.coordinates;
-        return {
-          stopId: p.stopId as string,
-          agencySlug: p.agencySlug as string,
-          stopName: p.stopName as string | undefined,
-          lat,
-          lon,
-          routeIds: p.routeIds as string[] | undefined,
-        };
-      });
+    const candidates = stopHubCandidates(allFeatures);
 
     const hub = collectStopHubSiblings(clickLat, clickLon, slug, stopName, candidates);
 

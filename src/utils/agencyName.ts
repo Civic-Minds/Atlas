@@ -243,6 +243,60 @@ function bracketAwareShortName(name: string): string {
   return isCode || !m[1].trim() ? short : m[1].trim();
 }
 
+/**
+ * Long " * Transit/Transportation Authority" names, mapped to the short or acronym forms the UI uses: the first row
+ * whose text appears in the name, or whose word does, wins. Order matters (checked top to bottom).
+ */
+const SHORT_FORMS: ReadonlyArray<readonly [contains: readonly string[], words: readonly string[], short: string]> = [
+  [['massachusetts bay'], ['mbta'], 'MBTA'],
+  [['capital district'], ['cdta'], 'CDTA'],
+  [['rochester-genesee'], ['rgrta'], 'RGRTA'],
+  [['pioneer valley'], ['pvta'], 'PVTA'],
+  [['worcester regional'], ['wrta'], 'WRTA'],
+  [['chattanooga'], [], 'CARTA'],
+  [['livermore amador'], [], 'LAVTA'],
+  [['ventura county'], [], 'VCTC'],
+  [['akron metro'], [], 'Akron Metro'],
+  [['stark area'], [], 'SARTA'],
+  [['capital area transportation'], [], 'CATA'],
+  [['san joaquin'], [], 'SJRTD'],
+  [['erie metropolitan'], [], 'EMTA'],
+  [['williamsburg area'], [], 'WATA'],
+  [['tompkins'], [], 'TCAT'],
+  [['greater lynchburg'], [], 'GLTC'],
+  [['whatcom'], [], 'Whatcom Transit'],
+  [['san luis obispo transit', 'slotransit'], [], 'SLO Transit'],
+  [['maryland transit administration'], [], 'MTA Maryland'],
+  [['fredericksburg'], [], 'FRED'],
+  [['memphis area'], [], 'MATA'],
+  [['dutchess'], [], 'Dutchess Transit'],
+  [['fairfield and suisun'], [], 'FAST'],
+  [['glens falls'], [], 'GGFT'],
+  [['mendocino'], [], 'Mendocino Transit'],
+  [['yamhill'], [], 'YCTA'],
+  [['metropolitan transit system'], ['sdmts'], 'MTS'],
+  [['roaring fork'], [], 'RFTA'],
+  [['river city', 'louisville'], [], 'TARC'],
+  [['bee-line', 'westchester'], [], 'Bee-Line'],
+  [['port authority of allegheny', 'pittsburgh regional'], [], 'PRT'],
+  [['nashville'], ['wego'], 'WeGo'],
+  [['sherbrooke'], [], 'STS'],
+  [['toronto transit'], [], 'TTC'],
+  [['spokane'], [], 'Spokane Transit'],
+  [['altamont corridor'], [], 'ACE'],
+  [['long island rail'], [], 'LIRR'],
+  [['washington state ferries'], [], 'WSF'],
+  [['riverside transit'], [], 'Riverside Transit'],
+  [['via metropolitan'], [], 'VIA'],
+  [['duluth transit'], [], 'DTA'],
+  [['kings area rural'], [], 'KART'],
+  [['hamilton street'], [], 'HSR'],
+  [['blue water area'], [], 'Blue Water'],
+  [['gwinnett county'], [], 'Gwinnett Transit'],
+  [['redding area'], [], 'RABA'],
+  [['rockford mass'], ['rmtd'], 'RMTD'],
+];
+
 function shortenedName(name: string): string {
   const lower = name.toLowerCase();
   if (lower.includes('ac transit')) return 'AC Transit';
@@ -272,53 +326,9 @@ function shortenedName(name: string): string {
   if (lower.includes('sound transit')) return 'Sound Transit';
 
   // Long " * Transit/Transportation Authority" names — map to common short/acronym forms used in UI
-  if (lower.includes('massachusetts bay') || hasWord(lower, 'mbta')) return 'MBTA';
-  if (lower.includes('capital district') || hasWord(lower, 'cdta')) return 'CDTA';
-  if (lower.includes('rochester-genesee') || hasWord(lower, 'rgrta')) return 'RGRTA';
-  if (lower.includes('pioneer valley') || hasWord(lower, 'pvta')) return 'PVTA';
-  if (lower.includes('worcester regional') || hasWord(lower, 'wrta')) return 'WRTA';
-  if (lower.includes('chattanooga')) return 'CARTA';
-  if (lower.includes('livermore amador')) return 'LAVTA';
-  if (lower.includes('ventura county')) return 'VCTC';
-  if (lower.includes('akron metro')) return 'Akron Metro';
-  if (lower.includes('stark area')) return 'SARTA';
-  if (lower.includes('capital area transportation')) return 'CATA';
-  if (lower.includes('san joaquin')) return 'SJRTD';
-  if (lower.includes('erie metropolitan')) return 'EMTA';
-  if (lower.includes('williamsburg area')) return 'WATA';
-  if (lower.includes('tompkins')) return 'TCAT';
-  if (lower.includes('greater lynchburg')) return 'GLTC';
-  if (lower.includes('whatcom')) return 'Whatcom Transit';
-  if (lower.includes('san luis obispo transit') || lower.includes('slotransit')) return 'SLO Transit';
-  if (lower.includes('maryland transit administration')) return 'MTA Maryland';
-  if (lower.includes('fredericksburg')) return 'FRED';
-  if (lower.includes('memphis area')) return 'MATA';
-  if (lower.includes('dutchess')) return 'Dutchess Transit';
-  if (lower.includes('fairfield and suisun')) return 'FAST';
-  if (lower.includes('glens falls')) return 'GGFT';
-  if (lower.includes('mendocino')) return 'Mendocino Transit';
-  if (lower.includes('yamhill')) return 'YCTA';
-  if (lower.includes('metropolitan transit system') || hasWord(lower, 'sdmts')) return 'MTS';
-  if (lower.includes('roaring fork')) return 'RFTA';
-  if (lower.includes('river city') || lower.includes('louisville')) return 'TARC';
-  if (lower.includes('bee-line') || lower.includes('westchester')) return 'Bee-Line';
-  if (lower.includes('port authority of allegheny') || lower.includes('pittsburgh regional')) return 'PRT';
-  if (lower.includes('nashville') || hasWord(lower, 'wego')) return 'WeGo';
-  if (lower.includes('sherbrooke')) return 'STS';
-  if (lower.includes('toronto transit')) return 'TTC';
-  if (lower.includes('spokane')) return 'Spokane Transit';
-  if (lower.includes('altamont corridor')) return 'ACE';
-  if (lower.includes('long island rail')) return 'LIRR';
-  if (lower.includes('washington state ferries')) return 'WSF';
-  if (lower.includes('riverside transit')) return 'Riverside Transit';
-  if (lower.includes('via metropolitan')) return 'VIA';
-  if (lower.includes('duluth transit')) return 'DTA';
-  if (lower.includes('kings area rural')) return 'KART';
-  if (lower.includes('hamilton street')) return 'HSR';
-  if (lower.includes('blue water area')) return 'Blue Water';
-  if (lower.includes('gwinnett county')) return 'Gwinnett Transit';
-  if (lower.includes('redding area')) return 'RABA';
-  if (lower.includes('rockford mass') || hasWord(lower, 'rmtd')) return 'RMTD';
+  for (const [contains, words, short] of SHORT_FORMS) {
+    if (contains.some(t => lower.includes(t)) || words.some(w => hasWord(lower, w))) return short;
+  }
 
   // General fallback: prefer whichever of {outer text, parenthetical} is
   // already compact — the parenthetical isn't always a brand abbreviation,
