@@ -104,7 +104,7 @@ export default function AirportStory() {
   const method = (
     <ResearchMethod parts={{
       dateConducted: <>{longDate(AIRPORT_STORY_CONDUCTED)}.</>,
-      sample: <>the 157 passenger airports with scheduled airline service in the cities Atlas covers in Canada and the United States, matched by stop names and distance from published airport locations.</>,
+      sample: <>the {TOTAL} passenger airports with scheduled airline service in the cities Atlas covers in Canada and the United States, matched by stop names and distance from published airport locations.</>,
       sources: <>each agency’s own schedule data (GTFS), for Tuesday November 17, Saturday November 21 and Sunday November 22, 2026. Flight times come from published schedules for nearby dates in November 2026.</>,
       whatCounted: <>a departure counts when the same vehicle later stops within 1.2 km of downtown (city hall or the main downtown transit hub). Landable hours are the hours of the week when a departure leaves within 60 minutes of landing at the start of that hour.</>,
       rechecked: <>every airport with no direct ride was checked by hand against the airport’s and agency’s own websites.</>,

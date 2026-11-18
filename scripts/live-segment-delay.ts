@@ -36,6 +36,7 @@ import { loadLiveAgencyConfig } from './live-agency-config.js';
 import { fillMissingDirections } from './live-trip-directions.js';
 import { assertDistinctFeeds, canonicalShapeIds, describeFeeds, droppedDaysWarning, feedForDate, feedsOverlapping, prefixedId, readFeedCoverage, uncoveredDates } from './live-gtfs-feeds.js';
 import { CALENDAR_DAY_FIELDS_SUNDAY_FIRST } from '../shared/rules/days.js';
+import { DAYTIME_PERIOD_KEYS } from '../shared/rules/periods.js';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live.js';
 
 const args: Record<string, string> = {};
@@ -937,7 +938,7 @@ const limitCutoffs = { earlyAtOrBelowMin: EARLY_AT_OR_BELOW_MIN, lateAtOrAboveMi
 const windowLimits = limitCounts(limitInput, inWindow, limitCutoffs);
 const goodLimits = limitCounts(limitInput, inGoodDays, limitCutoffs);
 const nearCutoffShare = windowLimits.nearCutoffShare;
-const BANDS: (TimeBand | 'all')[] = ['all', 'amPeak', 'midday', 'pmPeak', 'evening'];
+const BANDS: (TimeBand | 'all')[] = ['all', ...DAYTIME_PERIOD_KEYS];
 // B2 ranks only stops on a regular pattern (the main stretch's rule: 20%+ of the direction's trips), so a rare
 // diversion or odd pattern with a few late trips cannot top the list. Other stops are listed, not ranked.
 const regularStops = new Set<string>();
