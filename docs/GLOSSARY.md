@@ -72,6 +72,8 @@ Paths are from the repo root. "Main" means `origin/main` as of 2026-10-14 (741ee
 
 ## Live
 
+Live is a mode, not a product; its naming rule is in [TEXT.md](style/TEXT.md) (Words).
+
 Every entry in this section is **on feature/live-local-poc, not main yet**, unless it says "main". The code is in `shared/segmentDelay.ts`, `scripts/live-segment-delay.ts`, `src/utils/segmentDelayView.ts`, plus a card section component (`SegmentDelaySection`, branch only). The methods are in `docs/research/live-route-performance-2026-10/INDEX.md`. The card section is titled "Where the {route} falls behind" and has three views: "Running time", "Spacing" and "Standing still". Its time bands are "All day", "AM Peak", "Midday", "PM Peak" and "Evening".
 
 ### Measuring
