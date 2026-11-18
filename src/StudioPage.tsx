@@ -124,7 +124,13 @@ function movedSteps(c: StudioRouteChange, key: string): number {
  */
 export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
   const here = { before: c.before ? headwayAmount(c.before.headway[period]) : MISSING_VALUE, after: c.after ? headwayAmount(c.after.headway[period]) : MISSING_VALUE };
-  if (!c.before || !c.after || movedSteps(c, period) >= 1) return { label: null, ...here };
+  if (!c.before || !c.after) {
+    // Added or removed: this time of day's figure, or where it has none, the first time of day the route ran.
+    if (here.before !== here.after) return { label: null, ...here };
+    const ran = routeFigureRows(c).find(r => (PERIOD_KEYS as readonly string[]).includes(r.key) && r.before !== r.after);
+    return ran ? { label: ran.label, before: ran.before, after: ran.after } : { label: null, ...here };
+  }
+  if (movedSteps(c, period) >= 1) return { label: null, ...here };
   const keys = GROUP_KEYS[changeSize(c.before, c.after)];
   const changed = routeFigureRows(c).filter(r => r.before !== r.after && (!keys || keys.includes(r.key)));
   // A frequency that changed grade comes before trips (the group leads with frequency); otherwise the biggest move.

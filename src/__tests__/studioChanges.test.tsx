@@ -124,6 +124,8 @@ describe('Studio map page (CIV-1731)', () => {
     // The time of day's frequency where it changed, or where the route was removed: no name, the date columns say it.
     expect(rowFigure(change('10'), 'midday')).toEqual({ label: null, before: '60 min', after: '30 min' });
     expect(rowFigure(change('7B'), 'evening')).toEqual({ label: null, before: '96 min', after: '—' });
+    // A removed route with no figure at this time of day shows the time of day it ran, named.
+    expect(rowFigure(change('7B'), 'midday')).toEqual({ label: 'Evening', before: '96 min', after: '—' });
     // Unchanged at this time of day: the figure that did change, named, never the unchanged one.
     expect(rowFigure(change('10'), 'amPeak')).toEqual({ label: 'Midday', before: '60 min', after: '30 min' });
     // A first or last trip or trip time row shows that figure, not the frequency.
