@@ -225,8 +225,8 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
   const lossDates = (r?: string) => { const ds = r ? lossData.get(r)?.dates : [...lossData.values()].flatMap(d => d.dates); return [...new Set(ds ?? [])].sort(); };
   const networkLoss = fallsBehind && !route ? rankedTimeLoss(lossReports, band, FALLS_BEHIND_ROWS) : null;
   const routeLoss = fallsBehind && route && lossReports.has(route) ? rankedTimeLoss(new Map([[route, lossReports.get(route)!]]), band, FALLS_BEHIND_ROWS) : null;
-  const networkLossWidget: PanelWidget | null = networkLoss ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindAll} slower={networkLoss.slower} looser={networkLoss.looser} showRoute dates={lossDates()} onPick={openLossRow} /> } : null;
-  const routeLossWidget: PanelWidget | null = routeLoss && route ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindRoute(route)} slower={routeLoss.slower} looser={routeLoss.looser} showRoute={false} dates={lossDates(route)} onPick={openLossRow} /> } : null;
+  const networkLossWidget: PanelWidget | null = networkLoss ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget label={STUDIO_LIVE_PENDING.fallsBehindPill} slower={networkLoss.slower} looser={networkLoss.looser} showRoute dates={lossDates()} onPick={openLossRow} /> } : null;
+  const routeLossWidget: PanelWidget | null = routeLoss && route ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget label={`${route} · ${STUDIO_LIVE_PENDING.fallsBehindPill}`} slower={routeLoss.slower} looser={routeLoss.looser} showRoute={false} dates={lossDates(route)} onPick={openLossRow} /> } : null;
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
