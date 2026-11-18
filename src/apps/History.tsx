@@ -47,6 +47,7 @@ import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 import { TRIP_TIME_LABEL } from '../../shared/liveWording';
+import { frequencyChange } from '../../shared/frequencyChange';
 
 export interface RouteSnapshot {
   label: string;
@@ -166,8 +167,11 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all', day
   if (first.year === last.year) return null;
   const fHw = shownMinutes(periodMinutes(first, period, day)!);
   const lHw = shownMinutes(periodMinutes(last, period, day)!);
-  if (Math.abs(fHw - lHw) < 2) return null;
-  const worse = lHw > fHw;
+  // CIV-1814 item 38 (Ryan "1", option a): the one shared rule; the box shows when the route moves to another grade on the
+  // full grade list, moves inside the hidden 5 and 8 grades included, with the real minutes (never a grade).
+  const change = frequencyChange(fHw, lHw);
+  if (!change) return null;
+  const worse = !change.better;
   return {
     text: changeHeadline('Frequency', headwayExactAmount(fHw), headwayExactAmount(lHw)),
     subtext: `${first.label} to ${last.label}`,
