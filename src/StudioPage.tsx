@@ -275,7 +275,8 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
       sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel className="shrink-0" widgets={summary} />{list}</>}
       narrowPanels={<>
         <SidebarPanel className="p-3" widgets={routePanel ?? summary} />
-        {!routePanel && <div className="flex p-3 pt-0">{list}</div>}
+        {/* One column, one width: the list card is as wide as the summary card above it. */}
+        {!routePanel && <div className="flex p-3 pt-0 [&>section]:flex-1">{list}</div>}
       </>}
     />
   );
