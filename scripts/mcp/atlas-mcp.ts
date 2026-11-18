@@ -9,6 +9,7 @@
  * so it adds no dependency. Logs go to stderr; stdout carries only protocol messages.
  */
 import { createInterface } from 'node:readline';
+import { initializeResult, runTool, toolCallResult } from './rpc';
 import { PERIOD_KEYS, PERIOD_MINUTES, PERIOD_LABELS, formatPeriodRange } from '../../shared/config';
 import { hourRange } from '../../shared/timeText';
 import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
@@ -25,20 +26,17 @@ const local = await import('./localData');
 const { diskStore } = await import('./diskStore');
 // ATLAS_MCP_STORE=split:<folder> reads the split release files in a folder (what the hosted server reads), else the files on this Mac.
 const splitDir = process.env.ATLAS_MCP_STORE?.startsWith('split:') ? process.env.ATLAS_MCP_STORE.slice(6) : null;
+const { folderReader } = await import('./folderReader');
 if (splitDir) {
   const { splitStore } = await import('../../shared/mcpSplitStore');
-  const { readFileSync, existsSync } = await import('node:fs');
-  const { join } = await import('node:path');
-  data.useStore(splitStore(async path => { const f = join(splitDir, path); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; }));
+  data.useStore(splitStore(folderReader(splitDir)));
 } else data.useStore(diskStore());
 // Testing only (CIV-1860): ATLAS_MCP_LIVE_DIR points the Live tools at a folder laid out like the private Live bucket
 // (scripts/mcp/releaseLivePrivate.ts --dry-run writes one under <work>/dry-run).
 const liveDir = process.env.ATLAS_MCP_LIVE_DIR;
 if (liveDir) {
   const { splitLiveReader, useLiveReader } = await import('./liveData');
-  const { readFileSync, existsSync } = await import('node:fs');
-  const { join } = await import('node:path');
-  useLiveReader(splitLiveReader(async path => { const f = join(liveDir, path); return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null; }));
+  useLiveReader(splitLiveReader(folderReader(liveDir)));
 }
 
 const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
@@ -139,13 +137,12 @@ for await (const line of createInterface({ input: process.stdin })) {
   try { msg = JSON.parse(line); } catch { fail(null, -32700, 'Parse error'); continue; }
   const { id, method, params } = msg;
   if (id === undefined) continue; // notifications (initialized, cancelled) need no answer
-  if (method === 'initialize') reply(id, { protocolVersion: params?.protocolVersion ?? '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'atlas-studio', title: 'Atlas Studio', version: tools.SERVER_VERSION }, instructions: INSTRUCTIONS });
+  if (method === 'initialize') reply(id, initializeResult(params?.protocolVersion, tools.SERVER_VERSION, INSTRUCTIONS));
   else if (method === 'ping') reply(id, {});
   else if (method === 'tools/list') reply(id, { tools: TOOLS });
   else if (method === 'tools/call') {
     const handler = handlers[params?.name ?? ''];
     if (!handler) { fail(id, -32602, `Unknown tool ${params?.name}`); continue; }
-    try { reply(id, { content: [{ type: 'text', text: JSON.stringify(await handler(params?.arguments ?? {}), null, 1) }] }); }
-    catch (e) { reply(id, { content: [{ type: 'text', text: e instanceof Error ? e.message : String(e) }], isError: true }); }
+    reply(id, toolCallResult(await runTool(handler, params?.arguments ?? {})));
   } else fail(id, -32601, `Method not found: ${method}`);
 }

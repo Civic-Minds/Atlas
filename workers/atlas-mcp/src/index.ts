@@ -9,15 +9,13 @@
 import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { linkToken } from './linkToken';
-import { splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { jsonOrNull, splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LOGGED_RESULT = 1_500_000; // D1 rows top out at 2 MB
 const POINTER_TTL_SECONDS = 60;
-const SERVER = { name: 'atlas-studio', title: 'Atlas Studio', version: SERVER_VERSION };
-// The MCP protocol versions this server answers to (the newest first); a client asking for another gets the newest.
-const PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 
 const json = (body: unknown, status = 200, headers: HeadersInit = {}) => Response.json(body, { status, headers });
 const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -64,12 +62,7 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   if (env.ASSETS && env.DATA_FROM_ASSETS) {
     const assets = env.ASSETS;
     if (activeRelease?.id !== 'bundled') {
-      data.useStore(splitStore(async path => {
-        const r = await assets.fetch(`https://assets.invalid/${path}`);
-        if (r.status === 404) return null;
-        if (!r.ok) throw new Error(`Reading ${path} failed (${r.status}).`);
-        return r.json();
-      }));
+      data.useStore(splitStore(async path => jsonOrNull(await assets.fetch(`https://assets.invalid/${path}`), path)));
       activeRelease = { id: 'bundled', checkedAt: Date.now() };
     }
     return 'bundled';
@@ -94,12 +87,7 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
       throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
     }
     // Files of one release never change, so they cache for a long time at the edge.
-    data.useStore(splitStore(async path => {
-      const r = await fetch(`${base}/${path}`, { cf: { cacheTtl: 86_400, cacheEverything: true } });
-      if (r.status === 404) return null;
-      if (!r.ok) throw new Error(`Reading ${path} failed (${r.status}).`);
-      return r.json();
-    }));
+    data.useStore(splitStore(urlReader(base, { cf: { cacheTtl: 86_400, cacheEverything: true } })));
   }
   activeRelease = { id: releaseId, checkedAt: now };
   return releaseId;
@@ -130,7 +118,7 @@ async function handleMcp(request: Request, env: TestEnv, ctx: ExecutionContext, 
   if (id === undefined) return new Response(null, { status: 202 }); // notifications need no answer
   switch (method) {
     case 'initialize':
-      return rpcResult(id, { protocolVersion: PROTOCOL_VERSIONS.includes(params?.protocolVersion ?? '') ? params?.protocolVersion : PROTOCOL_VERSIONS[0], capabilities: { tools: {} }, serverInfo: SERVER, instructions: INSTRUCTIONS });
+      return rpcResult(id, initializeResult(params?.protocolVersion, SERVER_VERSION, INSTRUCTIONS));
     case 'ping': return rpcResult(id, {});
     case 'tools/list': return rpcResult(id, { tools: TOOLS.filter(t => t.name in handlers && served(t.name, env)) });
     case 'tools/call': useLiveBucket(env); return callTool(id, params ?? {}, env, ctx, tester);
@@ -153,19 +141,14 @@ async function callTool(id: unknown, params: NonNullable<JsonRpc['params']>, env
 
   const { question, ...args } = params.arguments ?? {};
   const started = Date.now();
-  let ok = true, text: string, releaseId: string | null = null;
-  try {
-    releaseId = await useCurrentRelease(env);
-    text = JSON.stringify(await handler(args), null, 1);
-  } catch (e) {
-    ok = false;
-    text = e instanceof Error ? e.message : String(e);
-  }
+  let releaseId: string | null = null;
+  const outcome = await runTool(async a => { releaseId = await useCurrentRelease(env); return handler(a); }, args);
+  const { ok, text } = outcome;
   const ms = Date.now() - started;
   const logged = text.length > MAX_LOGGED_RESULT ? `${text.slice(0, MAX_LOGGED_RESULT)}\n[cut: the answer was ${text.length} characters]` : text;
   ctx.waitUntil(env.DB.prepare('INSERT INTO calls (at, tester, tool, args, question, ok, result, ms, release_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
     .bind(new Date().toISOString(), tester.name, name, JSON.stringify(args), typeof question === 'string' ? question.slice(0, 2000) : null, ok ? 1 : 0, logged, ms, releaseId).run());
-  return rpcResult(id, { content: [{ type: 'text', text }], ...(ok ? {} : { isError: true }) });
+  return rpcResult(id, toolCallResult(outcome));
 }
 
 /** The tester behind a link's token, or null (unknown or revoked). */
