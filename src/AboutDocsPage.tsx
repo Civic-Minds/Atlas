@@ -234,7 +234,7 @@ export default function AboutDocsPage() {
               <li>Static route data, stop indexes and vector tiles are published to object storage.</li>
               <li>The browser loads only the data needed for the current map view and selected agency.</li>
             </ol>
-            <p>Atlas does not require an account or a user database. The deployed frontend and public transit artifacts are separate so data refreshes do not require a frontend release.</p>
+            <p>Atlas does not require an account or a user database.</p>
             <Subsection title="GTFS Inputs">
               <p>Atlas consumes GTFS Schedule as a relational set of core tables, calendar rules, optional geometry and optional extensions. It joins those records into a normalized analysis model before producing map and service metrics:</p>
               <ul className="list-disc pl-5 space-y-1">
@@ -312,7 +312,7 @@ export default function AboutDocsPage() {
           </Section>
 
           <Section id="map-architecture">
-            <p>The frontend is a React application using MapLibre for map interaction and rendering. Route geometry is distributed in vector tiles for broad map views, while agency detail and stop indexes are loaded as smaller JSON artifacts when needed.</p>
+            <p>The map is a React application using MapLibre for map interaction and rendering. Route geometry is distributed in vector tiles for broad map views, while agency detail and stop indexes are loaded as smaller JSON files when needed.</p>
             <p>At a high level, the browser combines three kinds of information:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>agency metadata, coverage, source dates and quality notices;</li>
@@ -331,7 +331,7 @@ export default function AboutDocsPage() {
               <p>These projections answer different questions. Stop and shared-stretch values are for display only: a busy stretch never makes a route qualify on its own. When a route already qualifies, the map can highlight the stretch where stop-level service meets the threshold. Atlas labels the surfaces rather than pretending there is one universal number.</p>
             </Subsection>
             <Subsection title="Public Outputs">
-              <p>After processing, Atlas publishes a set of read-only artifacts for the frontend:</p>
+              <p>After processing, Atlas publishes a set of read-only files for the map:</p>
               <ul className="list-disc pl-5 space-y-1">
                 <li>route geometry with serialized service metrics;</li>
                 <li>a lightweight stop index for searching and stop-specific views;</li>
@@ -340,7 +340,7 @@ export default function AboutDocsPage() {
                 <li>vector tiles for efficient map rendering; and</li>
               <li>agency metadata describing coverage, freshness, sources and quality status.</li>
               </ul>
-              <p>The artifacts contain processed public transit information. They do not contain user accounts, private analytics records, feed credentials or the raw maintainer workflow.</p>
+              <p>These files contain processed public transit information. They do not contain user accounts, private analytics records, feed credentials or the raw maintainer workflow.</p>
             </Subsection>
           </Section>
 
@@ -353,7 +353,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Agency-specific overrides</strong> handle a documented feed problem that cannot safely become a global rule. These are scoped to the affected agency, route, shape or source snapshot.</li>
               <li><strong className="text-[var(--text-primary)]">Quality annotations</strong> preserve problems that should not be silently “fixed,” such as missing shapes, stale feeds, route-frequency mismatches or unresolved geometry.</li>
             </ul>
-            <p>Atlas does not overwrite the upstream GTFS ZIP. It parses the source into an internal data model, applies validated transforms there and publishes new derived artifacts. Those transforms can filter unusable routes or trips, merge equivalent branches, synthesize missing direction metadata, normalize agency-specific conventions or repair clearly identifiable geometry problems.</p>
+            <p>Atlas does not overwrite the upstream GTFS ZIP. It parses the source into an internal data model, applies validated transforms there and publishes its own processed output. Those transforms can filter unusable routes or trips, merge equivalent branches, synthesize missing direction metadata, normalize agency-specific conventions or repair clearly identifiable geometry problems.</p>
             <p>Geometry repairs are conservative: when the parser cannot establish an unambiguous repair, it keeps the original geometry and records the anomaly for review rather than inventing a replacement. The source snapshot remains distinguishable from Atlas’s processed output.</p>
             <p>Every correction should have a reason, a narrow scope and a validation check. A general rule is only preferred when it has been tested against unrelated agencies; otherwise Atlas uses a targeted exception rather than risking a larger silent change.</p>
             <p>Corrections are tied to the source data that required them. When a new upstream feed arrives, Atlas rechecks whether the correction is still needed instead of treating the old exception as permanent truth.</p>
@@ -370,7 +370,7 @@ export default function AboutDocsPage() {
             <p>Feed-specific corrections are kept separate from the general methodology so a fix for one agency does not silently change every agency’s results.</p>
             <SubsectionTitle>A Conservative Publication Rule</SubsectionTitle>
             <p>Atlas would rather show no result and clearly indicate that data is missing than show a precise-looking result that may be wrong. This applies to route geometry, frequency metrics, service areas and research findings.</p>
-            <p>When the evidence is incomplete, Atlas can leave a route or field out, mark a result as unavailable or provisional, keep a feed in review, or preserve the last known artifact with a freshness warning. It does not fill gaps with a guessed value merely to make the map look complete.</p>
+            <p>When the evidence is incomplete, Atlas can leave a route or field out, mark a result as unavailable or provisional, keep a feed in review, or keep the last good published data with a freshness warning. It does not fill gaps with a guessed value merely to make the map look complete.</p>
             <SubsectionTitle>How Atlas Communicates Data Quality</SubsectionTitle>
             <p>Quality decisions are not meant to disappear behind a clean-looking map. Atlas surfaces user-relevant changes in the interface:</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -383,7 +383,7 @@ export default function AboutDocsPage() {
             <p>Not every internal exclusion becomes a separate banner. Clearly unusable rows can be removed during processing without overwhelming the map with implementation details, while known user-facing corrections, stale schedules, review states and material quality problems remain labelled where they affect interpretation.</p>
             <SubsectionTitle>How Outdated Data Is Flagged</SubsectionTitle>
             <p>Atlas determines schedule freshness from the service dates inside the feed, not only from the date the file was downloaded. It compares the latest usable date in <code className="text-xs text-[var(--text-primary)]">feed_info.txt</code>, <code className="text-xs text-[var(--text-primary)]">calendar.txt</code>, and non-removal entries in <code className="text-xs text-[var(--text-primary)]">calendar_dates.txt</code> with the current date, and an agency with several feeds uses the earliest of its feeds’ dates. A schedule also counts as ended when the calendars that carry most of its service have ended, even if a few rows run on.</p>
-            <p>During each refresh, Atlas records the feed’s expiry or version. If every available feed has expired, a download fails or validation fails, Atlas marks the agency as stale and retains the last good published artifact instead of replacing it with broken or empty output.</p>
+            <p>During each refresh, Atlas records the feed’s expiry or version. If every available feed has expired, a download fails or validation fails, Atlas marks the agency as stale and retains the last good published data instead of replacing it with broken or empty output.</p>
             <p>This also applies when a source publishes a newer GTFS file that is malformed or fails Atlas’s processing checks: the newer file is not promoted simply because it is newer. The active feed identity and last successful refresh remain unchanged; Atlas records the reason for the failure and tries again at the next refresh. If a source’s file is empty or unreadable, Atlas tries the agency’s next source for that feed.</p>
             <p>The interface then identifies that schedule as potentially outdated and shows the known end date and the check history when available. For agencies whose past feeds have repeatedly had problems, a newer feed is marked as under review while it is checked for missing service and other quality problems. A feed can therefore be visible, stale, under review, degraded or unusable as separate states rather than being silently treated as current.</p>
             <p>Source feeds can be delayed, incomplete, discontinued or incorrect.</p>
@@ -414,9 +414,9 @@ export default function AboutDocsPage() {
             <SubsectionTitle>{5 + flexStep}. Independent Source Review</SubsectionTitle>
             <p>Some facts cannot be established from GTFS alone. Atlas separately reviews official agency pages, service-area maps, system maps and agency guides. Each review records what source was checked, what claim it supports and whether the source is current enough to use.</p>
             <p>This is especially important for {FEATURES.onDemand ? 'on-demand coverage and ' : ''}system maps. A feed can prove that a route exists, but it may not prove that a service area is still active or that a map is the official current one. Those claims stay provisional or are excluded when the evidence is not strong enough.</p>
-            <SubsectionTitle>{6 + flexStep}. Artifact and Interface Checks</SubsectionTitle>
-            <p>Finally, Atlas checks the published output: route artifacts, stop indexes, vector tiles, metadata, map filters, route cards, links and deployment modes. The goal is to catch disagreements between the processed data and what a person can actually see or select in the application.</p>
-            <p>Published artifacts are checked for coverage and shape integrity, not just whether they uploaded successfully. The browser is checked against those artifacts because a correct pipeline result can still be presented incorrectly by a stale index, a missing tile, a mismatched route key or a filter that uses a different definition than the route card.</p>
+            <SubsectionTitle>{6 + flexStep}. Output and Interface Checks</SubsectionTitle>
+            <p>Finally, Atlas checks the published output: route files, stop indexes, vector tiles, metadata, map filters, route cards and links. The goal is to catch disagreements between the processed data and what a person can actually see or select in the application.</p>
+            <p>Published files are checked for coverage and shape integrity, not just whether they uploaded successfully. The browser is checked against those files because a correct pipeline result can still be presented incorrectly by a stale index, a missing tile, a mismatched route key or a filter that uses a different definition than the route card.</p>
             <SubsectionTitle>{7 + flexStep}. Manual Review and Feedback</SubsectionTitle>
             <p>Automated checks are supplemented by manual spot checks. When someone familiar with a city’s network notices a route, branch, shape, schedule or frequency that looks wrong, Atlas compares the result against the source feed and the agency’s published information rather than assuming the automated output is correct.</p>
             <p>Atlas also includes a Feedback link and a “{REPORT_A_PROBLEM}” form on route, stop and agency cards, which opens a pre-filled email. Reports can identify problems with routes, branches, names, frequencies, schedules, shapes, stops, filters, {FEATURES.live ? 'live information, ' : ''}or stale data, and the route report can include the loaded metric context needed to reproduce the result.</p>
