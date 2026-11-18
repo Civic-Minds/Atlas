@@ -104,3 +104,29 @@ Run: `_reports/mcp-tests/2026-11-17-rerun2.jsonl`. Version 0.3.0. Data: release 
 | 14 | rank_agencies (United States, similar to Hamilton, midday, every 10) | Hamilton has 31 weekday routes, so it compares the 172 US agencies with 16 to 62. NYC Subway leads with 21 routes, then MTA Bronx buses with 15; each agency lists its routes | Right: the same figures as routes_at_frequency | "Our size" is half to double Hamilton's weekday routes; min_routes and max_routes set another band |
 | – | list_agencies, no filter | Only the count, 548, and how to filter | Right | None |
 | – | list_agencies, Canada and Alberta | 6 agencies, one short line each | Right | None |
+
+## 2026-11-17: Ryan's third round, from the test page, plus his own extra questions
+
+Chat: `_reports/mcp-tests/2026-11-17-round3.jsonl`. Version 0.4.0, with TTC's current schedule (to 2026-12-21) downloaded with his OK during the round.
+
+| Question | Tools used | Answer | Right? | Gap or fix |
+|---|---|---|---|---|
+| TTC 29 on Saturday | route_frequency | Every 5–16 most of the day, 10–20 early, first 5:46 AM, last 2:08 AM | Right | None |
+| (extra) What branches does the route have? | Web search | 29A to Dufferin Gate, 29C to Princes' Gates, not confirmed | Right but not from Atlas | Atlas knows each branch and its ends; no tool shows them. Fix: list branches |
+| 29 Saturday vs Sunday, 10 AM–6 PM | route_frequency with a window | Hour by hour per branch; Dufferin Gate branch every 5 on Sunday from 1 PM against every 10 on Saturday | Right per Atlas data | Sunday's every 5 is being checked separately |
+| (extra) Buses needed for the 29 in the weekday AM peak | route_frequency, trip_time (4 calls) | About 15 buses, worked out by the assistant itself | Plausible, not Atlas's own calculation | Studio has a vehicles-needed calculation; no tool uses it. Fix: a buses-needed tool on Studio's rule |
+| (extra) With a 10% buffer | None | About 17 | Plausible | Same |
+| Other routes from Dufferin Station to Wilson Station | trip_time, combined_frequency | The 929; together every 4–6 on weekdays | Right | None |
+| How much faster is the 929 | (from the call above) | 4 min typical, 8 in the morning rush (weekday) | Right | None |
+| Do 29 and 929 times change 10 AM–6 PM | (from the call above) | Steady until 2–3 PM, then about 7 min longer | Right (weekday; the page's sample answer was for Saturday) | None |
+| US bus peers of HSR, midday every 10 | rank_agencies | Lubbock 6, LADOT DASH 5, Grand Rapids 4 … of 153 bus-only agencies with 16–62 routes; HSR has 2 | Right | None |
+| Routes near Bathurst and Bloor | None | Said Atlas can't search by place, then listed routes from memory, marked as unchecked | Admitted the gap, but still guessed | Fix: routes near a stop or corner, from Atlas's stops |
+| The 504 since 2019 | schedule_changes, route_frequency | Said Atlas has no older TTC schedule, gave today's figures | Admitted the gap | Atlas's History data has the 504 back to 2019. Fix: a route-history tool |
+| (extra) The Cherry streetcar | route_frequency, web search | Not in today's schedule; history from memory and the web | Right that it doesn't run today | History tool would help |
+| Rank Canadian agencies, evenings every 15 | rank_agencies | TTC 64, TransLink 32, Edmonton 11 … | Right | None |
+| Calgary 3, Sunday 8–11 AM | route_frequency with a window | Every 20 (21 in one hour), both directions | Right | None |
+| Finch to York Mills, weekday afternoon | combined_frequency | Line 1 every 4, the 97 about hourly, every 4 combined | Right | None |
+| PM peak every 10: Ottawa, Edmonton, Calgary | compare_agencies, routes_at_frequency | Calgary 7, Edmonton 4, Ottawa 2 | Right | None |
+| OC Transpo midday every 10 | routes_at_frequency | Only Line 1 (every 6) | Right | None |
+| YRT Sunday midday every 15 | routes_at_frequency, route_frequency | Only 20 Jane; explained why Viva misses | Right | None |
+| Agencies around Hamilton (asked twice) | list_agencies (Ontario) | Picked the nearby ones from all of Ontario's | Right, but the nearness was the assistant's own | Fix: find agencies near a place or another agency |
