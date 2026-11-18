@@ -304,19 +304,38 @@ export function periodsIn(start: number, end: number): string[] {
  * one direction can differ (TTC 29's Dufferin Gate and Princes' Gates ends), so each is listed; patterns with under a
  * tenth of their direction's trips are left out.
  */
-export function hourlyFrequency(r: RouteRows, start: number, end: number) {
-  const trips = (row: ShapeProperties) => Object.values((row.departuresByHour as Record<string, number> | undefined) ?? {}).reduce((a, b) => a + b, 0);
+export function hourlyFrequency(r: RouteRows, start: number, end: number, endOf?: (row: ShapeProperties) => string | null) {
+  const hoursOf = (row: ShapeProperties) => (row.departuresByHour as Record<string, number> | undefined) ?? {};
+  const trips = (row: ShapeProperties) => Object.values(hoursOf(row)).reduce((a, b) => a + b, 0);
+  const towardsOf = (row: ShapeProperties) => [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null;
   const dirTrips = new Map<string, number>();
   for (const row of r.rows) dirTrips.set(String(row.directionId ?? '0'), (dirTrips.get(String(row.directionId ?? '0')) ?? 0) + trips(row));
-  return r.rows
+  const kept = r.rows
     .filter(row => trips(row) >= 0.1 * (dirTrips.get(String(row.directionId ?? '0')) ?? 0))
-    .sort((a, b) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a))
-    .map(row => ({
-      towards: [row.headsign, row.routeVariant].filter(Boolean).join(' ') || null,
-      byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
-        .map(([h, v]) => [+h, v] as const).filter(([h]) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end).sort((a, b) => a[0] - b[0])
-        .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : `every ${v} min` })),
-    }));
+    .sort((a, b) => String(a.directionId).localeCompare(String(b.directionId)) || trips(b) - trips(a));
+  // Rows that end at the same stop and read the same each hour are one way to the end (TTC 29 northbound, from either
+  // loop to Wilson), as route_frequency's branches show it: one column, not one per starting loop.
+  const columns: Array<{ row: ShapeProperties; towards: string | null }> = [];
+  const seen = new Map<string, number>();
+  for (const row of kept) {
+    const end = endOf?.(row);
+    const sig = end ? `${row.directionId ?? '0'}|${end}|${JSON.stringify(row.headwayByHour ?? null)}` : null;
+    const at = sig != null ? seen.get(sig) : undefined;
+    if (at != null) {
+      const first = columns[at];
+      const heads = new Set(kept.filter(k => String(k.directionId ?? '0') === String(row.directionId ?? '0') && endOf?.(k) === end).map(k => String(k.headsign ?? '')).filter(Boolean));
+      first.towards = heads.size === 1 ? [...heads][0] : first.towards;
+      continue;
+    }
+    if (sig != null) seen.set(sig, columns.length);
+    columns.push({ row, towards: towardsOf(row) });
+  }
+  return columns.map(({ row, towards }) => ({
+    towards,
+    byHour: Object.entries((row.headwayByHour as Record<string, number | null> | undefined) ?? {})
+      .map(([h, v]) => [+h, v] as const).filter(([h]) => h * 60 >= Math.floor(start / 60) * 60 && h * 60 < end).sort((a, b) => a[0] - b[0])
+      .map(([h, v]) => ({ hour: hourRange(h, h + 1), every: v == null ? 'no regular trips' : `every ${v} min` })),
+  }));
 }
 
 // ---- Agency index for peers and rankings (CIV-1650 round 2) ----
@@ -348,6 +367,12 @@ export async function stopsOf(agency: CatalogAgency): Promise<Stop[]> {
   const stops = await store.stops(agency.slug);
   if (!stops) throw new Error(`No stops for ${agency.slug}.`);
   return stops;
+}
+
+/** Where each row of an agency's route ends (its last stop's name), for grouping branches that end at the same place. */
+export async function endOfRows(agency: CatalogAgency): Promise<(row: ShapeProperties) => string | null> {
+  const name = new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
+  return row => { const order = (row.stopOrder as string[] | undefined) ?? []; return order.length ? name.get(order[order.length - 1]) ?? null : null; };
 }
 
 /**

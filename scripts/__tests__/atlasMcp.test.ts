@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
+import { hourlyFrequency, edgeWait, frequencyChanges, parseClock, parseDay, parsePeriod, periodsIn, publicAgencies, useStore } from '../mcp/atlasData';
 import { agencyLabel, withAgency } from '../mcp/localData';
 import { diskStore } from '../mcp/diskStore';
 import { startsInWindow, windowHas } from '../mcp/tools';
@@ -90,5 +90,24 @@ describe('tool annotations (CIV-1854: every directory asks for a title and readO
       expect(t.title, t.name).not.toBe(t.name);
       expect(t.annotations).toMatchObject({ title: t.title, readOnlyHint: true, destructiveHint: false, openWorldHint: false });
     }
+  });
+});
+
+describe('hourly figures by branch (CIV-1840)', () => {
+  const row = (directionId: number, headsign: string, variant: string, by: Record<string, number>, hours: Record<string, number | null>) => ({ directionId, headsign, routeVariant: variant, departuresByHour: by, headwayByHour: hours });
+  const north = (variant: string) => row(1, 'Wilson', variant, { '8': 6, '9': 6 }, { '8': 10, '9': 10 });
+  const rows = [
+    row(0, 'Exhibition (Dufferin Gate)', 'a', { '8': 4, '9': 4 }, { '8': 15, '9': 15 }),
+    row(0, "Exhibition (Princes' Gates)", 'b', { '8': 2, '9': 2 }, { '8': 30, '9': 30 }),
+    north('from Dufferin Gate Loop'), north("from Princes' Gates Loop"),
+  ];
+  const r = { key: '29', name: '29', shortName: '29', longName: 'Dufferin', mode: 'Bus', rows } as unknown as Parameters<typeof hourlyFrequency>[0];
+  const endOf = (x: { directionId?: unknown; headsign?: unknown }) => (x.directionId === 1 ? 'Wilson Station' : String(x.headsign));
+
+  it('shows branches that end at the same stop and read the same as one column', () => {
+    expect(hourlyFrequency(r, 480, 600, endOf as never).map(c => c.towards)).toEqual(['Exhibition (Dufferin Gate) a', "Exhibition (Princes' Gates) b", 'Wilson']);
+  });
+  it('keeps every column when the ends are not known', () => {
+    expect(hourlyFrequency(r, 480, 600).length).toBe(4);
   });
 });
