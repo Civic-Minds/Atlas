@@ -204,7 +204,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   {
     path: CHANGELOG_PATH,
     title: tabTitle(PAGE_NAMES.whatsNew),
-    description: 'Every Atlas version and map data update, newest first.',
+    description: 'What’s changed in Atlas.',
     indexable: false,
   },
 ];
