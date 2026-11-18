@@ -43,7 +43,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { CLOSE_PLACES, closeLabel, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
+import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 import { TRIP_TIME_LABEL } from '../../shared/liveWording';
@@ -151,7 +151,7 @@ function snapshotHeadwayLabel(snapshot: RouteSnapshot, period: TimePeriod, minut
  * from here. The amounts are the shared formatters' ("15 min", "7.5 min"); should the two ever not share
  * the unit, each keeps its own.
  */
-export function changeHeadline(label: 'Frequency' | typeof TRIP_TIME_LABEL, firstAmount: string, lastAmount: string): string {
+export function changeHeadline(label: typeof FREQUENCY_LABEL | typeof TRIP_TIME_LABEL, firstAmount: string, lastAmount: string): string {
   const unit = ' min';
   const first = firstAmount.endsWith(unit) && lastAmount.endsWith(unit) ? firstAmount.slice(0, -unit.length) : firstAmount;
   return `${label}: ${first} → ${lastAmount}`;
@@ -173,7 +173,7 @@ function changeSummary(entry: RouteHistoryEntry, period: TimePeriod = 'all', day
   if (!change) return null;
   const worse = !change.better;
   return {
-    text: changeHeadline('Frequency', headwayExactAmount(fHw), headwayExactAmount(lHw)),
+    text: changeHeadline(FREQUENCY_LABEL, headwayExactAmount(fHw), headwayExactAmount(lHw)),
     subtext: `${first.label} to ${last.label}`,
     worse,
   };
