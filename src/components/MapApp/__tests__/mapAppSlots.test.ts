@@ -19,6 +19,9 @@ describe('map apps use the regular map\'s overlay slots (CIV-1821)', () => {
     expect(read('src/components/MapApp/MapAppLayout.tsx')).toContain('MAP_APP_SIDEBAR_SLOT');
     for (const page of ['src/StudioPage.tsx', 'src/LiveToolPage.tsx']) expect([page, read(page).includes('<MapLegendCard')]).toEqual([page, true]);
     expect(read('src/components/ui/MapLegendCard.tsx')).toContain('MAP_LEGEND_SLOT');
+    // The top-bar menus are the main map's chip (Ryan: "Are the pills in Studio different design than elsewhere").
+    expect(read('src/components/MapApp/PillMenu.tsx')).toContain('topBarChipClass(active)');
+    expect(read('src/components/Interval/FilterChips.tsx')).toContain('topBarChipClass');
   });
 
   it('places nothing over the map by hand: no edge offsets outside the slot table', () => {

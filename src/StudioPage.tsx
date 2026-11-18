@@ -23,7 +23,7 @@ import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
 import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, routeFigureRows, routeTitle } from './StudioChangesPage';
-import { STUDIO_AGENCIES, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
+import { STUDIO_AGENCIES, STUDIO_DEFAULT_AGENCY, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT } from '../shared/studioWording';
 
 /**
@@ -262,7 +262,7 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
   const routeOptions = useMemo(() => [['', T.allRoutes] as const, ...[...new Set([...Object.keys(file.lines?.after ?? {}), ...Object.keys(file.lines?.before ?? {})])]
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     .map(r => { const l = routeTitle({ route: r, name: file.changes.find(c => c.route === r)?.name ?? null }); return [r, <RouteRowName key={r} shortName={l.primary} name={l.secondary} />, l.text] as const; })], [file]);
-  const routeMenu = routeSlot ? <PortalInto slot={routeSlot}><PillMenu label={T.route} alignRight value={route ?? ''} options={routeOptions} onPick={r => setRoute(r || null)} /></PortalInto> : null;
+  const routeMenu = routeSlot ? <PortalInto slot={routeSlot}><PillMenu label={T.route} alignRight active={route != null} value={route ?? ''} options={routeOptions} onPick={r => setRoute(r || null)} /></PortalInto> : null;
   return (
     <MapAppLayout
       wide={wide}
@@ -311,7 +311,7 @@ export default function StudioPage() {
     <MapAppShell>
       <MapAppHeader>
         <AtlasLogo href="/" ariaLabel={ATLAS_BYLINE} showMark={false} />
-        <PillMenu label={AGENCY_COLUMN} value={slug} options={agencyOptions} onPick={pickAgency} />
+        <PillMenu label={AGENCY_COLUMN} active={slug !== STUDIO_DEFAULT_AGENCY} value={slug} options={agencyOptions} onPick={pickAgency} />
         <div className="ml-auto flex items-center gap-3">
           <div ref={setRouteSlot} className="contents" />
           {periods.length > 0 && <PillMenu label={TIME_OF_DAY_LABEL} value={period} options={periods.map(k => [k, PERIOD_LABELS[k]] as const)} onPick={k => setPeriod(k as PeriodKey)} />}

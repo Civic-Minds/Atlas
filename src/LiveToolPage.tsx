@@ -219,7 +219,7 @@ function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setRoute, d
     const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
   })], [s, networkV3, measure, band]);
-  const routeMenu = pickSlot ? createPortal(<PillMenu label={ROUTE_MENU_LABEL} alignRight value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
+  const routeMenu = pickSlot ? createPortal(<PillMenu label={ROUTE_MENU_LABEL} alignRight active={!!route} value={route ?? ''} options={routeOptions} onPick={r => { if (r) { setRoute(r); setPick(null); } else { setRoute(null); setDir(null); setPick(null); } }} />, pickSlot) : null;
   // The newest day in the figures, in the header: the picked route's, or the network summary's week.
   const upTo = dataSlot ? createPortal(<DataUpTo dates={v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? []} route={v3 ? ready?.route : ''} />, dataSlot) : null;
   const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={r => { setRoute(r); setPick(null); }} />;
