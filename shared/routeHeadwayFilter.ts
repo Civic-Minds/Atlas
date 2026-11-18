@@ -17,7 +17,7 @@
  * (CIV-82): the shared-stretch overlay judges each stop with featurePassesHeadwayFilter below,
  * and the route's own pass/fail never changes.
  */
-import type { PeriodKey } from './config.js';
+import { TRUNK_FILTER_ENABLED, type PeriodKey } from './config.js';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';
 import { buildTileHeadwayFilterClause, tileEffectiveHeadwayExpr } from './tileFilterExprs.js';
 import { stampWorstDirectionHeadways } from './worstDirection.js';
@@ -142,14 +142,15 @@ export function headwayFilterApplies(period: HeadwayFilterPeriod | undefined, ma
  * The route's filter headway for a period: the worst-direction sustained value the map filter
  * compares against the threshold. Null when the route has no qualifying service in the period.
  */
-const effectiveHeadwayExprCache = new Map<HeadwayFilterPeriod, unknown[]>();
+const effectiveHeadwayExprCache = new Map<string, unknown[]>();
 
-export function routeFilterHeadway(props: object, period: HeadwayFilterPeriod): number | null {
+export function routeFilterHeadway(props: object, period: HeadwayFilterPeriod, trunk: boolean = TRUNK_FILTER_ENABLED): number | null {
   try {
-    // The expression is fixed per period; build it once (the shared-stretch overlay evaluates
-    // it for every stop).
-    let expr = effectiveHeadwayExprCache.get(period);
-    if (!expr) { expr = tileEffectiveHeadwayExpr(period); effectiveHeadwayExprCache.set(period, expr); }
+    // The expression is fixed per period and rule (CIV-1822: trunk or not); build it once (the shared-stretch overlay
+    // evaluates it for every stop).
+    const cacheKey = `${period}:${trunk}`;
+    let expr = effectiveHeadwayExprCache.get(cacheKey);
+    if (!expr) { expr = tileEffectiveHeadwayExpr(period, trunk); effectiveHeadwayExprCache.set(cacheKey, expr); }
     const value = evaluate(expr, routeFilterTileProps(props));
     return typeof value === 'number' && value < NO_PERIOD_SERVICE_TILE_VALUE ? value : null;
   } catch (err) {
@@ -162,10 +163,10 @@ export function routeFilterHeadway(props: object, period: HeadwayFilterPeriod): 
  * Whether one route feature (a direction/branch shape) passes the frequency filter. Identical to
  * the PMTiles layer filter clause for the same feature.
  */
-export function featurePassesHeadwayFilter(props: object, period: HeadwayFilterPeriod | undefined, maxHeadway: number): boolean {
+export function featurePassesHeadwayFilter(props: object, period: HeadwayFilterPeriod | undefined, maxHeadway: number, trunk: boolean = TRUNK_FILTER_ENABLED): boolean {
   if (!headwayFilterApplies(period, maxHeadway)) return true;
   try {
-    return evaluate(buildTileHeadwayFilterClause(period, maxHeadway), routeFilterTileProps(props)) === true;
+    return evaluate(buildTileHeadwayFilterClause(period, maxHeadway, trunk), routeFilterTileProps(props)) === true;
   } catch (err) {
     if (err instanceof ExpressionTypeError) return false;
     throw err;
@@ -186,10 +187,11 @@ export function routePassesHeadwayFilter(
   period: HeadwayFilterPeriod | undefined,
   day: string | undefined,
   maxHeadway: number,
+  trunk: boolean = TRUNK_FILTER_ENABLED,
 ): boolean {
   return features.some(props => {
     const featureDay = (props as Props).day;
     if (day != null && featureDay != null && featureDay !== day) return false;
-    return featurePassesHeadwayFilter(props, period, maxHeadway);
+    return featurePassesHeadwayFilter(props, period, maxHeadway, trunk);
   });
 }
