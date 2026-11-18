@@ -4,7 +4,7 @@
  * feeds them. The same functions describe this week and last week, so a comparison never mixes two ways of counting.
  */
 import { median, percentile } from './segmentDelay.js';
-import { LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS } from './rules/live.js';
+import { LIVE_MIN_HEALTHY_DAYS_PER_WEEK, LIVE_MIN_SAME_TYPE_DAYS, LIVE_WINDOW_DAYS } from './rules/live.js';
 
 /** A day counts only when the archive holds at least this share of the snapshots a normal day has. */
 export const HEALTHY_DAY_SHARE = 0.9;
@@ -109,8 +109,9 @@ export function dayHealth(snapshotsByDate: ReadonlyMap<string, number>, typeOf: 
 /** The last two weeks of dates (this week = the newest 7, last week = the 7 before), with their healthy days. */
 export function weekSplit(dates: readonly string[], health: readonly DayHealth[]): { thisWeek: string[]; lastWeek: string[]; thisHealthy: string[]; lastHealthy: string[] } {
   const sorted = [...dates].sort();
-  const thisWeek = sorted.slice(-7);
-  const lastWeek = sorted.slice(-14, -7);
+  // The rolling window ("Rolling 7 days only") and the one before it, so the week comparison and every figure use one length.
+  const thisWeek = sorted.slice(-LIVE_WINDOW_DAYS);
+  const lastWeek = sorted.slice(-2 * LIVE_WINDOW_DAYS, -LIVE_WINDOW_DAYS);
   const ok = new Set(health.filter(h => h.healthy).map(h => h.date));
   return { thisWeek, lastWeek, thisHealthy: thisWeek.filter(d => ok.has(d)), lastHealthy: lastWeek.filter(d => ok.has(d)) };
 }

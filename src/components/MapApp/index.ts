@@ -2,7 +2,7 @@
  * CIV-1732: the map-and-sidebar page, shared by Live's tool page and Studio so the two never drift. One page is:
  *
  *   <MapAppShell>                                   desktop only: a phone falls back to the map
- *     <MapAppHeader>logo, names, <MapPillGroup …/> (the views), PillMenu (route, time)</MapAppHeader>
+ *     <MapAppHeader>logo, names, <PillGroup outlined …/> (the views, the main map's option set), PillMenu (route, time)</MapAppHeader>
  *     <MapAppLayout wide={useMapAppWide()} map={<MapAppMap layer={…} …/>} sidebar={<SidebarPanel widgets={…}/>}
  *       narrowPanels={…} overlay={<>{the key, one pill at the top left}<MapAppFooter note={…}/></>} />
  *   </MapAppShell>
@@ -15,6 +15,6 @@ export { MapAppShell, MapAppHeader } from './MapAppShell';
 export { MapAppLayout, MAP_APP_PADDING, useMapAppWide } from './MapAppLayout';
 export { default as MapAppMap, type MapLine, type MapPick } from './MapAppMap';
 export { MapAppFooter, framePadding } from './MapAppFooter';
-export { PillMenu, MapPillGroup } from './PillMenu';
+export { PillMenu } from './PillMenu';
 export { default as SidebarPanel, type PanelWidget } from '../Live/tool/WidgetPanel';
 export { default as SidebarWidget } from '../Live/tool/Widget';

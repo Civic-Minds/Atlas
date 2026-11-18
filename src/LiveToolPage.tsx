@@ -21,7 +21,7 @@ import { excludingDays, kpiTiles } from './utils/liveKpi';
 import { DIRECTION_LABEL, GROWS_LABEL, LATE_STOPS_TITLE, TIME_OF_DAY_LABEL, excludingText } from '../shared/liveWording';
 import LiveOffNotice from './components/LiveOffNotice';
 import AtlasLogo from './components/AtlasLogo';
-import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, MapPillGroup, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
+import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
 import { MapLegendCard } from './components/ui/MapLegendCard';
 import { directionStopsById } from './components/Live/DirectionStrip';
 import { TYPICAL_ADDED, timeLostLine } from '../shared/liveWording';
@@ -44,6 +44,7 @@ import { PERIOD_BANDS_ONLY, mins } from './components/Live/sections/figures';
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import Pill from './components/ui/Pill';
+import PillGroup from './components/ui/PillGroup';
 import LiveMapKey from './components/Live/LiveMapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { CardBackLink } from './components/CardBack';
@@ -64,7 +65,8 @@ export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> =
 /** How many stop pairs the "Falls behind" lists show. */
 const FALLS_BEHIND_ROWS = 10;
 function MeasurePills({ measure, setMeasure, options = MAP_MEASURES }: { measure: MapMeasure; setMeasure: (m: MapMeasure) => void; options?: ReadonlyArray<readonly [MapMeasure, string]> }) {
-  return <MapPillGroup label={MEASURE_LABEL} options={options} value={measure} onChange={setMeasure} />;
+  // The main map's own option set (CIV-1828: one switcher style, never a copy).
+  return <PillGroup outlined label={MEASURE_LABEL} options={options} value={measure} onChange={setMeasure} />;
 }
 
 /** The time of day as one pill showing the current period; a click opens a small menu with the five choices. */
@@ -223,8 +225,8 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
   const lossDates = (r?: string) => { const ds = r ? lossData.get(r)?.dates : [...lossData.values()].flatMap(d => d.dates); return [...new Set(ds ?? [])].sort(); };
   const networkLoss = fallsBehind && !route ? rankedTimeLoss(lossReports, band, FALLS_BEHIND_ROWS) : null;
   const routeLoss = fallsBehind && route && lossReports.has(route) ? rankedTimeLoss(new Map([[route, lossReports.get(route)!]]), band, FALLS_BEHIND_ROWS) : null;
-  const networkLossWidget: PanelWidget | null = networkLoss ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindAll} slower={networkLoss.slower} looser={networkLoss.looser} showRoute dates={lossDates()} onPick={openLossRow} /> } : null;
-  const routeLossWidget: PanelWidget | null = routeLoss && route ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget title={STUDIO_LIVE_PENDING.fallsBehindRoute(route)} slower={routeLoss.slower} looser={routeLoss.looser} showRoute={false} dates={lossDates(route)} onPick={openLossRow} /> } : null;
+  const networkLossWidget: PanelWidget | null = networkLoss ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget label={STUDIO_LIVE_PENDING.fallsBehindPill} slower={networkLoss.slower} looser={networkLoss.looser} showRoute dates={lossDates()} onPick={openLossRow} /> } : null;
+  const routeLossWidget: PanelWidget | null = routeLoss && route ? { key: 'falls-behind', size: 'medium', node: <FallsBehindWidget label={`${route} · ${STUDIO_LIVE_PENDING.fallsBehindPill}`} slower={routeLoss.slower} looser={routeLoss.looser} showRoute={false} dates={lossDates(route)} onPick={openLossRow} /> } : null;
   const backToNetwork = () => { setRoute(null); setDir(null); setPick(null); };
   // One panel, on the left: the network's overview with no route picked; the route's own figures once one is picked, with a way back.
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
