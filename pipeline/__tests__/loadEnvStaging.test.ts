@@ -56,3 +56,25 @@ describe('staging guard in r2 and loadEnv (#1129)', () => {
     }
   });
 });
+
+describe('a dry run loads no R2 write keys (#1587)', () => {
+  it('applies to process-gtfs --dry-run only', async () => {
+    const { dryRunWithoutEnv } = await import('../loadEnv.js');
+    expect(dryRunWithoutEnv(['node', '/x/pipeline/process-gtfs.ts', 'f.zip', 'ttc', '--dry-run'])).toBe(true);
+    expect(dryRunWithoutEnv(['node', '/x/pipeline/process-gtfs.ts', 'f.zip', 'ttc'])).toBe(false);
+    expect(dryRunWithoutEnv(['node', '/x/pipeline/build-pmtiles.ts', '--dry-run'])).toBe(false);
+  });
+
+  it('drops the keys the shell exports, loads no file and never reports production', async () => {
+    const { loadPipelineEnv, DRY_RUN_ENV_LABEL, R2_WRITE_ENV_KEYS } = await import('../loadEnv.js');
+    const saved = Object.fromEntries(R2_WRITE_ENV_KEYS.map(k => [k, process.env[k]]));
+    for (const k of R2_WRITE_ENV_KEYS) process.env[k] = 'x';
+    try {
+      expect(loadPipelineEnv({ dryRun: true })).toBe(DRY_RUN_ENV_LABEL);
+      for (const k of R2_WRITE_ENV_KEYS) expect(process.env[k], k).toBeUndefined();
+      expect(DRY_RUN_ENV_LABEL).toMatch(/DRY RUN/);
+    } finally {
+      for (const k of R2_WRITE_ENV_KEYS) { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; }
+    }
+  });
+});
