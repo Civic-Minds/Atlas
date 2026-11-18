@@ -73,13 +73,14 @@ export const GOOD_DAY_DEFINITION = `a good day is one with at least ${Math.round
  * LIVE_MIN_HEALTHY_DAYS_PER_WEEK full days, and the daily build runs the morning after the last of them. Null when not
  * recording or nothing is kept.
  */
-export function earliestFiguresDay(c: LiveCoverage): string | null {
+export function earliestFiguresDay(c: LiveCoverage, today = new Date().toISOString().slice(0, 10)): string | null {
   if (!c.firstDay || c.recordingNow !== true) return null;
-  return addDays(c.firstDay, LIVE_MIN_HEALTHY_DAYS_PER_WEEK + 1);
+  const day = addDays(c.firstDay, LIVE_MIN_HEALTHY_DAYS_PER_WEEK + 1);
+  return day > today ? day : null;
 }
 
 /** The plain limits an answer states for an agency, from its coverage and how many routes have figures. */
-export function coverageLimits(c: LiveCoverage, routesWithFigures: number): string[] {
+export function coverageLimits(c: LiveCoverage, routesWithFigures: number, today?: string): string[] {
   const out: string[] = [];
   out.push(c.routes === 'every route' ? `Live records ${c.feeds.join(' and ')} for every route.` : `Live records only routes ${c.routes.join(', ')}.`);
   if (c.daysRecorded == null) out.push('How many days are recorded could not be checked.');
@@ -87,7 +88,7 @@ export function coverageLimits(c: LiveCoverage, routesWithFigures: number): stri
   else out.push(`Recordings kept: ${c.daysRecorded} service day${c.daysRecorded === 1 ? '' : 's'}, ${c.firstDay} to ${c.lastDay}${c.recordingNow === false ? ' (not recording now)' : ''}.`);
   if (routesWithFigures === 0) {
     out.push(`No figures yet: a route needs at least ${LIVE_MIN_HEALTHY_DAYS_PER_WEEK} good days in the latest week (${GOOD_DAY_DEFINITION}).`);
-    const from = earliestFiguresDay(c);
+    const from = earliestFiguresDay(c, today);
     if (from) out.push(`If every day records well, the earliest figures are on ${from}.`);
   }
   return out;

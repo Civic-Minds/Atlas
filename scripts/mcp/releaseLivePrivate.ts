@@ -20,8 +20,9 @@ import { spawnSync } from 'child_process';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady, type LiveCoverage } from '../../shared/liveCoverage';
-import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET } from '../../shared/rules/live';
+import { LIVE_ARCHIVE_SLUGS, liveCoverage, liveFiguresReady } from '../../shared/liveCoverage';
+import { LIVE_ARCHIVE_BUCKET_BY_SLUG, DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_MIN_HEALTHY_DAYS_PER_WEEK } from '../../shared/rules/live';
+import { readCsv } from '../live-agency-summary';
 import { liveReliabilityFile } from '../../shared/liveReliability';
 import type { LiveV3 } from '../../shared/liveDashboard';
 import type { AgencySummary } from '../../shared/liveAgency';
@@ -82,6 +83,7 @@ async function archiveDates(slug: string): Promise<string[] | null> {
 }
 
 interface Built { files: Map<string, unknown>; routes: string[]; manifest: LiveManifest | null }
+class BuildFailed extends Error {}
 
 /** The TTC: Live's own published summaries (live-report-refresh builds them daily). */
 async function fromPublished(slug: string): Promise<Built> {
@@ -106,10 +108,15 @@ function fromArchive(slug: string): Built {
   const files = new Map<string, unknown>();
   const archive = join(work, `archive-${slug}`), feeds = join(work, 'gtfs', 'candidates', `${slug}-feeds`), out = join(work, 'out');
   mkdirSync(out, { recursive: true });
-  if (!run('scripts/live-fetch-archive.ts', ['--agency', slug, '--days', String(days), '--out', archive, '--prune'])) return { files, routes: [], manifest: null };
-  if (!run('scripts/live-gtfs-for-window.ts', ['--agency', slug, '--days', String(days), '--feeds-dir', feeds, '--archive', archive])) return { files, routes: [], manifest: null };
-  const gtfs = existsSync(feeds) ? readdirSync(feeds).map(d => join(feeds, d)).filter(d => existsSync(join(d, 'trips.txt'))).join(',') : '';
-  if (!gtfs) return { files, routes: [], manifest: null };
+  if (!run('scripts/live-fetch-archive.ts', ['--agency', slug, '--days', String(days), '--out', archive, '--prune'])) throw new BuildFailed('fetch');
+  if (!run('scripts/live-gtfs-for-window.ts', ['--agency', slug, '--days', String(days), '--feeds-dir', feeds, '--archive', archive])) throw new BuildFailed('timetables');
+  const feedDirs = existsSync(feeds) ? readdirSync(feeds).map(d => join(feeds, d)).filter(d => existsSync(join(d, 'trips.txt'))).sort() : [];
+  if (!feedDirs.length) throw new BuildFailed('timetables');
+  const gtfs = feedDirs.join(',');
+  // The archive and the analysis key routes by the live feed's route_id; answers use the route number riders know.
+  const shortOf = new Map<string, string>();
+  for (const d of feedDirs) for (const r of readCsv(readFileSync(join(d, 'routes.txt'), 'utf8'))) shortOf.set(r.route_id, r.route_short_name || r.route_id);
+  const short = (id: string) => shortOf.get(id) ?? id;
   const archived = [...new Set(readdirSync(archive).map(f => f.match(/^(.+)-\d{4}-\d{2}-\d{2}\.jsonl$/)?.[1]).filter((r): r is string => !!r && /^[A-Za-z0-9]+$/.test(r)))]
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const ready = new Map<string, { generatedAt: string; v3: LiveV3 }>();
@@ -119,14 +126,17 @@ function fromArchive(slug: string): Built {
     const r = JSON.parse(readFileSync(file, 'utf8')) as { generatedAt?: string; v3?: LiveV3 };
     if (r.v3 && liveFiguresReady(r.v3)) ready.set(route, { generatedAt: r.generatedAt ?? new Date().toISOString(), v3: r.v3 });
   }
-  const routes = [...ready.keys()];
+  const routes = [...ready.keys()].map(short);
   if (!routes.length) return { files, routes, manifest: null };
   // Titles and the ranking come from the agency summary live-segment-delay.ts rebuilds after each route.
   const agencyFile = join(out, `${slug}-agency.json`);
   const summary = existsSync(agencyFile) ? JSON.parse(readFileSync(agencyFile, 'utf8')) as AgencySummary : null;
   const title = (route: string) => summary?.routes.find(x => x.route === route)?.titleLabel ?? `Route ${route}`;
-  for (const [route, { generatedAt, v3 }] of ready) files.set(liveSplitPaths.route(slug, route), liveReliabilityFile(slug, route, title(route), generatedAt, v3));
-  if (summary) files.set(liveSplitPaths.ranking(slug), slimRanking({ ...summary, routes: summary.routes.filter(x => ready.has(x.route)) }));
+  for (const [route, { generatedAt, v3 }] of ready) files.set(liveSplitPaths.route(slug, short(route)), liveReliabilityFile(slug, short(route), title(route), generatedAt, v3));
+  if (summary) {
+    const ranking = slimRanking({ ...summary, routes: summary.routes.filter(x => ready.has(x.route)) });
+    files.set(liveSplitPaths.ranking(slug), { ...ranking, covered: ranking.covered.map(short), held: ranking.held.map(h => ({ ...h, route: short(h.route) })), routes: ranking.routes.map(x => ({ ...x, route: short(x.route) })) });
+  }
   const span = (d: string[]) => d.length ? { from: [...d].sort()[0], to: [...d].sort().at(-1)! } : null;
   const w = [...ready.values()][0].v3.weekly!;
   const manifest: LiveManifest = { agency: slug, generatedAt: [...ready.values()][0].generatedAt, thisWeek: span(w.thisWeek.dates), lastWeek: span(w.lastWeek.dates), routes };
@@ -134,23 +144,28 @@ function fromArchive(slug: string): Built {
 }
 
 const today = new Date().toISOString().slice(0, 10);
+// The last index, so an agency whose build fails keeps serving what it had instead of losing it.
+const previous = PRIVATE ? JSON.parse(await getText(PRIVATE, liveIndexPath) ?? 'null') as LiveIndex | null : null;
 const index: LiveIndex = { generatedAt: new Date().toISOString(), agencies: {} };
 const written = new Map<string, unknown>();
+const kept: string[] = []; // agencies whose old files stay (build failed)
 let failed = 0;
 for (const slug of LIVE_ARCHIVE_SLUGS.filter(s => !only || only.includes(s))) {
-  let coverage: LiveCoverage;
-  let built: Built = { files: new Map(), routes: [], manifest: null };
   try {
-    coverage = liveCoverage(slug, await archiveDates(slug), today);
-    if (coverage.daysRecorded) built = slug === 'ttc' ? await fromPublished(slug) : fromArchive(slug);
+    const coverage = liveCoverage(slug, await archiveDates(slug), today);
+    if (coverage.daysRecorded == null) throw new BuildFailed('archive');
+    // Too few days for any route to qualify (the first may be partial): skip the analysis.
+    const built = slug === 'ttc' ? await fromPublished(slug)
+      : coverage.daysRecorded > LIVE_MIN_HEALTHY_DAYS_PER_WEEK ? fromArchive(slug) : { files: new Map(), routes: [], manifest: null } as Built;
+    written.set(liveSplitPaths.coverage(slug), coverage);
+    if (built.manifest) { written.set(liveSplitPaths.manifest(slug), built.manifest); for (const [k, v] of built.files) written.set(k, v); }
+    index.agencies[slug] = { figures: built.routes.length > 0, routes: built.routes.length };
   } catch (e) {
     failed++;
     appendFileSync(log, `\n${slug}: ${(e as Error).stack ?? e}\n`);
-    coverage = liveCoverage(slug, null, today);
+    kept.push(slug);
+    if (previous?.agencies[slug]) index.agencies[slug] = { ...previous.agencies[slug], refreshFailed: true };
   }
-  written.set(liveSplitPaths.coverage(slug), coverage);
-  if (built.manifest) { written.set(liveSplitPaths.manifest(slug), built.manifest); for (const [k, v] of built.files) written.set(k, v); }
-  index.agencies[slug] = { figures: built.routes.length > 0, routes: built.routes.length };
 }
 
 const withFigures = Object.values(index.agencies).filter(a => a.figures).length;
@@ -161,13 +176,18 @@ if (dryRun) {
   const dir = join(work, 'dry-run');
   for (const [k, v] of [...written, [liveIndexPath, index] as const]) { const f = join(dir, k); mkdirSync(join(f, '..'), { recursive: true }); writeFileSync(f, JSON.stringify(v)); }
   console.log('Dry run: nothing uploaded.');
-} else {
+} else try {
   const put = (Key: string, v: unknown) => s3.send(new PutObjectCommand({ Bucket: PRIVATE, Key, Body: JSON.stringify(v), ContentType: 'application/json', CacheControl: 'no-cache' }));
   for (const [k, v] of written) await put(k, v);
   await put(liveIndexPath, index);
   // A route or agency that dropped out stops being served: the index no longer lists it, and its old files go.
   const { keys } = await listKeys(PRIVATE, 'live/');
-  const stale = keys.filter(k => k !== liveIndexPath && !written.has(k));
+  const stale = keys.filter(k => k !== liveIndexPath && !written.has(k) && !kept.some(slug => k.startsWith(`live/${slug}/`)));
   for (const Key of stale) await s3.send(new DeleteObjectCommand({ Bucket: PRIVATE, Key }));
   console.log(`Uploaded ${written.size + 1} files; removed ${stale.length} old ones.`);
+} catch (e) {
+  // The SDK's error can quote request details: keep it in the private log.
+  appendFileSync(log, `\nupload: ${(e as Error).stack ?? e}\n`);
+  console.error('Uploading the Live MCP files failed (see the private log).');
+  process.exit(1);
 }

@@ -233,7 +233,8 @@ jobs:
   # ---------------------------------------------------------------------------------------
   mcp-live:
     needs: publish
-    if: github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')
+    # Runs even when the TTC publish fails or refuses: the other agencies' files don't depend on it.
+    if: always() && github.ref == 'refs/heads/main' && (inputs.mode == 'publish' || github.event_name == 'schedule')
     runs-on: ubuntu-latest
     permissions:
       contents: read

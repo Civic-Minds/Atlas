@@ -44,6 +44,8 @@ export function readCsv(text: string): Record<string, string>[] {
 export function writeAgencySummary(agency: string, gtfs: string, out: string): string {
   const routesTxt = readCsv(readFileSync(resolve(gtfs, 'routes.txt'), 'utf8'));
   const byShort = new Map(routesTxt.map(r => [r.route_short_name || r.route_id, r]));
+  // Analysis files are keyed by the live feed's route_id; for most agencies that is the route number, for some (Hamilton) not.
+  const byId = new Map(routesTxt.map(r => [r.route_id, r]));
   const totalRoutes = byShort.size;
 
   // Every route with an analysis file (plus the configured ones, so a missing file is reported), held ones listed apart.
@@ -63,7 +65,7 @@ export function writeAgencySummary(agency: string, gtfs: string, out: string): s
     if (!v3 || v3.schema !== 3) { missing.push(route); continue; }
     const quality = qualityHold(v3);
     if (quality) { held.push({ route, reason: quality }); continue; }
-    const r = byShort.get(route);
+    const r = byShort.get(route) ?? byId.get(route);
     // The route card's title rule (until the one route-label helper, UI step 9, reaches this branch).
     const label = nameCase(getRouteLabel(route, r?.route_long_name || null), 'route');
     const parts = routeLabelParts(route, r?.route_long_name || null);

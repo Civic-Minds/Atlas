@@ -62,7 +62,7 @@ export const liveReader = () => reader;
  * live/index.json goes up after the rest and lists each agency; a reader trusts only what it lists.
  */
 export const liveIndexPath = 'live/index.json';
-export interface LiveIndex { generatedAt: string; agencies: Record<string, { figures: boolean; routes: number }> }
+export interface LiveIndex { generatedAt: string; agencies: Record<string, { figures: boolean; routes: number; /** The last build failed; these are the files from before it. */ refreshFailed?: true }> }
 export const liveSplitPaths = {
   coverage: (slug: string) => `live/${slug}/coverage.json`,
   manifest: (slug: string) => `live/${slug}/manifest.json`,
