@@ -6,7 +6,7 @@ import { FEATURES } from '../shared/config';
 import { OPEN_LIVE_LABEL } from '../shared/liveWording';
 import { LIVE_PATH } from '../shared/pagePaths';
 import { PLANNERS_COPY } from './content/noticeCopy';
-import FeatureCard, { featureCardAsset } from './components/FeatureCard';
+import FeatureCard, { featureCardAsset, featureCardColours } from './components/FeatureCard';
 import RequestDemoCard from './components/RequestDemoCard';
 import { DataSourceSection, PageHero } from './components/FeaturePageSections';
 
@@ -19,39 +19,41 @@ import { DataSourceSection, PageHero } from './components/FeaturePageSections';
  */
 
 const { cards } = PLANNERS_COPY;
-// Every card keeps the tint and picture side it had before CIV-1793; the two new cards (before and after, vehicles
-// needed) take the next tints in the colour sequence, color(6) and color(7).
+// CIV-1873 (Ryan, 2026-11-18): built features take the frequency tints in order down the page and Beta cards, not built
+// yet, take one grey (featureCardColours), so a card's colour says what is real today. The picture side alternates.
 
 export default function PlannersPage() {
   const tiers = useHeadwayTiers();
-  const color = (i: number) => tiers[i % tiers.length].color;
+  const [cFrequency, cDayTime, cAgencies, cBeforeAfter, cVehicles, cDelays, cShare, cDemo] = featureCardColours(tiers, [
+    false, false, false, !!cards.beforeAfter.beta, !!cards.vehiclesNeeded.beta, !!cards.delays.beta, false, false,
+  ]);
   return (
     <PageShell variant="wide">
 
       <PageHero title={PAGE_NAMES.planners} intro={PLANNERS_COPY.intro} picture={featureCardAsset('hero')} />
 
       <div className="grid gap-5 py-16 sm:py-20">
-        <FeatureCard title={cards.frequency.title} color={color(0)} picture={featureCardAsset('card-frequency')}>
+        <FeatureCard title={cards.frequency.title} color={cFrequency} picture={featureCardAsset('card-frequency')}>
           <p>{cards.frequency.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.dayTime.title} color={color(1)} picture={featureCardAsset('card-dayweek')} flip>
+        <FeatureCard title={cards.dayTime.title} color={cDayTime} picture={featureCardAsset('card-dayweek')} flip>
           <p>{cards.dayTime.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.agencies.title} color={color(2)} picture={featureCardAsset('card-agency')}>
+        <FeatureCard title={cards.agencies.title} color={cAgencies} picture={featureCardAsset('card-agency')}>
           <p>{cards.agencies.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.beforeAfter.title} color={color(6)} picture={null} beta={cards.beforeAfter.beta}>
+        <FeatureCard title={cards.beforeAfter.title} color={cBeforeAfter} picture={null} flip beta={cards.beforeAfter.beta}>
           <p>{cards.beforeAfter.text}</p>
         </FeatureCard>
-        <FeatureCard title={cards.vehiclesNeeded.title} color={color(7)} picture={null} beta={cards.vehiclesNeeded.beta}>
+        <FeatureCard title={cards.vehiclesNeeded.title} color={cVehicles} picture={null} beta={cards.vehiclesNeeded.beta}>
           <p>{cards.vehiclesNeeded.text}</p>
         </FeatureCard>
         {/* CIV-1705: the Live card became this one (CIV-1710 Q5), keeping its tint; it links to Live only when Live is on. */}
-        <FeatureCard title={cards.delays.title} color={color(4)} picture={null} beta={cards.delays.beta}>
+        <FeatureCard title={cards.delays.title} color={cDelays} picture={null} flip beta={cards.delays.beta}>
           <p>{cards.delays.text}</p>
           {FEATURES.live && <ArrowLink href={LIVE_PATH}>{OPEN_LIVE_LABEL}</ArrowLink>}
         </FeatureCard>
-        <FeatureCard title={cards.share.title} color={color(3)} picture={featureCardAsset('card-export')} flip>
+        <FeatureCard title={cards.share.title} color={cShare} picture={featureCardAsset('card-export')}>
           <p>{cards.share.text}</p>
         </FeatureCard>
       </div>
@@ -61,7 +63,7 @@ export default function PlannersPage() {
       {/* CIV-1706 (Ryan, 2026-11-15): the page ends with one ask, this button, with no line above it. It replaces the
           "Get in Touch" section. Ryan, 2026-11-16: it's a feature card, the shared Request a demo card. */}
       <div className="pb-16 sm:pb-20">
-        <RequestDemoCard color={color(5)} text={PLANNERS_COPY.demo} />
+        <RequestDemoCard color={cDemo} text={PLANNERS_COPY.demo} flip />
       </div>
 
     </PageShell>

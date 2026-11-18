@@ -34,11 +34,12 @@ describe('For Researchers page (CIV-1709)', () => {
     expect(screen.getByRole('link', { name: 'Read how Atlas works' })).toHaveAttribute('href', '/about/docs#data-flow');
   });
 
-  it('alternates the picture side of the cards with pictures, each its own (CIV-1794)', () => {
+  it('alternates the picture side of every card, picture or not (CIV-1794, CIV-1873)', () => {
     const { container } = render(<ResearchersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    // Compare Cities (flipped), then Maps You Can Cite; History and the Request a demo card have no picture.
-    expect(sides).toEqual(['left', 'right']);
+    // History (no picture yet), Compare Cities, Maps You Can Cite, then the Request a demo card (no picture).
+    expect(sides).toEqual(['right', 'left', 'right', 'left']);
+    expect(container.querySelectorAll('[data-empty-picture]')).toHaveLength(2);
     const srcs = [...container.querySelectorAll('img')].map(img => img.getAttribute('src'));
     for (const theme of ['light', 'dark']) {
       expect(srcs).toContain(`/assets/planners/hero-${theme}.webp`);
