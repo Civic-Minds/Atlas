@@ -37,6 +37,24 @@ with the local keys and writes nothing to R2. It fetches the agency's positions 
 service date's timetable from the agency's own archived static GTFS (`live-gtfs-for-window.ts --agency`, `gtfs/archive/<slug>/`),
 analyses every route in its archive (`live-analyze.sh all --agency <slug>`) and writes a time-loss report per route to
 `$LIVE_DATA/studio/time-loss/`. Kingston has enough recorded days from about 2026-12-28.
+
+### Studio's schedule files (the Fleet page)
+
+Studio's Fleet page reads two files per agency, built on this Mac from static GTFS zips. Nothing goes to R2 and the files stay out of git (`tmp/` is ignored). The agency menu lists every agency that has a before-after file.
+
+1. **Pick the agency and two zips.** The slug is the agency's own (`config/agencies/<slug>.json`, e.g. `rtd-denver`), so the run reads the map's preprocessing and excludes. Take an older and a newer feed zip (archived zips are in `/Users/ryan/Developer/Data/GTFS/Files/` or the private `atlas-archive` bucket) and the date to read each at.
+2. **Schedule changes** (the before-after file), dates as `YYYY-MM-DD`:
+   `nice -n 15 npx tsx scripts/compare-feed-dates.ts --slug <slug> --before <old.zip>@<date> --after <new.zip>@<date> --json tmp/studio/<slug>-before-after.json`
+   It also writes `tmp/feed-compare/<slug>.{json,md}`. A date the pipeline cannot read stops the run (exit 2) with a message.
+3. **Vehicles needed** (the vehicles file), from the same newer zip, anchored on the same date written `YYYYMMDD`, so both files describe one schedule and week:
+   `nice -n 15 npx tsx scripts/vehicles-needed.ts <new.zip> --slug <slug> --anchor <YYYYMMDD> --json tmp/studio/<slug>-vehicles.json`
+   It writes every time of day by group of routes that share vehicles, at each target of the public frequency scale (`STUDIO_TARGETS`, 10/15/20/30/60) with the schedule's own layover. A large agency (RTD Denver, 498 groups) takes under half a minute and about 200 KB. Run one at a time.
+4. **Check it in Studio.** The Vite dev server reads the folder live (no restart): `/studio?page=fleet&agency=<slug>` must list the agency in its Agency menu, show the change list, and open a route card with the Needed table. A vehicles file alone adds no agency; the before-after file does.
+
+Gotchas:
+- `tmp/` belongs to the checkout the dev server runs from. For Ryan's server on 5182 that is `Atlas-worktrees/bundle/tmp/studio/`; a file written in another worktree is invisible there.
+- `?route=` must be the key the feed writes, not a tidied one: Hamilton's route 6 is `06` (`?route=06`). The Route menu uses the files' own keys, so only hand-typed addresses go wrong.
+- A feed with no block data (Bustang) has no layover, so its vehicles figures need a note on the page before it is added.
 Before it is switched on, decide where its output may go: this repository is public, so run artifacts and logs are not private.
 
 The weekly schedule is in the file, off. Before it is turned on (a scheduled run publishes with nobody looking):
