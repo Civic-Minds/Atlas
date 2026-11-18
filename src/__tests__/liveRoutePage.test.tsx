@@ -345,8 +345,8 @@ describe('Live route dashboard', () => {
     await screen.findByText("The 512 isn’t included yet.");
     expect(back()).toBe('/apps/live/ttc');
     b.unmount();
-    renderPage({ status: 'unknown_route', reason: 'Live has no route 999 for TTC.' } as LiveDashboardResponse, '/apps/live/ttc/999');
-    await screen.findByText('Live has no route 999 for TTC.');
+    renderPage({ status: 'unknown_route', reason: 'Live doesn’t cover TTC 999.' } as LiveDashboardResponse, '/apps/live/ttc/999');
+    await screen.findByText('Live doesn’t cover TTC 999.');
     expect(back()).toBe('/apps/live/ttc');
   });
 });

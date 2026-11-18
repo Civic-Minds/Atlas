@@ -47,12 +47,12 @@ describe('bunching total and parts', () => {
 describe('lateStopsIntro (CIV-1405, CIV-1448)', () => {
   it('says how many stops, what late means, and the days of the figures as one range', async () => {
     const { lateStopsIntro } = await import('../liveWording');
-    expect(lateStopsIntro(10, { scope: 'agency', dates: ['2026-10-08', '2026-10-09', '2026-10-14'] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across all analysed routes.');
-    expect(lateStopsIntro(7, { scope: 'agency', dates: ['2026-10-30', '2026-11-05'] })).toBe('The 7 stops where vehicles most often leave more than 5½ min late, Oct 30–Nov 5, across all analysed routes.');
+    expect(lateStopsIntro(10, { scope: 'agency', dates: ['2026-10-08', '2026-10-09', '2026-10-14'] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, Oct 8–14, across every route Live covers.');
+    expect(lateStopsIntro(7, { scope: 'agency', dates: ['2026-10-30', '2026-11-05'] })).toBe('The 7 stops where vehicles most often leave more than 5½ min late, Oct 30–Nov 5, across every route Live covers.');
   });
   it('leaves the days out when the file has none, and a route says which stops count', async () => {
     const { lateStopsIntro } = await import('../liveWording');
-    expect(lateStopsIntro(10, { scope: 'agency', dates: [] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, across all analysed routes.');
+    expect(lateStopsIntro(10, { scope: 'agency', dates: [] })).toBe('The 10 stops where vehicles most often leave more than 5½ min late, across every route Live covers.');
     expect(lateStopsIntro(10, { scope: 'route' })).toBe('The 10 stops where vehicles most often leave more than 5½ min late (stops with 30+ departures).');
   });
 });

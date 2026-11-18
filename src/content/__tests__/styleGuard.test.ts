@@ -234,8 +234,8 @@ const APPROVED_TEXT: Record<string, string[]> = {
   // A round figure reads better as "about 1 km"; TriMet's own rule for its Sandy zone.
   'src/components/Live/sections/MethodSection.tsx': ['(about 1 km)'],
   'src/data/onDemandServiceAreas.ts': ['within 3 miles of Sandy'],
-  // Live's notices, word for word (CIV-1045); Ryan's CIV-1160 answer 7 keeps "Live has no route 109 for MiWay."
-  'src/content/noticeCopy.ts': ['`Live has no route ${route} for ${agency}.`', 'It covers ${agencyName} routes ${joinList(followed)}.'],
+  // Live's notices, word for word (CIV-1045; item 40, Ryan 2026-11-17: "Live doesn’t cover TTC 512.").
+  'src/content/noticeCopy.ts': ['It covers ${agencyName} routes ${joinList(followed)}.'],
 };
 
 // Block comments, and line comments that don't start inside a string or a URL.
