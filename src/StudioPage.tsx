@@ -10,6 +10,7 @@ import MapKey from './components/ui/MapKey';
 import LiveBackLink from './components/Live/LiveBackLink';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, SidebarPanel, SidebarWidget, MAP_APP_PADDING, framePadding, useMapAppWide, type MapLine, type PanelWidget } from './components/MapApp';
 import { MapLegendCard } from './components/ui/MapLegendCard';
+import { frequencyChange } from '../shared/frequencyChange';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../shared/config';
 import { PAGE_NAMES, tabTitle } from '../shared/pageNames';
@@ -19,7 +20,7 @@ import { dayInSentence, dayPlural } from '../shared/dayTypes';
 import { joinList } from '../shared/overflowText';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { TIME_OF_DAY_LABEL } from '../shared/liveWording';
-import { FREQUENCY_STEP_MIN, RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, frequencyMoved, periodChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
+import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, studioBeforeAfterDevUrl, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioBranchSplit, type StudioVehicleGroup, type StudioVehiclesFile } from '../shared/studioVehicles';
 import { StudioRouteTable, routeFigureRows, routeTitle } from './StudioChangesPage';
 import { STUDIO_AGENCIES, StudioGroupFigures, studioAgencyFrom } from './StudioVehiclesPage';
@@ -50,10 +51,14 @@ export interface ChangeGroup { key: string; title: string; routes: StudioRouteCh
 
 /** The sidebar's groups, in the order the page had them: frequency or trips, first or last trip, added, removed, small. */
 export function changeGroups(file: StudioBeforeAfterFile): ChangeGroup[] {
-  const of = (size: StudioRouteChange['size']) => file.changes.filter(c => c.size === size && c.before && c.after);
+  // Each route's group by the shared rule as it stands now (changeSize), not the size its file was written with.
+  const of = (size: StudioRouteChange['size']) => file.changes.filter(c => c.before && c.after && changeSize(c.before, c.after) === size);
   const added = file.changes.filter(c => !c.before), removed = file.changes.filter(c => !c.after);
-  // Routes whose frequency moved lead, then those where only the trip count did; route order inside each.
-  const frequency = [...of('frequency').filter(c => frequencyMoved(c.before, c.after)), ...of('frequency').filter(c => !frequencyMoved(c.before, c.after))];
+  // CIV-1814 item 38: routes whose frequency changed grade lead, public-grade changes first, then those only inside the
+  // hidden 5 and 8 grades, each by the biggest move in grades; then those where only the trip count moved; route order
+  // breaks ties.
+  const rank = (c: StudioRouteChange) => { const f = routeFrequencyChange(c.before, c.after); return f ? (f.publicChange ? 1000 : 0) + f.steps : -1; };
+  const frequency = of('frequency').map(c => ({ c, r: rank(c) })).sort((x, y) => y.r - x.r).map(x => x.c);
   return [
     { key: 'frequency', title: C.frequencyTitle, routes: frequency },
     { key: 'hours', title: C.hoursTitle, routes: of('hours') },
@@ -100,29 +105,31 @@ const GROUP_KEYS: Record<StudioRouteChange['size'], ReadonlyArray<string> | null
   small: null,
 };
 
-/** How far a figure moved, in its own step (shared/studioBeforeAfter.ts changeSize's): 1 or more is the move that puts a
- * route in its group; a frequency that starts or stops counts as any. */
+/** How far a figure moved: a frequency in grades (frequencyChange; a start or stop outranks any), the others in their
+ * own step (shared/studioBeforeAfter.ts changeSize's). 1 or more is a move that puts a route in its group. */
 function movedSteps(c: StudioRouteChange, key: string): number {
   const b = c.before!, a = c.after!;
   const by = (x: number | null | undefined, y: number | null | undefined, step: number) => (x == null && y == null ? 0 : x == null || y == null ? Infinity : Math.abs(x - y) / step);
   if (key === 'trips') return by(b.trips, a.trips, TRIP_STEP);
   if (key === 'first' || key === 'last') return by(b[key], a[key], SPAN_STEP_MIN);
   if (key === 'run') return Math.max(by(b.runMinutes[0], a.runMinutes[0], RUN_STEP_MIN), by(b.runMinutes.at(-1), a.runMinutes.at(-1), RUN_STEP_MIN));
-  return by(b.headway[key as PeriodKey], a.headway[key as PeriodKey], FREQUENCY_STEP_MIN);
+  return frequencyChange(b.headway[key as PeriodKey], a.headway[key as PeriodKey])?.steps ?? 0;
 }
 
 /**
  * The figure a list row shows (Ryan, CIV-1806: "the dates u are comparing are not by the actual numbers"): the time of
- * day's frequency where the route was added or removed, or where that frequency moved enough to count; otherwise the
+ * day's frequency where the route was added or removed, or where that frequency changed grade (frequencyChange); otherwise the
  * figure that moved most among its group's own kind (an hours row shows its first or last trip or trip time), named by
- * the route table's own label. CIV-1814 item 38's shared grade rule replaces the frequency steps when it lands.
+ * the route table's own label.
  */
 export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
   const here = { before: c.before ? headwayAmount(c.before.headway[period]) : MISSING_VALUE, after: c.after ? headwayAmount(c.after.headway[period]) : MISSING_VALUE };
-  if (!c.before || !c.after || (here.before !== here.after && movedSteps(c, period) >= 1)) return { label: null, ...here };
-  const keys = GROUP_KEYS[c.size];
+  if (!c.before || !c.after || movedSteps(c, period) >= 1) return { label: null, ...here };
+  const keys = GROUP_KEYS[changeSize(c.before, c.after)];
   const changed = routeFigureRows(c).filter(r => r.before !== r.after && (!keys || keys.includes(r.key)));
-  const pick = changed.reduce<(typeof changed)[number] | null>((best, r) => (!best || movedSteps(c, r.key) > movedSteps(c, best.key) ? r : best), null);
+  // A frequency that changed grade comes before trips (the group leads with frequency); otherwise the biggest move.
+  const tier = (key: string) => ((PERIOD_KEYS as readonly string[]).includes(key) && movedSteps(c, key) >= 1 ? 1 : 0);
+  const pick = changed.reduce<(typeof changed)[number] | null>((best, r) => (!best || tier(r.key) > tier(best.key) || (tier(r.key) === tier(best.key) && movedSteps(c, r.key) > movedSteps(c, best.key)) ? r : best), null);
   return pick ? { label: pick.key === period ? null : pick.label, before: pick.before, after: pick.after } : { label: null, ...here };
 }
 
@@ -258,7 +265,7 @@ function Body({ file, vehicles, agency, period, route, setRoute, routeSlot }: {
         ariaLabel={PAGE_NAMES.studio}
       />}
       overlay={<><StudioMapKey /><MapAppFooter onHeight={setFootH} /></>}
-      sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel widgets={summary} />{list}</>}
+      sidebar={routePanel ? <SidebarPanel widgets={routePanel} /> : <><SidebarPanel className="shrink-0" widgets={summary} />{list}</>}
       narrowPanels={<>
         <SidebarPanel className="p-3" widgets={routePanel ?? summary} />
         {!routePanel && <div className="flex p-3 pt-0">{list}</div>}
