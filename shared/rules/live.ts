@@ -14,6 +14,12 @@ export const EARLY_AT_OR_BELOW_MIN = -1.5;
  * exactly 5.5 is on time (CIV-1812 item 7). The analysis files' `lateAtOrAboveMin` field keeps its stored name.
  */
 export const LATE_ABOVE_MIN = 5.5;
+/**
+ * The route strip's middle delay step starts at this typical delay (minutes): under it a stop reads "On time", from it up
+ * to LATE_ABOVE_MIN "behind", and above that Late. The strip's own step, kept from before (CIV-1075 E22); its early step is
+ * EARLY_AT_OR_BELOW_MIN, as for vehicles.
+ */
+export const STRIP_BEHIND_FROM_MIN = 1;
 
 // ---- Minimum sample ----
 

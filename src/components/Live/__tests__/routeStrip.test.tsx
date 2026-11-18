@@ -13,12 +13,15 @@ const stop = (i: number, over: Partial<RouteStripStop> = {}): RouteStripStop => 
 const STOPS = Array.from({ length: 12 }, (_, i) => stop(i));
 
 describe('stepFor', () => {
-  it('steps by the legend: under 1 min is on time, 1 up to 3 min is a little late, 3+ is late, 1+ min early is its own step', () => {
+  it('steps by the legend and the one late line: under 1 min is on time, 1 up to 5.5 is behind, more than 5.5 is late, 1.5+ min early is its own step', () => {
     expect(stepFor('delay', -4)).toBe('early');
+    expect(stepFor('delay', -1.5)).toBe('early');
+    expect(stepFor('delay', -1.4)).toBe(0);
     expect(stepFor('delay', 0.9)).toBe(0);
     expect(stepFor('delay', 1)).toBe(1);
-    expect(stepFor('delay', 2.9)).toBe(1);
-    expect(stepFor('delay', 3)).toBe(2);
+    expect(stepFor('delay', 3)).toBe(1);
+    expect(stepFor('delay', 5.5)).toBe(1); // exactly 5.5 is not late (CIV-1812 item 7)
+    expect(stepFor('delay', 5.6)).toBe(2);
   });
   it('treats a missing value as not measured, never as on time', () => {
     expect(stepFor('delay', null)).toBeNull();
@@ -69,7 +72,7 @@ describe('stripSummary', () => {
     const span = stretchSpan(STOPS, { fromStopId: 'S3', toStopId: 'S5' }, 'delaysStart');
     const text = stripSummary(STOPS, 'delay', 'Southbound', span);
     expect(text).toContain('12 stops');
-    expect(text).toContain('2 on time, 4 1–3 min, 6 3+ min behind');
+    expect(text).toContain('2 on time, 10 1–5.5 min behind, 0 more than 5½ min late');
     expect(text).toContain('Delays start between Spadina Ave at Street 3 South Side and Spadina Ave at Street 5 South Side');
   });
 });
@@ -123,7 +126,7 @@ describe('RouteStrip', () => {
     fireEvent.keyDown(strip, { key: 'ArrowRight' });
     expect(strip.textContent).toContain('Spadina Ave at Street 0 South Side');
     fireEvent.keyDown(strip, { key: 'End' });
-    expect(strip.textContent).toContain('Usually 5.5 min late');
+    expect(strip.textContent).toContain('Usually 5.5 min behind');
     expect(screen.getByText('Delays start')).toBeTruthy();
   });
 
@@ -131,13 +134,13 @@ describe('RouteStrip', () => {
     setWidth(900);
     const { rerender } = render(<RouteStrip stops={STOPS} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('On time')).toBeTruthy();
-    expect(screen.queryByText('1+ min ahead')).toBeNull(); // no dot here is early
+    expect(screen.queryByText('1.5 min or more ahead')).toBeNull(); // no dot here is early
     expect(screen.queryByText('Fewer location reports')).toBeNull();
     rerender(<RouteStrip stops={[stop(0, { uncertain: true }), stop(1, { n: 12 }), ...STOPS.slice(2)]} modes={["delay"]} directionLabel="Southbound" />);
     expect(screen.getByText('Fewer location reports')).toBeTruthy();
     expect(screen.getByText('Fewer than 30 departures or gaps')).toBeTruthy();
     rerender(<RouteStrip stops={[stop(0, { delayMin: -2, timepoint: true }), ...STOPS.slice(1)]} modes={["delay"]} directionLabel="Southbound" />);
-    expect(screen.getByText('1+ min ahead')).toBeTruthy();
+    expect(screen.getByText('1.5 min or more ahead')).toBeTruthy();
   });
 
   it('switches its colours and legend to bunching', () => {

@@ -2,7 +2,7 @@ import MapKey from '../ui/MapKey';
 import { MAP_BADGE, MAP_BADGE_LABEL } from '../../styles';
 import { MAP_STEP_LIMITS, measureLabel, type MapMeasure } from './routeMapModel';
 import { STEP_LABELS, stepColor, type Step } from './routeStripModel';
-import { NOT_MEASURED_LABEL } from '../../../shared/liveWording';
+import { LATE_THRESHOLD, NOT_MEASURED_LABEL } from '../../../shared/liveWording';
 import { percentText } from '../../../shared/numberText';
 import { minutesText } from '../../../shared/liveFormat';
 import { headwayBandLabel } from '../../../shared/headwayText';
@@ -19,8 +19,8 @@ function stepLabels(measure: MapMeasure): [string, string, string] {
 /** Delay starts' definition, after its name in the key (Ryan, 2026-10-26, word for word). */
 export const DELAY_STARTS_NOTE = 'delay added that lasts 3+ stops';
 
-/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word). Run time has none; Delay starts' is its note. */
-const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: '5½+ min late', extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled', delayStarts: DELAY_STARTS_NOTE };
+/** The picked measure's one-line definition, first in the key (Ryan, 2026-10-26, word for word; Late's is the one late line, LATE_THRESHOLD, 2026-11-17). Run time has none; Delay starts' is its note. */
+const KEY_DEFINITION: Partial<Record<MapMeasure, string>> = { late: LATE_THRESHOLD, extraWait: 'wait beyond the scheduled gap', bunching: 'gaps under 2 min or over 2× scheduled', delayStarts: DELAY_STARTS_NOTE };
 
 /**
  * The Live map's key, as a row of pills (the regular map's legend pills): the measure's definition, then its three colour

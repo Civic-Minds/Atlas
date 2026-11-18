@@ -88,9 +88,10 @@ describe('Live route dashboard', () => {
     expect(within(b2).getByText(/Click or tap a stop for its figures\./)).toBeTruthy();
     // B4: forms sentence, every link with its number, linked wording.
     expect(screen.getAllByText(/bunching forms between Stop 2 and Stop 3/).length).toBeGreaterThanOrEqual(1); // the caption above each strip
-    // Four compact chips per direction (the thing, then High or Low with its number, CIV-1795); the caveat is said once, in the method.
-    expect(screen.getAllByText('Vehicles standing still in this stretch: High (0.6 a day)').length).toBe(2);
-    expect(screen.getAllByText('Uneven departures at the terminal: Low (5% of gaps off)').length).toBe(2);
+    // Four plain lines per direction: the thing and its number, with no High or Low level (Ryan, 2026-11-17).
+    expect(screen.getAllByText('Vehicles standing still in this stretch: 0.6 a day').length).toBe(2);
+    expect(screen.getAllByText('Uneven departures at the terminal: 5% of gaps off').length).toBe(2);
+    expect(screen.queryByText(/: (High|Low)\b/)).toBeNull();
     // The caveat is said once, in the method (not again under the chips).
     expect(screen.queryByText(/Linked means it was measured in this stretch/)).toBeNull();
     expect(document.body.textContent).toMatch(/shows what was measured in the same stretch\. It is not the cause\./);
@@ -241,8 +242,8 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
-    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
-    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
     expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();

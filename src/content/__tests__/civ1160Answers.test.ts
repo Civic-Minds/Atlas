@@ -29,7 +29,8 @@ describe('CIV-1160 wording answers', () => {
     expect(minutesText(7.5)).toBe('7.5 min');
     expect(minutesText(3)).toBe('3 min');
     expect(minutesText(-0.4)).toBe('−0.4 min');
-    expect(delayText(2)).toBe('2 min late');
+    expect(delayText(2)).toBe('2 min behind'); // under the late line (Ryan, 2026-11-17)
+    expect(delayText(6)).toBe('6 min late');
     expect(delayText(-2)).toBe('2 min early');
     expect(delayText(0)).toBe('on time');
   });

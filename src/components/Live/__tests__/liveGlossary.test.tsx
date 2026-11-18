@@ -37,7 +37,7 @@ describe('Live glossary', () => {
   }
   it('shows the delay legend in its own words (E22)', () => {
     const legend = LIVE_GLOSSARY.find(g => g.legend);
-    expect(`${legend?.term}: ${legend?.text}`).toBe('Typical delay: 1+ min ahead · On time · 1–3 min · 3+ min behind');
+    expect(`${legend?.term}: ${legend?.text}`).toBe('Typical delay: 1.5 min or more ahead · On time · 1–5.5 min behind · More than 5½ min late');
   });
   it('types each definition only in its home, never again in a page', () => {
     // The opening words of each definition; a second copy anywhere in src or shared fails (rules audit 2.9).

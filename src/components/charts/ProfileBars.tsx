@@ -11,9 +11,6 @@ export interface ProfilePoint {
   y: number;
   /** A second value stacked on top of `y` (for example gaps that are too far apart on top of those too close). */
   y2?: number;
-  /** Optional range drawn as a thin line through the bar (clipped to the chart's scale). */
-  lo?: number;
-  hi?: number;
   /** A reference value drawn as a short tick across the bar (for example the timetable's running time). */
   ref?: number;
   /** Sample size, shown on hover and in the table. */
@@ -66,8 +63,6 @@ interface ProfileBarsProps {
   zeroLabel?: string;
   /** Use this scale instead of the bars' own, so two charts side by side can be compared. */
   scale?: { min: number; max: number };
-  /** Draw the thin 1-in-10 line through each bar (default yes). The range is still in the table either way. */
-  whiskers?: boolean;
   /** Most names to print under the chart (default 6). */
   maxLabels?: number;
   /** Name every bar (a day-by-day chart), not just a few spread out; names still never overlap. */
@@ -129,7 +124,7 @@ function usePlotWidth() {
  * stop names that never overlap (the ends, the marked stretch, major stops), and a shaded, striped look for points that
  * are measured less exactly. The values are also in a table for screen readers.
  */
-export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = LIVE_MIN_SAMPLE, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, whiskers = true, maxLabels = 6, everyLabel = false, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
+export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = LIVE_MIN_SAMPLE, caption, fadedNote = true, peakLabel = false, takeaway, axisTitle, marks = [], zero = false, zeroLabel, scale, maxLabels = 6, everyLabel = false, labelSpacing = 90, lessExactNote, series, valueHeader, refHeader, rowHeader = 'Stop' }: ProfileBarsProps) {
   const [plotRef, plotWidth] = usePlotWidth();
   const tableId = useId();
   if (points.length < 2) return null;
@@ -196,9 +191,6 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = L
                     {p.ref != null && (
                       <div className="pointer-events-none absolute left-1/2 h-[2px] w-[90%] max-w-[22px] -translate-x-1/2 bg-[var(--text-primary)]" style={{ bottom: pos(p.ref) }} />
                     )}
-                    {whiskers && p.lo != null && p.hi != null && (
-                      <div className="absolute left-1/2 w-px -translate-x-1/2 bg-[var(--text-muted)] opacity-30" style={{ bottom: pos(p.lo), height: Math.max(1, pos(p.hi) - pos(p.lo)) }} />
-                    )}
                     {peak === i && (
                       <span data-peak className={`pointer-events-none absolute whitespace-nowrap text-xs font-bold leading-3 text-[var(--text-secondary)] ${i < 2 ? 'left-0' : i > count - 3 ? 'right-0' : 'left-1/2 -translate-x-1/2'}`} style={{ bottom: top + (p.y2 ? pos(p.y2) - pos(0) : 0) + 2 }}>{formatY(p.y + (p.y2 ?? 0))}</span>
                     )}
@@ -240,7 +232,6 @@ export default function ProfileBars({ points, ariaLabel, formatY, unit, minN = L
               { key: 'stop', header: rowHeader, rowHeader: true, className: 'font-normal', cell: r => r.p.label },
               { key: 'value', header: valueHeader, cell: r => formatY(r.p.y + (r.p.y2 ?? 0)) },
               ...(points.some(p => p.ref != null) ? [{ key: 'ref', header: refHeader ?? 'Reference', cell: (r: { p: ProfilePoint }) => (r.p.ref != null ? formatY(r.p.ref) : '') }] : []),
-              ...(points.some(p => p.lo != null) ? [{ key: 'range', header: points.some(p => p.ref != null) ? '1 in 10 over' : 'Most trips between', cell: (r: { p: ProfilePoint }) => (r.p.lo != null && r.p.hi != null ? (r.p.ref != null ? formatY(r.p.hi) : `${formatY(r.p.lo)} and ${formatY(r.p.hi)}`) : '') }] : []),
               { key: 'n', header: unit.charAt(0).toUpperCase() + unit.slice(1), cell: r => (r.p.n != null ? countText(r.p.n) : '') },
             ]}
           />

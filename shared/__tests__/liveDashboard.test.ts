@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { runningTimeSentence, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
+import { runningTimeSentence, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, linkLineText, bunchingSentence, dashboardUnavailable, linkValueText, rankStops, type DashboardBunchingBand, type DashboardStop, type LiveV3 } from '../liveDashboard';
 
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
@@ -39,6 +39,8 @@ describe('sentences', () => {
     expect(linkValueText('stood_still', 0.57)).toBe('0.6 a day');
     expect(linkValueText('slow_stretch', 273)).toBe('+273 s vs schedule');
     expect(linkValueText('terminal_departures', null)).toBe('not measured');
+    // One plain line each, no High/Low level (Ryan, 2026-11-17).
+    expect(linkLineText('stood_still', 0.57)).toBe('Vehicles standing still in this stretch: 0.6 a day');
   });
 });
 
@@ -62,8 +64,8 @@ describe('freshness', () => {
 
 
 describe('running time', () => {
-  it('says scheduled, usual and 1-in-10 in plain words, and does not guess from a handful of trips', () => {
-    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27 · 1 in 10 over 34 min.');
+  it('says scheduled and usual in plain words (no 1-in-10), and does not guess from a handful of trips', () => {
+    expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27.2, p90Min: 34.4, overMin: 5 })).toBe('Eastbound: scheduled 22 min · usually 27.');
     expect(runningTimeSentence('Eastbound', { n: 120, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 }, 17)).toMatch(/at 5 PM\.$/);
     expect(runningTimeSentence('Eastbound', { n: 10, scheduledMin: 22, typicalMin: 27, p90Min: 34, overMin: 5 })).toMatch(/too few trips \(10\)/);
     expect(runningTimeSentence('Eastbound', null)).toMatch(/too few trips were measured over the main stretch/);

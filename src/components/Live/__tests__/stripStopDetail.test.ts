@@ -7,7 +7,8 @@ describe('stopDetail bunching line', () => {
   it('splits the share into bunched and too long when both are known', () => {
     const lines = stopDetail({ ...base, bunchedShare: 0.07, gappedShare: 0.05 }).lines;
     expect(lines).toContain('7% bunched · 5% too long');
-    expect(lines).toContain('Usually 1 min late · 10% late');
+    expect(lines).toContain('Usually 1 min behind · 10% late');
+    expect(stopDetail({ ...base, delayMin: 6.2 }).lines[0]).toBe('Usually 6.2 min late · 10% late'); // late only above 5½
     expect(lines.some(l => /departures measured|gaps\)/.test(l))).toBe(false);
     expect(stopDetail({ ...base, delayMin: -1.7 }).lines[0]).toBe('Usually 1.7 min early · 10% late');
     expect(stopDetail({ ...base, delayMin: 0 }).lines[0]).toBe('Usually on time · 10% late');
@@ -18,10 +19,11 @@ describe('stopDetail bunching line', () => {
 });
 
 describe('early step (CIV-283)', () => {
-  it('gives a stop 1+ min early its own step, and keeps up to 1 min either way as on time', async () => {
+  it('gives a stop 1.5+ min early its own step, as vehicles, and keeps less than that early as on time', async () => {
     const { stepFor } = await import('../routeStripModel');
     expect(stepFor('delay', -1.7)).toBe('early');
-    expect(stepFor('delay', -1)).toBe('early');
+    expect(stepFor('delay', -1.5)).toBe('early');
+    expect(stepFor('delay', -1)).toBe(0);
     expect(stepFor('delay', -0.9)).toBe(0);
     expect(stepFor('delay', 0.8)).toBe(0);
     expect(stepFor('bunching', -0.5)).toBe(0);
@@ -29,31 +31,31 @@ describe('early step (CIV-283)', () => {
 });
 
 describe('early only at timed stops', () => {
-  it('shows 1+ min early as early at a timepoint, and as on time where the timetable time is approximate', async () => {
+  it('shows 1.5+ min early as early at a timepoint, and as on time where the timetable time is approximate', async () => {
     const { stopStep, stopDetail } = await import('../routeStripModel');
     const s = { stopId: 'x', name: 'X', delayMin: -1.8, lateShare: 0.05, bunchingShare: null, n: 500 };
     expect(stopStep({ ...s, timepoint: true }, 'delay')).toBe('early');
     expect(stopStep({ ...s, timepoint: false }, 'delay')).toBe(0);
     expect(stopStep({ ...s }, 'delay')).toBe('early'); // older files without the flag keep the early step
-    expect(stopStep({ ...s, delayMin: 4, timepoint: false }, 'delay')).toBe(2);
+    expect(stopStep({ ...s, delayMin: 6, timepoint: false }, 'delay')).toBe(2);
     expect(stopDetail({ ...s, timepoint: false }).lines[0]).toBe('Usually on time · 5% late');
     expect(stopDetail({ ...s, timepoint: true }).lines[0]).toBe('Usually 1.8 min early · 5% late');
   });
 });
 
 describe('one rounding for colour and words', () => {
-  it('colours a stop by the minutes as shown: 1 min late is not grey, 3 min late is not amber', async () => {
+  it('colours a stop by the minutes as shown: 1 min behind is not grey, 5.5 min behind is not late', async () => {
     const { stepFor, stopDetail } = await import('../routeStripModel');
-    expect(stepFor('delay', 0.94)).toBe(0); // reads 0.9 min late
-    expect(stepFor('delay', 0.96)).toBe(1); // reads 1 min late
+    expect(stepFor('delay', 0.94)).toBe(0); // reads 0.9 min behind
+    expect(stepFor('delay', 0.96)).toBe(1); // reads 1 min behind
     expect(stepFor('delay', 1)).toBe(1);
-    expect(stepFor('delay', 2.94)).toBe(1);
-    expect(stepFor('delay', 2.96)).toBe(2); // reads 3 min late
+    expect(stepFor('delay', 5.54)).toBe(1); // reads 5.5 min: not late
+    expect(stepFor('delay', 5.56)).toBe(2); // reads 5.6 min: late
     expect(stepFor('bunching', 0.144)).toBe(0); // reads 14%
     expect(stepFor('bunching', 0.146)).toBe(1); // reads 15%
     expect(stepFor('bunching', 0.25)).toBe(2);
     const s = { stopId: 'x', name: 'X', delayMin: 0.96, lateShare: 0.1, bunchingShare: null, n: 500 };
-    expect(stopDetail(s).lines[0]).toBe('Usually 1 min late · 10% late');
+    expect(stopDetail(s).lines[0]).toBe('Usually 1 min behind · 10% late');
   });
   it('shows the same early reading in the hidden table as on the strip', async () => {
     const { shownDelayMin } = await import('../routeStripModel');

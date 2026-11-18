@@ -637,7 +637,6 @@ export const LIVE_NO_STRETCH_STANDS_OUT = 'No stretch stands out on the analysed
 export const LIVE_NO_FREQUENT_STOP = `No stop on this route has a vehicle ${headwayOrBetter(15)} at this time of day.`;
 /** The Extra wait section's intro: what the measure is and where it applies. */
 export const LIVE_EXTRA_WAIT_INTRO = `How much longer riders wait than scheduled, where a vehicle is due ${headwayOrBetter(15)}.`;
-export const LIVE_NOTHING_LINKED = 'Nothing measured here is linked to it';
 export const LIVE_LESS_EXACT_HERE = 'Less exact here: vehicles report their location less often';
 export const LIVE_FEW_MEASUREMENTS = 'Few measurements: treat with care.';
 export const LIVE_NO_DEPARTURES_IN_PERIOD = 'No departures in this part of the day.';

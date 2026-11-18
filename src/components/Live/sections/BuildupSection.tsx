@@ -23,7 +23,7 @@ export function buildupModel(data: DashboardBandData, dir: number | null, uncert
   const lessExactStops = (d: number) => uncertain.find(u => u.directionId === d)?.stops ?? 0;
   const pointsOf = (b: (typeof rows)[number]): ProfilePoint[] => b.stretches.filter(s => s.n >= 10).map((s, i) => ({
     label: s.toName, short: shortStopName(s.toName), major: isMajorStop(s.toName), lessExact: i < lessExactStops(b.directionId) - 1,
-    y: s.medianDelayMin, lo: s.p10DelayMin, hi: s.p90DelayMin, n: s.n,
+    y: s.medianDelayMin, n: s.n,
   }));
   const scale = sharedScale(rows.map(pointsOf));
   return { rows, lessExactStops, pointsOf, scale };
@@ -74,7 +74,6 @@ export default function BuildupSection({ v3, data, dir, uncertain, detail, bound
                 unit="trips"
                 valueHeader={DELAY_LEGEND_TITLE}
                 caption={LIVE_BUILDUP_CHART_CAPTION}
-                whiskers={false}
                 zero
                 zeroLabel={ON_TIME_LABEL}
                 scale={scale}

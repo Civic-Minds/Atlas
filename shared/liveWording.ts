@@ -2,8 +2,9 @@ import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
-import { countText } from './numberText';
-import { minutesText, tenth } from './liveFormat';
+import { countText, percentText } from './numberText';
+import { minutesText } from './liveFormat';
+import { EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN, STRIP_BEHIND_FROM_MIN } from './rules/live';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -54,10 +55,6 @@ export const NOT_MEASURED_VALUE = 'not measured';
 export const DELAY_NOT_MEASURED = 'Delay not measured';
 /** A chart or strip mark resting on sparse location reports (Ryan, CIV-1795: the approved hover line's words; was "Less exact"). */
 export const LESS_EXACT_LABEL = 'Fewer location reports';
-/** The 90th-percentile delay column and figure (Ryan, CIV-1795 question 6, option b): "1 in 10 leave: 6+ min late". */
-export const P90_LATER_LABEL = '1 in 10 leave';
-/** That figure's value: "6+ min late", the minutes written by minutesText. */
-export const p90LateText = (min: number): string => `${minutesText(min).replace(/ min$/, '+ min')} late`;
 /** The back link from a report page to the Live map app. */
 export const OPEN_LIVE_LABEL = 'Open Live';
 /** The link from a report page to the same route or agency on the Live map. */
@@ -70,9 +67,6 @@ export const DIRECTION_LABEL = 'Direction';
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */
 export const LINKED_TO_TITLE = 'Also measured in this stretch';
-/** A link verdict: its figure passes the set level, or not (Ryan, CIV-1795 question 8, option a; was "Linked" / "Not linked"). */
-export const LINKED_LABEL = 'High';
-export const NOT_LINKED_LABEL = 'Low';
 /** A trip that ends before the line's end: a vehicle card tag and a trip pattern's kind. */
 export const SHORT_TURN_LABEL = 'Short turn';
 /** The two kinds of bunching gap, in charts, legends and figures. */
@@ -80,17 +74,22 @@ export const TOO_CLOSE_LABEL = 'Too close together';
 export const TOO_FAR_LABEL = 'Too far apart';
 /** The share of gaps too short or too long, as a figure and column (CIV-1795: Live's two bunching words; was "Gaps off the schedule"). */
 export const GAPS_OFF_SCHEDULE_LABEL = 'Too close or too far apart';
-export const EARLY_STEP_LABEL = '1+ min ahead';
-/** "behind", not "late": Late means more than 5½ min (E9); "behind" only on the last step (E22). */
 /** A vehicle or stop on schedule; the delay legend's first step (CIV-1601). */
 export const ON_TIME_LABEL = 'On time';
-export const DELAY_STEP_LABELS = [ON_TIME_LABEL, '1–3 min', '3+ min behind'] as const;
 
 export const LATE_DEFINITION = "is more than 5½ min behind schedule. This is based on the TTC’s 5-minute standard, plus 30 seconds because we only record each vehicle’s location once a minute.";
 /** The title of every late-by-hour section and card (approved by Ryan 2026-10-17). */
 export const LATE_BY_HOUR_TITLE = 'Late departures by hour';
 /** The threshold in one phrase, wherever a caption or intro says how late counts as Late (approved by Ryan 2026-10-17). */
 export const LATE_THRESHOLD = 'more than 5½ min late';
+
+/**
+ * The route strip's delay key, on the same lines as the vehicles (shared/rules/live.ts): early at 1.5 min or more ahead,
+ * Late above 5½ min, and a delay under the late line is "behind", never "late" (CIV-1795 audit, 2026-11-17; wording to
+ * confirm with Ryan): "1.5 min or more ahead · On time · 1–5.5 min behind · More than 5½ min late".
+ */
+export const EARLY_STEP_LABEL = `${minutesText(-EARLY_AT_OR_BELOW_MIN)} or more ahead`;
+export const DELAY_STEP_LABELS = [ON_TIME_LABEL, `${minutesText(STRIP_BEHIND_FROM_MIN).replace(/ min$/, '')}–${minutesText(LATE_ABOVE_MIN)} behind`, LATE_THRESHOLD.replace(/^m/, 'M')] as const;
 
 /** The title of every "Where delays start" section and the name of the stretch it marks (one name, CIV-1448). */
 export const DELAY_STARTS_TITLE = 'Where delays start';
@@ -99,6 +98,18 @@ export const TYPICAL_ADDED = 'Usually adds';
 /** Delays start: the minutes added on the way into a stop that aren't made back over the next 3 stops, on the Live map's stop and stretch cards (Ryan, CIV-1795 question 9: "Time lost: 2 min"). */
 export const TIME_LOST_LABEL = 'Time lost';
 export const timeLostLine = (min: number): string => `${TIME_LOST_LABEL}: ${minutesText(min)}`;
+/**
+ * Pending Ryan (CIV-1795 q9): the Delays start card's figure is either "Time lost: X min" with the "Usually adds" line
+ * under it (today), or "Delay added: X min" with that line dropped, so Studio's stretch figure alone says "Time lost".
+ * Flip this one constant to switch every Delays start card.
+ */
+export const DELAY_STARTS_CARD_WORDING: 'timeLost' | 'delayAdded' = 'timeLost';
+/** The "Delay added" label, used only when the switch above says so (pending Ryan, CIV-1795 q9). */
+export const DELAY_ADDED_LABEL = 'Delay added';
+/** The Delays start card's figure line, by the switch. */
+export const delayStartsCardLine = (min: number, wording: 'timeLost' | 'delayAdded' = DELAY_STARTS_CARD_WORDING): string => (wording === 'delayAdded' ? `${DELAY_ADDED_LABEL}: ${minutesText(min)}` : timeLostLine(min));
+/** Whether the Delays start card also shows its "Usually adds" line (only with "Time lost"). */
+export const delayStartsCardShowsUsuallyAdds = (wording: 'timeLost' | 'delayAdded' = DELAY_STARTS_CARD_WORDING): boolean => wording === 'timeLost';
 /** The name of the stretch where delay begins: the route strip's marked stretch and the Live map's measure button (Ryan, CIV-1602: "Delays start" everywhere). */
 export const DELAY_STARTS_LABEL = 'Delays start';
 /** The Live map's name: its page title and the title on a saved image of it (Ryan, CIV-1602; "Live", not "Live vehicles", 2026-11-17). */
@@ -135,9 +146,16 @@ export const lateHourLine = (clock: string, late: number, total: number): string
 /** Late departures in an hour, from its late share and its count (the share is that count over the total). */
 export const lateCount = (share: number, total: number): number => Math.round(share * total);
 
+/**
+ * The side of a typical (median) delay in words: "late" only above the late line (LATE_ABOVE_MIN), "behind" under it,
+ * "early" ahead of schedule (Ryan, 2026-11-17: one definition of late).
+ */
+export const delaySideWord = (delayMin: number): 'early' | 'behind' | 'late' => (delayMin < 0 ? 'early' : delayMin > LATE_ABOVE_MIN ? 'late' : 'behind');
+
 /** The route strip's stop hover (CIV-281, approved by Ryan): "Usually 1.7 min early · 12% late", "7% bunched · 5% too long". */
 export const USUALLY_ON_TIME = 'Usually on time';
-export const usuallyOffBy = (minutes: string, side: 'early' | 'late'): string => `Usually ${minutes} min ${side}`;
+/** "Usually 3.2 min behind", "Usually 6.1 min late", "Usually 1.7 min early", from the signed delay (minutes by minutesText). */
+export const usuallyOffBy = (delayMin: number): string => `Usually ${minutesText(Math.abs(delayMin))} ${delaySideWord(delayMin)}`;
 export const lateShareText = (pct: string): string => `${pct} late`;
 export const bunchedAndLong = (bunched: string, tooLong: string): string => `${bunched} bunched · ${tooLong} too long`;
 
@@ -207,7 +225,9 @@ export function runTimeShareText(over: number): string {
   return p === 0 ? 'on time' : `${p}% ${over < 0 ? 'faster' : 'slower'}`;
 }
 
-/** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
+/** A change in a share shown as both ends: "10% to 41%" (Ryan, CIV-1795 7b; was "+31 pt"). */
+export const shareFromToText = (from: number, to: number): string => `${percentText(from)} to ${percentText(to)}`;
+/** The old "+31 pt", only for an agency summary built before it carried both ends (rebuild it: scripts/live-agency-summary.ts). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
 
 /**
@@ -271,9 +291,7 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
 export const STUDIO_LIVE_PENDING = {
   /** The measure pill. */
   fallsBehindPill: 'Falls behind',
-  /** A stop pair's lines: the typical extra running time, the 1-in-10 (only when greater), the sample. */
-  takesLonger: (min: number): string => `Takes ${minutesText(min)} longer than scheduled`,
-  oneInTen: (min: number): string => `1 in 10 take ${tenth(min)}+ min longer`,
+  /** A stop pair's sample, in the list rows only (its figure line is timeLostLine: "Time lost: 1.5 min", Ryan, 2026-11-17). */
   sample: (trips: number, days: number): string => `${countText(trips)} trips, ${countText(days)} days`,
   /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
   looserTitle: 'Where the schedule is looser than needed',

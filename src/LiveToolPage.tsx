@@ -24,7 +24,7 @@ import AtlasLogo from './components/AtlasLogo';
 import { MapAppShell, MapAppHeader, MapAppLayout, MapAppMap, MapAppFooter, PillMenu, MAP_APP_PADDING, framePadding, useMapAppWide, type MapPick } from './components/MapApp';
 import { MapLegendCard } from './components/ui/MapLegendCard';
 import { directionStopsById } from './components/Live/DirectionStrip';
-import { TYPICAL_ADDED, timeLostLine } from '../shared/liveWording';
+import { TYPICAL_ADDED, delayStartsCardLine, delayStartsCardShowsUsuallyAdds, timeLostLine } from '../shared/liveWording';
 import { DELAY_STARTS_LABEL, MEASURES, measureLabel, routeMapModel, type MapMeasure, type MapSegment, type RouteMapModel } from './components/Live/routeMapModel';
 import { delayHeatPoints } from './components/Live/delayHeatModel';
 import { stopCardGroups, type CardGroup } from './components/Live/stopCardModel';
@@ -82,29 +82,29 @@ function stopLines(v3: LiveV3, band: DashboardBand, dir: number, stop: RouteStri
   // a stop the map measures (never a terminal stretch or one with too few trips).
   const heat = measure === 'delayStarts' ? delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(p => p.stopId === stop.stopId) : undefined;
   // Two labelled groups (CIV-946): vehicles against their timetable, then a rider's wait against the scheduled gaps.
-  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [timeLostLine(heat.addedMin), ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId)] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
+  return [...(heat ? [{ heading: measureLabel('delayStarts'), lines: [delayStartsCardLine(heat.addedMin), ...segmentLines(v3.bands[band] as DashboardBandData, dir, heat.fromStopId, stop.stopId, delayStartsCardShowsUsuallyAdds())] }] : []), ...stopCardGroups(stop, extra ? extra.extraWaitMin : null)];
 }
 
 /** The lines of a segment's card: only the segment, never its start stop. */
-function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string): string[] {
+function segmentLines(data: DashboardBandData, dir: number, fromStopId: string, toStopId: string, usuallyAdds = true): string[] {
   const x = data.buildup.find(b => b.directionId === dir)?.stretches.find(t => t.fromStopId === fromStopId && t.toStopId === toStopId);
-  return x && x.n > 0 ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`, `${GROWS_LABEL} ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
+  return x && x.n > 0 ? [...(usuallyAdds ? [`${TYPICAL_ADDED} ${mins(x.medianAddedMin)}`] : []), `${GROWS_LABEL} ${percentText(x.growShare)} of ${countText(x.n)}`] : [];
 }
 
-/** Delay starts: a segment card's "Time lost" line, the figure the map, list and panel use, when the segment ends at a measured stop. */
+/** Delay starts: a segment card's figure line ("Time lost" or "Delay added", by DELAY_STARTS_CARD_WORDING), the figure the map, list and panel use, when the segment ends at a measured stop. */
 function keptLine(v3: LiveV3, band: DashboardBand, dir: number, toStopId: string, fromStopId: string, uncertain: readonly UncertainStart[]): string[] {
   const p = delayHeatPoints(new Map([['', v3]]), band, { only: { route: '', directionId: dir }, uncertain: () => uncertain }).find(x => x.stopId === toStopId && x.fromStopId === fromStopId);
-  return p ? [timeLostLine(p.addedMin)] : [];
+  return p ? [delayStartsCardLine(p.addedMin)] : [];
 }
 
-/** CIV-1828: a stop pair's card lines under "Falls behind": the report's wording for its row, nothing when it is not listed. */
+/** CIV-1828: a stop pair's card lines under "Falls behind": the report's wording for its row (no sample line: that is in the list rows only), nothing when it is not listed. */
 function fallsBehindLines(report: TimeLossReport | undefined, band: DashboardBand, dir: number, from: string, to: string): string[] {
   const d = report?.bands[band]?.find(x => x.directionId === dir);
   const W = STUDIO_LIVE_PENDING;
   const slow = d?.slower.find(r => r.fromStopId === from && r.toStopId === to);
-  if (slow) return [W.takesLonger(slow.typicalMin), ...(slow.showP90 ? [W.oneInTen(slow.p90MinDown)] : []), W.sample(slow.passes, slow.days)];
+  if (slow) return [timeLostLine(slow.typicalMin)];
   const loose = d?.looser.find(r => r.fromStopId === from && r.toStopId === to);
-  return loose ? [W.looserLine(-loose.typicalMin), W.sample(loose.passes, loose.days)] : [];
+  return loose ? [W.looserLine(-loose.typicalMin)] : [];
 }
 
 /** What the route's week figures cover (the Run time tile's own scope wording). */
@@ -216,7 +216,7 @@ export function Body({ agency, agencyName, pickSlot, measureSlot, s, route, setR
     : pick?.kind === 'segment' ? (() => { const c = model.segments.find(x => x.fromStopId === pick.fromStopId && x.toStopId === pick.toStopId)?.coordinates; return c ? c[Math.floor(c.length / 2)] : null; })() : null;
   const picked = pick?.kind === 'stop' ? stops.get(pick.stopId) : undefined;
   const card = v3 && bandData
-    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
+    ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId, measure !== 'delayStarts' || delayStartsCardShowsUsuallyAdds())]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null;
   const summary = useMemo(() => summaryWidgets(s, band), [s, band]);

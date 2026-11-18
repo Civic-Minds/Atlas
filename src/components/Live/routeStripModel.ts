@@ -5,12 +5,12 @@
  */
 import { directionLabel, type DashboardBand, type LiveV3, type UncertainStart } from '../../../shared/liveDashboard';
 import { nameCase } from '../../utils/format';
-import { minutesText, tenth } from '../../../shared/liveFormat';
-import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STARTS_LABEL, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy, BUNCHING_FORMS_LABEL } from '../../../shared/liveWording';
+import { minutesText } from '../../../shared/liveFormat';
+import { BUNCHING_LABEL, DELAY_LEGEND_TITLE, DELAY_STARTS_LABEL, DELAY_NOT_MEASURED, DELAY_STEP_LABELS, EARLY_STEP_LABEL, LATE_LABEL, LESS_EXACT_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, USUALLY_ON_TIME, bunchedAndLong, bunchTotalParts, lateShareText, usuallyOffBy, delaySideWord, BUNCHING_FORMS_LABEL } from '../../../shared/liveWording';
 import { countOf } from '../../../shared/overflowText';
 import { DEPARTURES_COLUMN, LIVE_LESS_EXACT_HERE, STOP_COLUMN } from '../../content/noticeCopy';
 import { percentText } from '../../../shared/numberText';
-import { LIVE_MIN_SAMPLE } from '../../../shared/rules/live';
+import { EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN, LIVE_MIN_SAMPLE, STRIP_BEHIND_FROM_MIN } from '../../../shared/rules/live';
 
 export type RouteStripMode = 'delay' | 'bunching';
 
@@ -43,13 +43,16 @@ export interface RouteStripStretch {
   toStopId: string;
 }
 
-/** 'early': the delay track's step for cars that typically leave 1+ min early (CIV-283). */
+/** 'early': the delay track's step for cars that typically leave 1.5 min or more early, as vehicles (CIV-283). */
 export type Step = 'early' | 0 | 1 | 2;
 
-/** Delay steps: under 1 min is on time, 1 up to 3 min is a little late, 3 and more is late (the legend's own words), judged on the minutes as shown. */
-export const DELAY_STEP_LIMITS = [1, 3] as const;
-/** A typical departure this many minutes early or more is its own (blue) step, not "on time". */
-export const EARLY_STEP_MIN = 1;
+/**
+ * Delay steps, judged on the minutes as shown: under STRIP_BEHIND_FROM_MIN is on time, from it up to and including
+ * LATE_ABOVE_MIN is behind, and more than that is Late (the one late line: exactly 5.5 is not late).
+ */
+export const DELAY_STEP_LIMITS = [STRIP_BEHIND_FROM_MIN, LATE_ABOVE_MIN] as const;
+/** A typical departure this many minutes early or more is its own (blue) step, not "on time" (the vehicles' early line). */
+export const EARLY_STEP_MIN = -EARLY_AT_OR_BELOW_MIN;
 /** The early step's legend label (Ryan, CIV-1075 E22: "ahead", as in the Ahead definition). */
 export { EARLY_STEP_LABEL };
 /** Bunching steps: share of gaps too short or too long. */
@@ -111,7 +114,8 @@ export function stepFor(mode: RouteStripMode, value: number | null): Step | null
   // "1 min late" is never grey and one that reads "3 min late" is never amber.
   const r = mode === 'delay' ? Math.round(value * 10) / 10 : Math.round(value * 100) / 100;
   if (mode === 'delay' && r <= -EARLY_STEP_MIN) return 'early';
-  const [a, b] = mode === 'delay' ? DELAY_STEP_LIMITS : BUNCHING_STEP_LIMITS;
+  if (mode === 'delay') return r < DELAY_STEP_LIMITS[0] ? 0 : r <= DELAY_STEP_LIMITS[1] ? 1 : 2;
+  const [a, b] = BUNCHING_STEP_LIMITS;
   return r < a ? 0 : r < b ? 1 : 2;
 }
 
@@ -124,10 +128,10 @@ export function stopStep(stop: RouteStripStop, mode: RouteStripMode): Step | nul
   return step === 'early' && stop.timepoint === false ? 0 : step;
 }
 
-/** "3.1 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5). */
+/** "3.1 min behind", "6.2 min late", "2 min early", "on time": the shared minutes format (CIV-1160 question 5); late only above the late line. */
 export function delayText(min: number): string {
   if (Math.abs(min) < 0.05) return 'on time';
-  return `${minutesText(Math.abs(min))} ${min > 0 ? 'late' : 'early'}`;
+  return `${minutesText(Math.abs(min))} ${delaySideWord(min)}`;
 }
 
 /** Rough width of a label in px at 12px Inter, capped at `maxPx` (longer labels wrap onto more lines, see labelLines). */
@@ -252,7 +256,7 @@ export function bunchParts(stop: RouteStripStop): { total: number; bunched: numb
 export function stopDetail(stop: RouteStripStop): { name: string; lines: string[] } {
   const lines: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
-    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early');
+    const usual = Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(stop.delayMin);
     lines.push(stop.lateShare != null ? `${usual} · ${lateShareText(percentText(stop.lateShare))}` : usual);
   } else lines.push(DELAY_NOT_MEASURED);
   const parts = bunchParts(stop);

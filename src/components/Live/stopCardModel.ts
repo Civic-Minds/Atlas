@@ -4,7 +4,7 @@
  * the strip's stop hover (stopDetail); only the grouping and labels differ. Every heading and line here is wording to
  * confirm with Ryan.
  */
-import { DELAY_NOT_MEASURED, EXTRA_WAIT_LABEL, USUALLY_ON_TIME, usuallyOffBy } from '../../../shared/liveWording';
+import { DELAY_NOT_MEASURED, EXTRA_WAIT_LABEL, USUALLY_ON_TIME, lateShareText, usuallyOffBy } from '../../../shared/liveWording';
 import { tenth } from '../../../shared/liveFormat';
 import { bunchParts, type RouteStripStop } from './routeStripModel';
 import { LIVE_LESS_EXACT_HERE } from '../../content/noticeCopy';
@@ -15,7 +15,7 @@ export interface CardGroup { heading: string | null; lines: string[] }
 export const STOP_CARD_WORDS = {
   vehicles: 'Vehicles vs schedule',
   wait: 'Rider wait at this stop',
-  lateShare: (pct: string) => `${pct} are 5½+ min late`,
+  lateShare: lateShareText,
   // The measures keep the names the switcher and the table use, with the key's approved definitions.
   extraWait: (min: string) => `${EXTRA_WAIT_LABEL}: ${min} min beyond the scheduled gap`,
   noExtraWait: 'Extra wait: none beyond the scheduled gap',
@@ -31,7 +31,7 @@ export function stopCardGroups(stop: RouteStripStop, extraWaitMin: number | null
   const W = STOP_CARD_WORDS;
   const vehicles: string[] = [];
   if (stop.n > 0 && stop.delayMin != null) {
-    vehicles.push(Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(tenth(Math.abs(stop.delayMin)), stop.delayMin > 0 ? 'late' : 'early'));
+    vehicles.push(Math.abs(stop.delayMin) < 0.05 || (stop.delayMin < 0 && stop.timepoint === false) ? USUALLY_ON_TIME : usuallyOffBy(stop.delayMin));
     if (stop.lateShare != null) vehicles.push(W.lateShare(percentText(stop.lateShare)));
   } else vehicles.push(W.notMeasured);
   const wait: string[] = [];

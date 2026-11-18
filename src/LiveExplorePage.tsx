@@ -41,8 +41,8 @@ import { PERIOD_BANDS_ONLY, DAYS, dirsOf, mins } from './components/Live/section
 import { liveBandNow } from './components/Live/liveBandNow';
 import { useAgencies } from './hooks/useAgencies';
 import { BOUNDARY, RouteDevHint, RouteSubtitle, withNiceNames } from './LiveRoutePage';
-import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_LABEL, LINKED_TO_TITLE, NOT_LINKED_LABEL, NOT_MEASURED_LABEL, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, P90_LATER_LABEL, p90LateText, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
-import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, LIVE_NOTHING_LINKED, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
+import { ALONG_ROUTE_TITLE, BOTH_DIRECTIONS_LABEL, BUNCHING_FORMS_TITLE, DELAY_LEGEND_TITLE, DELAY_STARTS_TITLE, DIRECTION_LABEL, EXTRA_WAIT_LABEL, GAPS_OFF_SCHEDULE_LABEL, GROWS_LABEL, LATE_BY_HOUR_TITLE, LATE_LABEL, LATE_STOPS_TITLE, LINKED_TO_TITLE, NOT_MEASURED_VALUE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TIME_OF_DAY_LABEL, TOO_CLOSE_LABEL, TOO_FAR_LABEL, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, WEEK_COMPARE_TITLE } from '../shared/liveWording';
+import { LIVE_LESS_EXACT_HERE, LIVE_METHOD_DRAW_ERROR, loadingText, DAY_LABEL, FILTERS_LABEL } from './content/noticeCopy';
 import { percentText, countText } from '../shared/numberText';
 import { LIVE_PATH } from '../shared/pagePaths';
 
@@ -91,22 +91,20 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
             <Fact label={TYPICAL_ADDED} value={mins(f.medianAddedMin)} />
             <Fact label={GROWS_LABEL} value={percentText(f.growShare)} sub={`of ${countText(f.n)}`} />
             <Fact label={DELAY_LEGEND_TITLE} value={mins(f.medianDelayMin)} />
-            <Fact label={P90_LATER_LABEL} value={p90LateText(f.p90DelayMin)} />
           </Block>
         </Panel>
       );
     }
     const b = bunchBand?.forms;
     if (!b) return null;
-    const linked = b.links.filter(l => l.linked);
     return (
       <Panel title={stretchLabel(b.fromName, b.toName)} sub={strip.label}>
         <Block>
           <Fact label={GAPS_OFF_SCHEDULE_LABEL} value={`${percentText(b.fromBadShare)} to ${percentText(b.toBadShare)}`} />
         </Block>
-        <Block title={linked.length ? LINKED_TO_TITLE : LIVE_NOTHING_LINKED}>
+        <Block title={LINKED_TO_TITLE}>
           {b.links.map(l => (
-            <Fact key={l.kind} label={`${l.value == null ? NOT_MEASURED_LABEL : l.linked ? LINKED_LABEL : NOT_LINKED_LABEL}: ${LINK_LABELS[l.kind]}`} value={l.value == null ? '' : linkValueText(l.kind, l.value)} />
+            <Fact key={l.kind} label={LINK_LABELS[l.kind]} value={linkValueText(l.kind, l.value)} />
           ))}
         </Block>
       </Panel>
@@ -115,7 +113,6 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
 
   const s = stops.get(sel.stopId);
   if (!s) return null;
-  const full = data.stops.find(x => x.stopId === s.stopId && x.directionId === sel.dir);
   const bunch = bunchBand?.stops.find(x => x.stopId === s.stopId);
   const extra = v3.extraWait?.[band]?.find(x => x.directionId === sel.dir && x.stopId === s.stopId);
   const into = buildup?.stretches.find(x => x.toStopId === s.stopId);
@@ -125,7 +122,6 @@ function DetailPanel({ v3, band, sel, stops, data }: { v3: LiveV3; band: Dashboa
         {s.n > 0 && s.delayMin != null ? (
           <>
             <Fact label={DELAY_LEGEND_TITLE} value={delayText(s.delayMin)} />
-            {full && <Fact label={P90_LATER_LABEL} value={p90LateText(full.p90Min)} />}
             {s.lateShare != null && <Fact label={LATE_LABEL} value={percentText(s.lateShare)} sub={`of ${countText(s.n)} departures`} />}
           </>
         ) : <Fact label={DELAY_LEGEND_TITLE} value={NOT_MEASURED_VALUE} />}

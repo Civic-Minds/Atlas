@@ -37,14 +37,16 @@ describe('timeLossReport', () => {
     expect(s.p90MinDown).toBe(1); // 89 s -> 1 min, not shown: not greater than the typical value as shown
     expect(s.showP90).toBe(false);
   });
-  it('lists at most two looser-than-needed stop pairs, only when 9 in 10 are at or under the timetable', () => {
+  it('lists at most two looser-than-needed stop pairs, by the typical (median) time alone', () => {
     const d = midday([seg('a', 'b', stat(-40, 0)), seg('b', 'c', stat(-90, -10)), seg('c', 'd', stat(-60, -5)), seg('d', 'e', stat(-100, 5)), seg('e', 'f', stat(-29, -10))]);
-    expect(d.looser.map(r => r.fromStopId)).toEqual(['b', 'c']);
+    // d-e counts now that the 90th percentile no longer gates it (Ryan, 2026-11-17); e-f is still under 30 s.
+    expect(d.looser.map(r => r.fromStopId)).toEqual(['d', 'b']);
     expect(d.slower).toEqual([]);
   });
   it('writes the card wording, with the sample on every figure and none of the banned words', () => {
     const md = timeLossMarkdown(timeLossReport(data([seg('a', 'b', stat(74, 119)), seg('b', 'c', stat(-60, -5))]), ['midday']));
-    expect(md).toContain('Takes 1 min longer than scheduled; 1 in 10 take 1.5+ min longer | 40 trips, 6 days');
+    expect(md).toContain('Time lost: 1 min | 40 trips, 6 days');
+    expect(md).not.toContain('1 in 10');
     expect(md).toContain('The schedule allows 1 min more than vehicles need (40 trips, 6 days)');
     expect(md).not.toMatch(/\blate\b|delay of|at least|\bearly\b/i);
   });

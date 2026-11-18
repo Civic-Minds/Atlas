@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
 import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
-import { P90_LATER_LABEL, p90LateText, timeLostLine } from '../../shared/liveWording';
+import { DELAY_STARTS_CARD_WORDING, delayStartsCardLine, delayStartsCardShowsUsuallyAdds, timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
   it('names the agency once, without region or duplicated articles', () => {
@@ -146,8 +146,12 @@ describe('CIV-1795 plain words', () => {
     expect(liveReportFlagTitle(null, false, '504', 'Bus 8123')).toBe('Loading…');
     expect(liveReportFlagTitle(null, true, '504')).toBe('This agency couldn’t be found.');
   });
-  it('writes the 1-in-10 and time-lost figures', () => {
-    expect(`${P90_LATER_LABEL}: ${p90LateText(6)}`).toBe('1 in 10 leave: 6+ min late');
+  it('writes the time-lost figure, and the Delays start card line by its switch (pending Ryan, CIV-1795 q9)', () => {
     expect(timeLostLine(2)).toBe('Time lost: 2 min');
+    expect(DELAY_STARTS_CARD_WORDING).toBe('timeLost');
+    expect(delayStartsCardLine(2)).toBe('Time lost: 2 min');
+    expect(delayStartsCardShowsUsuallyAdds()).toBe(true);
+    expect(delayStartsCardLine(2, 'delayAdded')).toBe('Delay added: 2 min');
+    expect(delayStartsCardShowsUsuallyAdds('delayAdded')).toBe(false);
   });
 });

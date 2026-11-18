@@ -7,7 +7,7 @@
  * - stop pairs touching a main pattern end (`terminal`) are left out;
  * - a stop pair is listed only from 30 s typical extra running time; amber from 30 s, red from 60 s, on raw seconds;
  * - typical value rounded to nearest ½ min, the 1-in-10 rounded down, shown only when greater than the typical value;
- * - "looser than needed": typical at least 30 s under the timetable and 1-in-10 at or under it, at most 2 listed.
+ * - "looser than needed": typical (median) at least 30 s under the timetable, at most 2 listed (no percentile test, Ryan 2026-11-17).
  */
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, halfMinutes, halfMinutesDown, tidyStopName, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
@@ -36,7 +36,7 @@ export interface TimeLossRow {
   p90Sec: number;
   /** Rounded down to ½ min. */
   p90MinDown: number;
-  /** The 1-in-10 is shown only when, as shown, it is greater than the typical value. */
+  /** Kept in the data; no longer shown (Live shows no percentiles, Ryan 2026-11-17). */
   showP90: boolean;
   level: 'amber' | 'red' | 'looser';
   passes: number;
@@ -98,7 +98,7 @@ export function timeLossReport(data: SegmentDelayData, bands: readonly SegmentBa
         if (b.trips < MIN_SEGMENT_TRIPS || b.days < MIN_DAYS) { dir.tooFewPasses++; continue; }
         dir.measured++;
         if (b.gainedMedianSec >= TIME_LOSS_LIST_FROM_SEC) dir.slower.push(row(seg, band, b.gainedMedianSec >= TIME_LOSS_RED_FROM_SEC ? 'red' : 'amber'));
-        else if (b.gainedMedianSec <= LOOSER_AT_OR_BELOW_SEC && b.gainedP90Sec <= 0) dir.looser.push(row(seg, band, 'looser'));
+        else if (b.gainedMedianSec <= LOOSER_AT_OR_BELOW_SEC) dir.looser.push(row(seg, band, 'looser'));
       }
       dir.slower.sort((x, y) => y.typicalSec - x.typicalSec || y.p90Sec - x.p90Sec || y.passes - x.passes || x.fromStopId.localeCompare(y.fromStopId));
       dir.looser.sort((x, y) => x.typicalSec - y.typicalSec || y.passes - x.passes || x.fromStopId.localeCompare(y.fromStopId));
