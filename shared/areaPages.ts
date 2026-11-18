@@ -317,7 +317,7 @@ export function areaDatesText(d: Pick<AreaPageData, 'newestRefresh' | 'releaseDa
   const release = shortDate(d.releaseDate);
   const one = d.agencies.length === 1;
   const schedules = plural(d.agencies.length, 'schedule');
-  return [`Based on the ${one ? 'agency’s' : 'agencies’'} published ${schedules}.`, refreshed ? `Newest ${schedules} published ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
+  return [`Based on the ${one ? 'agency’s' : 'agencies’'} published ${schedules}.`, refreshed ? `The newest schedule was added on ${refreshed}.` : '', release ? `This page was last updated ${release}.` : ''].filter(Boolean).join(' ');
 }
 
 /**
