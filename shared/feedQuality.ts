@@ -223,16 +223,6 @@ function metricsFrom(input: FeedQualityInput): FeedQualityMetrics {
   };
 }
 
-export function qualityStatusLabel(status: FeedQualityStatus): string {
-  return {
-    healthy: 'Healthy',
-    review: 'Review',
-    degraded: 'Degraded',
-    unusable: 'Unusable',
-    paused: 'Paused',
-  }[status];
-}
-
 /**
  * Keep persisted quality records readable when their wording predates the
  * current rider-facing copy.
