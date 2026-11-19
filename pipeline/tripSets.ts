@@ -17,8 +17,8 @@ import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { edgeWaitFailMask } from './edgeWaits.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats, determineTier } from './transit-phase2.js';
-import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER, publicTierOf } from '../shared/rules/frequency.js';
+import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
+import { periodSplit } from './research1913.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -1547,29 +1547,9 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
     {
-      // CIV-1913 research (never merged): does the main stretch's period split into two steady parts with different
-      // public grades (E Line weekday Late: every 15 to midnight, then about hourly)? Each part needs 3+ departures over
-      // 60+ minutes and is graded by the settled tier rule (determineTier); the gap at the change belongs to the later part.
-      const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b);
-      const t = all.filter(x => x >= start && x < end);
-      // The later part may rest on 2 departures when it runs to the end of the window (E Line weekday Late: every 15 to
-      // midnight, then hourly to 2 AM).
-      const grade = (xs: number[], min = 3): number | null => {
-        if (xs.length < min) return null;
-        const g = determineTier(xs.slice(1).map((x, i) => x - xs[i]), xs.length, 0, TIER_MAXES, GRACE_MINUTES, 0, GRACE_PERCENT, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER as Record<number, number>);
-        return g === 'span' ? null : publicTierOf(Number(g));
-      };
-      let best: { at: number; before: number; after: number; steps: number } | null = null;
-      for (let k = 3; k <= t.length - 1; k++) {
-        const a = t.slice(0, k), b = t.slice(k - 1);
-        if (a[a.length - 1] - a[0] < 60 || end - b[0] < 60) continue;
-        const ga = grade(a), gb = grade(b, 2);
-        if (ga == null || gb == null || ga === gb) continue;
-        const pub = [10, 15, 20, 30, 60];
-        const steps = Math.abs(pub.indexOf(ga) - pub.indexOf(gb));
-        if (!best || steps > best.steps) best = { at: Math.round(t[k - 1]), before: ga, after: gb, steps };
-      }
-      (period[key] as any).splitResearch = best ? { ...best, whole: grade(t) } : null;
+      // CIV-1913 research attempt 2 (never merged): pipeline/research1913.ts.
+      const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((x, y) => x - y);
+      (period[key] as any).splitResearch = periodSplit(all.filter(x => x >= start && x < end), start, end);
     }
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
