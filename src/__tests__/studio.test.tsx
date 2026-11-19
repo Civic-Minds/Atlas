@@ -1,15 +1,16 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFor, studioPageFrom } from '../../shared/studioAgencies';
+import { INTERNAL_NAV_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../shared/config')>();
-  return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
+  return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' || k === 'internal' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
@@ -23,12 +24,14 @@ describe('Studio link in the header (CIV-1694)', () => {
     expect(screen.getByRole('link', { name: 'Studio' })).toHaveAttribute('href', '/studio');
   });
 
-  it('sits after Docs, just before Go to Atlas (CIV-1745)', () => {
+  it('sits first in the internal link bar, above the public links (CIV-1872, was after Docs in CIV-1745)', () => {
     flags.studio = true;
     render(<SiteHeader />);
-    const names = screen.getAllByRole('link').map(l => l.textContent?.trim() ?? '');
-    const order = names.filter(n => /^(Agencies|Research|Docs|Studio)$/.test(n) || /Go to Atlas/.test(n));
-    expect(order.slice(-3)).toEqual(['Docs', 'Studio', expect.stringMatching(/Go to Atlas/)]);
+    const internal = within(screen.getByRole('navigation', { name: INTERNAL_NAV_LABEL })).getAllByRole('link').map(l => l.textContent?.trim());
+    expect(internal[0]).toBe('Studio');
+    const publicLinks = within(screen.getByRole('navigation', { name: SITE_NAV_LABEL })).getAllByRole('link').map(l => l.textContent?.trim() ?? '');
+    expect(publicLinks).not.toContain('Studio');
+    expect(publicLinks.slice(-2)).toEqual(['Docs', expect.stringMatching(/Go to Atlas/)]);
   });
 
   it('is not there with the flag off', () => {
