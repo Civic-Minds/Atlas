@@ -967,6 +967,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 <React.Suspense fallback={null}>
                   <LiveVehicles
                   agencies={visibleAgencies}
+                    lightMode={lightMode}
+                    setLightMode={setLightMode}
                     active={liveShown}
                     onInfoOpen={openInfo}
                     query={deferredQuery}

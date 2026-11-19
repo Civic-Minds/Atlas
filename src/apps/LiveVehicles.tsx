@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useR
 import { useSidebarFrame } from '../context/SidebarFrame';
 import { createPortal } from 'react-dom';
 import { CardBackLink } from '../components/CardBack';
-import { ChevronRight } from 'lucide-react';
+import { Info, Moon, Sun, ChevronRight } from 'lucide-react';
 import { useLiveFeedsDown, useLiveVehiclesMapOverlay } from '../context/LiveVehiclesMapOverlay';
 import type { LiveVehicle } from '../context/LiveVehiclesMapOverlay';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES, LIVE_AGENCY_BBOXES, LIVE_AGENCY_PLACES, getPolledRoute } from '../../shared/livePollingConfig';
@@ -10,7 +10,7 @@ import { useViewport } from '../context/ViewportContext';
 import type { OpenInfoFn } from '../components/InfoPanel';
 import type { Agency } from '../App';
 import { fetchAgencyGeo } from '../lib/agencyGeo';
-import { TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
+import { ICON_BTN, TRANSITION_SLOW, LIST_ROW_DIM, PANEL_SIDEBAR, Z_HEADER, PANEL_TITLE, PANEL_SECTION_HEAD, SIDEBAR_PANEL_WIDTH } from '../styles';
 import { PHONE_MEDIA_QUERY, useMediaQuery } from '../hooks/useMediaQuery';
 import { BOTTOM_SHEET_FIT_CONTENT, BOTTOM_SHEET_FRAME, BottomSheetHandle, bottomSheetBodyClass, useBottomSheet } from '../components/ui/BottomSheet';
 import Tag from '../components/ui/Tag';
@@ -47,12 +47,14 @@ import { useLiveRouteRequest, useLiveViewUrl } from '../hooks/useLiveView';
 import PanelEmpty from '../components/ui/PanelEmpty';
 import AgencyName from '../components/ui/AgencyName';
 import AgencyGroupHeader from '../components/ui/AgencyGroupHeader';
-import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL } from '../content/noticeCopy';
+import { loadingText, liveReportFlagTitle, LIVE_COVERED_ROUTES_HEADING, LIVE_NOTHING_ACTIVE, LIVE_NOTHING_ACTIVE_HINT, LIVE_NO_ROUTE_MATCHES, LIVE_NO_VEHICLES_ON_ROUTE, liveRouteEmptyNotice, liveUnreachableText, ABOUT_ATLAS, TOGGLE_DARK_MODE_LABEL, BROWSE_LIVE_AGENCIES_LINK, LIVE_TAB_LABEL } from '../content/noticeCopy';
 import { speedText } from '../../shared/unitText';
 import { directionBranchFallback } from '../../shared/headsignDisplay';
 
 interface Props {
   agencies: Agency[];
+  lightMode: boolean;
+  setLightMode: (v: boolean) => void;
   active: boolean;
   onInfoOpen?: OpenInfoFn;
   query: string;
@@ -105,7 +107,7 @@ const MIN_LIVE_ZOOM = 9;
 const resolvedDirections = new WeakMap<LiveVehicle, LiveVehicle>();
 const NO_VEHICLES: LiveVehicle[] = [];
 
-export default function LiveVehicles({ agencies, active, onInfoOpen, query, layers = {}, selectionActive = false, routeRequest = null, onAgencyClick }: Props) {
+export default function LiveVehicles({ agencies, lightMode, setLightMode, active, onInfoOpen, query, layers = {}, selectionActive = false, routeRequest = null, onAgencyClick }: Props) {
   const { colorVisionFriendly } = useColorVision();
   const colorMode = colorVisionFriendly ? 'friendly' : 'default';
   const { setOverlay } = useLiveVehiclesMapOverlay();
@@ -977,6 +979,17 @@ export default function LiveVehicles({ agencies, active, onInfoOpen, query, laye
       </div>
       </SheetPortal>
 
+      {/* Toolbar */}
+      <div data-map-overlay="live-toolbar" className={`absolute top-6 right-6 ${Z_HEADER} flex items-center gap-1.5 pointer-events-auto`}>
+        <button onClick={() => setLightMode(!lightMode)} className={ICON_BTN} aria-label={TOGGLE_DARK_MODE_LABEL}>
+          {lightMode ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </button>
+        {onInfoOpen && (
+          <button onClick={() => onInfoOpen('about')} className={ICON_BTN} aria-label={ABOUT_ATLAS}>
+            <Info className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
