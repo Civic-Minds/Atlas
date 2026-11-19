@@ -8,8 +8,8 @@ import type { DayType } from '../../shared/dayTypes';
 import { headwayFilterApplies } from '../../shared/routeHeadwayFilter';
 
 /**
- * One route drawn in History's year view (#1028 batch A). Only routes with a snapshot in the year
- * are drawn (routesForYear: no fallback to another year). The colour is that year's value on the view's day
+ * One route drawn in History's year view (#1028 batch A). The routes routesForYear lists for the year: each route's own
+ * snapshot that year, or on older data its last number carried into a year it didn't change (#1591). The colour is that year's value on the view's day
  * (Weekday unless History's day picker says otherwise, CIV-1425) in the shared tier colours; a limited
  * or unknown value takes the map's no-value colour (never hidden, per the reader contract). A route with
  * no trips that day is not drawn, as on the main map (CIV-1434, passesHistoryLimit). `coordinates` is that year's own line from the shapes file (CIV-456) when it
@@ -120,7 +120,7 @@ export function passesHistoryLimit(value: SnapshotValue, maxHeadway: number, per
 }
 
 export function historyYearRoutes(
-  agency: { routes: Array<HistoryRouteLike<Snapshot>> },
+  agency: { routes: Array<HistoryRouteLike<Snapshot>>; coverageYears?: readonly number[] },
   year: number,
   colorMode: ColorVisionMode,
   view: HistoryView = HISTORY_VIEW_ALL,
@@ -130,7 +130,7 @@ export function historyYearRoutes(
   latestYear?: number,
 ): HistoryYearRoute[] {
   const out: HistoryYearRoute[] = [];
-  for (const { route, snapshot } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
+  for (const { route, snapshot, carriedFrom } of routesForYear<Snapshot, HistoryRouteLike<Snapshot>>(agency, year)) {
     const value = historyDayPeriodValue(snapshot, view.day, view.period);
     if (!passesHistoryLimit(value, view.maxHeadway, view.period)) continue;
     const headway = value.kind === 'value' ? value.min : null;
@@ -140,7 +140,8 @@ export function historyYearRoutes(
       color: localRouteHeadwayColor(headway, colorMode),
       // The year's own line when it has one (not for the latest year); otherwise today's map line.
       // Snapshots' old v1 `geometry` is not used (reader contract).
-      ...yearShape(shapes, route.routeShortName, year, latestYear),
+      // A route carried into an unchanged year (#1591) is drawn on the line of the year its number comes from.
+      ...yearShape(shapes, route.routeShortName, carriedFrom ?? year, latestYear),
     });
   }
   return out;
