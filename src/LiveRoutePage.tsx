@@ -109,7 +109,7 @@ export function DataUpTo({ dates, route = '' }: { dates: readonly string[]; rout
   const last = dates[dates.length - 1];
   if (!last) return null;
   const f = freshness({ window: { dates } } as LiveV3, route, Date.now());
-  const text = `data up to ${dateRange(last, last)}`;
+  const text = `Data up to ${dateRange(last, last)}`;
   return f.stale
     ? <span role="status" title={f.text} className="text-sm font-bold text-[var(--status-caution-text)]">{text}</span>
     : <span className="text-sm text-[var(--text-muted)]">{text}</span>;

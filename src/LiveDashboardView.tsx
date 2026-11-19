@@ -2,7 +2,7 @@ import DataTable from './components/ui/DataTable';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
+import { BUNCHING_SPLIT_NOTE, bunchingIsSplit, kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
@@ -70,7 +70,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes, caption, captionTitle, scope, excluding, excludingTitle }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -83,6 +83,8 @@ export function WeekTable({ tiles, notes, caption, captionTitle, scope, excludin
   excluding?: string | null;
   excludingTitle?: string;
 }) {
+  // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
+  const notes = tiles.some(bunchingIsSplit) ? [...(givenNotes ?? []), BUNCHING_SPLIT_NOTE] : givenNotes;
   return (
     <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
       <DataTable
