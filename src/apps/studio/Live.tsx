@@ -21,6 +21,7 @@ import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
+import RouteNow from './RouteNow';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
 
@@ -113,6 +114,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
                 <SidebarCardHeader back={{ to: agencyName, onClick: m.backToNetwork }} title={<RouteTitleName label={label} />} />
               </SidebarCardHeaderBlock>
               <DataUpTo dates={m.dataDates} route={m.dataRoute} />
+              <RouteNow agency={slug} route={route} />
               {m.routeBody && <WidgetPanel widgets={m.routeBody} />}
               {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
             </SidebarCardShell>

@@ -38,6 +38,8 @@ async function loadHandlers() {
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
   const { default: mcpCoverage } = await import('./local-api/mcp-coverage.js');
   handlers['/api/mcp-coverage'] = mcpCoverage.fetch;
+  const { default: routeNow } = await import('./local-api/route-now.js');
+  handlers['/api/route-now'] = routeNow.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
 }
 
