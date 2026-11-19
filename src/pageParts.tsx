@@ -1,6 +1,7 @@
 import { FREQUENCY_BANDS, NO_MIDDAY_SHORT, noMiddayBarSentence } from '../shared/agencyPages';
 import { useHeadwayTiers } from './hooks/useHeadwayTiers';
 import SplitBar from './components/charts/SplitBar';
+import { CHART_COUNT } from './components/charts/useActivePart';
 import { plural } from '../shared/overflowText';
 import { routeLabels } from './utils/format';
 import { ROUTES_BY_MIDDAY_FREQUENCY_LABEL } from './content/noticeCopy';
@@ -31,7 +32,7 @@ export function FrequencyBar({ counts }: { counts: number[] }) {
         value: n,
         fill: BAND_FILLS[i],
         sentence: i < BAND_PHRASES.length ? `${n} ${plural(n, 'route')} ${BAND_PHRASES[i]}` : noMiddayBarSentence(n),
-        legend: <span><span className="font-black">{n}</span> {BAND_SHORT[i]}{i === unitBand ? ' min' : ''}</span>,
+        legend: <span><span className={CHART_COUNT}>{n}</span> {BAND_SHORT[i]}{i === unitBand ? ' min' : ''}</span>,
       }))}
     />
   );
