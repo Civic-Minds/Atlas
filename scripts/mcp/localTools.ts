@@ -8,24 +8,26 @@ import { hourRange } from '../../shared/timeText';
 import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
 import { headwayEvery } from '../../shared/headwayText';
 import * as data from './atlasData';
-import { needAgency, needPeriod, window, withAlso, staleNote, windowNote, windowHas, startsInWindow, type Args } from './toolHelpers';
+import { needAgency, window, withAlso, periodOrNow, windowOrNow, nowBlock, staleNote, windowNote, windowHas, startsInWindow, type Args } from './toolHelpers';
 import * as local from './localData';
 
 export const localHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   buses_needed: async (args) => {
     const a = await needAgency(args.agency);
-    const key = needPeriod(args.period);
+    // period "now" (#1627): the agency's current part of the day. The figures are for a representative weekday.
+    const { key, now } = await periodOrNow(a, args.period, null);
+    const nowInfo = now ? { ...nowBlock(now), ...(now.day !== 'Weekday' ? { nowDayNote: `It's ${now.day} there now, but buses-needed figures are for a weekday.` } : {}) } : {};
     const route = String(args.route ?? '');
     const every = args.every != null ? Number(args.every) : null;
     const res = local.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
-    if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
-    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
+    if (!res.cached) return { agency: a.name, route, period, ...nowInfo, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
+    if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
     const missing = every != null && !STUDIO_TARGETS.includes(every);
     const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
     const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
     return {
-      agency: a.name, route, period,
+      agency: a.name, route, period, ...nowInfo,
       ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
       day: `A representative weekday in the week of ${res.referenceDate}.`,
       groups: res.groups.map(g => ({
@@ -71,8 +73,9 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
   },
   combined_frequency: async (args) => {
     const a = await needAgency(args.agency);
-    const dayType = data.parseDay(args.day);
-    const w = window(args);
+    // from_time "now" (#1627): the hour from the agency's current time, on today's day type.
+    const { w, now } = await windowOrNow(a, args);
+    const dayType = now && args.day == null ? now.day : data.parseDay(args.day);
     const ags = await withAlso(a, args);
     const c = await local.combinedDepartures(ags.map(x => ({ slug: x.slug, label: local.agencyLabel(x.slug, x.name) })), String(args.from_stop ?? ''), String(args.to_stop ?? ''), dayType);
     const windows = w ? [{ name: w.label, start: w.start, end: w.end }] : PERIOD_KEYS.map(k => ({ name: `${PERIOD_LABELS[k]} (${formatPeriodRange(k)})`, start: PERIOD_MINUTES[k].start, end: PERIOD_MINUTES[k].end }));
@@ -81,6 +84,7 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     const inWin = (starts: number[], win: { start: number; end: number }) => (w ? startsInWindow(starts, win) : starts);
     return {
       ...staleNote(a, c.scheduleEnds),
+      ...(now ? nowBlock(now, !inWin(all, w!).length) : {}),
       agency: ags.map(x => local.agencyLabel(x.slug, x.name)).join(', '), from: c.from, to: c.to, day: dayType, scheduleRead: c.readOn,
       ...(c.noDirectTrip ? { answer: 'No scheduled trip goes from the first stop to the second without a transfer on these agencies. Atlas Studio counts direct trips only.' } : {}),
       routes: [...c.byRoute.keys()],

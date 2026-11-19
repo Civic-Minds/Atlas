@@ -103,9 +103,9 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
       if (!meta) {
         meta = new Map();
         for (const a of await this.catalog()) {
-          let cfg: { shortName?: string; parentAgency?: string } = {};
+          let cfg: { shortName?: string; parentAgency?: string; timezone?: string } = {};
           try { cfg = JSON.parse(readFileSync(join(ATLAS_ROOT, 'config/agencies', `${a.slug}.json`), 'utf8')); } catch { /* no config */ }
-          meta.set(a.slug, { shortName: String(cfg.shortName ?? ''), parentAgency: cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null });
+          meta.set(a.slug, { shortName: String(cfg.shortName ?? ''), parentAgency: cfg.parentAgency ? parentAgency(cfg.parentAgency)?.name ?? cfg.parentAgency : null, timezone: cfg.timezone ?? null });
         }
       }
       return meta;

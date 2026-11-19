@@ -13,7 +13,8 @@ import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
 import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
-import { needAgency, needPeriod, window, mapLink, validThrough, SOURCE, windowNote, type Args } from './toolHelpers';
+import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args } from './toolHelpers';
+import { isNow } from './nowClock';
 
 export * from './toolDefs';
 export * from './toolHelpers';
@@ -61,6 +62,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
     if (!feeds) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
+    if (isNow(args.period)) throw new Error('A ranking spans agencies with their own clocks, so it takes a part of the day, not "now". Use routes_at_frequency with period "now" for one agency.');
     const dayType = data.parseDay(args.day), key = needPeriod(args.period), minutes = Number(args.every);
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
@@ -131,13 +133,14 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   },
   route_frequency: async (args) => {
     const a = await needAgency(args.agency);
-    const dayType = data.parseDay(args.day);
+    // from_time "now" (#1627): the hour from the agency's current time, on today's day type.
+    const { w, now } = await windowOrNow(a, args);
+    const dayType = now && args.day == null ? now.day : data.parseDay(args.day);
     const list = await data.routeList(a, dayType);
     const found = data.findRoute(list, String(args.route ?? ''));
     if (!found) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
     const also = data.otherExactMatches(list, String(args.route ?? ''), found);
     const r = await data.routeWithRows(a, dayType, found);
-    const w = window(args);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
     return {
       agency: a.name, route: r.name, name: r.longName, mode: r.mode, day: dayType,
@@ -146,6 +149,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       service: found.span,
       branches: await data.branchesOf(a, dayType, r),
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
+      ...(now ? nowBlock(now, found.figures[now.period]?.shown === 'no service') : {}),
       ...(also.length ? { alsoNamed: also.map(o => ({ route: o.name, name: o.longName, mode: o.mode })), alsoNamedNote: `"${args.route}" also names ${also.map(o => `${o.name} (${o.mode.toLowerCase()})`).join(', ')}. This answer is ${found.name} (${found.mode.toLowerCase()}); say so, name the other, and offer it.` } : {}),
       ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end, await data.endOfRows(a, dayType, r)), windowNote: windowNote(w), hourlyNote: "Each column is one branch's own frequency by hour. Branches that end at the same stop share their trips, so the direction as a whole runs more often than any one column says." } : {}),
@@ -155,12 +159,17 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   },
   routes_at_frequency: async ({ agency: q, period: p, every: n, day: d }) => {
     const a = await needAgency(q);
-    const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
+    const { key, dayType, now } = await periodOrNow(a, p, d);
+    const minutes = Number(n);
     const res = await data.routesMeeting(a, dayType, key, minutes);
-    return { agency: a.name, day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
+    return { agency: a.name, ...(now ? nowBlock(now, res.routesRunningInPeriod === 0) : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, meeting: res.meeting.map(m => ({ route: m.route, name: m.longName, mode: m.mode, shown: m.shown, waitMinutes: m.waitMinutes })), mapLink: mapLink({ agencies: [a.slug], day: dayType, period: key, every: minutes }), scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
-    const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
+    // "now" reads the first agency's clock (#1627); the answer says so when the others keep another time zone.
+    const first = Array.isArray(agencies) && agencies.length ? await data.findAgencyEntry(String(agencies[0] ?? '')) : null;
+    if (isNow(p) && !first) throw new Error('Name the agencies to compare.');
+    const { key, dayType, now } = first ? await periodOrNow(first.members[0], p, d) : { key: needPeriod(p), dayType: data.parseDay(d), now: null };
+    const minutes = Number(n);
     // One entry per agency or region (shared/agencyGroups.ts): "MTA New York" is its feeds together, a route in two of
     // them counted once.
     const rows = await Promise.all((Array.isArray(agencies) ? agencies : []).map(async q => {
@@ -170,13 +179,19 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       const ends = e.members.map(m => validThrough(m)).filter((x): x is string => !!x).sort();
       return { slugs: e.members.map(m => m.slug), agency: e.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: ends[0] ?? null };
     }));
-    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
+    const zones = now ? [...new Set(await Promise.all(rows.map(async r => (await data.timeZoneOf(r.slugs[0])) ?? now.timeZone)))] : [];
+    return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
-  routes_near: async ({ agency: q, place, metres }) => {
+  routes_near: async ({ agency: q, place, metres, when }) => {
     const a = await needAgency(q);
     const res = await data.routesNear(a, String(place ?? ''), metres != null ? Number(metres) : NEARBY_ROUTES_RADIUS_M);
     if (!res.matchedStops.length) return { agency: a.name, place, routes: [], note: 'No stop name matches every part of that place. Try a station or a street name as the stops are named.', scheduleValidThrough: validThrough(a) };
-    return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
+    if (!isNow(when)) return { agency: a.name, place, ...res, scheduleValidThrough: validThrough(a), source: SOURCE };
+    // when "now" (#1627): each route's service in the current part of the day, on today's day type.
+    const now = await nowAt(a);
+    const today = new Map((await data.routeList(a, now.day)).map(r => [r.name, r.figures[now.period]?.shown ?? 'no service']));
+    const routes = res.routes.map(r => ({ ...r, now: today.get(r.route) ?? 'no service' }));
+    return { agency: a.name, place, ...nowBlock(now, routes.every(r => r.now === 'no service')), ...res, routes, scheduleValidThrough: validThrough(a), source: SOURCE };
   },
   route_history: async ({ agency: q, route, day: d }) => {
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
