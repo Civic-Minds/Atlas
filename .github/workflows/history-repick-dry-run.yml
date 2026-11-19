@@ -108,7 +108,9 @@ jobs:
       - name: Download the published sidecars and their zips (read-only)
         run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT/in"
       - name: Build each period as published and re-picked, and compare
-        run: npx tsx pipeline/history-v2-repick-report.ts --slug "$SLUG" --in "$OUT/in" --out "$OUT/report" 2>&1 | tee "$OUT/repick.log"
+        run: |
+          set -o pipefail
+          npx tsx pipeline/history-v2-repick-report.ts --slug "$SLUG" --in "$OUT/in" --out "$OUT/report" 2>&1 | tee "$OUT/repick.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -144,9 +146,12 @@ jobs:
         run: echo "a repick job did not succeed (an agency with 0 sidecars or 0 compared periods fails its job)"; exit 1
       - name: Totals
         run: |
-          npx tsx pipeline/history-v2-repick-report.ts --summarize tmp/reports --md tmp/summary.md
-          cat tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
+          rc=0
+          npx tsx pipeline/history-v2-repick-report.ts --summarize tmp/reports --md tmp/summary.md || rc=$?
+          [ -f tmp/summary.md ] && cat tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
+          exit $rc
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: history-repick-summary
           path: |
