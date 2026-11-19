@@ -1,5 +1,4 @@
 import { HEADER_TAG_INTERNAL } from './siteMode';
-import { AIRPORT_STORY_DRAFT } from './researchStories';
 import { INTERNAL_PATH, PLANNERS_PATH, RESEARCHERS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
 
 /**
@@ -39,7 +38,6 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
     pages: [
       { title: 'For Planners', description: 'The planners page, not public yet.', path: PLANNERS_PATH },
       { title: 'For Researchers', description: 'The researchers page, not public yet.', path: RESEARCHERS_PATH },
-      { title: `${AIRPORT_STORY_DRAFT.cardTitle} draft`, description: 'A research story still being built.', path: AIRPORT_STORY_DRAFT.path },
     ],
   },
   {
