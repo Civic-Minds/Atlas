@@ -7,7 +7,7 @@
     43.7745,
     7.4975
   ],
-  "feedUrl": "https://static.data.gouv.fr/resources/horaires-reseau-zest/20260710-140010/gtfs-10072026-0806.zip",
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/72609821-2459-47fb-a63b-3dbbc0d96c92",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,
