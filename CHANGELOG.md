@@ -20,6 +20,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The Filters count badge and the report-a-problem button no longer use solid dark fills**: they use the pale selected tint like the rest of the app, and the badge was hard to read in dark mode
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
 - **On beta, a slow connection loads fewer networks and offers to turn on Data saver (pending sign-off)**: pages stayed slow to fill on 2G/3G and in browsers set to save data; the offer is a choice, never switched on silently ([#539](https://github.com/Civic-Minds/Atlas/issues/539))
+- **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **Live's 504 King report measures the streetcar, not the 504C replacement buses (local only)**: the buses ran more trips, so they were read as the main line and the streetcar as a branch; they are now left out and counted, as on the 506
 - **Atlas Studio says it has no current reading for a route Live doesn't record**: asking how TTC's 29 Dufferin was running right now listed every stop as unseen, which read as a real finding
 - **Live's "Where bunching forms" table shows each stretch's share before and after, like "10% to 41%"**: "+31 pt" gave only the rise, not where it started
