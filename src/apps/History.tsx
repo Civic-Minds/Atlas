@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useLayoutEffect, useId } from 'react';
+import { groupAgencies } from '../../shared/agencyGroups';
+import { groupHistoryAgencies } from '../utils/historyGroups';
 import { MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
@@ -62,6 +64,8 @@ export interface RouteSnapshot {
   trunkHeadwayByPeriod?: HeadwayByPeriod;
   geometry?: number[][];
   note?: string;
+  /** CIV-1963: the feed this snapshot was read from, under a parent agency (historyGroups.ts). */
+  memberSlug?: string;
 }
 
 export interface RouteTripDurationSummary {
@@ -79,6 +83,8 @@ export interface RouteHistoryEntry {
   snapshots: RouteSnapshot[];
   /** Only present when the route's stops/alignment were identical across the compared range. */
   tripDuration?: RouteTripDurationSummary;
+  /** CIV-1963: under a parent agency, the feed of the route's latest snapshot (its mode and labels are read there). */
+  memberSlug?: string;
 }
 
 export interface AgencyHistory {
@@ -106,7 +112,7 @@ interface Props {
   /** History's Frequency and Time (top-bar chips, held by App): the map, the year list and an opened route follow them. */
   view?: HistoryView;
   /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
-  agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string }[];
+  agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string; parentAgency?: string }[];
   /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
   searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
@@ -703,7 +709,7 @@ function HistoryAgencyPanel({
     routeLongName: route.routeName,
     routeType: route.currentRouteType,
     busSubType: route.currentBusSubType,
-    agencySlug: agencyHistory.slug,
+    agencySlug: route.memberSlug ?? agencyHistory.slug,
   })), [yearRoutes, agencyHistory.slug]);
 
   const routeFilters = useMemo(() => buildRouteModeFilters(filterRoutes), [filterRoutes]);
@@ -722,7 +728,7 @@ function HistoryAgencyPanel({
       routeLongName: route.routeName,
       routeType: route.currentRouteType,
       busSubType: route.currentBusSubType,
-      agencySlug: agencyHistory.slug,
+      agencySlug: route.memberSlug ?? agencyHistory.slug,
     }, activeFilter));
   }, [activeFilter, agencyHistory.slug, routeRows]);
 
@@ -773,7 +779,7 @@ function HistoryAgencyPanel({
             const delta = value.kind === 'value' && before?.kind === 'value' ? value.min - before.min : 0;
             return {
               key: route.routeShortName,
-              route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: agencyHistory.slug }),
+              route: routeLabels({ shortName: route.routeShortName, longName: route.routeName, routeType: route.currentRouteType ?? undefined, agencySlug: route.memberSlug ?? agencyHistory.slug }),
               headway: value.kind === 'value' ? value.min : undefined,
               limited: value.kind === 'limited' || value.kind === 'none',
               ...(value.kind === 'none' ? { limitedLabel: HISTORY_NO_TRIPS_LABEL } : {}),
@@ -842,15 +848,19 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   }, [loadingCover, visible]);
   // Agency name and place from the catalog, by the same rule as the agency card and About list (#1028 items 16-17).
   const catalogBySlug = useMemo(() => new Map((agencyCatalog ?? []).map(a => [a.slug, a])), [agencyCatalog]);
+  // CIV-1963: the parent agencies' slugs, whose History entry is named for the parent, not a catalog feed.
+  const parentEntrySlugs = useMemo(() => new Set(groupAgencies(agencyCatalog ?? []).filter(g => g.parent).map(g => g.slug)), [agencyCatalog]);
   const agencyCardParts = useCallback((slug: string, fallbackName: string) => {
+    if (parentEntrySlugs.has(slug)) return agencyCardTitle(fallbackName);
     const a = catalogBySlug.get(slug);
     return agencyCardTitle(a ?? fallbackName);
-  }, [catalogBySlug]);
+  }, [catalogBySlug, parentEntrySlugs]);
   // List rows use the short name (CIV-998); the agency card above keeps the full name.
   const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
+    if (parentEntrySlugs.has(slug)) return agencyNames(fallbackName).list;
     const a = catalogBySlug.get(slug);
     return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea, nameQualifier: a.nameQualifier }).list : agencyNames(fallbackName).list;
-  }, [catalogBySlug]);
+  }, [catalogBySlug, parentEntrySlugs]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);
   const [historyLoadFailed, setHistoryLoadFailed] = useState(false);
@@ -877,12 +887,16 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     loadHistoryConfig();
   }, [active, loadHistoryConfig]);
 
-  const historyAgencies = useMemo(() => {
+  // One entry per agency or region (CIV-1963): a parent's feeds are one History agency (historyGroups.ts).
+  const historyEntries = useMemo(() => {
     // Snapshots with no label or a future year (bad upstream data) are left out everywhere (#1030).
-    return (historyData ?? [])
-      .map(withUsableSnapshots)
-      .filter(a => a.routes.some(r => r.snapshots.length > 0) && agencyQualifiesForHistory(a));
-  }, [historyData]);
+    const usable = (historyData ?? []).map(withUsableSnapshots).filter(a => a.routes.some(r => r.snapshots.length > 0));
+    return groupHistoryAgencies(usable, slug => catalogBySlug.get(slug)?.parentAgency);
+  }, [historyData, catalogBySlug]);
+  const historyAgencies = useMemo(() => historyEntries.map(e => e.agency).filter(a => agencyQualifiesForHistory(a)), [historyEntries]);
+  /** Each feed's History entry (its parent's under one), and each entry's feeds. */
+  const entryOf = useMemo(() => new Map(historyEntries.flatMap(e => e.members.map(m => [m, e.agency.slug] as const))), [historyEntries]);
+  const membersOf = useMemo(() => new Map(historyEntries.map(e => [e.agency.slug, e.members])), [historyEntries]);
 
   useEffect(() => {
     if (!active) { appliedInitialSlugRef.current = false; return; }
@@ -895,33 +909,47 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   useEffect(() => {
     const openOn = openOnSlugRef.current;
     if (!active || selectedSlug || !openOn || appliedInitialSlugRef.current) return;
-    if (historyAgencies.some(a => a.slug === openOn)) {
-      setSelectedSlug(openOn);
+    const entry = entryOf.get(openOn) ?? openOn;
+    if (historyAgencies.some(a => a.slug === entry)) {
+      setSelectedSlug(entry);
       appliedInitialSlugRef.current = true;
     }
-  }, [active, historyAgencies, selectedSlug]);
+  }, [active, historyAgencies, selectedSlug, entryOf]);
 
   // The open agency, validated by the v2 reader (one result for the panel, slider and map, #1028
   // batch A). In fixture mode the agency file carries only routes, so the name, region and centre
   // come from the History list. A file that fails to parse shows an error, never partial data.
-  const [openAgency, setOpenAgency] = useState<{ slug: string; agency: AgencyHistory | null; shapes: HistoryShapesFile | null } | null>(null);
+  const [openAgency, setOpenAgency] = useState<{ slug: string; agency: AgencyHistory | null; shapes: Map<string, HistoryShapesFile | null> } | null>(null);
   useEffect(() => {
     if (!selectedSlug || historyData === null) { setOpenAgency(null); return; }
     let cancelled = false;
     const slug = selectedSlug;
-    const base = historyData.find(a => a.slug === slug);
+    // A parent agency (CIV-1963) loads each of its feeds and merges them; any other agency is its one feed.
+    const members = membersOf.get(slug) ?? [slug];
     // The per-year shapes file loads with it (CIV-456). Without one (not published, or unreadable)
     // the year's routes draw on today's map lines; that isn't an error.
-    Promise.all([loadHistoryAgencyV2<RouteSnapshot>(slug), loadHistoryShapesV2(slug)]).then(([result, shapes]) => {
+    Promise.all(members.map(m => Promise.all([loadHistoryAgencyV2<RouteSnapshot>(m), loadHistoryShapesV2(m)]))).then(loaded => {
       if (cancelled) return;
-      if (!result.ok) { setOpenAgency({ slug, agency: null, shapes: null }); return; }
-      const merged = { ...base, ...result.value, name: base?.name ?? slug, region: base?.region ?? '', center: base?.center } as AgencyHistory;
-      setOpenAgency({ slug, agency: withUsableSnapshots(merged), shapes: shapes.ok ? shapes.value : null });
+      const shapes = new Map(members.map((m, i) => [m, loaded[i][1].ok ? loaded[i][1].value : null] as const));
+      const read = members.flatMap((m, i) => {
+        const result = loaded[i][0];
+        if (!result.ok) return [];
+        const base = historyData.find(a => a.slug === m);
+        return [withUsableSnapshots({ ...base, ...result.value, slug: m, name: base?.name ?? m, region: base?.region ?? '', center: base?.center } as AgencyHistory)];
+      });
+      if (read.length === 0) { setOpenAgency({ slug, agency: null, shapes }); return; }
+      const agency = members.length > 1 ? groupHistoryAgencies(read, m => catalogBySlug.get(m)?.parentAgency)[0].agency : read[0];
+      setOpenAgency({ slug, agency, shapes });
     });
     return () => { cancelled = true; };
-  }, [selectedSlug, historyData]);
+  }, [selectedSlug, historyData, membersOf, catalogBySlug]);
   const openAgencyHistory = openAgency?.slug === selectedSlug ? openAgency.agency : null;
-  const openAgencyShapes = openAgency?.slug === selectedSlug ? openAgency.shapes : null;
+  const openAgencyShapes = useMemo(() => {
+    if (!openAgency || openAgency.slug !== selectedSlug) return null;
+    const { shapes, slug } = openAgency;
+    // One feed: its file. A parent: each snapshot's line from its own feed's file.
+    return shapes.size > 1 ? (m: string | undefined) => (m ? shapes.get(m) ?? null : null) : shapes.get(slug) ?? [...shapes.values()][0] ?? null;
+  }, [openAgency, selectedSlug]);
   const openAgencyFailed = openAgency?.slug === selectedSlug && openAgency.agency === null;
 
   // The map draws the selected year's routes (routesForYear: on older data, a route's last number carries into years it
@@ -936,6 +964,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     const yearRoutes = selectedYear > 0 ? historyYearRoutes(agency, selectedYear, historyColorMode, view, openAgencyShapes, latestYear) : [];
     setOverlay({
       slug: agency.slug,
+      slugs: membersOf.get(agency.slug) ?? [agency.slug],
       routeShortName: selectedRouteShortName ?? '',
       agencyCenter: agency.center,
       routeGeometry: yearRoutes.find(r => r.routeShortName === selectedRouteShortName)?.coordinates,
@@ -943,7 +972,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
       yearRoutes,
       day: view.day,
     });
-  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view]);
+  }, [active, openAgencyHistory, openAgencyShapes, selectedRouteShortName, setOverlay, selectedYear, historyColorMode, view, membersOf]);
 
   useEffect(() => { if (!active) setOverlay(null); }, [active, setOverlay]);
 
@@ -952,11 +981,11 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
     const { slug, routeShortName } = pendingRouteClick;
     const agency = historyData.find(a => a.slug === slug);
     if (agency) {
-      setSelectedSlug(slug);
+      setSelectedSlug(entryOf.get(slug) ?? slug);
       setSelectedRouteShortName(routeShortName || null);
     }
     onPendingRouteHandled?.();
-  }, [pendingRouteClick, historyData, onPendingRouteHandled]);
+  }, [pendingRouteClick, historyData, onPendingRouteHandled, entryOf]);
   // The top search bar searches agencies on the chooser and the open agency's routes once one is
   // open (#1015). On the chooser a new search clears the selection, as before. Compared with the last
   // value (not skipped once) so a linked selection survives mount, including StrictMode's repeated effects.
@@ -984,9 +1013,9 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   }, [active, selectedSlug]);
   const openAgencyName = useMemo(() => {
     if (!active || !selectedSlug) return null;
-    const agency = historyData?.find(a => a.slug === selectedSlug);
+    const agency = historyEntries.find(e => e.agency.slug === selectedSlug)?.agency;
     return agency ? agencyNames(agency.name).name : null;
-  }, [active, selectedSlug, historyData]);
+  }, [active, selectedSlug, historyEntries]);
   useEffect(() => { onOpenAgencyChange?.(openAgencyName); }, [openAgencyName, onOpenAgencyChange]);
   // Dismissed from the map (empty-map click, Escape), the panel closes and stays closed until the
   // user searches, picks something or reopens History, as the regular map's card does (#1031).
@@ -1024,11 +1053,14 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // A linked agency that History doesn't have: fall back to the agency chooser.
   useEffect(() => {
     if (!historyData || !selectedSlug) return;
-    if (!historyData.some(a => a.slug === selectedSlug)) {
+    // A feed's link opens its parent agency (CIV-1963); an unknown agency falls back to the chooser.
+    const entry = entryOf.get(selectedSlug);
+    if (entry && entry !== selectedSlug) { setSelectedSlug(entry); return; }
+    if (!historyEntries.some(e => e.agency.slug === selectedSlug)) {
       setSelectedSlug(null);
       setSelectedRouteShortName(null);
     }
-  }, [historyData, selectedSlug]);
+  }, [historyData, selectedSlug, entryOf, historyEntries]);
 
   const { recentSearches, saveRecentSearch, clearRecentSearches } = useRecentSearches(searchFocused);
 
@@ -1146,7 +1178,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
                 <RouteHistoryCard
                   route={selectedRoute}
                   agencyName={agencyHistory.name}
-                  agencySlug={agencyHistory.slug}
+                  agencySlug={selectedRoute.memberSlug ?? agencyHistory.slug}
                   onBack={() => setSelectedRouteShortName(null)}
                   frameClassName={frameClassName}
                   frameStyle={frameStyle}
