@@ -144,11 +144,26 @@ export async function routeWithRows(agency: CatalogAgency, day: DayType, s: Rout
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
  * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01), rail first on a tie.
  */
+/**
+ * The other routes whose name matches a query exactly, besides the one findRoute picked (#1623: GO's "Lakeshore West" is
+ * the LW train and the 18 bus that runs when trains don't; TTC "King" is the 504 and the 304 night streetcar), so an
+ * answer can name them. Empty when the query was the picked route's own short name, or nothing else shares it.
+ */
+export function otherExactMatches<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string, picked: R): R[] {
+  const q = query.trim().toLowerCase();
+  if (picked.shortName.toLowerCase() === q) return [];
+  return routes.filter(r => r !== picked && r.name !== picked.name && [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase()).includes(q));
+}
+
 export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
   const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
   const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
-  const exact = routes.find(r => names(r).includes(q));
+  // Exact matches: a short-name match first, then rail before bus (#1623: GO's "Lakeshore West" is the LW train, not bus 18
+  // with the same long name), then a daytime route before a night-only one (TTC "King" is the 504, not the 304), else the list's order.
+  const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
+  const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
+    .sort((a, b) => a.short - b.short || rail(a.r) - rail(b.r) || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
   if (line.length) return line[0];

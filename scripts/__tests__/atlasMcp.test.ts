@@ -193,6 +193,23 @@ describe('route lookup (CIV-1864)', () => {
     expect(findRoute(routes, 'zzz')).toBeNull();
   });
 
+  it('among exact names, takes a short-name match, then rail before bus (#1623, GO "Lakeshore West")', async () => {
+    const { findRoute } = await import('../mcp/atlasData');
+    const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
+    const period = (shown: string) => ({ shown });
+    const nightOnly = { amPeak: period('no service'), midday: period('no service'), pmPeak: period('no service'), evening: period('no service'), late: period('some trips'), overnight: period('every 30 min') };
+    const allDay = { ...nightOnly, amPeak: period('every 5 min'), midday: period('every 5 min') };
+    const routes = [r('18', 'Lakeshore West'), r('LW', 'Lakeshore West', 'Commuter rail'), r('LE', 'Lakeshore East', 'Commuter rail'), { ...r('304', 'King', 'Streetcar'), figures: nightOnly }, { ...r('504', 'King', 'Streetcar'), figures: allDay }];
+    expect(findRoute(routes, 'Lakeshore West')?.shortName).toBe('LW');
+    expect(findRoute(routes, '18')?.shortName).toBe('18');
+    expect(findRoute(routes, 'King')?.shortName).toBe('504');
+    // The answer names the other route of that name, unless the query was the picked route's own number.
+    const { otherExactMatches } = await import('../mcp/atlasData');
+    expect(otherExactMatches(routes, 'Lakeshore West', findRoute(routes, 'Lakeshore West')!).map(o => o.shortName)).toEqual(['18']);
+    expect(otherExactMatches(routes, 'King', findRoute(routes, 'King')!).map(o => o.shortName)).toEqual(['304']);
+    expect(otherExactMatches(routes, 'LW', findRoute(routes, 'LW')!)).toEqual([]);
+  });
+
   it('takes a name holding the words typed over one that only contains the letters (Metro Transit "E Line")', async () => {
     const { findRoute } = await import('../mcp/atlasData');
     const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
@@ -204,3 +221,13 @@ describe('route lookup (CIV-1864)', () => {
   });
 });
 
+
+describe('schedule_changes on an old comparison (#1624)', () => {
+  it('adds a note when the later schedule is more than 45 days before today', async () => {
+    const { staleComparisonNote } = await import('../mcp/tools');
+    const nov19 = Date.parse('2026-11-19T12:00:00Z');
+    expect(staleComparisonNote('20260527', nov19).staleNote).toMatch(/check route_frequency/);
+    expect(staleComparisonNote('20261125', nov19)).toEqual({});
+    expect(staleComparisonNote('20261010', nov19)).toEqual({});
+  });
+});

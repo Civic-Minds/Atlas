@@ -19,9 +19,18 @@ export * from './toolDefs';
 export * from './toolHelpers';
 export { LIVE_TOOLS };
 
+/** Days after which a schedule comparison may no longer be the agency's latest change (#1624: Hamilton's compared two spring 2026 schedules in November). */
+export const COMPARISON_STALE_DAYS = 45;
+/** A note when a comparison's later schedule is from well before today, so an answer doesn't call a route gone that runs now. */
+export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNote?: string } {
+  const after = Date.parse(`${afterYmd.slice(0, 4)}-${afterYmd.slice(4, 6)}-${afterYmd.slice(6, 8)}T12:00:00Z`);
+  if (Number.isNaN(after) || (nowMs - after) / 86_400_000 <= COMPARISON_STALE_DAYS) return {};
+  return { staleNote: 'This comparison is between schedules as of those dates. The agency may have changed its schedule since, so before saying a route was removed or cut, check route_frequency for today\'s schedule.' };
+}
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
-  list_agencies: async ({ query, region, country, near, km }) => {
+  list_agencies: async ({ query, region, country, near, km, include_parts }) => {
     if (near != null) {
       const res = await data.agenciesNear(String(near), km != null ? Number(km) : 60);
       if (!res) throw new Error(`No agency or city matching "${near}".`);
@@ -39,13 +48,15 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
     });
     const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
-    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))) }));
+    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
+    // include_parts (#1625): a parent agency's feeds too, each with its own schedule end, as rank_agencies lists them.
+    const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${validThrough(m) ?? ''}`)])) : null;
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule valid through' } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
@@ -121,8 +132,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   route_frequency: async (args) => {
     const a = await needAgency(args.agency);
     const dayType = data.parseDay(args.day);
-    const found = data.findRoute(await data.routeList(a, dayType), String(args.route ?? ''));
+    const list = await data.routeList(a, dayType);
+    const found = data.findRoute(list, String(args.route ?? ''));
     if (!found) throw new Error(`${a.name} has no route matching "${args.route}" on ${dayType}.`);
+    const also = data.otherExactMatches(list, String(args.route ?? ''), found);
     const r = await data.routeWithRows(a, dayType, found);
     const w = window(args);
     const sameRoutes = await data.sameNameRoutes(a, dayType, r);
@@ -133,6 +146,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       service: found.span,
       branches: await data.branchesOf(a, dayType, r),
       branchesNote: 'Branches that end at the same stop are one row, with their trips counted once; startsAt names where its trips begin.',
+      ...(also.length ? { alsoNamed: also.map(o => ({ route: o.name, name: o.longName, mode: o.mode })), alsoNamedNote: `"${args.route}" also names ${also.map(o => `${o.name} (${o.mode.toLowerCase()})`).join(', ')}. This answer is ${found.name} (${found.mode.toLowerCase()}); say so, name the other, and offer it.` } : {}),
       ...(() => { const same = sameRoutes; return same.length ? { sameNameRoutes: same, sameNameNote: `Other ${a.name} routes with the same name, often a night or express version on the same street. A rider on this street can use them too; combined_frequency between two stops counts them together.` } : {}; })(),
       ...(w ? { window: w.label, hourly: data.hourlyFrequency(r, w.start, w.end, await data.endOfRows(a, dayType, r)), windowNote: windowNote(w), hourlyNote: "Each column is one branch's own frequency by hour. Branches that end at the same stop share their trips, so the direction as a whole runs more often than any one column says." } : {}),
       mapLink: mapLink({ route: found.routeIds[0] != null ? { agency: a.slug, routeId: found.routeIds[0] } : undefined, day: dayType }),
@@ -197,6 +211,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
       frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,
+      ...staleComparisonNote(file.after.date, Date.now()),
       ...(from + size < changes.length ? { more: `Call again with offset ${from + size} for the next ${Math.min(size, changes.length - from - size)}.` } : {}),
     };
   },
