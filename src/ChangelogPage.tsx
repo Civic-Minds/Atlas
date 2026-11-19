@@ -5,6 +5,7 @@ import { WHATS_NEW, visibleWhatsNew } from './data/whatsNew';
 import { FEATURES } from '../shared/config';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import { PAGE_NAMES } from '../shared/pageNames';
+import { SCROLL_BELOW_HEADER } from './styles';
 
 export default function ChangelogPage() {
   const entries = buildChangelog(visibleWhatsNew(FEATURES.whatsNewBetaItems, WHATS_NEW));
@@ -19,7 +20,7 @@ export default function ChangelogPage() {
               <p className="mt-3">What changed in Atlas.</p>
             </header>
             {entries.map(entry => (
-              <section key={entry.key} id={entry.key} className="scroll-mt-24">
+              <section key={entry.key} id={entry.key} className={SCROLL_BELOW_HEADER}>
                 <SectionTitle level="item" className="mb-2">
                   {entry.label}
                   {entry.dateLabel && <span className="font-normal text-[var(--text-dim)]"> · {entry.dateLabel}</span>}

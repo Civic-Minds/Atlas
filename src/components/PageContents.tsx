@@ -2,12 +2,13 @@ import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { ON_THIS_PAGE_LABEL } from '../content/noticeCopy';
+import { STICK_BELOW_HEADER } from '../styles';
 
 type PageContentsItem = { id: string; label: string };
 
 /**
  * The reading line, in px from the top of the window: a section counts as being read once its top passes it. It sits
- * below the sticky header and below where a clicked or linked section's heading lands (`scroll-mt-24`).
+ * below the sticky header and below where a clicked or linked section's heading lands (SCROLL_BELOW_HEADER).
  */
 const READING_LINE = 120;
 /** Fallback for browsers without `scrollend`: how long a click keeps its section active while the page scrolls there. */
@@ -141,7 +142,7 @@ export default function PageContents({ items, title }: { items: readonly PageCon
     window.history.pushState(null, '', `#${id}`);
   };
   return (
-    <nav aria-label={ON_THIS_PAGE_LABEL} className="mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky lg:top-[calc(var(--page-header-h,3.25rem)+1.25rem)] lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14">
+    <nav aria-label={ON_THIS_PAGE_LABEL} className={`mb-8 rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-btn)] p-4 lg:sticky ${STICK_BELOW_HEADER} lg:mb-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:pt-14`}>
       {title && (
         <p
           aria-hidden="true"

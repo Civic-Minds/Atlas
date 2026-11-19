@@ -25,6 +25,7 @@ import DocsPageLayout from './components/ui/DocsPageLayout';
 import { countText } from '../shared/numberText';
 import { PAGE_NAMES } from '../shared/pageNames';
 import { AREAS_HEADING, HISTORY_TAG, LIVE_TAG } from './content/noticeCopy';
+import { SCROLL_BELOW_HEADER } from './styles';
 
 /** Shared multi-column layout for the Areas list and every country's agency list. */
 const INDEX_COLUMNS = 'sm:columns-2 lg:columns-3 sm:gap-x-8';
@@ -93,7 +94,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
               <SectionTitle id={`index-${g.country}`}>{g.country}</SectionTitle>
               {g.regions.map(r => (
                 <div key={r.region} className="mt-5">
-                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className="scroll-mt-24 text-base font-black">{r.href ? <AppLink className={UNDERLINED_LINK} to={regionPagePath(r.region)}>{r.region}</AppLink> : r.region}</h3>}
+                  {r.region !== g.country && <h3 id={agencyIndexRegionId(g.country, r.region)} className={`${SCROLL_BELOW_HEADER} text-base font-black`}>{r.href ? <AppLink className={UNDERLINED_LINK} to={regionPagePath(r.region)}>{r.region}</AppLink> : r.region}</h3>}
                   <ul className={`mt-2 text-sm ${INDEX_COLUMNS}`}>
                     {r.agencies.map(a => {
                       const routes = <span className="text-[var(--text-muted)]">{'\u00A0'}·{'\u00A0'}{countText(a.routes)}{'\u00A0'}{plural(a.routes, 'route')}</span>;
