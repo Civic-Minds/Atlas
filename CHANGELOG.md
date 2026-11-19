@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **[Boston's 2026](https://github.com/Civic-Minds/Atlas/issues/1609) in History draws its route lines and reads like every other year**: an older kind of schedule file outranked the 2026 one, so 2026 showed no lines and some odd values (route 19 every 167 min, not 28); Seattle, Philadelphia, Burlington and Volusia County's 2026 gain the same way
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
