@@ -8,6 +8,7 @@
  * on a step inside the kept range, so the figure is exact; anything else is refused, never rounded.
  */
 import { BUNCHED_GAP_SEC, CUTOFF_LIMITS, EARLY_AT_OR_BELOW_MIN, GAPPED_FACTOR, LATE_ABOVE_MIN } from './rules/live.js';
+import { plural } from './overflowText.js';
 
 export { CUTOFF_LIMITS };
 
@@ -99,7 +100,7 @@ export function cutoffsFrom(args: { late_after_min?: unknown; early_before_min?:
   return { cutoffs: c, custom };
 }
 
-const minutes = (n: number) => `${n} minute${n === 1 ? '' : 's'}`;
+const minutes = (n: number) => `${n} ${plural(n, 'minute')}`;
 
 /** Each figure's meaning in words, at any cut-off: the default definitions are these at the defaults. */
 export const lateText = (min: number) => `More than ${minutes(min)} after the scheduled time.`;
