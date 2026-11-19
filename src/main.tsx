@@ -40,8 +40,9 @@ const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 // Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
 const StudioPage = import.meta.env.DEV ? React.lazy(() => import('./StudioPage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
-const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
-const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
+// The diagnostics pages are maintainer-only (#1518): the same DEV check as Studio keeps them out of built bundles entirely.
+const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsUnevenPage')) : () => null;
+const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsPerformancePage')) : () => null;
 
 /** Night Service moved from /apps/night to /research/night; keep old links and their filters working. */
 function NightServiceRedirect() {
