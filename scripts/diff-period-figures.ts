@@ -32,7 +32,7 @@ type Figures = Record<string, number | null | undefined>;
 type Flags = Record<string, boolean | null | undefined>;
 type Texts = Record<string, string | null | undefined>;
 /** One drawn row: the route's and the direction's filter value per period (what the map and its filter read), and the row's own steady flag and longest gap (what its card reads). */
-export type Row = { route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts };
+export type Row = { route: string; day: string; direction: string; routeFigure: Figures; directionFigure: Figures; steady?: Flags; longestGap?: Figures; edge?: Texts; stretchEdges?: Texts; headline?: Figures };
 export type Summary = Record<string, Record<string, Row>>;
 
 export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<string, unknown> | null }>): Record<string, Row> {
@@ -54,6 +54,8 @@ export function summarizeFeatures(features: ReadonlyArray<{ properties?: Record<
       longestGap: (p.maxGapByPeriod ?? {}) as Figures,
       edge: edgeTexts(p.stretchPeriodEdge as EdgeMap | undefined),
       stretchEdges: stretchEdgeTexts(p.stretchMeta as StretchMeta | undefined),
+      // The row's headline, the "every N min" its route card leads with (CIV-209): the all-day value and each period's.
+      headline: { allDay: (p.headway ?? null) as number | null, ...((p.headwayByPeriod ?? {}) as Figures) },
     };
   }
   return rows;
@@ -92,7 +94,7 @@ function summarize(dir: string): Summary {
 const TIER_MAXES = HEADWAY_TIERS.map(t => t.max).filter(Number.isFinite);
 const tierOf = (v: number) => TIER_MAXES.filter(max => v > max).length;
 
-type What = 'route figure' | 'direction figure' | 'steady' | 'longest gap' | 'card edge' | 'stretch edges';
+type What = 'route figure' | 'direction figure' | 'steady' | 'longest gap' | 'card edge' | 'stretch edges' | 'headline';
 export type Change = { slug: string; route: string; day: string; direction: string; period: string; what: What; before: number | boolean | string | null; after: number | boolean | string | null };
 
 /** Largest first: a figure gained or lost, then by minutes changed; a flag change last. */
@@ -113,7 +115,7 @@ export function diffSummaries(before: Summary, after: Summary): { report: string
       const sides: Array<[What, Figures | Flags | Texts | undefined, Figures | Flags | Texts | undefined]> = [
         ['route figure', b.routeFigure, a.routeFigure], ['direction figure', b.directionFigure, a.directionFigure],
         ['steady', b.steady, a.steady], ['longest gap', b.longestGap, a.longestGap],
-        ['card edge', b.edge, a.edge], ['stretch edges', b.stretchEdges, a.stretchEdges],
+        ['card edge', b.edge, a.edge], ['stretch edges', b.stretchEdges, a.stretchEdges], ['headline', b.headline, a.headline],
       ];
       for (const [what, bv, av] of sides) {
         if (bv === undefined || av === undefined) { figuresOnly = true; continue; }
@@ -146,7 +148,7 @@ export function diffSummaries(before: Summary, after: Summary): { report: string
   for (const c of changes) perAgency.set(c.slug, (perAgency.get(c.slug) ?? new Set()).add(c.route));
   const show = (v: Change['before']) => (v == null || v === '' ? 'none' : typeof v === 'boolean' ? (v ? 'steady' : 'not steady') : String(v));
   const report = [
-    `Compared ${slugs.length} agencies: ${routesOf(changes)} routes with a change, ${changes.length} changed cells (${routeFigures.length} route figures, ${changes.filter(c => c.what === 'direction figure').length} direction figures, ${changes.filter(c => c.what === 'steady').length} steady flags, ${changes.filter(c => c.what === 'longest gap').length} longest gaps, ${changes.filter(c => c.what === 'card edge').length} card edges, ${changes.filter(c => c.what === 'stretch edges').length} stretch edges).`,
+    `Compared ${slugs.length} agencies: ${routesOf(changes)} routes with a change, ${changes.length} changed cells (${routeFigures.length} route figures, ${changes.filter(c => c.what === 'direction figure').length} direction figures, ${changes.filter(c => c.what === 'steady').length} steady flags, ${changes.filter(c => c.what === 'longest gap').length} longest gaps, ${changes.filter(c => c.what === 'card edge').length} card edges, ${changes.filter(c => c.what === 'stretch edges').length} stretch edges, ${changes.filter(c => c.what === 'headline').length} headlines).`,
     ...(figuresOnly ? ['One side has no steady flags or longest gaps (an older summary): only the figures are compared.'] : []),
     ...(unmatchedRows > 0 ? [`${unmatchedRows} rows are on one side only (not compared).`] : []),
     ...(oneSide.length > 0 ? [`Agencies on one side only (not compared): ${oneSide.join(', ')}.`] : []),
@@ -156,6 +158,16 @@ export function diffSummaries(before: Summary, after: Summary): { report: string
     `- From none to a value: ${routesOf(routeFigures.filter(c => c.before == null))} routes. From a value to none: ${routesOf(routeFigures.filter(c => c.after == null))} routes.`,
     `- Crossed 15 minutes: ${routesOf(crossed(15))} routes (${crossed(15).filter(c => c.after <= 15).length} cells to 15 or under, ${crossed(15).filter(c => c.after > 15).length} cells to over 15).`,
     `- Crossed any tier boundary (${TIER_MAXES.join(', ')}): ${routesOf(both.filter(c => tierOf(c.before) !== tierOf(c.after)))} routes (${both.filter(c => tierOf(c.before) !== tierOf(c.after)).length} cells).`,
+    '',
+    'Headlines (the route card\'s "every N min", all day and per period):',
+    ...(() => {
+      const h = changes.filter((c): c is Change & { before: number; after: number } => c.what === 'headline' && typeof c.before === 'number' && typeof c.after === 'number');
+      const gone = changes.filter(c => c.what === 'headline' && (c.before == null) !== (c.after == null));
+      return [
+        `- More frequent: ${routesOf(h.filter(c => c.after < c.before))} routes (${h.filter(c => c.after < c.before).length} cells). Less frequent: ${routesOf(h.filter(c => c.after > c.before))} routes (${h.filter(c => c.after > c.before).length} cells).`,
+        `- Gained or lost a headline: ${routesOf(gone)} routes (${gone.length} cells). Crossed a tier boundary: ${routesOf(h.filter(c => tierOf(c.before) !== tierOf(c.after)))} routes (${h.filter(c => tierOf(c.before) !== tierOf(c.after)).length} cells).`,
+      ];
+    })(),
     '',
     `Routes changed per agency (${perAgency.size} agencies):`,
     ...[...perAgency].sort((x, y) => y[1].size - x[1].size || x[0].localeCompare(y[0])).map(([slug, routes]) => `- ${slug}: ${routes.size}`),

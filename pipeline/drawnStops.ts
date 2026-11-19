@@ -1,4 +1,5 @@
 import { HEADLINE_WINDOWS, MIN_ALL_DAY_TERMINAL_DEPARTURES } from './headway-utils.js';
+import { BURST_MAX_SPAN_MINUTES } from './transit-phase2.js';
 
 /**
  * CIV-994: which of a line's drawn stops count, in one place. A drop-off-only stop (#879: every own stop time is
@@ -30,13 +31,17 @@ export function drawnStopsBeforeTerminal(drawn: readonly string[], dropOffOnly: 
  *   only, with no burst, window or sustained-median test (CIV-150). The headline and period floors and the #865
  *   sibling-terminal test read this.
  * - gradeable: boards and hasReading (CIV-1071 step A). The stop grades read this.
- * Floor and grade still read different answers (a drop-off-only stop counts in the floor); making them one rule is
- * CIV-209 step 1, a data change.
+ * - bunched: its 6-22h departures all fall within BURST_MAX_SPAN_MINUTES, the burst test the stop grade applies too.
+ * - countsInFloor: boards, hasReading and not bunched (CIV-209, Ryan's option 1 as scoped on review): the stops that
+ *   can hold a route's headline down. A drop-off-only stop or a handful of departures bunched into one burst no longer
+ *   does; a sparse stop with holes still does, since leaving it out overstated service (ART 45, TARTA 18).
  */
 export interface StopReading {
   boards: boolean;
   hasReading: boolean;
   gradeable: boolean;
+  bunched: boolean;
+  countsInFloor: boolean;
 }
 
 export interface StopReadingInput {
@@ -50,5 +55,7 @@ export function stopReading(stopId: string, { times, dropOffOnly }: StopReadingI
   const boards = !dropOffOnly.has(stopId);
   const daytime = [...new Set(times ?? [])].filter(t => t >= HEADLINE_WINDOWS.allDay.start && t <= HEADLINE_WINDOWS.allDay.end);
   const hasReading = daytime.length >= MIN_ALL_DAY_TERMINAL_DEPARTURES;
-  return { boards, hasReading, gradeable: boards && hasReading };
+  const sorted = daytime.sort((a, b) => a - b);
+  const bunched = sorted.length > 0 && sorted[sorted.length - 1] - sorted[0] <= BURST_MAX_SPAN_MINUTES;
+  return { boards, hasReading, gradeable: boards && hasReading, bunched, countsInFloor: boards && hasReading && !bunched };
 }

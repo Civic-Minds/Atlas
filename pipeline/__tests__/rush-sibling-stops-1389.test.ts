@@ -113,6 +113,7 @@ describe('what the rush-hour-only trips still never change (#720)', () => {
   it('LA Metro 105: Marlton / King keeps its headline and row values; only its PM stop values count Fairfax', async () => {
     const rows = (await fixtureRows('lacmta-105')).filter(p => p.directionId === 0);
     const marlton = rows.find(p => p.day === 'Weekday' && p.headsign === 'Marlton / King Layover');
+    // CIV-209: no stop on the line is graded, so it keeps today's rule (27).
     expect(marlton).toMatchObject({ headway: 27, tier: '60', serviceClass: 'regular' });
     expect(Object.values(marlton.headwayByPeriod).every(v => v == null)).toBe(true);
     // 8128 weekday PM: every 9-13 from 15:03 to 18:55 (GTFS 2026-10-21, all 105 trips). The pool this

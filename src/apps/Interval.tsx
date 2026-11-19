@@ -7,7 +7,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useViewportLoadGate } from '../hooks/useViewportLoadGate';
 import { distinctAgencyNames } from '../utils/agencyName';
 import SelectionLoadPanel, { SelectionNoticePanel } from '../components/Interval/SelectionLoadPanel';
-import { useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
+import { centreAgencySlugs, useAgencyData, viewportAgencySlugs } from '../hooks/useAgencyData';
 import { anyFeaturePassesRouteFilter, useIntervalStats, routeKey, PERIOD_KEYS, type HoveredBranch, type ShapeProperties } from '../hooks/useIntervalStats';
 import type { ViewportBounds, TimePeriod, DayType } from '../hooks/useIntervalStats';
 import { useNearbyRoutes } from '../hooks/useNearbyRoutes';
@@ -144,6 +144,8 @@ interface Props {
   onLayersChange?: (layers: Record<string, GeoJSON.FeatureCollection>) => void;
   /** Agencies in view, known before their data loads (drives the Live/History controls). */
   onViewportAgencySlugsChange?: (slugs: string[]) => void;
+  /** Agencies whose area holds the map's centre (drives which of the Live/History tabs are lit). */
+  onCentreAgencySlugsChange?: (slugs: string[]) => void;
   /** The user panned or zoomed the main map themselves (History opens on the city in view only after that, #1012). */
   onUserMoveMap?: () => void;
   onSelectedMapAgencyChange?: (slug: string | null) => void;
@@ -234,7 +236,7 @@ function CompareSideSlot({ side, className = '', children }: { side: 'A' | 'B'; 
 
 const PENDING_ROUTE_TIMEOUT_MS = 20000;
 
-export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
+export default function Interval({ agencies, allAgencies, lightMode, setLightMode, query, setQuery, onStatsChange, resetViewKey, showUi = true, showSelectionUi = false, showRouteLayers = true, liveRoutesOnly = false, filterToAgencies = false, agencyFilterSlugs = null, onHistoryRouteClick, onInfoOpen, selectedAgencySlug, setSelectedAgencySlug, onAgencyCardClose, historyView, onMapDismiss, externalPanelOpen = false, pendingLiveRoute, onPendingLiveRouteHandled, pendingNightRoute, onPendingNightRouteHandled, bustangView = false, pendingBustangRoute, connectionsBar = null, onPendingBustangRouteHandled, routeCardExtra, stopCardExtra, fallbackMapBounds = null, searchFocused = false, setSearchFocused, hideFilterPanel = false, pageView = false, day, setDay, onLayersChange, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onUserMoveMap, onSelectedMapAgencyChange, onSelectionActiveChange, onLiveRouteSelected, onCompareActiveChange, headerPortalContainer, viewTabsPortalContainer, compareTabElsewhere, moreMenuPortalContainer, onMoreMenuDone, nightServiceView = false, nightServiceFrequency = 60, setNightServiceFrequency, frequentServiceView = false, frequentServiceDays = ['Weekday'], frequentServiceFrequency = 15, frequentServiceWindow = 'daytime', setFrequentServiceDays, setFrequentServiceFrequency, setFrequentServiceWindow, showMapContext = false, showMatchPercentage = false, sidebarLeft, searchBarWidth, searchEnterRef, analyticsApp = 'frequency', hideLowQuality, setHideLowQuality, feedQualityEnabled = false, showMapLegend, setShowMapLegend, dataSaver, setDataSaver, exportEnabled = false, exportTitle = DEFAULT_EXPORT_TITLE }: Props) {
   const [searchParams] = useSearchParams();
   // Router path: Compare has its own address (/apps/compare); the link sync below also follows it.
   const { pathname } = useLocation();
@@ -682,6 +684,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   useEffect(() => {
     onViewportAgencySlugsChange?.(viewportSlugKey ? viewportSlugKey.split('|') : []);
   }, [viewportSlugKey, onViewportAgencySlugsChange]);
+  const centreSlugKey = useMemo(() => centreAgencySlugs(agencies, bounds).sort().join('|'), [agencies, bounds]);
+  useEffect(() => {
+    onCentreAgencySlugsChange?.(centreSlugKey ? centreSlugKey.split('|') : []);
+  }, [centreSlugKey, onCentreAgencySlugsChange]);
 
   // Near You sits in the left card slot (CIV-930), so it shows only while no other card is there. A route
   // opened from it gets "← Near You", which closes the route and shows Near You again.
