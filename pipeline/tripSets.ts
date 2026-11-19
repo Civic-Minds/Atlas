@@ -1552,16 +1552,18 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       // 60+ minutes and is graded by the settled tier rule (determineTier); the gap at the change belongs to the later part.
       const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b);
       const t = all.filter(x => x >= start && x < end);
-      const grade = (xs: number[]): number | null => {
-        if (xs.length < 3) return null;
+      // The later part may rest on 2 departures when it runs to the end of the window (E Line weekday Late: every 15 to
+      // midnight, then hourly to 2 AM).
+      const grade = (xs: number[], min = 3): number | null => {
+        if (xs.length < min) return null;
         const g = determineTier(xs.slice(1).map((x, i) => x - xs[i]), xs.length, 0, TIER_MAXES, GRACE_MINUTES, 0, GRACE_PERCENT, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER as Record<number, number>);
         return g === 'span' ? null : publicTierOf(Number(g));
       };
       let best: { at: number; before: number; after: number; steps: number } | null = null;
-      for (let k = 3; k <= t.length - 3; k++) {
+      for (let k = 3; k <= t.length - 1; k++) {
         const a = t.slice(0, k), b = t.slice(k - 1);
-        if (a[a.length - 1] - a[0] < 60 || b[b.length - 1] - b[0] < 60) continue;
-        const ga = grade(a), gb = grade(b);
+        if (a[a.length - 1] - a[0] < 60 || end - b[0] < 60) continue;
+        const ga = grade(a), gb = grade(b, 2);
         if (ga == null || gb == null || ga === gb) continue;
         const pub = [10, 15, 20, 30, 60];
         const steps = Math.abs(pub.indexOf(ga) - pub.indexOf(gb));
