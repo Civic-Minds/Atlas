@@ -34,3 +34,23 @@ describe('Studio mode tabs toggle their panel (#1588)', () => {
     expect(screen.getByTestId('where').textContent).not.toContain('panel=closed');
   });
 });
+
+describe('Studio keeps the agency (CIV-1883)', () => {
+  it('switching pages keeps the agency in the address', () => {
+    localStorage.clear();
+    const tabs = setup('/studio?page=live&agency=kingston');
+    fireEvent.click(tabs.querySelectorAll('button')[1]);
+    const where = screen.getByTestId('where').textContent!;
+    expect(where).toContain('page=fleet');
+    expect(where).toContain('agency=kingston');
+  });
+
+  it('remembers the agency across visits', () => {
+    localStorage.clear();
+    setup('/studio?page=live&agency=kingston');
+    document.body.innerHTML = '';
+    setup('/studio?page=live');
+    expect(screen.getByTestId('where').textContent).toContain('/studio');
+    expect(localStorage.getItem('atlas_studio_agency')).toBe('kingston');
+  });
+});

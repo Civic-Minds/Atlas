@@ -6,6 +6,7 @@ import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
+import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
 import { sidebarFrameStyle } from '../../styles';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioPageFor, type StudioPageKey } from '../../../shared/studioAgencies';
@@ -47,10 +48,12 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
   const listOf = (f: typeof liveList) => (f && f !== 'missing' ? f.agencies : f === 'missing' ? [] : null);
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
-  const page = studioPageFor(searchParams.get('page'), searchParams.get('agency'), { live: listOf(liveList), fleet: listOf(fleetList) });
+  // CIV-1883 (Ryan: "The city should be persistent"): the address's agency, else the one Studio was last on in this browser.
+  const wantedAgency = searchParams.get('agency') ?? getSavedStudioAgency();
+  const page = studioPageFor(searchParams.get('page'), wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
   // Live opens on its first agency (TTC), Fleet on Kingston.
-  const slug = studioAgencyFrom(searchParams.get('agency'), pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
+  const slug = studioAgencyFrom(wantedAgency, pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
   const route = searchParams.get('route');
   const setRoute = (r: string | null) => set({ route: r });
   const nameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).name : s; };
@@ -61,7 +64,9 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
   const closed = searchParams.get('panel') === 'closed';
-  const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: k === page ? slug : null, route: null }));
+  const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: (listOf(k === 'live' ? liveList : fleetList) ?? []).includes(slug) ? slug : null, route: null }));
+  // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
+  useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
 
