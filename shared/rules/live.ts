@@ -80,7 +80,7 @@ export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { k
 
 /**
  * The cut-offs a planner may set for themselves (CIV-1869), in the units they set them. Steps match the counts Live
- * keeps (shared/liveCutoffs.ts), so every figure is exact. Ranges pending the manager's OK.
+ * keeps (shared/liveCutoffs.ts), so every figure is exact. Ranges settled by the manager (2026-11-18), not by Ryan.
  */
 export const CUTOFF_LIMITS = {
   lateAfterMin: { min: 0, max: 30, step: 0.5 },
