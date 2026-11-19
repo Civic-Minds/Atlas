@@ -21,6 +21,7 @@ import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
+import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
 import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
 import StudioChips, { type StudioMenu } from './StudioChips';
@@ -135,7 +136,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
                 ))}
               </ChipMenu>
             </div>
-            <div className="mt-3"><WidgetPanel widgets={m.summary} /></div>
+            <div className="mt-3"><LiveGlance s={s} days={m.networkDates} /></div>
+            <WidgetPanel widgets={m.summary} />
           </PanelBody>
         </Panel>
       )}

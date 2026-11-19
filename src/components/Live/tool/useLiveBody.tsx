@@ -159,6 +159,8 @@ export interface LiveBodyModel {
   routeOptions: ReadonlyArray<readonly [string, ReactNode] | readonly [string, ReactNode, string]>;
   /** The days the data covers (the picked route's, or the network summary's week) and the route they are for. */
   dataDates: readonly string[];
+  /** Every day the network's route files cover (the agency's days of data), oldest first; empty until they load. */
+  networkDates: readonly string[];
   dataRoute: string;
   /** The map's note, for the delay-based measures; undefined otherwise. */
   note: ReactNode | undefined;
@@ -250,6 +252,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
   return {
     routes, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
+    networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),
     dataDates: v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? [], dataRoute: v3 ? ready?.route ?? '' : '',
     note: showNote ? ready!.note : undefined,
     frameKey: ready && route ? `route-${ready.route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`,

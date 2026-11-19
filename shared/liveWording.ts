@@ -284,6 +284,19 @@ export const STUDIO_LIVE_PENDING = {
 } as const;
 
 /**
+ * CIV-1878, Studio Live's at-a-glance lines (Ryan chose the mockup's words, 2026-11-19: "1"): how much data there is and
+ * how departures split this week between on time and more than 5½ min late.
+ */
+export const STUDIO_GLANCE = {
+  /** After the bold count: "9 routes recorded", "15 days of data, Nov 2–16". */
+  routes: 'routes recorded',
+  days: (dates: string): string => `days of data, ${dates}`,
+  barTitle: 'Departures this week',
+  onTime: 'On time',
+  late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
+} as const;
+
+/**
  * CIV-1893, Studio's "right now" view of a route: wording pending Ryan's OK. The figures and the definitions under them
  * come from shared/liveNow.ts, the same as the MCP's route_now.
  */
