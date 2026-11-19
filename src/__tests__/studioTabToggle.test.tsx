@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
+import { MODE_EASE_MS } from '../components/ModeTransition';
 
 vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: (url: string) => ({ agencies: url.includes('live') ? ['ttc', 'kingston'] : ['kingston', 'hamilton'] }) }));
 // Each page shows the frame key Studio hands it and the key the map last framed (CIV-1925).
@@ -28,7 +29,12 @@ describe('Studio mode tabs toggle their panel (#1588)', () => {
   it('clicking the active tab closes its panel, stays in Studio and keeps the agency', () => {
     const tabs = setup('/studio?page=live&agency=ttc');
     expect(screen.getByText('live panel')).toBeTruthy();
+    vi.useFakeTimers();
     fireEvent.click(tabs.querySelector('button[aria-pressed="true"], [aria-selected="true"], button')!);
+    // It fades out the way the main map's modes leave (CIV-1921), then goes.
+    expect(screen.getByText('live panel').closest('.opacity-0')).toBeTruthy();
+    act(() => { vi.advanceTimersByTime(MODE_EASE_MS); });
+    vi.useRealTimers();
     expect(screen.queryByText('live panel')).toBeNull();
     const where = screen.getByTestId('where').textContent!;
     expect(where.startsWith('/studio')).toBe(true);

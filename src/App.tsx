@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
@@ -420,6 +420,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const inHistory = activeApp === 'history';
   // Atlas Studio (CIV-1828): its pages draw on the map through PageMapOverlay; the map's own routes, tabs and chips step aside.
   const inStudio = activeApp === 'studio';
+  // Leaving Studio fades its page out the way it came in, as the main map's modes do (CIV-1921).
+  const studioLeaving = useModeLeaving(inStudio, FEATURES.modeTransitions);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
   // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
   const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
@@ -934,9 +936,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                 <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
               </React.Suspense>
             )}
-            {studioOn && inStudio && (
+            {studioOn && (inStudio || studioLeaving) && (
               <React.Suspense fallback={null}>
-                <Studio agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
+                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live and Fleet fade in and out like the main map's modes (local only)**: closing a page or leaving Studio cut it off in one frame; it now eases out the way it eased in
 - **Switching between Studio's Live and Fleet keeps the map and the open route (local only)**: each page refitted the map on its own and dropped the route, so a switch jumped the view; Live on the 504 now opens Fleet on the 504 where the map already was
 - **The For Transit Planners page counts the agencies Atlas really covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
 - **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; other cities wait for their own approval

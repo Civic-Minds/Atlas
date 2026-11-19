@@ -138,7 +138,7 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} />
-      {file === 'missing' && <Panel sidebar style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
+      {file === 'missing' && <Panel sidebar enter style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
       {ready && <Body file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>
   );

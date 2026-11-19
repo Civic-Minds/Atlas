@@ -58,7 +58,7 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
     return (
       <>
         <StudioChips container={headerPortal} menus={[agencyMenu]} />
-        <Panel sidebar style={frameStyle}><PanelEmpty>{waiting}</PanelEmpty></Panel>
+        <Panel sidebar enter style={frameStyle}><PanelEmpty>{waiting}</PanelEmpty></Panel>
       </>
     );
   }

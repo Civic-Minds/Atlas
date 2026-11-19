@@ -18,6 +18,8 @@ import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { AgencyDataSourceLink } from '../../components/Interval/cardUi';
 import { useDevFile } from './useDevFile';
+import { MODE_EASE, useModeLeaving } from '../../components/ModeTransition';
+import { FEATURES } from '../../../shared/config';
 import { StudioMapFrameProvider, studioFrameKey } from './StudioMapFrame';
 
 /**
@@ -36,9 +38,11 @@ export interface StudioProps {
   headerPortal: Element | null;
   /** App's view-tab row slot, where Studio's pages show as tabs. */
   tabsPortal: Element | null;
+  /** False while App is leaving Studio: the open page fades out, as the main map's modes do (CIV-1921). */
+  active?: boolean;
 }
 
-export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: StudioProps) {
+export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active = true }: StudioProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const set = (changes: Record<string, string | null>) => setSearchParams(p => {
     const n = new URLSearchParams(p);
@@ -73,7 +77,15 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
   const closed = searchParams.get('panel') === 'closed' || !searchParams.get('page');
   // The map's framing is the frame's (CIV-1925, CIV-1921): one key per agency and route, and the key last framed, kept across pages.
   const framedMemory = useRef<string | null>(null);
-  const mapFrame = useMemo(() => ({ frameKey: studioFrameKey(slug, route), framedMemory }), [slug, route]);
+  // Closing the panel or leaving Studio fades the page out the way it came in (useModeLeaving, as the main map's modes leave,
+  // CIV-1921): for that ease the page keeps showing what it showed, with no chips, while the address has already moved on.
+  const open = active && !closed;
+  const leaving = useModeLeaving(open, FEATURES.modeTransitions);
+  const now = { page, slug, route, noData, agency };
+  const held = useRef(now);
+  if (open) held.current = now;
+  const v = open ? now : held.current;
+  const mapFrame = useMemo(() => ({ frameKey: studioFrameKey(v.slug, v.route), framedMemory }), [v.slug, v.route]);
   const pickPage = (k: StudioPageKey) => {
     if (k === page && !closed) { set({ panel: 'closed', agency: slug, route: null }); return; }
     // A page switch carries the open route across (Ryan, CIV-1925: Live on the 504 opens Fleet on the 504) and keeps the map
@@ -84,13 +96,14 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
     set({ page: k, panel: null, agency: slug, route: keep });
   };
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
-  useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
-  useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
+  useEffect(() => { if (active && page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [active, page, slug, wantedAgency, pageAgencies]);
+  useEffect(() => { if (active) document.title = tabTitle(PAGE_NAMES.studio, agency); }, [active, agency]);
   const frameStyle = useSidebarFrame().style;
+  const chips = open ? headerPortal : null;
 
   return (
     <StudioMapFrameProvider value={mapFrame}>
-      {tabsPortal && page && createPortal(
+      {active && tabsPortal && page && createPortal(
         STUDIO_PAGES.map(k => {
           const Icon = PAGE_ICONS[k];
           return (
@@ -103,14 +116,18 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
         }),
         tabsPortal,
       )}
-      {!closed && noData && (
-        <StudioNoData agencyName={agency} options={agencyOptions} onPick={s => set({ agency: s, route: null })} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
-      )}
-      {!closed && !noData && page === 'fleet' && slug && (
-        <Fleet key={slug} slug={slug} agency={agency} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
-      )}
-      {!closed && !noData && page === 'live' && slug && (
-        <Live key={slug} slug={slug} measureSlot={measureSlot} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
+      {(open || leaving) && (
+        <div className={open ? '' : `opacity-0 transition-opacity ${MODE_EASE} pointer-events-none`}>
+          {v.noData && (
+            <StudioNoData agencyName={v.agency} options={agencyOptions} onPick={s => set({ agency: s, route: null })} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+          )}
+          {!v.noData && v.page === 'fleet' && v.slug && (
+            <Fleet key={v.slug} slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+          )}
+          {!v.noData && v.page === 'live' && v.slug && (
+            <Live key={v.slug} slug={v.slug} measureSlot={open ? measureSlot : null} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+          )}
+        </div>
       )}
     </StudioMapFrameProvider>
   );
