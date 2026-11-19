@@ -19,6 +19,7 @@ import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import ScrollToTop from './components/ScrollToTop';
+import { parseStudioPath } from '../shared/studioAgencies';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { withoutMapPosition } from './lib/analytics';
@@ -55,7 +56,8 @@ function NightServiceRedirect() {
 function MapOrNotFound() {
   const { pathname } = useLocation();
   // Atlas Studio (CIV-1828) is a view of the map, as History is, and local only, so it has no page entry of its own.
-  const studio = FEATURES.studio && pathname.replace(/\/$/, '') === FEATURE_ROUTES.studio;
+  // Its own addresses (/studio, /studio/live/…, /studio/fleet/…, CIV-1924); any other /studio/… stays not-found.
+  const studio = FEATURES.studio && parseStudioPath(pathname) != null;
   return findSeoRoute(pathname) || studio
     ? <HomeRemount>{goHome => <App onGoHome={goHome} />}</HomeRemount>
     : <NotFoundPage />;

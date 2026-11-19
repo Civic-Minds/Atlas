@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's pages have their own addresses (local only)**: /studio/live/ttc/504 and /studio/fleet/kingston, so a link opens the page, agency and route it names; the old ?page= links still open the same place
 - **The Live map mode no longer adds its own About and theme buttons (local only)**: they sat as a second toolbar under the top bar's own About button, unlike every other mode
 - **Studio's Live and Fleet fade in and out like the main map's modes (local only)**: closing a page or leaving Studio cut it off in one frame; it now eases out the way it eased in
 - **Switching between Studio's Live and Fleet keeps the map and the open route (local only)**: each page refitted the map on its own and dropped the route, so a switch jumped the view; Live on the 504 now opens Fleet on the 504 where the map already was

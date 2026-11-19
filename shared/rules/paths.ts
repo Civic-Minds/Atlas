@@ -55,6 +55,10 @@ export const RESEARCHERS_PATH = '/researchers';
 export const TERMS_PATH = '/terms';
 export const PRIVACY_PATH = '/privacy';
 export const CHANGELOG_PATH = '/changelog';
+/** The map apps' own addresses (CIV-1925): the frequency map, History and Compare (a view on the frequency map, split in two). */
+export const FREQUENCY_PATH = '/apps/frequency';
+export const HISTORY_PATH = '/apps/history';
+export const COMPARE_PATH = '/apps/compare';
 export const LIVE_PATH = '/apps/live';
 export const RESEARCH_PATH = '/research';
 /** Atlas Studio (CIV-1693), local only: the section opens its first page, the buses-needed calculator. */

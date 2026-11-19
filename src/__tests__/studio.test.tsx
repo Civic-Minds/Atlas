@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { STUDIO_DEFAULT_AGENCY, studioAgenciesFromFiles, studioAgencyFrom, studioPageFor, studioPageFrom } from '../../shared/studioAgencies';
+import { STUDIO_DEFAULT_AGENCY, parseStudioPath, studioAgenciesFromFiles, studioAgencyFrom, studioLegacyLocation, studioPageFor, studioPageFrom, studioPath } from '../../shared/studioAgencies';
 import { INTERNAL_NAV_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
@@ -155,5 +155,33 @@ describe('Studio opens the page that has the address\'s agency (CIV-1828)', () =
     expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null })).toBeNull();
     expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null })).toBeNull();
     expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null })).toBe('live');
+  });
+});
+
+describe('Studio path addresses (CIV-1924)', () => {
+  it('reads /studio, a page, an agency and a route', () => {
+    expect(parseStudioPath('/studio')).toEqual({ page: null, agency: null, route: null });
+    expect(parseStudioPath('/studio/')).toEqual({ page: null, agency: null, route: null });
+    expect(parseStudioPath('/studio/live/ttc/504')).toEqual({ page: 'live', agency: 'ttc', route: '504' });
+    expect(parseStudioPath('/studio/fleet/kingston')).toEqual({ page: 'fleet', agency: 'kingston', route: null });
+    expect(parseStudioPath('/studio/fleet/kingston/A%2FB')).toEqual({ page: 'fleet', agency: 'kingston', route: 'A/B' });
+  });
+
+  it('leaves Studio\'s other pages and unknown addresses alone', () => {
+    for (const p of ['/studio/coverage', '/studio/changes', '/studio/live/ttc/504/x', '/studio//ttc', '/', '/studios']) expect(parseStudioPath(p)).toBeNull();
+  });
+
+  it('writes the same addresses back', () => {
+    expect(studioPath({ page: 'live', agency: 'ttc', route: '504' })).toBe('/studio/live/ttc/504');
+    expect(studioPath({ page: 'fleet', agency: 'kingston', route: 'A/B' })).toBe('/studio/fleet/kingston/A%2FB');
+    expect(studioPath({ page: null, agency: 'ttc', route: '504' })).toBe('/studio');
+    expect(studioPath({ page: 'live', agency: null, route: '504' })).toBe('/studio/live');
+  });
+
+  it('reads the old query addresses', () => {
+    expect(studioLegacyLocation('?page=live&agency=ttc&route=504')).toEqual({ page: 'live', agency: 'ttc', route: '504' });
+    expect(studioLegacyLocation('?page=fleet&agency=ttc&panel=closed')).toEqual({ page: null, agency: 'ttc', route: null });
+    expect(studioLegacyLocation('?agency=rtd-denver')).toEqual({ page: null, agency: 'rtd-denver', route: null });
+    expect(studioLegacyLocation('?lat=43')).toBeNull();
   });
 });

@@ -27,7 +27,7 @@ function setup(url: string) {
 
 describe('Studio mode tabs toggle their panel (#1588)', () => {
   it('clicking the active tab closes its panel, stays in Studio and keeps the agency', () => {
-    const tabs = setup('/studio?page=live&agency=ttc');
+    const tabs = setup('/studio/live/ttc');
     expect(screen.getByText('live panel')).toBeTruthy();
     vi.useFakeTimers();
     fireEvent.click(tabs.querySelector('button[aria-pressed="true"], [aria-selected="true"], button')!);
@@ -37,34 +37,33 @@ describe('Studio mode tabs toggle their panel (#1588)', () => {
     vi.useRealTimers();
     expect(screen.queryByText('live panel')).toBeNull();
     const where = screen.getByTestId('where').textContent!;
-    expect(where.startsWith('/studio')).toBe(true);
-    expect(where).toContain('agency=ttc');
-    expect(where).toContain('panel=closed');
+    expect(where).toBe('/studio');
+    // The agency is kept for the next page opened (CIV-1883).
+    expect(localStorage.getItem('atlas_studio_agency')).toBe('ttc');
   });
 
   it('a tab opens its page again after the panel is closed', () => {
-    const tabs = setup('/studio?page=live&agency=ttc&panel=closed');
+    localStorage.setItem('atlas_studio_agency', 'ttc');
+    const tabs = setup('/studio');
     expect(screen.queryByText('live panel')).toBeNull();
     fireEvent.click(tabs.querySelectorAll('button')[0]);
-    expect(screen.getByTestId('where').textContent).not.toContain('panel=closed');
+    expect(screen.getByTestId('where').textContent).toBe('/studio/live/ttc');
   });
 });
 
 describe('Studio keeps the agency (CIV-1883)', () => {
   it('switching pages keeps the agency in the address', () => {
     localStorage.clear();
-    const tabs = setup('/studio?page=live&agency=kingston');
+    const tabs = setup('/studio/live/kingston');
     fireEvent.click(tabs.querySelectorAll('button')[1]);
-    const where = screen.getByTestId('where').textContent!;
-    expect(where).toContain('page=fleet');
-    expect(where).toContain('agency=kingston');
+    expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/kingston');
   });
 
   it('remembers the agency across visits', () => {
     localStorage.clear();
-    setup('/studio?page=live&agency=kingston');
+    setup('/studio/live/kingston');
     document.body.innerHTML = '';
-    setup('/studio?page=live');
+    setup('/studio/live');
     expect(screen.getByTestId('where').textContent).toContain('/studio');
     expect(localStorage.getItem('atlas_studio_agency')).toBe('kingston');
   });
@@ -84,29 +83,42 @@ describe('Studio opens with no panel (Ryan, 2026-11-18)', () => {
 describe('A page with no data for the agency keeps it (CIV-1883)', () => {
   it('says so and lists the page\'s agencies instead of switching', () => {
     localStorage.clear();
-    setup('/studio?page=fleet&agency=ttc');
+    setup('/studio/fleet/ttc');
     expect(screen.getByText('No data for ttc yet.')).toBeTruthy();
     expect(screen.queryByText('fleet panel')).toBeNull();
     expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
-    expect(screen.getByTestId('where').textContent).toContain('agency=ttc');
+    expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/ttc');
   });
 });
 
 describe('Studio carries the route and keeps the map across pages (CIV-1925, CIV-1921)', () => {
   it('Live on a route opens Fleet on the same route', () => {
     localStorage.clear();
-    const tabs = setup('/studio?page=live&agency=kingston&route=501');
+    const tabs = setup('/studio/live/kingston/501');
     fireEvent.click(tabs.querySelectorAll('button')[1]);
-    const where = screen.getByTestId('where').textContent!;
-    expect(where).toContain('page=fleet');
-    expect(where).toContain('route=501');
+    expect(screen.getByTestId('where').textContent).toBe('/studio/fleet/kingston/501');
   });
 
   it('a page switch on an agency the map already shows needs no new framing, so the map stays put', () => {
     localStorage.clear();
-    const tabs = setup('/studio?page=live&agency=kingston&route=501');
+    const tabs = setup('/studio/live/kingston/501');
     fireEvent.click(tabs.querySelectorAll('button')[1]);
     // Fleet's frame key is the one the map last framed: PageMapLayer leaves the map where it is.
     expect(screen.getByTestId('frame').textContent).toBe('kingston:route-501|kingston:route-501');
+  });
+});
+
+describe('Studio addresses are paths (CIV-1924)', () => {
+  it('an old query address opens its path and keeps the map\'s own parameters', () => {
+    localStorage.clear();
+    setup('/studio?page=live&agency=kingston&route=501&lat=43.6');
+    expect(screen.getByTestId('where').textContent).toBe('/studio/live/kingston/501?lat=43.6');
+  });
+
+  it('an old closed-panel address opens /studio and remembers its agency', () => {
+    localStorage.clear();
+    setup('/studio?agency=kingston&panel=closed');
+    expect(screen.getByTestId('where').textContent).toBe('/studio');
+    expect(localStorage.getItem('atlas_studio_agency')).toBe('kingston');
   });
 });

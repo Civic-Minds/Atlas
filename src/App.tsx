@@ -27,6 +27,7 @@ const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 // Atlas Studio is local only (FEATURES.studio is the dev server); the DEV check keeps it out of deployed bundles entirely.
 const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
+import { parseStudioPath } from '../shared/studioAgencies';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
@@ -71,7 +72,7 @@ import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/c
 import { splitRouteKey } from './utils/routeKey';
 import { LIVE_MAP_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
-import { LIVE_PATH } from '../shared/pagePaths';
+import { FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH } from '../shared/rules/paths';
 import type { AgencyCatalogEntry } from '../shared/agencyCatalog';
 
 /**
@@ -122,20 +123,25 @@ export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> 
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
-  '/apps/frequency': 'frequency',
-  '/apps/history': 'history',
+  [FREQUENCY_PATH]: 'frequency',
+  [HISTORY_PATH]: 'history',
   [LIVE_PATH]: 'live',
   // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
-  '/apps/compare': 'frequency',
+  [COMPARE_PATH]: 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
   [FEATURE_ROUTES.bustangConnections]: 'bustang',
   // Atlas Studio (CIV-1828): a view of the map, as History is; local only.
   [FEATURE_ROUTES.studio]: 'studio',
 };
 
+/** The view an address opens: its own path, or Studio's for any of Studio's paths (/studio/<page>/…, CIV-1924). */
+function appForPath(pathname: string): AppId {
+  return PATH_TO_APP[pathname] ?? (parseStudioPath(pathname) ? 'studio' : 'frequency');
+}
+
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/',
-  history: '/apps/history',
+  history: HISTORY_PATH,
   live: LIVE_PATH,
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
@@ -165,7 +171,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = phoneModes.compareMode;
   const studioOn = FEATURES.studio && phoneModes.mapApps;
-  const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const routedApp: AppId = appForPath(pathname);
   const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
@@ -176,7 +182,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
   // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
-  const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
+  const urlApp: AppId = appForPath(useUrlPathname());
   const modeCatchingUp = urlApp !== routedApp;
 
   // In a local copy, a switched-off Live says so instead of silently redirecting. Deployments keep the redirect.
@@ -259,7 +265,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   }, []);
   // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
-    window.location.pathname.startsWith('/apps/history') ? null : parseAgencyCardParam(window.location.search)
+    window.location.pathname.startsWith(HISTORY_PATH) ? null : parseAgencyCardParam(window.location.search)
   ));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
@@ -393,7 +399,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
   // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
+    window.location.pathname.startsWith(HISTORY_PATH) ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   // CIV-1433: with the day picker on, a day the viewer picks in History is saved as their day, as the map saves it.
