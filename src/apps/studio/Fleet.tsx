@@ -4,6 +4,7 @@ import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import Panel, { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
+import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
@@ -139,6 +140,8 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} />
+      {/* The shared loading panel while the file comes in, then the shared empty line if there is none (CIV-1925 phase 4). */}
+      {file == null && <ViewLoadingPanel what={agency} />}
       {file === 'missing' && <Panel sidebar enter style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
       {ready && <Body file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>

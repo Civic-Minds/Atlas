@@ -2,11 +2,11 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -64,8 +64,8 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL } from './content/noticeCopy';
-import Panel from './components/ui/Panel';
-import PanelEmpty from './components/ui/PanelEmpty';
+import ViewLoadingPanel from './components/ViewLoadingPanel';
+import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
 import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
@@ -928,22 +928,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? (
-                // The shared loading panel, where History's panels open (#1028 item 20).
-                // CIV-1567 (beta): it fades in from its first painted frame rather than appearing in one frame.
-                <ModeFadeInOnMount enabled={FEATURES.modeTransitions}>
-                  {fade => (
-                    <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)} className={fade || undefined}>
-                      <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
-                    </Panel>
-                  )}
-                </ModeFadeInOnMount>
-              ) : null}>
+              // The shared loading panel, where History's panels open (#1028 item 20, CIV-1925).
+              <React.Suspense fallback={inHistory ? <ViewLoadingPanel what="history" /> : null}>
                 <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
               </React.Suspense>
             )}
             {studioOn && (inStudio || studioLeaving) && (
-              <React.Suspense fallback={null}>
+              <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
                 <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}

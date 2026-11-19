@@ -52,6 +52,7 @@ describe('one frame for every map view (CIV-1828)', () => {
       ['builds its own frame key', /frameKey\s*[:=]\s*`/],
       ['keeps its own framing memory', /framedMemory\s*[:=]\s*useRef/],
       ['picks or remembers the agency', /saveStudioAgency|getSavedStudioAgency|studioAgencyFrom\(/],
+      ['makes its own loading panel (ViewLoadingPanel is the one)', /kind="loading"|loadingText\(/],
     ];
     const offending = pages.flatMap(f => rules.filter(([, re]) => re.test(read(f))).map(([what]) => `${f}: ${what}`));
     expect(offending).toEqual([]);

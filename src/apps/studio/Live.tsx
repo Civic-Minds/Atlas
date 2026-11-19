@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL, loadingText } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL } from '../../content/noticeCopy';
+import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -54,12 +55,13 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
   const state = useLiveAgency(slug);
   const { agencies } = useAgencies();
   const [band, setBand] = useState<DashboardBand>(() => liveBandNow(agencies.find(a => a.slug === slug)?.timezone));
-  const waiting = state.kind === 'loading' ? loadingText(agencyName) : state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null;
   if (state.kind !== 'done' || state.data.status !== 'ready') {
     return (
       <>
         <StudioChips container={headerPortal} menus={[agencyMenu]} />
-        <Panel sidebar enter style={frameStyle}><PanelEmpty>{waiting}</PanelEmpty></Panel>
+        {/* One loading panel and one way of saying why there's nothing (CIV-1925 phase 4). */}
+        {state.kind === 'loading' ? <ViewLoadingPanel what={agencyName} />
+          : <Panel sidebar enter style={frameStyle}><PanelEmpty kind={state.kind === 'error' ? 'error' : 'empty'}>{state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null}</PanelEmpty></Panel>}
       </>
     );
   }
