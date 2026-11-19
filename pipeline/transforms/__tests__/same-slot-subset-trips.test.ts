@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dropSameSlotSubsetTrips, PAIRED_SLOT_SHARE_MIN } from '../same-slot-subset-trips.js';
+import { dropSameSlotSubsetTrips, PAIRED_SLOT_SHARE_MIN, PAIRED_SLOTS_MIN } from '../same-slot-subset-trips.js';
 import type { GtfsData } from '../../../types/gtfs.js';
 
 // MNR Southeast (Bus), Sunday: EB9910 and LB9910 leave Wassaic (177) at 05:26; the express runs
@@ -16,11 +16,17 @@ const local = (id: string, start = '05:26') => times(id, [['177', start], ['176'
 
 describe('same-slot subset trips (CIV-1098)', () => {
   it('leaves out the express that leaves with a local serving all its stops', () => {
-    const { gtfs, dropped, routes } = dropSameSlotSubsetTrips(feed([trip('EB9910'), trip('LB9910')], [...express('EB9910'), ...local('LB9910')]));
-    expect(dropped).toBe(1);
+    // Three repeating slots (the dry-run floor); only the first is checked in detail.
+    const more = [['EB2', 'LB2', '07:26'], ['EB3', 'LB3', '09:26']] as const;
+    const f = feed(
+      [trip('EB9910'), trip('LB9910'), ...more.flatMap(([e, l]) => [trip(e), trip(l)])],
+      [...express('EB9910'), ...local('LB9910'), ...more.flatMap(([e, l, t]) => [...express(e, t), ...local(l, t)])],
+    );
+    const { gtfs, dropped, routes } = dropSameSlotSubsetTrips(f);
+    expect(dropped).toBe(3);
     expect([...routes]).toEqual(['2']);
-    expect(gtfs.trips.map(t => t.trip_id)).toEqual(['LB9910']);
-    expect(gtfs.stopTimes.every(st => st.trip_id === 'LB9910')).toBe(true);
+    expect(gtfs.trips.map(t => t.trip_id)).toEqual(['LB9910', 'LB2', 'LB3']);
+    expect(gtfs.stopTimes.every(st => st.trip_id.startsWith('LB'))).toBe(true);
   });
 
   it('keeps trips that leave at different times, from different first stops, or on other services', () => {
@@ -46,10 +52,15 @@ describe('same-slot subset trips (CIV-1098)', () => {
   });
 
   it('leaves out every subset trip of a slot with three', () => {
-    const shorter = times('EB2', [['177', '05:26'], ['94', '06:20']]);
-    const { gtfs, dropped } = dropSameSlotSubsetTrips(feed([trip('EB9910'), trip('EB2'), trip('LB9910')], [...express('EB9910'), ...shorter, ...local('LB9910')]));
-    expect(dropped).toBe(2);
-    expect(gtfs.trips.map(t => t.trip_id)).toEqual(['LB9910']);
+    const shorter = (id: string, t: string) => times(id, [['177', t], ['94', '06:20']]);
+    const slots = [['EB9910', 'EB2', 'LB9910', '05:26'], ['EB4', 'EB5', 'LB4', '07:26'], ['EB6', 'EB7', 'LB6', '09:26']] as const;
+    const f = feed(
+      slots.flatMap(([a, b, l]) => [trip(a), trip(b), trip(l)]),
+      slots.flatMap(([a, b, l, t]) => [...express(a, t), ...shorter(b, t), ...local(l, t)]),
+    );
+    const { gtfs, dropped } = dropSameSlotSubsetTrips(f);
+    expect(dropped).toBe(6);
+    expect(gtfs.trips.map(t => t.trip_id)).toEqual(['LB9910', 'LB4', 'LB6']);
   });
 
   it('never compares trips expanded from frequencies.txt', () => {
@@ -88,8 +99,23 @@ describe('same-slot subset trips (CIV-1098)', () => {
 
     it('judges each service on its own', () => {
       const sat = (p: ReturnType<typeof pairAt>) => ({ ...p, trips: p.trips.map(t => ({ ...t, service_id: 'sat' })) });
-      const f = build([pairAt(1, '06'), pairAt(2, '08'), sat(pairAt(3, '06')), sat(single(4, '07')), sat(single(5, '08')), sat(single(6, '09'))]);
-      expect(dropSameSlotSubsetTrips(f).dropped).toBe(2);
+      const f = build([pairAt(1, '06'), pairAt(2, '08'), pairAt(3, '10'), sat(pairAt(4, '06')), sat(single(5, '07')), sat(single(6, '08')), sat(single(7, '09'))]);
+      expect(dropSameSlotSubsetTrips(f).dropped).toBe(3);
+    });
+
+    it('uses a floor of 3 paired slots', () => expect(PAIRED_SLOTS_MIN).toBe(3));
+
+    // mtd-champaign (first dry run): ten groups had one departure slot, and it was a pair.
+    it('does not fire on a one-slot group that is entirely a pair', () => {
+      expect(dropSameSlotSubsetTrips(build([pairAt(1, '06')])).dropped).toBe(0);
+    });
+
+    it('does not fire when every slot is a pair but fewer than the floor', () => {
+      expect(dropSameSlotSubsetTrips(build([pairAt(1, '06'), pairAt(2, '08')])).dropped).toBe(0);
+    });
+
+    it('fires at exactly the floor when the pairs are most of the slots', () => {
+      expect(dropSameSlotSubsetTrips(build([pairAt(1, '06'), pairAt(2, '08'), pairAt(3, '10')])).dropped).toBe(3);
     });
   });
 });

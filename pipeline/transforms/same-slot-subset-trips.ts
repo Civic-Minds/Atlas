@@ -18,13 +18,18 @@ import type { GtfsData } from '../../types/gtfs.js';
  * DRY-RUN NARROWING (CIV-1098): the held version fired on one-off pairs and failed its criteria at
  * rtc, port-authority-pa, pvpta, petaluma and mtd-champaign. A pair is now left out only when the
  * pairing repeats across most of the route's departures: within one route, direction and service,
- * the share of departure slots that hold a subset pair must exceed PAIRED_SLOT_SHARE_MIN.
+ * the share of departure slots that hold a subset pair must exceed PAIRED_SLOT_SHARE_MIN and at least PAIRED_SLOTS_MIN slots must be paired.
  */
 
 // DRY-RUN PROPOSAL, NOT APPROVED (CIV-1098): "most of a route's departures" read as more than half
 // of its departure slots. Ryan has not signed off on this number; it exists only so a dry run can
 // test the rule.
 export const PAIRED_SLOT_SHARE_MIN = 0.5;
+
+// DRY-RUN PROPOSAL, NOT APPROVED (CIV-1098): a group needs at least this many paired slots before
+// any pair is left out, so a one-off pair on a one-departure group (mtd-champaign, 10 groups in the
+// first dry run) is never treated as repeating. Ryan has not signed off on this number.
+export const PAIRED_SLOTS_MIN = 3;
 
 export function dropSameSlotSubsetTrips(gtfs: GtfsData): { gtfs: GtfsData; dropped: number; routes: Set<string> } {
   const templates = new Set((gtfs.frequencies ?? []).map(f => f.trip_id));
@@ -71,7 +76,7 @@ export function dropSameSlotSubsetTrips(gtfs: GtfsData): { gtfs: GtfsData; dropp
   const routes = new Set<string>();
   for (const groupSlots of slotsByGroup.values()) {
     const pairedSlots = groupSlots.filter(ids => subsetTrips(ids).length > 0).length;
-    if (pairedSlots === 0 || pairedSlots / groupSlots.length <= PAIRED_SLOT_SHARE_MIN) continue;
+    if (pairedSlots < PAIRED_SLOTS_MIN || pairedSlots / groupSlots.length <= PAIRED_SLOT_SHARE_MIN) continue;
     for (const tripIds of groupSlots) {
       for (const a of subsetTrips(tripIds)) { drop.add(a); routes.add(tripById.get(a)!.route_id); }
     }
