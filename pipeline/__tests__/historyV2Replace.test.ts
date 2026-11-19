@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertReplacementApproved, checkFullReplacement, checkReplacement, checkWeekendOnlyAddition, mergeWeekendFields, replacementBackupKey } from '../historyV2Replace.js';
+import { assertReplacementApproved, checkFullReplacement, checkReplacement, checkRepickReplacement, checkWeekendOnlyAddition, mergeWeekendFields, replacementBackupKey } from '../historyV2Replace.js';
 
 // CIV-1430: the approved-replacement check (history:upload --replace-approved).
 describe('checkWeekendOnlyAddition (CIV-1430)', () => {
@@ -76,5 +76,30 @@ describe('checkFullReplacement (CIV-1430 full redo)', () => {
   it('CIV-1430 is approved for mbta in full mode, and no other agency', () => {
     expect(assertReplacementApproved('CIV-1430', 'mbta')).toBe('full');
     expect(() => assertReplacementApproved('CIV-1430', 'ttc')).toThrow();
+  });
+});
+
+// CIV-1313: re-pick MBTA's published periods with the vote picker.
+describe('checkRepickReplacement (CIV-1313)', () => {
+  const pub = JSON.stringify({ version: 2, slug: 'mbta', periodKey: 'p', refDate: '20181129', routes: { 1: { rep: { h: 12 } } }, refDateQuality: { holiday: true, reason: 'r', repicked: { from: 'a', to: 'b' } } });
+  const next = JSON.stringify({ version: 2, slug: 'mbta', periodKey: 'p', refDate: '20181204', routes: { 1: { rep: { h: 10 } }, 2: { rep: { h: 8 } } }, refDateQuality: { holiday: false, reason: 'week of 20181203 picked by vote', pickedBy: 'vote', weekStart: '20181203' } });
+  it('allows a new refDate, refDateQuality and routes; the backup and approval are CIV-1313 for mbta only', () => {
+    const c = checkReplacement('repick', pub, next);
+    expect(c.ok).toBe(true);
+    expect(c.changes.map(x => x.path)).toEqual(expect.arrayContaining(['refDate', 'routes.1.rep.h', 'routes.2']));
+    expect(assertReplacementApproved('CIV-1313', 'mbta')).toBe('repick');
+    expect(() => assertReplacementApproved('CIV-1313', 'ttc')).toThrow();
+    expect(replacementBackupKey('CIV-1313', 'history-v2/mbta/20181202.json', pub)).toMatch(/^history-v2-replaced\/CIV-1313\/mbta\/20181202\.[0-9a-f]{16}\.json$/);
+  });
+  it('the old modes still refuse a changed reference date, and a re-pick refuses what the old modes allow', () => {
+    expect(checkReplacement('full', pub, next).ok).toBe(false);
+    expect(checkReplacement('weekend', pub, next).ok).toBe(false);
+    expect(checkReplacement('repick', pub, pub).ok).toBe(false);
+  });
+  it('refuses a changed period, slug or extra top-level field, and a file not stamped as picked by vote', () => {
+    expect(checkRepickReplacement(pub, next.replace('"periodKey":"p"', '"periodKey":"q"')).ok).toBe(false);
+    expect(checkRepickReplacement(pub, next.replace('"slug":"mbta"', '"slug":"ttc"')).ok).toBe(false);
+    expect(checkRepickReplacement(pub, next.replace('"version":2', '"version":2,"feedSha256":"x"')).ok).toBe(false);
+    expect(checkRepickReplacement(pub, next.replace('"pickedBy":"vote"', '"pickedBy":"legacy"'))).toMatchObject({ ok: false, reason: expect.stringContaining('picked by vote') });
   });
 });

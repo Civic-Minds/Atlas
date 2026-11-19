@@ -19,16 +19,23 @@ import { PERIOD_KEYS } from '../shared/config.js';
  * - 'weekend': only added weekend p / t / tp (checkWeekendOnlyAddition);
  * - 'full': the routes object may change entirely (today's code on every field), every top-level field stays
  *   byte-identical (checkFullReplacement);
- * - 'add-noTripPeriods': only a CIV-471 noTripPeriods list added to routes that had none (checkNoTripAddition).
+ * - 'add-noTripPeriods': only a CIV-471 noTripPeriods list added to routes that had none (checkNoTripAddition);
+ * - 'repick': a re-pick with the vote picker (CIV-1313): the routes object, refDate and refDateQuality (with its
+ *   pickedBy) may all change; version, slug, periodKey and every other top-level field stay (checkRepickReplacement).
  */
-export type ReplacementMode = 'weekend' | 'full' | 'add-noTripPeriods';
+export type ReplacementMode = 'weekend' | 'full' | 'add-noTripPeriods' | 'repick';
 
 /**
  * Ticket -> the one agency slug it approves, and how much may change. CIV-1430: Ryan first chose "1" (weekend fields
  * only, 2026-11-13), then on 2026-11-14 chose to redo every MBTA period with today's code ("But 11 is more accurate
  * right?", then "1"), each file backed up first, all periods in one run ("But bunch the reruns together").
  */
-export const APPROVED_REPLACEMENTS: Readonly<Record<string, { slug: string; mode: ReplacementMode }>> = { 'CIV-1430': { slug: 'mbta', mode: 'full' } };
+export const APPROVED_REPLACEMENTS: Readonly<Record<string, { slug: string; mode: ReplacementMode }>> = {
+  'CIV-1430': { slug: 'mbta', mode: 'full' },
+  // CIV-1313: Ryan chose "Then redo Boston" (2026-11-19): every published MBTA period re-picked with the vote picker,
+  // anchored at the zip's first full week in force, in one run; each old file backed up first.
+  'CIV-1313': { slug: 'mbta', mode: 'repick' },
+};
 
 /**
  * CIV-1850: one ticket for the add-only no-trips backfill over every agency with published sidecars (manager-approved
@@ -165,8 +172,38 @@ export function checkFullReplacement(oldBody: string, newBody: string): Replacem
   return { ok: true, added: [], changes };
 }
 
+/**
+ * A re-pick (mode 'repick', CIV-1313): the week read changes, so `refDate` and `refDateQuality` (which carries
+ * `pickedBy` and `weekStart`) may differ, and so may every route. Every other top-level field (version, slug,
+ * periodKey, supplementalRoutes, feedSha256, ...) must be the same, in any order. The new body must say it was
+ * picked by vote with a week start, so a re-pick can never write a file the old picker made.
+ */
+export function checkRepickReplacement(oldBody: string, newBody: string): ReplacementCheck {
+  let oldJson: unknown;
+  let newJson: unknown;
+  try { oldJson = JSON.parse(oldBody); newJson = JSON.parse(newBody); } catch {
+    return { ok: false, added: [], changes: [], reason: 'not valid JSON' };
+  }
+  if (!isObj(oldJson) || !isObj(newJson) || !isObj(oldJson.routes) || !isObj(newJson.routes)) {
+    return { ok: false, added: [], changes: diffJson(oldJson, newJson), reason: 'not a sidecar (no routes object)' };
+  }
+  const changes = diffJson(oldJson, newJson);
+  const MAY_CHANGE = new Set(['routes', 'refDate', 'refDateQuality']);
+  const rest = (o: Obj) => JSON.stringify(Object.keys(o).filter(k => !MAY_CHANGE.has(k)).sort().map(k => [k, o[k]]));
+  if (rest(oldJson) !== rest(newJson)) {
+    const top = changes.filter(c => !/^(routes|refDate|refDateQuality)(\.|$)/.test(c.path));
+    return { ok: false, added: [], changes: top, reason: `a top-level field other than refDate and refDateQuality differs (first: ${top[0]?.path ?? 'unknown'})` };
+  }
+  const q = newJson.refDateQuality;
+  if (typeof newJson.refDate !== 'string' || !isObj(q) || q.pickedBy !== 'vote' || typeof q.weekStart !== 'string') {
+    return { ok: false, added: [], changes: [], reason: 'the new file is not stamped as picked by vote (refDateQuality.pickedBy and weekStart)' };
+  }
+  return { ok: true, added: [], changes };
+}
+
 /** The check an approval's mode applies. */
 export function checkReplacement(mode: ReplacementMode, oldBody: string, newBody: string): ReplacementCheck {
+  if (mode === 'repick') return checkRepickReplacement(oldBody, newBody);
   if (mode === 'add-noTripPeriods') return checkNoTripAddition(oldBody, newBody);
   return mode === 'full' ? checkFullReplacement(oldBody, newBody) : checkWeekendOnlyAddition(oldBody, newBody);
 }
