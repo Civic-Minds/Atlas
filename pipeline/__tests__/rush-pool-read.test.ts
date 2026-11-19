@@ -76,7 +76,7 @@ describe('a rush-hour-only bus pattern reads what serves its stops in its own ru
 });
 
 describe('what a rush-hour-only pattern still never changes (#720, CIV-850)', () => {
-  it('LA Metro 105: the Marlton / King headline stays 27, Washington Fairfax gains no midday', async () => {
+  it('LA Metro 105: the Marlton / King headline stays 27 (no stop on it is graded, CIV-209), Washington Fairfax gains no midday', async () => {
     const rows = (await weekdayRows('lacmta-105', 'lacmta')).filter(p => p.directionId === 0);
     expect(rows.find(p => p.headsign === 'Marlton / King Layover')).toMatchObject({ headway: 27 });
     const fairfax = rows.find(p => p.headsign === 'Washington Fairfax Hub');
