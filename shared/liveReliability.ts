@@ -10,6 +10,7 @@
 import { weekForBand, type DashboardBand, type LiveV3, type WeekMetrics } from './liveDashboard';
 import { DAYTIME_PERIOD_KEYS } from './rules/periods';
 import { BUNCHED_GAP_SEC, EARLY_AT_OR_BELOW_MIN, GAPPED_FACTOR, LATE_ABOVE_MIN } from './rules/live';
+import { DEFAULT_CUTOFFS, bunchedText, earlyText, gappedText, lateText, type CutoffCounts } from './liveCutoffs';
 
 /** The time-of-day keys a reliability answer covers: the whole day, then the map's daytime periods. */
 export const RELIABILITY_BANDS: readonly DashboardBand[] = ['all', ...DAYTIME_PERIOD_KEYS];
@@ -24,10 +25,10 @@ export const RELIABILITY_DEFINITIONS = {
 
 /** What each Live figure means, in words, from the same shared rules: the MCP's answers and Studio's view say it the same way. */
 export const RELIABILITY_DEFINITION_TEXT = {
-  late: `More than ${LATE_ABOVE_MIN} minutes after the scheduled time.`,
-  early: `${Math.abs(EARLY_AT_OR_BELOW_MIN)} minutes or more before the scheduled time.`,
-  bunched: `A gap of ${BUNCHED_GAP_SEC / 60} minutes or less behind the vehicle ahead.`,
-  gapped: `A gap more than ${GAPPED_FACTOR} times the scheduled gap.`,
+  late: lateText(DEFAULT_CUTOFFS.lateAfterMin),
+  early: earlyText(DEFAULT_CUTOFFS.earlyBeforeMin),
+  bunched: bunchedText(DEFAULT_CUTOFFS.bunchedWithinMin),
+  gapped: gappedText(DEFAULT_CUTOFFS.gappedFactor),
 } as const;
 
 /** One week's figures for one time of day. Null where nothing was measured. */
@@ -43,6 +44,8 @@ export interface WeekFigures {
   bunching: { badShare: number; bunchedShare: number | null; gappedShare: number | null; gaps: number } | null;
   /** Average wait added at stops served every 15 minutes or better, in minutes. */
   extraWaitMin: number | null;
+  /** How late each departure was and how big each gap was, for figures at a planner's own cut-offs (CIV-1869). Absent in older files. */
+  cutoffCounts?: CutoffCounts;
 }
 
 export interface LateStop { stopId: string; name: string; direction: string; lateShare: number; typicalDelayMin: number; departures: number }
@@ -81,7 +84,7 @@ export interface DirectionBunching {
 
 export interface RouteBunching {
   dates: string[];
-  bands: Partial<Record<DashboardBand, { thisWeek: WeekFigures['bunching']; lastWeek: WeekFigures['bunching']; byDirection: DirectionBunching[] }>>;
+  bands: Partial<Record<DashboardBand, { thisWeek: WeekFigures['bunching']; lastWeek: WeekFigures['bunching']; byDirection: DirectionBunching[]; /** As WeekFigures.cutoffCounts (CIV-1869). */ cutoffCounts?: { thisWeek: CutoffCounts | null; lastWeek: CutoffCounts | null } }>>;
   definitions: typeof RELIABILITY_DEFINITIONS;
 }
 
@@ -98,6 +101,7 @@ function weekFigures(w: WeekMetrics | null | undefined): WeekFigures | null {
     // bunched and gapped are already shares of the gaps (shared/liveAgency.ts reads them the same way).
     bunching: b ? { badShare: round(b.share), bunchedShare: b.bunched != null ? round(b.bunched) : null, gappedShare: b.gapped != null ? round(b.gapped) : null, gaps: b.gaps } : null,
     extraWaitMin: w.extraWait ? round(w.extraWait.minutes, 1) : null,
+    ...(w.cutoffCounts ? { cutoffCounts: w.cutoffCounts } : {}),
   };
 }
 
@@ -144,7 +148,11 @@ export function routeBunching(v3: LiveV3, opts: { worstStops?: number } = {}): R
       });
     }
     if (!week && !byDirection.length) continue;
-    bands[band] = { thisWeek: weekFigures(week?.thisWeek)?.bunching ?? null, lastWeek: weekFigures(week?.lastWeek)?.bunching ?? null, byDirection };
+    const [tw, lw] = [weekFigures(week?.thisWeek), weekFigures(week?.lastWeek)];
+    bands[band] = {
+      thisWeek: tw?.bunching ?? null, lastWeek: lw?.bunching ?? null, byDirection,
+      ...(tw?.cutoffCounts || lw?.cutoffCounts ? { cutoffCounts: { thisWeek: tw?.cutoffCounts ?? null, lastWeek: lw?.cutoffCounts ?? null } } : {}),
+    };
   }
   return { dates: goodDates(v3), bands, definitions: RELIABILITY_DEFINITIONS };
 }

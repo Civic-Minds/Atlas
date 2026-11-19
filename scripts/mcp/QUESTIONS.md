@@ -128,20 +128,21 @@ Tools: route_reliability, route_bunching. Every answer states the agency's limit
 
 ## Custom late, early and bunching cut-offs (CIV-1869)
 
-Not yet supported. Atlas uses one definition: late is more than 5½ minutes. Planners will want their own standard. Until it exists, a good answer must:
+route_reliability takes late_after_min and early_before_min; route_bunching takes bunched_within_min and gapped_factor. The standard figures (late is more than 5½ minutes, bunched is a gap under 2 minutes, gapped is more than twice the scheduled gap) stay in every answer and in every ranking. A good answer must:
 
-- say Atlas uses 5½ minutes and cannot apply the planner's cut-off;
-- give the 5½ minute figure, labelled as that;
-- never relabel it as the planner's standard.
-
-Once supported, a good answer must name the custom cut-off beside every figure, and keep 5½ minutes as the default in rankings.
+- give the figure at the planner's cut-off with that cut-off named beside it;
+- keep the standard figure labelled as the standard, never relabelled as the planner's;
+- rank only by the standard cut-offs;
+- say plainly when a route has no figure at a custom cut-off yet (route files built before CIV-1869), never pass the standard figure off as the custom one.
 
 | ID | Question | Audience | A good answer must include |
 |---|---|---|---|
-| CC1 | Using our 3-minute on-time standard, how often is the 504 late? | planner | Today: says Atlas uses 5½ minutes, gives the 504's late share labelled 5½ minutes. Later: the share against 3 minutes, with the cut-off named beside it. |
-| CC2 | Count bunching as under 4 minutes on the 510. | planner | Today: says the bunching rule is fixed, gives the 510's figure labelled with Atlas's rule. Later: the 4-minute figure, cut-off named. |
-| CC3 | Rank the TTC streetcars by how often they're late by our 3-minute standard. | planner | Today: ranking at 5½ minutes, labelled. Later: the 3-minute figure named beside each row; any default ranking stays at 5½ minutes. |
-| CC4 | We call a vehicle early if it leaves more than 1 minute ahead of schedule. How often is the 505 early? | planner | Today: says Atlas has no early cut-off to change and gives only what the tools return, labelled. Later: the 1-minute early share, cut-off named. |
+| CC1 | Using our 3-minute on-time standard, how often is the 504 late? | planner | The 504's late share at more than 3 minutes, named as such, beside the standard 5½-minute figure; or, where the file has no counts yet, says so and gives the 5½-minute figure labelled. |
+| CC2 | Count bunching as under 4 minutes on the 510. | planner | The 510's bunched share at under 4 minutes, cut-off named, beside the standard 2-minute figure; no combined bunched-or-gapped share at the custom cut-off. |
+| CC3 | Rank the TTC streetcars by how often they're late by our 3-minute standard. | planner | The ranking at 5½ minutes, labelled, saying rankings use the standard; any 3-minute figures are per route, each named. |
+| CC4 | We call a vehicle early if it leaves more than 1 minute ahead of schedule. How often is the 505 early? | planner | The 505's early share at 1 minute or more ahead, cut-off named. |
+| CC5 | Use 3 times the scheduled gap for gapped on the 504. | planner | The gapped share at more than 3 times the scheduled gap, named, beside the standard (twice) figure. |
+| CC6 | How late is the 504 if late means more than 5.3 minutes? | planner | Says cut-offs go in half-minute steps and offers 5 or 5½; never rounds silently. |
 
 ## The history doubtful-figure flag (CIV-1847)
 
