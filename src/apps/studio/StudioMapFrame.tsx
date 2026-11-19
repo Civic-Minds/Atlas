@@ -24,7 +24,7 @@ export function StudioMapFrameProvider({ value, children }: { value: StudioMapFr
 }
 
 /** The overlay's framing fields. `loading`: what's drawn is still coming in, so the map waits to frame it whole. */
-export function useStudioMapFrame(loading = false): Pick<PageMapOverlay, 'frameKey' | 'framedMemory' | 'holdFrame'> {
+export function useStudioMapFrame(loading = false): StudioMapFrame & Required<Pick<PageMapOverlay, 'holdFrame'>> {
   const f = useContext(Ctx);
   if (!f) throw new Error('useStudioMapFrame must be used inside Studio');
   return { frameKey: f.frameKey, framedMemory: f.framedMemory, holdFrame: loading };

@@ -75,11 +75,13 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
   const framedMemory = useRef<string | null>(null);
   const mapFrame = useMemo(() => ({ frameKey: studioFrameKey(slug, route), framedMemory }), [slug, route]);
   const pickPage = (k: StudioPageKey) => {
-    // A page switch keeps the map where it is, as the main map's mode tabs do: the new page's view counts as framed when the
-    // map already shows this agency. A new agency (or a first open) still frames.
-    if (framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, null);
-    if (k === page && !closed) set({ panel: 'closed', agency: slug, route: null });
-    else set({ page: k, panel: null, agency: slug, route: null });
+    if (k === page && !closed) { set({ panel: 'closed', agency: slug, route: null }); return; }
+    // A page switch carries the open route across (Ryan, CIV-1925: Live on the 504 opens Fleet on the 504) and keeps the map
+    // where it is, as the main map's mode tabs do: the new page's view counts as framed when the map already shows this
+    // agency. A new agency (or a first open) still frames.
+    const keep = closed ? null : route;
+    if (framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, keep);
+    set({ page: k, panel: null, agency: slug, route: keep });
   };
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);

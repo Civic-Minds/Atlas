@@ -4,8 +4,17 @@ import { describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
 
 vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: (url: string) => ({ agencies: url.includes('live') ? ['ttc', 'kingston'] : ['kingston', 'hamilton'] }) }));
-vi.mock('../apps/studio/Live', () => ({ default: () => <div>live panel</div> }));
-vi.mock('../apps/studio/Fleet', () => ({ default: () => <div>fleet panel</div> }));
+// Each page shows the frame key Studio hands it and the key the map last framed (CIV-1925).
+vi.mock('../apps/studio/Live', async () => {
+  const { useStudioMapFrame } = await import('../apps/studio/StudioMapFrame');
+  const { useEffect } = await import('react');
+  // Live frames its drawing on mount, as PageMapLayer does with the map.
+  return { default: () => { const f = useStudioMapFrame(); useEffect(() => { f.framedMemory.current = f.frameKey; }); return <div>live panel</div>; } };
+});
+vi.mock('../apps/studio/Fleet', async () => {
+  const { useStudioMapFrame } = await import('../apps/studio/StudioMapFrame');
+  return { default: () => { const f = useStudioMapFrame(); return <div>fleet panel <span data-testid="frame">{f.frameKey}|{f.framedMemory.current ?? ''}</span></div>; } };
+});
 
 function Where() { const l = useLocation(); return <span data-testid="where">{l.pathname + l.search}</span>; }
 function setup(url: string) {
@@ -74,5 +83,24 @@ describe('A page with no data for the agency keeps it (CIV-1883)', () => {
     expect(screen.queryByText('fleet panel')).toBeNull();
     expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
     expect(screen.getByTestId('where').textContent).toContain('agency=ttc');
+  });
+});
+
+describe('Studio carries the route and keeps the map across pages (CIV-1925, CIV-1921)', () => {
+  it('Live on a route opens Fleet on the same route', () => {
+    localStorage.clear();
+    const tabs = setup('/studio?page=live&agency=kingston&route=501');
+    fireEvent.click(tabs.querySelectorAll('button')[1]);
+    const where = screen.getByTestId('where').textContent!;
+    expect(where).toContain('page=fleet');
+    expect(where).toContain('route=501');
+  });
+
+  it('a page switch on an agency the map already shows needs no new framing, so the map stays put', () => {
+    localStorage.clear();
+    const tabs = setup('/studio?page=live&agency=kingston&route=501');
+    fireEvent.click(tabs.querySelectorAll('button')[1]);
+    // Fleet's frame key is the one the map last framed: PageMapLayer leaves the map where it is.
+    expect(screen.getByTestId('frame').textContent).toBe('kingston:route-501|kingston:route-501');
   });
 });
