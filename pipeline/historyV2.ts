@@ -389,6 +389,18 @@ export async function r2ArchiveSink(): Promise<HistoryV2Sink> {
   };
 }
 
+/**
+ * CIV-1929: two zips that share a period key (the same feed end date) are settled by rule, not by file
+ * name order: the one read at the newest refDate wins, and an equal refDate keeps the first zip seen.
+ * `seen` maps a period key to the refDate already written this run.
+ */
+export function periodWinner(seen: Map<string, string>, periodKey: string, refDate: string): 'first' | 'replace' | 'skip' {
+  const kept = seen.get(periodKey);
+  if (kept === undefined) { seen.set(periodKey, refDate); return 'first'; }
+  if (refDate.replace(/-/g, '') > kept.replace(/-/g, '')) { seen.set(periodKey, refDate); return 'replace'; }
+  return 'skip';
+}
+
 export function sidecarKey(slug: string, periodKey: string): string {
   return `history-v2/${slug}/${periodKey}.json`;
 }
