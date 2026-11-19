@@ -1,5 +1,5 @@
 import { HEADER_TAG_INTERNAL } from './siteMode';
-import { INTERNAL_PATH, PLANNERS_PATH, RESEARCHERS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
+import { INTERNAL_PATH, LIVE_PATH, PLANNERS_PATH, RESEARCHERS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
 
 /**
  * The local-only pages (CIV-1872): the /internal home page lists each once, in groups, and the content-page header's
@@ -51,8 +51,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
 /** The header's internal links (dev only): the main internal products, then More, which opens the home page. */
 export const INTERNAL_HEADER_LINKS: readonly { label: string; path: string; /** Drawn with the arrow "Go to Atlas" has (Ryan: "more should have an arrow beside it"). */ arrow?: true }[] = [
   { label: 'Studio', path: STUDIO_PATH },
-  // Live reports are one page per agency with no index, so Live opens Coverage, where each report is a tag.
-  { label: 'Live', path: STUDIO_COVERAGE_PATH },
+  { label: 'Live', path: LIVE_PATH },
   { label: 'Coverage', path: STUDIO_COVERAGE_PATH },
   { label: 'More', path: INTERNAL_PATH, arrow: true },
 ];
