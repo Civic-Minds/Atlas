@@ -1,4 +1,4 @@
-import type { HeadwayByPeriod } from './config.js';
+import type { HeadwayByPeriod, PeriodKey } from './config.js';
 
 /**
  * History v2 snapshot data (additive; old snapshots carry none of it).
@@ -60,6 +60,8 @@ export interface HistoryV2SidecarRoute {
   sat?: HistoryDayValue;
   sun?: HistoryDayValue;
   flag?: HistoryFlag;
+  /** CIV-471/CIV-1850: weekday periods the route ran no trip at all (absent: unknown). Added only by the add-only backfill. */
+  noTripPeriods?: PeriodKey[];
 }
 
 /**
