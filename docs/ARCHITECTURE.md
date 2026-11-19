@@ -69,10 +69,10 @@ are no longer in the repository.
 
 60-day retention enforced by the bucket's R2 lifecycle rule.
 
-### atlas-live-kingston (private, retired)
+### atlas-live-kingston (deleted)
 
 Kingston's own bucket from 2026-11-15 to 2026-11-18 (CIV-1682). Since CIV-1906 the Kingston Worker writes to
-atlas-live and its earlier objects were copied there; nothing reads this bucket.
+atlas-live; its earlier objects were copied there (checked, 0 differences) and the bucket was deleted on 2026-11-18 (Ryan's yes).
 
 
 ## Live polling: current and planned surfaces

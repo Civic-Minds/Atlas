@@ -85,7 +85,7 @@ export default function GapsChart({ gaps, ariaLabel, height: H = 180 }: { gaps: 
               type="button"
               aria-pressed={pick.active === s}
               aria-label={`${label}: ${countOf(count, 'gap')}`}
-              className="rounded px-1.5 py-0.5"
+              className="rounded-md px-1.5 py-0.5"
               style={{ background: pick.active === s ? ACTIVE_BG : undefined }}
               {...pick.partEvents(s)}
             >

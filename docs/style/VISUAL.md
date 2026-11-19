@@ -122,6 +122,28 @@ On the site:
 - Adding one source line under each chart would fit standard 3. (Editorial strategy, 2026-10-30; written as a proposal there)
 - A caveat sits next to the chart it affects, such as "Not found yet", not only at the end. (Editorial strategy, 2026-10-30)
 
+Research chart defaults (Ryan, 2026-11-18, CIV-1173, picks 1A to 5A on the chart kit review page; decision in [DECISIONS.md](../product/DECISIONS.md)):
+
+- Ranked bars for rankings.
+- Columns for spreads along a scale.
+- A split bar for shares of a whole.
+- Dot pairs for two values compared.
+- Empty steps stay on a fixed scale: a 60-min row at 0 is shown, not dropped.
+- The A/B pairs on that page are different chart types for different jobs, so each kind keeps the design its page already uses.
+
+The standard chart look (Ryan, 2026-11-18, CIV-1173: "Point of those was to make a standard look for all our charts/graphs etc", and the charts "look relatively fine"). The chart collection in `src/components/charts/` is the standard. A new chart is built from it, and a chart that differs is brought back to it:
+
+- Text: labels, legends and axis words are `CHART_TEXT` (`text-xs`, the primary text colour); a count is `CHART_COUNT` (`font-black`). Both are in `useActivePart.ts`.
+- Ticks: `text-xs` in `--text-dim`, normal weight, in a 36px value axis (`AXIS_W`, `SparkTicks` in `sparkParts.tsx`).
+- Gridlines: one faint `--border-primary` line per tick at 0.7 opacity.
+- Hour axes: `SPARKLINE_HOUR_LABELS` (6, 12, 18, 24).
+- Colours: CSS tokens only, never hex. Frequency colours come from `useHeadwayTiers` or `headwayToTierColor` (both colour-vision aware), and Live colours from the `--strip-*` and `--status-*` tokens.
+- Vertical bars: `SPARK_BAR`, 60% of the column, 3–12px wide, `rounded-sm`.
+- Horizontal bars: `RankedBars` (`h-3`, rounded, on a `--bg-stat` track) for rankings, and `SplitBar` (`h-4`) for shares.
+- Legends: `LegendItem` swatches, picked with `useActivePart` (above).
+- Screen readers: the numbers are also a table (`ChartTableDetails`, above).
+- Empty: a chart with no data draws nothing. The section around it says why, in its own words.
+
 For LinkedIn and other posts (Ryan, 2026-11-10, recorded in Claude's memory note on LinkedIn graphics). Make each graphic in this order:
 
 1. Pick the form.

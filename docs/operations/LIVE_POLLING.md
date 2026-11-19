@@ -76,7 +76,7 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 2026-11-15 (CIV-1682): Kingston Transit records every minute for the Atlas Studio demo, from its own worker (`wrangler.kingston.toml`, archive-only: not a Live agency) into its own bucket, atlas-live-kingston, kept 60 days.
 
-2026-11-18 (CIV-1906, Ryan): one Live bucket. atlas-live keeps everything 60 days (one lifecycle rule replaces the 30- and 90-day rules), the Kingston Worker writes to atlas-live under the same keys as the others, and Kingston's earlier objects were copied over. atlas-live-kingston is no longer read or written.
+2026-11-18 (CIV-1906, Ryan): one Live bucket. atlas-live keeps everything 60 days (one lifecycle rule replaces the 30- and 90-day rules), the Kingston Worker writes to atlas-live under the same keys as the others, and Kingston's earlier objects were copied over. atlas-live-kingston was deleted the same day, after a check found 0 differences (Ryan's yes).
 
 The previous Cloudflare Worker setup wrote to private R2 bucket `atlas-live`. Five
 small Workers covered TTC positions, TTC trips, Hamilton, STM, and Burlington plus

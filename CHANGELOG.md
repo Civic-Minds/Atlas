@@ -15,6 +15,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The Filters count badge and the report-a-problem button no longer use solid dark fills**: they use the pale selected tint like the rest of the app, and the badge was hard to read in dark mode
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
 - **On a filtered map, one odd stop no longer recolours a whole stretch of route**: a single stop a minute slower than the rest turned the stretch a slower colour; a real slower section or a gap in service still shows ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
+- **Charts that had drifted now match the shared chart look**: Live's run-time chart gets the same text size and faint gridlines as the charts beside it, and its usual-time dots get the outline they were meant to have; axis numbers on the Free child fares ages chart are grey like every other chart's
 - **Atlas Studio finds Metro Transit's [E Line](https://github.com/Civic-Minds/Atlas/issues/1589) when asked for "E Line"**: it returned the Blue Line, whose name also contains those letters
 - **Maintainer-only diagnostics pages no longer ship with the public site**: they were built into every release as unused files, though no address ever opened them
 - **The About panel's agency count and countries match the published data**: it counted every agency the build loaded, so it disagreed with the rest of the site
