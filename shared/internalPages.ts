@@ -29,7 +29,6 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
     heading: 'Tools',
     pages: [
       { title: 'Studio', description: 'Schedule changes and buses needed, for one agency at a time.', path: STUDIO_PATH },
-      { title: 'Live reports', description: 'Which agencies have Live reports, with what else each one has.', path: STUDIO_COVERAGE_PATH },
       { title: 'Coverage', description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
     ],
   },
