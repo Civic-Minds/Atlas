@@ -152,3 +152,14 @@ export function figuresAtCutoffs(c: CutoffCounts | null | undefined, cut: Cutoff
   }
   return out;
 }
+
+/** A cut-off in minutes as Atlas writes it: "5½ min", "½ min", "2 min" (the half steps the cut-offs go in). */
+export function cutoffMinutesText(min: number): string {
+  const whole = Math.floor(min), half = min - whole >= 0.5;
+  return `${whole || !half ? whole : ''}${half ? '½' : ''} min`;
+}
+/** A gapped cut-off: "2×", "1½×", "2.25×". */
+export function cutoffFactorText(f: number): string {
+  const whole = Math.floor(f);
+  return f - whole === 0.5 ? `${whole}½×` : `${f}×`;
+}
