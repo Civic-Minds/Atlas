@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import Card from '../../components/ui/Card';
 import DataTable from '../../components/ui/DataTable';
+import Pill from '../../components/ui/Pill';
+import { PickerSection } from '../../components/Interval/pickers';
 import { chipRowClass } from '../../components/Interval/ChipMenu';
 import { LAST_WEEK_COLUMN, THIS_WEEK_COLUMN } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
@@ -52,20 +54,22 @@ const isSet = (set: SetCutoffs) => ORDER.some(k => set[k] != null);
 /** The chip's menu: four rows of choices and a way back to the standard. Its chip is filled while any cut-off is set. */
 export function cutoffsMenu(set: SetCutoffs, onChange: (next: SetCutoffs) => void): StudioMenu {
   const content = (close: () => void): ReactNode => (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {ORDER.map(k => {
         const current = set[k] ?? DEFAULT_CUTOFFS[k];
         return (
-          <div key={k} role="group" aria-label={W.rowName[k]} className="flex flex-col gap-1">
-            <span className="px-1 text-2xs font-bold text-[var(--text-dim)]">{W.rowName[k]}</span>
-            <div className="flex flex-wrap gap-1">
-              {STUDIO_CUTOFF_PRESETS[k].map(v => (
-                <button key={v} type="button" aria-pressed={v === current} className={`${chipRowClass(v === current)} !w-auto`}
-                  onClick={() => onChange({ ...set, [k]: v === DEFAULT_CUTOFFS[k] ? undefined : v })}>
-                  {W.choice(k, v)}
-                </button>
-              ))}
-            </div>
+          // The main map's Settings rows (PickerSection over segment pills, CIV-1925 phase 3), not a look of Studio's own.
+          <div key={k} role="group" aria-label={W.rowName[k]}>
+            <PickerSection title={W.rowName[k]}>
+              <div className="flex flex-wrap gap-1">
+                {STUDIO_CUTOFF_PRESETS[k].map(v => (
+                  <Pill key={v} size="segment" selected={v === current}
+                    onClick={() => onChange({ ...set, [k]: v === DEFAULT_CUTOFFS[k] ? undefined : v })}>
+                    {W.choice(k, v)}
+                  </Pill>
+                ))}
+              </div>
+            </PickerSection>
           </div>
         );
       })}

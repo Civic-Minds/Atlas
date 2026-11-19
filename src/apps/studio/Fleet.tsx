@@ -9,7 +9,8 @@ import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from './StudioMapFrame';
-import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
+import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
+import { periodMenuOptions } from '../../components/Interval/pickers';
 import { PAGE_NAMES } from '../../../shared/pageNames';
 import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
@@ -133,7 +134,7 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
     ready ? { key: 'route', label: T.route, value: route ?? '', options: routeOptions, onPick: r => setRoute(r || null), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' } : null,
-    periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periods.map(k => [k, PERIOD_LABELS[k]] as const), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-40' } : null,
+    periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periodMenuOptions(periods), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-56' } : null,
   ];
   return (
     <>

@@ -8,6 +8,7 @@ import { MapNote } from '../../components/ui/MapNote';
 import LiveMapKey from '../../components/Live/LiveMapKey';
 import { STUDIO_MAP_MEASURES, type MapMeasure } from '../../components/Live/routeMapModel';
 import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
+import { periodMenuOptions } from '../../components/Interval/pickers';
 import { liveBandNow } from '../../components/Live/liveBandNow';
 import WidgetPanel from '../../components/Live/tool/WidgetPanel';
 import { useLiveBody } from '../../components/Live/tool/useLiveBody';
@@ -98,7 +99,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     agencyMenu,
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
-    { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
+    { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 

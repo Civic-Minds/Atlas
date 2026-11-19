@@ -7,6 +7,7 @@ import { headwayFilterLabel } from '../../utils/headwayText';
 import { useColorMode } from '../../hooks/useColorMode';
 import { DAY_TYPES, type DayType } from '../../../shared/dayTypes';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey, type TimePeriod } from '../../hooks/useIntervalStats';
+import { formatPeriodRange } from '../../../shared/config';
 
 /**
  * The frequency, day and time pickers every filter surface uses (the Frequency / Day / Time dropdowns, the phone filter panel,
@@ -62,6 +63,19 @@ export function DayPicker({ value, onChange, fill = false }: { value: DayType; o
     </div>
   );
 }
+
+/** A time period's row in a Time dropdown: its name and its hours, the same in the main map's chip and Studio's (CIV-1925). */
+export function PeriodChoice({ period }: { period: PeriodKey }) {
+  return (
+    <span className="flex w-full items-center justify-between gap-3">
+      <span className="whitespace-nowrap">{PERIOD_LABELS[period]}</span>
+      <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(period)}</span>
+    </span>
+  );
+}
+
+/** A Time dropdown's choices for a top-bar menu (StudioMenu options): each period's row and its plain name. */
+export const periodMenuOptions = (keys: readonly PeriodKey[]) => keys.map(k => [k, <PeriodChoice key={k} period={k} />, PERIOD_LABELS[k]] as const);
 
 /** The time periods. There is no All day (CIV-239). */
 export function PeriodPicker({ value, onChange }: { value: TimePeriod; onChange: (period: TimePeriod) => void }) {
