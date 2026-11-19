@@ -1,6 +1,7 @@
 {
   "nashvillemta": {
-    "_note": "CIV-536: one fall feed a year. 2015-2023 from the OpenMobilityData (TransitFeeds) archive, 2024-2026 from the Mobility Database (mdb-360). Research: Atlas-worktrees/_reports/CIV-536-wego-history.md.",
+    "_anchorMonth": 10,
+    "_note": "CIV-536: one fall feed a year. 2015-2023 from the OpenMobilityData (TransitFeeds) archive, 2024-2026 from the Mobility Database (mdb-360). Each period reads the first full October week of its year (manager, 2026-11-18: match existing History, mostly Sep-Dec). Research: Atlas-worktrees/_reports/CIV-536-wego-history.md.",
     "20150928": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20150928/gtfs.zip",
     "20160915": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20160915/gtfs.zip",
     "20170925": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20170925/gtfs.zip",

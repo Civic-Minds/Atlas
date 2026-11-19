@@ -10,6 +10,8 @@
  *                       (the atlas-archive bucket is private, so copy them down first)
  *   --out-dir <dir>     where sidecars are written (default tmp/history-v2). Nothing touches R2.
  *   --overwrite         replace a local sidecar whose content differs (default: report a conflict)
+ *   --anchor-month <M>  CIV-536: read the first full week of month M (1-12) in the year of each zip's YYYYMMDD name,
+ *                       instead of the zip's first full week in force (a zip that misses that week fails)
  *   --shapes            also write each period's route shapes to {out-dir}/history-v2-shapes/{slug}/{periodKey}.json
  *                       (docs/data/DATA_HISTORY.md "Route shapes"; off by default, so sidecar output is unchanged)
  *
@@ -53,7 +55,7 @@ import { readFeedEvidence } from './historyWeekend.js';
 import { buildPeriodShapes, shapeTripStats, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { readPickedWeekQuality, readQualityRows } from './historyRefQuality.js';
-import { firstFullWeekAnchor } from './serviceDays.js';
+import { firstFullWeekAnchor, monthAnchor } from './serviceDays.js';
 import { splitLumpedRoutes, type HistoryRouteSplits } from './historyRouteSplits.js';
 import { historyV2FromEnv, historyWeekendPeriodsFor } from './historyV2Flag.js';
 import { flagsFor, matchedRoutes, planSidecarNoTrip } from './historyV2NoTrip.js';
@@ -99,6 +101,9 @@ async function main(): Promise<void> {
   const splitKeys = (JSON.parse(readFileSync(resolve('config/history-route-splits.json'), 'utf8')) as HistoryRouteSplits)[slug] ?? [];
   mkdirSync(outDir, { recursive: true });
 
+  const anchorMonthArg = arg('--anchor-month');
+  const anchorMonth = anchorMonthArg ? Number(anchorMonthArg) : undefined;
+  if (anchorMonthArg && !(Number.isInteger(anchorMonth) && anchorMonth! >= 1 && anchorMonth! <= 12)) throw new Error(`--anchor-month must be 1-12, got ${anchorMonthArg}`);
   const pinFrom = arg('--pin-from');
   const pinned = pinFrom ? readPinnedSidecars(resolve(pinFrom), slug) : null;
   const pinnedBodies = pinFrom ? readPinnedBodies(resolve(pinFrom), slug) : null;
@@ -129,7 +134,10 @@ async function main(): Promise<void> {
       const dates = await peekFeedDates(buf);
       const periodKey = published ? stem : periodKeyForZip(stem, dates);
       // The zip's own anchor: its first full week in force (CIV-1101 Part B), never the run date.
-      const anchor = published ? null : firstFullWeekAnchor(await readQualityRows(buf));
+      // CIV-536: --anchor-month <1-12> reads the first full week of that month in the year of the zip's name
+      // (YYYYMMDD), so every period compares the same season; a zip whose dates miss that week fails.
+      const anchor = published ? null : anchorMonth ? monthAnchor(Number(stem.slice(0, 4)), anchorMonth, dates.feedStart, dates.feedExpiry) : firstFullWeekAnchor(await readQualityRows(buf));
+      if (!published && anchorMonth && !anchor) throw new Error(`--anchor-month ${anchorMonth}: the zip's dates (${dates.feedStart}-${dates.feedExpiry}) do not cover the first full week of that month in ${stem.slice(0, 4)}`);
       const pin = published ? pinnedReadFor(published) : null;
       const overrides = pin ? pin.overrides : anchor ? { serviceAnchor: anchor } : {};
       // CIV-1484: the same period's supplemental zips (same stem); a missing one fails this period.
