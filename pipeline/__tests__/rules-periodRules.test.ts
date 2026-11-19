@@ -16,13 +16,13 @@ describe('period values (rules audit move 4)', () => {
   it('keeps the six map periods and their hours', () => {
     expect(TIME_PERIODS.map(p => [p.key, p.label, p.startHour, p.endHour])).toEqual([
       ['amPeak', 'AM peak', 6, 9], ['midday', 'Midday', 9, 15], ['pmPeak', 'PM peak', 15, 19],
-      ['evening', 'Evening', 19, 23], ['late', 'Late', 23, 26], ['overnight', 'Overnight', 26, 30],
+      ['evening', 'Evening', 19, 23], ['late', 'Late', 23, 26], ['overnight', 'Overnight', 26, 29],
     ]);
     expect(PERIOD_KEYS).toEqual(['amPeak', 'midday', 'pmPeak', 'evening', 'late', 'overnight']);
     expect(PERIOD_LABELS).toEqual({ amPeak: 'AM peak', midday: 'Midday', pmPeak: 'PM peak', evening: 'Evening', late: 'Late', overnight: 'Overnight' });
     expect(PERIOD_MINUTES).toEqual({
       amPeak: { start: 360, end: 540 }, midday: { start: 540, end: 900 }, pmPeak: { start: 900, end: 1140 },
-      evening: { start: 1140, end: 1380 }, late: { start: 1380, end: 1560 }, overnight: { start: 1560, end: 1800 },
+      evening: { start: 1140, end: 1380 }, late: { start: 1380, end: 1560 }, overnight: { start: 1560, end: 1740 },
     });
     expect(MINUTES_PER_DAY).toBe(1440);
     expect([0, 5, 6, 23].map(toGtfsHour)).toEqual([24, 29, 6, 23]);

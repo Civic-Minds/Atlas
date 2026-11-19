@@ -69,12 +69,12 @@ describe('TTC night routes drawn on a minor pattern (#896)', () => {
     expect(values['337 0 Saturday']).toEqual({ headway: 30, coverage: 31, maxGap: 31, headline: 30 });
     // To Steeles: Saturday 26:25-27:54, then Sunday's 04:24-05:46. Its headline was 23, from the
     // three-trip short turn; it is never better than the night's.
-    expect(values['337 1 Saturday']).toEqual({ headway: 29, coverage: 30, maxGap: 30, headline: 29 });
+    expect(values['337 1 Saturday']).toEqual({ headway: 30, coverage: 30, maxGap: 30, headline: 30 });
     expect(values['373 0 Saturday']).toEqual({ headway: 30, coverage: 30, maxGap: 30, headline: 30 });
     expect(values['373 1 Saturday']).toEqual({ headway: 30, coverage: 30, maxGap: 30, headline: 30 });
     // Sunday night's last trip leaves at 28:33; the weekday timetable has no early 373 trip, so
-    // the night ends there (87 minutes to 06:00), as riders find it.
-    expect(values['373 1 Sunday']).toEqual({ headway: 30, coverage: 87, maxGap: 30, headline: 30 });
+    // the night ends there (the night now ends at 05:00), as riders find it.
+    expect(values['373 1 Sunday']).toEqual({ headway: 30, coverage: 30, maxGap: 30, headline: 30 });
   });
 
   it('leaves lines that read their periods from the destination already (Step 5) unchanged', async () => {

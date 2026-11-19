@@ -111,11 +111,12 @@ describe('an uneven tail counts a wait the window cuts, as a main stretch does (
 describe('an uneven main stretch leaves out only a true start or end of its service (CIV-1064, TTC 320 overnight)', () => {
   const on = PERIOD_MINUTES.overnight;
   // TTC 320 weekday overnight northbound at Eglinton (8980), from the feed: night service only. The
-  // first bus is 2:15 (2:13 in the feed), then every 5 to 3:40, every 15 to 5:10, then 5:17, 5:25, 5:32 and nothing after.
-  const night = [...every(on.start + 15, on.start + 100, 5), ...every(on.start + 115, on.start + 190, 15), on.start + 197, on.start + 205, on.start + 212];
+  // first bus is 2:15 (2:13 in the feed), then every 5 to 3:10, every 15 to 4:10, then 4:17, 4:25, 4:32 and nothing after.
+  // CIV-1764 dry run (overnight ends at 5:00): the feed's 4:10-5:32 run is shifted an hour earlier to stay in the window.
+  const night = [...every(on.start + 15, on.start + 70, 5), ...every(on.start + 85, on.start + 130, 15), on.start + 137, on.start + 145, on.start + 152];
   const dirOf = (times: number[]) => rollupDirection({ key: 'r::1::Weekday', main: main(times), tails: [], regularPatternCount: 1, variantTripCount: 0 } as never)!;
 
-  it('reads the longest gap between buses, not the run from the last bus to 6:00', () => {
+  it('reads the longest gap between buses, not the run from the last bus to 5:00', () => {
     const p = stretchPeriods(main(night)).overnight;
     expect(p.uneven).toBe(true);
     expect(p.coverage).toBe(28);
@@ -127,7 +128,7 @@ describe('an uneven main stretch leaves out only a true start or end of its serv
   });
 
   it('keeps the wait at a window boundary when the stretch runs on the other side of it', () => {
-    // The morning's first bus at 6:10: the 28 minutes from 5:32 to 6:00 are a real gap the window cuts.
+    // The morning's first bus at 5:10: the 28 minutes from 4:32 to 5:00 are a real gap the window cuts.
     const after = stretchPeriods(main([...night, on.end + 10])).overnight;
     expect(after.uneven).toBe(true);
     expect(after.value).toBe(28);
@@ -144,8 +145,8 @@ describe('an uneven main stretch leaves out only a true start or end of its serv
   });
 
   it('keeps the full-window wait when a true start is longer than the coverage cap, as a steady period does', () => {
-    // Night service starts at 3:10, every 10 to 4:30, then every 22.
-    const late = [...every(on.start + 70, on.start + 150, 10), ...every(on.start + 170, on.start + 238, 22)];
+    // Night service starts at 3:10, every 10 to 3:50, then every 22 (dry run, 5:00 end).
+    const late = [...every(on.start + 70, on.start + 110, 10), ...every(on.start + 130, on.start + 176, 22)];
     const p = stretchPeriods(main(late)).overnight;
     expect(p.uneven).toBe(true);
     expect(p.coverage).toBe(70);
@@ -155,7 +156,7 @@ describe('an uneven main stretch leaves out only a true start or end of its serv
 
   it('reads a tail the same way (CIV-1414): the 28 minutes the window cuts count', () => {
     expect(stretchPeriods({ ...main([...night, on.end + 10]), kind: 'tail' }).overnight.value).toBe(28);
-    // Without the 6:10 bus, the run to 6:00 is the end of its service and stays out.
+    // Without the 5:10 bus, the run to 5:00 is the end of its service and stays out.
     expect(stretchPeriods({ ...main(night), kind: 'tail' }).overnight.value).toBe(15);
   });
 });

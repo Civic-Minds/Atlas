@@ -295,9 +295,9 @@ describe('resolveTerminalPeriodHeadway', () => {
 describe('computePeriodSustained', () => {
   it('flags a cluster tight against one edge of an otherwise-empty window as not sustained (#299)', () => {
     // TTC Line 1 overnight-style case: 3 departures clustered near the tail of the overnight
-    // window [1560,1800], nothing else. Internal gaps alone (5, 5) look clean; the 210-minute
+    // window [1560,1740] (dry run: 5 AM end), nothing else. Internal gaps alone (5, 5) look clean; the 150-minute
     // void between window start and the first departure is what should fail this.
-    const result = computePeriodSustained([1770, 1775, 1780]);
+    const result = computePeriodSustained([1710, 1715, 1720]);
     expect(result.overnight).toBe(false);
   });
 

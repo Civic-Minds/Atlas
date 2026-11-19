@@ -11,13 +11,20 @@ export interface PeriodConfig<K extends string = string> {
   endHour: number;
 }
 
+/**
+ * CIV-1764 DRY RUN, option 2: a proposal, NOT APPROVED by Ryan, not for merge. The one hour the night ends, 29 = 5 AM,
+ * read by the Overnight period and by the Night Service window (STRETCH_NIGHT_END_MIN). Approved Overnight end: 30 (6 AM).
+ */
+const NIGHT_END_HOUR = 29;
+
 export const TIME_PERIODS = [
   { key: 'amPeak',    label: 'AM peak',    startHour: 6,  endHour: 9  },
   { key: 'midday',    label: 'Midday',     startHour: 9,  endHour: 15 },
   { key: 'pmPeak',    label: 'PM peak',    startHour: 15, endHour: 19 },
   { key: 'evening',   label: 'Evening',    startHour: 19, endHour: 23 },
   { key: 'late',      label: 'Late',       startHour: 23, endHour: 26 },
-  { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: 30 },
+  // CIV-1764 dry run, not approved: ends at NIGHT_END_HOUR (5 AM), not the approved 6 AM.
+  { key: 'overnight', label: 'Overnight',  startHour: 26, endHour: NIGHT_END_HOUR },
 ] as const satisfies readonly PeriodConfig[];
 
 export type PeriodKey = (typeof TIME_PERIODS)[number]['key'];
@@ -95,7 +102,7 @@ export const HEADLINE_WINDOWS = {
  * checks that a window ends after midnight, so it is gone (CIV-1812 item 1).
  */
 export const STRETCH_NIGHT_START_MIN = 26 * 60;
-export const STRETCH_NIGHT_END_MIN = 29 * 60;
+export const STRETCH_NIGHT_END_MIN = NIGHT_END_HOUR * 60;
 
 /** Sustained frequent service reads 7am-7pm; the research flags read 7am-7pm (daytime) and 7am-midnight (extended). */
 export const FREQUENT_SERVICE_WINDOW_START_MIN = 7 * 60;

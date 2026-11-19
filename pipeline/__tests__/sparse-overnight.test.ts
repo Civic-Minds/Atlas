@@ -43,12 +43,12 @@ async function route(overnight: number[]) {
 describe('sparse overnight window (#897)', () => {
   it('flags three departures whose two gaps the shared steadiness test calls uneven', () => {
     // A close pair, then a hole: 10 and 170.
-    expect(isSparseOvernightWindow(at('26:00', '26:10', '29:00'))).toBe(true);
+    expect(isSparseOvernightWindow(at('26:00', '26:10', '28:50'))).toBe(true);
     // Plain notation counts the same as extended notation.
-    expect(isSparseOvernightWindow(at('02:00', '02:10', '05:00'))).toBe(true);
+    expect(isSparseOvernightWindow(at('02:00', '02:10', '04:50'))).toBe(true);
     // TTC 504 weekday at King & John: 02:00-02:40 every 5, then nothing until 05:29; a three-trip
-    // tail of that shape (5 then 169).
-    expect(isSparseOvernightWindow(at('26:35', '26:40', '29:29'))).toBe(true);
+    // tail of that shape (5 then 135).
+    expect(isSparseOvernightWindow(at('26:35', '26:40', '28:55'))).toBe(true);
   });
 
   it('keeps TTC 300 weekday\'s short turn to Victoria Park at 10 (gaps 15 and 4 are steady)', () => {
@@ -76,29 +76,29 @@ describe('sparse overnight window (#897)', () => {
 
   it('leaves even, two-, four-departure and daytime windows alone', () => {
     expect(isSparseOvernightWindow(at('26:00', '27:00', '28:00'))).toBe(false);
-    expect(isSparseOvernightWindow(at('26:00', '26:10', '26:20', '29:00'))).toBe(false);
-    expect(isSparseOvernightWindow(at('26:00', '29:00'))).toBe(false);
+    expect(isSparseOvernightWindow(at('26:00', '26:10', '26:20', '28:50'))).toBe(false);
+    expect(isSparseOvernightWindow(at('26:00', '28:50'))).toBe(false);
     // The same shape at midday is not an overnight window and keeps its value.
     expect(isSparseOvernightWindow(at('10:00', '10:10', '13:00'))).toBe(false);
     expect(computePeriodHeadways(at('10:00', '10:10', '13:00')).midday).toBe(90);
   });
 
   it('reads no overnight value but keeps coverage and max gap', () => {
-    const times = at('26:00', '26:10', '29:00');
+    const times = at('26:00', '26:10', '28:50');
     expect(computePeriodHeadways(times).overnight).toBeNull();
-    expect(computePeriodCoverageHeadways(times).overnight).toBeGreaterThanOrEqual(170);
-    expect(computePeriodMaxGaps(times).overnight).toBe(170);
+    expect(computePeriodCoverageHeadways(times).overnight).toBeGreaterThanOrEqual(160);
+    expect(computePeriodMaxGaps(times).overnight).toBe(160);
   });
 
   it('applies to the night-route overnight override (#896)', () => {
-    const values = overnightPeriodValues(at('26:00', '26:10', '29:00'));
+    const values = overnightPeriodValues(at('26:00', '26:10', '28:50'));
     expect(values.headway).toBeNull();
-    expect(values.withheld).toBe(90);
-    expect(values.maxGap).toBe(170);
+    expect(values.withheld).toBe(85);
+    expect(values.maxGap).toBe(160);
   });
 
   it('withholds the value of a sparse window and only of a sparse window', () => {
-    expect(sparseOvernightHeadway(at('26:00', '26:10', '29:00'))).toBe(90);
+    expect(sparseOvernightHeadway(at('26:00', '26:10', '28:50'))).toBe(85);
     expect(sparseOvernightHeadway(at('04:38', '04:53', '04:57'))).toBeNull();
   });
 
@@ -128,13 +128,13 @@ describe('sparse overnight window (#897)', () => {
   });
 
   it('nulls the route and stop overnight values, keeping coverage, max gap and daytime values', async () => {
-    const p = await route(at('26:00', '26:10', '29:00'));
+    const p = await route(at('26:00', '26:10', '28:40')); // the fixture's second stop is 12 minutes on, still inside 5:00
     expect(p.headwayByPeriod.overnight).toBeNull();
     // The unsteady flag stays, so the route-wide coverage stamp picks the same patterns.
     expect(p.headwayByPeriodSustained?.overnight).toBe(false);
-    expect(p.worstDirectionPeriodCoverageHeadway.overnight).toBeGreaterThanOrEqual(170);
-    expect(p.periodCoverageHeadway.overnight).toBeGreaterThanOrEqual(170);
-    expect(p.maxGapByPeriod.overnight).toBe(170);
+    expect(p.worstDirectionPeriodCoverageHeadway.overnight).toBeGreaterThanOrEqual(150);
+    expect(p.periodCoverageHeadway.overnight).toBeGreaterThanOrEqual(150);
+    expect(p.maxGapByPeriod.overnight).toBe(150);
     expect(p.headwayByPeriod.midday).toBe(10);
     // The stop card reads the same: no stop shows the mean the route row dropped.
     for (const stop of Object.values(p.stopPeriodHeadways as Record<string, Record<string, number>>)) {
@@ -151,7 +151,7 @@ describe('sparse overnight window (#897)', () => {
   });
 
   it('keeps a steady three-trip overnight short turn at route and stop (TTC 300 shape)', async () => {
-    const p = await route(at('04:38', '04:53', '04:57'));
+    const p = await route(at('04:28', '04:43', '04:47'));
     expect(p.headwayByPeriod.overnight).toBe(10);
     expect(p.stopPeriodHeadways.s1.overnight).toBe(10);
   });
@@ -159,29 +159,30 @@ describe('sparse overnight window (#897)', () => {
 
 describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
   // TTC 63 Saturday at Liberty Village: two night arrivals, then the day's own first trips at 05:48
-  // and 06:00. The 06:00 trip made four departures and an every 15.
-  const liberty = at('02:04', '02:19', '05:48', '06:00');
+  // and 06:00. The 06:00 trip made four departures and an every 15. Dry run (CIV-1764, overnight ends 05:00): the same
+  // shape an hour earlier, so the last trip sits exactly on the window's end.
+  const liberty = at('02:04', '02:19', '04:48', '05:00');
 
   it('tests the three night departures and withholds their value', () => {
     expect(isSparseOvernightWindow(liberty)).toBe(true);
     expect(periodHeadwayInWindow(liberty, 'overnight')).toBeNull();
-    expect(sparseOvernightHeadway(liberty)).toBe(sparseOvernightHeadway(at('02:04', '02:19', '05:48')));
+    expect(sparseOvernightHeadway(liberty)).toBe(sparseOvernightHeadway(at('02:04', '02:19', '04:48')));
     expect(computePeriodSustained(liberty).overnight).toBe(false);
   });
 
   it('keeps coverage and max gap', () => {
-    expect(computePeriodCoverageHeadways(liberty).overnight).toBe(209);
-    expect(computePeriodMaxGaps(liberty).overnight).toBe(209);
+    expect(computePeriodCoverageHeadways(liberty).overnight).toBe(149);
+    expect(computePeriodMaxGaps(liberty).overnight).toBe(149);
   });
 
   it('leaves steady three-plus-06:00 windows and every other count alone', () => {
-    expect(periodHeadwayInWindow(at('05:00', '05:20', '05:40', '06:00'), 'overnight')).toBe(20);
-    expect(isSparseOvernightWindow(at('02:00', '02:10', '05:00', '05:50'))).toBe(false);
-    expect(isSparseOvernightWindow(at('02:00', '02:10', '02:20', '05:00', '06:00'))).toBe(false);
+    expect(periodHeadwayInWindow(at('04:00', '04:20', '04:40', '05:00'), 'overnight')).toBe(20);
+    expect(isSparseOvernightWindow(at('02:00', '02:10', '04:00', '04:50'))).toBe(false);
+    expect(isSparseOvernightWindow(at('02:00', '02:10', '02:20', '04:50', '05:00'))).toBe(false);
   });
 
   it('shows no overnight value on the row or any stop, with or without a 06:00 trip', async () => {
-    for (const night of [at('02:04', '02:19', '05:48', '06:00'), at('02:04', '02:19', '05:48')]) {
+    for (const night of [at('02:04', '02:19', '04:48', '05:00'), at('02:04', '02:19', '04:48')]) {
       const p = await route(night);
       expect(p.headwayByPeriod.overnight ?? null).toBeNull();
       for (const stop of Object.values(p.stopPeriodHeadways ?? {}) as any[]) expect(stop.overnight ?? null).toBeNull();
@@ -192,7 +193,7 @@ describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
 describe('periodMedianHeadway: a period\'s median before #897 withholds it (CIV-1799)', () => {
   it('is the period value, and keeps the value a sparse window withholds', () => {
     expect(periodMedianHeadway(at('07:00', '07:10', '07:20', '07:30'), 'amPeak')).toBe(periodHeadwayInWindow(at('07:00', '07:10', '07:20', '07:30'), 'amPeak'));
-    const sparse = at('26:00', '26:10', '29:00');
+    const sparse = at('26:00', '26:10', '28:50');
     expect(periodHeadwayInWindow(sparse, 'overnight')).toBeNull();
     expect(periodMedianHeadway(sparse, 'overnight')).toBe(sparseOvernightHeadway(sparse));
   });
