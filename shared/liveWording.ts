@@ -3,7 +3,7 @@ import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
-import { countText } from './numberText';
+import { countText, percentText } from './numberText';
 import { minutesText } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
 
@@ -211,6 +211,10 @@ export function runTimeShareText(over: number): string {
 
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
+
+/** A share before and after a stretch: "10% to 41%" (Ryan, CIV-1795 7b; CIV-1805). Without both shares (older summaries), the rise in points. */
+export const shareRiseText = (r: { value: number; fromShare?: number; toShare?: number }): string =>
+  r.fromShare != null && r.toShare != null ? `${percentText(r.fromShare)} to ${percentText(r.toShare)}` : risePointsText(r.value);
 
 /**
  * Bunching as whole percents that add up wherever a total and its two parts sit side by side (tile, route list, agency

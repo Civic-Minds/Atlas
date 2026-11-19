@@ -561,6 +561,10 @@ export const MAP_EXPORT_WAITING = `${MAP_STILL_LOADING} The image will save once
 // ---- Site ----
 // N62 update-available
 export const UPDATE_AVAILABLE_NOTICE = 'A newer version of this page is available.';
+// CIV-98 slow-connection prompt. Proposed wording, waiting on Ryan's word-for-word OK.
+export const SLOW_CONNECTION_PROMPT = 'Your connection looks slow. Turn on data saver to load fewer networks at once?';
+export const SLOW_CONNECTION_ACCEPT = 'Turn on';
+export const SLOW_CONNECTION_DECLINE = 'Not now';
 // N63 analytics-prompt
 export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.';
 // N64 analytics-setting

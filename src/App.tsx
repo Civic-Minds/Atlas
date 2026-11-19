@@ -55,6 +55,8 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
+import SlowConnectionPrompt, { readSlowPromptAnswered, rememberSlowPromptAnswered } from './components/SlowConnectionPrompt';
+import { useSlowConnection } from './utils/slowConnection';
 import { withFeedQualityToday, type FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
@@ -351,6 +353,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
   }, [dataSaver]);
+
+  // CIV-98: a slow connection loads like Data saver until the visitor answers; the answer is kept for the session.
+  const slowConnection = useSlowConnection(FEATURES.slowConnectionPrompt);
+  const [slowAnswered, setSlowAnswered] = useState(readSlowPromptAnswered);
+  const showSlowPrompt = slowConnection && !dataSaver && !slowAnswered;
 
   const visibleAgencies = useMemo(
     () => hideLowQuality
@@ -851,7 +858,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </button>
       </div>
       </div>
-      {FEATURES.updateBanner && <AppUpdateBanner />}
+      {showSlowPrompt && (
+        <SlowConnectionPrompt
+          onAccept={() => { setDataSaver(true); setSlowAnswered(true); rememberSlowPromptAnswered(); }}
+          onDecline={() => { setSlowAnswered(true); rememberSlowPromptAnswered(); }}
+        />
+      )}
+      {FEATURES.updateBanner && !showSlowPrompt && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label={MAP_ERROR_TEXT}>
@@ -936,6 +949,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
               dataSaver={dataSaver}
+              slowConnectionActive={showSlowPrompt}
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (

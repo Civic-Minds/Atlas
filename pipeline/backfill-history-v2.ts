@@ -50,7 +50,7 @@ import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { processAgencyFeeds } from './agencyFeeds.js';
 import { peekFeedDates } from './archiveSelection.js';
-import { backfillSupplementalIdPrefixes, backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, writeSidecar, type BuildV2Report } from './historyV2.js';
+import { backfillSupplementalIdPrefixes, backfillSupplementalPolicy, buildSidecar, buildV2Routes, localDirSink, periodKeyForZip, periodWinner, writeSidecar, type BuildV2Report } from './historyV2.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { buildPeriodShapes, shapeTripStats, extractRouteShapes, periodShapesKey } from './historyShapes.js';
 import { parseGtfsZip } from './parseGtfs.js';
@@ -118,6 +118,8 @@ async function main(): Promise<void> {
   if (pinned) console.log(`${slug}: pinning to ${pinned.size} published sidecar(s) from ${resolve(pinFrom!)}`);
 
   const rows: Array<{ zip: string; periodKey?: string; anchor?: string; refDate?: string; weekStart?: string; result?: string; report?: BuildV2Report; supplemental?: Array<{ url: string; refDate: string; routes: number }>; collisions?: Array<{ key: string; droppedFrom: string }>; pin?: { refDate: string; how: string } | null; notPinnable?: string; error?: string }> = [];
+  const periodRefDates = new Map<string, string>();
+  const replaceSink = localDirSink(outDir, { overwrite: true });
   for (const zip of zips) {
     const stem = basename(zip, '.zip');
     try {
@@ -171,6 +173,7 @@ async function main(): Promise<void> {
       let sidecar = buildSidecar(slug, periodKey, evidence.refDate, built.routes, supplementalRoutes);
       let result: Awaited<ReturnType<typeof writeSidecar>>;
       let mergeNote = '';
+      let replacedEarlier = false;
       if (published) {
         // CIV-1430: the full rebuild (the published top-level fields, today's routes) goes under full-rebuild/; it is
         // what history-rebuild.yml uploads since Ryan chose the full redo (2026-11-14). The weekend-only merge (option
@@ -194,7 +197,16 @@ async function main(): Promise<void> {
         mergeNote = `, merged ${merged.added.length} weekend field(s) into the published file (${merged.skipped.length} day(s) skipped)`;
       } else {
         sidecar.refDateQuality = await readPickedWeekQuality(buf, evidence.refDate, processed.serviceWeekStart);
-        result = await writeSidecar(sink, sidecar);
+        // CIV-1929: another zip this run already took this period key; the newest refDate wins, whatever the file names sort to.
+        const winner = periodWinner(periodRefDates, periodKey, evidence.refDate);
+        if (winner === 'skip') {
+          rows.push({ zip, periodKey, refDate: evidence.refDate, result: 'skipped: a zip read at a newer or equal refDate already holds this period' });
+          console.log(`\n${zip}: period ${periodKey} already taken by a zip read at ${periodRefDates.get(periodKey)}; this one (${evidence.refDate}) is not newer, skipped`);
+          continue;
+        }
+        replacedEarlier = winner === 'replace';
+        if (winner === 'replace') console.log(`\n${zip}: newer refDate ${evidence.refDate} replaces the earlier zip's ${periodKey} written this run`);
+        result = await writeSidecar(winner === 'replace' ? replaceSink : sink, sidecar);
       }
       let shapesNote = '';
       if (withShapes) {
@@ -209,7 +221,7 @@ async function main(): Promise<void> {
           trips.total += st.total; trips.emptyShapeId += st.emptyShapeId; trips.unknownShapeId += st.unknownShapeId;
         }
         const period = buildPeriodShapes(slug, periodKey, evidence.refDate, extracted, { trips });
-        const shapesResult = await sink.put(periodShapesKey(slug, periodKey), JSON.stringify(period));
+        const shapesResult = await (replacedEarlier ? replaceSink : sink).put(periodShapesKey(slug, periodKey), JSON.stringify(period));
         if (shapesResult === 'conflict') process.exitCode = 1;
         shapesNote = `, shapes ${shapesResult} (${Object.keys(period.routes).length} routes)`;
       }

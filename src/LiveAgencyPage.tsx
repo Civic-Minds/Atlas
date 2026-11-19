@@ -31,7 +31,7 @@ import ArrowLink from './components/ui/ArrowLink';
 import { SubsectionTitle, PageTitle } from './components/ui/PageTitle';
 import DevHint from './components/Live/DevHint';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
-import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, risePointsText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
+import { BUNCHING_FORMS_TITLE, BUNCHING_LABEL, DELAY_STARTS_TITLE, DELIVERED_LABEL, DIRECTION_LABEL, LATE_LABEL, LATE_STOPS_TITLE, OPEN_LIVE_LABEL, SERVICE_DELIVERED_TITLE, TRIP_TIME_LABEL, TYPICAL_ADDED, VIEW_ON_LIVE_MAP, bunchPartsText, coveredRoutesText, lateStopsIntro, liveSubtitle, shareRiseText, runTimeDiffText, runTimeShareText } from '../shared/liveWording';
 import { mins } from './components/Live/sections/figures';
 import MethodSection from './components/Live/sections/MethodSection';
 import LateStopsMap from './components/Live/LateStopsMapLazy';
@@ -150,7 +150,7 @@ function LateStops({ s, rows }: { s: AgencySummary; rows: AgencyHotspotStop[] })
 }
 
 /** Without `valueHeader` the table has no value column and keeps the summary's order (largest first). */
-function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (v: number) => string }) {
+function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySummary; rows: AgencyHotspotStretch[]; caption: string; valueHeader?: string; format?: (r: AgencyHotspotStretch) => string }) {
   if (!rows.length) return <p className="mt-3 text-sm text-[var(--text-muted)]">{LIVE_NO_STRETCH_STANDS_OUT}</p>;
   return (
     <PageTable>
@@ -166,7 +166,7 @@ function StretchTable({ s, rows, caption, valueHeader, format }: { s: AgencySumm
           { key: 'stretch', header: STRETCH_COLUMN, rowHeader: true, width: FIRST_COL, className: 'font-normal break-words', cell: r => { const name = stretchLabel(nameCase(r.fromName, 'liveStop'), nameCase(r.toName, 'liveStop')); return <span title={name}>{name}</span>; } },
           { key: 'route', header: ROUTE_COLUMN, width: ROUTE_COL, align: 'left' as const, className: 'truncate', cell: r => <HotspotRoute s={s} route={r.route} /> },
           { key: 'dir', header: DIRECTION_LABEL, width: DIR_COL, align: 'left' as const, narrowHide: !!valueHeader, cell: r => nameCase(r.direction, 'liveStop') },
-          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r.value)}</span> }] : []),
+          ...(valueHeader && format ? [{ key: 'value', header: valueHeader, width: FIGURE_COL, worst: (r: AgencyHotspotStretch) => r.value, cell: (r: AgencyHotspotStretch) => <span className="whitespace-nowrap">{format(r)}</span> }] : []),
         ]}
       />
     </PageTable>
@@ -222,11 +222,11 @@ export default function LiveAgencyPage() {
         </Section>
 
         <Section id="agency-delay" title={DELAY_STARTS_TITLE} intro={LIVE_DELAY_STARTS_INTRO}>
-          <StretchTable s={s} rows={s.delayStarts} caption={LIVE_DELAY_STRETCHES_CAPTION} valueHeader={TYPICAL_ADDED} format={mins} />
+          <StretchTable s={s} rows={s.delayStarts} caption={LIVE_DELAY_STRETCHES_CAPTION} valueHeader={TYPICAL_ADDED} format={r => mins(r.value)} />
         </Section>
 
         <Section id="agency-bunching" title={BUNCHING_FORMS_TITLE} intro={LIVE_BUNCHING_FORMS_INTRO}>
-          <StretchTable s={s} rows={s.bunchingForms} caption={LIVE_BUNCHING_STRETCHES_CAPTION} valueHeader={INCREASE_COLUMN} format={risePointsText} />
+          <StretchTable s={s} rows={s.bunchingForms} caption={LIVE_BUNCHING_STRETCHES_CAPTION} valueHeader={INCREASE_COLUMN} format={shareRiseText} />
         </Section>
 
         <MethodSection scope="agency" s={s} agencyName={agencyName} />

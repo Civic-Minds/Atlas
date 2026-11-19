@@ -1041,8 +1041,10 @@ describe('step 6: a time-limited or rush-hour-only route has no all-day value (#
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.every(p => p.routeAllDayHeadway === 999999)).toBe(true);
     expect(routePassesHeadwayFilter(rows, 'all', 'Weekday', 60)).toBe(false);
-    // Its peak service still reads.
-    expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 30)).toBe(true);
+    // Its peak service still reads, at 60. CIV-238 (Ryan, 2026-11-19): its last bus leaves at 18:03, so the 57 minutes to
+    // 7 PM count as a wait (a true end of service keeps only 10 minutes over the grade), and it no longer passes every 30.
+    expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 60)).toBe(true);
+    expect(routePassesHeadwayFilter(rows, 'pmPeak', 'Weekday', 30)).toBe(false);
   });
 });
 

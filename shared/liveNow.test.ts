@@ -49,6 +49,13 @@ describe('a route right now (CIV-1870)', () => {
     expect(d.longestWait!.minutes).toBeGreaterThan(20);
   });
 
+  it('a recorded route with no vehicle in the half hour still reports every stop as none seen (CIV-1928)', () => {
+    const d = run([]).directions[0];
+    expect(d.vehiclesNow).toBe(0);
+    expect(d.noneSeen.length).toBeGreaterThan(0);
+    expect(d.noneSeen[0]).toMatchObject({ fromStop: 'Trunk 1' });
+  });
+
   it('follows a planner’s own cut-offs', () => {
     expect(run([['A', NOW - 1760, 'n']], { cutoffs: { ...DEFAULT_CUTOFFS, gappedFactor: 6 } }).directions[0].gappedNow).toHaveLength(0);
     expect(run([['N', NOW - 300, 'n'], ['S', NOW - 180, 's']]).directions[0].bunchedNow).toHaveLength(0);

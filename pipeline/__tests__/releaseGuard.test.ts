@@ -151,10 +151,13 @@ describe('tile rules fingerprint', () => {
   // typing it. Same four keys, no tile value changes (checked against the previous tree): hash only.
   // CIV-1822: the beta and dev filter reads tv_ (TRUNK_FILTER_ENABLED). No version bump: the tiles are unchanged, tiles
   // without tv_ fall back to rv_, and public reads rv_ as before. Hash only.
+  // CIV-238 adds the ewf_<period> keys (the grades a period's first or last wait breaks) and a filter clause that reads
+  // them. No version bump, as for #899: no existing tile value changes, older tiles lack the keys and evaluate exactly as
+  // before (the clause is skipped without them), and older apps ignore them. Hash only.
   it('changes only together with a deliberate TILE_RULES_VERSION decision', () => {
     expect({ version: TILE_RULES_VERSION, fingerprint: tileRulesFingerprint() }).toEqual({
       version: 5,
-      fingerprint: '614e3d9c68da32d3b70bb760706764037a1103506b83b93bba46ac319ff2fa8b',
+      fingerprint: '6117762a4cce4a274dd90ffd0fa23892fbb213dc38750b71de2a0f82ff7e5f57',
     });
   });
 });

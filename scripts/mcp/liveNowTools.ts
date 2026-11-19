@@ -8,7 +8,7 @@ import { clockTime } from '../../shared/timeText';
 import { dayTypeOfDow } from '../../shared/rules/days';
 import { periodKeyForHour } from '../../shared/rules/periods';
 import { LIVE_AGENCY_TIMEZONES } from '../../shared/livePollingConfig';
-import { LIVE_ARCHIVE_SLUGS } from '../../shared/liveCoverage';
+import { LIVE_ARCHIVE_SLUGS, routeIsRecorded } from '../../shared/liveCoverage';
 import { bunchedText, cutoffsFrom, gappedText } from '../../shared/liveCutoffs';
 import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteRow } from '../../shared/liveNow';
 import { LIVE_STALE_SEC } from '../../shared/rules/live';
@@ -56,8 +56,11 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const stops = new Map((await data.stopsOf(a)).map(x => [x.id, x]));
     const directions = nowDirections(rows as unknown as NowRouteRow[], stops, period);
     if (!directions.length) return { agency: a.name, route: s.name, live: null, note: `Atlas has no stop list for route ${s.name} here, so it can't place vehicles on it.` };
+    const routeIds = [...new Set(rows.map(x => String(x.routeId)))];
+    // A route Atlas Live doesn't record has no readings at all, which is not the same as a recorded route with no vehicles on it.
+    if (!routeIsRecorded(a.slug, routeIds)) return { agency: a.name, route: s.longName ? `${s.name} ${s.longName}` : s.name, live: null, note: `Atlas has no current reading for this route: Atlas Live doesn't record it, so it has no figures for right now. Offer the published schedule (route_frequency).` };
     const snapshots = await source.snapshots(a.slug, now - NOW_WINDOW_MIN * 60, now);
-    const r = routeNow({ snapshots, routeIds: [...new Set(rows.map(x => String(x.routeId)))], directions, nowSec: now, cutoffs });
+    const r = routeNow({ snapshots, routeIds, directions, nowSec: now, cutoffs });
 
     // The reading's day and time in the agency's time zone ("Mon, Nov 16, 6:01 PM"), so an answer never reads as today's when it isn't.
     const asOf = r.asOf != null ? `${new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(r.asOf * 1000))}, ${clockTime(localClock(r.asOf, timeZone).minutes)}` : null;

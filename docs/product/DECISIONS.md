@@ -36,7 +36,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: 2 trips cannot show a cadence; 4 would reject real half-hourly service. Riders feel frequency, not share of trips.
   - Source: [methodology INDEX](../engineering/pipeline-studies/frequency-tier-methodology-2026-10/INDEX.md) (Minimum evidence), [#571](https://github.com/Civic-Minds/Atlas/issues/571), Linear CIV-321, comment of 2026-10-18
 - **Frequency tolerances are settled**
-  - What: 10% near misses for the 5 to 15 minute tiers, 5% for 20 to 60, cap of 3 gaps, one 10-minute allowance per true service edge.
+  - What: 10% near misses for the 5 to 15 minute tiers, 5% for 20 to 60, cap of 3 gaps, one 10-minute allowance per true service edge. A period's first and last waits count as gaps under these tolerances (2026-11-19).
   - Why: chosen from a census of 1,160 feeds and a review of example routes. Check these before asking.
   - Source: [FREQUENCY_RULES.md](FREQUENCY_RULES.md) (Thresholds), [#567](https://github.com/Civic-Minds/Atlas/issues/567), [#568](https://github.com/Civic-Minds/Atlas/issues/568), [#570](https://github.com/Civic-Minds/Atlas/issues/570), [#571](https://github.com/Civic-Minds/Atlas/issues/571), PR [#584](https://github.com/Civic-Minds/Atlas/pull/584)
 - **A period with no regular cadence reads "Irregular"**
@@ -268,6 +268,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-19 — A period's first and last waits count like any other gap
+Ryan, 2026-11-19 (CIV-238), approving the counts: "1". The wait from a period's start to its first bus, and from its last bus to the period's end, counts like any gap between buses, under the settled near-miss allowance. A true start or end of service keeps its approved 10 minutes over the grade. This restores Ryan's #507 ruling (2026-09-12: the full wait counts). The 60-minute and 8× edge allowance (33758d8b, `PERIOD_COVERAGE_MAX_HEADWAY` read as an allowance) was never approved and no longer lets a period pass. Night Service keeps its own 60 (CIV-1198). Route cards keep their numbers; only the filter changes. Counts (cloud dry run 44448813459, route × day type × period cells that passed before): every 10, 121 of 3,045 no longer pass; every 15, 582 of 9,473; every 20, 831 of 15,351; every 30, 2,260 of 38,650. Hand-checked against CTA's timetable: 121 AM (first bus at the stretch about 6:53), 143 AM, 26 PM.
 
 ### 2026-11-19 — "Learn more" is only in the notice at the bottom
 Ryan, 2026-11-19 (CIV-1142): "learn more is only in the notice at the bottom". He said this was decided long ago, but it was not written down anywhere. "Learn more" appears only in the notice at the bottom of a card. Rows never carry a Learn more link, so "No regular service during this period" stays a plain label with no explainer. Written into docs/style/TEXT.md (Card notices).

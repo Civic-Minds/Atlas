@@ -60,8 +60,9 @@ for route in "${ROUTES[@]}"; do
   echo "live:analyze: route $route ..."
   EXTRA=()
   if [ "$AGENCY" = "ttc" ]; then
-    # Some routes share a number with another service (506 runs streetcars and, in parallel, 506B replacement buses): analyse the named service only.
-    [ "$route" = "506" ] && EXTRA=(--exclude-headsign "replacement bus")
+    # Some routes share a number with another service (506 runs streetcars and, in parallel, 506B replacement buses; 504
+    # runs its streetcar diversion and 504C King replacement buses, CIV-1918): analyse the named service only.
+    { [ "$route" = "506" ] || [ "$route" = "504" ]; } && EXTRA=(--exclude-headsign "replacement bus")
     # The 507M is a shuttle to Marine Parade, a separate service from the 507 Long Branch line.
     [ "$route" = "507" ] && EXTRA=(--separate-service "507M")
   else

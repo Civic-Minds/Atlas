@@ -71,7 +71,7 @@ These are settled; don't change them without a new decision (Ryan, 2026-10-15).
 | `MIN_UNSUSTAINED_EXCESS_MINUTES` | 15 | 1ab8ec57, #345 |
 | `MIN_UNSUSTAINED_RATIO` | 1.7 | b1dfb752, #345 |
 | `BOUNDARY_DOMINANT_RATIO` | 8 | a267472a, #299 |
-| `PERIOD_COVERAGE_MAX_HEADWAY` | 60 | 33758d8b and 5be33998, #524 |
+| `PERIOD_COVERAGE_MAX_HEADWAY` | 60: a period whose full wait is over an hour reads that wait (Ryan, #507). It is not an allowance: a period's first and last waits count like any gap between buses under table A, a true start or end keeping its 10 minutes (`pipeline/edgeWaits.ts`, the filter's `ewf_`). Night Service keeps its own 60 (CIV-1198) | [DECISIONS 2026-11-19](DECISIONS.md#2026-11-19--a-periods-first-and-last-waits-count-like-any-other-gap), CIV-238; 33758d8b and 5be33998, #524 |
 
 The first three live in `pipeline/headway-utils.ts`, the last in `shared/periodEligibility.ts`.
 
