@@ -2,7 +2,7 @@ import DataTable from './components/ui/DataTable';
 import { MISSING_VALUE } from '../shared/missingValue';
 import { useMemo, useState, type ReactNode } from 'react';
 import { weekDailyValues, type DashboardBand, type DashboardBandData, type LiveV3, type UncertainStart } from '../shared/liveDashboard';
-import { BUNCHING_SPLIT_NOTE, bunchingIsSplit, kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
+import { bunchingIsSplit, kpiTiles, weekNotComparableLine, type Kpi, type KpiTone } from './utils/liveKpi';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ANALYZE_DEV_HINT } from './lib/liveReportData';
 import DevHint from './components/Live/DevHint';
@@ -19,7 +19,7 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL } from '../shared/liveWording';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingSplitNote } from '../shared/liveWording';
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
@@ -84,7 +84,7 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   excludingTitle?: string;
 }) {
   // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
-  const notes = tiles.some(bunchingIsSplit) ? [...(givenNotes ?? []), BUNCHING_SPLIT_NOTE] : givenNotes;
+  const notes = tiles.some(bunchingIsSplit) ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
     <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
       <DataTable

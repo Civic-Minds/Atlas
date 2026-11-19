@@ -4,6 +4,7 @@ import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText } from './numberText';
 import { minutesText } from './liveFormat';
+import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -221,6 +222,10 @@ export function bunchTotalParts(share: number, bunched?: number | null, gapped?:
   const close = Math.min(total, Math.round(bunched * 100));
   return { total, bunched: close, tooLong: total - close };
 }
+
+/** Under a table whose Bunching row shows two figures: what each is, from the rules' own thresholds (Ryan's wording, 2026-11-18; CIV-1878). */
+export const bunchingSplitNote = (): string =>
+  `Bunching: the first figure is gaps under ${minutesText(BUNCHED_GAP_SEC / 60)} between vehicles, the second gaps more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap.`;
 
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };
