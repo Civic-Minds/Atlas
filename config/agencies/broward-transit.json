@@ -6,9 +6,9 @@
     26.1224,
     -80.1373
   ],
-  "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
-  "lastFeedExpiry": "20280930",
-  "lastFeedVersion": "20251211",
+  "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data",
+  "lastFeedExpiry": "20270116",
+  "lastFeedVersion": "S20260621_E20270116_TS20260923105837",
   "region": "Florida",
   "lastRefreshedAt": "2026-11-02",
   "cities": [
@@ -26,14 +26,14 @@
   "lastFeedCheckAt": "20261116",
   "expiredFeedCheckCount": 0,
   "expiredFeedCheckSince": null,
-  "expiredFeedCheckExpiry": "20280930",
+  "expiredFeedCheckExpiry": "20270116",
   "timezone": "America/New_York",
   "feedRefreshStatus": "current",
   "feedRefreshError": null,
   "feedRefreshErrorAt": null,
   "feedRefreshRetryCount": 0,
   "lastFeedSourceKind": "configured",
-  "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
+  "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data",
   "feedQuality": {
     "status": "healthy",
     "score": 100,
@@ -56,5 +56,6 @@
   "lastPeekedExpiry": "20280930",
   "lastServiceWeek": "eb51abf65c72524e",
   "feedObtainedAt": "20251211",
-  "lastFeedStart": "20251001"
+  "lastFeedStart": "20260621",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3534/latest.zip"
 }
