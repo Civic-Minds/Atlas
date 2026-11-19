@@ -67,6 +67,8 @@ export const STUDIO_COVERAGE_PATH = '/studio/coverage';
 
 /** CIV-1872: the local-only home page listing every local-only page; the "Internal" tag beside the Atlas name opens it. Dev server only. */
 export const INTERNAL_PATH = '/internal';
+/** CIV-1900: the Atlas Studio MCP's internal docs page (dev server only). */
+export const MCP_DOCS_PATH = '/internal/mcp';
 
 /** The map's address parameter that opens an agency card (`/?operator=<slug>`); shareUrlState.ts re-exports it (CIV-1783). */
 export const AGENCY_CARD_PARAM = 'operator';

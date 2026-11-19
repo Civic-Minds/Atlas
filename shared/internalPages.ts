@@ -1,5 +1,6 @@
 import { HEADER_TAG_INTERNAL } from './siteMode';
-import { INTERNAL_PATH, LIVE_PATH, PLANNERS_PATH, RESEARCHERS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
+import { INTERNAL_PATH, LIVE_PATH, MCP_DOCS_PATH, PLANNERS_PATH, RESEARCHERS_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH } from './rules/paths';
+import { MCP_DOCS } from './mcpDocsCopy';
 
 /**
  * The local-only pages (CIV-1872): the /internal home page lists each once, in groups, and the content-page header's
@@ -30,6 +31,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
     pages: [
       { title: 'Studio', description: 'Schedule changes and buses needed, for one agency at a time.', path: STUDIO_PATH },
       { title: 'Coverage', description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
+      { title: MCP_DOCS.title, description: MCP_DOCS.card, path: MCP_DOCS_PATH },
     ],
   },
   {
