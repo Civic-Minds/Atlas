@@ -1,0 +1,44 @@
+/**
+ * CIV-1900: the words on the MCP docs page (/internal/mcp). New UI text, waiting on Ryan's word-for-word OK. The tool
+ * list itself is not here: the page reads it from the tool definitions (scripts/mcp/toolDefs.ts).
+ */
+export const MCP_DOCS = {
+  title: 'Atlas Studio MCP',
+  card: 'What the MCP answers, its tools, how fresh its data is and how to connect it.',
+  intro: 'The Atlas Studio MCP lets Claude answer a planner’s questions from Atlas’s own data. It only reads Atlas’s published figures; it changes nothing and reaches nothing outside Atlas.',
+  answers: {
+    heading: 'What it answers',
+    items: [
+      'How often a route runs in each part of the day, with its first and last trips and its branches.',
+      'Which routes run every N min or better, in one agency or across several, and how agencies rank.',
+      'Routes near a corner, station or stop, trip times between two stops, and how often any route leaves between them.',
+      'How a route’s frequency has changed over the years, from History.',
+      'Buses needed for a route, and what changed between two schedules, from Studio’s files.',
+      'How a route ran against its schedule and how evenly its vehicles were spaced, from Live’s recordings (past service only).',
+    ],
+    outside: 'It has no ridership, crowding or reasons for a change, and no figures for how a route is running right now. When a tool has no figure, the answer says so.',
+  },
+  tools: {
+    heading: 'Tools',
+    intro: 'Every tool, as the MCP describes it to Claude.',
+    name: 'Tool', title: 'What it does',
+    liveTag: 'Local only',
+    liveNote: 'Tools marked Local only answer from Live’s recordings. The hosted server leaves them out until they are switched on.',
+  },
+  freshness: {
+    heading: 'How fresh the data is',
+    items: [
+      'On this Mac, the MCP reads the newest published release saved here, so it is as fresh as the last time that copy was updated.',
+      'The hosted server follows each published release by itself, within a minute of it going live.',
+      'Every answer gives the hours it covers and the date the agency’s schedule runs to.',
+      'Live figures cover past weeks of recordings, never the current hour.',
+    ],
+    version: (v: string) => `Server version ${v}.`,
+  },
+  connect: {
+    heading: 'Connect it to Claude',
+    code: 'Claude Code, for every project:',
+    desktop: 'Claude Desktop: add this to claude_desktop_config.json, then quit and reopen Claude Desktop:',
+    hosted: 'Testers use the hosted server through a private link made for each of them. They add it in Claude as a custom connector.',
+  },
+} as const;
