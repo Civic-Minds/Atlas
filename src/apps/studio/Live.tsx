@@ -23,7 +23,6 @@ import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
-import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
 
@@ -74,7 +73,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // A planner's own cut-offs (CIV-1886), kept across routes while Studio is open.
   const [cutoffs, setCutoffs] = useState<SetCutoffs>({});
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const routeMenu = useChipRow<string>();
   const pickRoute = (r: string | null) => { setRoute(r); if (!r) setDir(null); setPick(null); };
   const m = useLiveBody({ agency: slug, agencyName, s, route, setRoute: pickRoute, dir, setDir, band, measure, pick, setPick });
 
@@ -127,16 +125,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={agencyName}>
           {dataUpTo}
           <PanelBody className="px-3 pt-3 pb-3">
-            {/* CIV-1878 (Ryan picked option 1): the first thing is a route dropdown listing every route, the map's own chip and dropdown (ChipMenu), so a long list never makes the panel scroll; its list scrolls inside itself. The stretch list lives in each route's own view. */}
-            <div ref={routeMenu.rowRef}>
-              <ChipMenu label={ROUTE_MENU_LABEL} active={false} width="w-full" arrow open={routeMenu.openChip === 'route'} onToggle={() => routeMenu.toggle('route')}
-                panelClassName="!static !mt-1 max-h-[40vh] overflow-y-auto">
-                {m.routeOptions.filter(([k]) => k !== '').map(([k, text, plain]) => (
-                  <button key={k} type="button" aria-label={plain} onClick={() => { m.openRoute(k); routeMenu.setOpenChip(null); }} className={chipRowClass(false)}>{text}</button>
-                ))}
-              </ChipMenu>
-            </div>
-            <div className="mt-3"><LiveGlance s={s} days={m.networkDates} /></div>
+            {/* CIV-1878 (Ryan, "1"): one route selector, the top bar's Route chip (its list scrolls inside the chip); the panel opens with the at-a-glance lines and the week table. */}
+            <LiveGlance s={s} days={m.networkDates} />
             <WidgetPanel widgets={m.summary} />
           </PanelBody>
         </Panel>
