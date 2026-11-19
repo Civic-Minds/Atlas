@@ -154,6 +154,15 @@ export function headlineDeparturesInWindow(times: readonly number[], start: numb
   return t.length >= HEADLINE_MIN_DEPARTURES ? t : null;
 }
 
+/**
+ * CIV-1764 dry run (not approved): whether a departure at exactly a window's end counts where the median, steadiness and
+ * sparse readers ask for it. Only the Overnight window's end (6:00, the AM peak's start) can say no, by
+ * OVERNIGHT_COUNTS_END_DEPARTURE. The one definition: every reader of an inclusive window end goes through it.
+ */
+export function countsEndDeparture(end: number): boolean {
+  return OVERNIGHT_COUNTS_END_DEPARTURE || end !== PERIODS.overnight.end;
+}
+
 /** Rail's own midday window (09:30 to 14:30); the constant lives in shared/rules/frequency.ts so the Docs page reads it too. */
 export { RAIL_TIER_WINDOW };
 
@@ -164,7 +173,7 @@ export function medianHeadwayInWindow(
   minDeps = 2,
   typical = false,
 ): number | null {
-  const times = [...new Set(departureTimes)].filter(t => t >= start && t <= end).sort((a, b) => a - b);
+  const times = [...new Set(departureTimes)].filter(t => t >= start && (countsEndDeparture(end) ? t <= end : t < end)).sort((a, b) => a - b);
   if (times.length < minDeps) return null;
   const gaps: number[] = [];
   for (let i = 1; i < times.length; i++) gaps.push(times[i] - times[i - 1]);
@@ -197,7 +206,7 @@ export function forCrossMidnightWindow(departureTimes: number[], windowEnd: numb
  */
 export function departuresInWindow(times: readonly number[], start: number, end: number, includeEnd: boolean): number[] {
   return [...new Set(forCrossMidnightWindow([...times], end))]
-    .filter(t => t >= start && ((includeEnd && (OVERNIGHT_COUNTS_END_DEPARTURE || end !== PERIODS.overnight.end)) ? t <= end : t < end))
+    .filter(t => t >= start && ((includeEnd && countsEndDeparture(end)) ? t <= end : t < end))
     .sort((a, b) => a - b);
 }
 

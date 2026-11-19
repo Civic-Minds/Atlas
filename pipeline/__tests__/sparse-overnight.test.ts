@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
-import { OVERNIGHT_COUNTS_END_DEPARTURE } from '../../shared/rules/periods';
 import { describe, expect, it } from 'vitest';
 import { computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, isSustainedHeadway, isSparseOvernightWindow, periodHeadwayInWindow, periodMedianHeadway, sparseOvernightHeadway, computePeriodSustained } from '../headway-utils';
+import { pooledReadingInWindow } from '../stopPools';
 import { decidePeriod } from '../routeGrading';
 import { overnightPeriodValues } from '../overnightTerminal';
 import { processGtfsBuffer } from '../process-core';
@@ -184,11 +184,8 @@ describe('three night departures plus a 06:00 trip (CIV-1746)', () => {
   it('shows no overnight value on the row or any stop, with or without a 06:00 trip', async () => {
     for (const night of [at('02:04', '02:19', '05:48', '06:00'), at('02:04', '02:19', '05:48')]) {
       const p = await route(night);
-      // CIV-1764 dry run FINDING: with 06:00 dropped from the window (the fixture day starts at 06:00), the pooled readers see three departures and
-      // no longer withhold the row's value, so the 06:00 case reads 112 (the mean of 15 and 209) instead of none.
-      const leaks = !OVERNIGHT_COUNTS_END_DEPARTURE;
-      expect(p.headwayByPeriod.overnight ?? null).toBe(leaks ? 112 : null);
-      for (const stop of Object.values(p.stopPeriodHeadways ?? {}) as any[]) if (!leaks) expect(stop.overnight ?? null).toBeNull();
+      expect(p.headwayByPeriod.overnight ?? null).toBeNull();
+      for (const stop of Object.values(p.stopPeriodHeadways ?? {}) as any[]) expect(stop.overnight ?? null).toBeNull();
     }
   });
 });
@@ -199,5 +196,20 @@ describe('periodMedianHeadway: a period\'s median before #897 withholds it (CIV-
     const sparse = at('26:00', '26:10', '29:00');
     expect(periodHeadwayInWindow(sparse, 'overnight')).toBeNull();
     expect(periodMedianHeadway(sparse, 'overnight')).toBe(sparseOvernightHeadway(sparse));
+  });
+});
+
+describe('pooled stop reader already withholds a sparse night (CIV-1764 dry run, #897)', () => {
+  // Three night departures, a close pair then a hole (TTC 63 Saturday at Liberty Village), with no 06:00 trip.
+  const m = (h: number, min: number) => h * 60 + min;
+  const night = [m(2, 4), m(2, 19), m(5, 48)];
+  it('withholds the value and keeps the longest wait', () => {
+    const r = pooledReadingInWindow(night, 26 * 60, 30 * 60, 3, false, night);
+    expect(r.value).toBeNull();
+    expect(r.worstWait).toBe(209);
+  });
+  it('still reads a steady three-departure night', () => {
+    const steady = [m(2, 0), m(2, 30), m(3, 0)];
+    expect(pooledReadingInWindow(steady, 26 * 60, 30 * 60, 3, false, steady).value).toBe(30);
   });
 });
