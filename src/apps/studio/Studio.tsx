@@ -6,6 +6,7 @@ import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
+import { useStudioAbout } from '../../context/StudioAbout';
 import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
 import { sidebarFrameStyle } from '../../styles';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
@@ -72,6 +73,11 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: slug, route: null }));
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
+  // The About menu's Studio text reads these (CIV-1890).
+  const { setAbout } = useStudioAbout();
+  const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
+  useEffect(() => { setAbout({ live: listOf(liveList) ?? [], fleet: listOf(fleetList) ?? [], agency: selected }); }, [setAbout, liveList, fleetList, selected]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => setAbout(null), [setAbout]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
 
