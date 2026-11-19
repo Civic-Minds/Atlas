@@ -22,3 +22,34 @@ export function isPeriodExcluded(excludes: HistoryPeriodExcludes, slug: string, 
 export function identitySplitApplies(flagOn: boolean, keys: HistoryIdentityKeys, slug: string, routeKey: string): boolean {
   return flagOn || (keys[slug]?.includes(routeKey) ?? false);
 }
+
+/**
+ * Period-scoped key remaps (CIV-437, `config/history-period-remaps.json`, `{slug: [{key, before, to}]}`): an item filed
+ * under `key` in a period whose key sorts before `before` (an 8-digit date, e.g. "20230101") is filed under `to`
+ * instead. For a feed that reuses one route key for different lines over time (LA Metro rail: 804 was the Gold Line
+ * until 2022 and the E Line from 2023, while Expo was 806). Every rule reads the item's ORIGINAL key, so one run can
+ * swap keys ("804 before 2023 to L Gold" and "806 before 2023 to 804" do not chain). Runs before the alias fold and the
+ * identity split. Pure.
+ */
+export type HistoryPeriodRemaps = Record<string, Array<{ key: string; before: string; to: string }>>;
+
+export function remapKeysByPeriod<T>(
+  routes: Record<string, T[]>,
+  rules: HistoryPeriodRemaps[string] | undefined,
+  periodKey: (item: T) => string,
+): { routes: Record<string, T[]>; moved: number } {
+  if (!rules?.length) return { routes, moved: 0 };
+  const out: Record<string, T[]> = {};
+  let moved = 0;
+  for (const [key, items] of Object.entries(routes)) {
+    const mine = rules.filter(r => r.key === key);
+    if (mine.length === 0) { (out[key] ??= []).push(...items); continue; }
+    if (items.length === 0) out[key] ??= [];
+    for (const item of items) {
+      const hit = mine.find(r => periodKey(item) < r.before);
+      if (hit) moved++;
+      (out[hit ? hit.to : key] ??= []).push(item);
+    }
+  }
+  return { routes: out, moved };
+}
