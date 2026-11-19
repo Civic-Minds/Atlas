@@ -42,7 +42,7 @@ export default function CategorySpark({ columns: allColumns, keepEmpty = false, 
       {/* Each column, its count, bar and name, is one target for the pointer, tap and keyboard, with the pointer cursor throughout (#1290). */}
       <div className="relative mt-2.5 select-none pt-4" style={{ paddingLeft: AXIS_W }} onMouseLeave={clear}>
         <div className="absolute inset-x-0 top-4" style={{ height }} aria-hidden="true">
-          <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => countText(t)} textClassName="text-[var(--text-primary)]" />
+          <SparkTicks ticks={ticks} y={t => height - pos(t)} format={t => countText(t)} />
         </div>
         <div role="group" aria-label={label} aria-details={details} className="relative flex gap-1">
           {columns.map(c => {

@@ -121,25 +121,25 @@ export default function RunTimeChart({ hours, scale, ariaLabel, minN = 5, height
             {hover != null && <rect x={x(hover) - colW / 2} y={PAD_TOP - 6} width={colW} height={H - PAD_TOP - PAD_BOTTOM + 6} rx={3} fill="var(--bg-btn-hover)" />}
             {!compact && ticks.map(t => (
               <g key={t}>
-                <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(t)} y2={y(t)} stroke="var(--border-primary)" strokeWidth={1} />
-                <text x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={13} fill="var(--text-dim)">{t}</text>
+                <line x1={AXIS_W} x2={AXIS_W + plotW} y1={y(t)} y2={y(t)} stroke="var(--border-primary)" strokeWidth={1} opacity={0.7} />
+                <text x={AXIS_W - 6} y={y(t) + 4} textAnchor="end" fontSize={12} fill="var(--text-dim)">{t}</text>
               </g>
             ))}
-            {!compact && <text x={0} y={10} fontSize={13} fill="var(--text-dim)">min</text>}
+            {!compact && <text x={0} y={10} fontSize={12} fill="var(--text-dim)">min</text>}
             {runs.map((r, k) => r.length > 1 && (
               <path key={`band${k}`} d={`${path(r, p => p.p90Min)}${[...r].reverse().map(p => `L${x(p.i)},${y(p.typicalMin)}`).join('')}Z`} fill="var(--strip-delay-1)" opacity={0.18} />
             ))}
             {runs.map((r, k) => r.length > 1 && <path key={`s${k}`} d={path(r, p => p.scheduledMin)} fill="none" stroke="var(--text-secondary)" strokeWidth={1.5} strokeDasharray="4 3" />)}
             {runs.map((r, k) => r.length > 1 && <path key={`u${k}`} d={path(r, p => p.typicalMin)} fill="none" stroke="var(--text-primary)" strokeWidth={2} strokeLinejoin="round" />)}
-            {pts.map(p => <circle key={p.i} cx={x(p.i)} cy={y(p.typicalMin)} r={3.5} fill="var(--text-primary)" stroke="var(--bg-primary)" strokeWidth={1.5} opacity={p.n >= minN ? 1 : 0.35} />)}
+            {pts.map(p => <circle key={p.i} cx={x(p.i)} cy={y(p.typicalMin)} r={3.5} fill="var(--text-primary)" stroke="var(--bg-panel)" strokeWidth={1.5} opacity={p.n >= minN ? 1 : 0.35} />)}
             {!compact && last && ends.map(l => (
               <line key={`lead${l.key}`} x1={x(last.i) + 6} y1={l.y} x2={AXIS_W + plotW + 6} y2={l.top + 7} stroke="var(--text-dim)" strokeWidth={1} opacity={0.5} />
             ))}
             {!compact && ends.map(l => l.lines.map((t, k) => (
-              <text key={`${l.key}${k}`} x={AXIS_W + plotW + 10} y={l.top + 11 + k * 14} fontSize={13} fontWeight={l.weight} fill={l.color}>{t}</text>
+              <text key={`${l.key}${k}`} x={AXIS_W + plotW + 10} y={l.top + 11 + k * 14} fontSize={12} fontWeight={l.weight} fill={l.color}>{t}</text>
             )))}
             {axis.map((h, i) => SPARKLINE_HOUR_LABELS[h] && (
-              <text key={h} x={x(i)} y={H - 4} textAnchor="middle" fontSize={13} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
+              <text key={h} x={x(i)} y={H - 4} textAnchor="middle" fontSize={12} fill="var(--text-dim)">{SPARKLINE_HOUR_LABELS[h]}</text>
             ))}
             {pts.map(p => (
               <rect key={`hit${p.i}`} x={x(p.i) - colW / 2} y={PAD_TOP} width={colW} height={H - PAD_TOP - PAD_BOTTOM} fill="transparent" onPointerEnter={() => setHover(p.i)} onPointerDown={() => setHover(p.i)} />
