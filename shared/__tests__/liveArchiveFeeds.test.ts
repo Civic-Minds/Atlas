@@ -82,6 +82,13 @@ describe('recording shards match the archiver Workers', () => {
   it('marks exactly the shards whose Worker has a cron trigger', () => {
     for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id), s.id).toBe('recording' in s && s.recording === true);
   });
+  it('gives every shard without a cron a pause date and reason, and none to a recording shard', () => {
+    for (const s of LIVE_ARCHIVE_SHARDS) {
+      const recording = 'recording' in s && s.recording === true;
+      expect('paused' in s, s.id).toBe(!recording);
+      if ('paused' in s) expect(s.paused.since, s.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
   it('records TTC, Hamilton, Kingston and the MBTA Green Line', () => {
     expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'mbta', 'ttc']);
   });
