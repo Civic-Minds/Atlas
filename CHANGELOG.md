@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's "Where bunching forms" table shows each stretch's share before and after, like "10% to 41%"**: "+31 pt" gave only the rise, not where it started
 - **A route card row no longer repeats its notice in an info icon**: the first-or-last-trip reason is said once, in the notice at the bottom of the card
 - **History keeps a route on the map in years its service didn't change**: on older History data a route vanished in those years, which read as if it hadn't run; it now shows its last number, only between years Atlas has its schedules ([#1591](https://github.com/Civic-Minds/Atlas/issues/1591))
 - **Charts that had drifted now match the shared chart look**: Live's run-time chart gets the same text size and faint gridlines as the charts beside it, and its usual-time dots get the outline they were meant to have; axis numbers on the Free child fares ages chart are grey like every other chart's

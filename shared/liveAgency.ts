@@ -49,7 +49,9 @@ export interface AgencyRouteRow {
 }
 
 export interface AgencyHotspotStop { route: string; routeLabel: string; stopId: string; name: string; directionId: number; direction: string; lateShare: number; medianMin: number; p90Min: number; n: number; lat?: number; lon?: number }
-export interface AgencyHotspotStretch { route: string; routeLabel: string; directionId: number; direction: string; fromStopId: string; toStopId: string; fromName: string; toName: string; value: number; n: number; from?: [number, number]; to?: [number, number] }
+export interface AgencyHotspotStretch { route: string; routeLabel: string; directionId: number; direction: string; fromStopId: string; toStopId: string; fromName: string; toName: string; value: number; n: number; from?: [number, number]; to?: [number, number];
+  /** Bunching only (CIV-1805): the share bunched or gapped at the stretch's first and last stop. Older files: absent. */
+  fromShare?: number; toShare?: number }
 
 export interface AgencySummary {
   schema: 1;
@@ -217,7 +219,7 @@ export function agencySummary(input: {
     if (!s || s.rise <= 0) return [];
     const n = band.stops.find(x => x.stopId === s.toStopId)?.n ?? 0;
     if (n < AGENCY_MIN_N) return [];
-    return [{ route, routeLabel: label, directionId: d.directionId, direction: dirLabel(v3, d.directionId), fromStopId: s.fromStopId, toStopId: s.toStopId, fromName: s.fromName, toName: s.toName, value: s.rise, n }];
+    return [{ route, routeLabel: label, directionId: d.directionId, direction: dirLabel(v3, d.directionId), fromStopId: s.fromStopId, toStopId: s.toStopId, fromName: s.fromName, toName: s.toName, value: s.rise, n, fromShare: s.fromBadShare, toShare: s.toBadShare }];
   })).sort((a, b) => b.value - a.value).slice(0, topStretches);
 
   return {
