@@ -1,7 +1,8 @@
-import { useId, useState, type Key } from 'react';
+import { useId, type Key } from 'react';
 import DataTable from '../ui/DataTable';
 import { niceAxis } from './ProfileBars';
 import { useWidth } from './RunTimeChart';
+import { AXIS_W } from './sparkParts';
 import { CHART_COUNT, CHART_TEXT, FADED_OPACITY, useActivePart } from './useActivePart';
 
 /** One dot: a thing with two measures. */
@@ -15,7 +16,7 @@ export interface ScatterPoint {
   sentence: string;
 }
 
-const PAD = { top: 10, right: 12, bottom: 34, left: 44 };
+const PAD = { top: 10, right: 12, bottom: 34, left: AXIS_W };
 
 /**
  * A scatter plot in the chart collection's look (CIV-1915, CIV-1173): faint gridlines, grey axis text at 12px, dots with a

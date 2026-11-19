@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import DataTable from '../ui/DataTable';
 import { niceAxis } from './ProfileBars';
 import { useWidth } from './RunTimeChart';
+import { AXIS_W } from './sparkParts';
 import { CHART_COUNT, CHART_TEXT } from './useActivePart';
 
 /** One dot on the line: a value at a place along the x axis. */
@@ -15,7 +16,7 @@ export interface LinePoint {
   sentence: string;
 }
 
-const PAD = { top: 10, right: 12, bottom: 24, left: 44 };
+const PAD = { top: 10, right: 12, bottom: 24, left: AXIS_W };
 
 /**
  * A line chart in the chart collection's look (CIV-1915, CIV-1173): faint gridlines, grey 12px axis text, a solid line with
