@@ -12,6 +12,18 @@ import type { AtlasStore, IndexedAgency, McpAgency, McpAgencyMeta, McpFeature, M
 /** The Atlas checkout the server reads (this file's repo by default). */
 export const ATLAS_ROOT = resolve(process.env.ATLAS_ROOT ?? join(import.meta.dirname, '..', '..'));
 
+/**
+ * A file Studio built for an agency (tmp/studio/<name>): in this checkout, else in the bundle worktree where Studio's dev
+ * server builds them. One lookup for every tool, so schedule_changes and buses_needed agree on what exists (#1616).
+ */
+export function studioFile(name: string): string | null {
+  for (const dir of [join(ATLAS_ROOT, 'tmp', 'studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees', 'bundle', 'tmp', 'studio')]) {
+    const file = join(dir, name);
+    if (existsSync(file)) return file;
+  }
+  return null;
+}
+
 type RouteFile = { features: Array<{ geometry: { type: string; coordinates?: [number, number] } | null; properties: Record<string, unknown> }> };
 
 /** Each agency with a route file on disk, and where it is. */
@@ -119,11 +131,8 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
     },
     async historyRoute(slug, i) { return (await allHistory())?.find(a => a.slug === slug)?.routes[i] ?? null; },
     async comparison(slug) {
-      for (const dir of [join(ATLAS_ROOT, 'tmp/studio'), join(ATLAS_ROOT, '..', 'Atlas-worktrees/bundle/tmp/studio')]) {
-        const file = join(dir, `${slug}-before-after.json`);
-        if (existsSync(file)) return JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile;
-      }
-      return null;
+      const file = studioFile(`${slug}-before-after.json`);
+      return file ? JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile : null;
     },
     allHistory,
     evict(slug) { features.delete(slug); },
