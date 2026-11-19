@@ -40,6 +40,7 @@ const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 // Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
 const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
+const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./McpDocsPage')) : () => null;
 const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
 const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
 
@@ -108,6 +109,8 @@ ReactDOM.createRoot(rootElement).render(
           {/* CIV-1871: what each agency has, local only; its address only, no link to it yet. */}
           {/* CIV-1872: the local-only home page; its "Internal" tag link and the header's internal links are dev only too. */}
           {FEATURES.internal && <Route path={FEATURE_ROUTES.internal} element={<InternalHomePage />} />}
+          {/* CIV-1900: the MCP's internal docs page, linked from /internal. */}
+          {FEATURES.internal && <Route path={FEATURE_ROUTES.mcpDocs} element={<McpDocsPage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioCoverage} element={<StudioCoveragePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
