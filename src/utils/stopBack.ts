@@ -30,6 +30,7 @@ export interface StopBackAgency {
   name: string;
   cities?: string[];
   displayArea?: string;
+  nameQualifier?: string;
   onDemandOnly?: boolean;
   onDemandServiceArea?: OnDemandServiceDetails;
 }
@@ -97,7 +98,7 @@ export function resolveStopBack(
     const agency = agencies.find(a => a.slug === slug);
     if (!agency) return MAP;
     const to = agency.onDemandServiceArea
-      ? onDemandCardName(agency.onDemandServiceArea, onDemandSelectionZoneId(target.selection), agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card.primary)
+      ? onDemandCardName(agency.onDemandServiceArea, onDemandSelectionZoneId(target.selection), agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: agency.nameQualifier }).card.primary)
       : agencyNames(agency.name).backLink;
     return to ? { to, target } : MAP;
   }
@@ -107,7 +108,7 @@ export function resolveStopBack(
   // An on-demand-only agency opens the on-demand card, so the link uses that card's heading.
   const opensOnDemandCard = resolveSelectedOnDemandSlug(null, agency.slug, agencies) === agency.slug && agency.onDemandServiceArea;
   const to = opensOnDemandCard
-    ? onDemandCardName(agency.onDemandServiceArea!, null, agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).card.primary)
+    ? onDemandCardName(agency.onDemandServiceArea!, null, agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: agency.nameQualifier }).card.primary)
     : agencyNames(agency.name).backLink;
   return to ? { to, target } : MAP;
 }

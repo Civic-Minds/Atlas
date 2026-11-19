@@ -58,6 +58,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 ### What the map shows and never shows
 
+- **One entry per agency or region, everywhere**
+  - What: an agency split across feeds (MTA New York, exo, Maryland Transit Administration, Bustang) is one entry wherever agencies are listed, counted, ranked or compared: the map's agency picker, search and In view list, the count pills, the agency index and pages, Studio (Coverage included) and the Atlas Studio MCP tools (list_agencies, rank_agencies, compare_agencies). A route in two of its feeds (same name, mode and long name) counts once. The feeds stay separate in the data; the grouping happens when it is read, in the one shared module `shared/agencyGroups.ts`, and a guard test fails if a list skips it.
+  - Why: the site listed MTA New York as nine feeds on some screens and one agency on others.
+  - Source: [decision log](#decision-log) (2026-11-19), Linear CIV-1963
+
 - **Understate rather than overstate**
   - What: when evidence is thin, show less or say there is not enough; never a plausible number that is not backed.
   - Why: overstating service is worse than understating it, because riders plan around it.
@@ -268,6 +273,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-19 — One entry per agency or region, everywhere
+CIV-1963 (#1610): Studio Coverage listed MTA New York's feeds as separate rows while the agency index and the map's picker showed one MTA New York. The rule is now one entry per agency or region on every screen and tool that lists, counts, ranks or compares agencies, with a route in two of a parent's feeds counted once (as its own page already counted them). Feeds are not merged in the pipeline; `shared/agencyGroups.ts` groups them at read time for the site and the MCP tools alike.
 
 ### 2026-11-19 — A slower end stop colours only its own end piece
 Ryan, 2026-11-19 (CIV-845), choosing between #1093's options for a shared stretch whose end stop is one tier slower: "1" (V0, ungated, over the gated version and over keeping today's colouring). On a drawn stretch of 3 or more stops, an end stop strictly worse in public tier than every other stop colours only the piece between it and its neighbour; the rest of the stretch takes the worst of the remaining stops. Only one end can be peeled by this test, since it must be worse than the other end too. The all-day value keeps the one-colour rule. Display only: no published value, stop card, filter result or pipeline gate changes, and no piece is ever better than the worse of its own two stops.

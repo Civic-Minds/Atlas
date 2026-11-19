@@ -8,7 +8,7 @@ import type { PeriodKey } from './config';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
 
 /** One public agency as the catalog lists it. */
-export interface McpAgency { slug: string; name: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
+export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
 
 /** A route line from an agency's published route file (GeoJSON LineString), before the map's own normalisation. */
 export interface McpFeature { geometry: { type: string } | null; properties: Record<string, unknown> }

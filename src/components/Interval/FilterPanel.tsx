@@ -478,7 +478,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                     <div className="divide-y divide-[var(--border-primary)]">
                       {filteredDegradedFeeds.map(agency => {
                         const quality = agency.feedQuality!;
-                        const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea }).list;
+                        const { primary, secondary } = agencyNames({ name: agency.name, cities: agency.cities, displayArea: agency.displayArea, nameQualifier: agency.nameQualifier }).list;
                         const checkedDate = shortDate(quality.checkedAt) ?? quality.checkedAt;
                         return (
                           <div key={agency.slug} className="py-3 first:pt-2">

@@ -36,9 +36,19 @@ export function groupAgencies<T extends { slug: string; parentAgency?: string | 
   return out;
 }
 
+/** The feed an entry takes its place and card from: the member on the parent's own slug (exo's trains), else its first. */
+export function groupHome<T extends { slug: string }>(g: AgencyGroup<T>): T {
+  return g.members.find(m => m.slug === g.slug) ?? g.members[0];
+}
+
 /** The entry's name: the parent's for a parent, else the agency's own (by `nameOf`). */
 export function agencyGroupName<T>(g: AgencyGroup<T>, nameOf: (a: T) => string): string {
   return g.parent ? g.parent.name : nameOf(g.members[0]);
+}
+
+/** The name one agency shows under in a list of entries: its parent's when it has one, else `own`. */
+export function agencyEntryName(a: { parentAgency?: string | null }, own: string): string {
+  return parentAgency(a.parentAgency ?? undefined)?.name ?? own;
 }
 
 /** How many entries these agencies show as: a parent once. */

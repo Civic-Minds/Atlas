@@ -1,4 +1,5 @@
 import { BACK_PLACES, backLinkLabel } from '../content/backLinks';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import AppLink from './ui/AppLink';
 import { shortDate } from '../../shared/dateText';
 import { mailto } from '../../shared/contact';
@@ -257,8 +258,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   }, [agencies, query, regionFilter, agencyFeatureFilters, liveBySlug, historyBySlug]);
 
   const byRegion = useMemo(() => {
-    const map = new Map<string, Agency[]>();
-    for (const a of filtered) {
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row under its name, opening its
+    // home feed.
+    const map = new Map<string, Array<Agency & { memberSlugs: string[] }>>();
+    for (const g of groupAgencies(filtered)) {
+      const home = groupHome(g);
+      const a = { ...home, name: agencyGroupName(g, x => x.name), ...(g.parent ? { nameQualifier: undefined } : {}), memberSlugs: g.members.map(m => m.slug) };
       const r = a.region ?? 'Other';
       if (!map.has(r)) map.set(r, []);
       map.get(r)!.push(a);
@@ -443,13 +448,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                     {[...byRegion.entries()].map(([region, list]) => (
                       <AgencyRegionSection key={region} region={region}>
                         {list.map(a => {
-                          const hasLive = liveBySlug.has(a.slug);
-                          const hasHistory = historyBySlug.has(a.slug);
+                          const hasLive = a.memberSlugs.some(slug => liveBySlug.has(slug));
+                          const hasHistory = a.memberSlugs.some(slug => historyBySlug.has(slug));
                           // The active status filter already explains why these rows are present.
                           // Repeating that same status on every row makes the filter feel inactive.
                           const showLiveBadge = FEATURES.live && hasLive && !agencyFeatureFilters.has('live');
                           const showHistoryBadge = FEATURES.history && hasHistory && !agencyFeatureFilters.has('history');
-                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list;
+                          const { primary, secondary } = agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea, nameQualifier: a.nameQualifier }).list;
                           const listLabel = secondary ? `${primary} · ${secondary}` : primary;
                           return (
                             <AgencyListRow

@@ -49,7 +49,7 @@ export default function StudioCoveragePage() {
   }, []);
 
   const rows = useMemo(() => coverageRows({
-    agencies: agencies.map(a => ({ slug: a.slug, name: agencyNames(a).name })),
+    agencies: agencies.map(a => ({ slug: a.slug, name: agencyNames(a).name, parentAgency: a.parentAgency })),
     historySlugs: (historyAgencyList as { slugs: string[] }).slugs,
     liveArchiveSlugs: LIVE_ARCHIVE_SLUGS,
     liveMapSlugs: LIVE_AGENCY_SLUGS,

@@ -46,9 +46,10 @@ export const MapContextPanel: React.FC<MapContextPanelProps> = ({ agencies, mode
   const filteredRouteGroups = useMemo(() => {
     const groups = new Map<string, { agencySlug: string; agencyName: string; routes: MapContextRoute[] }>();
     for (const route of routes) {
-      const group = groups.get(route.agencySlug) ?? { agencySlug: route.agencySlug, agencyName: route.agencyName, routes: [] };
+      const slug = route.groupSlug ?? route.agencySlug;
+      const group = groups.get(slug) ?? { agencySlug: slug, agencyName: route.agencyName, routes: [] };
       group.routes.push(route);
-      groups.set(route.agencySlug, group);
+      groups.set(slug, group);
     }
     // Same order as the agencies tab: most routes in view first, then A-Z. Routes inside each
     // agency keep the route-number order buildMapContextAgencies gave them.

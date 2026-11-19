@@ -42,3 +42,11 @@ describe('distinctAgencyNames (#1245)', () => {
     expect([...names.values()]).toEqual(['MTA NYCT Bus · Bronx', 'MTA NYCT Bus · Brooklyn', 'TTC']);
   });
 });
+
+describe('the place beside a name (CIV-1963)', () => {
+  it("prefers the qualifier that tells a feed apart over the first city its stops are in", () => {
+    const queens = { name: 'MTA NYCT Bus (Queens)', officialName: 'MTA NYCT Bus', nameQualifier: 'Queens', cities: ['Queens Village, New York', 'Bayside, New York'] };
+    expect(agencyNames(queens).list.secondary).toBe('Queens');
+    expect(agencyNames({ ...queens, displayArea: 'Queens and Brooklyn' }).list.secondary).toBe('Queens and Brooklyn');
+  });
+});

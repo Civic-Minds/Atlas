@@ -74,3 +74,23 @@ describe('routes drawn by segment layers (#1090)', () => {
   });
 });
 
+
+describe('a parent agency in view is one entry (CIV-1963)', () => {
+  const line = (slug: string, props: Record<string, unknown>): GeoJSON.Feature => ({ type: 'Feature', geometry: { type: 'LineString', coordinates: [[0, 0], [1, 1]] }, properties: { agencySlug: slug, routeBranch: null, routeType: 3, ...props } });
+  const agencies = [
+    { slug: 'nyct-bus-manhattan', name: 'MTA NYCT Bus (Manhattan)', parentAgency: 'mta-new-york' },
+    { slug: 'mta-bus-company', name: 'MTA Bus Company', parentAgency: 'mta-new-york' },
+    { slug: 'nj-transit-bus', name: 'NJ Transit' },
+  ] as any;
+
+  it('lists the feeds under the parent and counts a route in two of them once', () => {
+    const list = getMapContextAgenciesFromFeatures(agencies, [
+      line('nyct-bus-manhattan', { routeId: 'M106', routeShortName: 'M106', routeLongName: 'East Harlem - UWS' }),
+      line('mta-bus-company', { routeId: 'M106-b', routeShortName: 'M106', routeLongName: 'East Harlem - UWS' }),
+      line('mta-bus-company', { routeId: 'Q10', routeShortName: 'Q10', routeLongName: 'Kew Gardens - JFK' }),
+      line('nj-transit-bus', { routeId: '158', routeShortName: '158', routeLongName: 'Fort Lee' }),
+    ]);
+    expect(list.map(a => [a.name, a.routeCount])).toEqual([['MTA New York', 2], ['NJ Transit', 1]]);
+    expect(list[0].members).toEqual(['nyct-bus-manhattan', 'mta-bus-company']);
+  });
+});

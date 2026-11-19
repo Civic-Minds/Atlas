@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **[MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) is one agency everywhere, not one row per feed**: search, the In view list, the map's agency count, the agency browser, Studio and Atlas Studio's rankings and comparisons listed its subway, borough buses and railroads separately, and routes in two of its feeds counted twice; Queens buses are labelled Queens, not Queens Village
 - **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name

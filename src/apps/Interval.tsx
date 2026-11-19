@@ -1,4 +1,5 @@
 import { FOOTER_NOTICE_MEDIA_QUERY, PHONE_MEDIA_QUERY, phoneModeFlags, useMediaQuery } from '../hooks/useMediaQuery';
+import { agencyEntryCount } from '../../shared/agencyGroups';
 import { useOnDemandServiceSlugs, useOnDemandStatus } from '../hooks/useOnDemandData';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../mapOverlayLayout';
 import React, { useState, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
@@ -913,20 +914,23 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const researchCounts = useMemo(() => {
     if (!nightServiceView && !frequentServiceView) return null;
     if (nightServiceView) {
-      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds);
+      const night = countNightRoutesInView(layers, nightServiceFrequency, viewBounds, slug => agencies.find(a => a.slug === slug)?.parentAgency);
       return night.routes === 0 ? null : night;
     }
     const features = selectFrequentServiceFeatures(layers, { frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes });
     if (features.length === 0) return null;
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds count once, and so does a route in two of them.
+    const parentOf = new Map(agencies.map(a => [a.slug, a.parentAgency]));
     const routes = new Set<string>();
     const agencySlugs = new Set<string>();
     for (const feature of features) {
       const p = feature.properties as Record<string, unknown>;
-      routes.add(`${p.agencySlug}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`);
-      agencySlugs.add(String(p.agencySlug ?? ''));
+      const slug = String(p.agencySlug ?? '');
+      routes.add(`${parentOf.get(slug) ?? slug}::${p.routeShortName ?? ''}::${p.routeLongName ?? ''}`);
+      agencySlugs.add(slug);
     }
-    return { routes: routes.size, agencies: agencySlugs.size };
-  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
+    return { routes: routes.size, agencies: agencyEntryCount([...agencySlugs].map(slug => ({ slug, parentAgency: parentOf.get(slug) }))) };
+  }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes, agencies]);
 
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || bustangView || (maxHeadway === Infinity && period === 'all')) return false;
