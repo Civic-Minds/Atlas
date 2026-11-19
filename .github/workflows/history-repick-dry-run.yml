@@ -1,0 +1,152 @@
+name: History re-pick dry run
+
+# CIV-1313 / CIV-1839 (NOT FOR MERGE): count how many published History periods, routes and agencies would change if
+# older periods were re-picked with the vote picker (anchor = each zip's first full week in force). DRY RUN ONLY:
+# read-only R2 keys, no write step, no upload step; the report is a workflow artifact.
+#
+# A workflow not on the default branch cannot be dispatched (HTTP 404), so push a tag on this branch's commit:
+#   git tag dryrun/history-repick-1 <sha> && git push origin dryrun/history-repick-1
+# Optional one-agency trial: tag dryrun/history-repick-slug-<slug>-1 (for example dryrun/history-repick-slug-stm-1).
+# Once this file is on the default branch it can also be dispatched with `ref` (branch, tag or SHA) and `slugs`
+# (a comma list; empty = every agency with published History).
+on:
+  push:
+    tags:
+      - 'dryrun/history-repick-*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or SHA.'
+        required: false
+        default: main
+        type: string
+      slugs:
+        description: 'Comma list of agency slugs; empty = every agency with published History.'
+        required: false
+        default: ''
+        type: string
+
+env:
+  TZ: America/Toronto
+  ATLAS_HISTORY_V2: '1'
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      slugs: ${{ steps.list.outputs.slugs }}
+    env:
+      SLUGS_INPUT: ${{ inputs.slugs }}
+      REF_NAME: ${{ github.ref_name }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # Read-only keys: this workflow has no write-capable credential at all.
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: List the slugs
+        id: list
+        run: |
+          slugs="$SLUGS_INPUT"
+          if [[ "$REF_NAME" =~ ^dryrun/history-repick-slug-(.+)-[0-9]+$ ]]; then slugs="${BASH_REMATCH[1]}"; fi
+          if [ -n "$slugs" ]; then
+            json="$(node -e "const s=process.argv[1].split(',').map(x=>x.trim()).filter(Boolean);if(!s.every(x=>/^[a-z0-9][a-z0-9-]*\$/.test(x)))process.exit(1);console.log(JSON.stringify(s))" "$slugs")" || { echo "bad slug list: $slugs"; exit 1; }
+          else
+            json="$(npx tsx pipeline/history-v2-repick-report.ts --list-slugs | tail -n 1)"
+          fi
+          echo "slugs=$json" >> "$GITHUB_OUTPUT"
+          echo "$json"
+
+  repick:
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        slug: ${{ fromJSON(needs.discover.outputs.slugs) }}
+    env:
+      SLUG: ${{ matrix.slug }}
+      OUT: tmp/history-repick
+      NODE_OPTIONS: --max-old-space-size=6144
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
+      - name: Download the published sidecars and their zips (read-only)
+        run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT/in"
+      - name: Build each period as published and re-picked, and compare
+        run: npx tsx pipeline/history-v2-repick-report.ts --slug "$SLUG" --in "$OUT/in" --out "$OUT/report" 2>&1 | tee "$OUT/repick.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: history-repick-${{ matrix.slug }}
+          path: |
+            ${{ env.OUT }}/report/
+            ${{ env.OUT }}/in/sources.json
+            ${{ env.OUT }}/repick.log
+          retention-days: 30
+          if-no-files-found: warn
+
+  summary:
+    needs: repick
+    if: always() && needs.repick.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: history-repick-*
+          path: tmp/reports
+      - name: Totals
+        run: |
+          npx tsx pipeline/history-v2-repick-report.ts --summarize tmp/reports --md tmp/summary.md
+          cat tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: history-repick-summary
+          path: |
+            tmp/summary.md
+            tmp/reports/summary.json
+          retention-days: 30
