@@ -22,6 +22,7 @@ import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import StudioChips, { type StudioMenu } from './StudioChips';
+import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
 
 /**
  * Live, the first page of Atlas Studio on the main map (CIV-1828 step 2): where vehicles lose time, stop to stop, from the
@@ -67,6 +68,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const [measure, setMeasure] = useState<MapMeasure | null>(null);
   const [dir, setDir] = useState<number | null>(null);
   const [pick, setPick] = useState<MapPick | null>(null);
+  // A planner's own cut-offs (CIV-1886), kept across routes while Studio is open.
+  const [cutoffs, setCutoffs] = useState<SetCutoffs>({});
   const cardRef = useRef<HTMLDivElement | null>(null);
   const pickRoute = (r: string | null) => { setRoute(r); if (!r) setDir(null); setPick(null); };
   const m = useLiveBody({ agency: slug, agencyName, s, route, setRoute: pickRoute, dir, setDir, band, measure, pick, setPick });
@@ -91,6 +94,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     { key: 'route', label: 'Route', value: route ?? '', options: m.routeOptions, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
+    route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
   const routeRow = route ? s.routes.find(r => r.route === route) : null;
@@ -110,6 +114,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               </SidebarCardHeaderBlock>
               <DataUpTo dates={m.dataDates} route={m.dataRoute} />
               {m.routeBody && <WidgetPanel widgets={m.routeBody} />}
+              {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
             </SidebarCardShell>
           </PanelBody>
         </Panel>

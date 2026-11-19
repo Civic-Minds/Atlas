@@ -85,3 +85,14 @@ export const LIVE_POLL_SEC = 15;
 export const DEFAULT_LIVE_ARCHIVE_BUCKET = 'atlas-live';
 /** Agencies archived to a bucket of their own (each archiver's wrangler file binds the same one: liveRules.test.ts). */
 export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { kingston: 'atlas-live-kingston' };
+
+/**
+ * The cut-offs a planner may set for themselves (CIV-1869), in the units they set them. Steps match the counts Live
+ * keeps (shared/liveCutoffs.ts), so every figure is exact. Ranges settled by the manager (2026-11-18), not by Ryan.
+ */
+export const CUTOFF_LIMITS = {
+  lateAfterMin: { min: 0, max: 30, step: 0.5 },
+  earlyBeforeMin: { min: 0, max: 10, step: 0.5 },
+  bunchedWithinMin: { min: 0.5, max: 10, step: 0.5 },
+  gappedFactor: { min: 1, max: 6, step: 0.25 },
+} as const;

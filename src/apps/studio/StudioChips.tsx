@@ -15,6 +15,8 @@ export interface StudioMenu {
   active?: boolean;
   /** The dropdown's width, and scroll for a long list. */
   panelClassName?: string;
+  /** The dropdown's own content in place of the list of options (CIV-1886: the cut-offs' rows of choices); `close` shuts it. */
+  content?: (close: () => void) => ReactNode;
 }
 
 /**
@@ -29,7 +31,7 @@ export default function StudioChips({ container, menus }: { container: Element |
       {menus.map(m => m && (
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
-          {m.options.map(([k, text, plain]) => (
+          {m.content ? m.content(() => setOpenChip(null)) : m.options.map(([k, text, plain]) => (
             <button key={k} type="button" aria-pressed={k === m.value} aria-label={plain}
               onClick={() => { m.onPick(k); setOpenChip(null); }} className={chipRowClass(k === m.value)}>
               {text}
