@@ -265,6 +265,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-19 — "Learn more" is only in the notice at the bottom
+Ryan, 2026-11-19 (CIV-1142): "learn more is only in the notice at the bottom". He said this was decided long ago, but it was not written down anywhere. "Learn more" appears only in the notice at the bottom of a card. Rows never carry a Learn more link, so "No regular service during this period" stays a plain label with no explainer. Written into docs/style/TEXT.md (Card notices).
+
 ### 2026-11-18 — Research chart defaults
 Ryan, 2026-11-18 (CIV-1173): picked 1A, 2A, 3A, 4A and 5A on the chart kit review page. Ranked bars for rankings; columns for spreads along a scale; a split bar for shares of a whole; dot pairs for two values compared; empty steps kept on a fixed scale (a 60-min row at 0 is shown, not dropped). He noted the A/B pairs are different chart types for different jobs, so each kind keeps the design its page already uses. Style rule: [VISUAL.md](../style/VISUAL.md), Charts, graphs and graphics.
 
