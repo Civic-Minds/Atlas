@@ -4,7 +4,7 @@ import { RouteTitleName } from '../../components/RouteRowName';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
-import { MapAppNote } from '../../components/MapApp/MapAppFooter';
+import { MapNote } from '../../components/ui/MapNote';
 import LiveMapKey from '../../components/Live/LiveMapKey';
 import { STUDIO_MAP_MEASURES, type MapMeasure } from '../../components/Live/routeMapModel';
 import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
@@ -132,7 +132,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         </Panel>
       )}
       {measure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>}
-      {m.note && <MapAppNote>{m.note}</MapAppNote>}
+      {m.note && <MapNote>{m.note}</MapNote>}
     </>
   );
 }
