@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
 - **Broward County Transit shows its own bus network, not a Fort Lauderdale shuttle**: Atlas was reading the city's 5-route LauderGO shuttle feed under Broward's name; it now reads the county's 44 bus routes ([#1500](https://github.com/Civic-Minds/Atlas/issues/1500))
 - **Live's 504 King report measures the streetcar, not the 504C replacement buses (local only)**: the buses ran more trips, so they were read as the main line and the streetcar as a branch; they are now left out and counted, as on the 506
 - **Atlas Studio says it has no current reading for a route Live doesn't record**: asking how TTC's 29 Dufferin was running right now listed every stop as unseen, which read as a real finding
