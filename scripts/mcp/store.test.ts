@@ -91,5 +91,11 @@ describe('a parent agency is one entry in the tools (CIV-1963)', () => {
     const one = await data.routesMeeting((await data.findAgency('FX'))!, 'Weekday', 'midday', 20);
     expect(await data.entryRoutesMeeting(entry, 'Weekday', 'midday', 20)).toEqual(one);
     expect((await data.agenciesNear('Toronto', 60))!.agencies.map(a => a.name)).toEqual(['MTA New York', 'Fixture Transit']);
+    // list_agencies: one row for the parent; include_parts also lists its feeds (#1625).
+    const { handlers } = await import('./tools');
+    const plain = await handlers.list_agencies({ query: 'MTA' }) as { agencies: string[]; parts?: unknown };
+    expect([plain.agencies.length, plain.agencies[0].startsWith('MTA New York |'), plain.parts]).toEqual([1, true, undefined]);
+    const withParts = await handlers.list_agencies({ query: 'MTA', include_parts: true }) as { parts: Record<string, string[]> };
+    expect(withParts.parts['MTA New York'].map(p => p.split(' | ')[0])).toEqual(['NYCT-BUS-MANHATTAN', 'MTA-BUS-COMPANY']);
   });
 });

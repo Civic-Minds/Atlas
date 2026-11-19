@@ -30,7 +30,7 @@ export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNot
 
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
-  list_agencies: async ({ query, region, country, near, km }) => {
+  list_agencies: async ({ query, region, country, near, km, include_parts }) => {
     if (near != null) {
       const res = await data.agenciesNear(String(near), km != null ? Number(km) : 60);
       if (!res) throw new Error(`No agency or city matching "${near}".`);
@@ -48,13 +48,15 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
         && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
     });
     const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
-    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))) }));
+    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))), parts: g.parent ? g.members : null }));
+    // include_parts (#1625): a parent agency's feeds too, each with its own schedule end, as rank_agencies lists them.
+    const parts = include_parts === true ? Object.fromEntries(hits.slice(0, 40).filter(h => h.parts).map(h => [h.name, h.parts!.map(m => `${m.name} | ${validThrough(m) ?? ''}`)])) : null;
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(parts && Object.keys(parts).length ? { parts, partsColumns: 'feed | schedule valid through' } : {}), ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
     const feeds = await data.rankAgencies();
