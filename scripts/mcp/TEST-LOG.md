@@ -403,3 +403,15 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 - RN6, now on live B-Line readings: no stop over twice the scheduled 12 minutes; the closest was 22.7 minutes, described as just short of a gap.
 - RN8: the Queen St West and Spadina stretch given as "none ran, or a detour", never as a gap.
 
+
+## 2026-11-19: CC1 to CC6, planners' own cut-offs on live files (CIV-1910, 0.13.1), Claude both ways
+
+- Setup: one headless chat per question, locked down and normal, against the local server on main (6af657cb6). The public TTC Live files carried `cutoffCounts` from the Nov 19 cloud run (504, 505 and 510 generated 18:21 to 18:23 UTC). Plus one route_now question on the TTC 29. Gemini not run: agy's quota is used up (resets in about five days). Chats: `_reports/mcp-tests/2026-11-19-cc-claude-*`.
+- 14 of 14 answered from the tools, each custom figure with its cut-off named and the standard figure beside it.
+- CC1: 504 late 8.1% at more than 3 minutes (standard 5.5: 3.5%). Locked noted the stop list is only at 5.5.
+- CC2: 510 bunched 39.1% under 4 minutes (standard 16.3%), with a note that 4 minutes sits near the 510's normal spacing. No combined bunched-or-gapped share at 4 minutes.
+- CC3: both said the ranking uses the standard, then fetched each streetcar at 3 minutes and ordered them by hand, each labelled (510 27.6% to 507 2.2%, 512 no data). Acceptable, though the good answer only needed per-route figures named.
+- CC4: 505 early 12.7%; both said the tool counts "1 minute or more", against the planner's "more than 1".
+- CC5: 504 gapped 0.1% at more than 3 times (standard twice: 2.1%).
+- CC6: both said cut-offs go in half-minute steps and gave the 5 and 5.5 figures as a range (3.5 to 4.3%), never one rounded number.
+- TTC 29 now: both said Atlas Live doesn't record the 29, so there's no current reading, and offered the schedule.
