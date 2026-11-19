@@ -140,6 +140,35 @@ describe('routesForYear / yearsAvailable', () => {
     ] }] };
     expect(routesForYear(dup, 2020)[0].snapshot.weekdayHeadwayMin).toBe(11);
   });
+  it('carries a route into a year its service did not change, on older data only (#1591)', () => {
+    const old = (year: number, h: number) => ({ label: String(year), year, weekdayHeadwayMin: h, periodKey: `${year}0901` });
+    const ag = { routes: [
+      { routeShortName: 'A', snapshots: [old(2016, 10), old(2019, 15)] },
+      { routeShortName: 'B', snapshots: [old(2016, 20), old(2017, 30), old(2018, 30), old(2019, 30)] },
+    ] };
+    // 2017 and 2018 have schedules (B changed or ran then); A didn't change, so it keeps its 2016 number.
+    expect(routesForYear(ag, 2017).map(r => [r.route.routeShortName, r.snapshot.weekdayHeadwayMin, r.carriedFrom])).toEqual([['A', 10, 2016], ['B', 30, undefined]]);
+    expect(routesForYear(ag, 2018)[0]).toMatchObject({ carriedFrom: 2016, periodKey: '20160901' });
+    // Nothing after a route's last snapshot, nothing before its first.
+    expect(routesForYear(ag, 2020)).toEqual([]);
+    expect(routesForYear({ routes: [{ routeShortName: 'A', snapshots: [old(2016, 10), old(2019, 15)] }, { routeShortName: 'C', snapshots: [old(2014, 5), old(2015, 6)] }] }, 2015)
+      .map(r => r.route.routeShortName)).toEqual(['C']);
+  });
+  it('never carries into a year with no schedule, or across year-by-year data', () => {
+    const old = (year: number, h: number) => ({ label: String(year), year, weekdayHeadwayMin: h });
+    // No route has a snapshot in 2017 or 2018, and no coverage is published: Atlas has no schedule then.
+    const sparse = { routes: [{ routeShortName: 'A', snapshots: [old(2016, 10), old(2019, 15)] }] };
+    expect(routesForYear(sparse, 2017)).toEqual([]);
+    // Published coverage decides when present.
+    expect(routesForYear({ ...sparse, coverageYears: [2016, 2017, 2019] }, 2017).map(r => r.carriedFrom)).toEqual([2016]);
+    expect(routesForYear({ ...sparse, coverageYears: [2016, 2019] }, 2018)).toEqual([]);
+    // v2 lists every year a route ran: a gap means it didn't run.
+    const v2ag = { coverageYears: [2016, 2017, 2018], routes: [{ routeShortName: 'A', snapshots: [
+      { label: 'a', year: 2016, weekdayHeadwayMin: 10, v2: v2('20160901', { h: 10 }) },
+      { label: 'b', year: 2018, weekdayHeadwayMin: 10, v2: v2('20180901', { h: 10 }) },
+    ] }] };
+    expect(routesForYear(v2ag, 2017)).toEqual([]);
+  });
   it('years ascending and unique', () => {
     expect(yearsAvailable(agency)).toEqual([2018, 2020]);
   });
