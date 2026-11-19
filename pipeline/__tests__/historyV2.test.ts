@@ -2,6 +2,7 @@ import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { periodWinner } from '../historyV2.js';
 import { computeFeedEvidence, positivelyNoService, weekendDay } from '../historyWeekend.js';
 import {
   baselineFingerprint, buildSidecar, buildV2Routes, fingerprintChanged, fingerprintOf, localDirSink,
@@ -464,5 +465,34 @@ describe('a snapshot dated after the build month (CIV-1124)', () => {
     const report = newBuildReport();
     const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([{ periodKey: '20261031', headway: 10 }], []), 2026, report, { buildYm: BUILD_YM });
     expect(snaps.map(s => s.label)).toEqual(['Oct 2026']);
+  });
+});
+
+describe('periodWinner (CIV-1929)', () => {
+  // gcrta 20261205: zips read at 20260805 and 20260923; communitytransit 20261211: 20260902 and 20261007.
+  const cases = [
+    ['gcrta', '20261205', '20260805', '20260923'],
+    ['communitytransit', '20261211', '20260902', '20261007'],
+  ] as const;
+
+  for (const [slug, key, older, newer] of cases) {
+    it(`${slug}: the newest refDate holds ${key} in either file-name order`, () => {
+      const olderFirst = new Map<string, string>();
+      expect(periodWinner(olderFirst, key, older)).toBe('first');
+      expect(periodWinner(olderFirst, key, newer)).toBe('replace');
+      expect(olderFirst.get(key)).toBe(newer);
+
+      const newerFirst = new Map<string, string>();
+      expect(periodWinner(newerFirst, key, newer)).toBe('first');
+      expect(periodWinner(newerFirst, key, older)).toBe('skip');
+      expect(newerFirst.get(key)).toBe(newer);
+    });
+  }
+
+  it('an equal refDate keeps the first zip, and different periods do not interfere', () => {
+    const seen = new Map<string, string>();
+    expect(periodWinner(seen, '20261205', '20260923')).toBe('first');
+    expect(periodWinner(seen, '20261205', '20260923')).toBe('skip');
+    expect(periodWinner(seen, '20261211', '20260101')).toBe('first');
   });
 });
