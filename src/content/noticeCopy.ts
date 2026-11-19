@@ -1094,8 +1094,8 @@ export const COVERAGE_TEXT = {
   factsFailed: 'The dev server didn’t list the Studio and Live files, so those columns are empty.',
 } as const;
 
-/** CIV-1890 (DRAFT, awaiting Ryan's word-for-word OK): the About menu inside Studio, in place of the public atlas's text. */
-export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for checking an agency’s schedule and its recorded vehicle data.';
+/** CIV-1890 (Ryan, 2026-11-18, word for word): the About menu inside Studio, in place of the public atlas's text. */
+export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
 /** The Schedule sources view inside Studio: only the selected agency's. */
 export const studioSourcesLead = (agency: string): string => `${agency}’s schedule comes from:`;
 export const STUDIO_SOURCE_FEED = 'Schedule file';
