@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { FLOATING_CARD, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
+import { FLOATING_CARD, PANEL_ENTER_TOP } from '../../styles';
 import ActiveDot from '../ui/ActiveDot';
 import { FEATURES } from '../../../shared/config';
 import { topBarChipClass } from '../ui/topBarChip';
@@ -14,9 +14,8 @@ import { topBarChipClass } from '../ui/topBarChip';
 /** The dropdown under a chip. */
 export const CHIP_PANEL = `absolute top-10 right-0 ${FLOATING_CARD} p-2 ${PANEL_ENTER_TOP} flex flex-col gap-1`;
 
-/** A row in a chip's dropdown, filled where it is the current choice. */
-export const chipRowClass = (active: boolean) =>
-  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
+/** A row in a chip's dropdown: the shared option style, kept with Pill (sharedUiGuard). */
+export { chipRowClass } from '../ui/Pill';
 
 /**
  * The chip's set dot: mounted only while shown, except under mode transitions, where it fades instead of being remounted
