@@ -1,8 +1,9 @@
-import { FOCUS_AGENCY_SLUGS, PRODUCT_FOCUS, isFocusAgency } from './rules/focus.js';
+import { FOCUS_AGENCY_SLUGS, isFocusAgency } from './rules/focus.js';
 import { earliestFiguresDay, type LiveCoverage } from './liveCoverage.js';
 import { LIVE_MIN_DAYS_TO_SHOW } from './rules/live.js';
 import { shortDate } from './dateText.js';
 import { MISSING_VALUE } from './missingValue.js';
+import { liveFeedStatus } from './liveArchiveFeeds.js';
 import { agencyGroupName, groupAgencies } from './agencyGroups.js';
 
 /**
@@ -55,7 +56,8 @@ export interface CoverageRow {
 
 function liveRecordedText(slug: string, s: CoverageSources): string {
   if (!s.liveArchiveSlugs.includes(slug)) return MISSING_VALUE;
-  return (PRODUCT_FOCUS.live as readonly string[]).includes(slug) ? 'Recording' : 'Paused';
+  // The one recording state (shared/liveArchiveFeeds.ts), as the MCP and Live read it.
+  return liveFeedStatus(slug).status === 'recording' ? 'Recording' : 'Paused';
 }
 
 /** The MCP's Live figures: where recordings are kept and how far along they are, from the coverage files. */
