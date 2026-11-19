@@ -139,6 +139,9 @@ jobs:
         with:
           pattern: history-repick-*
           path: tmp/reports
+      - name: Fail unless every agency was compared
+        if: needs.repick.result != 'success'
+        run: echo "a repick job did not succeed (an agency with 0 sidecars or 0 compared periods fails its job)"; exit 1
       - name: Totals
         run: |
           npx tsx pipeline/history-v2-repick-report.ts --summarize tmp/reports --md tmp/summary.md

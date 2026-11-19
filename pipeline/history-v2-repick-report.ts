@@ -89,6 +89,18 @@ export function comparePeriod(
   };
 }
 
+/**
+ * Silence must not read as "no change": an agency with no published sidecars, or none compared, is a failure. The one
+ * allowed exception is an agency whose every period was skipped for having supplemental feeds (not covered here).
+ */
+export function emptyReason(slug: string, rows: PeriodRow[]): string | null {
+  if (rows.length === 0) return `${slug}: 0 published sidecars found (no history-v2/${slug}/ keys in the archive bucket), so nothing was compared`;
+  const read = rows.filter(r => r.periodChanged !== undefined).length;
+  if (read > 0) return null;
+  if (rows.every(r => r.skipped?.startsWith('agency has supplemental feeds'))) return null;
+  return `${slug}: 0 of ${rows.length} published periods could be compared (${[...new Set(rows.map(r => r.skipped ?? r.error ?? 'unknown'))].slice(0, 3).join('; ')})`;
+}
+
 export interface Summary {
   agencies: number;
   agenciesWithChange: number;
@@ -182,6 +194,8 @@ async function reportSlug(slug: string, inDir: string, outDir: string): Promise<
   }
   mkdirSync(outDir, { recursive: true });
   writeFileSync(resolve(outDir, `${slug}-repick.json`), JSON.stringify({ slug, rows }, null, 2));
+  const empty = emptyReason(slug, rows);
+  if (empty) throw new Error(`FAILED: ${empty}`);
 }
 
 async function main(): Promise<void> {
@@ -202,10 +216,13 @@ async function main(): Promise<void> {
     const reports = files.map(f => JSON.parse(readFileSync(resolve(dir, f), 'utf8')) as { slug: string; rows: PeriodRow[] });
     const s = summarize(reports);
     const md = summaryMarkdown(s);
+    const empties = reports.flatMap(r => { const e = emptyReason(r.slug, r.rows); return e ? [e] : []; });
+    if (reports.length === 0) empties.push('no per-agency reports found, so nothing was compared');
     const mdPath = arg('--md');
     if (mdPath) writeFileSync(resolve(mdPath), md);
     writeFileSync(resolve(dir, 'summary.json'), JSON.stringify(s, null, 2));
     console.log(md);
+    if (empties.length) throw new Error(`FAILED: ${empties.join('\n')}`);
     return;
   }
   const slug = arg('--slug'), inDir = arg('--in'), outDir = arg('--out');

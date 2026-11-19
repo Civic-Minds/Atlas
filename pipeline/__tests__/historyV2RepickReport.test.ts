@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { assertDryRun, comparePeriod, seasonOf, summarize } from '../history-v2-repick-report.js';
+import { assertDryRun, comparePeriod, emptyReason, seasonOf, summarize } from '../history-v2-repick-report.js';
 
 const base = { periodKey: '20180924', publishedRefDate: '20180924', publishedPickedBy: 'legacy-or-absent' };
 
@@ -34,5 +34,14 @@ describe('History re-pick dry run (CIV-1313)', () => {
     const diff = comparePeriod(base, { refDate: '20180924', routes: { a: 1 } }, { refDate: '20180618', anchor: '20180618', routes: { a: 2 } });
     const s = summarize([{ slug: 'x', rows: [same, diff, { ...base, skipped: 'no zip' }] }, { slug: 'y', rows: [same] }]);
     expect(s).toMatchObject({ agencies: 2, agenciesWithChange: 1, periods: 4, periodsRead: 3, periodsChanged: 1, periodsSeasonChanged: 1, periodsNotRead: 1, routesChanged: 1 });
+  });
+
+  it('silence is a failure: 0 sidecars or 0 compared periods is reported, not read as no change', () => {
+    const ok = comparePeriod(base, { refDate: '20180924', routes: {} }, { refDate: '20180924', anchor: '20180924', routes: {} });
+    expect(emptyReason('stm', [])).toMatch(/0 published sidecars/);
+    expect(emptyReason('stm', [{ ...base, skipped: 'no zip downloaded for this period' }])).toMatch(/0 of 1 published periods/);
+    expect(emptyReason('stm', [{ ...base, error: 'boom' }])).toMatch(/boom/);
+    expect(emptyReason('stm', [ok, { ...base, skipped: 'no zip' }])).toBeNull();
+    expect(emptyReason('x', [{ ...base, skipped: 'agency has supplemental feeds (not covered by this report)' }])).toBeNull();
   });
 });
