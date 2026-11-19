@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio says when Live's recording of an agency is paused (local only)**: asking how a Montréal or Halifax route was running right now read as a quiet half hour, though nothing is being recorded there ([#1621](https://github.com/Civic-Minds/Atlas/issues/1621))
 - **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **Atlas Studio flags Kingston's impossible old History figures as doubtful**: an express "every 3 min" in 2018 went unflagged, because the check compared it with History's newest schedule rather than today's ([#1619](https://github.com/Civic-Minds/Atlas/issues/1619))
 - **Atlas Studio's buses-needed answers no longer call a sum of all a route's patterns its round trip (local only)**: assistants divided it by the frequency and wrongly said Atlas's bus counts were off ([#1618](https://github.com/Civic-Minds/Atlas/issues/1618))

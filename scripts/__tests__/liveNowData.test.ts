@@ -27,3 +27,19 @@ describe('Live time zones (#1612)', () => {
     expect(LIVE_ARCHIVE_SLUGS.filter(s => !LIVE_AGENCY_TIMEZONES[s])).toEqual([]);
   });
 });
+
+describe('route_now for an agency whose recording is paused (#1621)', () => {
+  it('says recording is paused instead of reporting a quiet half hour', async () => {
+    const { RECORDING_SLUGS } = await import('../../shared/liveArchiveFeeds');
+    const { LIVE_ARCHIVE_SLUGS } = await import('../../shared/liveCoverage');
+    const paused = LIVE_ARCHIVE_SLUGS.find(s => !RECORDING_SLUGS.includes(s));
+    if (!paused) return; // every archive agency is recording: nothing to check
+    const data = await import('../mcp/atlasData');
+    const { memoryStore } = await import('../../shared/mcpMemoryStore');
+    data.useStore(memoryStore({ catalog: [{ slug: paused, name: 'Paused Transit', region: 'Ontario', lastFeedExpiry: '20271231' }] as never, files: {} }));
+    const { liveNowHandlers } = await import('../mcp/liveNowTools');
+    const res = await liveNowHandlers.route_now({ agency: 'Paused Transit', route: '1' }) as { live: null; note: string };
+    expect(res.live).toBeNull();
+    expect(res.note).toMatch(/paused/);
+  });
+});

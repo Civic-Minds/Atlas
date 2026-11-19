@@ -8,6 +8,7 @@ import { clockTime } from '../../shared/timeText';
 import { dayTypeOfDow } from '../../shared/rules/days';
 import { periodKeyForHour } from '../../shared/rules/periods';
 import { LIVE_AGENCY_TIMEZONES } from '../../shared/livePollingConfig';
+import { RECORDING_SLUGS } from '../../shared/liveArchiveFeeds';
 import { LIVE_ARCHIVE_SLUGS, routeIsRecorded } from '../../shared/liveCoverage';
 import { bunchedText, cutoffsFrom, gappedText } from '../../shared/liveCutoffs';
 import { NOW_RECENT_MIN, NOW_WINDOW_MIN, nowDirections, routeNow, type NowRouteRow } from '../../shared/liveNow';
@@ -41,6 +42,8 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const a = await data.findAgency(String(q ?? ''), await data.publicAgencies());
     if (!a) throw new Error(`No agency matches "${q}". Use list_agencies to search.`);
     if (!LIVE_ARCHIVE_SLUGS.includes(a.slug)) return { agency: a.name, live: null, note: `Atlas does not record Live data for ${a.name}, so it has no figures for how its routes are running. It has the published schedule (route_frequency).` };
+    // #1621: an agency whose recording is paused has no readings at all, which isn't a quiet half hour.
+    if (!RECORDING_SLUGS.includes(a.slug)) return { agency: a.name, live: null, note: `Atlas's recording of ${a.name}'s vehicles is paused, so it has no current readings and no figures for right now. Offer the published schedule (route_frequency), or a recorded week only if route_reliability has one.` };
     const source = nowSource();
     if (!source) return { agency: a.name, live: null, note: `Atlas records ${a.name}'s vehicles but this server can't read the current recordings yet. Offer the latest recorded week (route_reliability, route_bunching).` };
     const timeZone = LIVE_AGENCY_TIMEZONES[a.slug];
