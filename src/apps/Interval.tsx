@@ -55,6 +55,7 @@ import ResearchLegend from '../components/Interval/ResearchLegend';
 import { selectFrequentServiceFeatures } from '../components/Interval/map/useOverlaySources';
 import { countNightRoutesInView } from '../utils/nightRoutesInView';
 import { useViewport } from '../context/ViewportContext';
+import { usePageMapOverlay } from '../context/PageMapOverlay';
 import { areaFitZoom } from '../../shared/areaIndex';
 import type { AreaSearchResult } from '../../shared/areaSearch';
 import Spinner from '../components/ui/Spinner';
@@ -704,6 +705,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   const phoneErrorsInRow = isPhoneScreen && phoneMapErrors.length > 0;
   /** The bottom-right counts row is on (Live hides it); Live's "Unable to load" badge shows in it regardless (CIV-1768). */
   const countsRowShown = showUi || nightServiceView || phoneErrorsInRow;
+  // A page's pill (Studio's "Data up to") takes the loading pill's spot once nothing is loading.
+  const pagePill = usePageMapOverlay().overlay?.statusPill ?? null;
   const mapErrorsPanelRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!isPhoneScreen) setListedMapErrors(null); }, [isPhoneScreen]);
   useEffect(() => {
@@ -1527,6 +1530,10 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
       <div className={MAP_FOOTER_RIGHT_SLOT}>
+      {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page. */}
+      {pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2`}>{pagePill}</div>
+      )}
       {onDemandFailedInFooter && (
         <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>

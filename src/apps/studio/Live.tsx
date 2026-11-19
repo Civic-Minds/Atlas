@@ -85,12 +85,14 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const onMapPick = useRef(m.onMapPick);
   onMapPick.current = m.onMapPick;
   const { setOverlay } = usePageMapOverlay();
+  // "Data up to" sits in the map's loading-pill spot (the counts row), shown once loading finishes.
+  const statusPill = useMemo(() => <DataUpTo pill dates={m.dataDates} route={m.dataRoute} />, [m.dataDates, m.dataRoute]);
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
   const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
   useEffect(() => {
-    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey, framedMemory, holdFrame, frameCard: cardRef });
-  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, frameKey, framedMemory, holdFrame]);
+    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey, framedMemory, holdFrame, frameCard: cardRef, statusPill });
+  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, frameKey, framedMemory, holdFrame, statusPill]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
@@ -107,7 +109,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
 
   const routeRow = route ? s.routes.find(r => r.route === route) : null;
   const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
-  const dataUpTo = <div className="shrink-0 px-4 pt-3"><DataUpTo dates={m.dataDates} route={m.dataRoute} /></div>;
 
   return (
     <>
@@ -120,7 +121,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               <SidebarCardHeaderBlock>
                 <SidebarCardHeader back={{ to: agencyName, onClick: m.backToNetwork }} title={<RouteTitleName label={label} />} />
               </SidebarCardHeaderBlock>
-              <DataUpTo dates={m.dataDates} route={m.dataRoute} />
               <RouteNow agency={slug} route={route} />
               {m.routeBody && <WidgetPanel widgets={m.routeBody} />}
               {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
@@ -129,7 +129,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         </Panel>
       ) : (
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={agencyName}>
-          {dataUpTo}
           <PanelBody className="px-3 pt-3 pb-3">
             {/* CIV-1878 (Ryan, "1"): one route selector, the top bar's Route chip (its list scrolls inside the chip); the panel opens with the at-a-glance lines and the week table. */}
             <LiveGlance s={s} days={m.networkDates} />
