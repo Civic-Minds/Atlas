@@ -106,7 +106,7 @@ interface Props {
   /** History's Frequency and Time (top-bar chips, held by App): the map, the year list and an opened route follow them. */
   view?: HistoryView;
   /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
-  agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string }[];
+  agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string }[];
   /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
   searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
@@ -849,7 +849,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   // List rows use the short name (CIV-998); the agency card above keeps the full name.
   const agencyListNameParts = useCallback((slug: string, fallbackName: string) => {
     const a = catalogBySlug.get(slug);
-    return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea }).list : agencyNames(fallbackName).list;
+    return a ? agencyNames({ name: a.name, cities: a.cities, displayArea: a.displayArea, nameQualifier: a.nameQualifier }).list : agencyNames(fallbackName).list;
   }, [catalogBySlug]);
   const { setOverlay } = useHistoryMapOverlay();
   const [historyData, setHistoryData] = useState<AgencyHistory[] | null>(null);

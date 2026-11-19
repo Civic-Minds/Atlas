@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **[MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) is one agency everywhere, not one row per feed**: search, the In view list, the map's agency count, the agency browser, Studio and Atlas Studio's rankings and comparisons listed its subway, borough buses and railroads separately, and routes in two of its feeds counted twice; Queens buses are labelled Queens, not Queens Village
 - **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **Atlas Studio's buses-needed answers no longer call a sum of all a route's patterns its round trip (local only)**: assistants divided it by the frequency and wrongly said Atlas's bus counts were off ([#1618](https://github.com/Civic-Minds/Atlas/issues/1618))
 - **Atlas Studio finds the routes at a corner even where no stop is named for both streets**: asking for routes near Yonge and Finch on YRT found nothing, because YRT names its stops "Finch GO Bus Terminal" and "Yonge St"; it now takes the closest stops on each street ([#1614](https://github.com/Civic-Minds/Atlas/issues/1614))

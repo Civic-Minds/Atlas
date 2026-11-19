@@ -134,7 +134,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       elsewhere={agencySections.elsewhere}
       itemKey={(g: AgencySearchGroup) => g.key}
       renderItem={(g: AgencySearchGroup) => {
-        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea }).list;
+        const { primary, secondary } = agencyNames({ name: g.name, cities: g.cities, displayArea: g.displayArea, nameQualifier: g.nameQualifier }).list;
         // "Agency · place", as every agency list writes it (CIV-971).
         return (
           <ListRow

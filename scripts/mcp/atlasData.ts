@@ -9,6 +9,7 @@
  * - tmp/process-preview/<slug>/<slug>.json: a local `npm run process -- --dry-run` of the agency.
  * Public agencies only (public/data/catalog-public.json): a beta-only or unlaunched agency is never answered.
  */
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
 import type { AtlasStore, IndexedAgency, McpAgency, McpFeature, McpStop, PeriodFigure, RankAgency, RouteLabel, RouteSummary } from '../../shared/mcpStore';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, formatPeriodRange, type PeriodKey } from '../../shared/config';
 import { DAY_TYPES, type DayType } from '../../shared/rules/days';
@@ -244,6 +245,41 @@ export async function routesByHours(agency: CatalogAgency, day: DayType, endsBef
 /** The routes at or under `every` minutes in a period on a day, best first. */
 export async function routesMeeting(agency: CatalogAgency, day: DayType, period: PeriodKey, every: number) {
   const all = await routeList(agency, day);
+  const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
+  const running = figures.filter(f => f.waitMinutes != null);
+  const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
+  return { routesOnDay: all.length, routesRunningInPeriod: running.length, meeting };
+}
+
+/**
+ * One entry per agency or region (shared/agencyGroups.ts): an agency, or a parent agency standing for its feeds
+ * (MTA New York for its subway, borough buses and railroads). Found by a parent's name or slug, else as findAgency.
+ */
+export interface AgencyEntry { slug: string; name: string; members: CatalogAgency[] }
+export async function findAgencyEntry(query: string, list?: CatalogAgency[]): Promise<AgencyEntry | null> {
+  list ??= await availableAgencies();
+  const q = query.trim().toLowerCase();
+  const parent = groupAgencies(list).find(g => g.parent && (g.parent.slug === q || g.parent.name.toLowerCase() === q));
+  if (parent) return { slug: parent.slug, name: parent.parent!.name, members: parent.members };
+  const a = await findAgency(query, list);
+  return a ? { slug: a.slug, name: a.name, members: [a] } : null;
+}
+
+/** A parent entry's routes on a day with a route in two feeds (same name, mode and long name) once, as parentRoutes counts them. */
+export async function entryRoutesMeeting(entry: AgencyEntry, day: DayType, period: PeriodKey, every: number) {
+  if (entry.members.length === 1) return routesMeeting(entry.members[0], day, period, every);
+  const seen = new Set<string>();
+  const all: Array<RouteSummary> = [];
+  for (const m of entry.members) {
+    let routes: RouteSummary[];
+    try { routes = await routeList(m, day); } catch { continue; }
+    for (const r of routes) {
+      const k = `${r.name}\u0000${r.mode}\u0000${r.longName ?? ''}`;
+      if (seen.has(k)) continue;
+      seen.add(k);
+      all.push(r);
+    }
+  }
   const figures = all.map(r => ({ route: r.name, longName: r.longName, mode: r.mode, ...r.figures[period] }));
   const running = figures.filter(f => f.waitMinutes != null);
   const meeting = running.filter(f => f.waitMinutes! <= every).sort((a, b) => a.waitMinutes! - b.waitMinutes!);
@@ -518,7 +554,9 @@ export async function agenciesNear(query: string, km = 60) {
   const centre = (anchor?.center ?? byCity?.center) ?? null;
   if (!centre) return null;
   const dist = (c?: [number, number]) => c ? metresBetween({ lat: centre[0], lon: centre[1] }, { lat: c[0], lon: c[1] }) / 1000 : Infinity;
-  return { near: anchor?.name ?? query, km, agencies: all.map(a => ({ a, d: dist(a.center) })).filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.a.name, region: x.a.region ?? null, km: Math.round(x.d) })) };
+  // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row at its nearest feed's distance.
+  const entries = groupAgencies(all).map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region ?? null, d: Math.min(...g.members.map(m => dist(m.center))) }));
+  return { near: anchor?.name ?? query, km, agencies: entries.filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.name, region: x.region, km: Math.round(x.d) })) };
 }
 
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */

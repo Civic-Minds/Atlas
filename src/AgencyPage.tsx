@@ -271,7 +271,7 @@ export default function AgencyPage({ data: dataProp }: { data?: AgencyPageData }
               </div>
               <ul className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
                 {nearby.map(o => (
-                  <li key={o.slug}><AppLink className={UNDERLINED_LINK} to={agencyPagePath(o.slug)}>{o.name}</AppLink></li>
+                  <li key={o.slug}><AppLink className={UNDERLINED_LINK} to={o.path}>{o.name}</AppLink></li>
                 ))}
               </ul>
             </section>

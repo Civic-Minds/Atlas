@@ -1,4 +1,5 @@
 import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
+import { agencyEntryCount } from '../../shared/agencyGroups';
 import { boundingBox, lineCoordinates } from '../../shared/routeGeometry';
 
 export interface NightServiceFeatureProperties {
@@ -55,12 +56,14 @@ export function countNightRoutesInView(
   layers: Record<string, GeoJSON.FeatureCollection>,
   frequency: NightServiceFrequency,
   bounds: MapBounds | null | undefined,
+  /** Each agency's parent agency: a parent's feeds count once, as does a route in two of them (shared/agencyGroups.ts). */
+  parentOf: (slug: string) => string | undefined = () => undefined,
 ): { routes: number; agencies: number } {
   const routes = new Set<string>();
   const agencies = new Set<string>();
   for (const { agencySlug, properties } of nightRoutesInView(layers, frequency, bounds)) {
-    routes.add(nightRouteKey(agencySlug, properties));
+    routes.add(nightRouteKey(parentOf(agencySlug) ?? agencySlug, properties));
     agencies.add(agencySlug);
   }
-  return { routes: routes.size, agencies: agencies.size };
+  return { routes: routes.size, agencies: agencyEntryCount([...agencies].map(slug => ({ slug, parentAgency: parentOf(slug) }))) };
 }

@@ -11,6 +11,8 @@ import * as data from './atlasData';
 import { headwayEvery } from '../../shared/headwayText';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { LIVE_TOOLS, liveHandlers } from './liveTools';
+import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGroups';
+import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { needAgency, needPeriod, window, mapLink, validThrough, SOURCE, windowNote, type Args } from './toolHelpers';
 
 export * from './toolDefs';
@@ -27,55 +29,92 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     }
     const q = String(query ?? '').trim().toLowerCase(), reg = String(region ?? '').trim().toLowerCase(), ctry = String(country ?? '').trim();
     const all = await data.availableAgencies();
-    if (!q && !reg && !ctry) return { agencies: all.length, note: 'Filter by name or city, region or country to list them.' };
-    const hits = all.filter(a => (!q || [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q)))
-      && (!reg || (a.region ?? '').toLowerCase() === reg)
-      && (!ctry || data.sameCountry(countryForRegion(a.region), ctry)));
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds are one row under its name.
+    const entries = groupAgencies(all);
+    if (!q && !reg && !ctry) return { agencies: entries.length, note: 'Filter by name or city, region or country to list them.' };
+    const hitGroups = entries.filter(g => {
+      const home = groupHome(g);
+      return (!q || (g.parent && [g.parent.slug, g.parent.name].some(x => x.toLowerCase().includes(q))) || g.members.some(a => [a.slug, a.name, ...(a.cities ?? [])].some(x => x.toLowerCase().includes(q))))
+        && (!reg || g.members.some(a => (a.region ?? '').toLowerCase() === reg))
+        && (!ctry || data.sameCountry(countryForRegion(home.region), ctry));
+    });
+    const earliest = (xs: Array<string | null>) => xs.filter((x): x is string => !!x).sort()[0] ?? null;
+    const hits = hitGroups.map(g => ({ name: agencyGroupName(g, a => a.name), region: groupHome(g).region, end: earliest(g.members.map(m => validThrough(m))) }));
     if (!hits.length && q && !reg && !ctry) {
       // A service brand is not an agency name (Viva is part of York Region Transit): look for it in route names.
       const inRoutes = await data.agenciesWithRouteName(q);
       if (inRoutes.length) return { matches: 0, note: `No agency is named "${query}". It appears in route names at these agencies, so it may be a service run by one of them: ${inRoutes.slice(0, 8).map(x => x.agency).join(', ')}.`, inRouteNames: inRoutes.slice(0, 8) };
     }
-    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', validThrough(a) ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
+    return { matches: hits.length, agencies: hits.slice(0, 40).map(a => [a.name, a.region ?? '', a.end ?? ''].join(' | ')), columns: 'name | region | schedule valid through', ...(hits.length > 40 ? { note: 'First 40 shown; narrow the filter for the rest.' } : {}) };
   },
   rank_agencies: async (args) => {
-    const agencies = await data.rankAgencies();
-    if (!agencies) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
+    const feeds = await data.rankAgencies();
+    if (!feeds) throw new Error('The agency index has not been built for the current data. Run: nice -n 15 npx tsx scripts/mcp/buildIndex.ts');
     const dayType = data.parseDay(args.day), key = needPeriod(args.period), minutes = Number(args.every);
     let lo = args.min_routes != null ? Number(args.min_routes) : 0, hi = args.max_routes != null ? Number(args.max_routes) : Infinity;
     let like: string | null = null;
     let kind: 'bus' | 'rail' | 'ferry' | null = args.kind === 'bus' || args.kind === 'rail' || args.kind === 'ferry' ? args.kind : null;
     const KIND_TEXT = { bus: 'buses only', rail: 'with rail', ferry: 'ferries only' };
     const ends = new Map((await data.publicAgencies()).map(x => [x.slug, validThrough(x)]));
-    let skipParts = false;
+    const waits = await data.rankWaits(dayType);
+    const at = PERIOD_KEYS.indexOf(key);
+    // One entry per agency or region (shared/agencyGroups.ts): a parent's feeds rank as one agency, a route in two of
+    // them counted once. include_parts lists the feeds on their own instead.
+    const parts = args.include_parts === true;
+    const parentSlug = (name: string | null) => (name ? PARENT_AGENCIES.find(p => p.name === name)?.slug : undefined);
+    const groups = groupAgencies(feeds.map(a => ({ ...a, parentAgency: parts ? undefined : parentSlug(a.partOf) })));
+    const labelKey = ([route, name]: [string, string | null]) => `${route}\u0000${name ?? ''}`;
+    const entries = await Promise.all(groups.map(async g => {
+      const home = groupHome(g);
+      if (!g.parent) return { slug: home.slug, name: home.name, region: home.region, country: home.country, partOf: home.partOf, kind: home.kind, weekdayRoutes: home.weekdayRoutes, members: [home] };
+      const weekday = new Set<string>();
+      for (const m of g.members) for (const l of await data.rankLabels(m.slug, 'Weekday')) weekday.add(labelKey(l));
+      const kinds = g.members.map(m => m.kind);
+      return { slug: g.slug, name: g.parent.name, region: home.region, country: home.country, partOf: null, kind: kinds.includes('rail') ? 'rail' as const : kinds.every(k => k === 'ferry') ? 'ferry' as const : 'bus' as const, weekdayRoutes: weekday.size, members: g.members };
+    }));
     if (args.similar_to != null) {
       const a = await needAgency(args.similar_to);
-      const self = agencies.find(x => x.slug === a.slug);
+      const self = entries.find(x => x.members.some(m => m.slug === a.slug));
       if (!self) throw new Error(`${a.name} is not in the index.`);
       kind ??= self.kind;
-      skipParts = args.include_parts !== true;
-      like = `${a.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
+      like = `${self.name}: ${self.weekdayRoutes} weekday routes, ${KIND_TEXT[self.kind]}`;
       lo = Math.ceil(self.weekdayRoutes / 2); hi = self.weekdayRoutes * 2;
     }
     const reg = String(args.region ?? '').trim().toLowerCase(), ctry = String(args.country ?? '').trim();
-    const pool = agencies.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
-      && (!kind || a.kind === kind) && !(skipParts && a.partOf));
-    // Count from the waits alone, then read route names only for the agencies shown.
-    const waits = await data.rankWaits(dayType);
-    const at = PERIOD_KEYS.indexOf(key);
-    const counted = pool.map(a => {
-      const routes = waits[a.slug] ?? [];
-      const meeting = routes.map((w, i) => ({ i, wait: w[at] })).filter(r => r.wait != null && r.wait <= minutes).sort((x, y) => x.wait! - y.wait!);
-      return { a, routesOnDay: routes.length, meeting };
-    }).sort((x, y) => y.meeting.length - x.meeting.length || x.a.name.localeCompare(y.a.name));
+    const pool = entries.filter(a => (!reg || (a.region ?? '').toLowerCase() === reg) && (!ctry || data.sameCountry(a.country, ctry)) && a.weekdayRoutes >= lo && a.weekdayRoutes <= hi
+      && (!kind || a.kind === kind));
+    // Count from the waits alone (a parent's routes once each by name), then read route names only for the agencies shown.
+    const counted = await Promise.all(pool.map(async a => {
+      if (a.members.length === 1) {
+        const routes = waits[a.slug] ?? [];
+        const meeting = routes.map((w, i) => ({ slug: a.slug, i, wait: w[at] })).filter(r => r.wait != null && r.wait <= minutes).sort((x, y) => x.wait! - y.wait!);
+        return { a, routesOnDay: routes.length, meeting };
+      }
+      const seen = new Set<string>();
+      let routesOnDay = 0;
+      const meeting: Array<{ slug: string; i: number; wait: number | null }> = [];
+      for (const m of a.members) {
+        const labels = await data.rankLabels(m.slug, dayType);
+        (waits[m.slug] ?? []).forEach((w, i) => {
+          const k = labels[i] ? labelKey(labels[i]) : `${m.slug}\u0000${i}`;
+          if (seen.has(k)) return;
+          seen.add(k);
+          routesOnDay++;
+          if (w[at] != null && w[at]! <= minutes) meeting.push({ slug: m.slug, i, wait: w[at] });
+        });
+      }
+      return { a, routesOnDay, meeting: meeting.sort((x, y) => x.wait! - y.wait!) };
+    }));
+    counted.sort((x, y) => y.meeting.length - x.meeting.length || x.a.name.localeCompare(y.a.name));
     const limit = args.limit != null ? Number(args.limit) : 15;
     const shown = await Promise.all(counted.slice(0, limit).map(async ({ a, routesOnDay, meeting }) => {
-      const labels = await data.rankLabels(a.slug, dayType);
-      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: ends.get(a.slug) ?? null, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => `${labels[r.i][0]}${labels[r.i][1] ? ` ${labels[r.i][1]}` : ''} (every ${r.wait})`) };
+      const labels = new Map(await Promise.all(a.members.map(async m => [m.slug, await data.rankLabels(m.slug, dayType)] as const)));
+      const end = a.members.map(m => ends.get(m.slug)).filter((x): x is string => !!x).sort()[0] ?? null;
+      return { agency: a.name, region: a.region, ...(a.partOf ? { partOf: a.partOf } : {}), kind: KIND_TEXT[a.kind], scheduleValidThrough: end, weekdayRoutes: a.weekdayRoutes, routesOnDay, routesMeeting: meeting.length, routes: meeting.map(r => { const l = labels.get(r.slug)![r.i]; return `${l[0]}${l[1] ? ` ${l[1]}` : ''} (every ${r.wait})`; }) };
     }));
     return {
       day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes,
-      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(skipParts ? { leftOut: 'agencies that are part of a larger operator' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
+      ...(like ? { peersOf: like } : {}), ...(kind ? { kind: KIND_TEXT[kind] } : {}), ...(parts ? { listed: 'each feed of a larger agency on its own' } : {}), sizeRange: `${lo}–${hi === Infinity ? 'any' : hi} weekday routes`,
       agenciesCompared: counted.length, ranking: shown, source: SOURCE,
     };
   },
@@ -108,12 +147,16 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
   },
   compare_agencies: async ({ agencies, period: p, every: n, day: d }) => {
     const dayType = data.parseDay(d), key = needPeriod(p), minutes = Number(n);
+    // One entry per agency or region (shared/agencyGroups.ts): "MTA New York" is its feeds together, a route in two of
+    // them counted once.
     const rows = await Promise.all((Array.isArray(agencies) ? agencies : []).map(async q => {
-      const a = await needAgency(q);
-      const res = await data.routesMeeting(a, dayType, key, minutes);
-      return { slug: a.slug, agency: a.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: validThrough(a) };
+      const e = await data.findAgencyEntry(String(q ?? ''));
+      if (!e) throw new Error(`No agency matching "${q}" has data here. Use list_agencies to search.`);
+      const res = await data.entryRoutesMeeting(e, dayType, key, minutes);
+      const ends = e.members.map(m => validThrough(m)).filter((x): x is string => !!x).sort();
+      return { slugs: e.members.map(m => m.slug), agency: e.name, routesOnDay: res.routesOnDay, routesRunningInPeriod: res.routesRunningInPeriod, routesMeeting: res.meeting.length, scheduleValidThrough: ends[0] ?? null };
     }));
-    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slug: _slug, ...row }) => row), mapLink: mapLink({ agencies: rows.map(r => r.slug), day: dayType, period: key, every: minutes }), source: SOURCE };
+    return { day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
   },
   routes_near: async ({ agency: q, place, metres }) => {
     const a = await needAgency(q);
