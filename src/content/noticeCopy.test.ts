@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
+import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle } from './noticeCopy';
 import { P90_LATER_LABEL, p90LateText, timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
@@ -72,6 +72,13 @@ describe('approved notice wording (CIV-1045)', () => {
 
   it('N52: the Night view with nothing to list', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
+  });
+
+  it('N129, N130, N128: the last missing notices (CIV-959)', () => {
+    expect(frequentNoRoutesNotice(15, '7 AM–7 PM', ['Weekday'])).toBe('No routes here run every 15 min or better from 7 AM–7 PM on weekdays.');
+    expect(frequentNoRoutesNotice(30, '7 AM–12 AM', ['Saturday', 'Sunday'])).toBe('No routes here run every 30 min or better from 7 AM–12 AM on Saturdays and Sundays.');
+    expect(NO_SEARCH_MATCHES_NEAR_MAP).toBe('No routes in this map area match. Open the agency to see all its routes.');
+    expect(LIVE_STOP_ARRIVALS_UNAVAILABLE).toBe('Live arrivals for this stop can’t be shown right now.');
   });
 
   it('N17 and N26: no trips on the day (CIV-1077, CIV-1251)', () => {

@@ -48,7 +48,7 @@ import { DAY_PREF_KEY } from '../utils/openingDay';
 import { compareAddress, encodeCompareSideParams, encodeSelectionParams, encodeModesParam, isAgencyOff, parseAgencyUrlRule, parseAreaBounds, parseCompareSideParams, parseModesParam, parseRouteChooserParam, encodeRouteChooserParam, MODES_PARAM, ROUTE_CHOOSER_PARAM, settleAgencyUrlRule, shouldPersistAgencySelection, type AgencyUrlRule } from '../utils/shareUrlState';
 import { searchOverlayHidesPanel } from '../utils/format';
 import { trackEvent } from '../lib/analytics';
-import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../shared/frequentService';
+import { FREQUENT_WINDOW_LABELS, type FrequentServiceFrequency, type FrequentServiceWindow } from '../../shared/frequentService';
 import { rowPassesNightGrade, type NightServiceFrequency } from '../../shared/nightService';
 import { getRegionalView, getSavedView, parseUrlView, urlView } from '../utils/regionView';
 import ResearchLegend from '../components/Interval/ResearchLegend';
@@ -62,7 +62,7 @@ import { onDemandSelectionZoneId, resolveSelectedOnDemandSlug } from '../utils/o
 import { encodeStopBackTarget, parseStopBackTarget, resolveStopBack, STOP_BACK_PARAM, stopBackTarget, type StopBackRoute, type StopBackSnapshot, type StopBackTarget } from '../utils/stopBack';
 import { linkValueUnknown } from '../utils/linkSelection';
 import { useMissingLinkCard } from '../hooks/useMissingLinkCard';
-import { AGENCY_NOT_FOUND, liveUnableToLoadPill, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL, DEFAULT_EXPORT_TITLE } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, frequentNoRoutesNotice, nightNoRoutesNotice, liveUnableToLoadPill, loadingText, NEAR_YOU_TITLE, ON_DEMAND_AREAS_FAILED, ON_DEMAND_NOT_FOUND, networksFailedHint, networksFailedText, networksLoadingText, noRoutesMatchText, noServiceOnDayNotice, ROUTE_NOT_FOUND, STOP_NOT_FOUND, LOCATE_ME_LABEL, AGENCIES_IN_VIEW_LABEL, ROUTES_IN_VIEW_LABEL, DEFAULT_EXPORT_TITLE } from '../content/noticeCopy';
 import { useLiveFeedsDown } from '../context/LiveVehiclesMapOverlay';
 import { useRetrySeconds } from '../hooks/useRetrySeconds';
 import { useIndexSearch } from '../hooks/useIndexSearch';
@@ -928,6 +928,14 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
     return { routes: routes.size, agencies: agencySlugs.size };
   }, [nightServiceView, nightServiceFrequency, viewBounds, frequentServiceView, layers, frequentServiceDays, frequentServiceFrequency, frequentServiceWindow, selectedModes]);
 
+  // A research view with nothing drawn once its networks have loaded says why on the map, where the count pills would
+  // be (CIV-959 gap 11): Night reuses its list's line (N52), Frequent Service states its own rule (N129).
+  const researchEmptyNotice = (nightServiceView || frequentServiceView) && !researchCounts && !isLoading && Object.keys(layers).length > 0
+    ? (nightServiceView
+      ? nightNoRoutesNotice(nightServiceFrequency)
+      : frequentNoRoutesNotice(frequentServiceFrequency, FREQUENT_WINDOW_LABELS[frequentServiceWindow], frequentServiceDays))
+    : null;
+
   const selectedRouteOutOfFilter = useMemo(() => {
     if (!selectedRoute || frequentServiceView || nightServiceView || bustangView || (maxHeadway === Infinity && period === 'all')) return false;
     const { agencySlug: slug, routeId, routeBranch } = splitRouteKey(selectedRoute);
@@ -1518,7 +1526,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
           <div className={`${MAP_BADGE} h-8 px-3 py-1.5 text-xs text-[var(--text-muted)]`}>{ON_DEMAND_AREAS_FAILED}</div>
         </div>
       )}
-      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
+      {((stats && (stats.total > 0 || !isLoading)) || researchCounts || researchEmptyNotice || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, or Live's "Unable to load", the row stays.
         <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): while every Live feed in view
@@ -1562,6 +1570,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
                 <span className={MAP_BADGE_LABEL}>{plural(researchCounts.agencies, 'agency', 'agencies')}</span>
               </div>
             </div>
+          )}
+          {researchEmptyNotice && (
+            <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`}><span className={MAP_BADGE_LABEL}>{researchEmptyNotice}</span></div>
           )}
           {/* No key in the Night view: every line is the same colour and width (Ryan, CIV-1070). */}
           {frequentServiceView && <ResearchLegend view="frequent" frequentFrequency={frequentServiceFrequency} />}

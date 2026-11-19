@@ -43,7 +43,7 @@ import ModeFilterPillRow from '../components/ui/ModeFilterPillRow';
 import { syncUrlParams } from '../utils/syncUrlParams';
 import { encodeHistoryUrlState, parseHistoryUrlState, type HistoryUrlState } from '../utils/shareUrlState';
 import PanelEmpty from '../components/ui/PanelEmpty';
-import { CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, noTripsInPeriodText, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
+import { AGENCY_NOT_FOUND, CLOSE_PLACES, closeLabel, FREQUENCY_LABEL, HISTORY_BACK_TO_AGENCIES, HISTORY_CHART_LABEL, HISTORY_EXPAND_CHART, HISTORY_FREQUENCY_CHANGE_NOTE, HISTORY_LOAD_FAILED, HISTORY_NO_TRIPS_LABEL, noTripsInPeriodText, HISTORY_TITLE, HISTORY_YEAR_HINT, HISTORY_YEAR_LABEL, HISTORY_ROUTE_NOT_COVERED, HISTORY_ROUTE_ORDER_NOTE, HISTORY_TRIP_TIME_NOTE, loadingText, NO_AGENCIES_MATCH, NO_ROUTES_LOADED, noRoutesMatchText, RETRY_HINT, RETRY_LABEL, historyWeekendFrequencyChangeNote, historyWeekendPeriodsMissingNote } from '../content/noticeCopy';
 import { compareAgencyName, compareRegion } from '../utils/sortCompare';
 import { inViewFirst } from '../utils/historyOpen';
 import { TRIP_TIME_LABEL } from '../../shared/liveWording';
@@ -1124,6 +1124,14 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
         )}
         {selectedSlug ? (
         (() => {
+          // A link to an agency History doesn't have isn't a load failure: it says so, as the map does (N30, CIV-959 gap 9).
+          if (historyData !== null && !historyData.some(a => a.slug === selectedSlug)) {
+            return (
+              <Panel sidebar style={frameStyle} className={frameClassName}>
+                <PanelEmpty>{AGENCY_NOT_FOUND}</PanelEmpty>
+              </Panel>
+            );
+          }
           if (openAgencyFailed) {
             return (
               <Panel sidebar style={frameStyle} className={frameClassName}>

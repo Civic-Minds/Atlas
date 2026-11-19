@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Four places that showed nothing, or the wrong reason, now say why**: a History link to an agency History doesn't have (it said "History couldn't load"), Overnight and Frequent Service maps with no routes, a route search that only covers the map area, and Live stop arrivals that can't load (local only)
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
 - **Broward County Transit shows its own bus network, not a Fort Lauderdale shuttle**: Atlas was reading the city's 5-route LauderGO shuttle feed under Broward's name; it now reads the county's 44 bus routes ([#1500](https://github.com/Civic-Minds/Atlas/issues/1500))

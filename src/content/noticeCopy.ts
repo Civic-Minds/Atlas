@@ -22,7 +22,7 @@ import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { DAY_TYPES, dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
+import { DAY_TYPES, dayInSentence, dayPlural, isDayType, type DayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
 import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
@@ -150,6 +150,8 @@ export const NO_ROUTES_LOADED = 'No routes loaded yet.';
 export const noRoutesMatchText = (modeLabel?: string | null) => `No ${modeLabel ? `${modeLabel.toLowerCase()} ` : ''}routes match.`;
 // N38 no-search-matches
 export const NO_SEARCH_MATCHES = 'No matches found.';
+// N130 route-search-area (CIV-959 gap 6): route search covers only the networks near the map.
+export const NO_SEARCH_MATCHES_NEAR_MAP = 'No routes in this map area match. Open the agency to see all its routes.';
 // N40 no-agencies-match
 export const NO_AGENCIES_MATCH = 'No agencies match.';
 // N41 in-view-no-agencies: the same words as N40, from one place.
@@ -594,6 +596,9 @@ export const STOP_NOT_FOUND = "This stop couldn’t be found. It may have been m
 export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
 export const nightNoRoutesNotice = (frequency: number) => `No routes here run ${headwayOrBetter(frequency)} from 2–5 AM.`;
+/** N129 frequent-empty (CIV-959 gap 11): the Frequent Service view's own rule, as N52 for Night ("…from 7 AM–7 PM on weekdays."). */
+export const frequentNoRoutesNotice = (frequency: number, windowLabel: string, days: readonly DayType[]) =>
+  `No routes here run ${headwayOrBetter(frequency)} from ${windowLabel}${days.length ? ` on ${joinList(days.map(dayPlural))}` : ''}.`;
 // N54 history-failed (Ryan; with RETRY_HINT in the sidebar)
 export const HISTORY_LOAD_FAILED = loadErrorText('history');
 // N55 history-route-not-covered (Ryan)
@@ -982,6 +987,8 @@ export const MEASURE_LABEL = 'Measure';
 export const LOADING_LABEL = 'Loading…';
 export const ROUTE_MENU_LABEL = 'Route';
 export const LIVE_AT_STOP_LABEL = 'Live at this stop';
+/** N128 live-stop-unavailable (CIV-959 gap 13): as Live's other "can’t be shown right now" lines. */
+export const LIVE_STOP_ARRIVALS_UNAVAILABLE = 'Live arrivals for this stop can’t be shown right now.';
 export const NOTE_COLUMN = 'Note';
 export const DELIVERED_BY_DAY_LABEL = 'Share of scheduled trips that ran, day by day';
 export const STOP_COLUMN = 'Stop';
