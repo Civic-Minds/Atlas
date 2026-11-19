@@ -3,7 +3,7 @@ import { MemoryRouter, useLocation } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import Studio from '../apps/studio/Studio';
 
-vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: () => ({ agencies: ['ttc', 'kingston'] }) }));
+vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: (url: string) => ({ agencies: url.includes('live') ? ['ttc', 'kingston'] : ['kingston', 'hamilton'] }) }));
 vi.mock('../apps/studio/Live', () => ({ default: () => <div>live panel</div> }));
 vi.mock('../apps/studio/Fleet', () => ({ default: () => <div>fleet panel</div> }));
 
@@ -63,5 +63,16 @@ describe('Studio opens with no panel (Ryan, 2026-11-18)', () => {
     expect(screen.queryByText('fleet panel')).toBeNull();
     fireEvent.click(tabs.querySelectorAll('button')[0]);
     expect(screen.getByText('live panel')).toBeTruthy();
+  });
+});
+
+describe('A page with no data for the agency keeps it (CIV-1883)', () => {
+  it('says so and lists the page\'s agencies instead of switching', () => {
+    localStorage.clear();
+    setup('/studio?page=fleet&agency=ttc');
+    expect(screen.getByText('No data for ttc here')).toBeTruthy();
+    expect(screen.queryByText('fleet panel')).toBeNull();
+    expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
+    expect(screen.getByTestId('where').textContent).toContain('agency=ttc');
   });
 });

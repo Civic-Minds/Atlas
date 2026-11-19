@@ -14,6 +14,7 @@ import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
+import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
@@ -53,7 +54,9 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const page = studioPageFor(searchParams.get('page'), wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
   // Live opens on its first agency (TTC), Fleet on Kingston.
-  const slug = studioAgencyFrom(wantedAgency, pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
+  // CIV-1883: a page without data for the chosen agency keeps the agency and says so (no silent swap to another one).
+  const noData = !!(page && wantedAgency && pageAgencies && pageAgencies.length > 0 && !pageAgencies.includes(wantedAgency) && searchParams.get('page'));
+  const slug = noData ? wantedAgency! : studioAgencyFrom(wantedAgency, pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
   const route = searchParams.get('route');
   const setRoute = (r: string | null) => set({ route: r });
   const nameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).name : s; };
@@ -66,7 +69,7 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
   // Opening Studio with no page in the address is the same state: its map, the remembered agency, no panel (Ryan: Live and Fleet open only when clicked).
   const closed = searchParams.get('panel') === 'closed' || !searchParams.get('page');
-  const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: (listOf(k === 'live' ? liveList : fleetList) ?? []).includes(slug) ? slug : null, route: null }));
+  const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: slug, route: null }));
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
@@ -87,10 +90,13 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
         }),
         tabsPortal,
       )}
-      {!closed && page === 'fleet' && slug && (
+      {!closed && noData && (
+        <StudioNoData agencyName={agency} options={agencyOptions} onPick={s => set({ agency: s, route: null })} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
+      )}
+      {!closed && !noData && page === 'fleet' && slug && (
         <Fleet key={slug} slug={slug} agency={agency} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
-      {!closed && page === 'live' && slug && (
+      {!closed && !noData && page === 'live' && slug && (
         <Live key={slug} slug={slug} measureSlot={measureSlot} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
     </>
