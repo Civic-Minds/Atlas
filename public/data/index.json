@@ -32769,7 +32769,7 @@
         43.2965,
         5.3698
       ],
-      "feedUrl": null,
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/7eef6ec9-9ebb-44f2-becb-2efc522522d6",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -33013,7 +33013,8 @@
         47.2735,
         -2.2137
       ],
-      "feedUrl": null,
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/a1867718-7921-42a6-b672-c53b8c583aa3",
+      "agencyId": "STRAN",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -33132,7 +33133,7 @@
         43.5297,
         5.4474
       ],
-      "feedUrl": null,
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/9b44cd04-63b5-46e7-a1f8-d5c1c9151d5a",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
