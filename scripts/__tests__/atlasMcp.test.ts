@@ -193,6 +193,18 @@ describe('route lookup (CIV-1864)', () => {
     expect(findRoute(routes, 'zzz')).toBeNull();
   });
 
+  it('among exact names, takes a short-name match, then rail before bus (#1623, GO "Lakeshore West")', async () => {
+    const { findRoute } = await import('../mcp/atlasData');
+    const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
+    const period = (shown: string) => ({ shown });
+    const nightOnly = { amPeak: period('no service'), midday: period('no service'), pmPeak: period('no service'), evening: period('no service'), late: period('some trips'), overnight: period('every 30 min') };
+    const allDay = { ...nightOnly, amPeak: period('every 5 min'), midday: period('every 5 min') };
+    const routes = [r('18', 'Lakeshore West'), r('LW', 'Lakeshore West', 'Commuter rail'), r('LE', 'Lakeshore East', 'Commuter rail'), { ...r('304', 'King', 'Streetcar'), figures: nightOnly }, { ...r('504', 'King', 'Streetcar'), figures: allDay }];
+    expect(findRoute(routes, 'Lakeshore West')?.shortName).toBe('LW');
+    expect(findRoute(routes, '18')?.shortName).toBe('18');
+    expect(findRoute(routes, 'King')?.shortName).toBe('504');
+  });
+
   it('takes a name holding the words typed over one that only contains the letters (Metro Transit "E Line")', async () => {
     const { findRoute } = await import('../mcp/atlasData');
     const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });

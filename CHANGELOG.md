@@ -7,6 +7,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **[MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) is one agency everywhere, not one row per feed**: search, the In view list, the map's agency count, the agency browser, Studio and Atlas Studio's rankings and comparisons listed its subway, borough buses and railroads separately, and routes in two of its feeds counted twice; Queens buses are labelled Queens, not Queens Village
+- **Atlas Studio finds the route people mean when two share a name**: "Lakeshore West" on GO Transit found the 18 bus instead of the train line, and "King" on the TTC found the overnight 304 instead of the 504 ([#1623](https://github.com/Civic-Minds/Atlas/issues/1623))
 - **Atlas Studio says when Live's recording of an agency is paused (local only)**: asking how a Montréal or Halifax route was running right now read as a quiet half hour, though nothing is being recorded there ([#1621](https://github.com/Civic-Minds/Atlas/issues/1621))
 - **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **Atlas Studio flags Kingston's impossible old History figures as doubtful**: an express "every 3 min" in 2018 went unflagged, because the check compared it with History's newest schedule rather than today's ([#1619](https://github.com/Civic-Minds/Atlas/issues/1619))

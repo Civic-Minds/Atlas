@@ -148,7 +148,11 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   const q = query.trim().toLowerCase();
   const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
   const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
-  const exact = routes.find(r => names(r).includes(q));
+  // Exact matches: a short-name match first, then rail before bus (#1623: GO's "Lakeshore West" is the LW train, not bus 18
+  // with the same long name), then a daytime route before a night-only one (TTC "King" is the 504, not the 304), else the list's order.
+  const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
+  const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
+    .sort((a, b) => a.short - b.short || rail(a.r) - rail(b.r) || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
   if (line.length) return line[0];
