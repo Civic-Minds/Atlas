@@ -14,7 +14,7 @@ vi.mock('../components/Live/LateStopsMapLazy', () => ({ default: () => null }));
 const stretch = { route: '510', routeLabel: '510 Spadina', directionId: 1, direction: 'Northbound', fromStopId: 'a', toStopId: 'b', fromName: 'Queens Quay West', toName: 'King St West', n: 500 };
 const summary = {
   schema: 1, agency: 'ttc', generatedAt: '2026-10-17T20:00:00Z', totalRoutes: 1, covered: ['510'], held: [], weekly: null, daily: { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] },
-  routes: [], worstStops: [], delayStarts: [{ ...stretch, value: 2.4 }], bunchingForms: [{ ...stretch, value: 0.33 }],
+  routes: [], worstStops: [], delayStarts: [{ ...stretch, value: 2.4 }], bunchingForms: [{ ...stretch, value: 0.31, fromShare: 0.1, toShare: 0.41 }, { ...stretch, toStopId: 'c', toName: 'Queen St West', value: 0.33 }],
 };
 
 describe('Live agency page', () => {
@@ -23,10 +23,11 @@ describe('Live agency page', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, headers: new Headers(), json: async () => ({ status: 'ready', summary }) })));
   });
-  it('shows the rise in bunching for each stretch, like the delays table shows the minutes added', async () => {
+  it('shows each stretch\'s bunched share before and after (CIV-1805), and the rise in points from an older summary', async () => {
     render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     const bunching = within(await screen.findByRole('region', { name: 'Where Bunching Forms' }));
     expect(bunching.getByRole('columnheader', { name: /Increase/ })).toBeTruthy();
+    expect(bunching.getByText('10% to 41%')).toBeTruthy();
     expect(bunching.getByText('+33 pt')).toBeTruthy();
     const delays = within(screen.getByRole('region', { name: 'Where Delays Start' }));
     expect(delays.getByText('2.4 min')).toBeTruthy();

@@ -210,6 +210,10 @@ export function runTimeShareText(over: number): string {
 /** A rise in a share, in percentage points: "+31 pt" (the unit the tiles use for a change in a share). */
 export const risePointsText = (rise: number): string => `${rise > 0 ? '+' : ''}${Math.round(rise * 100)} pt`;
 
+/** A share before and after a stretch: "10% to 41%" (Ryan, CIV-1795 7b; CIV-1805). Without both shares (older summaries), the rise in points. */
+export const shareRiseText = (r: { value: number; fromShare?: number; toShare?: number }): string =>
+  r.fromShare != null && r.toShare != null ? `${Math.round(r.fromShare * 100)}% to ${Math.round(r.toShare * 100)}%` : risePointsText(r.value);
+
 /**
  * Bunching as whole percents that add up wherever a total and its two parts sit side by side (tile, route list, agency
  * table, strip): the total is rounded first, then the too-close part, and the too-far-apart part is what remains of the
