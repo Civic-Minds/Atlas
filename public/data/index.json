@@ -14634,7 +14634,7 @@
         39.1,
         -94.58
       ],
-      "feedUrl": "http://www.kc-metro.com/gtf/google_transit.zip",
+      "feedUrl": "https://ridekc.org/static-gtfs",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3519/latest.zip",
       "lastFeedExpiry": "20270102",
       "lastFeedVersion": "October 2026_20261014",
@@ -33934,7 +33934,7 @@
         43.2329,
         0.0781
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-du-reseau-tarbes-lourdes-tlp-mobilites-gtfs/20260709-103323/ktlp-gtfs-gvs-030826-090826.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/84f7501c-de7b-46d9-8e0c-14c30d9fa58b",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -34747,7 +34747,7 @@
         44.5186,
         3.4989
       ],
-      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=tum",
+      "feedUrl": "https://zenbus.net/gtfs/static/download.zip?dataset=MAX",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
