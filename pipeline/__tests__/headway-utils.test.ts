@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { OVERNIGHT_COUNTS_END_DEPARTURE } from '../../shared/rules/periods';
 import { adaptiveMedianHeadwayInWindow, departuresInWindow, computeHourDepartureCounts, hasDepartureInClockHour, computeHourMaxGaps, computePeriodCoverageHeadways, computePeriodHeadways, computePeriodMaxGaps, computePeriodSustained, computeResearchFrequentService, forCrossMidnightWindow, HEADLINE_MIN_DEPARTURES, HEADLINE_WINDOWS, headlineWindowValue, hasGenuineBranchPattern, hasSustainedFrequentService, headsignOverlapMinHeadway, isSustainedHeadway, medianHeadwayInWindow, nightServiceDepartureTimes, resolveTerminalHeadway, RAIL_TIER_WINDOW, resolveTerminalPeriodHeadway, sustainedMedianHeadwayInWindow, TIER_RANK } from '../headway-utils';
 import { TIME_PERIODS } from '../../shared/config';
 
@@ -630,7 +631,9 @@ describe('departuresInWindow: the one reader of a window\'s departures (CIV-1798
   it('folds plain post-midnight times, dedupes, sorts, and keeps or drops the end as asked', () => {
     // 02:04 written plain reads as 26:04; 06:00 is the overnight window's end.
     const times = [360, 124, 124, 1579];
-    expect(departuresInWindow(times, 1560, 1800, true)).toEqual([1564, 1579, 1800]);
+    // CIV-1764 dry run: with the proposal on (OVERNIGHT_COUNTS_END_DEPARTURE false), the Overnight window no longer counts 06:00.
+    expect(departuresInWindow(times, 1560, 1800, true)).toEqual(OVERNIGHT_COUNTS_END_DEPARTURE ? [1564, 1579, 1800] : [1564, 1579]);
+    expect(departuresInWindow(times, 1560, 1790, true)).toEqual([1564, 1579]);
     expect(departuresInWindow(times, 1560, 1800, false)).toEqual([1564, 1579]);
     expect(departuresInWindow([600, 540, 900], 540, 900, true)).toEqual([540, 600, 900]);
   });

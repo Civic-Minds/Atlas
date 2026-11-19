@@ -24,6 +24,14 @@ export type PeriodKey = (typeof TIME_PERIODS)[number]['key'];
 
 export const PERIOD_KEYS: PeriodKey[] = TIME_PERIODS.map(p => p.key);
 
+/**
+ * DRY-RUN PROPOSAL, NOT APPROVED (CIV-1764 option 1; needs Ryan's word-for-word OK, a methodology change).
+ * The Overnight window ends at 6:00 (30:00), which is also the AM peak's start. When false, the median, steadiness and
+ * sparse readers stop counting a departure at exactly 6:00 in the Overnight window, as coverage and the in-hour readers
+ * already do. Touches no other period and not STRETCH_NIGHT_END_MIN. Today's rule is true.
+ */
+export const OVERNIGHT_COUNTS_END_DEPARTURE = false;
+
 /** Each period's window in minutes after midnight, [start, end), the unit the pipeline reads departures in (CIV-986). */
 export const PERIOD_MINUTES = Object.fromEntries(
   TIME_PERIODS.map(p => [p.key, { start: p.startHour * 60, end: p.endHour * 60 }]),

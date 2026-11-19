@@ -1,6 +1,7 @@
 import { MIN_UNSUSTAINED_EXCESS_MINUTES, MIN_UNSUSTAINED_RATIO } from '../shared/unevenGap.js';
 import type { HeadwayByHour, RouteDepartureSpan } from '../shared/routeProperties.js';
 import { asNextNight, MINUTES_PER_DAY, PERIOD_MINUTES as PERIODS, type HeadwayByHourMaxGap, type HeadwayByPeriod, type HeadwayByPeriodMaxGap, type HeadwayByPeriodRange, type PeriodKey } from '../shared/config.js';
+import { OVERNIGHT_COUNTS_END_DEPARTURE } from '../shared/rules/periods.js';
 import { headwayGradeOn, TIER_MAXES, RAIL_TIER_WINDOW } from '../shared/rules/frequency.js';
 import {
   FREQUENT_SERVICE_WINDOW_END_MIN, FREQUENT_SERVICE_WINDOW_START_MIN, HEADLINE_WINDOWS,
@@ -196,7 +197,7 @@ export function forCrossMidnightWindow(departureTimes: number[], windowEnd: numb
  */
 export function departuresInWindow(times: readonly number[], start: number, end: number, includeEnd: boolean): number[] {
   return [...new Set(forCrossMidnightWindow([...times], end))]
-    .filter(t => t >= start && (includeEnd ? t <= end : t < end))
+    .filter(t => t >= start && ((includeEnd && (OVERNIGHT_COUNTS_END_DEPARTURE || end !== PERIODS.overnight.end)) ? t <= end : t < end))
     .sort((a, b) => a - b);
 }
 
