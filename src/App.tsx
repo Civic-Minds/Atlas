@@ -5,6 +5,7 @@ import { CompareTab } from './components/Interval/CompareControl';
 import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
+import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
 import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
@@ -494,17 +495,22 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const nonMapViewActive = FEATURES.collapseModeTabs
     && (inLive || inHistory || inNight || inBustang || inFrequentService || compareActive);
   const showCompareControl = compareOn && inFrequency;
-  const showLiveControl = FEATURES.live && !inStudio && (inLive || [...loadedAgencySlugs].some(slug =>
-    isLiveEligibleSlug(slug),
-  ));
+  // CIV-1861: the Live and History tabs always show when the view is on (never in Studio); over a city without data they
+  // are dimmed and tapping one lists the cities that have it.
+  const showLiveControl = FEATURES.live && !inStudio;
+  const liveHere = inLive || [...loadedAgencySlugs].some(slug => isLiveEligibleSlug(slug));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
-  const showHistoryControl = historyOn && !inStudio && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = historyOn && !inStudio;
+  const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
     [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
-  )));
+  ));
+  const [modeNote, setModeNote] = useState<'Live' | 'History' | null>(null);
+  const closeModeNote = useCallback(() => setModeNote(null), []);
+  const noteFor = (mode: 'Live' | 'History') => setModeNote(open => open === mode ? null : mode);
   // On the plain map (not in Live, where the extra download isn't worth it), warm History in idle time once its
   // tab is on offer, so the first open doesn't wait on the code or the multi-megabyte config.
-  const warmHistory = showHistoryControl && inFrequency && agenciesLoadState === 'ready';
+  const warmHistory = showHistoryControl && historyHere && inFrequency && agenciesLoadState === 'ready';
   useEffect(() => {
     if (!warmHistory) return;
     const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
@@ -656,6 +662,15 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} linkedSlug={linkedOnDemandSlug} />
+    {modeNote && (
+      <ModeUnavailableNote
+        mode={modeNote}
+        slugs={modeNote === 'Live' ? LIVE_AGENCY_SLUGS : [...(historyAgencySlugs ?? [])]}
+        agencies={agencies}
+        onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
+        onClose={closeModeNote}
+      />
+    )}
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
@@ -731,8 +746,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_MAP_TITLE}
-            active={liveTabOn}
-            onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
+            active={liveTabOn} dimmed={!liveHere}
+            onClick={() => liveHere ? setActiveApp(liveTabOn ? 'frequency' : 'live') : noteFor('Live')}
           />
         )}
 
@@ -741,9 +756,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
             ariaLabel={inHistory ? HISTORY_BUTTON_ACTIVE_LABEL : HISTORY_BUTTON_LABEL}
-            active={inHistory}
-            onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
-            onWarm={preloadHistory}
+            active={inHistory} dimmed={!historyHere}
+            onClick={() => historyHere ? setActiveApp(inHistory ? 'frequency' : 'history') : noteFor('History')}
+            onWarm={historyHere ? preloadHistory : undefined}
           />
         )}
 
@@ -780,17 +795,17 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   {showLiveControl && (
                     <ModeTab
                       variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
-                      label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn}
-                      onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn} dimmed={!liveHere}
+                      onClick={() => { if (liveHere) setActiveApp(liveTabOn ? 'frequency' : 'live'); else noteFor('Live'); setAppLinksOpen(false); }}
                     />
                   )}
                   {showHistoryControl && (
                     <ModeTab
-                      onWarm={preloadHistory}
+                      onWarm={historyHere ? preloadHistory : undefined}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
-                      active={inHistory}
-                      onClick={() => { setActiveApp(inHistory ? 'frequency' : 'history'); setAppLinksOpen(false); }}
+                      active={inHistory} dimmed={!historyHere}
+                      onClick={() => { if (historyHere) setActiveApp(inHistory ? 'frequency' : 'history'); else noteFor('History'); setAppLinksOpen(false); }}
                     />
                   )}
                   <div ref={moreMenuPortalRef} className="contents" />
