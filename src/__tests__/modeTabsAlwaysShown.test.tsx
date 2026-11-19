@@ -10,18 +10,19 @@ const agencyLists = new Set<unknown>();
 // Stands in for the map reporting which agencies are in view as it moves.
 // Layers stay loaded after the map moves on, as the real map's do.
 const loaded: Record<string, unknown> = {};
-let moveMapTo: (slugs: string[]) => void = () => {};
+let moveMapTo: (slugs: string[], centre?: string[]) => void = () => {};
 vi.mock('../apps/Interval', () => ({
-  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onLayersChange, onCompareActiveChange, compareTabElsewhere }: {
+  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCentreAgencySlugsChange, onLayersChange, onCompareActiveChange, compareTabElsewhere }: {
     agencies?: unknown;
     onViewportAgencySlugsChange?: (slugs: string[]) => void;
+    onCentreAgencySlugsChange?: (slugs: string[]) => void;
     onLayersChange?: (layers: Record<string, unknown>) => void;
     onCompareActiveChange?: (active: boolean) => void;
     compareTabElsewhere?: () => void;
   }) {
     // The real map turns Compare on at Compare's own address.
     const { pathname } = useLocation();
-    useEffect(() => { mapMounts++; moveMapTo = slugs => { for (const slug of slugs) loaded[slug] = { type: 'FeatureCollection', features: [] }; onLayersChange?.({ ...loaded }); onViewportAgencySlugsChange?.(slugs); }; onViewportAgencySlugsChange?.(['nowhere']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => { mapMounts++; moveMapTo = (slugs, centre) => { for (const slug of slugs) loaded[slug] = { type: 'FeatureCollection', features: [] }; onLayersChange?.({ ...loaded }); onViewportAgencySlugsChange?.(slugs); onCentreAgencySlugsChange?.(centre ?? slugs); }; onViewportAgencySlugsChange?.(['nowhere']); onCentreAgencySlugsChange?.([]); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => { onCompareActiveChange?.(pathname === '/apps/compare'); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
     agencyLists.add(agencies);
     // With mode transitions on (CIV-1567), the map keeps drawing the Compare tab in Live and History too.
@@ -86,6 +87,9 @@ describe('Live and History tabs where a city has no data (CIV-1861)', () => {
     // Away to one that has neither: the tabs grey out again, though the first city's data is still loaded.
     act(() => moveMapTo(['nowhere']));
     await waitFor(() => { expect(live.className).toContain('opacity-50'); expect(history.className).toContain('opacity-50'); });
+    // Near but outside: Toronto's wide area still touches the screen, but its centre has moved past the edge.
+    act(() => moveMapTo(['toronto-x'], []));
+    await waitFor(() => expect(history.className).toContain('opacity-50'));
     // And back.
     act(() => moveMapTo(['toronto-x']));
     await waitFor(() => expect(history.className).not.toContain('opacity-50'));

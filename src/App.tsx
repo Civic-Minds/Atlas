@@ -375,6 +375,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
+  const [centreAgencySlugs, setCentreAgencySlugs] = useState<string[]>([]);
   const [userMovedMap, setUserMovedMap] = useState(false);
   // History with an agency open: the top search bar searches that agency's routes (#1015).
   // The History agency open, by its short name: the top search bar then searches its routes (#1015, CIV-402).
@@ -477,14 +478,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // CIV-1861: the Live and History tabs always show when the view is on; over a city without data they are dimmed
   // and tapping one lists the cities that have it.
   const showLiveControl = FEATURES.live;
-  // "Here" is the agencies in view right now, not every layer ever loaded: scrolling from a city with data to one
-  // without dims the tabs again, and back.
-  const liveHere = inLive || viewportAgencySlugs.some(slug => isLiveEligibleSlug(slug));
+  // "Here" is the city at the map's centre right now: not every layer ever loaded, and not every agency whose wide area
+  // touches the screen. Panning from a city with data to one without dims the tabs again, and back.
+  const liveHere = inLive || centreAgencySlugs.some(slug => isLiveEligibleSlug(slug));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
   const showHistoryControl = historyOn;
   const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
-    viewportAgencySlugs.some(slug => historyAgencySlugs.has(slug))
+    centreAgencySlugs.some(slug => historyAgencySlugs.has(slug))
   ));
   const [modeNote, setModeNote] = useState<'Live' | 'History' | null>(null);
   const closeModeNote = useCallback(() => setModeNote(null), []);
@@ -877,6 +878,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDay={setDay}
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
+              onCentreAgencySlugsChange={setCentreAgencySlugs}
               onUserMoveMap={handleUserMoveMap}
               onMapDismiss={inHistory ? handleMapDismiss : undefined}
               historyView={inHistory ? historyViewControl : undefined}
