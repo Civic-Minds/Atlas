@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
