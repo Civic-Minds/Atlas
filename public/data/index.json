@@ -4178,7 +4178,7 @@
         43.29,
         -78.38
       ],
-      "feedUrl": "https://metro.nfta.com/__googletransit/google_transit.zip",
+      "feedUrl": "https://files.mobilitydatabase.org/tld-401/latest.zip",
       "lastFeedExpiry": "20261205",
       "lastFeedVersion": "26FALL",
       "supplementalFeedUrls": [
@@ -15989,9 +15989,9 @@
         26.1224,
         -80.1373
       ],
-      "feedUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
-      "lastFeedExpiry": "20280930",
-      "lastFeedVersion": "20251211",
+      "feedUrl": "https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data",
+      "lastFeedExpiry": "20270116",
+      "lastFeedVersion": "S20260621_E20270116_TS20260923105837",
       "region": "Florida",
       "lastRefreshedAt": "2026-11-02",
       "cities": [
@@ -16009,14 +16009,14 @@
       "lastFeedCheckAt": "20261116",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20280930",
+      "expiredFeedCheckExpiry": "20270116",
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11865/CFL_FL_GTFS.zip",
+      "lastFeedSourceUrl": "https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data",
       "feedQuality": {
         "status": "healthy",
         "score": 100,
@@ -16039,7 +16039,8 @@
       "lastPeekedExpiry": "20280930",
       "lastServiceWeek": "eb51abf65c72524e",
       "feedObtainedAt": "20251211",
-      "lastFeedStart": "20251001"
+      "lastFeedStart": "20260621",
+      "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-3534/latest.zip"
     },
     {
       "slug": "transfort",
@@ -17622,7 +17623,7 @@
         41.4222,
         -73.6597
       ],
-      "feedUrl": "https://westchester-gmv.itoworld.com/production/ito_westchester_county_gtfs.zip",
+      "feedUrl": "https://westchester-win.gmv.com:8443/repository/gtfs-public/GTFS_GMV_WCDOT.zip",
       "mdbFeedUrl": "https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip",
       "lastFeedExpiry": "20270209",
       "lastFeedVersion": null,
@@ -33458,7 +33459,7 @@
         49.4178,
         2.8261
       ],
-      "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=TIC_INT&dataFormat=GTFS&dataProfil=OPENDATA",
+      "feedUrl": "https://api.oisemob.cityway.fr/dataflow/offre-tc/download?provider=TIC_URB&dataFormat=GTFS&dataProfil=OPENDATA",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -33529,22 +33530,23 @@
     },
     {
       "slug": "douai",
-      "name": "Évasion (Douai)",
-      "officialName": "Évasion",
+      "name": "Évéole (Douai)",
+      "officialName": "Évéole",
       "nameQualifier": "Douai",
       "region": "Hauts-de-France",
       "center": [
         50.3678,
         3.0805
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/eveole-douai-reseau-bus-du-syndicat-mixte-des-transports-du-douaisis-smtd/20260707-151337/gtfs-du-060726-au-030127.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/99cf5e2f-87c2-4ff1-bc0d-32f04cc213ab",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
       "cities": [
         "Douai, France"
       ],
-      "timezone": "Europe/Paris"
+      "timezone": "Europe/Paris",
+      "websiteUrl": "http://www.eveole.com"
     },
     {
       "slug": "epinal",
@@ -33867,13 +33869,13 @@
       "name": "MAT (Saint-Malo)",
       "officialName": "MAT",
       "nameQualifier": "Saint-Malo",
-      "websiteUrl": "http://www.star.fr",
+      "websiteUrl": "https://www.reseau-mat.fr",
       "region": "Bretagne",
       "center": [
         48.6493,
         -2.0257
       ],
-      "feedUrl": "https://eu.ftp.opendatasoft.com/star/gtfs/GTFS_STAR_BUS_METRO_EN_COURS.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/3bd31fbe-93f4-432d-ade7-ee8d69897880",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -34397,7 +34399,7 @@
         49.8466,
         3.2875
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/donnees-gtfs-reseau-tuc-communaute-dagglomeration-de-cambrai/20260324-131607/rhdf-gtfs-cac-tuc-24-03-26.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/42e3ea9d-251e-47c1-988d-f7227f0e2d0f",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
