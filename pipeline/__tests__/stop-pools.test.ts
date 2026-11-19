@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPooledStopMap, collapseBunched, computeStopSharers, pooledHeadwayInWindow } from '../stopPools';
+import { buildPooledStopMap, collapseBunched, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow } from '../stopPools';
 import type { SharedStretchPattern } from '../sharedStretch';
 
 // #690: who pools with whom at each stop, and how a line is cut into segments.
@@ -108,6 +108,27 @@ describe('pooledHeadwayInWindow evenness guard', () => {
     // A 30-minute hole against an every-20 list (#813) stays out: 30 is past 20 plus the grace.
     const hole = every(540, 900, 20).filter(t => t !== 700);
     expect(pooledHeadwayInWindow(hole, 540, 900)).toBeNull();
+  });
+
+  // CIV-1957: the 1.6 ratio reads the value before it is rounded to whole minutes.
+  const fromGaps = (gaps: number[]) => gaps.reduce<number[]>((out, g) => [...out, out[out.length - 1] + g], [540]);
+  it('a 24-minute gap in a list averaging 14.5 is not within 1.6 of "15" (DRT 900 eastbound evening, stop 44)', () => {
+    const gaps = [6, 18, 6, 15, 9, 15, 9, 13, 11, 15, 9, 10, 24, 24, 24, 24]; // mean 14.5, typical 14, longest 24
+    expect(pooledReadingInWindow(fromGaps(gaps), 540, 900)).toEqual({ value: null, worstWait: 24 });
+    // The same list with 22-minute gaps (mean 14) is within 1.6 x 14 and still publishes.
+    const even = [6, 18, 6, 15, 9, 15, 9, 13, 11, 15, 9, 10, 22, 22, 22, 22];
+    expect(pooledHeadwayInWindow(fromGaps(even), 540, 900)).toBe(14);
+  });
+  it('the grace stays on whole minutes: a 10-minute gap in a list averaging 4.9 still publishes (ttc 52)', () => {
+    // 73 departures over 359 minutes: mean 4.986, one held 10-minute gap; 5 + grace 5 = 10.
+    const gaps = [...Array.from({ length: 25 }, () => 5), 10, ...Array.from({ length: 10 }, () => 4), ...Array.from({ length: 15 }, () => 5)];
+    const times = fromGaps(gaps);
+    expect((times[times.length - 1] - times[0]) / gaps.length).toBeLessThan(5);
+    expect(pooledHeadwayInWindow(times, 540, 900)).toBe(5);
+  });
+  it('15, 15, 30 repeating keeps reading 20 (RTC 219)', () => {
+    const gaps = Array.from({ length: 12 }, (_, i) => (i % 3 === 2 ? 30 : 15));
+    expect(pooledHeadwayInWindow(fromGaps(gaps), 540, 900)).toBe(20);
   });
 });
 

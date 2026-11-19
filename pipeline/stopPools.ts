@@ -25,7 +25,7 @@
  */
 import { qualifyingSharedRuns } from './sharedStretch.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
-import { BUNCHED_DEPARTURE_MINUTES, departuresInWindow, medianHeadwayInWindow, sustainedMedianHeadwayInWindow } from './headway-utils.js';
+import { BUNCHED_DEPARTURE_MINUTES, departuresInWindow, medianHeadwayInWindow, typicalOfGaps, sustainedMedianHeadwayInWindow } from './headway-utils.js';
 
 /** A same-headsign pattern pools at every common stop when it serves this share of the other's stops. */
 export const SAME_HEADSIGN_COVERAGE = 2 / 3;
@@ -113,12 +113,17 @@ export function pooledReadingInWindow(times: readonly number[], start: number, e
     : null;
   const floored = Math.max(typical, Math.round(mean));
   const value = ownValue != null ? Math.min(floored, ownValue) : floored;
+  // CIV-1957: the 1.6 ratio reads the value before it was rounded to whole minutes (a mean of
+  // 14.5 is not a 15); the published value and the whole-minute graces are unchanged.
+  const exactOf = (list: readonly number[]) => typicalOfGaps(list.slice(1).map((t, i) => t - list[i]), allDay);
+  const exactFloored = Math.max(exactOf(inWindow), mean);
+  const exactValue = ownValue != null ? Math.min(exactFloored, exactOf(ownSorted)) : exactFloored;
   // Even enough: no gap over POOLED_MAX_GAP_RATIO times the mean (two 30s three minutes apart
   // are not a 15) and, #813, none over POOLED_MAX_GAP_TYPICAL_RATIO times the value itself.
   // Each ratio allows at least the grace over its base: one held bus on a dense service is
   // not an alternation, while two 30s three minutes apart (27 against a mean of 15) stay out.
   if (longest > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)
-    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * value, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest };
+    || longest > Math.max(POOLED_MAX_GAP_TYPICAL_RATIO * exactValue, value + POOLED_MAX_GAP_GRACE_MINUTES)) return { value: null, worstWait: longest };
   return { value, worstWait: null };
 }
 

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A shared stretch no longer reads "every 15" when its buses are really spaced 14.5 minutes apart with 24-minute gaps**: the evenness check rounded the average before comparing, so uneven stops such as DRT 900 eastbound in Oshawa passed; they now keep their own pattern's reading
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
