@@ -9,7 +9,7 @@ import { agencyNames } from '../../utils/agencyName';
 import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
 import { sidebarFrameStyle } from '../../styles';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
-import { STUDIO_DEFAULT_AGENCY, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioPageFor, type StudioPageKey } from '../../../shared/studioAgencies';
+import { STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioAgencyListFrom, studioPageFor, type StudioPageKey } from '../../../shared/studioAgencies';
 import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
@@ -47,16 +47,16 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   });
   const liveList = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
-  const listOf = (f: typeof liveList) => (f && f !== 'missing' ? f.agencies : f === 'missing' ? [] : null);
+  // One reading and one default for both pages (CIV-1898): the same list rule, the same default agency.
+  const listOf = studioAgencyListFrom;
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
   // CIV-1883 (Ryan: "The city should be persistent"): the address's agency, else the one Studio was last on in this browser.
   const wantedAgency = searchParams.get('agency') ?? getSavedStudioAgency();
   const page = studioPageFor(searchParams.get('page'), wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
-  // Live opens on its first agency (TTC), Fleet on Kingston.
   // CIV-1883: a page without data for the chosen agency keeps the agency and says so (no silent swap to another one).
   const noData = !!(page && wantedAgency && pageAgencies && pageAgencies.length > 0 && !pageAgencies.includes(wantedAgency) && searchParams.get('page'));
-  const slug = noData ? wantedAgency! : studioAgencyFrom(wantedAgency, pageAgencies, page === 'live' ? pageAgencies?.[0] ?? '' : STUDIO_DEFAULT_AGENCY);
+  const slug = noData ? wantedAgency! : studioAgencyFrom(wantedAgency, pageAgencies);
   const route = searchParams.get('route');
   const setRoute = (r: string | null) => set({ route: r });
   const nameOf = (s: string) => { const a = agencyCatalog.find(x => x.slug === s); return a ? agencyNames(a).name : s; };

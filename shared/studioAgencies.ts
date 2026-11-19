@@ -31,11 +31,16 @@ export function studioAgenciesFromFiles(fileNames: readonly string[]): string[] 
  * The agency an address asks for (?agency=, the one source of truth). With the list loaded: the asked-for agency when
  * Studio has it, else the default when it has that, else the first. Before the list loads, the address as written.
  */
-export function studioAgencyFrom(param: string | null, agencies: readonly string[] | null, preferred: string = STUDIO_DEFAULT_AGENCY): string {
-  if (!agencies) return param || preferred;
+export function studioAgencyFrom(param: string | null, agencies: readonly string[] | null): string {
+  // One default for every page (CIV-1898): STUDIO_DEFAULT_AGENCY where the page has it, else the page's first agency.
+  if (!agencies) return param || STUDIO_DEFAULT_AGENCY;
   if (param && agencies.includes(param)) return param;
-  return agencies.includes(preferred) ? preferred : agencies[0] ?? preferred;
+  return agencies.includes(STUDIO_DEFAULT_AGENCY) ? STUDIO_DEFAULT_AGENCY : agencies[0] ?? STUDIO_DEFAULT_AGENCY;
 }
+
+/** What a page's agency file gives: its list, an empty one when the file is missing, null while it loads (one reading for every page). */
+export const studioAgencyListFrom = (file: { agencies: readonly string[] } | 'missing' | null | undefined): readonly string[] | null =>
+  file && file !== 'missing' ? file.agencies : file === 'missing' ? [] : null;
 
 /**
  * Studio's pages (CIV-1828), in the page menu's order; the first opens by default. Live is the first page (ROADMAP,

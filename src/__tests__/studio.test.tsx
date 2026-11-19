@@ -132,9 +132,11 @@ describe('Studio pages (CIV-1828)', () => {
     expect(studioPageFrom('vehicles')).toBe('live');
   });
 
-  it('opens each page on its own first agency when the address names one it lacks', () => {
-    expect(studioAgencyFrom('kingston', ['ttc'], 'ttc')).toBe('ttc');
+  it('one default for every page: the default agency where the page has it, else its first (CIV-1898)', () => {
+    expect(studioAgencyFrom('kingston', ['ttc'])).toBe('ttc');
     expect(studioAgencyFrom(null, ['kingston', 'hamilton'])).toBe('kingston');
+    expect(studioAgencyFrom(null, ['ttc', 'kingston'])).toBe('kingston');
+    expect(studioAgencyFrom(null, ['ttc', 'hamilton'])).toBe('ttc');
   });
 });
 
