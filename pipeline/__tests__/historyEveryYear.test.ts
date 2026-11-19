@@ -120,11 +120,15 @@ describe('build-history with ATLAS_HISTORY_V2=1: every year a route ran', () => 
     expect(keys(2018)).toEqual(['S']);
     expect(keys(2019)).toEqual([]);
     expect(agency.routes.some(r => r.routeShortName === 'V')).toBe(false);
-    expect(keys(2014)).toEqual(['A', 'B']); // M's 2014 old-file value equals 2013: not expanded
+    // M's 2014 old-file value equals 2013, so the build keeps no 2014 point; the reader carries M's 2012 number into
+    // 2014 (#1591), a year Atlas has schedules for (A and B), between M's old-file points 2012 and 2015.
+    expect(keys(2014)).toEqual(['A', 'B', 'M']);
+    expect(routesForYear(agency, 2014).find(r => r.route.routeShortName === 'M')?.carriedFrom).toBe(2012);
     expect(keys(2015)).toEqual(['A', 'M']);
     expect(keys(2016)).toEqual(['A', 'B', 'M']);
     expect(keys(2017)).toEqual(['M']);
-    // v1-only periods are not expanded: M 2012 (first) and 2015 (changed) from old files; 2013, 2014 stay absent.
+    // v1-only periods are not expanded in the build: M 2012 (first) and 2015 (changed) from old files. 2013 has no
+    // schedule for any route, so the reader carries nothing into it.
     expect(pairs('M')).toEqual([[2012, 30], [2015, 20], [2016, 20], [2017, 20]]);
     expect(keys(2013)).toEqual([]);
     expect(yearsAvailable(agency)).toEqual([2012, 2014, 2015, 2016, 2017, 2018, 2026]);

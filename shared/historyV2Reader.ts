@@ -216,29 +216,45 @@ export interface YearRoute<S extends HistorySnapshotLike, R extends HistoryRoute
   periodKey?: string;
   /** Real service day, YYYYMMDD (v2 only). */
   refDate?: string;
+  /**
+   * #1591: the year this route's number is carried from, when the route has no snapshot of its own in the year. Older
+   * History data (snapshots with no `v2`) saved a snapshot only when a route's frequency changed, so an unchanged year
+   * has none; the route ran with its last number. Absent for a snapshot of the year itself.
+   */
+  carriedFrom?: number;
 }
 
 /** Sort key: real date when known, else the period key, so a stray duplicate resolves to the latest. */
 const rank = (s: HistorySnapshotLike): string => s.v2?.refDate ?? s.periodKey ?? '';
 
 /**
- * The routes that have a kept snapshot in `year`, each with that one snapshot. The map shows
- * only these routes for that year: a route with no snapshot in the year is not in the list
- * (absent, not zero). The build keeps one snapshot per route per year; if data ever carries two,
- * the one with the latest refDate (then period key) wins. Route order is the agency's order.
+ * The routes in `year`, each with its one snapshot. The build keeps one snapshot per route per year; if data ever carries
+ * two, the one with the latest refDate (then period key) wins. Route order is the agency's order.
+ *
+ * A route with no snapshot in the year is carried forward (#1591) from its last snapshot before the year, only when all
+ * of these hold, and is otherwise left out (absent, not zero):
+ *  - that snapshot and the route's next one after the year are both older History data (no `v2`), which saved a snapshot
+ *    only when the frequency changed. Year-by-year (v2) data lists every year a route ran, so a gap there means it didn't;
+ *  - the route has a snapshot after the year, so it still ran then (nothing is carried past a route's last snapshot);
+ *  - Atlas has a schedule for the agency that year: the agency's `coverageYears` when published, else a year in which
+ *    some route has a snapshot (yearsAvailable). Nothing is invented for a year outside that.
  */
 export function routesForYear<S extends HistorySnapshotLike, R extends HistoryRouteLike<S>>(
-  agency: { routes: R[] },
+  agency: { routes: R[]; coverageYears?: readonly number[] },
   year: number,
 ): Array<YearRoute<S, R>> {
   const out: Array<YearRoute<S, R>> = [];
+  let covered: boolean | undefined;
+  const isCovered = () => (covered ??= (agency.coverageYears?.length ? agency.coverageYears : yearsAvailable(agency)).includes(year));
   for (const route of agency.routes) {
-    let best: S | undefined;
+    let best: S | undefined, before: S | undefined, after: S | undefined;
     for (const s of route.snapshots) {
-      if (s.year !== year) continue;
-      if (!best || rank(s) >= rank(best)) best = s;
+      if (s.year === year) { if (!best || rank(s) >= rank(best)) best = s; }
+      else if (s.year < year) { if (!before || s.year > before.year || (s.year === before.year && rank(s) >= rank(before))) before = s; }
+      else if (!after || s.year < after.year) after = s;
     }
     if (best) out.push({ route, snapshot: best, periodKey: best.periodKey, refDate: best.v2?.refDate });
+    else if (before && after && !before.v2 && !after.v2 && isCovered()) out.push({ route, snapshot: before, periodKey: before.periodKey, carriedFrom: before.year });
   }
   return out;
 }

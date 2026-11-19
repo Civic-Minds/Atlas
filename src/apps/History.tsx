@@ -924,7 +924,8 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const openAgencyShapes = openAgency?.slug === selectedSlug ? openAgency.shapes : null;
   const openAgencyFailed = openAgency?.slug === selectedSlug && openAgency.agency === null;
 
-  // The map draws the selected year's routes only (routesForYear: no fallback to another year),
+  // The map draws the selected year's routes (routesForYear: on older data, a route's last number carries into years it
+  // didn't change, #1591),
   // coloured by that year's value on History's day (historyYearRoutes; Weekday unless the day picker says otherwise).
   const historyColorMode = useColorMode();
   useEffect(() => {
