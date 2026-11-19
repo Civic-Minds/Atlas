@@ -59,7 +59,8 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const snapshots = await source.snapshots(a.slug, now - NOW_WINDOW_MIN * 60, now);
     const r = routeNow({ snapshots, routeIds: [...new Set(rows.map(x => String(x.routeId)))], directions, nowSec: now, cutoffs });
 
-    const asOf = r.asOf != null ? clockTime(localClock(r.asOf, timeZone).minutes) : null;
+    // The reading's day and time in the agency's time zone ("Mon, Nov 16, 6:01 PM"), so an answer never reads as today's when it isn't.
+    const asOf = r.asOf != null ? `${new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(r.asOf * 1000))}, ${clockTime(localClock(r.asOf, timeZone).minutes)}` : null;
     const base = { agency: a.name, route: s.longName ? `${s.name} ${s.longName}` : s.name, source: NOW_SOURCE };
     if (r.stale) {
       return { ...base, live: null, ...(asOf ? { latestReading: asOf } : {}), note: `Atlas has no current reading for this route${asOf ? ` (the latest is from ${asOf}, more than ${LIVE_STALE_SEC / 60} minutes ago)` : ' in the last half hour'}, so it has no figures for right now. Offer the latest recorded week (route_reliability, route_bunching).` };
