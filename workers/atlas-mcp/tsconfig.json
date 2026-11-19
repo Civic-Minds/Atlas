@@ -1,7 +1,7 @@
 {
   // The hosted MCP Worker and the MCP code it shares with the local server (scripts/mcp, shared/mcp*). The shared code
-  // pulls in the app's own types (DOM, Vite), so this has its own config instead of tsconfig.workers.json. The app's files it imports are checked by the root tsconfig, so
-  // `npm run typecheck:mcp-worker` reports only errors in the Worker and the MCP files.
+  // pulls in the app's own types (DOM, Vite), so this has its own config instead of tsconfig.workers.json. The app files it reaches by import are checked here too, with
+  // Cloudflare's types (where res.json() is unknown), so `npm run typecheck:mcp-worker` must report no errors at all (CIV-1892).
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": ["node", "vite/client", "@cloudflare/workers-types"]
   },
-  "include": ["src", "worker-configuration.d.ts", "../../scripts/mcp/*.ts", "../../shared"]
+  "include": ["src", "worker-configuration.d.ts", "../../scripts/mcp/*.ts", "../../shared", "../../src/vite-env.d.ts"]
 }

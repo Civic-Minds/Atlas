@@ -1238,7 +1238,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
           return;
         }
         fetch('/api/geo')
-          .then(r => (r.ok ? r.json() : null))
+          .then(r => (r.ok ? (r.json() as Promise<{ latitude: number; longitude: number; city?: string | null }>) : null))
           .then((geo: { latitude: number; longitude: number; city?: string | null } | null) => {
             if (!geo) throw new Error('no approximate location');
             map.flyTo({ center: [geo.longitude, geo.latitude], zoom: 10, duration: 1200 });

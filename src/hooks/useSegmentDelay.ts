@@ -11,7 +11,7 @@ function load(slug: string, route: string): Promise<SegmentDelayData | null> {
   let p = cache.get(key);
   if (!p) {
     p = fetch(`/api/live-segments?agency=${encodeURIComponent(slug)}&route=${encodeURIComponent(route)}`)
-      .then(r => (r.ok ? r.json() : null))
+      .then(r => (r.ok ? (r.json() as Promise<Partial<SegmentDelayData> & { noData?: boolean; error?: unknown }>) : null))
       .then(j => (j && !j.noData && !j.error && Array.isArray(j.segments) ? (j as SegmentDelayData) : null))
       .catch(() => null);
     cache.set(key, p);

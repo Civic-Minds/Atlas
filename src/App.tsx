@@ -602,8 +602,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     if (!infoOpen || feedRefreshMeta) return;
     Promise.all([
-      fetch('/data/feed-refresh.json').then(r => (r.ok ? r.json() : null)),
-      fetch(`${R2_PUBLIC_URL}/atlas/feed-refresh-meta.json`).then(r => (r.ok ? r.json() : null)),
+      fetch('/data/feed-refresh.json').then(r => (r.ok ? (r.json() as Promise<FeedRefreshMeta>) : null)),
+      fetch(`${R2_PUBLIC_URL}/atlas/feed-refresh-meta.json`).then(r => (r.ok ? (r.json() as Promise<{ lastCompletedAt?: string; lastScopedAt?: string }>) : null)),
     ])
       .then(([schedule, run]: [FeedRefreshMeta | null, { lastCompletedAt?: string; lastScopedAt?: string } | null]) => {
         if (schedule?.scheduleCron) {

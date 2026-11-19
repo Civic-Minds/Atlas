@@ -26,7 +26,7 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
     let cancelled = false;
     const load = () =>
       fetch(`/api/live-stop?agency=${encodeURIComponent(slug)}&stop=${encodeURIComponent(stopId)}&lat=${lat}&lon=${lon}`)
-        .then(r => (r.ok ? r.json() : null))
+        .then(r => (r.ok ? (r.json() as Promise<LiveStopData>) : null))
         .then(d => { if (!cancelled && d) setData(d); })
         .catch(() => {});
     load();
