@@ -12,7 +12,8 @@ import { ROUTES_HEADING } from '../../../content/noticeCopy';
  * header is the measure's own label. Routes with no figure sit at the end. The card ends after its last row (CIV-1732)
  * and is clipped only when the column is shorter than the list.
  */
-export default function OverviewList({ s, measure, band = 'all', route, network, onPick }: { s: AgencySummary; measure: MapMeasure; band?: DashboardBand; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
+export default function OverviewList({ s, measure: chosen, band = 'all', route, network, onPick }: { s: AgencySummary; /** Null: no measure chosen, so names only. */ measure: MapMeasure | null; band?: DashboardBand; route: string | null; network: Map<string, LiveV3>; onPick: (route: string) => void }) {
+  const measure: MapMeasure = chosen ?? 'fallsBehind';
   const rows = useMemo(() => rankRoutes(s, network, measure, band), [s, measure, band, network]);
   // Every route is listed: the route list is the only route picker. Nothing scrolls, so a list taller than its room is clipped at the bottom.
   const shown = rows;

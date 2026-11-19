@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { Activity, Bus } from 'lucide-react';
@@ -63,6 +63,7 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => set({ agency: s, route: null }) } : null;
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
+  const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
   const closed = searchParams.get('panel') === 'closed';
   const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: (listOf(k === 'live' ? liveList : fleetList) ?? []).includes(slug) ? slug : null, route: null }));
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
@@ -75,7 +76,13 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
       {tabsPortal && page && createPortal(
         STUDIO_PAGES.map(k => {
           const Icon = PAGE_ICONS[k];
-          return <ModeTab key={k} icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} active={!closed && page === k} onClick={() => pickPage(k)} />;
+          return (
+            <Fragment key={k}>
+              <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} active={!closed && page === k} onClick={() => pickPage(k)} />
+              {/* CIV-1886 (Ryan: "should measure be beside the live button when u open it"): Live's Measure picker sits right after its tab. */}
+              {k === 'live' && !closed && page === 'live' && <span ref={setMeasureSlot} className="contents" />}
+            </Fragment>
+          );
         }),
         tabsPortal,
       )}
@@ -83,7 +90,7 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
         <Fleet key={slug} slug={slug} agency={agency} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
       {!closed && page === 'live' && slug && (
-        <Live key={slug} slug={slug} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
+        <Live key={slug} slug={slug} measureSlot={measureSlot} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
     </>
   );

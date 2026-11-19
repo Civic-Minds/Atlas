@@ -132,7 +132,7 @@ function LoadingWidget() {
 export interface LiveBodyInput {
   agency: string; agencyName: string; s: AgencySummary;
   route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void;
-  band: DashboardBand; measure: MapMeasure; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+  band: DashboardBand; /** Null: no measure chosen, a plain map and a names-only route list (CIV-1889). */ measure: MapMeasure | null; pick: MapPick | null; setPick: (p: MapPick | null) => void;
 }
 
 export interface LiveBodyModel {
@@ -172,7 +172,9 @@ export interface LiveBodyModel {
   openRoute: (r: string) => void;
 }
 
-export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure, pick, setPick }: LiveBodyInput): LiveBodyModel {
+export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure: chosen, pick, setPick }: LiveBodyInput): LiveBodyModel {
+  // The computations below need a measure; with none chosen the map draws every segment grey and the list shows names only.
+  const measure: MapMeasure = chosen ?? 'late';
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes, route);
   // A route whose file was already fetched with the network opens at once; otherwise it is fetched. Until the new route's
@@ -193,7 +195,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const shown = v3 ? (dir != null && ids.includes(dir) ? dir : ids[0]) : 0;
   const uncertain = ready?.uncertainStart ?? [];
   const stops = useMemo(() => (v3 ? directionStopsById(v3, shown, band, uncertain) : new Map<string, RouteStripStop>()), [v3, shown, band]); // eslint-disable-line react-hooks/exhaustive-deps
-  const model: RouteMapModel = useMemo(() => {
+  const measured: RouteMapModel = useMemo(() => {
     const loss = (r: string, d: number) => { const x = lossData.get(r); return x ? timeLossBySegment(x, band, d) : undefined; };
     if (v3) return routeMapModel(v3, shown, band, measure, uncertain, route ? loss(route, shown) : undefined);
     const segments: MapSegment[] = [];
@@ -204,6 +206,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     }
     return { directionId: 0, segments, stops: [] };
   }, [v3, shown, band, measure, network, lossData]); // eslint-disable-line react-hooks/exhaustive-deps
+  const model: RouteMapModel = useMemo(() => chosen ? measured : { ...measured, segments: measured.segments.map(x => ({ ...x, value: null, step: null })), stops: measured.stops.map(x => ({ ...x, value: null, step: null })) }, [measured, chosen]);
   const heat = useMemo(() => {
     if (measure !== 'delayStarts') return null;
     if (v3 && route) return delayHeatPoints(new Map([[route, v3]]), band, { only: { route, directionId: shown }, uncertain: () => uncertain });
@@ -236,14 +239,14 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const routePanel = routeBody && [back, ...routeBody];
 
-  const showNote = ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
+  const showNote = chosen != null && ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
-  const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, measure, band).map(({ r }) => {
+  const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, chosen ?? 'fallsBehind', band).map(({ r }) => {
     const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
-  })], [s, networkV3, measure, band]);
+  })], [s, networkV3, chosen, band]);
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
-  const overview = <OverviewList s={s} measure={measure} band={band} route={route} network={networkV3} onPick={openRoute} />;
+  const overview = <OverviewList s={s} measure={chosen} band={band} route={route} network={networkV3} onPick={openRoute} />;
   const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
   return {
     routes, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,

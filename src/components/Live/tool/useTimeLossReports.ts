@@ -23,6 +23,9 @@ function load(agency: string, route: string): Promise<SegmentDelayData | null> {
  * CIV-1828: every listed route's stop-pair figures (the time-loss report's input), for Studio's "Falls behind" views.
  * Only while `enabled`; routes without a file are left out. The map stays without colours until they arrive.
  */
+/** One empty map for every render that has nothing loaded: a fresh one each time changed the map's model every render and looped (any measure but Falls behind, on Studio's Live page). */
+const NONE: Map<string, SegmentDelayData> = new Map();
+
 export function useTimeLossData(agency: string, routes: readonly string[], enabled: boolean): Map<string, SegmentDelayData> {
   const [data, setData] = useState<{ key: string; map: Map<string, SegmentDelayData> }>({ key: '', map: new Map() });
   const key = `${agency}|${routes.join(',')}`;
@@ -34,5 +37,5 @@ export function useTimeLossData(agency: string, routes: readonly string[], enabl
     });
     return () => { cancelled = true; };
   }, [enabled, agency, key]); // eslint-disable-line react-hooks/exhaustive-deps
-  return enabled && data.key === key ? data.map : new Map();
+  return enabled && data.key === key ? data.map : NONE;
 }

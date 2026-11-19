@@ -38,11 +38,13 @@ export interface LiveProps {
   /** The agency menu, the shell's, first in the top bar. */
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
+  /** Right after the Live tab: where the Measure picker sits (CIV-1886). */
+  measureSlot: Element | null;
   /** The sidebar card's place: sidebarFrameStyle(sidebarLeft, searchBarWidth), as History's panels. */
   frameStyle: CSSProperties;
 }
 
-export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, frameStyle }: LiveProps) {
+export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, measureSlot, frameStyle }: LiveProps) {
   const agencyName = useLiveAgencyName(slug);
   const state = useLiveAgency(slug);
   const { agencies } = useAgencies();
@@ -56,13 +58,13 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
       </>
     );
   }
-  return <Ready slug={slug} agencyName={agencyName} s={state.data.summary} route={route} setRoute={setRoute} band={band} setBand={setBand} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />;
+  return <Ready slug={slug} agencyName={agencyName} s={state.data.summary} route={route} setRoute={setRoute} band={band} setBand={setBand} agencyMenu={agencyMenu} headerPortal={headerPortal} measureSlot={measureSlot} frameStyle={frameStyle} />;
 }
 
-function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu, headerPortal, frameStyle }: Omit<LiveProps, 'route'> & {
+function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu, headerPortal, measureSlot, frameStyle }: Omit<LiveProps, 'route'> & {
   agencyName: string; s: Parameters<typeof useLiveBody>[0]['s']; route: string | null; band: DashboardBand; setBand: (b: DashboardBand) => void;
 }) {
-  const [measure, setMeasure] = useState<MapMeasure>('fallsBehind');
+  const [measure, setMeasure] = useState<MapMeasure | null>(null);
   const [dir, setDir] = useState<number | null>(null);
   const [pick, setPick] = useState<MapPick | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -76,17 +78,17 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const { setOverlay } = usePageMapOverlay();
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
   useEffect(() => {
-    setOverlay({ layer: { kind: 'segments', model: m.model, measure, heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey: `${slug}:${m.frameKey}`, frameCard: cardRef });
+    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey: `${slug}:${m.frameKey}`, frameCard: cardRef });
   }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, slug, m.frameKey]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
     ? { key: 'direction', label: DIRECTION_LABEL, value: String(m.shown), options: m.ids.map(id => [String(id), m.v3!.directionLabels[String(id)]] as const), onPick: d => { setDir(Number(d)); setPick(null); }, panelClassName: 'w-56' }
     : null;
+  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: 'w-48' };
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
     { key: 'route', label: 'Route', value: route ?? '', options: m.routeOptions, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
-    { key: 'measure', label: MEASURE_LABEL, value: measure, options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k as MapMeasure), panelClassName: 'w-48' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
   ];
@@ -98,6 +100,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} />
+      <StudioChips container={measureSlot} menus={[measureMenu]} />
       {route && label ? (
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">
@@ -120,7 +123,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
           </PanelBody>
         </Panel>
       )}
-      <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>
+      {measure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>}
       {m.note && <MapAppNote>{m.note}</MapAppNote>}
     </>
   );
