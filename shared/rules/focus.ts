@@ -19,6 +19,7 @@ export const FOCUS_AREAS: readonly FocusArea[] = [
   { slug: 'kingston', name: 'Kingston', agencies: ['kingston'] },
   { slug: 'denver', name: 'Denver', agencies: ['rtd-denver'] },
   { slug: 'guelph', name: 'A small Ontario city (Guelph)', agencies: ['guelph'] },
+  { slug: 'boston', name: 'Boston', agencies: ['mbta'] },
 ];
 
 /** Every focus agency, in the areas' order. */
