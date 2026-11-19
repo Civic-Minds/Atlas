@@ -1,12 +1,12 @@
 import React from 'react';
 import { heldRowStyles, type HeldSize } from '../../utils/heldLayout';
-import { ChevronRight, Info } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { fmtHeadwayRange } from '../../utils/format';
 import { headwayRangeShown } from '../../utils/headwayText';
 import { HeadwayBadge, LimitedBadge, twoPart } from './cardUi';
 import RouteRowName from '../RouteRowName';
 import { keepLastWord } from '../../utils/keepLastWord';
-import { LIMITED_SERVICE_LABEL, FIRST_LAST_TRIP_ALLOWANCE_HINT, FIRST_LAST_TRIP_ALLOWANCE_LABEL } from '../../content/noticeCopy';
+import { LIMITED_SERVICE_LABEL } from '../../content/noticeCopy';
 
 interface Props {
   label: string;
@@ -45,8 +45,6 @@ interface Props {
   limited?: boolean;
   /** Words for the limited state; "Irregular" where the filter says the route has none in the period. */
   limitedLabel?: string;
-  edgeGapAllowance?: 'opening' | 'closing' | 'both';
-  onEdgeGapAllowanceClick?: () => void;
   // Filtering
   dimmed?: boolean;
   // Branch map highlight (#96)
@@ -87,7 +85,7 @@ export function keyboardFocusHover(onHoverStart?: () => void, onHoverEnd?: () =>
 /** Longer than this, a value counts as long: a plain value or range ("every 60–120 min", 16) stays beside the name. */
 export const LONG_VALUE_CHARS = 16;
 
-export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, edgeGapAllowance, onEdgeGapAllowanceClick, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
+export default function RouteDirectionRow({ label, routeName, labelWeight = 'bold', singleLine: singleLineProp = false, valueEnd: valueEndProp = false, wrapLongValue = false, headway, colorHeadway, dotColor, headwayLabel, trunkHeadway, headwaySuffix, headwaySuffixTone, subLabel, subLabelTrailing, subLabelWeight = 'bold', live, limited, limitedLabel = LIMITED_SERVICE_LABEL, dimmed, onHoverStart, onHoverEnd, branchHovered, branchDimmed, onClick, holdLayout = false, chevron = false, value }: Props) {
   const interactive = !!(onHoverStart && onHoverEnd);
   const clickable = !!onClick;
   const faded = dimmed || branchDimmed;
@@ -95,7 +93,7 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
   const rangeText = showRange && headway != null && trunkHeadway != null
     ? fmtHeadwayRange(trunkHeadway, headway)
     : null;
-  const hasValueCell = !!edgeGapAllowance || limited || (headway != null && !showRange) || !!rangeText || value != null;
+  const hasValueCell = limited || (headway != null && !showRange) || !!rangeText || value != null;
   const valueWords = limited ? limitedLabel : rangeText ?? (headway != null ? headwayLabel : undefined);
   const rowRef = React.useRef<HTMLDivElement>(null);
   const valueRef = React.useRef<HTMLSpanElement>(null);
@@ -143,20 +141,6 @@ export default function RouteDirectionRow({ label, routeName, labelWeight = 'bol
           {routeName ? <RouteRowName shortName={routeName.shortName} name={routeName.name} /> : singleLine ? label : keepLastWord(label)}
         </span>
         {hasValueCell && <span ref={valueRef} style={held.value} className={`inline-flex items-center justify-end gap-2 min-w-0 ${valueEnd ? 'ml-auto' : ''}`}>
-          {edgeGapAllowance && (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onEdgeGapAllowanceClick?.();
-              }}
-              className="inline-flex items-center text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors shrink-0"
-              title={FIRST_LAST_TRIP_ALLOWANCE_HINT}
-              aria-label={FIRST_LAST_TRIP_ALLOWANCE_LABEL}
-            >
-              <Info aria-hidden="true" className="w-3 h-3" />
-            </button>
-          )}
           {limited && <LimitedBadge label={limitedLabel} />}
           {!limited && headway != null && !showRange && (
             <HeadwayBadge headway={headway} colorHeadway={colorHeadway} dotColor={dotColor} live={live} suffix={headwaySuffix} suffixTone={headwaySuffixTone} label={headwayLabel} stacked={listRow || twoLineValue} />
