@@ -496,3 +496,23 @@ describe('periodWinner (CIV-1929)', () => {
     expect(periodWinner(seen, '20261211', '20260101')).toBe('first');
   });
 });
+
+describe('a sidecar beats an old change file in the same year (CIV-1962)', () => {
+  const sc = (refDate: string, h: number) => ({ refDate, rep: { h } }) as never;
+  it('keeps MBTA 2026 on the 20260902 sidecar over change files keyed by later feed end dates', () => {
+    const report = newBuildReport();
+    const snaps = buildRouteSnapshots('mbta', '1', joinCandidates([
+      { periodKey: '20260905', headway: 12, processedAt: '2026-06-29T16:37:50.159Z' },
+      { periodKey: '20261212', headway: 11, processedAt: '2026-09-07T12:24:08.255Z' },
+    ], [{ periodKey: '20260902', v2: sc('20260923', 10) }]), 2026, report, { buildYm: 202611 });
+    expect(snaps.map(s => [s.year, s.periodKey, s.weekdayHeadwayMin, s.v2?.refDate])).toEqual([[2026, '20260902', 10, '20260923']]);
+  });
+  it('leaves a year with only change files, only sidecars, or one of each in different years as before', () => {
+    const v1 = buildRouteSnapshots('s', 'A', joinCandidates([{ periodKey: '20240301', headway: 10 }, { periodKey: '20240901', headway: 12 }], []), 2026, newBuildReport());
+    expect(v1.map(s => s.weekdayHeadwayMin)).toEqual([12]);
+    const v2only = buildRouteSnapshots('s', 'A', joinCandidates([], [{ periodKey: 'a', v2: sc('20240301', 20) }, { periodKey: 'b', v2: sc('20240901', 21) }]), 2026, newBuildReport());
+    expect(v2only.map(s => s.weekdayHeadwayMin)).toEqual([21]);
+    const apart = buildRouteSnapshots('s', 'A', joinCandidates([{ periodKey: '20251214', headway: 9 }], [{ periodKey: '20240901', v2: sc('20240911', 14) }]), 2026, newBuildReport());
+    expect(apart.map(s => [s.year, s.weekdayHeadwayMin])).toEqual([[2024, 14], [2025, 9]]);
+  });
+});
