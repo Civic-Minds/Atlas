@@ -1,3 +1,4 @@
+import Card from '../../components/ui/Card';
 import SplitBar from '../../components/charts/SplitBar';
 import { STUDIO_GLANCE as G } from '../../../shared/liveWording';
 import { dateRange } from '../../../shared/dateText';
@@ -14,13 +15,13 @@ export default function LiveGlance({ s, days }: { s: AgencySummary; days: readon
   const lateShare = late && late.n > 0 ? late.share : null;
   const lateText = lateShare != null ? percentText(lateShare) : null;
   // The two parts add up to 100: on time is what is left of the rounded late share.
-  const onTimeText = lateShare != null ? `${100 - Math.round(lateShare * 100)}%` : null;
+  const onTimeText = lateShare != null ? percentText(1 - Math.round(lateShare * 100) / 100) : null;
   const bar = lateShare != null ? [
     { key: 'onTime', value: 1 - lateShare, fill: 'var(--strip-delay-0)', sentence: `${G.onTime} ${onTimeText}`, legend: <span><span className="font-black">{onTimeText}</span> {G.onTime}</span> },
     { key: 'late', value: lateShare, fill: 'var(--strip-delay-1)', sentence: `${G.late} ${lateText}`, legend: <span><span className="font-black">{lateText}</span> {G.late}</span> },
   ] : null;
   return (
-    <section aria-label={G.barTitle} className="mb-3 rounded-2xl border border-[var(--border-primary)] px-3 py-2.5 text-sm">
+    <Card as="section" tone="surface" aria-label={G.barTitle} className="mb-3 px-3 py-2.5 text-sm">
       <p className="m-0"><span className="font-black">{countText(s.covered.length)}</span> {G.routes}</p>
       {days.length > 0 && <p className="m-0"><span className="font-black">{countText(days.length)}</span> {G.days(dateRange(days[0], days[days.length - 1]))}</p>}
       {bar && (
@@ -29,6 +30,6 @@ export default function LiveGlance({ s, days }: { s: AgencySummary; days: readon
           <SplitBar segments={bar} label={`${G.barTitle}: ${G.onTime} ${onTimeText}, ${G.late} ${lateText}`} />
         </div>
       )}
-    </section>
+    </Card>
   );
 }
