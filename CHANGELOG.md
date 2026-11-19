@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio no longer hands assistants a maintainer's build command when an agency has no buses-needed figures**: the answer carried a shell line with a path on Atlas's own computer, which a planner can't use ([#1613](https://github.com/Civic-Minds/Atlas/issues/1613))
 - **Atlas Studio can say how Boston's recorded routes are running right now**: asking about an MBTA route returned an error, because Live's Boston recordings had no time zone set ([#1612](https://github.com/Civic-Minds/Atlas/issues/1612))
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name

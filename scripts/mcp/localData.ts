@@ -194,13 +194,8 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
 /** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
 export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', studioVehiclesFileName(slug)); }
 
-/** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
-export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${studioVehiclesFileName(slug)}`;
-}
-
 export type BusesNeeded =
-  | { cached: false; command: string | null }
+  | { cached: false }
   | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
 
 /**
@@ -210,8 +205,9 @@ export type BusesNeeded =
  */
 export function busesNeeded(slug: string, route: string, period: PeriodKey): BusesNeeded {
   const path = studioVehiclesPath(slug);
+  // No build command in the answer (#1613): it's a maintainer's shell line with a path on this Mac, of no use to a planner.
+  if (!existsSync(path)) return { cached: false };
   const file = feedFile(slug);
-  if (!existsSync(path)) return { cached: false, command: file ? studioVehiclesCommand(slug, file) : null };
   const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
   const want = route.trim().toLowerCase();
   const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
