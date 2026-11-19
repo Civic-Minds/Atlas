@@ -27,7 +27,7 @@ describe('parseWranglerToml', () => {
   it('matches the archiver configs in the repo', () => {
     const read = (f: string) => parseWranglerToml(readFileSync(new URL(`../workers/gtfs-rt-archiver/${f}`, import.meta.url), 'utf8'), f);
     expect(read('wrangler.toml')).toMatchObject({ name: 'atlas-gtfs-rt-archiver-ttc-positions', crons: ['* * * * *'] });
-    expect(read('wrangler.kingston.toml')).toMatchObject({ bucket: 'atlas-live-kingston', crons: ['* * * * *'] });
+    expect(read('wrangler.kingston.toml')).toMatchObject({ bucket: 'atlas-live', crons: ['* * * * *'] });
     expect(read('wrangler.hamilton.toml')).toMatchObject({ crons: ['* * * * *'] });
     for (const f of ['wrangler.ttc-trips.toml', 'wrangler.stm.toml', 'wrangler.burlington-halifax.toml']) {
       expect(read(f).crons, f).toEqual([]);
@@ -53,11 +53,11 @@ describe('compareCrons', () => {
 });
 
 describe('expectedPrefixes and formatAge', () => {
-  it('puts Kingston in its own bucket and the rest in atlas-live', () => {
+  it('expects every agency, Kingston included, in atlas-live (CIV-1906)', () => {
     const p = expectedPrefixes();
-    expect(p['atlas-live-kingston']).toEqual(['kingston/', 'positions/kingston/']);
+    expect(Object.keys(p)).toEqual(['atlas-live']);
     expect(p['atlas-live']).toContain('positions/ttc/');
-    expect(p['atlas-live']).not.toContain('kingston/');
+    expect(p['atlas-live']).toEqual(expect.arrayContaining(['kingston/', 'positions/kingston/']));
   });
 
   it('formats ages', () => {

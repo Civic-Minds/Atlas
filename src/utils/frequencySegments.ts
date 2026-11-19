@@ -5,6 +5,7 @@ import { clipBetweenStopIndices, clipLinestring } from './lineClip';
 import { headwayToTierColor, type ColorVisionMode } from './colors';
 import { featurePassesHeadwayFilter, routeFilterHeadway } from '../../shared/routeHeadwayFilter';
 import { PERIOD_KEYS } from '../../shared/config';
+import { LONE_STOP_GAP_GUARD_TIERS, LONE_STOP_MIN_STRETCH_STOPS, LONE_STOP_TIERS_WORSE, PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { splitRouteKey } from './routeKey';
 import {
   buildSharedStopIndex,
@@ -441,6 +442,57 @@ export function sharedStretchStopPass(
   return out;
 }
 
+/** A headway's public tier as an index, fastest first; past the last public tier is one more (Infrequent). */
+const publicTierIndex = (h: number): number => {
+  const i = PUBLIC_TIER_MAXES.findIndex(m => h <= m);
+  return i < 0 ? PUBLIC_TIER_MAXES.length : i;
+};
+
+/**
+ * The headway a drawn stretch (stops `from` to `to` of one feature) is coloured by: its worst stop value, except under
+ * the #1093 lone-stop exception (shared/rules/frequency.ts): on a stretch of 3 or more stops, exactly one stop one public
+ * tier worse than every other stop takes no part, and the stretch, that stop's own segment included, takes the worst of
+ * the others. Not when the stop just past a stretch end is as slow (a slower section starts there), nor when the lone
+ * stop's longest gap is 2 or more tiers worse than the others' (a real hole). Every stop of the stretch already passes
+ * the filter, so this only ever shows a better tier of a passing colour. `valueAt` is the stop value the overlay
+ * colours by. Map periods only: the all-day value (internal) keeps the worst stop.
+ */
+export function stretchColorHeadway(
+  p: Pick<ShapeProperties, 'stopOrder'> & { stopPeriodHeadways?: Record<string, Partial<Record<PeriodKey, number | null>>> | null; stopPeriodCoverageHeadways?: Record<string, Partial<Record<PeriodKey, number | null>>> | null },
+  period: TimePeriod,
+  from: number,
+  to: number,
+  valueAt: (i: number) => number | null | undefined,
+): number | null {
+  const stops: Array<{ i: number; v: number }> = [];
+  for (let i = from; i <= to; i++) { const v = valueAt(i); if (v != null) stops.push({ i, v }); }
+  if (stops.length === 0) return null;
+  const worst = Math.max(...stops.map(s => s.v));
+  if (period === 'all' || stops.length < LONE_STOP_MIN_STRETCH_STOPS) return worst;
+  const top = publicTierIndex(worst);
+  const lone = stops.filter(s => publicTierIndex(s.v) === top);
+  if (lone.length !== 1) return worst;
+  const others = stops.filter(s => s !== lone[0]);
+  const othersWorst = Math.max(...others.map(s => s.v));
+  if (publicTierIndex(othersWorst) !== top - LONE_STOP_TIERS_WORSE) return worst;
+  const order = p.stopOrder ?? [];
+  const pk = period as PeriodKey;
+  // End guard: a lone end stop whose neighbour past the stretch is as slow starts a slower section.
+  const li = lone[0].i;
+  const past = li === from ? from - 1 : li === to ? to + 1 : -1;
+  if (past >= 0 && past < order.length) {
+    const own = p.stopPeriodHeadways?.[order[past]]?.[pk];
+    if (own != null && publicTierIndex(own) >= top) return worst;
+  }
+  // Gap guard: the lone stop's longest gap 2+ tiers worse than every other stop's is a real hole in service.
+  const gap = (i: number) => p.stopPeriodCoverageHeadways?.[order[i]]?.[pk] ?? null;
+  const loneGap = gap(li);
+  const otherGaps: number[] = [];
+  for (let i = from; i <= to; i++) { if (i === li) continue; const g = gap(i); if (g != null) otherGaps.push(g); }
+  if (loneGap != null && otherGaps.length > 0 && publicTierIndex(loneGap) >= publicTierIndex(Math.max(...otherGaps)) + LONE_STOP_GAP_GUARD_TIERS) return worst;
+  return othersWorst;
+}
+
 /** The overlay's per-stop pass for routes that FAIL the active filter (see sharedStretchStopPass). */
 export function failingRouteSharedRanges(
   routeFeatures: readonly GeoJSON.Feature[],
@@ -466,13 +518,13 @@ function addFailingRouteSharedStretches(
     for (const [from, to] of ranges) {
       const clipped = clipBetweenStopIndices((feature.geometry as GeoJSON.LineString).coordinates, p.stopPositions!, from, to);
       if (!clipped) continue;
-      let repHw = 0;
-      for (let i = from; i <= to; i++) repHw = Math.max(repHw, values.get(i) ?? maxHeadway);
+      // The stretch's colour: its worst stop, or the #1093 lone-stop exception (stretchColorHeadway).
+      const repHw = stretchColorHeadway(p as any, period, from, to, i => values.get(i) ?? maxHeadway) ?? maxHeadway;
       segments.push({
         type: 'Feature',
         geometry: { type: 'LineString', coordinates: clipped },
         properties: {
-          // Same tier palette as every route line: the worst filter value on the stretch.
+          // Same tier palette as every route line.
           color: headwayToTierColor(repHw || maxHeadway, colorMode),
           agencySlug: p.agencySlug ?? slug,
           routeId: p.routeId,
@@ -557,10 +609,8 @@ export function computeFrequencySegmentOverlay(
       for (const [from, to] of ranges) {
         const clipped = clipBetweenStopIndices(coords, stopPositions, from, to);
         if (!clipped) continue;
-        const hwVals = lineValues
-          .slice(from, to + 1)
-          .filter((v): v is number => v != null);
-        const repHw = hwVals.length > 0 ? Math.max(...hwVals) : maxHeadway;
+        // The stretch's colour: its worst stop, or the #1093 lone-stop exception (stretchColorHeadway).
+        const repHw = stretchColorHeadway(p as any, period, from, to, i => lineValues[i]) ?? maxHeadway;
         segments.push({
           type: 'Feature',
           geometry: { type: 'LineString', coordinates: clipped },

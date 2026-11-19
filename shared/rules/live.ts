@@ -81,10 +81,13 @@ export const LIVE_POLL_SEC = 15;
 
 // ---- Archive ----
 
-/** The R2 bucket every archived agency uses unless LIVE_ARCHIVE_BUCKET_BY_SLUG gives it its own. */
+/** The R2 bucket every archived agency is recorded to (CIV-1906: one Live bucket, kept 60 days). */
 export const DEFAULT_LIVE_ARCHIVE_BUCKET = 'atlas-live';
-/** Agencies archived to a bucket of their own (each archiver's wrangler file binds the same one: liveRules.test.ts). */
-export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = { kingston: 'atlas-live-kingston' };
+/**
+ * Agencies archived to a bucket of their own (each archiver's wrangler file binds the same one: liveRules.test.ts). None
+ * since CIV-1906 moved Kingston into atlas-live; kept so a future agency that needs its own bucket says so in one place.
+ */
+export const LIVE_ARCHIVE_BUCKET_BY_SLUG: Readonly<Record<string, string>> = {};
 
 /**
  * The cut-offs a planner may set for themselves (CIV-1869), in the units they set them. Steps match the counts Live

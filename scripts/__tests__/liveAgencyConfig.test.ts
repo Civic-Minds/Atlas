@@ -13,9 +13,9 @@ describe('liveAgencyConfig', () => {
     expect(c.notDiversions).toHaveLength(4); // the carhouses plus the Dufferin Gate loop
     expect(c.directionLabels).toBe('headsignFirstWordBound');
   });
-  it('reads Kingston from its own bucket and gives it none of the TTC places', () => {
+  it('reads Kingston from atlas-live (CIV-1906) and gives it none of the TTC places', () => {
     const c = liveAgencyConfig('kingston', 'America/Toronto');
-    expect(c.bucket).toBe('atlas-live-kingston');
+    expect(c.bucket).toBe('atlas-live');
     expect(c.positionsPrefix('2026-11-15')).toBe('positions/kingston/2026-11-15/');
     expect(c.carhouses).toEqual([]);
     expect(c.notDiversions).toEqual([]);

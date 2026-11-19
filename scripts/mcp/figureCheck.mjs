@@ -69,7 +69,8 @@ const CHECKS = [
     ['nearest', r => r.agencies[0].split(' | ')[0], 'Hamilton Street Railway'],
   ] },
   { call: ['routes_near', { agency: 'TTC', place: 'Bathurst and Bloor' }], expect: [
-    ['routes', r => routeIds(r.routes), sorted(['2', '7', '300', '307', '511'])],
+    // 94 Wellesley stops at Harbord and Bathurst, about 450 m away: in since the radius became the map's 500 m (d8852e99c).
+    ['routes', r => routeIds(r.routes), sorted(['2', '7', '94', '300', '307', '511'])],
   ] },
   { call: ['route_history', { agency: 'TTC', route: '504' }], expect: [
     ['Oct 2019 AM peak', r => r.schedules.find(s => s.schedule === 'Oct 2019')?.['AM peak'], 'every 6 min'],

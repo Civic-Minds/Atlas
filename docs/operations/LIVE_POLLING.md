@@ -4,7 +4,7 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
-**Status (checked against Cloudflare 2026-11-15, CIV-1689):** TTC vehicle positions are recorded every minute by the ttc-positions Worker (cron `* * * * *`, in `wrangler.toml` again since CIV-1689) and kept 30 days. Hamilton (HSR) vehicle positions are recorded every minute again from 2026-11-18 (Ryan), kept 30 days (`wrangler.hamilton.toml`). Kingston Transit is recorded every minute into its own bucket, kept 60 days (CIV-1682). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused: no cron since 2026-10-14, and the 30-day rule has since deleted all their data. Run `npm run audit-live-state` to see the live crons, the newest snapshot per prefix and the lifecycle rules.
+**Status (checked against Cloudflare 2026-11-15, CIV-1689):** TTC vehicle positions are recorded every minute by the ttc-positions Worker (cron `* * * * *`, in `wrangler.toml` again since CIV-1689) Hamilton (HSR) vehicle positions are recorded every minute again from 2026-11-18 (Ryan) (`wrangler.hamilton.toml`). Kingston Transit is recorded every minute too (CIV-1682). All three go to atlas-live, kept 60 days (CIV-1906). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused: no cron since 2026-10-14, and the old 30-day rule deleted all their data. Run `npm run audit-live-state` to see the live crons, the newest snapshot per prefix and the lifecycle rules.
 
 ---
 
@@ -72,16 +72,18 @@ Per-agency live feed quirks (trip-ID mismatches, missing routes, protobuf issues
 
 ## History archiving (TTC, Hamilton and Kingston running; three shards paused)
 
-2026-10-14: cron triggers removed from atlas-gtfs-rt-archiver-hamilton (restored 2026-11-18), -stm, -burlington-halifax and -ttc-trips (scripts kept; restore with `* * * * *`). TTC positions kept running every minute (Ryan, 2026-11-15); Hamilton was switched back on 2026-11-18 (Ryan). Retention on atlas-live is a bucket-wide 30-day delete rule, plus a 90-day rule; the 30-day one decides.
+2026-10-14: cron triggers removed from atlas-gtfs-rt-archiver-hamilton (restored 2026-11-18), -stm, -burlington-halifax and -ttc-trips (scripts kept; restore with `* * * * *`). TTC positions kept running every minute (Ryan, 2026-11-15); Hamilton was switched back on 2026-11-18 (Ryan). Retention on atlas-live was a bucket-wide 30-day delete rule, plus a 90-day rule; the 30-day one decided.
 
-2026-11-15 (CIV-1682): Kingston Transit records every minute for the Atlas Studio demo, from its own worker (`wrangler.kingston.toml`, archive-only: not a Live agency) into its own bucket, atlas-live-kingston, kept 60 days. atlas-live and its rules are unchanged.
+2026-11-15 (CIV-1682): Kingston Transit records every minute for the Atlas Studio demo, from its own worker (`wrangler.kingston.toml`, archive-only: not a Live agency) into its own bucket, atlas-live-kingston, kept 60 days.
+
+2026-11-18 (CIV-1906, Ryan): one Live bucket. atlas-live keeps everything 60 days (one lifecycle rule replaces the 30- and 90-day rules), the Kingston Worker writes to atlas-live under the same keys as the others, and Kingston's earlier objects were copied over. atlas-live-kingston is no longer read or written.
 
 The previous Cloudflare Worker setup wrote to private R2 bucket `atlas-live`. Five
 small Workers covered TTC positions, TTC trips, Hamilton, STM, and Burlington plus
 Halifax. Each shard ran every minute; trip-update archives ran every 5 minutes,
 while vehicle-position samples ran every minute. That setup is paused except for TTC positions and should be
 treated as a legacy design, not the committed shape of the next hosted collector.
-R2 lifecycle rules enforce **30-day** retention.
+An R2 lifecycle rule enforces **60-day** retention (30 days before CIV-1906).
 Deploy the configs separately: `wrangler.toml`, `wrangler.ttc-trips.toml`,
 `wrangler.hamilton.toml`, `wrangler.stm.toml`, and
 `wrangler.burlington-halifax.toml` (plus `wrangler.kingston.toml`). The STM shard also needs its own
@@ -91,7 +93,7 @@ This is **not** the same set as client Live Vehicles (`LIVE_POLLING_ROUTES`). Th
 
 ### Trip-update archives (every ~5 min; paused except Kingston)
 
-Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies below is recorded now, and their data has expired; Kingston's are in atlas-live-kingston. Powers `/api/history-adherence` and related History RT views.
+Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies below is recorded now, and their data has expired; Kingston's are recorded now. Powers `/api/history-adherence` and related History RT views.
 
 | Agency | Slug | Notes |
 |--------|------|-------|
@@ -103,7 +105,7 @@ Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies 
 
 ### Vehicle-position archives (every 1 min; TTC, Hamilton and Kingston only)
 
-Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. TTC and Hamilton are recorded now (Burlington, STM and Halifax are paused and their data has expired); Kingston's are in atlas-live-kingston. Used for live history and measured headway/speed analysis.
+Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. TTC and Hamilton are recorded now (Burlington, STM and Halifax are paused and their data has expired); Kingston is recorded too. Used for live history and measured headway/speed analysis.
 
 | Agency | Slug | Filter |
 |--------|------|--------|

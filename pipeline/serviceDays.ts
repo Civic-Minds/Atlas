@@ -96,14 +96,30 @@ export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar'
   // holiday dates from Jan 1 2013 (Sunday service added on 8 single days), which put the anchor on a
   // January week where only those holidays run, and the period came out blank. Single added days
   // never make a week; with no such week the first Monday stands, as before.
+  // CIV-1885: the days must also carry the feed's real service, not a sliver of it. WeGo's Oct 2018 zip keeps one
+  // 50-trip weekday service in force from April, months before the 2,335-trip timetable starts in August; that April week
+  // had 5 days in force and won, so the period showed 8 express routes. A day counts toward MIN_DAYS_IN_FORCE only when
+  // it carries MIN_WEEK_TRIP_SHARE of the feed's busiest day (over the weeks searched). With no such week the old rule
+  // (any trips) stands.
   const end = dayNumber(span.end);
+  const weeks: Array<{ monday: number; dayTrips: number[] }> = [];
   for (let monday = first, n = 0; monday <= end && n < MAX_ANCHOR_WEEKS; monday += 7, n++) {
     const { days } = buildServiceDayTable({ ...rows, anchor: ymdOf(monday), daysBefore: 0, weeksAfter: 1 });
     const inWeek = days.filter(d => { const x = dayNumber(d.date); return x >= monday && x < monday + 7 && d.signature !== ''; });
-    if (inWeek.length >= MIN_DAYS_IN_FORCE) return ymdOf(monday);
+    weeks.push({ monday, dayTrips: inWeek.map(d => signatureTrips(d.signature)) });
   }
-  return ymdOf(first);
+  const floor = Math.max(0, ...weeks.flatMap(w => w.dayTrips)) * MIN_WEEK_TRIP_SHARE;
+  const inForce = (min: number) => weeks.find(w => w.dayTrips.filter(n => n >= min).length >= MIN_DAYS_IN_FORCE);
+  return ymdOf((inForce(floor) ?? inForce(1))?.monday ?? first);
 }
+/** A day's trips: the sum of its trips-per-route signature (`route:n,...`). */
+function signatureTrips(signature: string): number {
+  let n = 0;
+  for (const part of signature.split(',')) n += Number(part.slice(part.lastIndexOf(':') + 1)) || 0;
+  return n;
+}
+/** firstFullWeekAnchor: a day under this share of the feed's busiest day doesn't count toward a week in force (CIV-1885). */
+export const MIN_WEEK_TRIP_SHARE = 0.25;
 /** firstFullWeekAnchor: days of a Monday-Sunday week with service for the week to count as in force (CIV-1485). */
 const MIN_DAYS_IN_FORCE = 4;
 /** firstFullWeekAnchor: weeks searched for one in force before falling back to the first Monday. */

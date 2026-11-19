@@ -3,7 +3,7 @@
  *
  *   1. Each archiver Worker's live cron schedules next to the `[triggers]` in its
  *      workers/gtfs-rt-archiver/wrangler*.toml (matched by the toml's `name`), with mismatches flagged.
- *   2. For each live bucket (atlas-live, atlas-live-kingston), the newest object under every
+ *   2. For each live bucket (atlas-live only since CIV-1906), the newest object under every
  *      prefix (`positions/<slug>/` and `<slug>/`) and its age. Date folders are read newest-first,
  *      so only the newest day is listed. Slugs the archive config expects but the bucket lacks show "none".
  *   3. Each bucket's lifecycle rules.

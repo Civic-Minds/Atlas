@@ -1,5 +1,5 @@
 /**
- * Copy archived vehicle positions from R2 (atlas-live, or the agency's own bucket in LIVE_ARCHIVE_BUCKET_BY_SLUG) into the
+ * Copy archived vehicle positions from R2 (atlas-live, unless LIVE_ARCHIVE_BUCKET_BY_SLUG gives the agency its own bucket) into the
  * local Live data folder (archive/ for the TTC, archive-<slug>/ for any other agency), one file per route and day,
  * for every route at once. Each snapshot holds the whole network, so keeping every route costs the same download as
  * keeping one (the old one-route fetcher in ../_live-data/fetch-archive.mts dropped the rest).

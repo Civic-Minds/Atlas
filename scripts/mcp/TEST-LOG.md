@@ -2,7 +2,7 @@
 
 What the Atlas Studio MCP server ([README](README.md)) answered to the questions in [QUESTIONS.md](QUESTIONS.md), round by round. Rerun all of them after every change to the server, and add a dated section with the results checked against Atlas data.
 
-The quick check comes first: `node scripts/mcp/figureCheck.mjs` asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
+The quick check comes first: `npm run check:mcp-figures` (`node scripts/mcp/figureCheck.mjs`) asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
 
 ## Versions
 
@@ -29,6 +29,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
 | 0.12.0 | 2026-11-18 | Planners' own cut-offs (CIV-1869): route_reliability takes late_after_min and early_before_min, route_bunching takes bunched_within_min and gapped_factor; each figure at a custom cut-off comes in atYourCutoffs with the cut-off in words beside it, the standard figures stay, rankings stay on the standard cut-offs |
 | 0.13.0 | 2026-11-18 | route_now (CIV-1870, local server only): bunching and gaps on a route right now, from Live's last half hour of vehicle readings, measured at stops against each stop's scheduled gap, with the time of the reading; stops no vehicle passed are named apart, never called a gap |
+| 0.13.1 | 2026-11-18 | Route lookup: a name holding the words typed beats one that only contains the letters ("E Line" is Metro Transit's E Line, not the Blue Line). Figure check 34 of 34, golden calls unchanged |
 
 ## Questions
 
@@ -372,4 +373,33 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
   - Every half hour named 16 to 19 stops on Queen St West and Spadina where no vehicle passed: Atlas's 504 stop list runs that way, the recorded streetcars ran on King. Shown as noneSeen, not as a gap.
 - Unit tests: two branches on a shared trunk, waits against each stop's own scheduled gap, no-vehicle stops, a stale reading, a feed with no direction, custom cut-offs.
 - Not yet run: the RN1 to RN8 questions locked and normal (route_now needs the read-only token or a saved-readings server), and Hamilton (route ids differ from the route number; the B-Line check waits for real readings).
+
+## 2026-11-18: RN1 to RN8, route_now on saved readings (CIV-1870, 0.13.0), Claude both ways
+
+- Setup: one headless chat per question, locked down and normal, against a local server reading saved TTC streetcar readings (all 10 routes, Mon Nov 16, 5:30 to 6:01 PM) with "now" set to 6:01 PM. Hamilton had no saved readings in this set. The first run was redone: later questions leaked into each prompt through stdin, and answers called the Nov 16 reading "today". route_now now gives the reading's day as well as its time.
+- 16 of 16 answered from the tools, every figure matching route_now's output, with the time of the reading on every answer.
+- RN1: moving and standing by direction. The scheduled count (39) came from buses_needed, labelled as scheduled.
+- RN2 and RN5: bunched stretches and the longest waits against each stop's scheduled gap.
+- RN3: says route_now measures spacing, not lateness, and gives the spacing instead.
+- RN4: declines one-vehicle lookups. Both runs named outside trackers, the TTC's own and others, as places to look.
+- RN6: says there is no current B-Line reading. Locked gave the date figures start (Nov 23); normal offered the recorded week.
+- RN7: the 4-minute cut-off named beside every bunched figure, with a note that it sits close to the scheduled gap.
+- RN8: the Queen St West and Spadina stretch where no vehicle was seen, given as "none ran or a diversion", never as a gap. One locked answer called it "King/Queen west of Spadina", a loose place name.
+- Every run noticed the reading was two days before today and said so. That is right for saved readings and won't arise on real ones.
+- Hamilton separately: saved B-Line readings (Nov 18, 1:21 PM). Feed and Atlas route ids match (5829), and direction is worked out from the stops passed. 3 to 4 moving per direction, no bunching, longest waits 16 and 23 minutes against a scheduled 12.
+
+## 2026-11-18: RN1 to RN8 locked on live readings (CIV-1870, 0.13.0), Claude
+
+- Live at last: the local server reads the recorder's readings from atlas-live with the read-only token, which is loaded from its credentials file and never printed. Checked at 8:13 PM: the TTC reading was 25 to 40 seconds old and Hamilton's 49 to 60 seconds, against the 3-minute limit.
+- route_now directly at 8:13 PM, weekday evening:
+  - 504: 17 and 12 moving, 41% and 45% of gaps bunched over the half hour.
+  - B-Line: 4 and 3 moving, no bunching; longest waits 19 and 22 minutes against a scheduled 12.
+- 8 of 8 locked answers came from the tools, with the reading's day and time (8:13 to 8:15 PM, Wed Nov 18) on every one.
+- RN1: 29 moving plus 2 standing against 31 scheduled (buses_needed, labelled as scheduled).
+- RN2: the 510's two big northbound gaps (27 and 26 minutes against 10 and 5) and its bunched pairs.
+- RN3: says route_now measures spacing, not lateness, and gives the spacing.
+- RN4: declines one-vehicle lookups.
+- RN5 and RN7: bunched shares named; RN7 names the 4-minute cut-off beside its figures.
+- RN6, now on live B-Line readings: no stop over twice the scheduled 12 minutes; the closest was 22.7 minutes, described as just short of a gap.
+- RN8: the Queen St West and Spadina stretch given as "none ran, or a detour", never as a gap.
 

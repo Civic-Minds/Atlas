@@ -36,6 +36,20 @@ export function publicTierOf(tier: number): number | null {
   return PUBLIC_TIER_MAXES.find(t => tier <= t) ?? null;
 }
 
+// ---- A drawn stretch's colour ----
+
+/**
+ * #1093 lone-stop exception. Ryan, 2026-11-18: "If it's literally only 1 stop then I think we should figure out a way to
+ * make an exception", "1 single stop seems like an oddity more than anything", then approved the proposal as written
+ * ("1"; docs/product/DECISIONS.md, 2026-11-18). On a drawn stretch of at least LONE_STOP_MIN_STRETCH_STOPS stops, exactly
+ * one stop LONE_STOP_TIERS_WORSE public tier worse than every other stop doesn't set the stretch's colour, unless the stop
+ * just past a stretch end is as slow (the start of a slower section) or the lone stop's longest gap is
+ * LONE_STOP_GAP_GUARD_TIERS or more public tiers worse than the other stops' (a real hole in service).
+ */
+export const LONE_STOP_MIN_STRETCH_STOPS = 3;
+export const LONE_STOP_TIERS_WORSE = 1;
+export const LONE_STOP_GAP_GUARD_TIERS = 2;
+
 // ---- Near misses ----
 
 /** A gap within T + max(GRACE_MINUTES, T × GRACE_PERCENT) of a tier T is a near miss, not a failure. */

@@ -14,6 +14,10 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Moving between Atlas pages no longer reloads the page**: links to Research, Docs, About, agencies, areas and the rest, and clicking a table row, switch pages inside the app, so each opens as smoothly as the other views
 - **The Filters count badge and the report-a-problem button no longer use solid dark fills**: they use the pale selected tint like the rest of the app, and the badge was hard to read in dark mode
 - **The report-a-problem form fills the screen width on phones**: it had shrunk to a narrow strip, so its button label wrapped and was cut off
+- **On a filtered map, one odd stop no longer recolours a whole stretch of route**: a single stop a minute slower than the rest turned the stretch a slower colour; a real slower section or a gap in service still shows ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
+- **Atlas Studio finds Metro Transit's [E Line](https://github.com/Civic-Minds/Atlas/issues/1589) when asked for "E Line"**: it returned the Blue Line, whose name also contains those letters
+- **Maintainer-only diagnostics pages no longer ship with the public site**: they were built into every release as unused files, though no address ever opened them
+- **The About panel's agency count and countries match the published data**: it counted every agency the build loaded, so it disagreed with the rest of the site
 - **Atlas Studio can say where a route's vehicles are bunched and where riders have waited longest right now (local only)**: from Live's last half hour of vehicle readings, judged against each stop's scheduled gap, with the time of the reading
 - **Atlas Studio defines bunched as a gap under 2 minutes**: it said "2 minutes or less", while the figure counts only gaps under 2 minutes, as Studio's own note says
 - **Atlas Studio can give Live figures at a planner's own late, early, bunched and gapped cut-offs**: an agency with a 3-minute on-time standard gets its own figure, named beside the standard one; rankings stay on the standard cut-offs so routes still compare fairly

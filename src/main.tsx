@@ -41,8 +41,9 @@ const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
 const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./McpDocsPage')) : () => null;
-const DiagnosticsUnevenPage = React.lazy(() => import('./DiagnosticsUnevenPage'));
-const DiagnosticsPerformancePage = React.lazy(() => import('./DiagnosticsPerformancePage'));
+// The diagnostics pages are maintainer-only (#1518): the same DEV check as Studio keeps them out of built bundles entirely.
+const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsUnevenPage')) : () => null;
+const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsPerformancePage')) : () => null;
 
 /** Night Service moved from /apps/night to /research/night; keep old links and their filters working. */
 function NightServiceRedirect() {

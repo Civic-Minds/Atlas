@@ -4,7 +4,7 @@
 #   npm run studio:report                     Kingston, last 15 service dates
 #   npm run studio:report -- kingston --days 15
 # Reads with whatever R2 keys the environment has (read only: nothing is written to R2). Fetches the agency's archived
-# positions (scripts/live-fetch-archive.ts --agency, atlas-live-kingston for Kingston), takes each service date's
+# positions (scripts/live-fetch-archive.ts --agency, from atlas-live), takes each service date's
 # timetable from the agency's own archived static GTFS (scripts/live-gtfs-for-window.ts --agency), analyses every route
 # in its archive (scripts/live-analyze.sh all --agency) and writes a time-loss report per route to
 # $LIVE_DATA/studio/time-loss/. LIVE_DATA defaults to ../_live-data, as for live:analyze. Runs at low priority.
