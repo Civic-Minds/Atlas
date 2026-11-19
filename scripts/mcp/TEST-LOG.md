@@ -29,6 +29,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
 | 0.12.0 | 2026-11-18 | Planners' own cut-offs (CIV-1869): route_reliability takes late_after_min and early_before_min, route_bunching takes bunched_within_min and gapped_factor; each figure at a custom cut-off comes in atYourCutoffs with the cut-off in words beside it, the standard figures stay, rankings stay on the standard cut-offs |
 | 0.13.0 | 2026-11-18 | route_now (CIV-1870, local server only): bunching and gaps on a route right now, from Live's last half hour of vehicle readings, measured at stops against each stop's scheduled gap, with the time of the reading; stops no vehicle passed are named apart, never called a gap |
+| 0.13.1 | 2026-11-18 | Route lookup: a name holding the words typed beats one that only contains the letters ("E Line" is Metro Transit's E Line, not the Blue Line). Figure check 34 of 34, golden calls unchanged |
 
 ## Questions
 

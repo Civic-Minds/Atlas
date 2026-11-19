@@ -192,5 +192,15 @@ describe('route lookup (CIV-1864)', () => {
     expect(findRoute(routes, 'kingsway')?.shortName).toBe('105');
     expect(findRoute(routes, 'zzz')).toBeNull();
   });
+
+  it('takes a name holding the words typed over one that only contains the letters (Metro Transit "E Line")', async () => {
+    const { findRoute } = await import('../mcp/atlasData');
+    const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
+    const routes = [r('901', 'METRO Blue Line', 'Light rail'), r('925', 'METRO E Line'), r('921', 'METRO A Line')];
+    expect(findRoute(routes, 'E Line')?.shortName).toBe('925');
+    expect(findRoute(routes, 'METRO E Line')?.shortName).toBe('925');
+    expect(findRoute(routes, 'blue line')?.shortName).toBe('901');
+    expect(findRoute(routes, 'a line')?.shortName).toBe('921');
+  });
 });
 
