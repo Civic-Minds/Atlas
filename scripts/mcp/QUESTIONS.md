@@ -154,16 +154,27 @@ Coming. Today route_history marks only impossible old figures as doubtful (3 min
 | HD2 | How has Kingston Transit route 12 changed since 2018? | planner | Ends with today's schedule (every 30 from 6:30 AM to 6:26 PM), not "midday only". Doubtful figures flagged and left out of any before and after claim. |
 | HD3 | How does the Kingston 12's midday service in January 2019 compare with today? | planner | Refuses the comparison for the doubtful figure and says why. Gives today's figure and the other old periods that are not doubtful. |
 
-## Right now, for planners
+## Right now, for planners (CIV-1870)
 
-Not yet supported. Atlas Live keeps recordings of past weeks and has no current-vehicle answers. Until it does, a good answer declines clearly and offers the latest recorded week (from route_reliability or route_bunching). It must not use web search or its own memory to fill in.
+route_now answers from Live's last half hour of vehicle readings (local server only for now; the hosted server says it has no current figures). A good answer:
+
+- gives the time of the reading with every figure ("as of 6:01 PM");
+- names where vehicles are bunched now and where riders have waited longest, against that stop's scheduled gap;
+- says plainly where no vehicle was seen at all (it may be a diversion), never calls that a gap;
+- uses the standard bunched and gapped cut-offs unless the planner sets their own, named beside the figure;
+- when route_now has no current reading, says so and offers the latest recorded week (route_reliability or route_bunching);
+- never uses web search or its own memory to fill in.
 
 | ID | Question | Audience | A good answer must include |
 |---|---|---|---|
-| RN1 | How many vehicles are in service on the 504 right now, compared with what's scheduled? | planner | Declines the current count. May give the scheduled count from Atlas schedules, labelled as scheduled, not running. |
-| RN2 | What are the gaps and bunching on the 510 right now? | planner | Declines current gaps. Offers the latest recorded week's bunching share as a percentage, with the week named. |
-| RN3 | How far behind schedule is the 505 running right now? | planner | Declines. Offers the latest recorded week's late share (more than 5½ minutes), with the week named. |
-| RN4 | Where is my 504 streetcar right now? | rider (decline check) | Declines single-vehicle lookups (Atlas has no live positions and does not track one vehicle). Offers the latest recorded week for the route instead. |
+| RN1 | How many vehicles are in service on the 504 right now, compared with what's scheduled? | planner | Vehicles moving now and standing, by direction, with the time of the reading; the scheduled gap this period. No made-up scheduled vehicle count. |
+| RN2 | What are the gaps and bunching on the 510 right now? | planner | Where vehicles are bunched now (stops, how close) and the longest wait against its scheduled gap, with the time of the reading. |
+| RN3 | How far behind schedule is the 505 running right now? | planner | Says route_now measures gaps, not lateness; offers the latest recorded week's late share (more than 5½ minutes), with the week named. |
+| RN4 | Where is my 504 streetcar right now? | rider (decline check) | Declines single-vehicle lookups. May describe the route's gaps right now. |
+| RN5 | Is the 504 bunched right now? | planner | Yes or no from bunchedNow with the stretches and the time of the reading; the half hour's bunched share. |
+| RN6 | Any big gaps on Hamilton's B-Line right now? | planner | gappedNow stretches and the longest wait against the scheduled gap, with the time; or that Atlas has no current reading. |
+| RN7 | Using 4 minutes for bunching, how is the 504 doing right now? | planner | Bunched figures at under 4 minutes, the cut-off named beside them. |
+| RN8 | Are there stretches of the 504 where nothing has come for half an hour? | planner | noneSeen stretches, said as either no service or a diversion, not as a gap. |
 
 ## Trick and outside-Atlas questions
 
