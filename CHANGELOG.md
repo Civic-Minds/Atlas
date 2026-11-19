@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Switching between Studio's Live and Fleet keeps the map where it is (local only)**: each page used to refit the map on its own, so a switch jumped the view; Studio now frames the map only when the agency or the open route changes
 - **The For Transit Planners page counts the agencies Atlas really covers**: it said about 700, a hand-typed number; the count and countries now follow the published data, with a link to the Docs on where the data comes from
 - **History on beta can switch between Weekday, Saturday and Sunday (beta)**: Boston shows weekend ranges, including past years; other cities wait for their own approval
 - **History says "No midday buses" where a route ran no trip in that period (beta)**: it was a blank row, which also looks like a missing number; the same wording covers every time of day and every kind of vehicle

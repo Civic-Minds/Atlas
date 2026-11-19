@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router';
 import { Activity, Bus } from 'lucide-react';
@@ -18,6 +18,7 @@ import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
 import { AgencyDataSourceLink } from '../../components/Interval/cardUi';
 import { useDevFile } from './useDevFile';
+import { StudioMapFrameProvider, studioFrameKey } from './StudioMapFrame';
 
 /**
  * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its view tabs (Studio's pages in place of
@@ -70,14 +71,23 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
   const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
   // Opening Studio with no page in the address is the same state: its map, the remembered agency, no panel (Ryan: Live and Fleet open only when clicked).
   const closed = searchParams.get('panel') === 'closed' || !searchParams.get('page');
-  const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: slug, route: null }));
+  // The map's framing is the frame's (CIV-1925, CIV-1921): one key per agency and route, and the key last framed, kept across pages.
+  const framedMemory = useRef<string | null>(null);
+  const mapFrame = useMemo(() => ({ frameKey: studioFrameKey(slug, route), framedMemory }), [slug, route]);
+  const pickPage = (k: StudioPageKey) => {
+    // A page switch keeps the map where it is, as the main map's mode tabs do: the new page's view counts as framed when the
+    // map already shows this agency. A new agency (or a first open) still frames.
+    if (framedMemory.current?.startsWith(`${slug}:`)) framedMemory.current = studioFrameKey(slug, null);
+    if (k === page && !closed) set({ panel: 'closed', agency: slug, route: null });
+    else set({ page: k, panel: null, agency: slug, route: null });
+  };
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = useSidebarFrame().style;
 
   return (
-    <>
+    <StudioMapFrameProvider value={mapFrame}>
       {tabsPortal && page && createPortal(
         STUDIO_PAGES.map(k => {
           const Icon = PAGE_ICONS[k];
@@ -100,6 +110,6 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: Stud
       {!closed && !noData && page === 'live' && slug && (
         <Live key={slug} slug={slug} measureSlot={measureSlot} route={route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />
       )}
-    </>
+    </StudioMapFrameProvider>
   );
 }

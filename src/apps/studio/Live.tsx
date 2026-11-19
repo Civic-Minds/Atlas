@@ -13,6 +13,7 @@ import WidgetPanel from '../../components/Live/tool/WidgetPanel';
 import { useLiveBody } from '../../components/Live/tool/useLiveBody';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
+import { useStudioMapFrame } from './StudioMapFrame';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveAgencyName } from '../../hooks/useLiveAgencyName';
 import { useLiveAgency } from '../../LiveAgencyPage';
@@ -43,7 +44,7 @@ export interface LiveProps {
   headerPortal: Element | null;
   /** Right after the Live tab: where the Measure picker sits (CIV-1886). */
   measureSlot: Element | null;
-  /** The sidebar card's place: sidebarFrameStyle(sidebarLeft, searchBarWidth), as History's panels. */
+  /** The sidebar card's place, from the Studio frame (useSidebarFrame), as History's panels. */
   frameStyle: CSSProperties;
 }
 
@@ -82,9 +83,11 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   onMapPick.current = m.onMapPick;
   const { setOverlay } = usePageMapOverlay();
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
+  // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
+  const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
   useEffect(() => {
-    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey: `${slug}:${m.frameKey}`, frameCard: cardRef });
-  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, slug, m.frameKey]);
+    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey, framedMemory, holdFrame, frameCard: cardRef });
+  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, frameKey, framedMemory, holdFrame]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1

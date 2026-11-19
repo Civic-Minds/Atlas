@@ -8,6 +8,7 @@ import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
+import { useStudioMapFrame } from './StudioMapFrame';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
 import { PAGE_NAMES } from '../../../shared/pageNames';
 import { capitalizeFirst } from '../../../shared/headwayText';
@@ -113,7 +114,7 @@ export interface FleetProps {
   /** The agency menu, the shell's, first in the top bar. */
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
-  /** The sidebar card's place: sidebarFrameStyle(sidebarLeft, searchBarWidth), as History's panels. */
+  /** The sidebar card's place, from the Studio frame (useSidebarFrame), as History's panels. */
   frameStyle: React.CSSProperties;
 }
 
@@ -153,11 +154,11 @@ function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
   setRouteRef.current = setRoute;
   const onPick = useMemo(() => (p: MapPick | null) => { if (p?.kind === 'line' && p.route) setRouteRef.current(p.route); }, []);
   const { setOverlay } = usePageMapOverlay();
-  // The agency is in the key: switching agencies frames the new network, not the last one's view.
-  const frameKey = `${file.slug}:${route ? `route-${route}` : 'network'}`;
+  // Studio's frame owns where the map is framed (CIV-1925).
+  const { frameKey, framedMemory, holdFrame } = useStudioMapFrame();
   useEffect(() => {
-    setOverlay({ layer: { kind: 'lines', lines }, selected: null, onPick, highlightRoute: route, frameKey, frameCard: cardRef });
-  }, [setOverlay, lines, onPick, route, frameKey]);
+    setOverlay({ layer: { kind: 'lines', lines }, selected: null, onPick, highlightRoute: route, frameKey, framedMemory, holdFrame, frameCard: cardRef });
+  }, [setOverlay, lines, onPick, route, frameKey, framedMemory, holdFrame]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;

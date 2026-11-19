@@ -42,4 +42,25 @@ describe('one frame for every map view (CIV-1828)', () => {
     expect(main).not.toMatch(/StudioPage|apps\/studio/);
     expect(read('src/App.tsx')).toMatch(/\[FEATURE_ROUTES\.studio\]: 'studio'/);
   });
+
+  it('leaves the map, the agency, the route and the address to the Studio frame (CIV-1925)', () => {
+    // Pages supply their panel and their own chips; the frame (Studio.tsx, StudioMapFrame.tsx) owns the rest.
+    const frame = ['src/apps/studio/Studio.tsx', 'src/apps/studio/StudioMapFrame.tsx'];
+    const pages = sourceFiles('src/apps/studio').filter(f => !frame.includes(f));
+    const rules: [string, RegExp][] = [
+      ['reads or writes the address', /useSearchParams|setSearchParams|syncUrlParams/],
+      ['builds its own frame key', /frameKey\s*[:=]\s*`/],
+      ['keeps its own framing memory', /framedMemory\s*[:=]\s*useRef/],
+      ['picks or remembers the agency', /saveStudioAgency|getSavedStudioAgency|studioAgencyFrom\(/],
+    ];
+    const offending = pages.flatMap(f => rules.filter(([, re]) => re.test(read(f))).map(([what]) => `${f}: ${what}`));
+    expect(offending).toEqual([]);
+    expect(read('src/apps/studio/Studio.tsx')).toMatch(/StudioMapFrameProvider/);
+  });
+
+  it('places every view\'s sidebar card from the one shared frame, not props (CIV-1925)', () => {
+    const views = ['src/apps/History.tsx', 'src/apps/LiveVehicles.tsx', 'src/apps/NightService.tsx', 'src/apps/BustangConnections.tsx', 'src/components/ResearchInfo.tsx', ...sourceFiles('src/apps/studio')];
+    const offending = views.filter(f => /\bsidebarLeft\b|\bsearchBarWidth\b|sidebarFrameStyle\(/.test(read(f)));
+    expect(offending).toEqual([]);
+  });
 });
