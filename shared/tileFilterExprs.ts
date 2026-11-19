@@ -1,6 +1,7 @@
 import { TRUNK_FILTER_ENABLED, type PeriodKey } from './config.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE, periodHeadwayFlatKeys } from './pmtilesProps.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from './periodEligibility.js';
+import { edgeWaitBit } from './rules/frequency.js';
 import { buildEffectiveModeExpression } from './modes.js';
 import { tileNightServiceExpr } from './nightService.js';
 
@@ -194,6 +195,14 @@ export function buildTileHeadwayFilterClause(period: PeriodFilter | undefined, m
   // behaves as before.
   if ((!period || period === 'all') && maxHeadway !== Infinity) {
     return ['all', ['<=', ['coalesce', ['get', 'routeMiddayCap'], ['get', 'worstDirectionMiddayCap'], 0], threshold], clause];
+  }
+  // CIV-238 (Ryan, 2026-11-19): a period also fails a grade its first or last wait breaks (ewf_, pipeline/edgeWaits.ts).
+  // Night Service keeps its own rule. A tile without the mask behaves as before.
+  const bit = period && period !== 'overnight' ? edgeWaitBit(maxHeadway) : null;
+  if (bit != null) {
+    const key = `ewf_${period}`;
+    const breaks = ['all', ['has', key], ['==', ['%', ['floor', ['/', ['get', key], bit]], 2], 1]];
+    return ['all', clause, ['!', breaks]];
   }
   return clause;
 }

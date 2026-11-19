@@ -260,3 +260,28 @@ describe('#899: a direction with some midday service but no steady midday patter
   });
 });
 
+
+describe('CIV-238: a period fails a grade its first or last wait breaks (routeEdgeWaitFailByPeriod)', () => {
+  // A route every 8 in the AM peak whose first bus comes 53 minutes in: the pipeline records grades 10-30 as broken
+  // (bits 1+2+4+8 = 15). Its numbers stay; the filter fails it at 10-30 and passes it at 60.
+  const row = (ewf?: Record<string, number>) => ({
+    routeId: '121', day: 'Weekday', tier: '10',
+    routeFilterHeadwayByPeriod: { amPeak: 8 }, routeRunsByPeriod: { amPeak: true }, headwayByPeriod: { amPeak: 8 },
+    ...(ewf ? { routeEdgeWaitFailByPeriod: ewf } : {}),
+  });
+
+  it('fails the broken grades and keeps the others', () => {
+    for (const n of [10, 15, 20, 30]) expect(featurePassesHeadwayFilter(row({ amPeak: 15 }), 'amPeak', n)).toBe(false);
+    expect(featurePassesHeadwayFilter(row({ amPeak: 15 }), 'amPeak', 60)).toBe(true);
+  });
+
+  it('a route with no mask, or a mask for another period, passes as before', () => {
+    expect(featurePassesHeadwayFilter(row(), 'amPeak', 10)).toBe(true);
+    expect(featurePassesHeadwayFilter(row({ midday: 31 }), 'amPeak', 10)).toBe(true);
+  });
+
+  it('a 16-minute boundary wait breaks every 10 only (bit 1)', () => {
+    expect(featurePassesHeadwayFilter(row({ amPeak: 1 }), 'amPeak', 10)).toBe(false);
+    expect(featurePassesHeadwayFilter(row({ amPeak: 1 }), 'amPeak', 15)).toBe(true);
+  });
+});

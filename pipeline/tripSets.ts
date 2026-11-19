@@ -14,6 +14,7 @@
  */
 import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_DAY, type PeriodKey } from '../shared/config.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { edgeWaitFailMask } from './edgeWaits.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
 import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
@@ -1280,6 +1281,8 @@ export interface DirectionRollup {
      * branch minimum (Ryan, 2026-11-15). Nothing reads it yet.
      */
     trunkFilterValue: number | null;
+    /** CIV-238: the public grades the main stretch's first or last wait breaks in the period (pipeline/edgeWaits.ts); 0 = none. */
+    edgeWaitFail: number;
     /** The main stretch runs through the period (departures on both sides of its midpoint). */
     runs: boolean;
     /** The main stretch has any departure in the period. A direction with none is skipped by the route (a one-way peak route). */
@@ -1518,6 +1521,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       mainLow: !main[key].counts ? null : main[key].uneven ? main[key].headway : main[key].value,
       filterValue: null,
       trunkFilterValue: null,
+      edgeWaitFail: 0,
       typical: null,
       runs: false,
       hasService: false,
@@ -1545,6 +1549,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
     period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
+    period[key].edgeWaitFail = key === 'overnight' ? 0 : edgeWaitFailMask([...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b), start, end);
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
     const setter = setterAt?.p;
     period[key].typical = setter?.uneven && setter.headway != null && setter.headway < period[key].filterValue! ? setter.headway : null;
@@ -1663,6 +1668,8 @@ export interface RouteRollup {
     filterValue: number | null;
     /** CIV-1579 shadow: every serving direction's trunkFilterValue, the worst; null when any has none. Nothing reads it yet. */
     trunkFilterValue: number | null;
+    /** CIV-238: the public grades the main stretch's first or last wait breaks in the period (pipeline/edgeWaits.ts); 0 = none. */
+    edgeWaitFail: number;
     /** At least one direction runs through the period ("All" for that period still draws the route). */
     runs: boolean;
   }>;
@@ -1717,6 +1724,8 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
       range: value != null && low != null && low !== value ? [Math.min(low, value), value] : null,
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
+      // A route fails a grade any serving direction's edge wait breaks (the worst direction decides, as everywhere).
+      edgeWaitFail: serving.reduce((m, d) => m | d.period[key].edgeWaitFail, 0),
       runs: known.some(d => d.period[key].runs),
     };
   }
@@ -1890,6 +1899,11 @@ export function stampStretchShadow(
     // direction passing, the worst deciding. Where the trunk has no value but the route has (a trunk under the branch
     // minimum), it is the route's own value, so a short-trunk route keeps today's D1 reading and the app can read this
     // alone. Overnight is unchanged: it reads the night verdict, as above.
+    {
+      const ewf: Partial<Record<PeriodKey, number>> = {};
+      for (const { key } of PERIOD_WINDOWS) if (route.period[key].edgeWaitFail) ewf[key] = route.period[key].edgeWaitFail;
+      if (Object.keys(ewf).length) p.routeEdgeWaitFailByPeriod = ewf; else delete p.routeEdgeWaitFailByPeriod;
+    }
     p.routeTrunkHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].trunkFilterValue ?? route.period[k].filterValue);
     // CIV-1579: which of the row's stops are on its direction's main stretch (1, else empty), run-length encoded
     // (encodeStopRuns), so coverage can count a trunk's stops without its branches. Aligned to the row's stopOrder,
