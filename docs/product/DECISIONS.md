@@ -265,6 +265,9 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-18 — Research chart defaults
+Ryan, 2026-11-18 (CIV-1173): picked 1A, 2A, 3A, 4A and 5A on the chart kit review page. Ranked bars for rankings; columns for spreads along a scale; a split bar for shares of a whole; dot pairs for two values compared; empty steps kept on a fixed scale (a 60-min row at 0 is shown, not dropped). He noted the A/B pairs are different chart types for different jobs, so each kind keeps the design its page already uses. Style rule: [VISUAL.md](../style/VISUAL.md), Charts, graphs and graphics.
+
 ### 2026-11-18 — The MCP answers bunching and gaps right now
 Ryan, 2026-11-18 (CIV-1870): "I would like us to have Live added with real-time information available (like being able to ask about bunching for example, or gaps in service on a specific route)". route_now (local MCP first; Studio's view CIV-1893 calls the same shared/liveNow.ts) reads the Live recorder's last half hour of vehicle readings. Gaps are measured where vehicles pass stops, as the weekly figures count them, never guessed from speed. Each stop is judged against its own scheduled gap for the period (Atlas's figure for that stop, branches together), with the shared bunched and gapped cut-offs. A stop no vehicle passed in the half hour is named apart, not called a gap, since a diversion looks the same. Every answer gives the time of the reading; a reading older than 3 minutes means no current figures. The manager settled the plan and the one tool.
 
