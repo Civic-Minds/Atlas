@@ -7,7 +7,7 @@ import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
 import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
-import { sidebarFrameStyle } from '../../styles';
+import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, studioAgencyFrom, studioAgencyListFrom, studioPageFor, type StudioPageKey } from '../../../shared/studioAgencies';
 import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
@@ -31,15 +31,13 @@ const PAGE_ICONS: Record<StudioPageKey, typeof Bus> = { live: Activity, fleet: B
 
 export interface StudioProps {
   agencyCatalog: Agency[];
-  sidebarLeft: number;
-  searchBarWidth?: number;
   /** App's top-bar slot for the view's chips (headerPortalRef). */
   headerPortal: Element | null;
   /** App's view-tab row slot, where Studio's pages show as tabs. */
   tabsPortal: Element | null;
 }
 
-export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, headerPortal, tabsPortal }: StudioProps) {
+export default function Studio({ agencyCatalog, headerPortal, tabsPortal }: StudioProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const set = (changes: Record<string, string | null>) => setSearchParams(p => {
     const n = new URLSearchParams(p);
@@ -76,7 +74,7 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
-  const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
+  const frameStyle = useSidebarFrame().style;
 
   return (
     <>

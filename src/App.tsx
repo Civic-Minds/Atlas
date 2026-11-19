@@ -31,6 +31,7 @@ import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { PageMapOverlayProvider } from './context/PageMapOverlay';
+import { SidebarFrameProvider } from './context/SidebarFrame';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
@@ -659,6 +660,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -929,26 +931,26 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   )}
                 </ModeFadeInOnMount>
               ) : null}>
-                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
               </React.Suspense>
             )}
             {studioOn && inStudio && (
               <React.Suspense fallback={null}>
-                <Studio agencyCatalog={agencies} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
+                <Studio agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
+                <NightService active={inNight} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
               </React.Suspense>
             )}
             {FEATURES.researchApps && inBustang && (
               <React.Suspense fallback={null}>
-                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
+                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}
@@ -963,11 +965,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     onInfoOpen={openInfo}
                     query={deferredQuery}
                     layers={layers}
-                    sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
                     routeRequest={liveRouteRequest}
                     onAgencyClick={handleLiveAgencyClick}
-                    searchBarWidth={isPhone ? undefined : searchBarWidth}
                   />
                 </React.Suspense>
               </div>
@@ -995,6 +995,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </main>
       <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} />
     </div>
+    </SidebarFrameProvider>
     </PageMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

@@ -3,9 +3,10 @@ import { MAP_SCRUBBER_SLOT, MAP_SCRUBBER_WIDTH } from '../mapOverlayLayout';
 import { loadHistoryConfig as loadHistoryConfigShared } from '../utils/historyConfig';
 import { History as HistoryIcon } from 'lucide-react';
 import { useHistoryMapOverlay } from '../context/HistoryMapOverlay';
+import { useSidebarFrame } from '../context/SidebarFrame';
 import { type HeadwayByPeriod, type PeriodKey } from '../../shared/config';
 import { countOf } from '../../shared/overflowText';
-import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarFrameStyle, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
+import { TRANSITION_BASE, AGENCY_LIST_FILTERS, PILL_SURFACE, PILL_SCROLL_ROW, SIDEBAR_CARD, SIDEBAR_CARD_MAX_H, sidebarCardFrame, SIDEBAR_PANEL_WIDTH, Z_PANEL, CARD_NOTICE, CARD_NOTE } from '../styles';
 import { routeLabels } from '../utils/format';
 import { RouteTitleName } from '../components/RouteRowName';
 import { agencyCardTitle, agencyNames } from '../utils/agencyName';
@@ -102,13 +103,10 @@ interface Props {
   setQuery: (q: string) => void;
   pendingRouteClick?: { slug: string; routeShortName: string } | null;
   onPendingRouteHandled?: () => void;
-  sidebarLeft?: number;
   /** History's Frequency and Time (top-bar chips, held by App): the map, the year list and an opened route follow them. */
   view?: HistoryView;
   /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
   agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string }[];
-  /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
-  searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
   onOpenAgencyChange?: (name: string | null) => void;
   /** CIV-1646: whether the open agency's History data has weekend values (null: none open), which decides if the Day chip shows. */
@@ -790,7 +788,7 @@ function HistoryAgencyPanel({
   );
 }
 
-export default function History({ active, view = HISTORY_VIEW_ALL, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, sidebarLeft, searchBarWidth, agencyCatalog, onOpenAgencyChange, onOpenAgencyWeekendChange, dismissKey = 0, onPanelOpenChange }: Props) {
+export default function History({ active, view = HISTORY_VIEW_ALL, initialAgencySlug, inViewAgencySlugs, onInfoOpen, query, searchFocused, setQuery, pendingRouteClick, onPendingRouteHandled, agencyCatalog, onOpenAgencyChange, onOpenAgencyWeekendChange, dismissKey = 0, onPanelOpenChange }: Props) {
   // Applies initialAgencySlug (the currently map-selected agency) once per
   // History session, not every time selectedSlug clears -- otherwise a user
   // typing a new search gets raced back to whatever agency the map still
@@ -1116,7 +1114,7 @@ export default function History({ active, view = HISTORY_VIEW_ALL, initialAgency
   const panelInteractive = Boolean(selectedSlug || showAgencyChooser || searchFocused);
   // Placement shared by History's panels, by the regular cards' rule: anchored under the search bar
   // at its width on desktop (#1033 parity B). Each panel adds its own top, as its regular card does.
-  const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
+  const frameStyle = useSidebarFrame().style;
   const frameClassName = `transition-opacity ${TRANSITION_BASE} ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${!panelInteractive ? 'pointer-events-none' : ''}`;
   // The agency chooser fades out with the same transition once dismissed (#1031). One opacity class only: with the
   // frame's opacity-100 beside an opacity-0, the stylesheet order kept it showing.

@@ -11,7 +11,7 @@ function Where() { const l = useLocation(); return <span data-testid="where">{l.
 function setup(url: string) {
   const tabs = document.createElement('div');
   document.body.appendChild(tabs);
-  render(<MemoryRouter initialEntries={[url]}><Studio agencyCatalog={[]} sidebarLeft={0} searchBarWidth={300} tabsPortal={tabs} headerPortal={null} /><Where /></MemoryRouter>);
+  render(<MemoryRouter initialEntries={[url]}><Studio agencyCatalog={[]} tabsPortal={tabs} headerPortal={null} /><Where /></MemoryRouter>);
   return tabs;
 }
 
