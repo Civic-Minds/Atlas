@@ -64,7 +64,8 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
   const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
-  const closed = searchParams.get('panel') === 'closed';
+  // Opening Studio with no page in the address is the same state: its map, the remembered agency, no panel (Ryan: Live and Fleet open only when clicked).
+  const closed = searchParams.get('panel') === 'closed' || !searchParams.get('page');
   const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: (listOf(k === 'live' ? liveList : fleetList) ?? []).includes(slug) ? slug : null, route: null }));
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);

@@ -54,3 +54,14 @@ describe('Studio keeps the agency (CIV-1883)', () => {
     expect(localStorage.getItem('atlas_studio_agency')).toBe('kingston');
   });
 });
+
+describe('Studio opens with no panel (Ryan, 2026-11-18)', () => {
+  it('no page in the address shows no panel, with every tab inactive', () => {
+    localStorage.clear();
+    const tabs = setup('/studio');
+    expect(screen.queryByText('live panel')).toBeNull();
+    expect(screen.queryByText('fleet panel')).toBeNull();
+    fireEvent.click(tabs.querySelectorAll('button')[0]);
+    expect(screen.getByText('live panel')).toBeTruthy();
+  });
+});
