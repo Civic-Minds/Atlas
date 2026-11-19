@@ -76,7 +76,7 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   // The About menu's Studio text reads these (CIV-1890).
   const { setAbout } = useStudioAbout();
   const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
-  useEffect(() => { setAbout({ live: listOf(liveList) ?? [], fleet: listOf(fleetList) ?? [], agency: selected }); }, [setAbout, liveList, fleetList, selected]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setAbout({ agency: selected }); }, [setAbout, selected]);
   useEffect(() => () => setAbout(null), [setAbout]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);

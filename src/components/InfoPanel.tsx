@@ -22,9 +22,8 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_SOURCE_FEED, STUDIO_SOURCE_NONE, STUDIO_SOURCE_WEBSITE, studioAboutAgencies, studioAboutRecency, studioSourcesLead } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_SOURCE_FEED, STUDIO_SOURCE_NONE, STUDIO_SOURCE_WEBSITE, studioSourcesLead } from '../content/noticeCopy';
 import { useStudioAbout } from '../context/StudioAbout';
-import { STUDIO_PAGE_NAMES } from '../../shared/studioWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -375,14 +374,12 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Data</p>
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  {inStudio ? [studioAboutAgencies([{ page: STUDIO_PAGE_NAMES.live, agencies: (studio?.live ?? []).map(studioName) }, { page: STUDIO_PAGE_NAMES.fleet, agencies: (studio?.fleet ?? []).map(studioName) }]), studio?.agency?.lastRefreshedAt ? studioAboutRecency(studioName(studio.agency.slug), shortDate(studio.agency.lastRefreshedAt) ?? studio.agency.lastRefreshedAt) : ''].filter(Boolean).join(' ') : <>
+                {!inStudio && <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
                   Covering {agencies.length} transit agencies.
                   {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
                   {FEATURES.live && !FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}.`}
                   {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
-                  </>}
-                </p>
+                </p>}
                 <div className="space-y-2">
                   {!inStudio && <LinkCard as="button"
                     onClick={() => setView('agencies')} icon="chevron">Browse agencies</LinkCard>}

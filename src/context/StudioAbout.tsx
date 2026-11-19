@@ -3,12 +3,9 @@ import type { Agency } from '../App';
 
 /**
  * What the About menu says inside Studio (CIV-1890): the same menu component as the main map, with Studio's own text. Studio
- * publishes the agencies each page has data for (from the Live and Fleet lists) and the one selected; the menu reads them.
+ * publishes the selected agency, whose schedule sources the menu lists.
  */
 export interface StudioAbout {
-  /** Each page's agencies, in that page's order. */
-  live: readonly string[];
-  fleet: readonly string[];
   /** The selected agency, from the catalog; null until the lists load. */
   agency: Agency | null;
 }

@@ -1098,11 +1098,6 @@ export const COVERAGE_TEXT = {
 export const studioNoDataNote = (agency: string): string => `No data for ${agency} here`;
 /** CIV-1890 (DRAFT, awaiting Ryan's word-for-word OK): the About menu inside Studio, in place of the public atlas's text. */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for checking an agency’s schedule and its recorded vehicle data.';
-/** "Live has data for TTC, Hamilton and Kingston. Fleet has data for …": each page's agencies, read from the lists Studio loads. */
-export const studioAboutAgencies = (pages: ReadonlyArray<{ page: string; agencies: readonly string[] }>): string =>
-  pages.filter(p => p.agencies.length).map(p => `${p.page} has data for ${joinList(p.agencies)}.`).join(' ');
-/** "Toronto Transit Commission’s schedule was last updated Nov 13.": how recent the selected agency's schedule is. */
-export const studioAboutRecency = (agency: string, date: string): string => `${agency}’s schedule was last updated ${date}.`;
 /** The Schedule sources view inside Studio: only the selected agency's. */
 export const studioSourcesLead = (agency: string): string => `${agency}’s schedule comes from:`;
 export const STUDIO_SOURCE_FEED = 'Schedule file';
