@@ -19,3 +19,11 @@ describe("route_now's read-only token (CIV-1870)", () => {
     expect(readTokenEnv({}, join(tmpdir(), 'no-such-file.env'))).toEqual({});
   });
 });
+
+describe('Live time zones (#1612)', () => {
+  it('gives every agency Live records a time zone, so route_now can read its clock', async () => {
+    const { LIVE_ARCHIVE_SLUGS } = await import('../../shared/liveCoverage');
+    const { LIVE_AGENCY_TIMEZONES } = await import('../../shared/livePollingConfig');
+    expect(LIVE_ARCHIVE_SLUGS.filter(s => !LIVE_AGENCY_TIMEZONES[s])).toEqual([]);
+  });
+});

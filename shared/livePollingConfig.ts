@@ -78,6 +78,7 @@ export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
   lacmta: 'America/Los_Angeles',
   edmonton: 'America/Edmonton',
   halifax: 'America/Halifax',
+  mbta: 'America/New_York',
 };
 
 export const LIVE_POLLING_ROUTES: LiveRouteConfig[] = [
