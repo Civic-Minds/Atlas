@@ -14,6 +14,7 @@ import { NO_DATA_YET, NOT_MEASURED_VALUE, TRIP_TIME_LABEL } from './liveWording.
 import { countOf } from './overflowText.js';
 import { percentText, countText } from './numberText.js';
 import { LIVE_MIN_SAMPLE, LIVE_MIN_SPREAD_DAYS } from './rules/live.js';
+import type { CutoffCounts } from './liveCutoffs.js';
 
 export interface AdherenceCounts {
   n: number;
@@ -95,6 +96,8 @@ export interface WeekMetrics {
   extraWait: { minutes: number; gaps: number } | null;
   bunching: { share: number; gaps: number; /** Too close (CIV-302); absent in older files. */ bunched?: number; /** Too far apart. */ gapped?: number } | null;
   delivered: { share: number; seen: number; notSeen: number; unknown: number } | null;
+  /** How late each trip-start departure was and how big each gap was, for planners' own cut-offs (CIV-1869). Weeks only; absent in older files. */
+  cutoffCounts?: CutoffCounts;
 }
 /** The two weeks for each time of day (CIV-1459), on the same days as the whole day's. */
 export type WeekBands = Partial<Record<Exclude<DashboardBand, 'all'>, { thisWeek: WeekMetrics; lastWeek: WeekMetrics }>>;

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio can give Live figures at a planner's own late, early, bunched and gapped cut-offs**: an agency with a 3-minute on-time standard gets its own figure, named beside the standard one; rankings stay on the standard cut-offs so routes still compare fairly
 - **Atlas Studio's nearby-routes answers cover 500 m around a place, the same as the map's nearby routes**: they used 250 m, so a corner like Bathurst and Bloor left out routes a short walk away
 - **Atlas Studio finds a route typed without its leading zero**: "1" finds Hamilton's route 01, by the same match the map's route search uses
 - **A shared map link with a location previews that exact spot on X, LinkedIn and Facebook**: the preview picture shows Atlas's frequency lines around the shared spot (it used to show the nearest of about 60 city pictures, so a spot 30 km out showed downtown); links with no location keep today's picture

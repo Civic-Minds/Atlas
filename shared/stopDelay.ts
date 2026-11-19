@@ -7,6 +7,7 @@
 import { delayStatus } from './liveDelayStatus.js';
 import { median, percentile } from './segmentDelay.js';
 import { LIVE_MIN_SAMPLE } from './rules/live.js';
+import { latenessCounter, latenessStep, type Steps } from './liveCutoffs.js';
 
 export interface RunStopDelay {
   stopId: string;
@@ -108,6 +109,13 @@ export function adherenceReport(runs: readonly RunDelays[], options: { timepoint
     byDate: [...byDate].sort((a, b) => a[0].localeCompare(b[0])).map(([date, m]) => ({ date, ...tally(m) })),
     byDirection: Object.fromEntries([...byDir].sort((a, b) => a[0] - b[0]).map(([d, m]) => [String(d), tally(m)])),
   };
+}
+
+/** Trip-start departures counted by lateness in half-minute steps, from the same departures adherenceReport's tripStartsOnly counts (CIV-1869). */
+export function tripStartLateness(runs: readonly RunDelays[]): Steps {
+  const c = latenessCounter();
+  for (const r of runs) for (const s of r.stops) if (s.tripStart === true) c.add(latenessStep(s.delaySec));
+  return c.steps();
 }
 
 export interface StopDelayStat {

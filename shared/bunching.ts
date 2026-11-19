@@ -7,6 +7,7 @@
  */
 import { median, percentile } from './segmentDelay.js';
 
+import { gapRatioStep, gapStep, type StepCounter } from './liveCutoffs.js';
 import { BASELINE_STOPS, BUNCHED_GAP_SEC, GAPPED_FACTOR, GRADUAL_CLIMB, LIVE_MIN_SAMPLE, RISE, STAYS_UP_M, STAYS_UP_SHARE, STAYS_UP_STOPS } from './rules/live.js';
 
 /** The bunching thresholds live in shared/rules/live.ts (rules move 2). */
@@ -52,6 +53,17 @@ export function stopBunching(stopId: string, windows: readonly GapWindow[]): Sto
     stopId, n, bunchedShare: n ? bunched / n : 0, gappedShare: n ? gapped / n : 0, badShare: n ? (bunched + gapped) / n : 0,
     medianGapSec: median(all), spread: p10 && p90 ? p90 / p10 : null,
   };
+}
+
+/** Adds a stop's gaps to the counts kept for planners' own cut-offs (CIV-1869): the same gaps stopBunching counts. */
+export function addGapCounts(windows: readonly GapWindow[], gaps: StepCounter, ratio: StepCounter): void {
+  for (const w of windows) {
+    const sched = median(w.scheduledGaps);
+    for (const g of w.actualGaps) {
+      gaps.add(gapStep(g));
+      if (sched != null && sched > 0) ratio.add(gapRatioStep(g, sched));
+    }
+  }
 }
 
 export interface BunchingStretch {

@@ -27,6 +27,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.10.0 | 2026-11-18 | route_reliability and route_bunching: how a route ran against its schedule and how evenly vehicles were spaced, from Atlas Live's published recordings (TTC streetcars), through shared/liveReliability.ts, which Studio shares (CIV-1860). 0.9.0 is Studio's CIV-1840 build |
 | 0.11.0 | 2026-11-18 | Live tools cover every agency Live records: each answer states the agency's limits (days kept, routes covered, earliest date figures can appear); figures switch on by themselves once a route has 4 good days in a week (CIV-1860) |
 | 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
+| 0.12.0 | 2026-11-18 | Planners' own cut-offs (CIV-1869): route_reliability takes late_after_min and early_before_min, route_bunching takes bunched_within_min and gapped_factor; each figure at a custom cut-off comes in atYourCutoffs with the cut-off in words beside it, the standard figures stay, rankings stay on the standard cut-offs |
 
 ## Questions
 
@@ -351,4 +352,12 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 
 - **Changed on purpose:** routes_near's default radius, 250 m to the map's 500 m (2 answers: Bathurst and Bloor, Union Station gain nearby stops and routes); the Live tools' source line now says past service, not how the route is running right now.
 - **Unchanged:** every other answer, after each of the other steps (buses_needed through Studio's groupAtTarget, one protocol and file-reading helper for both servers, nearby stops and period trips from shared code, the shared route match, the shared schedule-change pairing, the tool-code split). The hosted Worker bundles to 80 KB gzipped.
+
+## 2026-11-18: planners' own cut-offs (CIV-1869, 0.12.0), checked by hand
+
+- Live's analysis keeps how late each trip-start departure was (half-minute steps) and how big each gap was (half-minute steps, and quarter steps of the scheduled gap), weeks only, about 1.6 KB per route file.
+- Exactness: Kingston routes 2 and 702 rebuilt locally (no uploads). At the standard cut-offs the kept counts give the same late, bunched and gapped shares and counts as the stored figures in every week and part of the day: 60 checks, 0 differences.
+- Tool calls on a local copy of the private Live files: 3-minute late and 1-minute early on one route return atYourCutoffs with the cut-off worded beside each figure; 4-minute bunched and 3 times gapped return both separately with no combined share; a ranking with a custom cut-off stays on the standard and says so; 5.3 minutes is refused ("in steps of 0.5"), never rounded.
+- Files built before CIV-1869 have no counts: a custom cut-off then says Atlas has no figure at that cut-off yet.
+- Golden comparison with no cut-offs given (34 calls, disk and split stores): 0 changed. The test questions CC1 to CC6 (QUESTIONS.md) run in the next locked-down and normal round, once the private Live files are rebuilt with counts.
 
