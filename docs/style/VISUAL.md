@@ -122,6 +122,15 @@ On the site:
 - Adding one source line under each chart would fit standard 3. (Editorial strategy, 2026-10-30; written as a proposal there)
 - A caveat sits next to the chart it affects, such as "Not found yet", not only at the end. (Editorial strategy, 2026-10-30)
 
+Research chart defaults (Ryan, 2026-11-18, CIV-1173, picks 1A to 5A on the chart kit review page; decision in [DECISIONS.md](../product/DECISIONS.md)):
+
+- Ranked bars for rankings.
+- Columns for spreads along a scale.
+- A split bar for shares of a whole.
+- Dot pairs for two values compared.
+- Empty steps stay on a fixed scale: a 60-min row at 0 is shown, not dropped.
+- The A/B pairs on that page are different chart types for different jobs, so each kind keeps the design its page already uses.
+
 For LinkedIn and other posts (Ryan, 2026-11-10, recorded in Claude's memory note on LinkedIn graphics). Make each graphic in this order:
 
 1. Pick the form.
