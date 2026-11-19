@@ -6569,6 +6569,10 @@
         -121.8
       ],
       "feedUrl": "https://metro.kingcounty.gov/gtfs/google_transit.zip",
+      "excludeRouteShortNames": [
+        "South Lake Union Streetcar",
+        "First Hill Streetcar"
+      ],
       "lastFeedExpiry": "20271231",
       "lastFeedVersion": "FAL26-161.5",
       "lastRefreshedAt": "2026-11-16",
