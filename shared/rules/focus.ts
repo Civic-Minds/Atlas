@@ -40,4 +40,3 @@ export const PRODUCT_FOCUS = {
   vehiclesNeeded: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
 } as const satisfies Record<string, readonly string[]>;
 
-export type FocusProduct = keyof typeof PRODUCT_FOCUS;
