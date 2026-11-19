@@ -6,7 +6,7 @@
     47.0594,
     -0.8797
   ],
-  "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-reseau-choletbus/20260717-113054/gtfs.zip",
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/71e8ee8e-0b55-40a1-a297-21ef89aba4dc",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,
