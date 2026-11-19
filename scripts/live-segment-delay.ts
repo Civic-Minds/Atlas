@@ -24,8 +24,9 @@ import {
   segmentObservations, stopPassages,
   type HoldEvent, type Pattern, type TripPing, type TripStopStatus, type PositionSample, type ScheduledRunTimes, type SegmentObservation, type TimeBand,
 } from '../shared/segmentDelay.js';
-import { adherenceReport, delayBuildup, stopDelayStats, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
-import { BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
+import { adherenceReport, delayBuildup, stopDelayStats, tripStartLateness, type RunDelays, type RunStopDelay } from '../shared/stopDelay.js';
+import { gapCounter, gapRatioCounter } from '../shared/liveCutoffs.js';
+import { addGapCounts, BUNCHED_GAP_SEC, bunchingLinks, bunchingProfile, stopBunching, stopGapsRow, type GapWindow, type StopGapsRow } from '../shared/bunching.js';
 import { delayStatus, EARLY_AT_OR_BELOW_MIN, LATE_ABOVE_MIN } from '../shared/liveDelayStatus.js';
 import { feedGaps, routeEmptyMinutes, MIN_SCHEDULED_TRIPS } from '../shared/feedOutages.js';
 import { dayHealth, delivered, goodDates, goodDayTotals, keepGoodDays, limitCounts, runTimeStat, snapshotsPerDate, weekSplit, MIN_HEALTHY_DAYS, type RunTimeRow } from '../shared/routeMetrics.js';
@@ -1223,14 +1224,16 @@ const weeks = weekSplit(allValidDates, healthV3);
  * The week's figures over `days`, for the whole day or one time of day (CIV-1459: the Live map's week tables follow the
  * period picked). A trip's time of day is the hour it starts, as the late-by-hour chart and run time count it.
  */
-function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all') {
+function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all', keepCounts = false) {
   const ds = new Set(days);
   const inBand = (hour: number) => band === 'all' || bandForHour(hour) === band;
   const runs = runDelays.filter(r => ds.has(r.date)).map(r => (band === 'all' ? r : { ...r, stops: r.stops.filter(x => inBand(x.hour)) })).filter(r => r.stops.length > 0);
   const tp = adherenceReport(runs, { tripStartsOnly: true }).overall;
   let ewtSum = 0, ewtW = 0, bad = 0, gaps = 0, close = 0, far = 0;
+  const gapSteps = gapCounter(), ratioSteps = gapRatioCounter();
   for (const [key, m] of headwayByStop) {
     const wins = (m.get(band) ?? []).filter(w => ds.has(w.date));
+    if (keepCounts) addGapCounts(wins, gapSteps, ratioSteps);
     const stat = headwayBandStat(wins);
     if (stat && stat.excessWaitSec != null && stat.scheduledMedianGapSec <= EXTRA_WAIT_MAX_SCHEDULED_SEC && stat.gaps >= 10) { ewtSum += stat.excessWaitSec * stat.gaps; ewtW += stat.gaps; }
     const sb = stopBunching(key.split('|')[0], wins);
@@ -1249,6 +1252,8 @@ function weekMetrics(days: readonly string[], band: TimeBand | 'all' = 'all') {
     // The two parts of the bunching share: gaps too close (under 2 min) and too far apart (over twice the timetable's).
     bunching: gaps ? { share: r3(bad / gaps), gaps, bunched: r3(close / gaps), gapped: r3(far / gaps) } : null,
     delivered: dv.share == null ? null : { share: r3(dv.share), seen: dv.seen, notSeen: dv.notSeen, unknown: dv.unknown },
+    // How late each departure was and how big each gap was, so a planner's own cut-off can be worked out (CIV-1869). Weeks only.
+    ...(keepCounts ? { cutoffCounts: { lateness: tripStartLateness(runs), gaps: gapSteps.steps(), gapRatio: ratioSteps.steps() } } : {}),
   };
 }
 const serviceDeliveredV3 = {
@@ -1272,13 +1277,13 @@ const dailyV3 = Object.fromEntries(allValidDates.map(date => {
 const weeklyV3 = {
   minHealthyDays: MIN_HEALTHY_DAYS,
   health: healthV3.filter(h => allValidDates.includes(h.date)),
-  thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy) },
-  lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy) },
+  thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy, 'all', true) },
+  lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy, 'all', true) },
   comparable: weeks.thisHealthy.length >= MIN_HEALTHY_DAYS && weeks.lastHealthy.length >= MIN_HEALTHY_DAYS,
   // The same two weeks for each time of day (CIV-1459), on the same days.
   bands: Object.fromEntries(BANDS.filter((b): b is TimeBand => b !== 'all').map(band => [band, {
-    thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy, band) },
-    lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy, band) },
+    thisWeek: { dates: weeks.thisWeek, healthyDates: weeks.thisHealthy, ...weekMetrics(weeks.thisHealthy, band, true) },
+    lastWeek: { dates: weeks.lastWeek, healthyDates: weeks.lastHealthy, ...weekMetrics(weeks.lastHealthy, band, true) },
   }])),
 };
 

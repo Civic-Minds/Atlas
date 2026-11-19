@@ -5,6 +5,7 @@
 import { PERIOD_KEYS, PERIOD_LABELS, formatPeriodRange } from '../../shared/config';
 import { DAY_TYPES } from '../../shared/rules/days';
 import { RELIABILITY_BANDS } from '../../shared/liveReliability';
+import { CUTOFF_LIMITS, DEFAULT_CUTOFFS } from '../../shared/liveCutoffs';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 
@@ -14,6 +15,13 @@ const agency = { type: 'string', description: 'Agency name or short name, e.g. "
 const alsoAgencies = { type: 'array', items: { type: 'string' }, description: 'Optional other agencies serving the same trip, counted together (e.g. LA Metro with Big Blue Bus between downtown LA and Santa Monica). Use list_agencies near a place to find them.' };
 const period = { type: 'string', enum: PERIODS, description: `Part of the day: ${PERIOD_KEYS.map(k => `${PERIOD_LABELS[k]} ${formatPeriodRange(k)}`).join(', ')}.` };
 const livePeriod = { type: 'string', enum: ['All day', ...RELIABILITY_BANDS.filter(b => b !== 'all').map(b => PERIOD_LABELS[b])], description: 'Optional part of the day; every part when left out.' };
+/** A planner's own cut-offs (CIV-1869): the standard figures stay, and the answer adds each figure at the cut-off asked for. */
+const cutoffArg = (k: keyof typeof CUTOFF_LIMITS, what: string) => ({ type: 'number',
+  description: `Optional, only when the person sets their own cut-off: ${what} (standard ${DEFAULT_CUTOFFS[k]}; ${CUTOFF_LIMITS[k].min} to ${CUTOFF_LIMITS[k].max} in steps of ${CUTOFF_LIMITS[k].step}).` });
+const LATE_AFTER = cutoffArg('lateAfterMin', 'count a departure late when it is more than this many minutes after the scheduled time');
+const EARLY_BEFORE = cutoffArg('earlyBeforeMin', 'count a departure early when it is this many minutes or more before the scheduled time');
+const BUNCHED_WITHIN = cutoffArg('bunchedWithinMin', 'count a gap as bunched when it is under this many minutes');
+const GAPPED_FACTOR_ARG = cutoffArg('gappedFactor', 'count a gap as gapped when it is more than this many times the scheduled gap');
 const every = { type: 'number', description: `Minutes: routes that run this often or better. Atlas's map uses ${PUBLIC_TIER_MAXES.join(', ')}.` };
 const fromTime = { type: 'string', description: 'Optional start of a time window, such as "10:00" or "10 AM".' };
 const toTime = { type: 'string', description: 'Optional end of the time window, such as "18:00" or "6 PM".' };
@@ -32,8 +40,8 @@ const TOOL_LIST = [
   { name: 'routes_by_hours', description: "Routes whose service ends early or starts late on a day type: every route whose last trip leaves before ends_before, or whose first trip leaves after starts_after, with its first and last trips. For questions such as which routes stop before 10 PM on Sundays.", inputSchema: { type: 'object', properties: { agency, day, ends_before: { type: 'string', description: 'Clock time, e.g. "22:00" or "10 PM".' }, starts_after: { type: 'string', description: 'Clock time, e.g. "07:00".' } }, required: ['agency'] } },
   { name: 'trip_time', description: 'Scheduled trip time from one stop to another, by hour the trip leaves, for each route that runs between them (or the routes named). Use it to compare routes, such as a local and an express, or to see whether the trip takes longer at some hours.', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), routes: { type: 'array', items: { type: 'string' }, description: 'Optional route numbers; every route between the stops when left out.' }, day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
-  { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service; Atlas has no figures yet for how a route is running right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod }, required: ['agency'] } },
-  { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod }, required: ['agency', 'route'] } },
+  { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service; Atlas has no figures yet for how a route is running right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod, late_after_min: LATE_AFTER, early_before_min: EARLY_BEFORE }, required: ['agency'] } },
+  { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod, bunched_within_min: BUNCHED_WITHIN, gapped_factor: GAPPED_FACTOR_ARG }, required: ['agency', 'route'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency, offset: { type: 'number', description: 'Skip this many frequency changes (to page through a long list).' }, limit: { type: 'number', description: 'How many frequency changes to return; 40 when left out, 200 at most.' } }, required: ['agency'] } },
 ];
 
@@ -58,7 +66,7 @@ const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHi
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.11.1';
+export const SERVER_VERSION = '0.12.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of

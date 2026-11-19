@@ -8,6 +8,7 @@ import { liveReader } from './liveData';
 import { LIVE_ARCHIVE_SLUGS, coverageLimits } from '../../shared/liveCoverage';
 import { RELIABILITY_BANDS, RELIABILITY_DEFINITION_TEXT } from '../../shared/liveReliability';
 import { type Args } from './toolHelpers';
+import { cutoffsFrom, figuresAtCutoffs, type CutoffCounts, type Cutoffs } from '../../shared/liveCutoffs';
 
 const LIVE_SOURCE = "Atlas Live's recordings of where vehicles were, matched to the timetable: past service, not how the route is running right now.";
 /** The meaning of every Live figure, worded from the shared rules (shared/rules/live.ts). */
@@ -50,12 +51,30 @@ async function liveRoute(a: { slug: string; name: string }, m: { routes: string[
   return { file };
 }
 
+/**
+ * Planners' own cut-offs (CIV-1869, Ryan: defaults stay, rankings use the defaults, a custom cut-off is labelled beside
+ * its figure). The standard figures stay as they are; each week gains `atYourCutoffs`, worked out from the counts the
+ * route file keeps, which are then left out of the answer.
+ */
+const STANDARD_RANKING = 'Rankings and ranked stops always use the standard cut-offs in definitions.';
+type WeekWithCounts = { cutoffCounts?: CutoffCounts } | null;
+function withoutCounts<T extends WeekWithCounts>(w: T): T {
+  if (!w) return w;
+  const { cutoffCounts: _drop, ...rest } = w;
+  return rest as T;
+}
+function weekAtCutoffs<T extends WeekWithCounts>(w: T, cut: Cutoffs, custom: Array<keyof Cutoffs>) {
+  if (!w) return w;
+  return { ...withoutCounts(w), ...(custom.length ? { atYourCutoffs: figuresAtCutoffs(w.cutoffCounts, cut, custom) } : {}) };
+}
+
 /** The Live tools (CIV-1860). The hosted pilot hides them until Ryan decides whether testers see Live figures. */
 export const LIVE_TOOLS: readonly string[] = ['route_reliability', 'route_bunching'];
 
 export const liveHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
-  route_reliability: async ({ agency: q, route, period: p }) => {
+  route_reliability: async ({ agency: q, route, period: p, late_after_min, early_before_min }) => {
     const band = liveBand(p);
+    const { cutoffs, custom } = cutoffsFrom({ late_after_min, early_before_min });
     const a = await liveAgencyFor(q);
     const live = await liveAgency(a);
     if ('none' in live) return live.none;
@@ -63,21 +82,27 @@ export const liveHandlers: Record<string, (args: Args) => unknown | Promise<unkn
       const r = await liveReader().ranking(a.slug);
       if (!r) return { agency: a.name, ranking: null, note: 'Atlas has no ranking of recorded routes for this agency.' };
       const routes = [...r.routes].sort((x, y) => (y.lateShare ?? -1) - (x.lateShare ?? -1)).map(x => ({ route: x.route, name: x.titleLabel, lateShare: x.lateShare, lateShareLastWeek: x.lateLastWeek, departures: x.lateN, bunchedOrGappedShare: x.bunchingShare, deliveredShare: x.deliveredShare }));
-      return { agency: a.name, ...liveWeeks(live.manifest), measured: 'Whole day, this week, most often late first.', routes, held: r.held.map(h => h.route), ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+      return { agency: a.name, ...liveWeeks(live.manifest), measured: 'Whole day, this week, most often late first.', ...(custom.length ? { cutoffs: `${STANDARD_RANKING} Ask about one route for figures at your own cut-off.` } : {}), routes, held: r.held.map(h => h.route), ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
     }
     const f = await liveRoute(a, live.manifest, route, live.limits);
     if ('none' in f) return f.none;
-    const bands = Object.fromEntries(Object.entries(f.file.reliability.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
-    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), directions: f.file.reliability.directions, weeksComparable: f.file.reliability.weeksComparable, byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE };
+    const bands = Object.fromEntries(Object.entries(f.file.reliability.bands).filter(([k]) => !band || k === band)
+      .map(([k, v]) => [bandLabel(k), v && { ...v, thisWeek: weekAtCutoffs(v.thisWeek, cutoffs, custom), lastWeek: weekAtCutoffs(v.lastWeek, cutoffs, custom) }]));
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), directions: f.file.reliability.directions, weeksComparable: f.file.reliability.weeksComparable, byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, ...(custom.length ? { cutoffs: `atYourCutoffs gives each figure at the cut-off asked for, worded beside it; give it with that wording. ${STANDARD_RANKING}` } : {}), source: LIVE_SOURCE };
   },
-  route_bunching: async ({ agency: q, route, period: p }) => {
+  route_bunching: async ({ agency: q, route, period: p, bunched_within_min, gapped_factor }) => {
     const band = liveBand(p);
+    const { cutoffs, custom } = cutoffsFrom({ bunched_within_min, gapped_factor });
     const a = await liveAgencyFor(q);
     const live = await liveAgency(a);
     if ('none' in live) return live.none;
     const f = await liveRoute(a, live.manifest, route, live.limits);
     if ('none' in f) return f.none;
-    const bands = Object.fromEntries(Object.entries(f.file.bunching.bands).filter(([k]) => !band || k === band).map(([k, v]) => [bandLabel(k), v]));
-    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, source: LIVE_SOURCE, note: 'startShare is the share of bunched or gapped gaps where the route starts; formsAt is the stretch where it forms (pattern "forms") or rises most; risePoints is how many percentage points it rises across that stretch.' };
+    const bands = Object.fromEntries(Object.entries(f.file.bunching.bands).filter(([k]) => !band || k === band).map(([k, v]) => {
+      if (!v) return [bandLabel(k), v];
+      const { cutoffCounts, ...rest } = v;
+      return [bandLabel(k), { ...rest, ...(custom.length ? { atYourCutoffs: { thisWeek: figuresAtCutoffs(cutoffCounts?.thisWeek, cutoffs, custom), lastWeek: figuresAtCutoffs(cutoffCounts?.lastWeek, cutoffs, custom) } } : {}) }];
+    }));
+    return { agency: a.name, route: f.file.routeTitle, ...liveWeeks(live.manifest), byPartOfDay: bands, ...(live.limits ? { limits: live.limits } : {}), definitions: LIVE_DEFINITIONS, ...(custom.length ? { cutoffs: `atYourCutoffs gives bunched and gapped at the cut-offs asked for, each worded beside it; give them with that wording. At your own cut-offs there is no combined bunched-or-gapped share, since one gap could count as both. ${STANDARD_RANKING}` } : {}), source: LIVE_SOURCE, note: 'startShare is the share of bunched or gapped gaps where the route starts; formsAt is the stretch where it forms (pattern "forms") or rises most; risePoints is how many percentage points it rises across that stretch.' };
   },
 };
