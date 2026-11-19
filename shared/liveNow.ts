@@ -15,6 +15,7 @@ import { projectRun, stopPassages, SEGMENT_DEFAULTS, type Pattern, type Position
 import { DEFAULT_CUTOFFS, type Cutoffs } from './liveCutoffs.js';
 import { LIVE_STALE_SEC } from './rules/live.js';
 import type { PeriodKey } from './rules/periods.js';
+import { directionBranchFallback } from './headsignDisplay.js';
 
 /** How far back a "right now" answer looks for vehicles passing stops. */
 export const NOW_WINDOW_MIN = 30;
@@ -109,7 +110,7 @@ export function nowDirections(rows: readonly NowRouteRow[], stops: ReadonlyMap<s
       const s = stops.get(id);
       return s ? [{ stopId: id, name: s.name, lat: s.lat, lon: s.lon, scheduledGapMin: (period && r.stopPeriodHeadways?.[id]?.[period]) ?? null }] : [];
     })).filter(p => p.length >= 2);
-    if (patterns.length) out.push({ directionId: d, label: mine[0].headsign ? `To ${mine[0].headsign}` : `Direction ${d}`, patterns });
+    if (patterns.length) out.push({ directionId: d, label: directionBranchFallback(d, mine[0].headsign ? `To ${mine[0].headsign}` : undefined), patterns });
   }
   return out;
 }
