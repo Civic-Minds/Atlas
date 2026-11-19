@@ -179,8 +179,9 @@ interface MapCanvasProps {
   mapContextOpen?: boolean;
   mapContextView?: 'agencies' | 'routes';
   onMapContextOpenChange?: (open: boolean) => void;
-  onMapContextAgencyCountChange?: (count: number) => void;
-  onMapContextRouteCountChange?: (count: number) => void;
+  /** Null until the map's drawn routes have been measured once (CIV-1967), so no pill shows a count that was never taken. */
+  onMapContextAgencyCountChange?: (count: number | null) => void;
+  onMapContextRouteCountChange?: (count: number | null) => void;
   /** Route keys drawn in view, counted the same way as the route-count badge (compare mode labels). */
   onRenderedRouteKeysChange?: (keys: Set<string>) => void;
   /** Phones (CIV-1057): the map's error notices, for the footer row's "Error" pill. */
@@ -498,6 +499,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [liveOverlay]);
 
   const [mapContextAgencies, setMapContextAgencies] = useState<MapContextAgency[]>([]);
+  const [mapContextMeasured, setMapContextMeasured] = useState(false);
   const mapContextRegionBySlug = useMemo(
     () => new Map(agencies.map(agency => [agency.slug, agency.region ?? 'Other'])),
     [agencies],
@@ -591,7 +593,7 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
     const features = queryDrawnRouteFeatures(map);
     const contextAgencies = getMapContextAgenciesFromFeatures(agencies, features);
     // The panel and its counts show distinct rider-visible lines; compare mode below keeps raw keys.
-    if (showMapContext) setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies));
+    if (showMapContext) { setMapContextAgencies(dedupeMapContextByDisplay(contextAgencies)); setMapContextMeasured(true); }
     // Compare's route counts wait for the map to finish loading rather than report a partial count (#1075).
     if (!canCountRenderedRoutes(map, layers.length)) return;
     renderedRouteKeysRef.current?.(new Set(contextAgencies.flatMap(agency => agency.routes.map(route => route.key))));
@@ -755,9 +757,10 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   }, [agencies, filteredLayers, layers, mapFilteredLayers, period, pmtilesRouteAgencies, colorMode]);
 
   useEffect(() => {
-    onMapContextAgencyCountChange?.(mapContextAgencies.length);
-    onMapContextRouteCountChange?.(mapContextAgencies.reduce((total, agency) => total + agency.routeCount, 0));
-  }, [mapContextAgencies, onMapContextAgencyCountChange, onMapContextRouteCountChange]);
+    // CIV-1967: nothing to report before the first measurement (the empty starting list is not a count of zero).
+    onMapContextAgencyCountChange?.(mapContextMeasured ? mapContextAgencies.length : null);
+    onMapContextRouteCountChange?.(mapContextMeasured ? mapContextAgencies.reduce((total, agency) => total + agency.routeCount, 0) : null);
+  }, [mapContextAgencies, mapContextMeasured, onMapContextAgencyCountChange, onMapContextRouteCountChange]);
 
   useEffect(() => {
     if (!showMapContext || !mapContextOpen) return;

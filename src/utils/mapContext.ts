@@ -201,3 +201,13 @@ export function dedupeMapContextByDisplay(agencies: MapContextAgency[]): MapCont
     return { ...agency, routeCount: routes.length, routes };
   });
 }
+
+/**
+ * CIV-1967: whether the map's count pills can show. Without In view they wait for the agency data. With it they show the
+ * drawn-route count only once it has been measured (null before), and while agencies are still arriving only when it is
+ * above zero, so a dense area loading slowly never reads "0 routes · 0 agencies".
+ */
+export function mapCountsReady(o: { showMapContext: boolean; isLoading: boolean; inViewRouteCount: number | null }): boolean {
+  if (!o.showMapContext) return !o.isLoading;
+  return o.inViewRouteCount != null && (!o.isLoading || o.inViewRouteCount > 0);
+}
