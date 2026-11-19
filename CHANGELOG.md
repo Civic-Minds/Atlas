@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Night list shows [MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) as one agency**: its subway, borough buses and railroads each had their own section, unlike the rest of the site
 - **Atlas Studio can answer "what's running right now" from the schedule**: it works out the time, day and part of the day in the agency's own city and says what it used, instead of the assistant guessing ([#1627](https://github.com/Civic-Minds/Atlas/issues/1627))
 - **Atlas Studio can list the feeds that make up an agency like MTA New York**: asking which feeds it has got no answer from the agency list ([#1625](https://github.com/Civic-Minds/Atlas/issues/1625))
 - **Atlas Studio warns when its schedule comparison for an agency is months old**: asked what changed at Hamilton, it gave a spring 2026 comparison as the latest and called route 51 removed, though it runs today ([#1624](https://github.com/Civic-Minds/Atlas/issues/1624))

@@ -25,6 +25,8 @@ const SITES = [
   'src/components/InfoPanel.tsx', // agency browser
   'scripts/mcp/tools.ts', // list_agencies, rank_agencies, compare_agencies
   'scripts/mcp/atlasData.ts', // list_agencies near, compare's parent lookup
+  'src/apps/NightService.tsx', // Night list sections
+  'src/DiagnosticsPerformancePage.tsx', // diagnostics agency count
 ];
 
 /** Page modules that build a parent's own page from its members (its Services list): allowed to read members directly. */
