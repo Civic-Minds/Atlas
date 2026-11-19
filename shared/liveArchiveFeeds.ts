@@ -47,7 +47,7 @@ export const LIVE_ARCHIVE_SHARDS = [
     positionSlugs: ['burlington', 'halifax'],
     tripSlugs: ['burlington', 'halifax'],
   },
-  // Atlas Studio demo agency (CIV-1682). Its worker writes to its own bucket, atlas-live-kingston, kept 60 days.
+  // Atlas Studio demo agency (CIV-1682). Its own worker writes to atlas-live like the rest (CIV-1906).
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
 ] as const;
 
@@ -59,7 +59,7 @@ export const RECORDING_SLUGS: readonly string[] = [...new Set(
   LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
 )];
 
-/** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30): shared/rules/live.ts. */
+/** Agencies whose snapshots live in their own bucket instead of atlas-live (none since CIV-1906): shared/rules/live.ts. */
 export { LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
 
 /** Trip-update archives → atlas-live/{slug}/{date}/{ts}.json (every ~5 min). */
