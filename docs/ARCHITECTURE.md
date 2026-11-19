@@ -51,10 +51,11 @@ Read by: `pipeline/refresh.ts` (history and stop baselines), `pipeline/build-his
 
 Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are
 recorded every minute by the ttc-positions Worker (cron `* * * * *`, in
-`workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689) and kept 30 days. Hamilton is recorded every
-minute again from 2026-11-18. The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused
+`workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689). Hamilton is recorded every
+minute again from 2026-11-18, and Kingston Transit every minute for the Atlas Studio demo (CIV-1682; its own
+`atlas-gtfs-rt-archiver-kingston` Worker, archive-only, not a Live agency; in this bucket since CIV-1906). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused
 with no cron, and their data has expired: checked 2026-11-15, the bucket held only `positions/ttc/`. Objects are
-retained until the bucket’s 30-day lifecycle removes them (a 90-day rule also exists).
+kept 60 days by the bucket’s one lifecycle rule (CIV-1906, 2026-11-18; 30 days before).
 `npm run audit-live-state` shows the live crons, newest snapshots and lifecycle rules. Snapshot/replay for Live UI needs a
 restored provider contract before Live can be re-enabled.
 
@@ -66,14 +67,12 @@ Written by small Cloudflare Workers (only ttc-positions runs now) sharing `worke
 The local-only `history-adherence` handler (`local-api/`, never deployed) can read the archive; the former live snapshot/replay routes
 are no longer in the repository.
 
-30-day retention enforced by the bucket's R2 lifecycle rules.
+60-day retention enforced by the bucket's R2 lifecycle rule.
 
-### atlas-live-kingston (private)
+### atlas-live-kingston (private, retired)
 
-Kingston Transit's GTFS-RT snapshots for the Atlas Studio demo (CIV-1682), written every minute by
-the `atlas-gtfs-rt-archiver-kingston` Worker (`wrangler.kingston.toml`): `positions/kingston/...` each
-run, `kingston/...` trip updates every 5th run, same key layout as atlas-live. Kept 60 days by the
-bucket's lifecycle rule. Kingston is archive-only, not a Live agency.
+Kingston's own bucket from 2026-11-15 to 2026-11-18 (CIV-1682). Since CIV-1906 the Kingston Worker writes to
+atlas-live and its earlier objects were copied there; nothing reads this bucket.
 
 
 ## Live polling: current and planned surfaces

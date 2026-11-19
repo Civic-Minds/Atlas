@@ -41,7 +41,8 @@ describe('liveArchiveFeeds', () => {
     expect(LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === 'kingston')?.archiveOnly).toBe(true);
     expect(LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'kingston')?.archiveOnly).toBe(true);
     expect(LIVE_TRIP_UPDATES_FEEDS.kingston).toBeUndefined();
-    expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBe('atlas-live-kingston');
+    // CIV-1906: one Live bucket; Kingston is recorded to atlas-live with the rest.
+    expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBeUndefined();
   });
 
   it('archives Halifax trip + vehicle feeds (no API key)', () => {
