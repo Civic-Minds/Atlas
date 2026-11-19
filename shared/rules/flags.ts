@@ -96,6 +96,8 @@ export function getAgencyCatalogUrl(mode: AtlasMode = ATLAS_MODE): string {
 export const PERSISTED_SETTINGS_ENABLED = BETA_BUILD;
 // The "a new version is available" banner.
 export const UPDATE_BANNER_ENABLED = BETA_BUILD;
+// CIV-98: on a slow connection the map loads fewer networks and offers to turn on Data saver for good.
+export const SLOW_CONNECTION_PROMPT_ENABLED = BETA_BUILD;
 // The map-context readout and the match percentage in the map's status badge.
 export const MAP_CONTEXT_ENABLED = BETA_BUILD;
 export const MATCH_PERCENTAGE_ENABLED = BETA_BUILD;
@@ -160,6 +162,7 @@ export const FEATURES = {
   contextLayer: CONTEXT_LAYER_ENABLED,
   persistedSettings: PERSISTED_SETTINGS_ENABLED,
   updateBanner: UPDATE_BANNER_ENABLED,
+  slowConnectionPrompt: SLOW_CONNECTION_PROMPT_ENABLED,
   mapContext: MAP_CONTEXT_ENABLED,
   matchPercentage: MATCH_PERCENTAGE_ENABLED,
   feedQuality: FEED_QUALITY_ENABLED,

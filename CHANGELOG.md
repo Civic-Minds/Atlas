@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On beta, a slow connection loads fewer networks and offers to turn on Data saver (pending sign-off)**: pages stayed slow to fill on 2G/3G and in browsers set to save data; the offer is a choice, never switched on silently ([#539](https://github.com/Civic-Minds/Atlas/issues/539))
 - **Live's 504 King report measures the streetcar, not the 504C replacement buses (local only)**: the buses ran more trips, so they were read as the main line and the streetcar as a branch; they are now left out and counted, as on the 506
 - **Atlas Studio says it has no current reading for a route Live doesn't record**: asking how TTC's 29 Dufferin was running right now listed every stop as unseen, which read as a real finding
 - **Live's "Where bunching forms" table shows each stretch's share before and after, like "10% to 41%"**: "+31 pt" gave only the rise, not where it started

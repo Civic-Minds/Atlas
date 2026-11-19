@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const STAND_IN_FLAGS = [
   'persistedSettings',
   'updateBanner',
+  'slowConnectionPrompt',
   'mapContext',
   'matchPercentage',
   'feedQuality',
