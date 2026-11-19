@@ -3,7 +3,7 @@ import { DAYTIME_PERIOD_KEYS } from '../../../shared/rules/periods';
 import DataTable from '../../components/ui/DataTable';
 import { routeLabels } from '../../utils/format';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
-import { headwayAmount, headwayEveryRange } from '../../../shared/headwayText';
+import { headwayAmount, headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
 import { clockTime } from '../../../shared/timeText';
 import { countText } from '../../../shared/numberText';
 import { MISSING_VALUE } from '../../../shared/missingValue';
@@ -39,6 +39,16 @@ export function periodFigure(d: StudioRouteDay | null, k: PeriodKey): string {
   const edge = d.edge?.[k];
   return edge ? periodEdgeText(edge) : headwayAmount(d.headway[k]);
 }
+/**
+ * A time of day's figure on both sides in one format (CIV-1922: "every 10 min until 7:32 PM" beside "15 min"): where either
+ * side starts late or ends early, both read in the route card's words ("every 15 min"); otherwise both are the map's
+ * frequency.
+ */
+export function pairFigures(b: StudioRouteDay | null, a: StudioRouteDay | null, k: PeriodKey): { before: string; after: string } {
+  if (!b?.edge?.[k] && !a?.edge?.[k]) return { before: periodFigure(b, k), after: periodFigure(a, k) };
+  const side = (d: StudioRouteDay | null) => (!d ? MISSING_VALUE : d.edge?.[k] ? periodFigure(d, k) : d.headway[k] != null ? headwayEvery(d.headway[k]) : MISSING_VALUE);
+  return { before: side(b), after: side(a) };
+}
 const clockOrMissing = (m: number | null | undefined) => (m == null ? MISSING_VALUE : clockTime(m));
 
 interface FigureRow { key: string; label: string; before: string; after: string }
@@ -48,7 +58,7 @@ export function routeFigureRows(c: Pick<StudioRouteChange, 'before' | 'after'>):
   const { before: b, after: a } = c;
   const periods = PERIOD_KEYS.filter(k => MAIN_PERIODS.includes(k) || b?.headway[k] != null || a?.headway[k] != null);
   return [
-    ...periods.map(k => ({ key: k, label: PERIOD_LABELS[k], before: periodFigure(b, k), after: periodFigure(a, k) })),
+    ...periods.map(k => ({ key: k, label: PERIOD_LABELS[k], ...pairFigures(b, a, k) })),
     { key: 'trips', label: T.trips, before: b ? countText(b.trips) : MISSING_VALUE, after: a ? countText(a.trips) : MISSING_VALUE },
     { key: 'first', label: T.firstTrip, before: clockOrMissing(b?.first), after: clockOrMissing(a?.first) },
     { key: 'last', label: T.lastTrip, before: clockOrMissing(b?.last), after: clockOrMissing(a?.last) },

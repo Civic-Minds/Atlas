@@ -12,7 +12,7 @@ import { PAGE_NAMES } from './pageNames';
 const ROUTES = 'Routes';
 
 /** The page menu's entries (CIV-1828): Live (Ryan and Strategy, 2026-11-17), and Fleet, a placeholder name (Ryan, 2026-11-17). */
-export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet' } as const;
+export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet', changes: 'Schedule Changes' } as const;
 
 export const STUDIO_MAP_TEXT = {
   route: 'Route',
@@ -64,6 +64,8 @@ export const STUDIO_VEHICLES_TEXT = {
  */
 /** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). */
 export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder(`${ends[0]} – ${ends[1]}`);
+/** Fleet's line under its title: what the buses table covers (CIV-1922; the words wait on Ryan). */
+export const fleetIntroText = (agency: string, date: string) => devPlaceholder(`Buses ${agency} needs across all its routes, ${date} schedule.`);
 /** Why the buses cover more than the open route: "12, 31, 601 and 602 share buses, so these numbers cover all four." */
 export const groupSharesText = (routes: readonly string[]) => devPlaceholder(`${joinList([...routes])} share buses, so these numbers cover all ${routes.length}.`);
 /** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17". */
