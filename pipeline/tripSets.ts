@@ -16,7 +16,8 @@ import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
+import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats, determineTier } from './transit-phase2.js';
+import { GRACE_MINUTES, GRACE_PERCENT, TIER_MAXES, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER, publicTierOf } from '../shared/rules/frequency.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -1541,6 +1542,29 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
+    {
+      // CIV-1913 research (never merged): does the main stretch's period split into two steady parts with different
+      // public grades (E Line weekday Late: every 15 to midnight, then about hourly)? Each part needs 3+ departures over
+      // 60+ minutes and is graded by the settled tier rule (determineTier); the gap at the change belongs to the later part.
+      const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b);
+      const t = all.filter(x => x >= start && x < end);
+      const grade = (xs: number[]): number | null => {
+        if (xs.length < 3) return null;
+        const g = determineTier(xs.slice(1).map((x, i) => x - xs[i]), xs.length, 0, TIER_MAXES, GRACE_MINUTES, 0, GRACE_PERCENT, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER as Record<number, number>);
+        return g === 'span' ? null : publicTierOf(Number(g));
+      };
+      let best: { at: number; before: number; after: number; steps: number } | null = null;
+      for (let k = 3; k <= t.length - 3; k++) {
+        const a = t.slice(0, k), b = t.slice(k - 1);
+        if (a[a.length - 1] - a[0] < 60 || b[b.length - 1] - b[0] < 60) continue;
+        const ga = grade(a), gb = grade(b);
+        if (ga == null || gb == null || ga === gb) continue;
+        const pub = [10, 15, 20, 30, 60];
+        const steps = Math.abs(pub.indexOf(ga) - pub.indexOf(gb));
+        if (!best || steps > best.steps) best = { at: Math.round(t[k - 1]), before: ga, after: gb, steps };
+      }
+      (period[key] as any).splitResearch = best ? { ...best, whole: grade(t) } : null;
+    }
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
@@ -1718,7 +1742,12 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       runs: known.some(d => d.period[key].runs),
-    };
+      splitResearch: (() => {
+        const rs = serving.map(d => (d.period[key] as any).splitResearch ?? null);
+        if (!rs.some(Boolean)) return null;
+        return { dirs: rs, every: rs.every(Boolean) };
+      })(),
+    } as any;
   }
   return {
     period,
@@ -1890,6 +1919,7 @@ export function stampStretchShadow(
     // direction passing, the worst deciding. Where the trunk has no value but the route has (a trunk under the branch
     // minimum), it is the route's own value, so a short-trunk route keeps today's D1 reading and the app can read this
     // alone. Overnight is unchanged: it reads the night verdict, as above.
+    p.researchSplitByPeriod = byPeriod(k => (route.period[k] as any).splitResearch ?? null);
     p.routeTrunkHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].trunkFilterValue ?? route.period[k].filterValue);
     // CIV-1579: which of the row's stops are on its direction's main stretch (1, else empty), run-length encoded
     // (encodeStopRuns), so coverage can count a trunk's stops without its branches. Aligned to the row's stopOrder,
