@@ -114,8 +114,9 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={agencyName}>
           {dataUpTo}
           <PanelBody className="px-3 pt-3 pb-3">
-            <WidgetPanel widgets={m.networkLossWidget ? [m.networkLossWidget, ...m.summary] : m.summary} />
-            {!m.networkLossWidget && <div className="mt-3 flex">{m.overview}</div>}
+            {/* CIV-1878 (Ryan): the first thing is picking a route. The stretch list ("Last N service days", "Where the schedule is looser than needed") and its sample lines live in each route's own view. */}
+            <div className="flex">{m.overview}</div>
+            <div className="mt-3"><WidgetPanel widgets={m.summary} /></div>
           </PanelBody>
         </Panel>
       )}
