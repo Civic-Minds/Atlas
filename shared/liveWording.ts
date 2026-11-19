@@ -298,6 +298,27 @@ export const STUDIO_GLANCE = {
 } as const;
 
 /**
+ * CIV-1886 / CIV-1893: Studio Live's Settings chip, the planner's own late, early, bunched and gapped settings. Ryan approved
+ * these rows word for word ("Sure for now", 2026-11-19). The standard value is shown in bold, with no "(standard)" tag. A
+ * row's choices are numbers in a row, with its unit once after them.
+ */
+export const STUDIO_SETTINGS_TEXT = {
+  chip: 'Settings',
+  rows: {
+    lateAfterMin: 'Counts as late after',
+    earlyBeforeMin: 'Counts as early from',
+    bunchedWithinMin: 'Counts as bunched under',
+    gappedFactor: 'Counts as a long gap over',
+  },
+  units: {
+    lateAfterMin: 'min',
+    earlyBeforeMin: 'min ahead',
+    bunchedWithinMin: 'min apart',
+    gappedFactor: '× the scheduled wait',
+  },
+} as const;
+
+/**
  * CIV-1893, Studio's "right now" view of a route: wording pending Ryan's OK. The figures and the definitions under them
  * come from shared/liveNow.ts, the same as the MCP's route_now.
  */
