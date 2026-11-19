@@ -70,6 +70,7 @@ export const LIVE_AGENCY_TIMEZONES: Record<string, string> = {
   burlington: 'America/Toronto',
   ttc: 'America/Toronto',
   hamilton: 'America/Toronto',
+  kingston: 'America/Toronto',
   yrt: 'America/Toronto',
   translink: 'America/Vancouver',
   stm: 'America/Montreal',

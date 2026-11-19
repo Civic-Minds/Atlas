@@ -42,6 +42,7 @@ const TOOL_LIST = [
   { name: 'combined_frequency', description: 'Every route that goes from one stop to another, and how often a rider leaving the first stop gets a trip on any of them combined, using the rule Atlas uses to combine trips at a stop (two trips a minute or less apart count as one; uneven combined service says so).', inputSchema: { type: 'object', properties: { agency, also_agencies: alsoAgencies, from_stop: stop('Starting'), to_stop: stop('Ending'), day, from_time: fromTime, to_time: toTime }, required: ['agency', 'from_stop', 'to_stop'] } },
   { name: 'route_reliability', description: "How a route actually ran against its schedule, from Atlas Live's recordings of where vehicles were (past service; Atlas has no figures yet for how a route is running right now): the share of departures that were late, typical trip time against the timetable's, the share of scheduled trips that ran, this week against last week, and the stops most often late, for the whole day and each part of the day. Leave out route to rank the agency's recorded routes by how often they were late. Atlas records only some agencies (the answer says which routes it has).", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name; leave out to rank the recorded routes.' }, period: livePeriod, late_after_min: LATE_AFTER, early_before_min: EARLY_BEFORE }, required: ['agency'] } },
   { name: 'route_bunching', description: "How evenly a route's vehicles were spaced, from Atlas Live's recordings (past service): the share of gaps between vehicles that were bunched (too close) or gapped (far longer than scheduled), this week against last week, where along the route bunching forms, and the stops where the spacing goes most wrong, by direction and part of the day.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, period: livePeriod, bunched_within_min: BUNCHED_WITHIN, gapped_factor: GAPPED_FACTOR_ARG }, required: ['agency', 'route'] } },
+  { name: 'route_now', description: "How a route is running right now, from Atlas Live's last half hour of vehicle readings (one a minute): each running vehicle's gap to the one ahead, which are bunched or gapped against this period's scheduled gap, the longest current gap, and the shares over the half hour, by direction. Every answer gives the time of the reading. Atlas records only some agencies; when it has no current reading it says so.", inputSchema: { type: 'object', properties: { agency, route: { type: 'string', description: 'Route number or name.' }, bunched_within_min: BUNCHED_WITHIN, gapped_factor: GAPPED_FACTOR_ARG }, required: ['agency', 'route'] } },
   { name: 'schedule_changes', description: "What changed between an agency's two most recent schedules, where Atlas has built that comparison: routes added and removed, and frequency changes, biggest first. A frequency change counts when a route moves to a different step of Atlas's scale.", inputSchema: { type: 'object', properties: { agency, offset: { type: 'number', description: 'Skip this many frequency changes (to page through a long list).' }, limit: { type: 'number', description: 'How many frequency changes to return; 40 when left out, 200 at most.' } }, required: ['agency'] } },
 ];
 
@@ -59,14 +60,14 @@ const TITLES: Record<string, string> = {
   routes_at_frequency: 'Routes at a frequency', compare_agencies: 'Compare agencies', routes_near: 'Routes near a place',
   route_history: 'Route history', buses_needed: 'Buses needed', routes_by_hours: 'Routes that end early or start late',
   trip_time: 'Trip time between stops', combined_frequency: 'Combined frequency between stops', schedule_changes: 'Schedule changes',
-  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced',
+  route_reliability: 'How a route ran against its schedule', route_bunching: 'How evenly vehicles were spaced', route_now: 'How a route is running right now',
 };
 /** Every tool only reads Atlas's own published data: nothing is changed, and nothing outside Atlas is reached. */
 const annotations = (name: string) => ({ title: TITLES[name] ?? name, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
 export const TOOLS = TOOL_LIST.map(t => ({ ...t, title: TITLES[t.name] ?? t.name, annotations: annotations(t.name), inputSchema: { ...t.inputSchema, properties: { ...t.inputSchema.properties, question: QUESTION } } }));
 
 /** The server's version: bump when a tool's answers change (the TEST-LOG version rule). */
-export const SERVER_VERSION = '0.12.0';
+export const SERVER_VERSION = '0.13.0';
 
 /**
  * How to answer with these tools, sent to every assistant at the start (MCP initialize instructions). Gemini's run of
@@ -79,5 +80,6 @@ export const INSTRUCTIONS = [
   "When a tool says Atlas has no figure, say so; don't work one out or estimate it unless the person asks for an estimate, and then call it yours.",
   "Don't run shell commands or read files to get around a missing tool.",
   // CIV-1860, Ryan: "'where is my streetcar right now' is a rider question not a transit planner question".
-  "Live figures are past service. For how a route is running right now (vehicles in service against scheduled, current gaps and bunching, how far behind it is), say Atlas has no current figures yet and offer the latest recorded week. Atlas doesn't look up where a single vehicle is.",
+  // CIV-1870, Ryan: "being able to ask about bunching for example, or gaps in service on a specific route" right now.
+  "route_reliability and route_bunching are past service. For gaps and bunching on a route right now, use route_now where the server has it, and give the time of its reading; when it has no current reading, say so and offer the latest recorded week. Atlas doesn't look up where a single vehicle is.",
 ].join(' ');
