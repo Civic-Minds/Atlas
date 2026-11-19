@@ -31,7 +31,7 @@ import { headwayEvery } from '../../shared/headwayText';
 import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
-import { placeParts } from '../../shared/stopNameText';
+import { placeParts, stopMatchText } from '../../shared/stopNameText';
 
 
 type Feature = McpFeature;
@@ -462,17 +462,38 @@ export async function branchesOf(agency: CatalogAgency, day: DayType, r: RouteRo
 /** A route that runs only at night: no trips in any part of the day before the late evening (the map's own period list). */
 export const isNightRoute = (r: Pick<RouteSummary, 'figures'>) => DAYTIME_PERIOD_KEYS.every(k => r.figures[k]?.shown === 'no service');
 
+/** How far apart the nearest stops on each street of a corner may be (YRT's Finch GO Bus Terminal is 330 m from its nearest Yonge St stop). */
+export const CORNER_MAX_APART_M = 400;
+
+/**
+ * A corner whose stops aren't named for both streets (#1614: YRT names them "FINCH GO BUS TERMINAL", "YONGE ST STOP # 4915"):
+ * the closest pair of stops, one named for each street as a whole word, within CORNER_MAX_APART_M, plus any pair within
+ * 50 m more of that. Two streets only; null when there's no such pair.
+ */
+export function cornerSeeds<S extends { name: string; lat: number; lon: number }>(stops: S[], parts: string[]): { stops: S[]; apart: number } | null {
+  if (parts.length !== 2) return null;
+  const on = (p: string) => { const re = new RegExp(`(^| )${p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}( |$)`); return stops.filter(s => re.test(stopMatchText(s.name))); };
+  const [a, b] = [on(parts[0]), on(parts[1])];
+  const pairs = a.flatMap(x => b.map(y => ({ x, y, m: metresBetween({ lat: x.lat, lon: x.lon }, { lat: y.lat, lon: y.lon }) }))).filter(p => p.m <= CORNER_MAX_APART_M);
+  if (!pairs.length) return null;
+  const best = Math.min(...pairs.map(p => p.m));
+  const close = pairs.filter(p => p.m <= best + 50);
+  return { stops: [...new Set(close.flatMap(p => [p.x, p.y]))], apart: Math.round(best) };
+}
+
 export async function routesNear(agency: CatalogAgency, place: string, metres = NEARBY_ROUTES_RADIUS_M) {
   const weekday = new Map((await routeList(agency, 'Weekday')).map(r => [r.name, r]));
   const parts = placeParts(place);
   const stops = await stopsOf(agency);
-  const seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  let seeds = stops.filter(s => { const n = s.name.toLowerCase(); return parts.every(p => n.includes(p)); });
+  const corner = seeds.length ? null : cornerSeeds(stops, parts);
+  if (corner) seeds = corner.stops;
   const near = stops.filter(s => seeds.some(t => withinMetres({ lat: s.lat, lon: s.lon }, { lat: t.lat, lon: t.lon }, metres)));
   const routeNames = await routeIdNames(agency);
   const byRoute = new Map<string, Set<string>>();
   for (const s of near) for (const id of s.routeIds) { const n = routeNames.get(id); if (n) (byRoute.get(n.name) ?? byRoute.set(n.name, new Set()).get(n.name)!).add(s.name); }
   const info = new Map([...routeNames.values()].map(v => [v.name, v]));
-  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
+  return { matchedStops: [...new Set(seeds.map(s => s.name))].slice(0, 8), ...(corner ? { matchedAs: `No stop is named for both streets; these are the closest stops on each, ${corner.apart} m apart.` } : {}), within: metres, routes: [...byRoute.entries()].map(([name, at]) => { const w = weekday.get(name); return { route: name, name: info.get(name)?.longName ?? null, mode: info.get(name)?.mode ?? null, stops: [...at].slice(0, 4), weekdayService: w ? w.span : 'none: this route does not run on weekdays', ...(w && isNightRoute(w) ? { nightRoute: true } : {}) }; }).sort((a, b) => compareRouteNumber(a.route, b.route, a.name, b.name)) };
 }
 
 /** Each route id's names and mode (the last day a route appears wins, as the map's days run Weekday, Saturday, Sunday): from the store's ready-made list, else from the rows. */
