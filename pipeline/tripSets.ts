@@ -1556,9 +1556,10 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       const t = all.filter(x => x >= start && x < end);
       if (t.length > 0) {
         const open = t[0] - start, close = end - t[t.length - 1];
-        period[key].edgeWait = Math.ceil(Math.max(open, close));
         const trueOpen = all[0] < start ? 0 : open;
         const trueClose = all[all.length - 1] >= end ? 0 : close;
+        // Recount 2: edgeWait holds only the period-boundary edges (buses run on the other side).
+        period[key].edgeWait = Math.ceil(Math.max(all[0] < start ? open : 0, all[all.length - 1] >= end ? close : 0));
         period[key].trueEdgeWait = Math.ceil(Math.max(trueOpen, trueClose));
       }
     }

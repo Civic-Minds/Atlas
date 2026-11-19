@@ -41,9 +41,12 @@ for (const slug of slugs) {
     const stamped = passing.filter(p => p.researchEdgeWaitByPeriod != null);
     if (stamped.length < passing.length) { totals[n].legacy++; continue; }
     const allowed = n + grace(n);
+    // Recount 2 (manager, 2026-11-18): period-boundary edges at N + grace, true starts and ends at N + 10. A cell is cut
+    // only when every passing row is cut. "any" = that rule; "true" = the true-edge part alone.
+    const cutRow = (p: Props) => (p.researchEdgeWaitByPeriod?.[period] ?? 0) > allowed || (p.researchTrueEdgeWaitByPeriod?.[period] ?? 0) > n + 10;
     const anyWait = Math.min(...stamped.map(p => p.researchEdgeWaitByPeriod?.[period] ?? 0));
     const trueWait = Math.min(...stamped.map(p => p.researchTrueEdgeWaitByPeriod?.[period] ?? 0));
-    const cutAny = anyWait > allowed, cutTrue = trueWait > allowed;
+    const cutAny = stamped.every(cutRow), cutTrue = stamped.every(p => (p.researchTrueEdgeWaitByPeriod?.[period] ?? 0) > n + 10);
     if (!cutAny && !cutTrue) continue;
     if (cutAny) { mine[n].any++; totals[n].any++; totals[n].agencies.add(slug); }
     if (cutTrue) { mine[n].true++; totals[n].true++; }
