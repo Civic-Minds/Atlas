@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **On a filtered map, one odd stop no longer recolours a whole stretch of route**: a single stop a minute slower than the rest turned the stretch a slower colour; a real slower section or a gap in service still shows ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
 - **Atlas Studio finds Metro Transit's [E Line](https://github.com/Civic-Minds/Atlas/issues/1589) when asked for "E Line"**: it returned the Blue Line, whose name also contains those letters
 - **Maintainer-only diagnostics pages no longer ship with the public site**: they were built into every release as unused files, though no address ever opened them
 - **The About panel's agency count and countries match the published data**: it counted every agency the build loaded, so it disagreed with the rest of the site
