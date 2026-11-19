@@ -53,7 +53,7 @@ Private storage for real-time GTFS-RT snapshots. TTC vehicle positions are
 recorded every minute by the ttc-positions Worker (cron `* * * * *`, in
 `workers/gtfs-rt-archiver/wrangler.toml` since CIV-1689). Hamilton is recorded every
 minute again from 2026-11-18, and Kingston Transit every minute for the Atlas Studio demo (CIV-1682; its own
-`atlas-gtfs-rt-archiver-kingston` Worker, archive-only, not a Live agency; in this bucket since CIV-1906). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused
+`atlas-gtfs-rt-archiver-kingston` Worker, archive-only, not a Live agency; in this bucket since CIV-1906). Boston's MBTA Green Line (routes Green-B to Green-E) is recorded every minute from its `atlas-gtfs-rt-archiver-mbta` Worker (CIV-1930, positions only, archive-only; data © MassDOT under its Developers License Agreement, which requires crediting MassDOT as the provider). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused
 with no cron, and their data has expired: checked 2026-11-15, the bucket held only `positions/ttc/`. Objects are
 kept 60 days by the bucket’s one lifecycle rule (CIV-1906, 2026-11-18; 30 days before).
 `npm run audit-live-state` shows the live crons, newest snapshots and lifecycle rules. Snapshot/replay for Live UI needs a

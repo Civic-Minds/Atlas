@@ -65,13 +65,14 @@ The main map covers every agency it can. The deeper products (Live, History, Stu
 | Kingston | Kingston Transit | The Studio demo agency: a mid-sized agency (the buyer in "Who pays"), recorded every minute for Studio. |
 | Denver | RTD | Already in Studio and History. |
 | A small Ontario city | Guelph Transit | Shows the vehicles-needed figures on a small agency (CIV-1806). Picked on 2026-11-18 (Barrie is the fallback): every Guelph trip has a vehicle assignment in its feed, and its figures match the schedule, with scheduled and needed vehicles agreeing on every route at midday. |
+| Boston | MBTA | Live and History work on a US city (CIV-1930). |
 
 ### Per product
 
 | Product | In it today (source) | Focus |
 |---------|----------------------|-------|
 | Main map | Every agency in the public catalog, Canada and the US (`npm run report:agency-count`, [Agencies](../data/AGENCIES.md)) | No focus limit. New agencies follow the [Agency backlog](../data/AGENCY_BACKLOG.md). |
-| Live | Recording every minute: TTC streetcars and Hamilton, plus Kingston for Studio only. Switched off on every site (`shared/liveArchiveFeeds.ts`, [Live polling](../operations/LIVE_POLLING.md); check with `npm run audit-live-state`) | TTC, Hamilton and Kingston. Other configured feeds stay paused until an agency or consultant asks, or a paid pilot starts. |
+| Live | Recording every minute: TTC streetcars, Hamilton and the MBTA Green Line, plus Kingston for Studio only. Switched off on every site (`shared/liveArchiveFeeds.ts`, [Live polling](../operations/LIVE_POLLING.md); check with `npm run audit-live-state`) | TTC, Hamilton, Kingston and the MBTA Green Line. Other configured feeds stay paused until an agency or consultant asks, or a paid pilot starts. |
 | History | Agencies with 10 or more years of schedules, mostly large US systems; from the focus areas, TTC, Burlington, Brampton, GRT and RTD Denver (`shared/data/history-agencies.json`, [History coverage](../data/DATA_HISTORY.md)) | Eligibility stays automatic. Among new candidates, focus agencies go first: Kingston (one more year needed) and Hamilton, which is in Live and Studio but not History. |
 | Studio | Kingston (opens first), Hamilton, RTD Denver: the agencies with a Schedule Changes file (`tmp/studio/<slug>-before-after.json`, local only and not in git; `shared/studioAgencies.ts`) | The same three until an agency says yes to the demo (CIV-1680). |
 | Vehicles needed (Studio) | Kingston, Hamilton, RTD Denver (`tmp/studio/<slug>-vehicles.json`). TTC has a vehicles file on main but no Schedule Changes file, so Studio doesn't list it. | Add Guelph next. Local and regional bus only (rule below). |

@@ -45,6 +45,19 @@ describe('liveArchiveFeeds', () => {
     expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBeUndefined();
   });
 
+  it('records the MBTA Green Line only: positions, archive-only, route ids Green-B to Green-E (CIV-1930)', () => {
+    const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'mbta');
+    expect(pos?.archiveOnly).toBe(true);
+    expect(pos?.url).toBe('https://cdn.mbta.com/realtime/VehiclePositions.pb');
+    expect(pos?.apiKeyHeader).toBeUndefined();
+    const filter = new RegExp(pos!.routeFilterSource);
+    for (const id of ['Green-B', 'Green-C', 'Green-D', 'Green-E']) expect(filter.test(id), id).toBe(true);
+    for (const id of ['Red', 'Orange', 'Blue', 'Mattapan', 'Green', 'Green-A', 'Green-BX', '1', 'CR-Providence']) expect(filter.test(id), id).toBe(false);
+    expect(LIVE_ARCHIVE_TRIP_FEEDS.some(f => f.slug === 'mbta')).toBe(false);
+    expect(LIVE_VEHICLE_POSITIONS_FEEDS.mbta).toBeUndefined();
+    expect(LIVE_ARCHIVE_SHARDS.find(s => s.id === 'mbta')).toMatchObject({ positionSlugs: ['mbta'], tripSlugs: [] });
+  });
+
   it('archives Halifax trip + vehicle feeds (no API key)', () => {
     const trip = LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === 'halifax');
     const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'halifax');
@@ -68,7 +81,7 @@ describe('recording shards match the archiver Workers', () => {
   it('marks exactly the shards whose Worker has a cron trigger', () => {
     for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id), s.id).toBe('recording' in s && s.recording === true);
   });
-  it('records TTC, Hamilton and Kingston', () => {
-    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'ttc']);
+  it('records TTC, Hamilton, Kingston and the MBTA Green Line', () => {
+    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'mbta', 'ttc']);
   });
 });

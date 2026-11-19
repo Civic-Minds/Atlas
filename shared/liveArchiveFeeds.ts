@@ -49,6 +49,8 @@ export const LIVE_ARCHIVE_SHARDS = [
   },
   // Atlas Studio demo agency (CIV-1682). Its own worker writes to atlas-live like the rest (CIV-1906).
   { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
+  // Boston's MBTA Green Line (CIV-1930, Ryan): positions only, recorded for analysis (not a Live agency yet).
+  { id: 'mbta', positionSlugs: ['mbta'], tripSlugs: [], recording: true },
 ] as const;
 
 /**
@@ -109,6 +111,14 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     slug: 'kingston',
     url: 'https://api.cityofkingston.ca/gtfs-realtime/vehicleupdates.pb',
     routeFilterSource: '.+',
+    archiveOnly: true,
+  },
+  // Green Line only (B, C, D, E: MBTA GTFS routes.txt, 2026-11-19); the full feed also carries the subway, buses and
+  // commuter rail. Data is MassDOT's, used under its Developers License Agreement (credit MassDOT as the provider).
+  {
+    slug: 'mbta',
+    url: 'https://cdn.mbta.com/realtime/VehiclePositions.pb',
+    routeFilterSource: '^Green-[BCDE]$',
     archiveOnly: true,
   },
 ] as const;
