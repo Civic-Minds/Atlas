@@ -1,0 +1,23 @@
+### step4 (step4.ts)
+stops in stretches with >=1 refused & >=1 passing stop: refused stops 175 (refused in all-refused stretches, unchanged: 57 )
+colour (tier) would change 128 | pass->fail 0 | fail->pass 51
+{"900 EB eve":{"ref":13,"tier":13,"pf":0,"fp":13},"900 WB eve":{"ref":34,"tier":34,"pf":0,"fp":34},"901 N AM":{"ref":16,"tier":4,"pf":0,"fp":0},"901 S eve":{"ref":4,"tier":4,"pf":0,"fp":4},"102 S eve":{"ref":37,"tier":2,"pf":0,"fp":0},"102 S mid":{"ref":21,"tier":21,"pf":0,"fp":0},"102 N am":{"ref":25,"tier":25,"pf":0,"fp":0},"102 S am":{"ref":25,"tier":25,"pf":0,"fp":0}}
+changed stops: own longest wait n128 min 12 med 15 max 30 | today pub n128 min 10 med 14 max 30 | stretch value (becomes) n128 min 6 med 7 max 16
+passing neighbours in those stretches (all stretches with a refused stop): 116 | their longest wait n116 min 6 med 14 max 25 | their value n116 min 6 med 9.5 max 17 | with longest>=20: 42 | longest>=1.5x value: 82
+   900 EB eve passing nbrs 33 value n33 min 15 med 15 max 16 longest n33 min 24 med 24 max 25
+   900 WB eve passing nbrs 9 value n9 min 16 med 16 max 17 longest n9 min 24 med 24 max 25
+   901 N AM passing nbrs 2 value n2 min 11 med 11 max 11 longest n2 min 16 med 16.5 max 17
+   901 S eve passing nbrs 14 value n14 min 15 med 15 max 15 longest n14 min 15 med 15 max 16
+   102 S eve passing nbrs 8 value n8 min 7 med 8 max 8 longest n8 min 10 med 10.5 max 11
+   102 S mid passing nbrs 17 value n17 min 7 med 7 max 7 longest n17 min 12 med 12 max 12
+   102 N am passing nbrs 13 value n13 min 6 med 6 max 6 longest n13 min 6 med 6 max 6
+   102 S am passing nbrs 20 value n20 min 7 med 7 max 8 longest n20 min 12 med 12 max 13
+  changed 900 EB eve 13 longest n13 min 24 med 24 max 26 pub n13 min 24 med 24 max 24 -> value n13 min 15 med 15 max 15
+  changed 900 WB eve 34 longest n34 min 26 med 27.5 max 30 pub n34 min 24 med 24 max 24 -> value n34 min 16 med 16 max 16
+  changed 901 N AM 4 longest n4 min 19 med 20 max 20 pub n4 min 17 med 18 max 18 -> value n4 min 11 med 11 max 11
+  changed 901 S eve 4 longest n4 min 27 med 27.5 max 28 pub n4 min 30 med 30 max 30 -> value n4 min 15 med 15 max 15
+  changed 102 S eve 2 longest n2 min 15 med 15 max 15 pub n2 min 10 med 10 max 10 -> value n2 min 8 med 8 max 8
+  changed 102 S mid 21 longest n21 min 13 med 15 max 15 pub n21 min 14 med 14 max 15 -> value n21 min 7 med 7 max 7
+  changed 102 N am 25 longest n25 min 12 med 12 max 12 pub n25 min 12 med 12 max 12 -> value n25 min 6 med 6 max 6
+  changed 102 S am 25 longest n25 min 12 med 12 max 14 pub n25 min 12 med 12 max 12 -> value n25 min 7 med 7 max 8
+exit 0

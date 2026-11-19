@@ -1,0 +1,35 @@
+=== base12
+SET base12: stops 759; baseline stops published from a pooled pass: 312; baseline over-states (longest >= 1.5x shown): 134
+== main+MR: chg 47 = pass->refused 47 + other 0; cross 9 [over-draws removed 8, real frequent dropped 1]; stillOver 89
+== branch: chg 7 = pass->refused 7 + other 0; cross 7 [over-draws removed 7, real frequent dropped 0]; stillOver 127
+== branch+MR: chg 54 = pass->refused 54 + other 0; cross 16 [over-draws removed 15, real frequent dropped 1]; stillOver 82
+== main155: chg 33 = pass->refused 33 + other 0; cross 26 [over-draws removed 26, real frequent dropped 0]; stillOver 101
+== main155+MR: chg 88 = pass->refused 88 + other 0; cross 42 [over-draws removed 41, real frequent dropped 1]; stillOver 48
+== main15: chg 34 = pass->refused 34 + other 0; cross 26 [over-draws removed 26, real frequent dropped 0]; stillOver 100
+== main15+MR: chg 88 = pass->refused 88 + other 0; cross 42 [over-draws removed 41, real frequent dropped 1]; stillOver 48
+=== pin
+SET pin: stops 426; baseline stops published from a pooled pass: 330; baseline over-states (longest >= 1.5x shown): 115
+== main+MR: chg 0 = pass->refused 0 + other 0; cross 0 [over-draws removed 0, real frequent dropped 0]; stillOver 115
+== branch: chg 0 = pass->refused 0 + other 0; cross 0 [over-draws removed 0, real frequent dropped 0]; stillOver 115
+== branch+MR: chg 0 = pass->refused 0 + other 0; cross 0 [over-draws removed 0, real frequent dropped 0]; stillOver 115
+== main155: chg 12 = pass->refused 12 + other 0; cross 12 [over-draws removed 12, real frequent dropped 0]; stillOver 103
+== main155+MR: chg 12 = pass->refused 12 + other 0; cross 12 [over-draws removed 12, real frequent dropped 0]; stillOver 103
+=== marg
+SET marg: stops 780; baseline stops published from a pooled pass: 657; baseline over-states (longest >= 1.5x shown): 173
+== main+MR: chg 9 = pass->refused 9 + other 0; cross 9 [over-draws removed 1, real frequent dropped 8]; stillOver 172
+== branch: chg 0 = pass->refused 0 + other 0; cross 0 [over-draws removed 0, real frequent dropped 0]; stillOver 173
+== branch+MR: chg 9 = pass->refused 9 + other 0; cross 9 [over-draws removed 1, real frequent dropped 8]; stillOver 172
+=== hsr
+SET hsr: stops 2840; baseline stops published from a pooled pass: 2332; baseline over-states (longest >= 1.5x shown): 398
+== main+MR: chg 14 = pass->refused 14 + other 0; cross 7 [over-draws removed 0, real frequent dropped 7]; stillOver 398
+== branch: chg 8 = pass->refused 8 + other 0; cross 2 [over-draws removed 2, real frequent dropped 0]; stillOver 390
+== branch+MR: chg 34 = pass->refused 34 + other 0; cross 9 [over-draws removed 2, real frequent dropped 7]; stillOver 378
+== main155: chg 42 = pass->refused 42 + other 0; cross 24 [over-draws removed 24, real frequent dropped 0]; stillOver 324
+== main155+MR: chg 56 = pass->refused 56 + other 0; cross 31 [over-draws removed 24, real frequent dropped 7]; stillOver 320
+=== wide
+SET wide: stops 5964; baseline stops published from a pooled pass: 4481; baseline over-states (longest >= 1.5x shown): 533
+== main+MR: chg 56 = pass->refused 56 + other 0; cross 15 [over-draws removed 8, real frequent dropped 7]; stillOver 479
+== branch: chg 14 = pass->refused 13 + other 1; refused->pass 1; cross 13 [over-draws removed 13, real frequent dropped 0]; fail->pass 1; stillOver 521
+== branch+MR: chg 71 = pass->refused 70 + other 1; refused->pass 1; cross 28 [over-draws removed 21, real frequent dropped 7]; fail->pass 1; stillOver 466
+== main155: chg 60 = pass->refused 60 + other 0; cross 53 [over-draws removed 53, real frequent dropped 0]; stillOver 473
+== main155+MR: chg 125 = pass->refused 125 + other 0; cross 75 [over-draws removed 68, real frequent dropped 7]; stillOver 410

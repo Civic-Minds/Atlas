@@ -1,0 +1,255 @@
+
+##### TTC 102 dir0 evening  trips=204 stops=80 window=19-23h filter<=20
+stretch idx 7-10 (4 stops, 4 valued) buses=P1  trips/stop ~8
+   pub_today        value 31.0  tiers {60}  pieces 1  pass@20: 0/4
+   worst            value 36.0  tiers {60}  pieces 1  pass@20: 0/4
+   average          value 30.7  tiers {60}  pieces 1  pass@20: 0/4
+   riderwait        value 30.9  tiers {60}  pieces 1  pass@20: 0/4
+   median           value 30.0  tiers {30}  pieces 1  pass@20: 0/4
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@20: 0/4
+   unit_pooled_gate value 31.0  tiers {60}  pieces 1  pass@20: 0/4
+   raw per-stop spread: worst 36-36, mean gap 30.7-30.7, median 30-30, pub 31-31 (distinct 1)
+stretch idx 21-28 (8 stops, 8 valued) buses=P1  trips/stop ~8
+   pub_today        value 30-31  tiers {60,30}  pieces 4  pass@20: 0/8
+   worst            value 36.0  tiers {60}  pieces 1  pass@20: 0/8
+   average          value 30.6  tiers {60}  pieces 1  pass@20: 0/8
+   riderwait        value 30.7  tiers {60}  pieces 1  pass@20: 0/8
+   median           value 30.0  tiers {30}  pieces 1  pass@20: 0/8
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@20: 0/8
+   unit_pooled_gate value 31.0  tiers {60}  pieces 1  pass@20: 0/8
+   raw per-stop spread: worst 36-36, mean gap 30.4-30.6, median 30-30, pub 30-31 (distinct 2)
+stretch idx 34-40 (7 stops, 7 valued) buses=P0+P1+P4+P5  trips/stop ~31
+   pub_today        value 8-15  tiers {8,15}  pieces 2  pass@20: 7/7
+   worst            value 10.0  tiers {10}  pieces 1  pass@20: 7/7
+   average          value 7.8  tiers {8}  pieces 1  pass@20: 7/7
+   riderwait        value 8.0  tiers {8}  pieces 1  pass@20: 7/7
+   median           value 8.0  tiers {8}  pieces 1  pass@20: 7/7
+   median_cap1      value 8-14  tiers {8,15}  pieces 2  pass@20: 7/7
+   unit_pooled_gate value 8.0  tiers {8}  pieces 1  pass@20: 7/7
+   raw per-stop spread: worst 10-15, mean gap 7.7-8.0, median 8-8, pub 8-15 (distinct 2)
+stretch idx 42-79 (38 stops, 38 valued) buses=P0+P1+P2+P4  trips/stop ~39
+   pub_today        value 7-15  tiers {15,8}  pieces 2  pass@20: 38/38
+   worst            value 14.0  tiers {15}  pieces 1  pass@20: 38/38
+   average          value 6.1  tiers {8}  pieces 1  pass@20: 38/38
+   riderwait        value 7.3  tiers {8}  pieces 1  pass@20: 38/38
+   median           value 6.0  tiers {8}  pieces 1  pass@20: 38/38
+   median_cap1      value 6-14  tiers {15,8}  pieces 2  pass@20: 38/38
+   unit_pooled_gate value 14.0  tiers {15}  pieces 1  pass@20: 38/38
+   raw per-stop spread: worst 11-15, mean gap 5.9-6.4, median 6-7, pub 7-15 (distinct 5)
+
+##### TTC 102 dir1 evening  trips=215 stops=93 window=19-23h filter<=20
+stretch idx 0-37 (38 stops, 38 valued) buses=P0+P1+P3+P4+P5  trips/stop ~41
+   pub_today        value 6-7  tiers {8}  pieces 1  pass@20: 38/38
+   worst            value 10.0  tiers {10}  pieces 1  pass@20: 38/38
+   average          value 5.8  tiers {8}  pieces 1  pass@20: 38/38
+   riderwait        value 6.7  tiers {8}  pieces 1  pass@20: 38/38
+   median           value 6.0  tiers {8}  pieces 1  pass@20: 38/38
+   median_cap1      value 6.0  tiers {8}  pieces 1  pass@20: 38/38
+   unit_pooled_gate value 6.0  tiers {8}  pieces 1  pass@20: 38/38
+   raw per-stop spread: worst 10-10, mean gap 5.7-6.0, median 5-7, pub 6-7 (distinct 2)
+stretch idx 39-44 (6 stops, 6 valued) buses=P0+P1+P3  trips/stop ~31
+   pub_today        value 8.0  tiers {8}  pieces 1  pass@20: 6/6
+   worst            value 10.0  tiers {10}  pieces 1  pass@20: 6/6
+   average          value 7.8  tiers {8}  pieces 1  pass@20: 6/6
+   riderwait        value 8.1  tiers {8}  pieces 1  pass@20: 6/6
+   median           value 8.0  tiers {8}  pieces 1  pass@20: 6/6
+   median_cap1      value 8.0  tiers {8}  pieces 1  pass@20: 6/6
+   unit_pooled_gate value 8.0  tiers {8}  pieces 1  pass@20: 6/6
+   raw per-stop spread: worst 10-10, mean gap 7.6-7.9, median 8-8, pub 8-8 (distinct 1)
+stretch idx 45-47 (3 stops, 3 valued) buses=P0+P1  trips/stop ~30
+   pub_today        value 8.0  tiers {8}  pieces 1  pass@20: 3/3
+   worst            value 10.0  tiers {10}  pieces 1  pass@20: 3/3
+   average          value 7.7  tiers {8}  pieces 1  pass@20: 3/3
+   riderwait        value 7.9  tiers {8}  pieces 1  pass@20: 3/3
+   median           value 8.0  tiers {8}  pieces 1  pass@20: 3/3
+   median_cap1      value 8.0  tiers {8}  pieces 1  pass@20: 3/3
+   unit_pooled_gate value 8.0  tiers {8}  pieces 1  pass@20: 3/3
+   raw per-stop spread: worst 10-10, mean gap 7.7-7.8, median 8-8, pub 8-8 (distinct 1)
+stretch idx 52-65 (14 stops, 14 valued) buses=P1  trips/stop ~9
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@20: 0/14
+   worst            value 37.0  tiers {60}  pieces 1  pass@20: 0/14
+   average          value 28.6  tiers {30}  pieces 1  pass@20: 0/14
+   riderwait        value 29.9  tiers {30}  pieces 1  pass@20: 0/14
+   median           value 30.0  tiers {30}  pieces 1  pass@20: 0/14
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@20: 0/14
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@20: 0/14
+   raw per-stop spread: worst 37-37, mean gap 28.4-30.4, median 30-30, pub 30-30 (distinct 1)
+stretch idx 80-82 (3 stops, 3 valued) buses=P1  trips/stop ~9
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@20: 0/3
+   worst            value 37.0  tiers {60}  pieces 1  pass@20: 0/3
+   average          value 29.9  tiers {30}  pieces 1  pass@20: 0/3
+   riderwait        value 30.3  tiers {30}  pieces 1  pass@20: 0/3
+   median           value 30.0  tiers {30}  pieces 1  pass@20: 0/3
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@20: 0/3
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@20: 0/3
+   raw per-stop spread: worst 37-37, mean gap 29.9-30.0, median 30-30, pub 30-30 (distinct 1)
+
+##### TTC 102 dir0 midday  trips=204 stops=80 window=9-15h filter<=15
+stretch idx 7-10 (4 stops, 4 valued) buses=P1  trips/stop ~13
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@15: 0/4
+   worst            value 30.0  tiers {30}  pieces 1  pass@15: 0/4
+   average          value 29.3  tiers {30}  pieces 1  pass@15: 0/4
+   riderwait        value 29.4  tiers {30}  pieces 1  pass@15: 0/4
+   median           value 30.0  tiers {30}  pieces 1  pass@15: 0/4
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@15: 0/4
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@15: 0/4
+   raw per-stop spread: worst 30-30, mean gap 29.3-29.3, median 30-30, pub 30-30 (distinct 1)
+stretch idx 21-28 (8 stops, 8 valued) buses=P1  trips/stop ~12
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@15: 0/8
+   worst            value 30.0  tiers {30}  pieces 1  pass@15: 0/8
+   average          value 29.5  tiers {30}  pieces 1  pass@15: 0/8
+   riderwait        value 29.6  tiers {30}  pieces 1  pass@15: 0/8
+   median           value 30.0  tiers {30}  pieces 1  pass@15: 0/8
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@15: 0/8
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@15: 0/8
+   raw per-stop spread: worst 30-30, mean gap 29.4-29.5, median 30-30, pub 30-30 (distinct 1)
+stretch idx 34-40 (7 stops, 7 valued) buses=P0+P1+P4+P5  trips/stop ~38
+   pub_today        value 10.0  tiers {10}  pieces 1  pass@15: 7/7
+   worst            value 16.0  tiers {20}  pieces 1  pass@15: 0/7
+   average          value 9.6  tiers {10}  pieces 1  pass@15: 7/7
+   riderwait        value 10.2  tiers {10}  pieces 1  pass@15: 7/7
+   median           value 10.0  tiers {10}  pieces 1  pass@15: 7/7
+   median_cap1      value 10.0  tiers {10}  pieces 1  pass@15: 7/7
+   unit_pooled_gate value 10.0  tiers {10}  pieces 1  pass@15: 7/7
+   raw per-stop spread: worst 15-16, mean gap 9.5-9.6, median 10-10, pub 10-10 (distinct 1)
+stretch idx 42-79 (38 stops, 38 valued) buses=P0+P1+P2+P4  trips/stop ~54
+   pub_today        value 7-15  tiers {15,8}  pieces 2  pass@15: 38/38
+   worst            value 13.0  tiers {15}  pieces 1  pass@15: 38/38
+   average          value 6.7  tiers {8}  pieces 1  pass@15: 38/38
+   riderwait        value 7.6  tiers {8}  pieces 1  pass@15: 38/38
+   median           value 5.0  tiers {5}  pieces 1  pass@15: 38/38
+   median_cap1      value 6-14  tiers {15,8}  pieces 2  pass@15: 38/38
+   unit_pooled_gate value 13.0  tiers {15}  pieces 1  pass@15: 38/38
+   raw per-stop spread: worst 12-15, mean gap 6.6-6.8, median 5-5, pub 7-15 (distinct 3)
+
+##### TTC 102 dir1 midday  trips=215 stops=93 window=9-15h filter<=15
+stretch idx 0-37 (38 stops, 38 valued) buses=P0+P1+P3+P4+P5  trips/stop ~55
+   pub_today        value 14-15  tiers {15}  pieces 1  pass@15: 38/38
+   worst            value 14.0  tiers {15}  pieces 1  pass@15: 38/38
+   average          value 6.5  tiers {8}  pieces 1  pass@15: 38/38
+   riderwait        value 7.4  tiers {8}  pieces 1  pass@15: 38/38
+   median           value 5.0  tiers {5}  pieces 1  pass@15: 38/38
+   median_cap1      value 13-14  tiers {15}  pieces 1  pass@15: 38/38
+   unit_pooled_gate value 14.0  tiers {15}  pieces 1  pass@15: 38/38
+   raw per-stop spread: worst 14-15, mean gap 6.5-6.6, median 5-5, pub 14-15 (distinct 2)
+stretch idx 39-44 (6 stops, 6 valued) buses=P0+P1+P3  trips/stop ~38
+   pub_today        value 10.0  tiers {10}  pieces 1  pass@15: 6/6
+   worst            value 14.0  tiers {15}  pieces 1  pass@15: 6/6
+   average          value 9.5  tiers {10}  pieces 1  pass@15: 6/6
+   riderwait        value 9.9  tiers {10}  pieces 1  pass@15: 6/6
+   median           value 10.0  tiers {10}  pieces 1  pass@15: 6/6
+   median_cap1      value 10.0  tiers {10}  pieces 1  pass@15: 6/6
+   unit_pooled_gate value 10.0  tiers {10}  pieces 1  pass@15: 6/6
+   raw per-stop spread: worst 14-14, mean gap 9.5-9.6, median 10-10, pub 10-10 (distinct 1)
+stretch idx 45-47 (3 stops, 3 valued) buses=P0+P1  trips/stop ~32
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   worst            value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   average          value 10.9  tiers {15}  pieces 1  pass@15: 3/3
+   riderwait        value 11.7  tiers {15}  pieces 1  pass@15: 3/3
+   median           value 10.0  tiers {10}  pieces 1  pass@15: 3/3
+   median_cap1      value 23.0  tiers {30}  pieces 1  pass@15: 0/3
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   raw per-stop spread: worst 24-24, mean gap 10.9-10.9, median 10-10, pub 24-24 (distinct 1)
+stretch idx 52-65 (14 stops, 14 valued) buses=P1  trips/stop ~13
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@15: 0/14
+   worst            value 30.0  tiers {30}  pieces 1  pass@15: 0/14
+   average          value 27.8  tiers {30}  pieces 1  pass@15: 0/14
+   riderwait        value 28.4  tiers {30}  pieces 1  pass@15: 0/14
+   median           value 30.0  tiers {30}  pieces 1  pass@15: 0/14
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@15: 0/14
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@15: 0/14
+   raw per-stop spread: worst 30-30, mean gap 27.8-27.9, median 30-30, pub 30-30 (distinct 1)
+stretch idx 80-82 (3 stops, 3 valued) buses=P1  trips/stop ~13
+   pub_today        value 30.0  tiers {30}  pieces 1  pass@15: 0/3
+   worst            value 31.0  tiers {60}  pieces 1  pass@15: 0/3
+   average          value 27.5  tiers {30}  pieces 1  pass@15: 0/3
+   riderwait        value 28.1  tiers {30}  pieces 1  pass@15: 0/3
+   median           value 30.0  tiers {30}  pieces 1  pass@15: 0/3
+   median_cap1      value 30.0  tiers {30}  pieces 1  pass@15: 0/3
+   unit_pooled_gate value 30.0  tiers {30}  pieces 1  pass@15: 0/3
+   raw per-stop spread: worst 31-31, mean gap 27.5-27.7, median 30-30, pub 30-30 (distinct 1)
+
+##### TTC 102 dir0 amPeak  trips=204 stops=80 window=6-9h filter<=15
+stretch idx 7-10 (4 stops, 4 valued) buses=P1  trips/stop ~7
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/4
+   worst            value 25.0  tiers {30}  pieces 1  pass@15: 0/4
+   average          value 22.8  tiers {30}  pieces 1  pass@15: 0/4
+   riderwait        value 23.0  tiers {30}  pieces 1  pass@15: 0/4
+   median           value 24.0  tiers {30}  pieces 1  pass@15: 0/4
+   median_cap1      value 24.0  tiers {30}  pieces 1  pass@15: 0/4
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/4
+   raw per-stop spread: worst 25-26, mean gap 22.8-23.3, median 24-24, pub 24-24 (distinct 1)
+stretch idx 21-28 (8 stops, 8 valued) buses=P1  trips/stop ~8
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/8
+   worst            value 25.0  tiers {30}  pieces 1  pass@15: 0/8
+   average          value 22.7  tiers {30}  pieces 1  pass@15: 0/8
+   riderwait        value 22.9  tiers {30}  pieces 1  pass@15: 0/8
+   median           value 24.0  tiers {30}  pieces 1  pass@15: 0/8
+   median_cap1      value 24.0  tiers {30}  pieces 1  pass@15: 0/8
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/8
+   raw per-stop spread: worst 25-25, mean gap 22.7-22.9, median 24-24, pub 24-24 (distinct 1)
+stretch idx 34-40 (7 stops, 7 valued) buses=P0+P1+P4+P5  trips/stop ~22
+   pub_today        value 8-14  tiers {8,15}  pieces 2  pass@15: 7/7
+   worst            value 13.0  tiers {15}  pieces 1  pass@15: 7/7
+   average          value 8.3  tiers {8}  pieces 1  pass@15: 7/7
+   riderwait        value 9.5  tiers {10}  pieces 1  pass@15: 7/7
+   median           value 6.0  tiers {8}  pieces 1  pass@15: 7/7
+   median_cap1      value 7-13  tiers {8,15}  pieces 2  pass@15: 7/7
+   unit_pooled_gate value 8.0  tiers {8}  pieces 1  pass@15: 7/7
+   raw per-stop spread: worst 13-14, mean gap 8.3-8.4, median 6-6, pub 8-14 (distinct 2)
+stretch idx 42-79 (38 stops, 38 valued) buses=P0+P1+P2+P4  trips/stop ~27.5
+   pub_today        value 7-12  tiers {15,8}  pieces 2  pass@15: 38/38
+   worst            value 12.0  tiers {15}  pieces 1  pass@15: 38/38
+   average          value 6.4  tiers {8}  pieces 1  pass@15: 38/38
+   riderwait        value 7.3  tiers {8}  pieces 1  pass@15: 38/38
+   median           value 6.0  tiers {8}  pieces 1  pass@15: 38/38
+   median_cap1      value 6-11  tiers {15,8}  pieces 2  pass@15: 38/38
+   unit_pooled_gate value 12.0  tiers {15}  pieces 1  pass@15: 38/38
+   raw per-stop spread: worst 12-12, mean gap 6.4-7.0, median 6-6, pub 7-12 (distinct 2)
+
+##### TTC 102 dir1 amPeak  trips=215 stops=93 window=6-9h filter<=15
+stretch idx 0-37 (38 stops, 38 valued) buses=P0+P1+P3+P4+P5  trips/stop ~29
+   pub_today        value 6-12  tiers {8,15}  pieces 2  pass@15: 38/38
+   worst            value 12.0  tiers {15}  pieces 1  pass@15: 38/38
+   average          value 6.2  tiers {8}  pieces 1  pass@15: 38/38
+   riderwait        value 6.4  tiers {8}  pieces 1  pass@15: 38/38
+   median           value 6.0  tiers {8}  pieces 1  pass@15: 38/38
+   median_cap1      value 6-11  tiers {8,15}  pieces 2  pass@15: 38/38
+   unit_pooled_gate value 12.0  tiers {15}  pieces 1  pass@15: 38/38
+   raw per-stop spread: worst 6-12, mean gap 6.0-6.3, median 6-6, pub 6-12 (distinct 2)
+stretch idx 39-44 (6 stops, 6 valued) buses=P0+P1+P3  trips/stop ~22.5
+   pub_today        value 18.0  tiers {20}  pieces 1  pass@15: 0/6
+   worst            value 18.0  tiers {20}  pieces 1  pass@15: 0/6
+   average          value 8.2  tiers {8}  pieces 1  pass@15: 6/6
+   riderwait        value 9.7  tiers {10}  pieces 1  pass@15: 6/6
+   median           value 6.0  tiers {8}  pieces 1  pass@15: 6/6
+   median_cap1      value 17.0  tiers {20}  pieces 1  pass@15: 0/6
+   unit_pooled_gate value 18.0  tiers {20}  pieces 1  pass@15: 0/6
+   raw per-stop spread: worst 18-18, mean gap 8.0-8.3, median 6-6, pub 18-18 (distinct 1)
+stretch idx 45-47 (3 stops, 3 valued) buses=P0+P1  trips/stop ~9
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   worst            value 25.0  tiers {30}  pieces 1  pass@15: 0/3
+   average          value 21.5  tiers {30}  pieces 1  pass@15: 0/3
+   riderwait        value 23.8  tiers {30}  pieces 1  pass@15: 0/3
+   median           value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   median_cap1      value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   raw per-stop spread: worst 25-25, mean gap 21.5-21.5, median 24-24, pub 24-24 (distinct 1)
+stretch idx 52-65 (14 stops, 14 valued) buses=P1  trips/stop ~7.5
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/14
+   worst            value 25.0  tiers {30}  pieces 1  pass@15: 0/14
+   average          value 23.8  tiers {30}  pieces 1  pass@15: 0/14
+   riderwait        value 23.9  tiers {30}  pieces 1  pass@15: 0/14
+   median           value 24.0  tiers {30}  pieces 1  pass@15: 0/14
+   median_cap1      value 24.0  tiers {30}  pieces 1  pass@15: 0/14
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/14
+   raw per-stop spread: worst 25-25, mean gap 23.4-24.2, median 24-24, pub 24-24 (distinct 1)
+stretch idx 80-82 (3 stops, 3 valued) buses=P1  trips/stop ~7
+   pub_today        value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   worst            value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   average          value 23.2  tiers {30}  pieces 1  pass@15: 0/3
+   riderwait        value 23.3  tiers {30}  pieces 1  pass@15: 0/3
+   median           value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   median_cap1      value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   unit_pooled_gate value 24.0  tiers {30}  pieces 1  pass@15: 0/3
+   raw per-stop spread: worst 24-25, mean gap 23.2-23.4, median 24-24, pub 24-24 (distinct 1)

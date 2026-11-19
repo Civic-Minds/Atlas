@@ -1,0 +1,15 @@
+### s6w (s6w.ts)
+V1: stops changed 7 (pass->over filter 7) byCase {"900 EB eve":7} readingFlips 18 Oshawa 44:R 53:R 55:pass 56:pass
+W155: stops changed 34 (pass->over filter 26) byCase {"900 EB eve":22,"900 WB eve":4,"901 N AM":1,"102 S mid":7} readingFlips 86 Oshawa 44:R 53:R 55:pass 56:R
+   900 WB eve|1596 16->24 f20; 900 WB eve|1598 16->24 f20; 900 WB eve|1599 16->24 f20; 900 WB eve|1602 16->24 f20; 901 N AM|94151 11->15 f20; 102 S mid|5562 10->15 f15; 102 S mid|13701 10->15 f15; 102 S mid|14143 10->14 f15; 102 S mid|5574 10->15 f15; 102 S mid|5587 10->15 f15; 102 S mid|5583 10->15 f15; 102 S mid|4469 10->15 f15
+W150: stops changed 43 (pass->over filter 35) byCase {"900 EB eve":31,"900 WB eve":4,"901 N AM":1,"102 S mid":7} readingFlips 104 Oshawa 44:R 53:R 55:pass 56:R
+   900 WB eve|1596 16->24 f20; 900 WB eve|1598 16->24 f20; 900 WB eve|1599 16->24 f20; 900 WB eve|1602 16->24 f20; 901 N AM|94151 11->15 f20; 102 S mid|5562 10->15 f15; 102 S mid|13701 10->15 f15; 102 S mid|14143 10->14 f15; 102 S mid|5574 10->15 f15; 102 S mid|5587 10->15 f15; 102 S mid|5583 10->15 f15; 102 S mid|4469 10->15 f15
+W149: stops changed 49 (pass->over filter 41) byCase {"900 EB eve":33,"900 WB eve":8,"901 N AM":1,"102 S mid":7} readingFlips 116 Oshawa 44:R 53:R 55:R 56:R
+   900 WB eve|1596 16->24 f20; 900 WB eve|1598 16->24 f20; 900 WB eve|1599 16->24 f20; 900 WB eve|1600 16->24 f20; 900 WB eve|1601 16->24 f20; 900 WB eve|1602 16->24 f20; 900 WB eve|1603 16->24 f20; 900 WB eve|1604 16->24 f20; 901 N AM|94151 11->15 f20; 102 S mid|5562 10->15 f15; 102 S mid|13701 10->15 f15; 102 S mid|14143 10->14 f15; 102 S mid|5574 10->15 f15; 102 S mid|5587 10->15 f15; 102 S mid|5583 10->15 f15; 102 S mid|4469 10->15 f15
+WM: stops changed 19 (pass->over filter 12) byCase {"900 EB eve":8,"900 WB eve":4,"102 S mid":7} readingFlips 63 Oshawa 44:R 53:R 55:pass 56:R
+   900 WB eve|1596 16->24 f20; 900 WB eve|1598 16->24 f20; 900 WB eve|1599 16->24 f20; 900 WB eve|1602 16->24 f20; 102 S mid|5562 10->15 f15; 102 S mid|13701 10->15 f15; 102 S mid|14143 10->14 f15; 102 S mid|5574 10->15 f15; 102 S mid|5587 10->15 f15; 102 S mid|5583 10->15 f15; 102 S mid|4469 10->15 f15
+15/15/30 T0:pub 20 V1:pub 20 W155:pub 20 W150:pub 20 W149:refused WM:pub 20
+ttc52 10gap T0:pub 5 V1:pub 5 W155:pub 5 W150:pub 5 W149:pub 5 WM:pub 5
+900 mean14.5 T0:pub 15 V1:refused W155:refused W150:refused W149:refused WM:refused
+even 22s T0:pub 14 V1:pub 14 W155:refused W150:refused W149:refused WM:pub 14
+exit 0
