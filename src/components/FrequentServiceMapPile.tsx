@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { agencyInSentence } from '../../shared/agencyArticle';
 import { MAP_PILE_PAPER } from '../../shared/rules/colours';
 
@@ -59,9 +60,20 @@ const pileSpots: Record<string, { left: number; top: number; width: number; rati
 const pileOrder = Object.keys(pileSpots);
 const slugOf = (frame: MapFrame) => frame.image.split('/').pop()!.replace('.jpg', '');
 
+/** A random stacking order of n maps (Fisher–Yates): each map's place in the pile, bottom to top. */
+function shuffledStack(n: number): number[] {
+  const rank = Array.from({ length: n }, (_, i) => i);
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rank[i], rank[j]] = [rank[j], rank[i]]; }
+  return rank;
+}
+
 export default function FrequentServiceMapPile() {
-  // Paint order is the pile order (Toronto last, so on top); the frame list stays the source of the agencies and sources.
+  // The frame list stays the source of the agencies and sources; the default stacking is the pile order (Toronto last, so on top).
   const frames = [...publishedMapFrames].sort((a, b) => pileOrder.indexOf(slugOf(a)) - pileOrder.indexOf(slugOf(b)));
+  // CIV-1875 (Ryan: "just like the order, not new pics"): each visit shuffles which map is on top. The prerendered page and the first
+  // paint keep the default order, and the shuffle moves only the stacking (z-index) of the same maps in the same places and tilts, so nothing shifts.
+  const [stack, setStack] = useState<number[] | null>(null);
+  useEffect(() => { setStack(shuffledStack(frames.length)); }, [frames.length]);
   return (
     <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)]" style={{ backgroundColor: MAP_PILE_PAPER }}>
       <div className="relative aspect-[12/7] overflow-hidden">
@@ -74,7 +86,7 @@ export default function FrequentServiceMapPile() {
               alt={`Published system map from ${agencyInSentence(frame.agency)}.`}
               loading="lazy"
               className="absolute rounded-[2px] border-[5px] border-white object-cover"
-              style={{ left: `${spot.left}%`, top: `${spot.top}%`, width: `${spot.width}%`, aspectRatio: spot.ratio, transform: `rotate(${spot.turn}deg)`, zIndex: index + 1 }}
+              style={{ left: `${spot.left}%`, top: `${spot.top}%`, width: `${spot.width}%`, aspectRatio: spot.ratio, transform: `rotate(${spot.turn}deg)`, zIndex: (stack ? stack[index] : index) + 1 }}
             />
           );
         })}
