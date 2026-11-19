@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { Activity, Bus } from 'lucide-react';
 import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
@@ -38,6 +38,7 @@ export interface StudioProps {
 
 export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, headerPortal, tabsPortal }: StudioProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const set = (changes: Record<string, string | null>) => setSearchParams(p => {
     const n = new URLSearchParams(p);
     for (const [k, v] of Object.entries(changes)) { if (v == null) n.delete(k); else n.set(k, v); }
@@ -58,7 +59,8 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, nameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
   const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => set({ agency: s, route: null }) } : null;
-  const pickPage = (k: StudioPageKey) => set({ page: k, agency: null, route: null });
+  // The active page's tab toggles it off, like the main map's mode tabs (#1588): Studio closes and the plain map opens.
+  const pickPage = (k: StudioPageKey) => (k === page ? navigate('/') : set({ page: k, agency: null, route: null }));
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
 
