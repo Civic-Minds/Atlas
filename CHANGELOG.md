@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio says it has no current reading for a route Live doesn't record**: asking how TTC's 29 Dufferin was running right now listed every stop as unseen, which read as a real finding
 - **Live's "Where bunching forms" table shows each stretch's share before and after, like "10% to 41%"**: "+31 pt" gave only the rise, not where it started
 - **A route card row no longer repeats its notice in an info icon**: the first-or-last-trip reason is said once, in the notice at the bottom of the card
 - **History keeps a route on the map in years its service didn't change**: on older History data a route vanished in those years, which read as if it hadn't run; it now shows its last number, only between years Atlas has its schedules ([#1591](https://github.com/Civic-Minds/Atlas/issues/1591))

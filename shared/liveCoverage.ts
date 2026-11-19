@@ -35,6 +35,18 @@ export function routesRecorded(filterSource: string): 'every route' | string[] {
   return hits.length ? hits : 'every route';
 }
 
+/**
+ * Whether Atlas Live records vehicle positions for a route at all (CIV-1928): the agency's position feed keeps only the
+ * route ids its filter names (TTC: the streetcars), so any other route has no readings however busy it is. A route whose
+ * ids are any of the recorded ones counts as recorded; an agency with no position feed records none.
+ */
+export function routeIsRecorded(slug: string, routeIds: readonly string[]): boolean {
+  const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === slug);
+  if (!pos) return false;
+  const re = new RegExp(pos.routeFilterSource);
+  return routeIds.some(id => re.test(id));
+}
+
 const addDays = (ymd: string, n: number) => new Date(Date.parse(`${ymd}T12:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
 
 /** One agency's coverage from the dates its archive holds (YYYY-MM-DD), or null dates when they could not be listed. */
