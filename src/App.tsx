@@ -31,7 +31,6 @@ import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { PageMapOverlayProvider } from './context/PageMapOverlay';
-import { StudioAboutProvider } from './context/StudioAbout';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
@@ -660,7 +659,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
-    <StudioAboutProvider>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -997,7 +995,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </main>
       <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} />
     </div>
-    </StudioAboutProvider>
     </PageMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

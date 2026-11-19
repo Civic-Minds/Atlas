@@ -6,7 +6,6 @@ import type { Agency } from '../../App';
 import ModeTab from '../../components/ModeTab';
 import { AGENCY_COLUMN } from '../../content/noticeCopy';
 import { agencyNames } from '../../utils/agencyName';
-import { useStudioAbout } from '../../context/StudioAbout';
 import { getSavedStudioAgency, saveStudioAgency } from '../../utils/studioAgency';
 import { sidebarFrameStyle } from '../../styles';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
@@ -17,6 +16,7 @@ import Fleet from './Fleet';
 import Live from './Live';
 import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
+import { AgencyDataSourceLink } from '../../components/Interval/cardUi';
 import { useDevFile } from './useDevFile';
 
 /**
@@ -64,7 +64,9 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const agency = nameOf(slug);
   const agencyOptions = useMemo(() => (pageAgencies ?? [slug]).filter(Boolean).map(s => [s, nameOf(s)] as const), [agencyCatalog, pageAgencies, slug]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new page or agency starts with no route open.
-  const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => set({ agency: s, route: null }) } : null;
+  const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
+  // The selected agency's own source sits beside the agency chip, the agency card's Source link (CIV-1890).
+  const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => set({ agency: s, route: null }), after: selected ? <AgencyDataSourceLink agency={{ slug: selected.slug, websiteUrl: selected.websiteUrl ?? undefined }} /> : null } : null;
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
   const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
@@ -73,11 +75,6 @@ export default function Studio({ agencyCatalog, sidebarLeft, searchBarWidth, hea
   const pickPage = (k: StudioPageKey) => (k === page && !closed ? set({ panel: 'closed', agency: slug, route: null }) : set({ page: k, panel: null, agency: slug, route: null }));
   // Remember the agency when it is the one asked for, never a fallback another page's list swapped in.
   useEffect(() => { if (page && slug && slug === wantedAgency && pageAgencies?.includes(slug)) saveStudioAgency(slug); }, [page, slug, wantedAgency, pageAgencies]);
-  // The About menu's Studio text reads these (CIV-1890).
-  const { setAbout } = useStudioAbout();
-  const selected = useMemo(() => agencyCatalog.find(a => a.slug === slug) ?? null, [agencyCatalog, slug]);
-  useEffect(() => { setAbout({ agency: selected }); }, [setAbout, selected]);
-  useEffect(() => () => setAbout(null), [setAbout]);
   useEffect(() => { document.title = tabTitle(PAGE_NAMES.studio, agency); }, [agency]);
   const frameStyle = sidebarFrameStyle(sidebarLeft, searchBarWidth);
 

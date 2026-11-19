@@ -22,8 +22,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_SOURCE_FEED, STUDIO_SOURCE_NONE, STUDIO_SOURCE_WEBSITE, studioSourcesLead } from '../content/noticeCopy';
-import { useStudioAbout } from '../context/StudioAbout';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -131,9 +130,6 @@ function ExplainerBody({ layout, lead, p2After = '', helpContext }: { layout: Ex
 }
 
 export default function InfoPanel({ open, onClose, agencies, defaultTab, featureFilter = 'all', helpContext, feedRefreshMeta, onAgencySelect, onLiveRouteClick, layers, inStudio = false }: Props) {
-  const { about: studioAbout } = useStudioAbout();
-  const studio = inStudio ? studioAbout : null;
-  const studioName = (slug: string) => { const a = agencies.find(x => x.slug === slug); return a ? agencyNames(a).name : slug; };
   // History is not offered on phones, so its filter, badges and wording step aside there.
   const isPhone = useMediaQuery(PHONE_MEDIA_QUERY);
   const FEATURES = { ...BASE_FEATURES, history: BASE_FEATURES.history && phoneModeFlags(isPhone).history };
@@ -488,33 +484,20 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
 
           {view === 'sources' && (
             <div className="h-full overflow-y-auto px-5 py-4 space-y-4">
-              {inStudio ? (
-                <>
-                  <p className="text-xs text-[var(--text-primary)] leading-relaxed">{studio?.agency ? studioSourcesLead(studioName(studio.agency.slug)) : ''}</p>
-                  <div className="space-y-2">
-                    {studio?.agency?.feedUrl && <LinkCard href={studio.agency.feedUrl} target="_blank" rel="noopener noreferrer" icon="external">{STUDIO_SOURCE_FEED}</LinkCard>}
-                    {studio?.agency?.websiteUrl && <LinkCard href={studio.agency.websiteUrl} target="_blank" rel="noopener noreferrer" icon="external">{STUDIO_SOURCE_WEBSITE}</LinkCard>}
-                    {studio?.agency && !studio.agency.feedUrl && !studio.agency.websiteUrl && <p className="text-xs text-[var(--text-dim)] leading-relaxed">{STUDIO_SOURCE_NONE}</p>}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                    {SOURCES_LEAD}
-                  </p>
-                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">
-                    {SOURCES_FALLBACK}
-                  </p>
-                  <div className="space-y-2">
-                    <LinkCard href="https://mobilitydatabase.org/"
-                      target="_blank"
-                      rel="noopener noreferrer" icon="external">Mobility Database</LinkCard>
-                    <LinkCard href="https://www.transit.land/"
-                      target="_blank"
-                      rel="noopener noreferrer" icon="external">Transitland</LinkCard>
-                  </div>
-                </>
-              )}
+              <p className="text-xs text-[var(--text-primary)] leading-relaxed">
+                {SOURCES_LEAD}
+              </p>
+              <p className="text-xs text-[var(--text-dim)] leading-relaxed">
+                {SOURCES_FALLBACK}
+              </p>
+              <div className="space-y-2">
+                <LinkCard href="https://mobilitydatabase.org/"
+                  target="_blank"
+                  rel="noopener noreferrer" icon="external">Mobility Database</LinkCard>
+                <LinkCard href="https://www.transit.land/"
+                  target="_blank"
+                  rel="noopener noreferrer" icon="external">Transitland</LinkCard>
+              </div>
               <p className="text-xs text-[var(--text-dim)] leading-relaxed">
                 {feedRefreshCountdownLabel(feedRefreshMeta)}
               </p>

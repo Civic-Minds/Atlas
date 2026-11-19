@@ -1096,8 +1096,3 @@ export const COVERAGE_TEXT = {
 
 /** CIV-1890 (Ryan, 2026-11-18, word for word): the About menu inside Studio, in place of the public atlas's text. */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
-/** The Schedule sources view inside Studio: only the selected agency's. */
-export const studioSourcesLead = (agency: string): string => `${agency}’s schedule comes from:`;
-export const STUDIO_SOURCE_FEED = 'Schedule file';
-export const STUDIO_SOURCE_WEBSITE = 'Agency website';
-export const STUDIO_SOURCE_NONE = 'No source is listed for this agency.';

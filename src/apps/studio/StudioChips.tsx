@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
 
@@ -21,6 +21,8 @@ export interface StudioMenu {
   width?: string;
   /** The chip's dropdown chevron, for a menu that sits among the tabs (Live's Measure, CIV-1889). */
   arrow?: boolean;
+  /** Shown right after the chip, outside its dropdown (the agency chip's Source link, CIV-1890). */
+  after?: ReactNode;
 }
 
 /**
@@ -33,6 +35,7 @@ export default function StudioChips({ container, menus }: { container: Element |
   return createPortal(
     <div ref={rowRef} className="hidden sm:flex items-center gap-2 pointer-events-auto">
       {menus.map(m => m && (
+        <Fragment key={m.key}>
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
           {m.content ? m.content(() => setOpenChip(null)) : m.options.map(([k, text, plain]) => (
@@ -42,6 +45,8 @@ export default function StudioChips({ container, menus }: { container: Element |
             </button>
           ))}
         </ChipMenu>
+        {m.after}
+        </Fragment>
       ))}
     </div>,
     container,
