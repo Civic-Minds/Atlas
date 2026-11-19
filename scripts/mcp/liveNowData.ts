@@ -5,9 +5,14 @@
  * Two readers: a folder of saved snapshots in the same layout (ATLAS_MCP_NOW_DIR, for tests and checks), or R2 through a
  * read-only token (ATLAS_MCP_R2_READ_ACCOUNT_ID / _KEY_ID / _SECRET). It never reads the R2_* keys in .env.local, which
  * can write. ATLAS_MCP_NOW_AT (unix seconds) sets "now" when answering from saved snapshots.
+ *
+ * The read-only token's three values come from the environment, else from its credentials file on this Mac
+ * (ATLAS_MCP_R2_READ_ENV, by default ~/Developer/Credentials/Cloudflare R2 read-only for Atlas MCP.env): KEY=value lines.
+ * The values are never logged.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { homedir } from 'node:os';
 import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { datesForWindow } from '../../shared/liveArchive';
 import { DEFAULT_LIVE_ARCHIVE_BUCKET, LIVE_ARCHIVE_BUCKET_BY_SLUG } from '../../shared/rules/live';
@@ -65,7 +70,19 @@ export function r2NowSource(env: Record<string, string | undefined>): NowSource 
 }
 
 const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
-let source: NowSource | null = env.ATLAS_MCP_NOW_DIR ? folderNowSource(env.ATLAS_MCP_NOW_DIR) : r2NowSource(env);
+const READ_KEYS = ['ATLAS_MCP_R2_READ_ACCOUNT_ID', 'ATLAS_MCP_R2_READ_KEY_ID', 'ATLAS_MCP_R2_READ_SECRET'] as const;
+/** The read-only token from the environment, or from its credentials file; only the three read-only names are taken. */
+export function readTokenEnv(e: Record<string, string | undefined>, file = e.ATLAS_MCP_R2_READ_ENV ?? join(homedir(), 'Developer/Credentials/Cloudflare R2 read-only for Atlas MCP.env')): Record<string, string | undefined> {
+  if (READ_KEYS.every(k => e[k])) return e;
+  if (!existsSync(file)) return e;
+  const fromFile: Record<string, string> = {};
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const m = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (m && (READ_KEYS as readonly string[]).includes(m[1])) fromFile[m[1]] = m[2].replace(/^(['"])(.*)\1$/, '$2');
+  }
+  return { ...e, ...fromFile };
+}
+let source: NowSource | null = env.ATLAS_MCP_NOW_DIR ? folderNowSource(env.ATLAS_MCP_NOW_DIR) : r2NowSource(readTokenEnv(env));
 export function useNowSource(s: NowSource | null): void { source = s; }
 export const nowSource = () => source;
 /** "Now", in unix seconds: the clock, or ATLAS_MCP_NOW_AT when answering from saved snapshots. */
