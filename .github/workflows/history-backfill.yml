@@ -1,0 +1,91 @@
+name: History backfill (dry run)
+
+# CIV-536: build History v2 sidecars for an agency with no History yet, from the public past-feed zips listed in
+# config/history-backfill-sources.json, with pipeline/backfill-history-v2.ts (local files only). DRY RUN ONLY: read-only
+# R2 keys; the sidecars, a sha256 list of the zips and the report upload as an artifact. Uploading them is a separate,
+# approved step (Ryan's go), never this workflow.
+#
+# A workflow not on the default branch cannot be dispatched, so a tag dryrun/civ-536-<slug>-* runs <slug>.
+on:
+  push:
+    tags:
+      - 'dryrun/civ-536-*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or SHA.'
+        required: false
+        default: main
+        type: string
+      slug:
+        description: 'Agency slug with an entry in config/history-backfill-sources.json.'
+        required: true
+        type: string
+
+env:
+  TZ: America/Toronto
+  OUT: tmp/history-backfill
+  ATLAS_HISTORY_V2: '1'
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
+      SLUG_INPUT: ${{ inputs.slug }}
+      REF_NAME: ${{ github.ref_name }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_ARCHIVE_BUCKET_NAME: ${{ secrets.R2_ARCHIVE_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+      # Read-only keys: this job runs the code of any ref, so it never sees a write-capable credential.
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Pick the slug
+        run: |
+          slug="$SLUG_INPUT"
+          if [ -z "$slug" ]; then slug="$(node -e "const r=process.env.REF_NAME.replace(/^dryrun\/civ-536-/,'');const s=Object.keys(require('./config/history-backfill-sources.json')).filter(k=>r===k||r.startsWith(k+'-')).sort((a,b)=>b.length-a.length)[0];if(!s)process.exit(1);console.log(s)")" || { echo "no slug in config/history-backfill-sources.json matches $REF_NAME"; exit 1; }; fi
+          [[ "$slug" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "bad slug: $slug"; exit 1; }
+          echo "SLUG=$slug" >> "$GITHUB_ENV"
+      - name: Check the timezone
+        run: |
+          zone="$(node -p "Intl.DateTimeFormat().resolvedOptions().timeZone")"
+          [ "$zone" = "America/Toronto" ] || { echo "Expected America/Toronto, got $zone"; exit 1; }
+      - name: Download the listed zips
+        run: |
+          mkdir -p "$OUT/zips"
+          node -e "const s=require('./config/history-backfill-sources.json')[process.env.SLUG];for(const [k,u] of Object.entries(s))if(!k.startsWith('_'))console.log(k+' '+u)" | while read -r stem url; do
+            [[ "$stem" =~ ^[0-9]{8}$ ]] || { echo "bad stem $stem"; exit 1; }
+            curl -fsSL --retry 3 -o "$OUT/zips/$stem.zip" "$url"
+            unzip -tq "$OUT/zips/$stem.zip" > /dev/null || { echo "$stem: not a valid zip"; exit 1; }
+          done
+          (cd "$OUT/zips" && sha256sum *.zip) | tee "$OUT/zips.sha256"
+      - name: Build the sidecars (local files only)
+        run: |
+          set -o pipefail
+          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/sidecars" 2>&1 | tee "$OUT/backfill.log"
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-backfill-${{ env.SLUG }}-${{ github.run_id }}
+          path: |
+            ${{ env.OUT }}/sidecars/
+            ${{ env.OUT }}/zips.sha256
+            ${{ env.OUT }}/backfill.log
+          retention-days: 30
+          if-no-files-found: warn
