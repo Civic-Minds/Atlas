@@ -28,11 +28,10 @@ import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
 import { capitalizeFirst, headwayAmount, headwayOrBetter } from '../../utils/headwayText';
-import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
+import { SEARCH_ANY_PLACEHOLDER, DAY_LABEL, FREQUENCY_LABEL, MODE_LABEL, NO_AGENCIES_IN_VIEW, TIME_LABEL, ON_DEMAND_PARTIAL_COVERAGE, OTHER_REGION_LABEL, AGENCIES_FILTER_LABEL, FILTERS_BOTH_MAPS_LABEL, OVERNIGHT_FREQUENCY_LABEL, SELECT_ALL_LABEL, SELECT_NONE_LABEL, SIDE_LABEL, CONNECTION_ARRIVING_LABEL, CONNECTION_LEAVING_LABEL, TIME_WINDOW_LABEL, WAIT_LABEL, WALK_LABEL } from '../../content/noticeCopy';
 import { metresText } from '../../../shared/unitText';
 import SearchBox from '../ui/SearchBox';
 import { topBarChipClass } from '../ui/topBarChip';
-import { devPlaceholder } from '../../content/devPlaceholder';
 
 
 interface FilterChipsProps {
@@ -87,8 +86,8 @@ export interface ConnectionsBarControls {
   setTripId: (id: string) => void;
 }
 
-/** The bar's two sides. Placeholders until Ryan OKs the words (CIV-1353); the bar is dev-only (FEATURES.connectionsBar). */
-const CONNECTION_SIDE_LABELS = [['after', devPlaceholder('arriving')], ['before', devPlaceholder('leaving')]] as const;
+/** The bar's two sides (CIV-1766); the bar is dev-only (FEATURES.connectionsBar). */
+const CONNECTION_SIDE_LABELS = [['after', CONNECTION_ARRIVING_LABEL], ['before', CONNECTION_LEAVING_LABEL]] as const;
 
 /**
  * A chip's "filter is on" dot. Declared out here, not inside FilterChips, so it is the same component on every render

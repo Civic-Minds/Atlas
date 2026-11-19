@@ -914,6 +914,9 @@ export const TOGGLE_DATA_SAVER_LABEL = 'Toggle data saver';
 export const WAIT_LABEL = 'Wait';
 export const WALK_LABEL = 'Walk';
 export const SIDE_LABEL = 'Side';
+/** The two sides (CIV-1766): you arrive on the picked trip, or you leave on it. */
+export const CONNECTION_ARRIVING_LABEL = 'Arriving';
+export const CONNECTION_LEAVING_LABEL = 'Leaving';
 export const OVERNIGHT_FREQUENCY_LABEL = 'Overnight frequency';
 export const TIME_WINDOW_LABEL = 'Time window';
 /** The map's agency filter chip and its two bulk buttons. */
