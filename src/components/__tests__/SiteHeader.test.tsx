@@ -42,7 +42,6 @@ describe('internal links (CIV-1872)', () => {
   it('lists every internal page once on the home page, and the header links are among them or More', () => {
     const pages = INTERNAL_GROUPS.flatMap(g => g.pages);
     const paths = pages.map(p => p.path);
-    // Live reports has no page of its own: its card opens Coverage, which links each report.
     expect(new Set(pages.map(p => p.title)).size).toBe(pages.length);
     for (const link of INTERNAL_HEADER_LINKS.filter(l => l.path !== INTERNAL_PATH)) expect(paths).toContain(link.path);
   });
