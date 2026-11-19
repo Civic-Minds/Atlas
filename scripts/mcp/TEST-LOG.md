@@ -373,3 +373,17 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 - Unit tests: two branches on a shared trunk, waits against each stop's own scheduled gap, no-vehicle stops, a stale reading, a feed with no direction, custom cut-offs.
 - Not yet run: the RN1 to RN8 questions locked and normal (route_now needs the read-only token or a saved-readings server), and Hamilton (route ids differ from the route number; the B-Line check waits for real readings).
 
+## 2026-11-18: RN1 to RN8, route_now on saved readings (CIV-1870, 0.13.0), Claude both ways
+
+- Setup: one headless chat per question, locked down and normal, against a local server reading saved TTC streetcar readings (all 10 routes, Mon Nov 16, 5:30 to 6:01 PM) with "now" set to 6:01 PM. Hamilton had no saved readings in this set. The first run was redone: later questions leaked into each prompt through stdin, and answers called the Nov 16 reading "today". route_now now gives the reading's day as well as its time.
+- 16 of 16 answered from the tools, every figure matching route_now's output, with the time of the reading on every answer.
+- RN1: moving and standing by direction. The scheduled count (39) came from buses_needed, labelled as scheduled.
+- RN2 and RN5: bunched stretches and the longest waits against each stop's scheduled gap.
+- RN3: says route_now measures spacing, not lateness, and gives the spacing instead.
+- RN4: declines one-vehicle lookups. Both runs named outside trackers, the TTC's own and others, as places to look.
+- RN6: says there is no current B-Line reading. Locked gave the date figures start (Nov 23); normal offered the recorded week.
+- RN7: the 4-minute cut-off named beside every bunched figure, with a note that it sits close to the scheduled gap.
+- RN8: the Queen St West and Spadina stretch where no vehicle was seen, given as "none ran or a diversion", never as a gap. One locked answer called it "King/Queen west of Spadina", a loose place name.
+- Every run noticed the reading was two days before today and said so. That is right for saved readings and won't arise on real ones.
+- Hamilton separately: saved B-Line readings (Nov 18, 1:21 PM). Feed and Atlas route ids match (5829), and direction is worked out from the stops passed. 3 to 4 moving per direction, no bunching, longest waits 16 and 23 minutes against a scheduled 12.
+
