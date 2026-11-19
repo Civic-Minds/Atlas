@@ -24,7 +24,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.api.json && node scripts/typecheck-pipeline.mjs",
     "check:vercel": "bash scripts/check-vercel.sh",
     "typecheck:workers": "tsc --noEmit -p tsconfig.workers.json",
-    "typecheck:mcp-worker": "! tsc --noEmit -p workers/atlas-mcp/tsconfig.json | grep -E '^(workers/atlas-mcp|scripts/mcp|shared/(mcp|routeRuns))'",
+    "typecheck:mcp-worker": "tsc --noEmit -p workers/atlas-mcp/tsconfig.json",
     "check:duplicates": "node scripts/check-duplicates.mjs",
     "check:unused": "ATLAS_SKIP_ENV_CHECK=1 npx -y knip@6.44.1 --no-progress --include files,exports,types",
     "test": "vitest run",

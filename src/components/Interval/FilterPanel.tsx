@@ -192,7 +192,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     let cancelled = false;
     setHiddenRoutesLoading(true);
     fetch(`${R2_PUBLIC_URL}/atlas/hidden-routes.json`, { cache: 'no-store' })
-      .then(response => response.ok ? response.json() : { routes: [] })
+      .then(response => response.ok ? (response.json() as Promise<{ routes?: unknown }>) : { routes: [] })
       .then(data => {
         if (!cancelled) {
           setHiddenRoutes(Array.isArray(data?.routes) ? data.routes : []);
