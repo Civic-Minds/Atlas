@@ -32,15 +32,16 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
         routesSharingBuses: g.routes,
         scheduledNow: g.scheduled,
         neededAtCurrentFrequency: g.implied,
-        roundTripRunningMinutes: g.runningMin,
-        roundTripLayoverMinutes: g.layoverMin,
+        // Summed over every direction and branch of the group (#1618), not one round trip.
+        runningMinutesAllPatterns: g.runningMin,
+        layoverMinutesAllPatterns: g.layoverMin,
         // The same figures Studio's buses-needed page shows for each branch split (groupAtTarget).
         neededAt: neededAt(groupAtTarget(g, 'current')),
         ...(g.atTargetEven ? { neededAtWithBranchesEven: neededAt(groupAtTarget(g, 'even')) } : {}),
       })),
       targetsNote: `Atlas Studio works buses out only for every ${STUDIO_TARGETS.join(', ')} minutes. For any other frequency, say Atlas has no figure; don't work one out yourself.`,
       ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),
-      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted.",
+      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted. 'runningMinutesAllPatterns' and 'layoverMinutesAllPatterns' add up every direction and branch of the group, so they are not one round trip: never divide them by a frequency to check or replace a count.",
       source: "Atlas Studio's buses-needed file, worked out from the agency's own schedule.",
     };
   },

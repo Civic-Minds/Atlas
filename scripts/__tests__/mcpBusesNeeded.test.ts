@@ -32,3 +32,12 @@ describe('buses_needed files (CIV-1910)', () => {
     expect(busesNeeded('hamilton', '1', 'pmPeak')).toMatchObject({ cached: true, feed: 'own.zip' });
   });
 });
+
+describe('buses_needed answer fields (#1618)', () => {
+  it('names the summed running and layover times for what they are, not a round trip', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync(join(import.meta.dirname, '../mcp/localTools.ts'), 'utf8');
+    expect(src).not.toMatch(/roundTrip(Running|Layover)Minutes/);
+    expect(src).toMatch(/runningMinutesAllPatterns/);
+  });
+});

@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's buses-needed answers no longer call a sum of all a route's patterns its round trip (local only)**: assistants divided it by the frequency and wrongly said Atlas's bus counts were off ([#1618](https://github.com/Civic-Minds/Atlas/issues/1618))
 - **Atlas Studio finds the routes at a corner even where no stop is named for both streets**: asking for routes near Yonge and Finch on YRT found nothing, because YRT names its stops "Finch GO Bus Terminal" and "Yonge St"; it now takes the closest stops on each street ([#1614](https://github.com/Civic-Minds/Atlas/issues/1614))
 - **Atlas Studio finds Hamilton's route 1 in its buses-needed figures (local only)**: Studio's file names it "01", so asking for "1" found nothing ([#1617](https://github.com/Civic-Minds/Atlas/issues/1617))
 - **Atlas Studio finds the buses-needed figures Studio has built for Hamilton and Denver (local only)**: it looked for them in only one of the two places Studio keeps them, so it said it had no figures ([#1616](https://github.com/Civic-Minds/Atlas/issues/1616))
