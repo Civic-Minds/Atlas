@@ -40,7 +40,7 @@ export interface WeekFigures {
   tripTime: { scheduledMin: number; typicalMin: number; trips: number } | null;
   /** Share of scheduled trips that were seen running. */
   delivered: { share: number; seen: number; notSeen: number } | null;
-  /** Share of gaps between vehicles that were bunched (BUNCHED_GAP_SEC or less) or gapped (over GAPPED_FACTOR × the scheduled gap). */
+  /** Share of gaps between vehicles that were bunched (under BUNCHED_GAP_SEC) or gapped (over GAPPED_FACTOR × the scheduled gap). */
   bunching: { badShare: number; bunchedShare: number | null; gappedShare: number | null; gaps: number } | null;
   /** Average wait added at stops served every 15 minutes or better, in minutes. */
   extraWaitMin: number | null;

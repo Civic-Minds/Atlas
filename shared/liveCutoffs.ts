@@ -104,8 +104,8 @@ const minutes = (n: number) => `${n} minute${n === 1 ? '' : 's'}`;
 /** Each figure's meaning in words, at any cut-off: the default definitions are these at the defaults. */
 export const lateText = (min: number) => `More than ${minutes(min)} after the scheduled time.`;
 export const earlyText = (min: number) => `${minutes(min)[0].toUpperCase()}${minutes(min).slice(1)} or more before the scheduled time.`;
-// The wording says "or less" while the rule counts gaps under the cut-off (shared/bunching.ts); kept as it was, raised with the manager.
-export const bunchedText = (min: number) => `A gap of ${minutes(min)} or less behind the vehicle ahead.`;
+// "Under", as the rule counts (shared/bunching.ts) and as Studio's note says ("gaps under 2 min between vehicles").
+export const bunchedText = (min: number) => `A gap of under ${minutes(min)} behind the vehicle ahead.`;
 export const gappedText = (factor: number) => `A gap more than ${factor} times the scheduled gap.`;
 
 /** Share of trip-start departures more than `min` late. */
