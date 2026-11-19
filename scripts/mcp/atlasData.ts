@@ -144,6 +144,17 @@ export async function routeWithRows(agency: CatalogAgency, day: DayType, s: Rout
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
  * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01), rail first on a tie.
  */
+/**
+ * The other routes whose name matches a query exactly, besides the one findRoute picked (#1623: GO's "Lakeshore West" is
+ * the LW train and the 18 bus that runs when trains don't; TTC "King" is the 504 and the 304 night streetcar), so an
+ * answer can name them. Empty when the query was the picked route's own short name, or nothing else shares it.
+ */
+export function otherExactMatches<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string, picked: R): R[] {
+  const q = query.trim().toLowerCase();
+  if (picked.shortName.toLowerCase() === q) return [];
+  return routes.filter(r => r !== picked && r.name !== picked.name && [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase()).includes(q));
+}
+
 export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
   const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());

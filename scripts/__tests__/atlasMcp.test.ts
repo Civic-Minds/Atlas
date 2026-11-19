@@ -203,6 +203,11 @@ describe('route lookup (CIV-1864)', () => {
     expect(findRoute(routes, 'Lakeshore West')?.shortName).toBe('LW');
     expect(findRoute(routes, '18')?.shortName).toBe('18');
     expect(findRoute(routes, 'King')?.shortName).toBe('504');
+    // The answer names the other route of that name, unless the query was the picked route's own number.
+    const { otherExactMatches } = await import('../mcp/atlasData');
+    expect(otherExactMatches(routes, 'Lakeshore West', findRoute(routes, 'Lakeshore West')!).map(o => o.shortName)).toEqual(['18']);
+    expect(otherExactMatches(routes, 'King', findRoute(routes, 'King')!).map(o => o.shortName)).toEqual(['304']);
+    expect(otherExactMatches(routes, 'LW', findRoute(routes, 'LW')!)).toEqual([]);
   });
 
   it('takes a name holding the words typed over one that only contains the letters (Metro Transit "E Line")', async () => {
