@@ -408,7 +408,7 @@ export const WEEKDAY_VARIATION_NOTICE = "This route’s weekday schedules vary b
 /** "Includes variants 51A, 51B" (beta route variants). */
 export const variantsIncludedNotice = (shortNames: string) => `Includes variants ${shortNames}`;
 // N14 first-last-allowance
-/** The info icon's hover text on a row whose frequency allows a longer first or last trip. */
+/** The route card's notice when a row's frequency allows a longer first or last trip (CIV-1916: said once, never on the row). */
 export const FIRST_LAST_TRIP_ALLOWANCE_HINT = "This route’s frequency allows a slightly longer wait for the first or last trip of the day.";
 
 // ---- Route and agency cards ----
@@ -896,7 +896,6 @@ export const OPENS_IN_NEW_TAB_HINT = 'Opens in a new tab';
 /** The report form's buttons. */
 export const CANCEL_LABEL = 'Cancel';
 export const CHANGE_LABEL = 'Change';
-export const FIRST_LAST_TRIP_ALLOWANCE_LABEL = 'About the first-or-last-trip allowance';
 export const MAP_LEGEND_LABEL = 'Map legend';
 /** A map key's screen-reader name. */
 export const MAP_COLOURS_LABEL = 'Map colours';

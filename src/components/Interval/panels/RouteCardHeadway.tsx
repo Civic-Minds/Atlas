@@ -34,7 +34,7 @@ import { routeCardNotices, type CardFooterNotice } from '../../../utils/routeCar
 import { dirIdNum } from '../../../utils/routeCardTrunk';
 import type { VariantFamily } from '../../../utils/routeVariants';
 import { reportDetails, REPORT_DETAIL_LABELS } from '../../../utils/reportIssue';
-import { explainerFor, listingEndHasPassed, MAP_KEY_NIGHT, OVERNIGHT_PART_OF_ROUTE } from '../../../content/noticeCopy';
+import { explainerFor, FIRST_LAST_TRIP_ALLOWANCE_HINT, listingEndHasPassed, MAP_KEY_NIGHT, OVERNIGHT_PART_OF_ROUTE } from '../../../content/noticeCopy';
 import { agencyTodayYmd, effectiveFeedExpiry } from '../../../../shared/feedAvailability';
 import type { RouteLabel } from '../../../utils/routeFacts';
 import { directionBranchFallback } from '../../../../shared/headsignDisplay';
@@ -475,8 +475,6 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
                           colorHeadway={shown.value.colorHeadway}
                           headwayLabel={shown.value.headwayLabel}
                           trunkHeadway={shown.value.trunkHeadway}
-                          edgeGapAllowance={d.edgeGapAllowance}
-                          onEdgeGapAllowanceClick={onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N14') }) : undefined}
                           dimmed={shown.value.dimmed}
                           limited={shown.value.isLimited}
                           {...hoverProps(group.dirId, d, row.hover)}
@@ -510,6 +508,12 @@ export const RouteCardHeadway: React.FC<RouteCardHeadwayProps> = ({
               message={notices.filter.text}
               onLearnMore={notices.filter.learnMore && onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N12'), filterNotice: notices.filter!.text }) : undefined}
             />
+          </div>
+        )}
+        {/* N14 (CIV-1916, Ryan's D): the first-or-last-trip allowance is said once, here; its rows stay plain. */}
+        {model.groups.some(group => group.rows.some(row => !row.night && row.feature?.edgeGapAllowance)) && (
+          <div className={`${CARD_NOTICE_FOOTER} space-y-1`}>
+            <CardHelpNotice message={FIRST_LAST_TRIP_ALLOWANCE_HINT} onLearnMore={onInfoOpen ? () => onInfoOpen('about', { helpTopic: explainerFor('N14') }) : undefined} />
           </div>
         )}
         {notices.period && (
