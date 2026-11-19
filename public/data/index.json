@@ -33152,7 +33152,7 @@
         43.6766,
         4.6278
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/donnees-statiques-et-temps-reels-reseau-envia/20260713-080242/gtfs-envia-20260711.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/52216d2f-072e-4b7d-af0c-15d8d4e98b09",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -33330,7 +33330,7 @@
         43.5528,
         7.0174
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/horaires-theoriques-et-temps-reel-gtfs-gtfs-rt-du-reseau-palmbus-cannes-pays-de-lerins/20260710-114430/palmbus-cannes-fr.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/47bc8088-6c72-43ad-a959-a5bbdd1aa14f",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
@@ -33691,7 +33691,7 @@
         43.7745,
         7.4975
       ],
-      "feedUrl": "https://static.data.gouv.fr/resources/horaires-reseau-zest/20260710-140010/gtfs-10072026-0806.zip",
+      "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/72609821-2459-47fb-a63b-3dbbc0d96c92",
       "mdbFeedUrl": null,
       "hiddenInProduction": true,
       "pmtilesPending": true,
