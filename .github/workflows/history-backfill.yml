@@ -1,7 +1,8 @@
 name: History backfill (dry run)
 
 # CIV-536: build History v2 sidecars for an agency with no History yet, from the public past-feed zips listed in
-# config/history-backfill-sources.json, with pipeline/backfill-history-v2.ts (local files only). DRY RUN ONLY: read-only
+# config/history-backfill-sources.json, with pipeline/backfill-history-v2.ts --shapes (local files only; the per-period
+# shapes History draws go to sidecars/history-v2-shapes/, as the runbook's upload step expects). DRY RUN ONLY: read-only
 # R2 keys; the sidecars, a sha256 list of the zips and the report upload as an artifact. Uploading them is a separate,
 # approved step (Ryan's go), never this workflow.
 #
@@ -79,7 +80,7 @@ jobs:
           set -o pipefail
           month="$(node -e "const m=require('./config/history-backfill-sources.json')[process.env.SLUG]._anchorMonth;if(m)console.log(m)")"
           args=(); [ -n "$month" ] && args=(--anchor-month "$month")
-          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/sidecars" "${args[@]}" 2>&1 | tee "$OUT/backfill.log"
+          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/sidecars" --shapes "${args[@]}" 2>&1 | tee "$OUT/backfill.log"
       - name: Upload the report
         if: always()
         uses: actions/upload-artifact@v4
