@@ -1,4 +1,5 @@
 import { agencyInSentence } from '../../shared/agencyArticle';
+import { MAP_PILE_PAPER } from '../../shared/rules/colours';
 
 interface MapFrame {
   agency: string;
@@ -48,7 +49,7 @@ export default function FrequentServiceMapPile() {
   // Paint order is the pile order (Toronto last, so on top); the frame list stays the source of the agencies and sources.
   const frames = [...publishedMapFrames].sort((a, b) => pileOrder.indexOf(slugOf(a)) - pileOrder.indexOf(slugOf(b)));
   return (
-    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#e9e6df]">
+    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)]" style={{ backgroundColor: MAP_PILE_PAPER }}>
       <div className="relative aspect-[12/7]">
         {frames.map((frame, index) => {
           const spot = pileSpots[slugOf(frame)];
@@ -58,7 +59,7 @@ export default function FrequentServiceMapPile() {
               src={frame.image}
               alt={`Published system map from ${agencyInSentence(frame.agency)}.`}
               loading="lazy"
-              className="absolute rounded-[2px] border-[5px] border-white object-cover shadow-[0_2px_6px_rgba(0,0,0,0.2)]"
+              className="absolute rounded-[2px] border-[5px] border-white object-cover"
               style={{ left: `${spot.left}%`, top: `${spot.top}%`, width: `${spot.width}%`, aspectRatio: spot.ratio, transform: `rotate(${spot.turn}deg)`, zIndex: index + 1 }}
             />
           );

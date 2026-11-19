@@ -88,7 +88,7 @@ export default function DiagnosticsPerformancePage() {
     { label: 'Captured', value: new Date().toLocaleTimeString() },
   ];
   const factColumns: DataTableColumn<(typeof facts)[number]>[] = [
-    { key: 'label', header: 'This page', rowHeader: true, width: 16, className: 'font-normal', cell: f => f.label },
+    { key: 'label', header: 'This Page', rowHeader: true, width: 16, className: 'font-normal', cell: f => f.label },
     { key: 'value', header: 'Value', cell: f => f.value },
   ];
   const metricColumns: DataTableColumn<PerformanceMetric>[] = [
@@ -104,9 +104,9 @@ export default function DiagnosticsPerformancePage() {
       <div className="mt-6">
         <Pill tone="outline" size="segment" onClick={() => window.location.reload()}>Reload and measure</Pill>
       </div>
-      <PageSection id="performance-page" title="This page">
+      <PageSection id="performance-page" title="This Page">
         <PageTable>
-          <DataTable layout="page" caption="This page" columns={factColumns} rows={facts} rowKey={f => f.label} />
+          <DataTable layout="page" caption="This Page" columns={factColumns} rows={facts} rowKey={f => f.label} />
         </PageTable>
       </PageSection>
       <PageSection id="performance-metrics-heading" title="Timings" intro="Use the reload button for a fresh navigation measurement. These timings are local browser measurements; production also reports Vercel Speed Insights.">
