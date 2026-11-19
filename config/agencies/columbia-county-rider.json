@@ -1,0 +1,25 @@
+{
+  "slug": "columbia-county-rider",
+  "officialName": "Columbia County Rider",
+  "websiteUrl": "https://nwconnector.org/agencies/columbia-county-rider/",
+  "center": [
+    45.87,
+    -122.81
+  ],
+  "feedUrl": "https://oregon-gtfs.trilliumtransit.com/gtfs_data/columbiacounty-or-us/columbiacounty-or-us.zip",
+  "region": "Oregon",
+  "mdbFeedUrl": "https://files.mobilitydatabase.org/tld-4210/latest.zip",
+  "bbox": [
+    45.5165,
+    -122.9376,
+    46.0898,
+    -122.6773
+  ],
+  "cities": [
+    "St. Helens, Oregon",
+    "Scappoose, Oregon",
+    "Rainier, Oregon"
+  ],
+  "timezone": "America/Los_Angeles",
+  "hiddenInProduction": true
+}
