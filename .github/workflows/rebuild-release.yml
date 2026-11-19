@@ -284,6 +284,13 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RO_SECRET_ACCESS_KEY }}
 
+      # CIV-1913 research only (this branch is never merged): split-period counts.
+      - name: Count CIV-1913 split periods
+        if: always() && steps.summary.outputs.report == 'true'
+        run: |
+          npx tsx scripts/research-civ1913-split-periods.ts tmp/derived-reprocess
+          cat tmp/civ1913/summary.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload the reprocess report and release diff
         if: always()
         uses: actions/upload-artifact@v7
@@ -291,6 +298,7 @@ jobs:
           name: rebuild-report-dry-run-${{ github.run_id }}
           path: |
             tmp/derived-reprocess/report.json
+            tmp/civ1913/*
             tmp/derived-reprocess/period-figures.json
             tmp/derived-reprocess/build-settings.json
             tmp/release-diff/*.md
