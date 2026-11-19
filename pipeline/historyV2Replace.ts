@@ -12,14 +12,16 @@
  * Pure: no R2 access.
  */
 import { createHash } from 'node:crypto';
+import { PERIOD_KEYS } from '../shared/config.js';
 
 /**
  * How much of a published sidecar an approval lets a replacement change:
  * - 'weekend': only added weekend p / t / tp (checkWeekendOnlyAddition);
  * - 'full': the routes object may change entirely (today's code on every field), every top-level field stays
- *   byte-identical (checkFullReplacement).
+ *   byte-identical (checkFullReplacement);
+ * - 'add-noTripPeriods': only a CIV-471 noTripPeriods list added to routes that had none (checkNoTripAddition).
  */
-export type ReplacementMode = 'weekend' | 'full';
+export type ReplacementMode = 'weekend' | 'full' | 'add-noTripPeriods';
 
 /**
  * Ticket -> the one agency slug it approves, and how much may change. CIV-1430: Ryan first chose "1" (weekend fields
@@ -27,6 +29,25 @@ export type ReplacementMode = 'weekend' | 'full';
  * right?", then "1"), each file backed up first, all periods in one run ("But bunch the reruns together").
  */
 export const APPROVED_REPLACEMENTS: Readonly<Record<string, { slug: string; mode: ReplacementMode }>> = { 'CIV-1430': { slug: 'mbta', mode: 'full' } };
+
+/**
+ * CIV-1850: one ticket for the add-only no-trips backfill over every agency with published sidecars (manager-approved
+ * pass criteria, 2026-11-18). Add-only, so it can never change a published value; Ryan's go is still needed per run.
+ */
+export const APPROVED_NOTRIP_ADDITIONS: Readonly<Record<string, readonly string[]>> = {
+  'CIV-1850': [
+    'bigbluebus', 'brampton', 'cta', 'hart', 'kingcountymetro', 'lynx', 'mbta', 'mta-bus-company', 'nyct-bus-bronx',
+    'nyct-bus-brooklyn', 'nyct-bus-manhattan', 'nyct-bus-queens', 'nyct-bus-si', 'nyct-subway', 'port-authority-pa',
+    'septa', 'translink', 'trimet', 'ttc', 'votran', 'winnipeg',
+  ],
+  // CIV-1862: the same agencies, each period re-read from a re-downloaded source feed; the flag goes only on routes the
+  // pinned rebuild reproduces exactly (manager, 2026-11-18). Same add-only check.
+  'CIV-1862': [
+    'bigbluebus', 'brampton', 'cta', 'hart', 'kingcountymetro', 'lynx', 'mbta', 'mta-bus-company', 'nyct-bus-bronx',
+    'nyct-bus-brooklyn', 'nyct-bus-manhattan', 'nyct-bus-queens', 'nyct-bus-si', 'nyct-subway', 'port-authority-pa',
+    'septa', 'translink', 'trimet', 'ttc', 'votran', 'winnipeg',
+  ],
+};
 
 /** Weekend fields a replacement may add. */
 export const ADDABLE_WEEKEND_FIELDS = ['p', 't', 'tp'] as const;
@@ -38,6 +59,10 @@ export function approvedSlugFor(ticket: string): string | null {
 
 /** Throws unless `ticket` approves replacements for exactly `slug`; returns the approved mode. */
 export function assertReplacementApproved(ticket: string, slug: string): ReplacementMode {
+  if (Object.prototype.hasOwnProperty.call(APPROVED_NOTRIP_ADDITIONS, ticket)) {
+    if (!APPROVED_NOTRIP_ADDITIONS[ticket].includes(slug)) throw new Error(`--replace-approved ${ticket} does not cover ${slug}`);
+    return 'add-noTripPeriods';
+  }
   const approved = approvedSlugFor(ticket);
   if (!approved) throw new Error(`--replace-approved ${ticket}: no such approval (known: ${Object.keys(APPROVED_REPLACEMENTS).join(', ')})`);
   if (approved !== slug) throw new Error(`--replace-approved ${ticket} covers only ${approved}, not ${slug}`);
@@ -142,7 +167,48 @@ export function checkFullReplacement(oldBody: string, newBody: string): Replacem
 
 /** The check an approval's mode applies. */
 export function checkReplacement(mode: ReplacementMode, oldBody: string, newBody: string): ReplacementCheck {
+  if (mode === 'add-noTripPeriods') return checkNoTripAddition(oldBody, newBody);
   return mode === 'full' ? checkFullReplacement(oldBody, newBody) : checkWeekendOnlyAddition(oldBody, newBody);
+}
+
+const blankValue = (v: unknown) => v === null || v === undefined;
+
+/**
+ * CIV-1850 (mode 'add-noTripPeriods'): the new sidecar is the old one plus a noTripPeriods list on some routes, and
+ * nothing else. The old body must be compact and hold no noTripPeriods anywhere; each added list is non-empty, of
+ * known periods, no repeats, and only on periods the route shows no number for (rep.p and rep.tp blank). Removing
+ * the added lists must give the old body back byte for byte.
+ */
+export function checkNoTripAddition(oldBody: string, newBody: string): ReplacementCheck {
+  let oldJson: unknown;
+  let newJson: unknown;
+  try { oldJson = JSON.parse(oldBody); newJson = JSON.parse(newBody); } catch {
+    return { ok: false, added: [], changes: [], reason: 'not valid JSON' };
+  }
+  if (!isObj(oldJson) || !isObj(newJson) || !isObj(oldJson.routes) || !isObj(newJson.routes)) {
+    return { ok: false, added: [], changes: diffJson(oldJson, newJson), reason: 'not a sidecar (no routes object)' };
+  }
+  if (JSON.stringify(oldJson) !== oldBody) return { ok: false, added: [], changes: [], reason: 'the published sidecar is not compact JSON' };
+  if (Object.values(oldJson.routes).some(r => isObj(r) && r.noTripPeriods !== undefined)) {
+    return { ok: false, added: [], changes: [], reason: 'the published sidecar already records noTripPeriods' };
+  }
+  const stripped = JSON.parse(newBody) as Obj;
+  for (const [route, rec] of Object.entries(stripped.routes as Obj)) {
+    if (!isObj(rec) || rec.noTripPeriods === undefined) continue;
+    const list = rec.noTripPeriods;
+    if (!Array.isArray(list) || list.length === 0 || list.some(p => !(PERIOD_KEYS as readonly unknown[]).includes(p)) || new Set(list).size !== list.length) {
+      return { ok: false, added: [], changes: [], reason: `routes.${route}.noTripPeriods must be a non-empty list of known periods` };
+    }
+    const rep = isObj(rec.rep) ? rec.rep : {};
+    const p = isObj(rep.p) ? rep.p : {};
+    const tp = isObj(rep.tp) ? rep.tp : {};
+    const valued = (list as string[]).filter(k => !blankValue(p[k]) || !blankValue(tp[k]));
+    if (valued.length) return { ok: false, added: [], changes: [], reason: `routes.${route} flags ${valued.join(', ')} but shows a number there` };
+    delete rec.noTripPeriods;
+  }
+  if (JSON.stringify(stripped) === oldBody) return { ok: true, added: [], changes: [] };
+  const changes = diffJson(oldJson, newJson).filter(c => !/^routes\.[^.]+\.noTripPeriods/.test(c.path));
+  return { ok: false, added: [], changes, reason: changes.length ? `a field other than noTripPeriods differs (first: ${changes[0].path})` : 'bytes differ outside the added noTripPeriods (key order or number formatting)' };
 }
 
 export function sha256Hex(body: string): string {

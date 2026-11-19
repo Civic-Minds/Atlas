@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
+  monthAnchor,
   DAY_NAMES, buildServiceDayTable, pickServiceWeek, serviceAnchor, splitServicePeriods,
   type ServiceDayTableInput,
 } from '../serviceDays';
@@ -704,5 +705,19 @@ describe('pickServiceWeek: inputs from the existing tests', () => {
     expect(week.weekStart).toBe('20181217');
     for (const day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const) expect(week.services[day]).toEqual(['MAIN']);
     expect(skippedDates(week)).toEqual(['20181224', '20181225', '20181226', '20190101']);
+  });
+});
+
+describe('monthAnchor (CIV-536)', () => {
+  it('is the first Monday on or after the 1st, when that whole week is in the feed', () => {
+    expect(monthAnchor(2018, 10, '20180401', '20181013')).toBe('20181001');
+    expect(monthAnchor(2016, 10, '20160327', '20170325')).toBe('20161003');
+    expect(monthAnchor(2023, 10, '20231001', '20240330')).toBe('20231002');
+  });
+  it('is null when the feed misses that week, or the month is bad', () => {
+    expect(monthAnchor(2018, 10, '20180401', '20181005')).toBeNull();
+    expect(monthAnchor(2021, 10, '20211005', '20220402')).toBeNull();
+    expect(monthAnchor(2021, 13, '20210101', '20221231')).toBeNull();
+    expect(monthAnchor(2021, 10, undefined, '20221231')).toBeNull();
   });
 });

@@ -1,0 +1,18 @@
+{
+  "nashvillemta": {
+    "_anchorMonth": 10,
+    "_note": "CIV-536: one fall feed a year. 2015-2023 from the OpenMobilityData (TransitFeeds) archive, 2024-2026 from the Mobility Database (mdb-360). Each period reads the first full October week of its year (manager, 2026-11-18: match existing History, mostly Sep-Dec). Research: Atlas-worktrees/_reports/CIV-536-wego-history.md.",
+    "20150928": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20150928/gtfs.zip",
+    "20160915": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20160915/gtfs.zip",
+    "20170925": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20170925/gtfs.zip",
+    "20181002": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20181002/gtfs.zip",
+    "20190927": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20190927/gtfs.zip",
+    "20201021": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20201021/gtfs.zip",
+    "20211004": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20211004/gtfs.zip",
+    "20220923": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20220923/gtfs.zip",
+    "20231004": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/nashville-mta/220/20231004/gtfs.zip",
+    "20241007": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202410070004/mdb-360-202410070004.zip",
+    "20250920": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202509200102/mdb-360-202509200102.zip",
+    "20261001": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202610010139/mdb-360-202610010139.zip"
+  }
+}

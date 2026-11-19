@@ -59,7 +59,7 @@ function ymdOf(day: number): string {
 function dayIndex(day: number): number {
   return (new Date(day * 86400000).getUTCDay() + 6) % 7;
 }
-const isYmd = (s: string | undefined): s is string => !!s && /^\d{8}$/.test(s);
+const isYmd = (s: string | null | undefined): s is string => !!s && /^\d{8}$/.test(s);
 
 /**
  * The anchor every reading starts from: the day after the run, in the pipeline's time zone
@@ -108,6 +108,20 @@ export function firstFullWeekAnchor(input: Pick<ServiceDayTableInput, 'calendar'
 const MIN_DAYS_IN_FORCE = 4;
 /** firstFullWeekAnchor: weeks searched for one in force before falling back to the first Monday. */
 const MAX_ANCHOR_WEEKS = 60;
+/**
+ * CIV-536: the Monday of the first full week of a month (the first Monday on or after the 1st), when the whole week
+ * lies inside the feed's service dates; else null. backfill-history-v2 --anchor-month reads that week, so every
+ * period of an agency compares the same season (existing History is mostly Sep-Dec).
+ */
+export function monthAnchor(year: number, month: number, feedStart: string | null | undefined, feedEnd: string | null | undefined): string | null {
+  if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) return null;
+  const first = dayNumber(`${year}${String(month).padStart(2, '0')}01`);
+  const monday = first + ((7 - dayIndex(first)) % 7);
+  if (!isYmd(feedStart) || !isYmd(feedEnd)) return null;
+  if (monday < dayNumber(feedStart) || monday + 6 > dayNumber(feedEnd)) return null;
+  return ymdOf(monday);
+}
+
 
 export interface ServiceDay {
   date: string;

@@ -39,10 +39,10 @@ export function useLiveFeeds(active: boolean, visibleSlugs: string[], visibleSlu
     try {
       const res = await fetch(`/api/live-vehicles?agency=${slug}`);
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
+        const errData = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(errData.error || "Can’t reach this feed right now.");
       }
-      const data = await res.json();
+      const data = (await res.json()) as { vehicles?: any[]; headways?: Record<string, { gapMin: number; samples: number }>; degraded?: boolean; degradedReason?: string };
       if (!inView.current.has(slug)) return;
       const tagged: LiveVehicle[] = (data.vehicles || []).map((v: any) => ({ ...v, agencySlug: slug }));
       // Skip React updates when poll returns the same map-relevant vehicle state

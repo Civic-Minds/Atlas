@@ -157,7 +157,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   useEffect(() => {
     if (!FEATURES.history || historyAgencies || !open) return;
     fetch(`${R2_PUBLIC_URL}/atlas/history-config.json`)
-      .then(r => r.json())
+      .then(r => r.json() as Promise<HistoryAgencySummary[]>)
       .then((d: HistoryAgencySummary[]) => setHistoryAgencies(d))
       .catch(() => setHistoryAgencies([]));
   }, [historyAgencies, open]);

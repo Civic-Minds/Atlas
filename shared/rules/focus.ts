@@ -1,8 +1,11 @@
 /**
  * The focus list in one place (CIV-1866, from CIV-1865 and docs/product/STRATEGY.md "Focus cities and agencies"): the
- * places Live, History, Studio, the vehicles-needed figures and the MCP's pilot go deep in first. Imports nothing, so
- * the app, the scripts, the Worker and the tests all read it. Add an agency here, not in a copy elsewhere.
+ * places Live, History, Studio, the vehicles-needed figures and the MCP's pilot go deep in first. Imports only the
+ * archive shard list (no app code), so the app, the scripts, the Worker and the tests all read it. Add an agency here,
+ * not in a copy elsewhere; which agencies are recorded comes from the shards (CIV-1899).
  */
+
+import { RECORDING_SLUGS } from '../liveArchiveFeeds.js';
 
 export interface FocusArea {
   slug: string;
@@ -32,12 +35,11 @@ export const STUDIO_DEFAULT_AGENCY = 'kingston';
  * from here, or when an agency or consultant asks for it; the main map and History have no such limit.
  */
 export const PRODUCT_FOCUS = {
-  /** Recorded every minute: TTC and Hamilton, plus Kingston for Studio only. */
-  live: ['ttc', 'hamilton', 'kingston'],
+  /** Recorded every minute (TTC and Hamilton, plus Kingston for Studio only): the archive shards marked `recording`. */
+  live: RECORDING_SLUGS,
   /** Agencies with a Schedule Changes file. */
   studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
   /** Agencies with a buses-needed file. Local and regional bus only. */
   vehiclesNeeded: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
 } as const satisfies Record<string, readonly string[]>;
 
-export type FocusProduct = keyof typeof PRODUCT_FOCUS;

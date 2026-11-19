@@ -210,7 +210,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
   if (!remote) log('remote state unknown (no credentials; dry-run listing skipped)');
   for (const i of scan.items) {
     const verb = i.state === 'new' ? 'put (new)' : i.state === 'identical' ? 'no-op (identical)'
-      : i.state === 'replace' ? `REPLACE (${ticket}: ${mode === 'full' ? `full, ${i.check!.changes.length} route field(s) differ` : `adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}`}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
+      : i.state === 'replace' ? `REPLACE (${ticket}: ${mode === 'full' ? `full, ${i.check!.changes.length} route field(s) differ` : mode === 'add-noTripPeriods' ? 'adds the no-trips flag only' : `adds weekend fields only ${JSON.stringify(countAdded(i.check!.added))}`}; backup ${replacementBackupKey(ticket!, i.key, i.existing!)})`
       : i.state === 'conflict' ? (i.check ? `CONFLICT (${ticket} refused: ${i.check.reason})` : 'CONFLICT (differs, never overwritten)') : 'put or no-op (state unknown)';
     log(`  ${i.key}  ${i.bytes} bytes  ${verb}`);
     if (i.state === 'conflict' && i.check) for (const c of i.check.changes.slice(0, 20)) log(`      ${c.path}: ${c.before ?? '(absent)'} -> ${c.after ?? '(absent)'}`);

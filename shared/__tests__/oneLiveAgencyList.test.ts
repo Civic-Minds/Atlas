@@ -36,10 +36,15 @@ describe('one list of live agencies (CIV-1691)', () => {
     expect(named.map(f => relative(ROOT, join(ROOT, f)))).toEqual([]);
   });
 
+  // CIV-1899: the focus areas are places (a region's agencies, live or not), not a list of live agencies; only that block is
+  // skipped. Which agencies are recorded comes from the archive shards, so the rest of focus.ts is checked like any file.
+  const withoutFocusAreas = (f: string, text: string) =>
+    f === 'shared/rules/focus.ts' ? text.replace(/export const FOCUS_AREAS[\s\S]*?\n\];/, '') : text;
+
   it('has no hand-typed array or set of live agency slugs', () => {
     const lists = code.filter(f => {
-      const text = readFileSync(join(ROOT, f), 'utf8');
-      for (const m of text.matchAll(/(\[|new Set\(\[)([^\]\n]{0,200})\]/g)) {
+      const text = withoutFocusAreas(f, readFileSync(join(ROOT, f), 'utf8'));
+      for (const m of text.matchAll(/(\[|new Set\(\[)([^\]]{0,400})\]/g)) {
         if (LIVE_AGENCY_SLUGS.filter(slug => quoted(slug).test(m[2])).length >= 2) return true;
       }
       return false;

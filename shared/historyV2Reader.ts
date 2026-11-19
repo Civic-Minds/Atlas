@@ -22,6 +22,7 @@
  */
 import type { HistoryDayValue, HistoryFlag, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar } from './historyV2.js';
 import { yearOfRefDate } from './historyV2.js';
+import { PERIOD_KEYS } from './config.js';
 
 export type { HistoryFlag, HistoryShapeLine, HistoryShapesFile, HistorySnapshotV2, HistoryV2Sidecar };
 
@@ -108,6 +109,13 @@ function checkDay(v: unknown, path: string): HistoryV2Error | null {
   return null;
 }
 
+/** CIV-1850: absent, or a non-empty list of known periods with no repeats. */
+function checkNoTripPeriods(v: unknown, path: string): HistoryV2Error | null {
+  if (v === undefined) return null;
+  return Array.isArray(v) && v.length > 0 && v.every(p => (PERIOD_KEYS as readonly unknown[]).includes(p)) && new Set(v).size === v.length ? null
+    : { code: 'bad-field', path, message: 'noTripPeriods must be a non-empty list of known periods' };
+}
+
 function checkFlag(v: unknown, path: string): HistoryV2Error | null {
   return v === undefined || (typeof v === 'string' && FLAGS.includes(v)) ? null
     : { code: 'bad-field', path, message: 'flag must be fast, slow or limited' };
@@ -125,7 +133,8 @@ export function parseHistoryV2Sidecar(input: unknown): HistoryV2Result<HistoryV2
   for (const [key, route] of Object.entries(input.routes)) {
     const base = `routes.${key}`;
     if (!isObj(route)) return fail('bad-field', base, 'route must be an object');
-    const err = checkRep(route.rep, `${base}.rep`) ?? checkDay(route.sat, `${base}.sat`) ?? checkDay(route.sun, `${base}.sun`) ?? checkFlag(route.flag, `${base}.flag`);
+    const err = checkRep(route.rep, `${base}.rep`) ?? checkDay(route.sat, `${base}.sat`) ?? checkDay(route.sun, `${base}.sun`) ?? checkFlag(route.flag, `${base}.flag`)
+      ?? checkNoTripPeriods(route.noTripPeriods, `${base}.noTripPeriods`);
     if (err) return { ok: false, error: err };
   }
   return { ok: true, value: input as unknown as HistoryV2Sidecar };

@@ -1,9 +1,12 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   LIVE_ARCHIVE_SHARDS,
   LIVE_ARCHIVE_POSITION_FEEDS,
   LIVE_ARCHIVE_TRIP_FEEDS,
   LIVE_ARCHIVE_BUCKET_BY_SLUG,
+  RECORDING_SLUGS,
 } from '../liveArchiveFeeds';
 import {
   LIVE_TRIP_UPDATES_FEEDS,
@@ -50,5 +53,21 @@ describe('liveArchiveFeeds', () => {
     expect(pos!.apiKeyHeader).toBeUndefined();
     expect(trip!.url).toContain('gtfs.halifax.ca');
     expect(pos!.url).toContain('gtfs.halifax.ca');
+  });
+});
+
+// CIV-1899: Studio's "Recording" comes from the shards marked `recording`; each must be a Worker with a cron, and the
+// rest must have none, so the label can't drift from what is actually recorded.
+describe('recording shards match the archiver Workers', () => {
+  const dir = join(import.meta.dirname, '..', '..', 'workers', 'gtfs-rt-archiver');
+  const crons = new Map(readdirSync(dir).filter(f => /^wrangler.*\.toml$/.test(f)).map(f => {
+    const text = readFileSync(join(dir, f), 'utf8');
+    return [text.match(/ARCHIVE_SHARD = "([^"]+)"/)![1], /^\s*crons\s*=\s*\[\s*"/m.test(text)] as const;
+  }));
+  it('marks exactly the shards whose Worker has a cron trigger', () => {
+    for (const s of LIVE_ARCHIVE_SHARDS) expect(crons.get(s.id), s.id).toBe('recording' in s && s.recording === true);
+  });
+  it('records TTC, Hamilton and Kingston', () => {
+    expect([...RECORDING_SLUGS].sort()).toEqual(['hamilton', 'kingston', 'ttc']);
   });
 });

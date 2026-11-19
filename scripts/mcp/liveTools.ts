@@ -69,7 +69,7 @@ function weekAtCutoffs<T extends WeekWithCounts>(w: T, cut: Cutoffs, custom: Arr
 }
 
 /** The Live tools (CIV-1860). The hosted pilot hides them until Ryan decides whether testers see Live figures. */
-export const LIVE_TOOLS: readonly string[] = ['route_reliability', 'route_bunching'];
+export const LIVE_TOOLS: readonly string[] = ['route_reliability', 'route_bunching', 'route_now'];
 
 export const liveHandlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   route_reliability: async ({ agency: q, route, period: p, late_after_min, early_before_min }) => {

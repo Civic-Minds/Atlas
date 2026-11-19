@@ -116,7 +116,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
     fetch(`${R2_PUBLIC_URL}/atlas/night-service.json`, { cache: 'no-store' })
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
+        return r.json() as Promise<NightServiceIndexFile>;
       })
       .then((json: NightServiceIndexFile) => {
         setData(json);

@@ -28,6 +28,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.11.0 | 2026-11-18 | Live tools cover every agency Live records: each answer states the agency's limits (days kept, routes covered, earliest date figures can appear); figures switch on by themselves once a route has 4 good days in a week (CIV-1860) |
 | 0.11.1 | 2026-11-18 | One shared calculation with the app and Studio (CIV-1864): routes_near uses the map's 500 m nearby radius (was 250 m); route lookup uses the map's search rule ("1" finds route 01); right-now questions get a planner-shaped answer (no current figures yet, never a single vehicle); tool code split by job |
 | 0.12.0 | 2026-11-18 | Planners' own cut-offs (CIV-1869): route_reliability takes late_after_min and early_before_min, route_bunching takes bunched_within_min and gapped_factor; each figure at a custom cut-off comes in atYourCutoffs with the cut-off in words beside it, the standard figures stay, rankings stay on the standard cut-offs |
+| 0.13.0 | 2026-11-18 | route_now (CIV-1870, local server only): bunching and gaps on a route right now, from Live's last half hour of vehicle readings, measured at stops against each stop's scheduled gap, with the time of the reading; stops no vehicle passed are named apart, never called a gap |
 
 ## Questions
 
@@ -360,4 +361,15 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 - Tool calls on a local copy of the private Live files: 3-minute late and 1-minute early on one route return atYourCutoffs with the cut-off worded beside each figure; 4-minute bunched and 3 times gapped return both separately with no combined share; a ranking with a custom cut-off stays on the standard and says so; 5.3 minutes is refused ("in steps of 0.5"), never rounded.
 - Files built before CIV-1869 have no counts: a custom cut-off then says Atlas has no figure at that cut-off yet.
 - Golden comparison with no cut-offs given (34 calls, disk and split stores): 0 changed. The test questions CC1 to CC6 (QUESTIONS.md) run in the next locked-down and normal round, once the private Live files are rebuilt with counts.
+
+## 2026-11-18: route_now (CIV-1870, 0.13.0), on saved readings
+
+- Source: the Live recorder's position readings (one a minute), read from saved copies of the TTC 504 archive (positions/<slug>/<date>/<seconds>.json layout) with ATLAS_MCP_NOW_AT; the read-only R2 token isn't made yet, so no R2 reads.
+- Five half hours (Nov 12 8 AM, Nov 13 4:30 and 6 PM, Nov 16 5 and 6 PM), disk and split stores alike:
+  - 14 to 18 vehicles moving per direction, 2 to 6 standing.
+  - Bunched over the half hour: 34% to 51% of gaps at stops (the 504's weekly PM peak is 30%, AM similar); the closest pairs were two distinct streetcars running together (checked by vehicle id).
+  - Gapped over the half hour: 0% to 7% (weekly PM peak 10%).
+  - Every half hour named 16 to 19 stops on Queen St West and Spadina where no vehicle passed: Atlas's 504 stop list runs that way, the recorded streetcars ran on King. Shown as noneSeen, not as a gap.
+- Unit tests: two branches on a shared trunk, waits against each stop's own scheduled gap, no-vehicle stops, a stale reading, a feed with no direction, custom cut-offs.
+- Not yet run: the RN1 to RN8 questions locked and normal (route_now needs the read-only token or a saved-readings server), and Hamilton (route ids differ from the route number; the B-Line check waits for real readings).
 

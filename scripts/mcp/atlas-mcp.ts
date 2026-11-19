@@ -34,7 +34,9 @@ if (liveDir) {
 }
 
 const { localHandlers } = await import('./localTools');
-const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = { ...tools.handlers, ...localHandlers };
+// route_now (CIV-1870) reads the Live recorder's snapshots: local only for now.
+const { liveNowHandlers } = await import('./liveNowTools');
+const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = { ...tools.handlers, ...localHandlers, ...liveNowHandlers };
 // Every tool's definition, the local ones included.
 const TOOLS = tools.TOOLS;
 
