@@ -7,7 +7,7 @@
     50.3678,
     3.0805
   ],
-  "feedUrl": "https://static.data.gouv.fr/resources/eveole-douai-reseau-bus-du-syndicat-mixte-des-transports-du-douaisis-smtd/20260707-151337/gtfs-du-060726-au-030127.zip",
+  "feedUrl": "https://www.data.gouv.fr/api/1/datasets/r/99cf5e2f-87c2-4ff1-bc0d-32f04cc213ab",
   "mdbFeedUrl": null,
   "hiddenInProduction": true,
   "pmtilesPending": true,
