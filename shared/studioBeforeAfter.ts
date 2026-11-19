@@ -6,6 +6,7 @@
  */
 import { PERIOD_KEYS, type PeriodKey } from './config';
 import { frequencyChange } from './frequencyChange';
+import { pairChanges, routePairKey } from './scheduleChangePairing';
 import type { DayType } from './dayTypes';
 
 /** One route on the compared day, on one side. Minutes after midnight for first/last (past 1440 runs into the night). */
@@ -184,4 +185,19 @@ export function studioBeforeAfterFile(cmp: StudioComparisonInput, sides?: { befo
     unchanged: cmp.unchanged,
     ...(sides && day ? { lines: { before: sideLines(sides.before, day), after: sideLines(sides.after, day) } } : {}),
   };
+}
+
+/**
+ * Studio's page reads the file through this (CIV-1868): a route written differently in the two schedules ("KING", "King")
+ * is one changed route, not one removed and one added, the same pairing the MCP's schedule_changes uses
+ * (shared/scheduleChangePairing.ts). The paired route's older lines move under its newer name so the map still draws both.
+ */
+export function pairedStudioFile(file: StudioBeforeAfterFile): StudioBeforeAfterFile {
+  const addedByKey = new Map(file.changes.filter(c => !c.before && c.after).map(c => [routePairKey(c.route), c.route] as const));
+  const renamed = file.changes.filter(c => c.before && !c.after).map(c => [c.route, addedByKey.get(routePairKey(c.route))] as const).filter((p): p is readonly [string, string] => !!p[1] && p[1] !== p[0]);
+  const changes = pairChanges(file.changes).map(c => (c.before && c.after ? { ...c, size: changeSize(c.before, c.after) } : c)).sort(byRoute);
+  if (!file.lines || !renamed.length) return { ...file, changes };
+  const before = { ...file.lines.before };
+  for (const [oldName, newName] of renamed) if (before[oldName]) { before[newName] = before[oldName]; delete before[oldName]; }
+  return { ...file, changes, lines: { ...file.lines, before } };
 }

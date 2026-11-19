@@ -14,7 +14,7 @@ import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
 import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
-import { studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
+import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, vehiclesTitleText } from '../../../shared/studioWording';
 import { StudioRouteTable, routeTitle } from './StudioRouteTable';
@@ -121,7 +121,8 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
   const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
   const [period, setPeriod] = useState<PeriodKey>(DEFAULT_PERIOD);
-  const ready = file && file !== 'missing' ? file : null;
+  // CIV-1868: a route written differently in the two schedules is one changed route (the MCP's pairing).
+  const ready = useMemo(() => (file && file !== 'missing' ? pairedStudioFile(file) : null), [file]);
   // The times of day either file has figures for.
   const periods = PERIOD_KEYS.filter(k => (vehicles && vehicles !== 'missing' && vehicles.periods[k]?.length)
     || (ready && ready.changes.some(c => c.before?.headway[k] != null || c.after?.headway[k] != null)));
