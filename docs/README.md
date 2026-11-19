@@ -99,6 +99,14 @@ Read first: [Decisions](product/DECISIONS.md) to check the behavior is not inten
 | [Branch and deployment workflow](engineering/BRANCH_WORKFLOW.md) | Open before you start a branch or worktree, before a version cut (What's new entry), or when a deployment looks stale. |
 | [Pipeline studies index](engineering/pipeline-studies/INDEX.md) | Open before you start an internal pipeline study. |
 | [CIV-845 evenness evidence](engineering/pipeline-studies/civ-845-evenness/README.md) | Open when you need the replay scripts and outputs behind the #1086 "Everything tried" log. |
+| [CIV-1959 technical appendix (draft)](engineering/pipeline-studies/civ-845-evenness/civ1959/github-appendix.md) | Open when you need the replay method and numbers behind the CIV-1959 "even enough" proposal. |
+| [CIV-1959 per-attempt comment drafts](engineering/pipeline-studies/civ-845-evenness/civ1959/github-comment-drafts.md) | Open when you need the per-attempt replay results drafted for the #1086 log. |
+| [CIV-1959 proposal](engineering/pipeline-studies/civ-845-evenness/civ1959/linear-proposal.md) | Open when you need the proposed single definition of "even enough" and the problem it fixes. |
+| [CIV-1957 nine stop cells traced](engineering/pipeline-studies/civ-845-evenness/dryrun-diff/civ-1957-nine-cells.md) | Open when you need why nine stop cells changed between the CIV-1957 baseline and candidate. |
+| [CIV-1957 dry-run diff (pair)](engineering/pipeline-studies/civ-845-evenness/dryrun-diff/civ-1957-stops-pair.md) | Open when you need the CIV-1957 candidate compared with itself as a replay sanity check. |
+| [CIV-1957 dry-run diff vs CIV-1934](engineering/pipeline-studies/civ-845-evenness/dryrun-diff/civ-1957-vs-baseline.md) | Open when you need the CIV-1957 replay diff against the CIV-1934 baseline. |
+| [CIV-1934 dry-run diff vs baseline](engineering/pipeline-studies/civ-845-evenness/dryrun-diff/test-baseline-vs-1934.md) | Open when you need the CIV-1934 replay diff against the original baseline. |
+| [CIV-845 original scratch README](engineering/pipeline-studies/civ-845-evenness/original-scratch-README.md) | Open when you need the original run notes for the CIV-845 / CIV-1957 evidence re-run. |
 | [Pipeline study template](engineering/pipeline-studies/EXPERIMENT_TEMPLATE.md) | Open when you start a new pipeline experiment and need the blank template. |
 
 ## Reference, plans and research
