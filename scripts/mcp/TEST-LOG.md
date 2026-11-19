@@ -2,7 +2,7 @@
 
 What the Atlas Studio MCP server ([README](README.md)) answered to the questions in [QUESTIONS.md](QUESTIONS.md), round by round. Rerun all of them after every change to the server, and add a dated section with the results checked against Atlas data.
 
-The quick check comes first: `node scripts/mcp/figureCheck.mjs` asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
+The quick check comes first: `npm run check:mcp-figures` (`node scripts/mcp/figureCheck.mjs`) asks the server a fixed set of questions and compares key figures with the hand-checked numbers below, in about 20 seconds (from a worktree, set `ATLAS_ROOT` to the main checkout; `--published-only` for the hosted version). A full round still follows any change to tool answers.
 
 ## Versions
 
