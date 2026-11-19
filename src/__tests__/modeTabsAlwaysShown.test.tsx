@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter, useLocation } from 'react-router';
 import { useEffect } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,16 +7,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 let mapMounts = 0;
 // The agency list the map loads from: a new list object makes the real map reload its data.
 const agencyLists = new Set<unknown>();
+// Stands in for the map reporting which agencies are in view as it moves.
+// Layers stay loaded after the map moves on, as the real map's do.
+const loaded: Record<string, unknown> = {};
+let moveMapTo: (slugs: string[]) => void = () => {};
 vi.mock('../apps/Interval', () => ({
-  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onCompareActiveChange, compareTabElsewhere }: {
+  default: function MockInterval({ agencies, onViewportAgencySlugsChange, onLayersChange, onCompareActiveChange, compareTabElsewhere }: {
     agencies?: unknown;
     onViewportAgencySlugsChange?: (slugs: string[]) => void;
+    onLayersChange?: (layers: Record<string, unknown>) => void;
     onCompareActiveChange?: (active: boolean) => void;
     compareTabElsewhere?: () => void;
   }) {
     // The real map turns Compare on at Compare's own address.
     const { pathname } = useLocation();
-    useEffect(() => { mapMounts++; onViewportAgencySlugsChange?.(['nowhere']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => { mapMounts++; moveMapTo = slugs => { for (const slug of slugs) loaded[slug] = { type: 'FeatureCollection', features: [] }; onLayersChange?.({ ...loaded }); onViewportAgencySlugsChange?.(slugs); }; onViewportAgencySlugsChange?.(['nowhere']); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     useEffect(() => { onCompareActiveChange?.(pathname === '/apps/compare'); }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
     agencyLists.add(agencies);
     // With mode transitions on (CIV-1567), the map keeps drawing the Compare tab in Live and History too.
@@ -34,11 +39,13 @@ vi.mock('../../shared/config', async importOriginal => {
 });
 
 import App from '../App';
+import { LIVE_AGENCY_SLUGS } from '../../shared/livePollingConfig';
 
 describe('Live and History tabs where a city has no data (CIV-1861)', () => {
   beforeEach(() => {
     mapMounts = 0;
     agencyLists.clear();
+    for (const k of Object.keys(loaded)) delete loaded[k];
     window.history.replaceState(null, '', '/');
     const store = new Map<string, string>();
     vi.stubGlobal('localStorage', {
@@ -66,5 +73,21 @@ describe('Live and History tabs where a city has no data (CIV-1861)', () => {
     expect(window.location.pathname).toBe('/');
     fireEvent.keyDown(document, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  });
+
+  it('dims and undims as the map moves between a city with Live and History data and one without', async () => {
+    render(<BrowserRouter><App /></BrowserRouter>);
+    const live = await screen.findByRole('button', { name: 'Live' });
+    const history = await screen.findByRole('button', { name: 'History' });
+    expect(live.className).toContain('opacity-50');
+    // Into a city that has both.
+    act(() => moveMapTo(['toronto-x', LIVE_AGENCY_SLUGS[0]]));
+    await waitFor(() => { expect(live.className).not.toContain('opacity-50'); expect(history.className).not.toContain('opacity-50'); });
+    // Away to one that has neither: the tabs grey out again, though the first city's data is still loaded.
+    act(() => moveMapTo(['nowhere']));
+    await waitFor(() => { expect(live.className).toContain('opacity-50'); expect(history.className).toContain('opacity-50'); });
+    // And back.
+    act(() => moveMapTo(['toronto-x']));
+    await waitFor(() => expect(history.className).not.toContain('opacity-50'));
   });
 });

@@ -482,14 +482,6 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     const found = bustangData ? bustangStopFor(bustangData, stop) : null;
     return found && bustangData ? <BustangStopConnections data={bustangData} day={day} within={bustangWithin} stop={found} /> : null;
   }, [bustangData, day, bustangWithin]);
-  const loadedAgencySlugs = useMemo(
-    () => new Set([
-      ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
-      // In-view agencies count before their data arrives, so the Live and History controls do not wait for it.
-      ...viewportAgencySlugs,
-    ]),
-    [layers, viewportAgencySlugs],
-  );
   // One rule for the desktop mode tabs (beta): while any non-map view is on, the unselected tabs
   // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
   const nonMapViewActive = FEATURES.collapseModeTabs
@@ -498,12 +490,14 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // CIV-1861: the Live and History tabs always show when the view is on (never in Studio); over a city without data they
   // are dimmed and tapping one lists the cities that have it.
   const showLiveControl = FEATURES.live && !inStudio;
-  const liveHere = inLive || [...loadedAgencySlugs].some(slug => isLiveEligibleSlug(slug));
+  // "Here" is the agencies in view right now, not every layer ever loaded: scrolling from a city with data to one
+  // without dims the tabs again, and back.
+  const liveHere = inLive || viewportAgencySlugs.some(slug => isLiveEligibleSlug(slug));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
   const showHistoryControl = historyOn && !inStudio;
   const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
-    [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
+    viewportAgencySlugs.some(slug => historyAgencySlugs.has(slug))
   ));
   const [modeNote, setModeNote] = useState<'Live' | 'History' | null>(null);
   const closeModeNote = useCallback(() => setModeNote(null), []);
