@@ -3,6 +3,7 @@ import AtlasLogo from './components/AtlasLogo';
 import Pill from './components/ui/Pill';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { FLOATING_CARD } from './styles';
+import { LOADING_LABEL } from './content/noticeCopy';
 import { BACK_PLACES, backLinkLabel } from './content/backLinks';
 import { useAgencies } from './hooks/useAgencies';
 import { PAGE_NAMES } from '../shared/pageNames';
@@ -67,7 +68,7 @@ export default function StudioCoveragePage() {
       </div>
       <div className="p-6">
         {agenciesLoadState === 'loading' ? (
-          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">Loading…</div>
+          <div className="flex items-center justify-center py-24 text-[var(--text-dim)] text-sm">{LOADING_LABEL}</div>
         ) : agenciesLoadState === 'error' ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3 text-sm text-[var(--text-dim)]">
             <p>Could not load agency data.</p>

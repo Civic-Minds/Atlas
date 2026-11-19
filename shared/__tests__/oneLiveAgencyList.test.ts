@@ -22,6 +22,8 @@ function files(dir: string): string[] {
   });
 }
 
+// The focus list is strategy picks (which agencies to go deeper on, which to record), not the list of live agencies.
+const FOCUS = 'shared/rules/focus.ts';
 const code = ['src', 'shared', 'local-api'].flatMap(files).filter(f => f !== SOURCE && f !== ARCHIVE);
 const quoted = (slug: string) => new RegExp(`['"\`]${slug}['"\`]`);
 
@@ -37,9 +39,9 @@ describe('one list of live agencies (CIV-1691)', () => {
   });
 
   it('has no hand-typed array or set of live agency slugs', () => {
-    const lists = code.filter(f => {
+    const lists = code.filter(f => f !== FOCUS).filter(f => {
       const text = readFileSync(join(ROOT, f), 'utf8');
-      for (const m of text.matchAll(/(\[|new Set\(\[)([^\]\n]{0,200})\]/g)) {
+      for (const m of text.matchAll(/(\[|new Set\(\[)([^\]]{0,400})\]/g)) {
         if (LIVE_AGENCY_SLUGS.filter(slug => quoted(slug).test(m[2])).length >= 2) return true;
       }
       return false;
