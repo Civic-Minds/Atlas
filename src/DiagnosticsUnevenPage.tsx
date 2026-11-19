@@ -1,4 +1,5 @@
 import { MISSING_VALUE } from '../shared/missingValue';
+import { countText } from '../shared/numberText';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAgencies } from './hooks/useAgencies';
 import type { ShapeProperties } from './hooks/useAgencyData';
@@ -175,7 +176,7 @@ export default function DiagnosticsUnevenPage() {
           <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
         </div>
       ) : (
-        <PageSection id="uneven-flagged" title="Flagged directions" intro={`${sorted.length.toLocaleString()} on a ${day.toLowerCase()}.`}>
+        <PageSection id="uneven-flagged" title="Flagged Directions" intro={`${countText(sorted.length)} on a ${day.toLowerCase()}.`}>
           <div className="mt-4 flex gap-1.5">
             {DAY_TYPES.map(d => (
               <Pill key={d} onClick={() => setDay(d)} size="segment" selected={day === d}>{d}</Pill>
