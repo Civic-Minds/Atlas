@@ -4,6 +4,9 @@
  */
 import { clockTime } from '../../shared/timeText';
 import * as data from './atlasData';
+import { agencyNow, isNow, type NowInfo } from './nowClock';
+import type { PeriodKey } from '../../shared/config';
+import type { DayType } from '../../shared/rules/days';
 import { PUBLIC_TIER_MAXES } from '../../shared/rules/frequency';
 import { SITE_URL } from '../../shared/rules/paths';
 import { TIME_PERIODS } from '../../shared/rules/periods';
@@ -76,3 +79,24 @@ export const staleNote = (a: { lastFeedExpiry?: string | null }, ends: string | 
   ? { scheduleWarning: `These trip times come from an older schedule file on this Mac (service to ${isoDate(ends)}); the map's figures use the current one (to ${validThrough(a)}). Times may have changed since.` }
   : {});
 export const windowNote = (w: { label: string; periods: string[] }) => `The window ${w.label} overlaps these Atlas periods: ${w.periods.join(', ')}. Hourly figures are the typical wait in trips leaving that hour.`;
+
+/** The agency's "now" (#1627): its local time, day type and Atlas period, from its own time zone. */
+export async function nowAt(a: { slug: string; name: string }): Promise<NowInfo> { return agencyNow(a, await data.timeZoneOf(a.slug)); }
+/** What "now" used, for the answer, plus a no-service note when nothing is scheduled in this period. */
+export const nowBlock = (n: NowInfo, noService = false) => ({
+  now: { used: n.used, holidays: n.holidays },
+  ...(noService ? { nowNote: `No scheduled service in this part of the day now. The next part of the day is ${n.next.label}; ask about it for the next service.` } : {}),
+});
+/** A period argument that may be "now": the period and day to read, and the "now" used, if any. */
+export async function periodOrNow(a: { slug: string; name: string }, p: unknown, d: unknown): Promise<{ key: PeriodKey; dayType: DayType; now: NowInfo | null }> {
+  if (!isNow(p)) return { key: needPeriod(p), dayType: data.parseDay(d), now: null };
+  const now = await nowAt(a);
+  return { key: now.period, dayType: d != null ? data.parseDay(d) : now.day, now };
+}
+/** A time window that may start "now": the hour from the agency's current time, on the service day's clock (1:30 AM after a weekday is 25:30). */
+export async function windowOrNow(a: { slug: string; name: string }, args: Args): Promise<{ w: ReturnType<typeof window>; now: NowInfo | null }> {
+  if (!isNow(args.from_time) && !isNow(args.to_time)) return { w: window(args), now: null };
+  const now = await nowAt(a);
+  const start = now.minutes, end = now.minutes + 60;
+  return { w: { start, end, label: `${clockTime(start)}–${clockTime(end)}`, periods: data.periodsIn(start, end) }, now };
+}

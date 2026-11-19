@@ -59,6 +59,9 @@ export async function availableAgencies(): Promise<CatalogAgency[]> {
 
 /** An agency by slug or name (case-insensitive), among those available. */
 /** The short names riders use for an agency (config shortName, such as "HSR" or "TTC"), lower case. */
+/** An agency's own time zone from its config, or null (#1627). */
+export async function timeZoneOf(slug: string): Promise<string | null> { return (await store.meta()).get(slug)?.timezone ?? null; }
+
 export async function findAgency(query: string, list?: CatalogAgency[]): Promise<CatalogAgency | null> {
   list ??= await availableAgencies();
   const meta = await store.meta();

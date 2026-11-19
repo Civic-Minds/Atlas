@@ -17,7 +17,7 @@ export interface McpFeature { geometry: { type: string } | null; properties: Rec
 export interface McpStop { id: string; name: string; lat: number; lon: number; routeIds: string[] }
 
 /** What config/agencies/<slug>.json says that the tools use. */
-export interface McpAgencyMeta { shortName: string; parentAgency: string | null }
+export interface McpAgencyMeta { shortName: string; parentAgency: string | null; /** The agency's own time zone (config/agencies/<slug>.json), for "now" (#1627). */ timezone?: string | null }
 
 /** One agency's routes and each route's waitMinutes per period, on each day type: what ranking reads. */
 export interface IndexedAgency { slug: string; name: string; region: string | null; country: string | null; /** The larger operator this feed is part of (MTA New York for its borough bus feeds), if any. */ partOf: string | null; /** Weekday routes that are rail (subway, light rail, commuter rail, streetcar, monorail). */ railRoutes: number; days: Partial<Record<DayType, Array<{ route: string; name: string | null; mode?: string; wait: Partial<Record<PeriodKey, number | null>> }>>> }
