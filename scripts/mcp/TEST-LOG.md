@@ -387,3 +387,18 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
 - Every run noticed the reading was two days before today and said so. That is right for saved readings and won't arise on real ones.
 - Hamilton separately: saved B-Line readings (Nov 18, 1:21 PM). Feed and Atlas route ids match (5829), and direction is worked out from the stops passed. 3 to 4 moving per direction, no bunching, longest waits 16 and 23 minutes against a scheduled 12.
 
+## 2026-11-18: RN1 to RN8 locked on live readings (CIV-1870, 0.13.0), Claude
+
+- Live at last: the local server reads the recorder's readings from atlas-live with the read-only token, which is loaded from its credentials file and never printed. Checked at 8:13 PM: the TTC reading was 25 to 40 seconds old and Hamilton's 49 to 60 seconds, against the 3-minute limit.
+- route_now directly at 8:13 PM, weekday evening:
+  - 504: 17 and 12 moving, 41% and 45% of gaps bunched over the half hour.
+  - B-Line: 4 and 3 moving, no bunching; longest waits 19 and 22 minutes against a scheduled 12.
+- 8 of 8 locked answers came from the tools, with the reading's day and time (8:13 to 8:15 PM, Wed Nov 18) on every one.
+- RN1: 29 moving plus 2 standing against 31 scheduled (buses_needed, labelled as scheduled).
+- RN2: the 510's two big northbound gaps (27 and 26 minutes against 10 and 5) and its bunched pairs.
+- RN3: says route_now measures spacing, not lateness, and gives the spacing.
+- RN4: declines one-vehicle lookups.
+- RN5 and RN7: bunched shares named; RN7 names the 4-minute cut-off beside its figures.
+- RN6, now on live B-Line readings: no stop over twice the scheduled 12 minutes; the closest was 22.7 minutes, described as just short of a gap.
+- RN8: the Queen St West and Spadina stretch given as "none ran, or a detour", never as a gap.
+
