@@ -1,3 +1,4 @@
+import { noDataText } from './noDataText';
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
@@ -190,7 +191,7 @@ export const METHOD_GROUPS = {
 } as const;
 
 /** A Live route page with no measured day, in its subtitle where "data up to Oct 14" would be (Ryan, CIV-1795 question 4, option a). */
-export const NO_DATA_YET = 'No data yet.';
+export const NO_DATA_YET = noDataText();
 /** The method line on trips close to the late or ahead cutoff (Ryan, CIV-1795 question 12, option a; was "Near a limit"). */
 export const NEAR_CUTOFF_TERM = 'Close to the cutoff';
 /** The agency page's method term for its combined figures, and its glossary term (Ryan, CIV-1795 question 13, option a; was "Network figures"). */

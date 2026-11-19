@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import LinkCard from '../../components/ui/LinkCard';
-import { studioNoDataNote } from '../../content/noticeCopy';
+import { STUDIO_CHANGES_TEXT } from '../../../shared/studioWording';
 import StudioChips, { type StudioMenu } from './StudioChips';
 
 /**
@@ -19,9 +19,9 @@ export default function StudioNoData({ agencyName, options, onPick, agencyMenu, 
   return (
     <>
       <StudioChips container={headerPortal} menus={[agencyMenu]} />
-      <Panel sidebar wide enter style={frameStyle} aria-label={studioNoDataNote(agencyName)}>
+      <Panel sidebar wide enter style={frameStyle} aria-label={STUDIO_CHANGES_TEXT.noDataFor(agencyName)}>
         <PanelBody className="px-4 pt-4 pb-4">
-          <p className="m-0 mb-3 text-sm font-bold">{studioNoDataNote(agencyName)}</p>
+          <p className="m-0 mb-3 text-sm font-bold">{STUDIO_CHANGES_TEXT.noDataFor(agencyName)}</p>
           <div className="space-y-2">
             {options.map(([slug, name]) => <LinkCard key={slug} as="button" onClick={() => onPick(slug)} icon="chevron">{name}</LinkCard>)}
           </div>

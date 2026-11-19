@@ -3,6 +3,7 @@
  * schedule changes (STUDIO_CHANGES_TEXT) and the buses needed (STUDIO_VEHICLES_TEXT). Every string is Ryan's
  * word-for-word OK or waiting on it; the CIV-1774 style guard keeps labels out of the components.
  */
+import { noDataText } from './noDataText';
 import { joinList, plural } from './overflowText';
 import { devPlaceholder } from './devPlaceholder';
 import { PAGE_NAMES } from './pageNames';
@@ -42,7 +43,9 @@ export const STUDIO_CHANGES_TEXT = {
   firstTrip: 'First trip',
   lastTrip: 'Last trip',
   tripTime: 'Trip time',
-  noData: 'No data for this agency yet.',
+  noData: noDataText('this agency'),
+  /** The page has no data for the agency Studio is on: "No data for TTC yet." */
+  noDataFor: noDataText,
   noDay: 'These two schedules couldn’t be compared.',
 } as const;
 

@@ -70,7 +70,7 @@ describe('A page with no data for the agency keeps it (CIV-1883)', () => {
   it('says so and lists the page\'s agencies instead of switching', () => {
     localStorage.clear();
     setup('/studio?page=fleet&agency=ttc');
-    expect(screen.getByText('No data for ttc here')).toBeTruthy();
+    expect(screen.getByText('No data for ttc yet.')).toBeTruthy();
     expect(screen.queryByText('fleet panel')).toBeNull();
     expect(screen.getByRole('button', { name: /hamilton/i })).toBeTruthy();
     expect(screen.getByTestId('where').textContent).toContain('agency=ttc');
