@@ -559,6 +559,19 @@ export async function agenciesNear(query: string, km = 60) {
   return { near: anchor?.name ?? query, km, agencies: entries.filter(x => x.d <= km).sort((x, y) => x.d - y.d).map(x => ({ name: x.name, region: x.region, km: Math.round(x.d) })) };
 }
 
+/**
+ * "Now" for History's doubtful rule, by part of the day: today's schedule where the answer shows it as the last row (#1619:
+ * Kingston 501's newest History snapshot runs every 15 midday, today's schedule every 30), else History's newest snapshot.
+ * Where now has no figure in that part of the day, its best figure.
+ */
+export function historyNow(todayWait: Partial<Record<PeriodKey, number>> | null, newestValue: (k: PeriodKey) => number | null): (k: PeriodKey) => number | null {
+  const own = (k: PeriodKey) => (todayWait ? todayWait[k] : newestValue(k)) ?? null;
+  const best = Math.min(...PERIOD_KEYS.map(own).filter((v): v is number => v != null));
+  return k => own(k) ?? (Number.isFinite(best) ? best : null);
+}
+/** Doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more (GitHub #1580). */
+export const isDoubtfulHistoryFigure = (old: number | null, now: number | null) => old != null && old <= 3 && now != null && now >= 30;
+
 /** A route's History: each schedule Atlas has kept, oldest first, with its value in each period, read as History reads it. */
 export async function routeHistory(agency: CatalogAgency, routeQuery: string, day: DayType) {
   const slug = agency.slug;
@@ -576,9 +589,6 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
   // GitHub #1580: some old schedules hold impossible values (1-3 min on routes that now run every 30 or more), most
   // likely two copies of a service counted together. Until that is fixed, such a value is marked, not reported as real.
   // "Now" is the newest schedule's figure in the same part of the day, or, where it has none there, its best figure.
-  const nowBest = Math.min(...PERIOD_KEYS.map(k => valueOf(newest, k)).filter((v): v is number => v != null));
-  const suspect = (s: typeof snaps[number], k: PeriodKey) => { const v = valueOf(s, k), now = valueOf(newest, k) ?? (Number.isFinite(nowBest) ? nowBest : null); return s !== newest && v != null && v <= 3 && now != null && now >= 30; };
-  let flagged = 0;
   // CIV-1840: History can end before the schedule on the map (Kingston 12's last snapshot is Aug 2026, midday only, while
   // today's schedule runs every 30 from 6:30 AM). When the agency was refreshed after History's newest snapshot, end with
   // today's schedule as a row, from the same figures route_frequency gives.
@@ -586,16 +596,22 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
   const newestMonth = newest ? monthOf(newest.label) : null;
   const refreshed = agency.lastRefreshedAt?.slice(0, 7) ?? null;
   let current: Record<string, string> | null = null;
+  // Today's schedule, where it is shown as the last row: then "now" for the doubtful rule is today, not History's newest (#1619).
+  let todayWait: Partial<Record<PeriodKey, number>> | null = null;
   if (newestMonth && refreshed && refreshed > newestMonth) {
     try {
       const today = findRoute(await routeList(agency, day), route.routeShortName);
       if (today) {
         const cells = PERIOD_KEYS.flatMap(k => { const f = today.figures[k]; return f.waitMinutes != null ? [[PERIOD_LABELS[k], headwayEvery(f.waitMinutes)]] : f.shown === 'no service' ? [[PERIOD_LABELS[k], 'no service']] : []; });
         const through = agency.lastFeedExpiry ? `, runs to ${agency.lastFeedExpiry.slice(0, 4)}-${agency.lastFeedExpiry.slice(4, 6)}-${agency.lastFeedExpiry.slice(6, 8)}` : '';
+        todayWait = Object.fromEntries(PERIOD_KEYS.flatMap(k => today.figures[k].waitMinutes != null ? [[k, today.figures[k].waitMinutes!]] : []));
         current = { schedule: `Today's schedule on Atlas's map (History's newest is ${newest.label}${through})`, ...Object.fromEntries(cells) };
       }
     } catch { /* no route data here: History alone */ }
   }
+  const nowOf = historyNow(todayWait, k => valueOf(newest, k));
+  const suspect = (s: typeof snaps[number], k: PeriodKey) => (todayWait != null || s !== newest) && isDoubtfulHistoryFigure(valueOf(s, k), nowOf(k));
+  let flagged = 0;
   return {
     route: route.routeShortName, name: route.routeName ?? null,
     schedules: [...snaps.map(s => ({ schedule: s.label, ...Object.fromEntries(PERIOD_KEYS.map(k => {
