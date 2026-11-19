@@ -42,8 +42,8 @@ export interface LiveArchivePositionFeed {
  * Triggers per account. These shards keep each invocation small while
  * preserving one-minute positions and five-minute trip-update archives.
  */
-/** The 2026-10-14 pause: crons removed to stay within the free Workers plan's five cron triggers (CIV-1856; the shard split is 1c08c18cd). */
-const FIVE_CRON_PAUSE = { since: '2026-10-14', reason: "Cron removed to stay within the free Workers plan's five cron triggers (CIV-1856)." } as const;
+/** The 2026-10-14 pause: crons removed to stay within the free Workers plan’s five cron triggers (CIV-1856; the shard split is 1c08c18cd). */
+const FIVE_CRON_PAUSE = { since: '2026-10-14', reason: "Cron removed to stay within the free Workers plan’s five cron triggers (CIV-1856)." } as const;
 
 export const LIVE_ARCHIVE_SHARDS = [
   { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
