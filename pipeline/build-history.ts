@@ -15,7 +15,7 @@
  * snapshots. BASE_HISTORY handles manual case-study data (e.g. GCRTA
  * pre-pipeline snapshots).
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { config } from 'dotenv';
 import { r2ListArchive, r2GetArchive, r2Get, r2Put } from './r2.js';
@@ -40,6 +40,14 @@ import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 config({ path: resolve('.env.local') });
 
 const dryRun = process.argv.includes('--dry-run');
+/**
+ * CIV-415: --local-archive <dir> (dry runs only) reads v2 sidecars and shapes from <dir>/history-v2/{slug}/*.json and
+ * <dir>/history-v2-shapes/{slug}/*.json as well as the archive, a local file winning over the archived one with the same
+ * key, so a locally backfilled agency (backfill-history-v2.ts --out-dir <dir>) can be checked before any upload.
+ */
+const localArchiveArg = process.argv.indexOf('--local-archive');
+const localArchive = localArchiveArg >= 0 ? resolve(process.argv[localArchiveArg + 1]) : null;
+if (localArchive && !dryRun) throw new Error('--local-archive is for dry runs only');
 
 /**
  * History v2 is opt-in: ATLAS_HISTORY_V2=1. Unset, this build produces exactly what origin/main
@@ -413,12 +421,12 @@ async function main() {
   // Each sidecar period's in-service date, so a trip-duration file with the same period key can be
   // dated by when its feed ran, not when it ends (CIV-1124).
   const sidecarRefDates: Record<string, Record<string, string>> = {};
-  const sidecarKeys = !v2 ? [] : (await r2ListArchive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
+  const sidecarKeys = !v2 ? [] : (await listV2Archive('history-v2/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
   if (v2) console.log(`Found ${sidecarKeys.length} v2 sidecar files in atlas-archive/history-v2/`);
   type SidecarRead = { key: string; sc?: HistoryV2Sidecar; failed?: boolean };
   const sidecarReads = await runWithConcurrency(sidecarKeys.map(key => async (): Promise<SidecarRead> => {
     try {
-      const raw = await r2GetArchive(key);
+      const raw = await getV2Archive(key);
       if (!raw) return { key, failed: true };
       const sc = JSON.parse(raw) as HistoryV2Sidecar;
       return sc.version === 2 && sc.routes ? { key, sc } : { key };
@@ -450,12 +458,12 @@ async function main() {
   // 1d. v2 route shapes: history-v2-shapes/{slug}/{periodKey}.json (written only by the v2 backfill with --shapes).
   // Flag-gated like the sidecars: unset, nothing is listed or read.
   const shapePeriods: Record<string, Map<string, HistoryPeriodShapes>> = {};
-  const shapeKeys = !v2 ? [] : (await r2ListArchive('history-v2-shapes/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
+  const shapeKeys = !v2 ? [] : (await listV2Archive('history-v2-shapes/')).filter(k => k.split('/').length === 3 && k.endsWith('.json')).sort();
   if (v2) console.log(`Found ${shapeKeys.length} v2 shape files in atlas-archive/history-v2-shapes/`);
   type ShapeRead = { key: string; ps?: HistoryPeriodShapes; failed?: boolean };
   const shapeReads = await runWithConcurrency(shapeKeys.map(key => async (): Promise<ShapeRead> => {
     try {
-      const raw = await r2GetArchive(key);
+      const raw = await getV2Archive(key);
       if (!raw) return { key, failed: true };
       const ps = JSON.parse(raw) as HistoryPeriodShapes;
       return ps.version === 1 && ps.routes ? { key, ps } : { key };
@@ -874,6 +882,24 @@ async function main() {
   // Keep the UI's small eligible-agency list in step with what was just published (commit it).
   const eligible = writeHistoryAgencyList(historyData, { realYearsOnly: v2 });
   console.log(`Wrote shared/data/history-agencies.json (${eligible} agencies) — commit it`);
+}
+
+/** Archive keys under a v2 prefix, plus any local ones from --local-archive (CIV-415). */
+async function listV2Archive(prefix: string): Promise<string[]> {
+  const keys = new Set(await r2ListArchive(prefix));
+  if (localArchive && existsSync(resolve(localArchive, prefix))) {
+    for (const slug of readdirSync(resolve(localArchive, prefix))) {
+      const dir = resolve(localArchive, prefix, slug);
+      if (!statSync(dir).isDirectory()) continue;
+      for (const f of readdirSync(dir)) if (f.endsWith('.json')) keys.add(`${prefix}${slug}/${f}`);
+    }
+  }
+  return [...keys];
+}
+/** A v2 archive object, the local --local-archive copy first (CIV-415). */
+async function getV2Archive(key: string): Promise<string | null> {
+  if (localArchive && existsSync(resolve(localArchive, key))) return readFileSync(resolve(localArchive, key), 'utf8');
+  return r2GetArchive(key);
 }
 
 main().catch(err => {
