@@ -1,6 +1,7 @@
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
+import SearchBox from '../../components/ui/SearchBox';
 
 /** One of Studio's menus in the top bar: what its chip shows, its choices and the current one. */
 export interface StudioMenu {
@@ -15,6 +16,8 @@ export interface StudioMenu {
   active?: boolean;
   /** The dropdown's width, and scroll for a long list. */
   panelClassName?: string;
+  /** A long list that grows (routes): the shared search box on top of the options, as the map's agency selector has one. The hint is a "Find …" line from noticeCopy. */
+  searchPlaceholder?: string;
   /** The dropdown's own content in place of the list of options (CIV-1886: the cut-offs' rows of choices); `close` shuts it. */
   content?: (close: () => void) => ReactNode;
   /** One width for the chip and its dropdown, so the chip is at least as wide as its own list (CIV-1889). */
@@ -38,17 +41,41 @@ export default function StudioChips({ container, menus }: { container: Element |
         <Fragment key={m.key}>
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
-          {m.content ? m.content(() => setOpenChip(null)) : m.options.map(([k, text, plain]) => (
-            <button key={k} type="button" aria-pressed={k === m.value} aria-label={plain}
-              onClick={() => { m.onPick(k); setOpenChip(null); }} className={chipRowClass(k === m.value)}>
-              {text}
-            </button>
-          ))}
+          {m.content ? m.content(() => setOpenChip(null))
+            : m.searchPlaceholder ? <SearchableOptions menu={m} close={() => setOpenChip(null)} />
+            : m.options.map(o => <OptionRow key={o[0]} menu={m} option={o} close={() => setOpenChip(null)} />)}
         </ChipMenu>
         {m.after}
         </Fragment>
       ))}
     </div>,
     container,
+  );
+}
+
+type Option = StudioMenu['options'][number];
+
+function OptionRow({ menu, option, close }: { menu: StudioMenu; option: Option; close: () => void }) {
+  const k = option[0], text = option[1], plain = option.length === 3 ? option[2] : undefined;
+  return (
+    <button type="button" aria-pressed={k === menu.value} aria-label={plain}
+      onClick={() => { menu.onPick(k); close(); }} className={chipRowClass(k === menu.value)}>
+      {text}
+    </button>
+  );
+}
+
+/** The map's agency selector's shape for routes: the shared search box, then the matching rows in a list that scrolls inside the dropdown. */
+function SearchableOptions({ menu, close }: { menu: StudioMenu; close: () => void }) {
+  const [query, setQuery] = useState('');
+  const q = query.trim().toLowerCase();
+  const shown = q ? menu.options.filter(o => (o.length === 3 ? o[2] : o[0]).toLowerCase().includes(q)) : menu.options;
+  return (
+    <>
+      <SearchBox value={query} onChange={setQuery} placeholder={menu.searchPlaceholder!} autoFocus />
+      <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+        {shown.map(o => <OptionRow key={o[0]} menu={menu} option={o} close={close} />)}
+      </div>
+    </>
   );
 }

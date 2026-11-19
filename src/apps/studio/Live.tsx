@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, TIME_LABEL, loadingText } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL, loadingText } from '../../content/noticeCopy';
 import { RouteTitleName } from '../../components/RouteRowName';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -93,7 +93,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: '', width: 'w-36', arrow: true };
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
-    { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
+    { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
