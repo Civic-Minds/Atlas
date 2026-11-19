@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import { PageTitle, SectionTitle } from './components/ui/PageTitle';
 import Tag from './components/ui/Tag';
-import { TOOLS, SERVER_VERSION } from '../scripts/mcp/toolDefs';
+import { TOOLS, TOOL_SUMMARIES, SERVER_VERSION } from '../scripts/mcp/toolDefs';
 import { LIVE_TOOLS } from '../scripts/mcp/liveTools';
 import { MCP_DOCS as C } from '../shared/mcpDocsCopy';
 import { tabTitle } from '../shared/pageNames';
 
 /**
  * CIV-1900: the internal docs page for the Atlas Studio MCP (dev server only, linked from /internal). The tool list is
- * read from the tool definitions the server sends Claude, so it can't drift; the words are in shared/mcpDocsCopy.ts.
+ * read from the tool definitions the server sends Claude, each with its plain summary (TOOL_SUMMARIES), so it can't drift; the words are in shared/mcpDocsCopy.ts.
  */
 
 /** The local server's setup, as scripts/mcp/README.md gives it (paths in the main checkout). */
@@ -18,9 +18,6 @@ const NODE = '/opt/homebrew/bin/node';
 const ARGS = [`${CHECKOUT}/node_modules/tsx/dist/cli.mjs`, `${CHECKOUT}/scripts/mcp/atlas-mcp.ts`];
 const CLAUDE_CODE = `claude mcp add -s user atlas-studio -- ${NODE} ${ARGS.join(' ')}`;
 const CLAUDE_DESKTOP = JSON.stringify({ mcpServers: { 'atlas-studio': { command: NODE, args: ARGS } } }, null, 2);
-
-/** A tool's description up to its first full stop: the one line the table shows. */
-const firstSentence = (text: string) => text.match(/^.*?[.?!](?=\s|$)/)?.[0] ?? text;
 
 const SECTIONS = [
   { id: 'mcp-answers', label: C.answers.heading },
@@ -64,7 +61,7 @@ export default function McpDocsPage() {
                 <code className="text-xs font-normal text-[var(--text-muted)]">{tool.name}</code>
                 {LIVE_TOOLS.includes(tool.name) && <Tag size="inline">{C.tools.liveTag}</Tag>}
               </dt>
-              <dd className="text-[var(--text-muted)]">{firstSentence(tool.description)}</dd>
+              <dd className="text-[var(--text-muted)]">{TOOL_SUMMARIES[tool.name]}</dd>
             </div>
           ))}
         </dl>
