@@ -16,7 +16,7 @@ export interface LinePoint {
   sentence: string;
 }
 
-const PAD = { top: 10, right: 12, bottom: 24, left: AXIS_W };
+const PAD = { top: 24, right: 12, bottom: 24, left: AXIS_W };
 
 /**
  * A line chart in the chart collection's look (CIV-1915, CIV-1173): faint gridlines, grey 12px axis text, a solid line with
@@ -71,7 +71,7 @@ export default function LineChart({ points, label, yTitle, formatY, height = 240
                 <text x={PAD.left - 6} y={py(t) + 4} textAnchor="end" fontSize={12} fill="var(--text-dim)">{formatY(t)}</text>
               </g>
             ))}
-            <text x={0} y={PAD.top - 2} fontSize={12} fill="var(--text-dim)">{yTitle}</text>
+            <text x={0} y={10} fontSize={12} fill="var(--text-dim)">{yTitle}</text>
             {runs.map((r, k) => r.length > 1 && (
               <path key={k} d={r.map((p, i) => `${i ? 'L' : 'M'}${px(p.x)},${py(p.y)}`).join('')} fill="none" stroke="var(--text-primary)" strokeWidth={2} strokeLinejoin="round" />
             ))}

@@ -16,7 +16,7 @@ export interface ScatterPoint {
   sentence: string;
 }
 
-const PAD = { top: 10, right: 12, bottom: 34, left: AXIS_W };
+const PAD = { top: 24, right: 12, bottom: 34, left: AXIS_W };
 
 /**
  * A scatter plot in the chart collection's look (CIV-1915, CIV-1173): faint gridlines, grey axis text at 12px, dots with a
@@ -65,7 +65,7 @@ export default function ScatterPlot({ points, label, xTitle, yTitle, formatX, fo
               <text key={`x${t}`} x={px(t)} y={height - 16} textAnchor="middle" fontSize={12} fill="var(--text-dim)" aria-hidden="true">{formatX(t)}</text>
             ))}
             <text x={PAD.left + plotW / 2} y={height - 2} textAnchor="middle" fontSize={12} fill="var(--text-dim)" aria-hidden="true">{xTitle}</text>
-            <text x={0} y={PAD.top - 2} fontSize={12} fill="var(--text-dim)" aria-hidden="true">{yTitle}</text>
+            <text x={0} y={10} fontSize={12} fill="var(--text-dim)" aria-hidden="true">{yTitle}</text>
             {points.map(p => (
               <circle
                 key={p.key} cx={px(p.x)} cy={py(p.y)} r={5} tabIndex={0} role="img" aria-label={`${p.label}: ${p.sentence}`}
