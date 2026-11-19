@@ -111,8 +111,11 @@ export function historyYearRoutes(
   year: number,
   colorMode: ColorVisionMode,
   view: HistoryView = HISTORY_VIEW_ALL,
-  /** The agency's per-year shapes file (CIV-456), or null when there is none. */
-  shapes: HistoryShapesFile | null = null,
+  /**
+   * The agency's per-year shapes file (CIV-456), or null when there is none. A parent agency's (CIV-1963) is a lookup by
+   * feed: each snapshot's line comes from the shapes file of the feed it was read from (its memberSlug).
+   */
+  shapes: HistoryShapesFile | null | ((memberSlug: string | undefined) => HistoryShapesFile | null) = null,
   /** The latest year: it uses today's map lines, as the map does, so no year shape is read for it. */
   latestYear?: number,
 ): HistoryYearRoute[] {
@@ -128,7 +131,7 @@ export function historyYearRoutes(
       // The year's own line when it has one (not for the latest year); otherwise today's map line.
       // Snapshots' old v1 `geometry` is not used (reader contract).
       // A route carried into an unchanged year (#1591) is drawn on the line of the year its number comes from.
-      ...yearShape(shapes, route.routeShortName, carriedFrom ?? year, latestYear),
+      ...yearShape(typeof shapes === 'function' ? shapes((snapshot as { memberSlug?: string }).memberSlug) : shapes, route.routeShortName, carriedFrom ?? year, latestYear),
     });
   }
   return out;

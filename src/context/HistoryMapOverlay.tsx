@@ -4,6 +4,8 @@ import type { HistoryYearRoute } from '../utils/historyYearMap';
 
 export interface HistoryMapOverlay {
   slug: string;
+  /** CIV-1963: a parent agency's feeds, whose lines on today's map are the open agency's (default: [slug]). */
+  slugs?: string[];
   routeShortName: string;
   agencyCenter?: [number, number];
   routeGeometry?: number[][];  // historical shape for the selected period (AI-162, AI-161)
@@ -12,6 +14,11 @@ export interface HistoryMapOverlay {
   yearRoutes?: HistoryYearRoute[];
   /** History's day: routes on today's map lines draw that day's line only, as the map does. */
   day?: DayType;
+}
+
+/** The feeds whose lines are the open History agency's: a parent's members, or the agency itself. */
+export function historyOverlaySlugs(o: Pick<HistoryMapOverlay, 'slug' | 'slugs'>): string[] {
+  return o.slugs ?? [o.slug];
 }
 
 interface ContextValue {

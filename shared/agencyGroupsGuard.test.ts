@@ -26,6 +26,8 @@ const SITES = [
   'scripts/mcp/tools.ts', // list_agencies, rank_agencies, compare_agencies
   'scripts/mcp/atlasData.ts', // list_agencies near, compare's parent lookup
   'src/apps/NightService.tsx', // Night list sections
+  'src/apps/History.tsx', // History agency list and the open agency
+  'src/utils/historyGroups.ts', // History's merge of a parent's feeds
   'src/DiagnosticsPerformancePage.tsx', // diagnostics agency count
 ];
 
