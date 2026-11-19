@@ -1,12 +1,4 @@
-import { useEffect, useState } from 'react';
 import { agencyInSentence } from '../../shared/agencyArticle';
-
-/**
- * How long each map shows: a quick flick through the pictures, 180 ms. CIV-1495 #2 (2026-11-15) slowed it to a second;
- * Ryan, 2026-11-18, reversed that: "Feel like the point of this was that it changed through pics fast ... but then u made
- * us slow it down now it looks dumb". Reduced motion shows one still frame.
- */
-export const MONTAGE_FRAME_MS = 180;
 
 interface MapFrame {
   agency: string;
@@ -29,43 +21,48 @@ export const publishedMapFrames: MapFrame[] = [
   { agency: 'Miami-Dade Transit', image: '/assets/research/system-maps/miami.jpg', source: 'https://www.miamidade.gov/resources/transportation_publicworks/documents/system-maps-web.pdf' },
 ];
 
-export default function FrequentServicePublishedMapMontage() {
-  const [activeFrame, setActiveFrame] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
+/**
+ * CIV-1875: one still pile of paper maps in place of the flicking montage. Every map is placed by hand so nothing lines up:
+ * different sizes and shapes, angles up to about 20° with no two alike, heavy overlaps, and several running off the edges.
+ * Left, top and width are percentages of the frame; ratio is width over height; Toronto lies on top.
+ */
+const pileSpots: Record<string, { left: number; top: number; width: number; ratio: number; turn: number }> = {
+  vancouver: { left: -7, top: 7, width: 27, ratio: 0.78, turn: -14 },
+  montreal: { left: 15, top: -12, width: 22, ratio: 1.3, turn: 7 },
+  ottawa: { left: 36, top: 5, width: 17, ratio: 0.72, turn: -3 },
+  edmonton: { left: 55, top: -8, width: 24, ratio: 1.1, turn: 18 },
+  seattle: { left: 4, top: 52, width: 21, ratio: 0.9, turn: 4 },
+  portland: { left: 22, top: 40, width: 25, ratio: 1.4, turn: -9 },
+  'san-jose': { left: 49, top: 54, width: 19, ratio: 0.8, turn: 12 },
+  'los-angeles': { left: 70, top: 22, width: 33, ratio: 0.95, turn: -19 },
+  miami: { left: 84, top: 63, width: 20, ratio: 1.2, turn: 6 },
+  washington: { left: 9, top: 24, width: 16, ratio: 0.7, turn: 16 },
+  septa: { left: 63, top: 49, width: 27, ratio: 1.35, turn: -6 },
+  toronto: { left: 28, top: 14, width: 38, ratio: 1.05, turn: -1.5 },
+};
 
-  useEffect(() => {
-    if (typeof window.matchMedia !== 'function') return;
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(mediaQuery.matches);
-    update();
-    mediaQuery.addEventListener?.('change', update);
-    return () => mediaQuery.removeEventListener?.('change', update);
-  }, []);
+const pileOrder = Object.keys(pileSpots);
+const slugOf = (frame: MapFrame) => frame.image.split('/').pop()!.replace('.jpg', '');
 
-  useEffect(() => {
-    if (reducedMotion) return;
-    const timer = window.setInterval(() => setActiveFrame(frame => (frame + 1) % publishedMapFrames.length), MONTAGE_FRAME_MS);
-    return () => window.clearInterval(timer);
-  }, [reducedMotion]);
-
-  const current = publishedMapFrames[activeFrame];
-
+export default function FrequentServiceMapPile() {
+  // Paint order is the pile order (Toronto last, so on top); the frame list stays the source of the agencies and sources.
+  const frames = [...publishedMapFrames].sort((a, b) => pileOrder.indexOf(slugOf(a)) - pileOrder.indexOf(slugOf(b)));
   return (
-    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#f4f3ef]">
+    <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)] bg-[#e9e6df]">
       <div className="relative aspect-[12/7]">
-        {publishedMapFrames.map((frame, index) => (
-          <img
-            key={frame.image}
-            src={frame.image}
-            alt={index === activeFrame ? `Published system map from ${agencyInSentence(frame.agency)}.` : ''}
-            aria-hidden={index !== activeFrame}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ opacity: index === activeFrame ? 1 : 0 }}
-          />
-        ))}
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-black/60 to-transparent px-4 pb-4 pt-12 text-white sm:px-6 sm:pb-5">
-          <span className="text-sm font-bold">{current.agency}</span>
-        </div>
+        {frames.map((frame, index) => {
+          const spot = pileSpots[slugOf(frame)];
+          return (
+            <img
+              key={frame.image}
+              src={frame.image}
+              alt={`Published system map from ${agencyInSentence(frame.agency)}.`}
+              loading="lazy"
+              className="absolute rounded-[2px] border-[5px] border-white object-cover shadow-[0_2px_6px_rgba(0,0,0,0.2)]"
+              style={{ left: `${spot.left}%`, top: `${spot.top}%`, width: `${spot.width}%`, aspectRatio: spot.ratio, transform: `rotate(${spot.turn}deg)`, zIndex: index + 1 }}
+            />
+          );
+        })}
       </div>
       <figcaption className="px-4 py-3 text-xs text-[var(--text-muted)] sm:px-6">
         {/* The count is the frames shown, so it can't drift from the list above. */}
