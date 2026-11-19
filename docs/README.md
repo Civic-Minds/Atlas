@@ -98,6 +98,7 @@ Read first: [Decisions](product/DECISIONS.md) to check the behavior is not inten
 | [Issue filing](engineering/ISSUES.md) | Open when you file, triage or close a GitHub issue. |
 | [Branch and deployment workflow](engineering/BRANCH_WORKFLOW.md) | Open before you start a branch or worktree, before a version cut (What's new entry), or when a deployment looks stale. |
 | [Pipeline studies index](engineering/pipeline-studies/INDEX.md) | Open before you start an internal pipeline study. |
+| [CIV-845 evenness evidence](engineering/pipeline-studies/civ-845-evenness/README.md) | Open when you need the replay scripts and outputs behind the #1086 "Everything tried" log. |
 | [Pipeline study template](engineering/pipeline-studies/EXPERIMENT_TEMPLATE.md) | Open when you start a new pipeline experiment and need the blank template. |
 
 ## Reference, plans and research

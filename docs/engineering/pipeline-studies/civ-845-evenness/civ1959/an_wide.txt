@@ -1,0 +1,27 @@
+SET wide: stops 5964; baseline stops published from a pooled pass: 4481; baseline over-states (longest >= 1.5x shown): 533
+
+== main+MR: changed published values 56 = pass->refused 56 + other 0; refused->pass 0; crossing filter (<=F to >F) 15 [RULER longest>=1.5x shown: over-draws removed 8, real frequent dropped 7]; fail->pass 0; stops still overstating (>=1.5x) 479
+
+== exact15c: changed published values 96 = pass->refused 96 + other 0; refused->pass 0; crossing filter (<=F to >F) 86 [RULER longest>=1.5x shown: over-draws removed 76, real frequent dropped 10]; fail->pass 0; stops still overstating (>=1.5x) 449
+
+== exact15c+MR: changed published values 144 = pass->refused 144 + other 0; refused->pass 0; crossing filter (<=F to >F) 92 [RULER longest>=1.5x shown: over-draws removed 76, real frequent dropped 16]; fail->pass 0; stops still overstating (>=1.5x) 402
+
+== exact155c: changed published values 66 = pass->refused 66 + other 0; refused->pass 0; crossing filter (<=F to >F) 57 [RULER longest>=1.5x shown: over-draws removed 52, real frequent dropped 5]; fail->pass 0; stops still overstating (>=1.5x) 473
+
+== exact155c+MR: changed published values 125 = pass->refused 125 + other 0; refused->pass 0; crossing filter (<=F to >F) 74 [RULER longest>=1.5x shown: over-draws removed 63, real frequent dropped 11]; fail->pass 0; stops still overstating (>=1.5x) 415
+
+--- 900 EB eve
+main         
+main+MR      
+exact15c     
+exact15c+MR  
+exact155c    
+exact155c+MR 
+
+--- 900 WB eve
+main         
+main+MR      
+exact15c     
+exact15c+MR  
+exact155c    
+exact155c+MR 

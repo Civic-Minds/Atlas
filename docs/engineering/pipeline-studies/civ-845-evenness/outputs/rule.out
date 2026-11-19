@@ -1,0 +1,15 @@
+### rule (rule.ts all)
+900 EB eve   patterns 2 stops 61 pooled 46 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 13 | B(own-fallback) pf 0 (<20: 0 ) fp 13 | A2(fullest stop) pf 33 (<20: 33 ) fp 0
+900 WB eve   patterns 2 stops 56 pooled 43 | A(worst) pass->fail 9 (pub<20: 9 ) fail->pass 0 | B(own-fallback) pf 9 (<20: 9 ) fp 0 | A2(fullest stop) pf 9 (<20: 9 ) fp 0
+901 N AM     patterns 4 stops 39 pooled 35 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+901 S AM     patterns 4 stops 35 pooled 32 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+901 N eve    patterns 4 stops 39 pooled 35 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+901 S eve    patterns 4 stops 35 pooled 32 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 4 | B(own-fallback) pf 0 (<20: 0 ) fp 4 | A2(fullest stop) pf 14 (<20: 14 ) fp 0
+102 N eve    patterns 6 stops 85 pooled 54 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+102 S eve    patterns 6 stops 75 pooled 53 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+102 N mid    patterns 6 stops 92 pooled 54 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+102 S mid    patterns 6 stops 75 pooled 53 | A(worst) pass->fail 2 (pub<20: 2 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 2 (<20: 2 ) fp 0
+102 N am     patterns 6 stops 92 pooled 54 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+102 S am     patterns 6 stops 75 pooled 53 | A(worst) pass->fail 0 (pub<20: 0 ) fail->pass 0 | B(own-fallback) pf 0 (<20: 0 ) fp 0 | A2(fullest stop) pf 0 (<20: 0 ) fp 0
+TOTAL {"A":{"pf":11,"pfU20":11,"pf20eq":0,"fp":17,"fpO20":17},"B":{"pf":9,"pfU20":9,"pf20eq":0,"fp":17,"fpO20":17},"A2":{"pf":58,"pfU20":58,"pf20eq":0,"fp":0,"fpO20":0},"stops":759}
+exit 0

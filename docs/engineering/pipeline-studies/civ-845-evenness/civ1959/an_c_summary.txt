@@ -1,0 +1,30 @@
+=== base12
+SET base12: stops 759; baseline stops published from a pooled pass: 312; baseline over-states (longest >= 1.5x shown): 134
+== exact15c: changed published values 55 = pass->refused 55 + other 0; refused->pass 0; crossing filter (<=F to >F) 47 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 6]; fail->pass 0; stops still overstating (>=1.5x) 85
+== exact15c+MR: changed published values 93 = pass->refused 93 + other 0; refused->pass 0; crossing filter (<=F to >F) 47 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 6]; fail->pass 0; stops still overstating (>=1.5x) 48
+== exact155c: changed published values 39 = pass->refused 39 + other 0; refused->pass 0; crossing filter (<=F to >F) 31 [RULER longest>=1.5x shown: over-draws removed 30, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 96
+== exact155c+MR: changed published values 88 = pass->refused 88 + other 0; refused->pass 0; crossing filter (<=F to >F) 42 [RULER longest>=1.5x shown: over-draws removed 41, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 48
+=== pin
+SET pin: stops 426; baseline stops published from a pooled pass: 330; baseline over-states (longest >= 1.5x shown): 115
+== exact15c: changed published values 16 = pass->refused 16 + other 0; refused->pass 0; crossing filter (<=F to >F) 16 [RULER longest>=1.5x shown: over-draws removed 14, real frequent dropped 2]; fail->pass 0; stops still overstating (>=1.5x) 101
+== exact15c+MR: changed published values 16 = pass->refused 16 + other 0; refused->pass 0; crossing filter (<=F to >F) 16 [RULER longest>=1.5x shown: over-draws removed 14, real frequent dropped 2]; fail->pass 0; stops still overstating (>=1.5x) 101
+== exact155c: changed published values 3 = pass->refused 3 + other 0; refused->pass 0; crossing filter (<=F to >F) 3 [RULER longest>=1.5x shown: over-draws removed 2, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 113
+== exact155c+MR: changed published values 3 = pass->refused 3 + other 0; refused->pass 0; crossing filter (<=F to >F) 3 [RULER longest>=1.5x shown: over-draws removed 2, real frequent dropped 1]; fail->pass 0; stops still overstating (>=1.5x) 113
+=== marg
+SET marg: stops 780; baseline stops published from a pooled pass: 657; baseline over-states (longest >= 1.5x shown): 173
+== exact15c: changed published values 0 = pass->refused 0 + other 0; refused->pass 0; crossing filter (<=F to >F) 0 [RULER longest>=1.5x shown: over-draws removed 0, real frequent dropped 0]; fail->pass 0; stops still overstating (>=1.5x) 173
+== exact15c+MR: changed published values 9 = pass->refused 9 + other 0; refused->pass 0; crossing filter (<=F to >F) 9 [RULER longest>=1.5x shown: over-draws removed 1, real frequent dropped 8]; fail->pass 0; stops still overstating (>=1.5x) 172
+== exact155c: changed published values 0 = pass->refused 0 + other 0; refused->pass 0; crossing filter (<=F to >F) 0 [RULER longest>=1.5x shown: over-draws removed 0, real frequent dropped 0]; fail->pass 0; stops still overstating (>=1.5x) 173
+== exact155c+MR: changed published values 9 = pass->refused 9 + other 0; refused->pass 0; crossing filter (<=F to >F) 9 [RULER longest>=1.5x shown: over-draws removed 1, real frequent dropped 8]; fail->pass 0; stops still overstating (>=1.5x) 172
+=== hsr
+SET hsr: stops 2840; baseline stops published from a pooled pass: 2332; baseline over-states (longest >= 1.5x shown): 398
+== exact15c: changed published values 122 = pass->refused 122 + other 0; refused->pass 0; crossing filter (<=F to >F) 75 [RULER longest>=1.5x shown: over-draws removed 75, real frequent dropped 0]; fail->pass 0; stops still overstating (>=1.5x) 280
+== exact15c+MR: changed published values 150 = pass->refused 150 + other 0; refused->pass 0; crossing filter (<=F to >F) 82 [RULER longest>=1.5x shown: over-draws removed 75, real frequent dropped 7]; fail->pass 0; stops still overstating (>=1.5x) 276
+== exact155c: changed published values 92 = pass->refused 92 + other 0; refused->pass 0; crossing filter (<=F to >F) 70 [RULER longest>=1.5x shown: over-draws removed 70, real frequent dropped 0]; fail->pass 0; stops still overstating (>=1.5x) 310
+== exact155c+MR: changed published values 106 = pass->refused 106 + other 0; refused->pass 0; crossing filter (<=F to >F) 77 [RULER longest>=1.5x shown: over-draws removed 70, real frequent dropped 7]; fail->pass 0; stops still overstating (>=1.5x) 310
+=== wide
+SET wide: stops 5964; baseline stops published from a pooled pass: 4481; baseline over-states (longest >= 1.5x shown): 533
+== exact15c: changed published values 96 = pass->refused 96 + other 0; refused->pass 0; crossing filter (<=F to >F) 86 [RULER longest>=1.5x shown: over-draws removed 76, real frequent dropped 10]; fail->pass 0; stops still overstating (>=1.5x) 449
+== exact15c+MR: changed published values 144 = pass->refused 144 + other 0; refused->pass 0; crossing filter (<=F to >F) 92 [RULER longest>=1.5x shown: over-draws removed 76, real frequent dropped 16]; fail->pass 0; stops still overstating (>=1.5x) 402
+== exact155c: changed published values 66 = pass->refused 66 + other 0; refused->pass 0; crossing filter (<=F to >F) 57 [RULER longest>=1.5x shown: over-draws removed 52, real frequent dropped 5]; fail->pass 0; stops still overstating (>=1.5x) 473
+== exact155c+MR: changed published values 125 = pass->refused 125 + other 0; refused->pass 0; crossing filter (<=F to >F) 74 [RULER longest>=1.5x shown: over-draws removed 63, real frequent dropped 11]; fail->pass 0; stops still overstating (>=1.5x) 415

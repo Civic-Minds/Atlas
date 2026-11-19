@@ -24,3 +24,6 @@ results, and implementation commit.
 
 - [Frequency-tier methodology](frequency-tier-methodology-2026-10/INDEX.md):
   edge gaps, internal near misses, hard failures, and full-census validation.
+- [CIV-845 stop-value evenness](civ-845-evenness/README.md):
+  replay scripts, small outputs and the CIV-1957 22-agency dry run behind the
+  GitHub #1086 "Everything tried" log.

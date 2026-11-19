@@ -1,0 +1,31 @@
+### s2c_T0 (s2c.ts T0)
+T0 routes 38 shown (green) pieces 18
+pieces that are the whole same-bus block: 3 | partial (a neighbour in the block fails): 15
+900 d0 p0 b13 28/46st endstop(m0.4) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 2/46st refused(m1.6) | refused(m1.6)
+900 d0 p0 b13 1/46st refused(m1.6) | blockend
+900 d0 p1 b2 28/46st endstop(m0.4) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 2/46st refused(m1.6) | refused(m1.6)
+900 d0 p1 b2 1/46st refused(m1.6) | blockend
+900 d1 p0 b0 9/43st refused(m0.4) | blockend
+900 d1 p1 b0 9/43st refused(m0.4) | blockend
+901 d1 p0 b0 14/18st refused(m1.4) | blockend
+901 d1 p1 b0 14/18st refused(m1.4) | blockend
+901 d1 p3 b5 14/18st refused(m1.4) | blockend
+green pieces per route {"900":12,"901":6}
+WHOLE 901 d0 p0 b17 18 st
+WHOLE 901 d0 p1 b4 18 st
+WHOLE 901 d0 p3 b17 18 st
+ANY PASS 900 d0 {"pooled":92,"poolPass":66,"single":15,"singlePass":0,"pats":2}
+ANY PASS 900 d1 {"pooled":86,"poolPass":18,"single":13,"singlePass":0,"pats":2}
+ANY PASS 901 d0 {"pooled":94,"poolPass":54,"single":4,"singlePass":0,"pats":4}
+ANY PASS 901 d1 {"pooled":88,"poolPass":42,"single":3,"singlePass":0,"pats":4}
+ANY PASS 915 d1 {"pooled":0,"poolPass":0,"single":57,"singlePass":19,"pats":1}
+ANY PASS 921 d0 {"pooled":0,"poolPass":0,"single":5,"singlePass":5,"pats":1}
+SEQ 915 d1 p0 30 30 30 30 30 30 30 30 30 30 30 30 30 29 29 30 30 29 30 29 29 28 28 28 28 28 27 28 28 28 28 27 27 28 27 24 24 24 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 -
+SEQ 921 d0 p0 - - - - - - - - - - - - - - - - - - - - - - - - - 17 16 20 20 20 -
+exit 0

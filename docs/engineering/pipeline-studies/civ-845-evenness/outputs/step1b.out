@@ -1,0 +1,53 @@
+### step1b (step1b.ts)
+T0 pooled stop-readings 1874 refused 861 mean longest 15.970 mean limit 17.217 mean value 10.518
+A1 pooled stop-readings 1874 refused 882 mean longest 15.918 mean limit 17.192 mean value 10.498
+A2 pooled stop-readings 1874 refused 1016 mean longest 15.918 mean limit 17.128 mean value 10.431
+B pooled stop-readings 1874 refused 860 mean longest 15.978 mean limit 17.214 mean value 10.519
+longest gap, T0 minus seconds: n1874 mean 0.052 T0-longer 305 T0-shorter 182
+mean gap, T0 minus seconds: n1874 mean 0.024 T0-longer 571 T0-shorter 671
+limit, T0 minus A2(frac): n1874 mean 0.088 T0-longer 914 T0-shorter 515
+limit, T0 minus A1(int value): n1874 mean 0.025 T0-longer 69 T0-shorter 16
+A1 all pooled readings: pass->refuse 36 refuse->pass 15 unchanged 1823
+A2 all pooled readings: pass->refuse 160 refuse->pass 5 unchanged 1709
+B all pooled readings: pass->refuse 29 refuse->pass 30 unchanged 1815
+seconds kept, integer value/mean (A1) vs fully fractional (A2): A1 refuse & A2 pass 6 A1 pass & A2 refuse 140
+92072 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+2218 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+2220 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+2221 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+412 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+413 900 EB eve mean 14.86 intValue 15 limit 24.0 | frac value 14.86 limit 23.77 longest 24.00
+pooled readings with mean within .4-.6 of a minute (rounding tips value by 1 = limit by 1.6): 451 / 1874
+--- A1 flips
+900 EB eve|427->431 long 24.0,24.0 lim 24.0,22.4
+900 EB eve|1178->1181 long 24.0,24.0 lim 22.4,24.0
+900 WB eve|1596->1598 long 25.6,25.0 lim 25.6,25.6
+901 N AM|674->93178 long 17.6,17.8 lim 17.6,17.6
+901 S eve|706->707 long 27.3,15.0 lim 25.6,24.0
+102 N eve|14608->13632 long 16.0,16.0 lim 16.0,16.0
+102 N eve|15193->16256 long 15.2,15.0 lim 16.0,14.4
+102 N eve|16256->16252 long 15.0,15.0 lim 14.4,16.0
+102 S eve|5574->5587 long 10.0,15.0 lim 13.0,13.0
+102 S eve|6126->16898 long 11.5,11.0 lim 11.0,11.0
+102 S mid|1212->1565 long 12.2,12.0 lim 12.0,12.0
+102 N am|4622->4624 long 6.0,12.0 lim 11.0,11.0
+102 S am|5562->13701 long 13.0,13.1 lim 13.0,13.0
+102 S am|4224->4240 long 12.0,12.0 lim 11.0,12.0
+--- A2 flips
+900 EB eve|93254->92072 long 24.0,24.0 lim 24.6,23.8
+900 EB eve|424->425 long 24.0,24.0 lim 24.0,24.0
+900 EB eve|427->431 long 24.0,24.0 lim 24.0,23.2
+900 WB eve|1596->1598 long 25.6,25.0 lim 25.1,25.6
+901 N AM|94151->672 long 16.8,17.2 lim 17.1,17.1
+901 S eve|706->707 long 27.3,15.0 lim 25.3,24.0
+102 N eve|13632->15193 long 16.0,15.2 lim 15.3,15.2
+102 S eve|5574->5587 long 10.0,15.0 lim 13.0,13.0
+102 S eve|6126->16898 long 11.5,11.0 lim 11.0,11.1
+102 S mid|6115->1558 long 11.6,11.6 lim 11.6,11.6
+102 S mid|6126->16898 long 11.2,12.0 lim 11.6,11.8
+102 N am|4622->4624 long 6.0,12.0 lim 11.0,11.2
+102 S am|13701->14143 long 13.1,13.2 lim 13.4,13.2
+A1 new: 900 WB eve|1596->1598 ; 901 N AM|674->93178 ; 901 S eve|706->707 ; 102 N eve|14608->13632 ; 102 N eve|15193->16256 ; 102 N eve|16256->16252 ; 102 S eve|6126->16898 ; 102 S mid|1212->1565 ; 102 S am|5562->13701
+A2 new: 900 EB eve|93254->92072 ; 900 EB eve|424->425 ; 900 WB eve|1596->1598 ; 901 S eve|706->707 ; 102 N eve|13632->15193 ; 102 S eve|6126->16898 ; 102 S mid|6115->1558 ; 102 S mid|6126->16898 ; 102 S am|13701->14143
+B new: 900 EB eve|1177->1178 ; 900 WB eve|1596->1598 ; 901 N AM|674->93178 ; 102 S eve|6126->16898 ; 102 S mid|4220->4242 ; 102 S mid|4240->1212 ; 102 N am|1552->4622 ; 102 S am|5574->5587 ; 102 S am|4242->4224
+exit 0

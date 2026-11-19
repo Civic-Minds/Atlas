@@ -1,0 +1,29 @@
+### var (var.ts)
+900 EB eve P0 stops60 runs base 10 C 2 D5 10 D10 2 E 10 F 2
+  EB base 24,24,24,24,24,24,24,24,24,24,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,24,24,15,24,24,24,24,24,24,24,24,15,24,16,15,24,16,
+   C 24,24,24,24,24,24,24,24,24,24,24,24,24,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,
+   D5 24,24,24,24,24,24,24,24,24,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,16,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,24,24,15,24,24,24,24,24,24,24,24,15,24,16,15,24,16,
+   D10 24,24,24,24,24,24,24,24,24,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,16,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,14,14,15,14,14,14,14,14,14,14,14,15,14,16,15,14,16,
+   E 24,24,24,24,24,24,24,24,24,24,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,24,24,15,24,24,24,24,24,24,24,24,15,24,16,15,24,16,
+   F 24,24,24,24,24,24,24,24,24,24,24,24,24,16,16,16,16,16,16,16,16,16,16,16,16,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,16,16,15,16,16,16,16,16,16,16,16,15,16,16,15,16,16,
+900 EB eve P1 stops49 runs base 10 C 2 D5 10 D10 2 E 10 F 2
+900 WB eve P0 stops59 runs base 3 C 2 D5 3 D10 9 E 3 F 3
+  WB idx34-42 base 16,16,16,16,16,16,16,16,17
+   C 16,16,16,16,16,16,16,16,16
+   D5 16,16,16,16,16,16,16,16,17
+   D10 16,16,16,16,16,16,16,16,17
+   E 16,16,16,16,16,16,16,16,17
+   F 16,16,16,16,16,16,16,16,17
+900 WB eve P1 stops45 runs base 3 C 2 D5 3 D10 9 E 3 F 3
+stretches 126 baseline one-colour 109
+C {"one":126,"pf":0,"pfU20":0,"fp":51,"fpOver":51,"tier":141,"chg":206} 
+   fp detail: 900 EB eve:93542 pub24 ownLongest26 | 900 EB eve:431 pub24 ownLongest26 | 900 EB eve:432 pub24 ownLongest26 | 900 EB eve:450 pub24 ownLongest26 | 900 EB eve:451 pub24 ownLongest26 | 900 EB eve:452 pub24 ownLongest26 | 900 EB eve:453 pub24 ownLongest26 | 900 EB eve:1175 pub24 ownLongest26 | 900 EB eve:1176 pub24 ownLongest26 | 900 EB eve:1177 pub24 ownLongest26 | 900 EB eve:1178 pub24 ownLongest26 | 900 EB eve:1183 pub24 ownLongest26 | 900 EB eve:1185 pub24 ownLongest26 | 900 WB eve:1163 pub24 ownLongest30 | 900 WB eve:1164 pub24 ownLongest30 | 900 WB eve:1165 pub24 ownLongest30 | 900 WB eve:1166 pub24 ownLongest30 | 900 WB eve:1167 pub24 ownLongest30 | 900 WB eve:1169 pub24 ownLongest30 | 900 WB eve:1171 pub24 ownLongest30 | 900 WB eve:1172 pub24 ownLongest30 | 900 WB eve:1173 pub24 ownLongest30 | 900 WB eve:1174 pub24 ownLongest30 | 900 WB eve:386 pub24 ownLongest30 | 900 WB eve:387 pub24 ownLongest30 | 900 WB eve:388 pub24 ownLongest30 | 900 WB eve:389 pub24 ownLongest30 | 900 WB eve:391 pub24 ownLongest28 | 900 WB eve:393 pub24 ownLongest27 | 900 WB eve:394 pub24 ownLongest28 | 900 WB eve:396 pub24 ownLongest28 | 900 WB eve:398 pub24 ownLongest27 | 900 WB eve:400 pub24 ownLongest27 | 900 WB eve:401 pub24 ownLongest27 | 900 WB eve:404 pub24 ownLongest27 | 900 WB eve:405 pub24 ownLongest27 | 900 WB eve:406 pub24 ownLongest27 | 900 WB eve:93749 pub24 ownLongest32 | 900 WB eve:410 pub24 ownLongest32 | 900 WB eve:411 pub24 ownLongest32 | 900 WB eve:1587 pub24 ownLongest32 | 900 WB eve:1588 pub24 ownLongest32 | 900 WB eve:1590 pub24 ownLongest32 | 900 WB eve:1591 pub24 ownLongest32 | 900 WB eve:1593 pub24 ownLongest32 | 900 WB eve:1594 pub24 ownLongest32 | 900 WB eve:1595 pub24 ownLongest32 | 901 S eve:698 pub30 ownLongest30 | 901 S eve:94189 pub30 ownLongest30 | 901 S eve:706 pub30 ownLongest30 | 901 S eve:707 pub30 ownLongest30
+D5 {"one":109,"pf":0,"pfU20":0,"fp":4,"fpOver":4,"tier":4,"chg":11} 
+   fp detail: 900 EB eve:93542 pub24 ownLongest26 | 900 WB eve:1593 pub24 ownLongest32 | 900 WB eve:1594 pub24 ownLongest32 | 900 WB eve:1595 pub24 ownLongest32
+D10 {"one":119,"pf":0,"pfU20":0,"fp":27,"fpOver":27,"tier":82,"chg":97} 
+   fp detail: 900 EB eve:93542 pub24 ownLongest26 | 900 EB eve:431 pub24 ownLongest26 | 900 EB eve:432 pub24 ownLongest26 | 900 EB eve:450 pub24 ownLongest26 | 900 EB eve:451 pub24 ownLongest26 | 900 EB eve:452 pub24 ownLongest26 | 900 EB eve:453 pub24 ownLongest26 | 900 EB eve:1175 pub24 ownLongest26 | 900 EB eve:1176 pub24 ownLongest26 | 900 EB eve:1177 pub24 ownLongest26 | 900 EB eve:1178 pub24 ownLongest26 | 900 EB eve:1183 pub24 ownLongest26 | 900 EB eve:1185 pub24 ownLongest26 | 900 WB eve:404 pub24 ownLongest27 | 900 WB eve:406 pub24 ownLongest27 | 900 WB eve:93749 pub24 ownLongest32 | 900 WB eve:411 pub24 ownLongest32 | 900 WB eve:1588 pub24 ownLongest32 | 900 WB eve:1590 pub24 ownLongest32 | 900 WB eve:1591 pub24 ownLongest32 | 900 WB eve:1593 pub24 ownLongest32 | 900 WB eve:1594 pub24 ownLongest32 | 900 WB eve:1595 pub24 ownLongest32 | 901 S eve:698 pub30 ownLongest30 | 901 S eve:94189 pub30 ownLongest30 | 901 S eve:706 pub30 ownLongest30 | 901 S eve:707 pub30 ownLongest30
+E {"one":114,"pf":0,"pfU20":0,"fp":0,"fpOver":0,"tier":34,"chg":46} 
+   fp detail: 
+F {"one":116,"pf":0,"pfU20":0,"fp":17,"fpOver":17,"tier":26,"chg":37} 
+   fp detail: 900 EB eve:93542 pub24 ownLongest26 | 900 EB eve:431 pub24 ownLongest26 | 900 EB eve:432 pub24 ownLongest26 | 900 EB eve:450 pub24 ownLongest26 | 900 EB eve:451 pub24 ownLongest26 | 900 EB eve:452 pub24 ownLongest26 | 900 EB eve:453 pub24 ownLongest26 | 900 EB eve:1175 pub24 ownLongest26 | 900 EB eve:1176 pub24 ownLongest26 | 900 EB eve:1177 pub24 ownLongest26 | 900 EB eve:1178 pub24 ownLongest26 | 900 EB eve:1183 pub24 ownLongest26 | 900 EB eve:1185 pub24 ownLongest26 | 901 S eve:698 pub30 ownLongest30 | 901 S eve:94189 pub30 ownLongest30 | 901 S eve:706 pub30 ownLongest30 | 901 S eve:707 pub30 ownLongest30
+exit 0

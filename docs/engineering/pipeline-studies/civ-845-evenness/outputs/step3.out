@@ -1,0 +1,17 @@
+### step3 (step3.ts)
+windows 112 stops with a reading 5963 | stops reading >=1 trip outside window 3171 (trips 5101 ) max minutes outside 34 median max-out per stop 7
+of those, on a side with real service change (>=1.5x headway across edge): 172 | value changed vs today 15 | tier changed 13 | pass/fail changed 9
+per period {"AM":{"withOut":729,"flagged":40,"changed":7},"Mid":{"withOut":847,"flagged":12,"changed":2},"PM":{"withOut":871,"flagged":45,"changed":1},"Eve":{"withOut":724,"flagged":75,"changed":5}}
+overall R3 vs today in these windows: pf 2 fp 52 worse 71 stops 5964
+flagged & changed by >=3 min: 11 of changed 15
+{"lab":"drt:9011 Eve","stop":"698","from":30,"to":15,"out":10,"lo":["18:50"],"hi":[],"info":"start side: 10 outside vs 15 inside"}
+{"lab":"drt:9011 Eve","stop":"94189","from":30,"to":15,"out":9,"lo":["18:51"],"hi":[],"info":"start side: 10 outside vs 15 inside"}
+{"lab":"drt:9011 Eve","stop":"706","from":30,"to":15,"out":8,"lo":["18:52"],"hi":[],"info":"start side: 10 outside vs 15 inside"}
+{"lab":"drt:9011 Eve","stop":"707","from":30,"to":15,"out":7,"lo":["18:53"],"hi":[],"info":"start side: 10 outside vs 15 inside"}
+{"lab":"drt:9000 AM","stop":"451","from":24,"to":12,"out":2,"lo":[],"hi":["9:02"],"info":"end side: 16 outside vs 10 inside"}
+{"lab":"drt:9000 AM","stop":"452","from":24,"to":12,"out":2,"lo":[],"hi":["9:02"],"info":"end side: 16 outside vs 10 inside"}
+delta distribution (flagged changed): -15,-15,-15,-15,-12,-12,-12,-11,-11,1,1,1,1,6,6
+stops by max minutes outside: >=5 2007 >=10 1123 >=15 599 >=20 254 >=24 99
+flagged changed: longer 6 shorter 9
+{"drt:9000 AM 24->12 out2":2,"drt:9000 AM 24->12 out13":1,"drt:9000 Mid 24->13 out14":1,"drt:9000 Mid 24->13 out15":1,"drt:9001 PM 11->12 out9":1,"drt:9011 Eve 30->15 out10":1,"drt:9011 Eve 30->15 out9":1,"drt:9011 Eve 30->15 out8":1,"drt:9011 Eve 30->15 out7":1,"ttc102:1021 AM 6->12 out14":2,"ttc5241:521 AM 5->6 out8":1,"ttc5241:521 AM 5->6 out7":1,"ttcm:320 Eve 14->15 out1":1}
+exit 0
