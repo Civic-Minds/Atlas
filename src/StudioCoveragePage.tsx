@@ -16,10 +16,10 @@ import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
 import { agencyPagePath, LIVE_PATH } from '../shared/pagePaths';
 import { coverageRows, MCP_COVERAGE_API_URL, type CoverageRow } from '../shared/coverageRows';
 import historyAgencyList from '../shared/data/history-agencies.json';
-import { COVERAGE_COLUMNS as H, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T, loadingText } from './content/noticeCopy';
+import { COVERAGE_COLUMNS as H, COVERAGE_HISTORY as HY, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T, loadingText } from './content/noticeCopy';
 import { agencyNames } from './utils/agencyName';
 
-interface LocalFacts { studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
+interface LocalFacts { historyYears?: Record<string, number>; studio: string[]; vehicles: string[]; coverage: Record<string, LiveCoverage> }
 
 const WIDE = PAGE_FIGURE_COLUMN_REM + 2;
 
@@ -45,7 +45,7 @@ const mcpTags = (r: CoverageRow) => [
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
-  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? 'Yes' : MISSING_VALUE) },
+  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? <Pill as="span" tone="outline" size="option">{HY.public}</Pill> : r.historyYears > 0 ? HY.years(r.historyYears) : MISSING_VALUE) },
   { key: 'live', header: H.live, width: WIDE + 4, cell: r => <TagCell tags={liveTags(r)} link={r.liveReport ? { label: L.report, to: `${LIVE_PATH}/${r.slug}` } : undefined} /> },
   { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell tags={studioTags(r)} /> },
   { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagCell tags={mcpTags(r)} /> },
@@ -89,6 +89,7 @@ export default function StudioCoveragePage() {
   const rows = useMemo(() => coverageRows({
     agencies: agencies.map(a => { const n = agencyNames(a).list; return { slug: a.slug, name: n.primary, place: n.secondary }; }),
     historySlugs: (historyAgencyList as { slugs: string[] }).slugs,
+    historyYears: facts?.historyYears,
     liveArchiveSlugs: LIVE_ARCHIVE_SLUGS,
     // Real-time only where Live itself is on in this build (LIVE_ENABLED) and the agency has a usable Live feed.
     liveMapSlugs: FEATURES.live ? LIVE_AGENCY_SLUGS : [],
