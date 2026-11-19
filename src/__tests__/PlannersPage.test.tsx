@@ -30,8 +30,25 @@ describe('For Transit Planners page (CIV-1320)', () => {
   it('alternates the picture side of the feature cards on desktop, right then left (CIV-1754)', () => {
     const { container } = render(<PlannersPage />);
     const sides = [...container.querySelectorAll('[data-picture-side]')].map(c => c.getAttribute('data-picture-side'));
-    // Frequency, Day and Time, Agencies, Share; cards 4-6 have no picture.
-    expect(sides).toEqual(['right', 'left', 'right', 'left']);
+    // Every card, the Request a demo card last, alternates, picture or not (CIV-1873: no card is a different size).
+    expect(sides).toEqual(['right', 'left', 'right', 'left', 'right', 'left', 'right', 'left']);
+  });
+
+  it('keeps a card with no picture the same size as the rest: an empty grey area holds the picture\'s place (CIV-1873)', () => {
+    const { container } = render(<PlannersPage />);
+    const cards = [...container.querySelectorAll('[data-picture-side]')];
+    // Before and after, Vehicles needed, Where Delays Build Up and the Request a demo card.
+    expect(container.querySelectorAll('[data-empty-picture]')).toHaveLength(4);
+    for (const card of cards) expect(card.querySelectorAll('picture, [data-empty-picture]').length, card.textContent ?? '').toBeGreaterThan(0);
+    for (const empty of container.querySelectorAll('[data-empty-picture]')) expect(empty.className).toContain('aspect-[4/3]');
+  });
+
+  it('colours built cards with the frequency tints in order and Beta cards one grey (CIV-1873)', () => {
+    const { container } = render(<PlannersPage />);
+    const colours = [...container.querySelectorAll<HTMLElement>('[data-picture-side]')].map(c => c.style.background);
+    const [frequency, dayTime, agencies, beforeAfter, vehicles, delays, share, demo] = colours;
+    expect(new Set([beforeAfter, vehicles, delays]).size).toBe(1);
+    expect(new Set([frequency, dayTime, agencies, share, demo, beforeAfter]).size).toBe(6);
   });
 
   it('marks the before and after, vehicles needed and delay cards Beta, with the shared tag beside the title (CIV-1793)', () => {
