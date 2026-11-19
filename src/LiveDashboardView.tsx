@@ -19,8 +19,8 @@ import LateByHourSection from './components/Live/sections/LateByHourSection';
 import RunTimeSection from './components/Live/sections/RunTimeSection';
 import WorstStopsSection from './components/Live/sections/WorstStopsSection';
 import { dirsOf } from './components/Live/sections/figures';
-import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingSplitNote } from '../shared/liveWording';
-import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE } from './content/noticeCopy';
+import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_TITLE, TRIP_TIME_LABEL, WEEK_COMPARE_TITLE, BUNCHING_FORMS_LABEL, bunchingShortNote, bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../shared/liveWording';
+import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE, LEARN_MORE_LABEL } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live';
@@ -70,7 +70,7 @@ export function KpiTile({ k, className = '', math, bare = false, caption = false
  * they match, the row says nothing extra (its hover text says "same as last week"). The short math lines are notes under
  * the table. One component for any surface that wants it; the planner's left panel uses it today.
  */
-export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle }: {
+export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, scope, excluding, excludingTitle, aboutLive }: {
   tiles: Kpi[];
   /** The lines that explain how the figures are worked out, in order, under the table. */
   notes?: readonly string[];
@@ -82,9 +82,12 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
   /** The days left out, as one note directly under the table ("Excluding Oct 11 this week, Oct 4 last week"), with its hover reason. */
   excluding?: string | null;
   excludingTitle?: string;
+  /** Studio: a Bunching row with two figures gets its short definition and a Learn more link to the About panel's Live part. */
+  aboutLive?: boolean;
 }) {
   // A Bunching row with two figures says what each is, under the table (Ryan: numbers are explained, never decoded).
-  const notes = tiles.some(bunchingIsSplit) ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
+  const split = tiles.some(bunchingIsSplit);
+  const notes = split && !aboutLive ? [...(givenNotes ?? []), bunchingSplitNote()] : givenNotes;
   return (
     <Card as="section" tone="surface" aria-label={WEEK_COMPARE_TITLE} className="min-w-0 px-2.5 py-1.5">
       <DataTable
@@ -111,6 +114,11 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
         </ul>
       )}
       {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
+      {aboutLive && split && (
+        <p className={`m-0 text-xs leading-4 text-[var(--text-dim)] opacity-75 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
+          {bunchingShortNote()} <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))} className="cursor-pointer border-0 bg-transparent p-0 text-xs underline hover:text-[var(--accent)]">{LEARN_MORE_LABEL}</button>
+        </p>
+      )}
     </Card>
   );
 }

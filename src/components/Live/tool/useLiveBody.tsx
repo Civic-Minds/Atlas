@@ -86,18 +86,21 @@ const BOTH_DIRECTIONS = 'both directions';
 const weekly = (v3: LiveV3, band: DashboardBand) => { const w = weekForBand(v3.weekly, band); return w ? kpiTiles(w, band === 'all' ? weekDailyValues(v3) : {}) : []; };
 
 /** The network's summary, on the left with no route picked: the week's figures as one-line rows, (late departures by hour show for a picked route only). */
-function summaryWidgets(s: AgencySummary, band: DashboardBand): PanelWidget[] {
+/** The week table's grey-colour line and the bunching note: the Live tool page shows both under the table; Studio has them in About. */
+const weekCaptions = (inStudio: boolean) => inStudio ? { aboutLive: true } : { caption: LIVE_NOISE_CAPTION, captionTitle: NOISE_RULE };
+
+function summaryWidgets(s: AgencySummary, band: DashboardBand, inStudio: boolean): PanelWidget[] {
   const weekLeft = excludingDays(s.weekly);
   const tiles = agencyKpiTiles(s, band);
   return [
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={ALL_ROUTES_LABEL} caption={LIVE_NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={ALL_ROUTES_LABEL} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
   ];
 }
 
 
 /** The figures for a route, in the one left panel: the week's figures in the same table as the network's, then the run time strip, late by hour and the worst stops. A picked stop or segment shows in the map popover only. */
-function routeWidgets({ data, v3, dir, band, setPick, route }: {
-  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; route: string;
+function routeWidgets({ data, v3, dir, band, setPick, route, inStudio }: {
+  data: { uncertainStart?: { directionId: number; stops: number }[] }; v3: LiveV3; dir: number; band: DashboardBand; setPick: (p: MapPick | null) => void; route: string; inStudio: boolean;
 }): PanelWidget[] {
   const bandData = v3.bands[band] as DashboardBandData;
   const worst = worstStopRows(v3, bandData, dir, data.uncertainStart ?? [], 3, stopId => setPick({ kind: 'stop', stopId }));
@@ -110,7 +113,7 @@ function routeWidgets({ data, v3, dir, band, setPick, route }: {
   const hourLeftShown = excludingText(hourLeft) === weekLeft.text ? undefined : hourLeft;
   return [
     // The week's figures cover the whole route (both directions), while Run time and the stops follow the direction pills.
-    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} caption={LIVE_NOISE_CAPTION} captionTitle={NOISE_RULE} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
+    ...(tiles.length ? [{ key: 'week', size: 'medium' as const, node: <WeekTable tiles={tiles} scope={`${route} · ${BOTH_DIRECTIONS}`} {...weekCaptions(inStudio)} excluding={weekLeft.text} excludingTitle={weekLeft.title ?? undefined} /> }] : []),
     ...(hasRunTime ? [{ key: 'run-time', size: 'medium' as const, node: <RunTimeWidget v3={v3} dir={dir} band={band} /> }] : []),
     ...(hours.length ? [{ key: 'late-hours', size: 'medium' as const, node: <LateByHourSection chart="mini" hours={hours} band={band} overall={routeLateOverall(v3)} days={routeLateDays(v3)} leftOut={hourLeftShown} scope={BOTH_DIRECTIONS} height={40} /> }] : []),
     ...(worst.length ? [{ key: 'problems', size: 'medium' as const, node: <ProblemsWidget title={LATE_STOPS_TITLE} rows={worst} /> }] : []),
@@ -133,6 +136,7 @@ export interface LiveBodyInput {
   agency: string; agencyName: string; s: AgencySummary;
   route: string | null; setRoute: (r: string | null) => void; dir: number | null; setDir: (d: number | null) => void;
   band: DashboardBand; /** Null: no measure chosen, a plain map and a names-only route list (CIV-1889). */ measure: MapMeasure | null; pick: MapPick | null; setPick: (p: MapPick | null) => void;
+  /** Studio: the week table's explanation lines live in its About panel, with a Learn more link (Ryan, 2026-11-19). */ inStudio?: boolean;
 }
 
 export interface LiveBodyModel {
@@ -174,7 +178,7 @@ export interface LiveBodyModel {
   openRoute: (r: string) => void;
 }
 
-export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure: chosen, pick, setPick }: LiveBodyInput): LiveBodyModel {
+export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure: chosen, pick, setPick, inStudio = false }: LiveBodyInput): LiveBodyModel {
   // The computations below need a measure; with none chosen the map draws every segment grey and the list shows names only.
   const measure: MapMeasure = chosen ?? 'late';
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
@@ -224,7 +228,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     ? pick?.kind === 'segment' ? <MapCard title={stretchLabel(stops.get(pick.fromStopId)?.name ?? pick.fromStopId, stops.get(pick.toStopId)?.name ?? pick.toStopId)} lines={fallsBehind ? fallsBehindLines(route ? lossReports.get(route) : undefined, band, shown, pick.fromStopId, pick.toStopId) : [...(measure === 'delayStarts' ? keptLine(v3, band, shown, pick.toStopId, pick.fromStopId, uncertain) : []), ...segmentLines(bandData, shown, pick.fromStopId, pick.toStopId)]} />
       : picked ? <MapCard title={picked.name} groups={stopLines(v3, band, shown, picked, measure, uncertain)} /> : null
     : null, [v3, bandData, pick, picked, stops, band, shown, measure, uncertain, fallsBehind, route, lossReports]); // eslint-disable-line react-hooks/exhaustive-deps
-  const summary = useMemo(() => summaryWidgets(s, band), [s, band]);
+  const summary = useMemo(() => summaryWidgets(s, band, inStudio), [s, band, inStudio]);
   // CIV-1828: a "Falls behind" row opens its route, direction and stop pair.
   const openLossRow = (x: TimeLossListRow) => { setRoute(x.route); setDir(x.directionId); setPick({ kind: 'segment', fromStopId: x.row.fromStopId, toStopId: x.row.toStopId }); };
   const lossDates = (r?: string) => { const ds = r ? lossData.get(r)?.dates : [...lossData.values()].flatMap(d => d.dates); return [...new Set(ds ?? [])].sort(); };
@@ -237,7 +241,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
   const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routeBody: PanelWidget[] | null = !route ? null
-    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route })]
+    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio })]
     : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const routePanel = routeBody && [back, ...routeBody];
 

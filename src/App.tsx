@@ -73,7 +73,7 @@ import { BustangRouteDepartures, BustangStopConnections } from './components/res
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
 import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
 import { splitRouteKey } from './utils/routeKey';
-import { LIVE_MAP_TITLE } from '../shared/liveWording';
+import { LIVE_MAP_TITLE, OPEN_ABOUT_LIVE_EVENT } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
 import { FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH } from '../shared/rules/paths';
 import type { AgencyCatalogEntry } from '../shared/agencyCatalog';
@@ -255,6 +255,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setInfoOpen(false);
     setInfoHelpContext(null);
   }, []);
+  // Studio's Live view: Learn more opens About at its Live part.
+  useEffect(() => {
+    const on = () => openInfo('about');
+    window.addEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+    return () => window.removeEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+  }, [openInfo]);
   const toggleInfo = useCallback(() => {
     setInfoOpen(isOpen => {
       if (isOpen) {

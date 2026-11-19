@@ -22,7 +22,8 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK, STUDIO_ABOUT_LEAD, STUDIO_ABOUT_LIVE_HEADING, LIVE_NOISE_CAPTION } from '../content/noticeCopy';
+import { bunchingSplitNote, OPEN_ABOUT_LIVE_EVENT } from '../../shared/liveWording';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -200,6 +201,18 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
     }
   }, [open, defaultTab, featureFilter, helpContext]);
 
+  // A Learn more link in Studio's Live view opens this panel at its Live part (App opens the panel; this scrolls to it).
+  const liveRef = useRef<HTMLDivElement>(null);
+  const [wantLive, setWantLive] = useState(0);
+  useEffect(() => {
+    const on = () => setWantLive(n => n + 1);
+    window.addEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+    return () => window.removeEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+  }, []);
+  useEffect(() => {
+    if (wantLive && open && view === 'home') liveRef.current?.scrollIntoView?.({ block: 'start' });
+  }, [wantLive, open, view]);
+
   useEffect(() => {
     if (view === 'agencies') {
       const id = setTimeout(() => searchInputRef.current?.focus(), 150);
@@ -360,6 +373,14 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
                 <p className="text-xs text-[var(--text-primary)] leading-relaxed">
                 A transit atlas covering agencies across {coverageCountriesText()}.
                 </p>
+              )}
+
+              {inStudio && (
+                <div ref={liveRef}>
+                  <p className="text-xs font-bold text-[var(--text-muted)] mb-2">{STUDIO_ABOUT_LIVE_HEADING}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-1">{bunchingSplitNote()}</p>
+                  <p className="text-xs text-[var(--text-dim)] leading-relaxed">{LIVE_NOISE_CAPTION}</p>
+                </div>
               )}
 
               <div>

@@ -78,7 +78,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const [cutoffs, setCutoffs] = useState<SetCutoffs>({});
   const cardRef = useRef<HTMLDivElement | null>(null);
   const pickRoute = (r: string | null) => { setRoute(r); if (!r) setDir(null); setPick(null); };
-  const m = useLiveBody({ agency: slug, agencyName, s, route, setRoute: pickRoute, dir, setDir, band, measure, pick, setPick });
+  const m = useLiveBody({ agency: slug, agencyName, s, route, setRoute: pickRoute, dir, setDir, band, measure, pick, setPick, inStudio: true });
 
   // The page overlay: the map draws Live's segments, the pick's card follows its anchor. The overlay's pick callback is kept
   // in a ref: a new one each render would redraw the map every time.

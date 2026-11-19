@@ -181,13 +181,14 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: their data is not being refreshed, and the design is still in progress.
   - Source: [decision log](#decision-log) (2026-11-15)
 - **Desktop only, one top bar**
-  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar, with the map key as one pill at the map's top left.
+  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar, with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
   - Source: Linear CIV-293, comments of 2026-10-17 (14:42 and 14:56 UTC)
+  - Exception (Ryan, 2026-11-19): in Studio's Live view the week table's two explanation lines (what Bunching's two figures are, and what grey means) live in Studio's About panel, Live part. The side panel keeps the short bunching definition with a Learn more link that opens it, and the map key keeps its short definition.
 - **Understood at a glance, no scrolling or collapsing in sidebars**
   - What: both sidebars show everything at once; if it does not fit, show less rather than cram.
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
@@ -297,7 +298,7 @@ Ryan, 2026-11-17: "I think the MCP would be part of that right?", of Atlas Studi
 Ryan, 2026-11-17 (CIV-1813): "Fix it now then omfg why the fuck are there any separate freqeucnies between buses and rail", then "like we can have 5 mins or 8 mins or 12 mins or whatever and not expose it to th epublic and put it under the next highest one if we want but this is much different than that", then "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". There are no mode-specific scales: every mode, bus, rail and streetcar, is graded on one scale, 5, 8, 10, 15, 20, 30, 60 (`TIER_MAXES`). The public scale is 10, 15, 20, 30, 60 (`PUBLIC_TIER_MAXES`); the internal 5 and 8 count as 10 (`publicTierOf`). Before this, buses graded on 10-60 and rail on 5-8-10-15-30-60, with no 20 since 75c2d8422 (2026-10-06, never approved). `modeTierOverrides` and `RAIL_TIER_MAXES` are gone, and `frequencyScales.test.ts` fails if a mode-specific scale or tier list appears.
 
 ### 2026-11-16 — Live and Studio are desktop only, with one top bar for every switcher
-Ryan, 2026-11-16 (CIV-1732, through the manager, answering "1" twice): Live and Studio are desktop only and hidden on phones, the same way as History and Compare; a phone visiting one falls back to the map. Of three redesign options for the shared map-and-sidebar layout, he picked A, "one bar": the measures join the other switchers in the top bar, the map key is one pill at the map's top left with its definition, and the route list ends after its last row. Live's tool page and Studio share this layout (`src/components/MapApp/`).
+Ryan, 2026-11-16 (CIV-1732, through the manager, answering "1" twice): Live and Studio are desktop only and hidden on phones, the same way as History and Compare; a phone visiting one falls back to the map. Of three redesign options for the shared map-and-sidebar layout, he picked A, "one bar": the measures join the other switchers in the top bar, the map key is one pill with its definition (it floats at the bottom left of the map since CIV-1821), and the route list ends after its last row. Live's tool page and Studio share this layout (`src/components/MapApp/`).
 
 ### 2026-11-16 — The For Transit Planners page is at /planners
 Ryan, 2026-11-16 (CIV-1744): "should it rlly be at /about/planners or should it be at another url", then picked "1": `/planners`, and later `/researchers` for the researchers page (CIV-1709). Audience pages get their own top-level address instead of sitting under About. The page had never been public, so the old address has no redirect.

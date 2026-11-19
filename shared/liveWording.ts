@@ -232,6 +232,13 @@ export function bunchTotalParts(share: number, bunched?: number | null, gapped?:
 export const bunchingSplitNote = (): string =>
   `Bunching: the first figure is gaps under ${minutesText(BUNCHED_GAP_SEC / 60)} between vehicles, the second gaps more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap.`;
 
+/** The same note short, beside the Learn more link that opens Studio's About panel at the Live part (Ryan, 2026-11-19). The map key says the same in its own words. */
+export const bunchingShortNote = (): string =>
+  `Bunching: gaps under ${minutesText(BUNCHED_GAP_SEC / 60)} or over ${GAPPED_FACTOR}× scheduled.`;
+
+/** The window event the Learn more link fires; the app opens the About panel at its Live part. */
+export const OPEN_ABOUT_LIVE_EVENT = 'atlas:open-about-live';
+
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };
 
