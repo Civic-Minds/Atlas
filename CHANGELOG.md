@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A route that starts late or stops early in a time of day no longer passes the frequency filter for it**: the wait before its first bus and after its last now counts like any other wait, so a route every 8 minutes whose first bus comes at 6:53 doesn't read as frequent for the 6–9 AM rush
 - **Maintainer-only diagnostics pages no longer ship with the public site**: they were built into every release as unused files, though no address ever opened them
 - **The About panel's agency count and countries match the published data**: it counted every agency the build loaded, so it disagreed with the rest of the site
 - **Atlas Studio can say where a route's vehicles are bunched and where riders have waited longest right now (local only)**: from Live's last half hour of vehicle readings, judged against each stop's scheduled gap, with the time of the reading

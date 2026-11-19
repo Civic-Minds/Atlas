@@ -79,3 +79,9 @@ export const EDGE_GAP_ALLOWANCE_MINUTES = 10;
 
 /** Rail's own midday window (09:30 to 14:30, minutes after midnight), used by its tier scale and the rail roll-up, and named on the Docs page. */
 export const RAIL_TIER_WINDOW = { start: 570, end: 870 } as const;
+
+/** CIV-238: the bit a public grade has in a route's edge-wait mask (pipeline/edgeWaits.ts), or null for any other number. */
+export function edgeWaitBit(grade: number): number | null {
+  const i = PUBLIC_TIER_MAXES.indexOf(grade);
+  return i < 0 ? null : 2 ** i;
+}

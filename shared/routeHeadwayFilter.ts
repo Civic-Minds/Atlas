@@ -115,6 +115,19 @@ function evaluate(expr: unknown, props: Props): unknown {
       if (typeof a !== 'number' || typeof b !== 'number') throw new ExpressionTypeError(`${op} expects numbers`);
       return op === '<' ? a < b : a <= b;
     }
+    // CIV-238: the edge-wait mask reads one bit, floor(mask / bit) % 2, as MapLibre evaluates it.
+    case '/':
+    case '%': {
+      const a = evaluate(args[0], props);
+      const b = evaluate(args[1], props);
+      if (typeof a !== 'number' || typeof b !== 'number') throw new ExpressionTypeError(`${op} expects numbers`);
+      return op === '/' ? a / b : a % b;
+    }
+    case 'floor': {
+      const a = evaluate(args[0], props);
+      if (typeof a !== 'number') throw new ExpressionTypeError('floor expects a number');
+      return Math.floor(a);
+    }
     default:
       throw new Error(`routeHeadwayFilter: unsupported expression operator "${op}"`);
   }
