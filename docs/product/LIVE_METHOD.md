@@ -4,7 +4,7 @@ This is how the Live route page (the dashboard and the full analysis at `/apps/l
 
 ## Where the numbers come from
 
-- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every minute, measured at 1,440 snapshots a day, and a vehicle's own position advances at a median of 61 seconds; kept 30 days in the `atlas-live` bucket) and the agency's timetable (GTFS).
+- **Positions, not reported delays.** The TTC feed sends no delay values, so Live works delays out itself. It uses the archived vehicle positions (one snapshot about every minute, measured at 1,440 snapshots a day; the TTC feed itself refreshes about every 30 seconds, and a vehicle's own timestamp advances at a median of 31 seconds, with 1 in 10 advances taking 61 seconds or more, so the recording sees about half the feed's updates; measured 2026-10-17 over a 4-minute poll, CIV-306; kept 60 days in the `atlas-live` bucket since CIV-1906) and the agency's timetable (GTFS).
 - **Window.** The last 7 service days by default. The page always says which days, how many trips and how many stop departures it is based on.
 - **Good days only.** A day counts as good when the route has at least 90% of the snapshots a typical day of its kind has.
   - **What counts as a snapshot.** One per timestamp, and only when it carries at least one of the route's vehicles. The older fetcher wrote an empty line for a snapshot with none of the route's vehicles; `--routes all` leaves it out. They are counted the same (neither), so an archive that mixes the two formats gives the same verdict for every day.
