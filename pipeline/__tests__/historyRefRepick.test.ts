@@ -153,7 +153,9 @@ describe('the archived zip\'s anchor skips token services (CIV-1641)', () => {
   it('a feed split into 150 one-trip services, each under the bar, still gets an anchor from all of them', () => {
     const ids = Array.from({ length: 150 }, (_, i) => `S${i}`);
     const rows: RepickRows = { calendar: ids.map((id, i) => cal(id, MF, i === 0 ? '20180905' : '20181001', '20181231')), calendarDates: [], trips: ids.map(service_id => ({ service_id, route_id: 'R1' })) };
-    expect(firstFullWeekAnchor(rows)).toBe('20180910');
+    // Every service counts (none is over the token bar). CIV-1885: the week of Sep 10 runs 1 trip a day against 150 from
+    // Oct 1, so it is a sliver of the feed, not the period: the anchor is Oct 1, the first week carrying the service.
+    expect(firstFullWeekAnchor(rows)).toBe('20181001');
   });
 });
 
@@ -167,6 +169,37 @@ describe('the archived zip\'s anchor is a week in force (CIV-1485)', () => {
 
   it('a weekday-only feed whose first week opens on a holiday Monday keeps that week (4 days in force)', () => {
     const rows: RepickRows = { calendar: [cal('MAIN', MF, '20180903', '20190118')], calendarDates: [{ service_id: 'MAIN', date: '20180903', exception_type: '2' }] as any, trips: tripsFor('MAIN', 20) };
+    expect(firstFullWeekAnchor(rows)).toBe('20180903');
+  });
+});
+
+describe('the archived zip\'s anchor carries the feed\'s real service (CIV-1885)', () => {
+  /** WeGo Oct 2018 shape: a 50-trip weekday service in force from April, the 2,335-trip timetable from August. */
+  function slimEarlyFeed(): RepickRows {
+    return {
+      calendar: [cal('EXPRESS', MF, '20180401', '20181013'), cal('MAIN', MF, '20180812', '20181013')],
+      calendarDates: [],
+      trips: [...tripsFor('EXPRESS', 50), ...tripsFor('MAIN', 2335)],
+    };
+  }
+
+  it('skips the April weeks where only the 50-trip service runs', () => {
+    const rows = slimEarlyFeed();
+    expect(firstFullWeekAnchor(rows)).toBe('20180813');
+    expect(week(rows, firstFullWeekAnchor(rows)!).week.services.Wednesday).toEqual(['EXPRESS', 'MAIN']);
+  });
+
+  it('keeps a slimmer season that still carries a real share of the service (summer at half of fall)', () => {
+    const rows: RepickRows = {
+      calendar: [cal('SUMMER', MF, '20180604', '20180831'), cal('FALL', MF, '20180903', '20181221')],
+      calendarDates: [],
+      trips: [...tripsFor('SUMMER', 100), ...tripsFor('FALL', 200)],
+    };
+    expect(firstFullWeekAnchor(rows)).toBe('20180604');
+  });
+
+  it('with no week near the busiest, the first week in force stands', () => {
+    const rows: RepickRows = { calendar: [cal('ONLY', MF, '20180903', '20181221')], calendarDates: [], trips: tripsFor('ONLY', 5) };
     expect(firstFullWeekAnchor(rows)).toBe('20180903');
   });
 });
