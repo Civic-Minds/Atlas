@@ -38,9 +38,9 @@ export interface LiveArchivePositionFeed {
  * preserving one-minute positions and five-minute trip-update archives.
  */
 export const LIVE_ARCHIVE_SHARDS = [
-  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [] },
+  { id: 'ttc-positions', positionSlugs: ['ttc'], tripSlugs: [], recording: true },
   { id: 'ttc-trips', positionSlugs: [], tripSlugs: ['ttc'] },
-  { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'] },
+  { id: 'hamilton', positionSlugs: ['hamilton'], tripSlugs: ['hamilton'], recording: true },
   { id: 'stm', positionSlugs: ['stm'], tripSlugs: ['stm'] },
   {
     id: 'burlington-halifax',
@@ -48,8 +48,16 @@ export const LIVE_ARCHIVE_SHARDS = [
     tripSlugs: ['burlington', 'halifax'],
   },
   // Atlas Studio demo agency (CIV-1682). Its worker writes to its own bucket, atlas-live-kingston, kept 60 days.
-  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'] },
+  { id: 'kingston', positionSlugs: ['kingston'], tripSlugs: ['kingston'], recording: true },
 ] as const;
+
+/**
+ * The agencies being recorded now (Studio's "Recording"): every slug in a shard marked `recording`, which is a shard whose
+ * Worker has a cron trigger (workers/gtfs-rt-archiver/wrangler*.toml; the test checks they agree). The others are paused.
+ */
+export const RECORDING_SLUGS: readonly string[] = [...new Set(
+  LIVE_ARCHIVE_SHARDS.filter(s => 'recording' in s && s.recording).flatMap(s => [...s.positionSlugs, ...s.tripSlugs]),
+)];
 
 /** Agencies whose snapshots live in their own bucket instead of atlas-live (CIV-1682: kept 60 days, not 30): shared/rules/live.ts. */
 export { LIVE_ARCHIVE_BUCKET_BY_SLUG } from './rules/live.js';
