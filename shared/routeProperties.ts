@@ -107,6 +107,8 @@ export interface RouteProperties {
    * TRUNK_FILTER_ENABLED is on (beta and dev, with section colours); public still reads routeFilterHeadwayByPeriod.
    */
   routeTrunkHeadwayByPeriod?: Partial<Record<PeriodKey, number | null>>;
+  /** CIV-238: per period, the public grades its first or last wait breaks (bit mask over PUBLIC_TIER_MAXES); absent = none. */
+  routeEdgeWaitFailByPeriod?: Partial<Record<PeriodKey, number>>;
   /** CIV-1579 shadow: aligned to this row's stopOrder (never fullStopOrder), "1" where the stop is on the direction's main stretch, empty where off it (shared/stopRuns decodeStopRuns). */
   trunkStopMask?: string;
   /** The direction's value is one gap between departures, not a cadence (pipeline isOneGapPeriod). Display only. */
