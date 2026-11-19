@@ -62,6 +62,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: an agency split across feeds (MTA New York, exo, Maryland Transit Administration, Bustang) is one entry wherever agencies are listed, counted, ranked or compared: the map's agency picker, search and In view list, the count pills, the agency index and pages, Studio (Coverage included) and the Atlas Studio MCP tools (list_agencies, rank_agencies, compare_agencies). A route in two of its feeds (same name, mode and long name) counts once. The feeds stay separate in the data; the grouping happens when it is read, in the one shared module `shared/agencyGroups.ts`, and a guard test fails if a list skips it.
   - Why: the site listed MTA New York as nine feeds on some screens and one agency on others.
   - Source: [decision log](#decision-log) (2026-11-19), Linear CIV-1963
+- **A feed with several operators is one regional entry**
+  - What: a single feed that carries several operators (Embark's feed with EMBARK, EMBARK Norman, Citylink Edmond, OU's CART and the Oklahoma River Cruises ferry; Metro Transit's with six) stays one agency in Atlas under the feed's agency, not split by agency_id into one agency per operator.
+  - Why: Ryan, 2026-11-19, choosing between one entry per feed and a split by operator: "1 but then by this logic we should combine the NYC MTA agencies right?" (the MTA half is CIV-1963).
+  - Source: Linear CIV-1944
 
 - **Understate rather than overstate**
   - What: when evidence is thin, show less or say there is not enough; never a plausible number that is not backed.
