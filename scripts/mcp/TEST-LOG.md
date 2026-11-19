@@ -438,3 +438,9 @@ No chat round: a refactor. 34 fixed tool calls (`scripts/mcp/goldenRun.mjs` with
   - #1623: "Lakeshore West" found GO's 18 bus, not the train, and "King" found the overnight 304, not the 504. Fixed (exact matches: short name, then rail, then daytime). route_frequency also names the other route of that name (alsoNamed: GO's 18 bus runs when the trains don't; the 304 is the King night streetcar), so the assistant can offer it. Re-run: both right.
   - #1624: schedule_changes gave Hamilton's spring comparison as the latest and called route 51 removed, though it runs every 10 today. Fixed with a note for comparisons over 45 days old; the rebuild is CIV-1969.
   - Weak, not filed: "Jackson Square" isn't a stop name, so both runs fell back to King and James. Locked, "which feeds make up MTA New York" was answered from a map link instead of include_parts.
+
+## 2026-11-19: schedule "now" (#1627), Claude both ways
+
+- SN1-SN3 in fresh chats on the branch server at 5:44 PM Thu Toronto time. All six passed "now" (none guessed a period) and stated what it used: "Thursday 5:44 PM Toronto time, weekday PM peak". SN1: 64 of 189 TTC routes every 10 or better. SN3: routes near Yonge and Finch with each one's service now. SN2: locked used route_frequency now plus route_now; normal used route_now alone (live bunching). Both are fine for "how often is it coming".
+- Checked by direct calls with ATLAS_MCP_NOW_AT at 3 AM Monday: Sunday's overnight service, "no scheduled service now", next part of the day Weekday AM peak. rank_agencies refuses "now". compare_agencies notes when the agencies keep different time zones (TTC and TransLink).
+- Hosted: the split meta.json needs a rebuild to carry each agency's time zone. Until then the hosted server falls back to Live's table, and says it has no time zone for other agencies.
