@@ -32,7 +32,7 @@ export interface PeriodSplit { at: number; beforeGap: number; afterGap: number; 
 /** times: sorted departures (minutes) inside [start, end). */
 export function periodSplit(times: readonly number[], start: number, end: number): PeriodSplit | null {
   const t = [...times];
-  let best: PeriodSplit | null = null;
+  let best: PeriodSplit | null = null, bestRaw = 0;
   for (let k = 3; k <= t.length - 1; k++) {
     const a = t.slice(0, k), b = t.slice(k - 1);
     if (t[k - 1] - start < SPLIT_BEFORE_MIN || end - t[k - 1] < SPLIT_AFTER_MIN) continue;
@@ -42,7 +42,8 @@ export function periodSplit(times: readonly number[], start: number, end: number
     if (ratio < SPLIT_RATIO) continue;
     const before = typicalGrade(ma), after = typicalGrade(mb);
     if (before === after) continue;
-    if (!best || ratio >= best.ratio) best = { at: Math.round(t[k - 1]), beforeGap: Math.round(ma), afterGap: Math.round(mb), before, after, ratio: Math.round(ratio * 100) / 100 };
+    // Compare the unrounded ratio, so a tie keeps the later split.
+    if (!best || ratio >= bestRaw) bestRaw = ratio, best = { at: Math.round(t[k - 1]), beforeGap: Math.round(ma), afterGap: Math.round(mb), before, after, ratio: Math.round(ratio * 100) / 100 };
   }
   return best;
 }
