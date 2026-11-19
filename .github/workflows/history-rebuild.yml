@@ -18,10 +18,17 @@ name: Rebuild History v2 sidecars
 #
 # A workflow that is not on the default branch cannot be dispatched (HTTP 404), so pushing a tag named
 # dryrun/civ-1430-* also starts a DRY RUN of mbta at that tag (never write mode).
+#
+# CIV-1313: repick=true re-picks every published period with the vote picker (anchored at each zip's first full week
+# in force, no --pin-from) and uploads under the CIV-1313 approval (mode 'repick': refDate, refDateQuality and the
+# routes may change). A dryrun/civ-1313-* tag starts a re-pick DRY RUN of mbta.
+#   gh workflow run history-rebuild.yml -f ref=main -f slug=mbta -f repick=true                         (dry run)
+#   gh workflow run history-rebuild.yml -f ref=main -f slug=mbta -f repick=true -f mode=write -f ticket=CIV-1313
 on:
   push:
     tags:
       - 'dryrun/civ-1430-*'
+      - 'dryrun/civ-1313-*'
   workflow_dispatch:
     inputs:
       ref:
@@ -42,6 +49,11 @@ on:
         options:
           - dry-run
           - write
+      repick:
+        description: 'CIV-1313: re-pick every period with the vote picker instead of pinning it to its published reference date (use ticket CIV-1313).'
+        required: false
+        default: false
+        type: boolean
       ticket:
         description: 'Write mode: the approval ticket (e.g. CIV-1430). Dry run: optional; mbta defaults to CIV-1430 for the check.'
         required: false
@@ -68,6 +80,7 @@ jobs:
     env:
       SLUG: ${{ inputs.slug || 'mbta' }}
       TICKET: ${{ inputs.ticket }}
+      REPICK: ${{ inputs.repick || startsWith(github.ref_name, 'dryrun/civ-1313-') }}
       NODE_OPTIONS: --max-old-space-size=6144
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
@@ -106,7 +119,19 @@ jobs:
 
       # One process (three side by side ran the runner out of memory: exit 143, run 43551595422); the shard
       # layout stays so it can be raised later.
+      # CIV-1313: a re-pick reads each zip with the vote picker (no --pin-from); the sidecars go straight to full-rebuild/.
+      - name: Re-pick every period with the vote picker
+        if: env.REPICK == 'true'
+        id: repick
+        env:
+          ATLAS_HISTORY_V2: '1'
+          ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug || 'mbta' }}
+        run: |
+          set -o pipefail
+          npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/full-rebuild" 2>&1 | tee "$OUT/backfill-0.log"
+
       - name: Rebuild every period pinned to its published reference date
+        if: env.REPICK != 'true'
         id: backfill
         continue-on-error: true
         env:
@@ -144,14 +169,14 @@ jobs:
         run: |
           npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/full-rebuild" --out "$OUT/diff.json" --md "$OUT/diff.md"
           cat "$OUT/diff.md" >> "$GITHUB_STEP_SUMMARY"
-          npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff-weekend-merge.json" --md "$OUT/diff-weekend-merge.md" > /dev/null || true
+          [ "$REPICK" = true ] || npx tsx pipeline/history-v2-diff.ts --slug "$SLUG" --published "$OUT/published" --rebuilt "$OUT/rebuilt" --out "$OUT/diff-weekend-merge.json" --md "$OUT/diff-weekend-merge.md" > /dev/null || true
 
       - name: Upload plan (dry run, with the approved-replacement check)
         if: always()
         continue-on-error: true
         run: |
           ticket="$TICKET"
-          if [ -z "$ticket" ] && [ "$SLUG" = mbta ]; then ticket=CIV-1430; fi
+          if [ -z "$ticket" ] && [ "$SLUG" = mbta ]; then ticket=CIV-1430; [ "$REPICK" = true ] && ticket=CIV-1313; fi
           args=(--slug "$SLUG" --dir "$OUT/full-rebuild")
           [ -n "$ticket" ] && args+=(--replace-approved "$ticket")
           set -o pipefail
@@ -192,6 +217,7 @@ jobs:
     env:
       SLUG: ${{ inputs.slug }}
       TICKET: ${{ inputs.ticket }}
+      REPICK: ${{ inputs.repick }}
       REF_INPUT: ${{ inputs.ref }}
       NODE_OPTIONS: --max-old-space-size=6144
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -234,13 +260,19 @@ jobs:
       - name: Download the published sidecars and their zips (read-only)
         run: npx tsx pipeline/history-v2-fetch-pinned.ts --slug "$SLUG" --out "$OUT"
 
-      - name: Rebuild every period pinned to its published reference date
+      - name: Rebuild every period pinned to its published reference date (or re-pick it, CIV-1313)
         env:
           ATLAS_HISTORY_V2: '1'
           ATLAS_HISTORY_WEEKEND_PERIODS: ${{ inputs.slug }}
         run: |
           mkdir -p "$OUT/rebuilt"
           set -o pipefail
+          if [ "$REPICK" = true ]; then
+            [ "$TICKET" = CIV-1313 ] || { echo "a re-pick uploads only under CIV-1313, got: '$TICKET'"; exit 1; }
+            npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/rebuilt/full-rebuild" > "$OUT/backfill.log" 2>&1 || { tail -50 "$OUT/backfill.log"; exit 1; }
+            grep -E "FAILED|refDate" "$OUT/backfill.log" | tail -40 || true
+            exit 0
+          fi
           npx tsx pipeline/backfill-history-v2.ts --slug "$SLUG" --zip-dir "$OUT/zips" --out-dir "$OUT/rebuilt" --pin-from "$OUT/published" > "$OUT/backfill.log" 2>&1 || { tail -50 "$OUT/backfill.log"; exit 1; }
           grep -E "PINNED|NOT PINNABLE|FAILED|^Pinned:" "$OUT/backfill.log" || true
 
