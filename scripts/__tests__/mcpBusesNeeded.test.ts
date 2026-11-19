@@ -7,7 +7,7 @@ const root = join(mkdtempSync(join(tmpdir(), 'mcp-buses-')), 'Atlas');
 mkdirSync(join(root, 'tmp', 'studio'), { recursive: true });
 const before = process.env.ATLAS_ROOT;
 process.env.ATLAS_ROOT = root;
-const file = (feed: string) => JSON.stringify({ feed, referenceDate: '2026-11-17', periods: { pmPeak: [{ routes: ['1'], scheduled: 9 }] } });
+const file = (feed: string) => JSON.stringify({ feed, referenceDate: '2026-11-17', periods: { pmPeak: [{ routes: ['01'], scheduled: 9 }] } });
 afterAll(() => { if (before == null) delete process.env.ATLAS_ROOT; else process.env.ATLAS_ROOT = before; });
 
 describe('buses_needed files (CIV-1910)', () => {
@@ -22,7 +22,10 @@ describe('buses_needed files (CIV-1910)', () => {
     writeFileSync(join(bundle, 'hamilton-before-after.json'), '{}');
     const { busesNeeded } = await import('../mcp/localData');
     const { studioFile } = await import('../mcp/diskStore');
-    expect(busesNeeded('hamilton', '1', 'pmPeak')).toMatchObject({ cached: true, feed: 'bundle.zip', groups: [{ routes: ['1'] }] });
+    expect(busesNeeded('hamilton', '1', 'pmPeak')).toMatchObject({ cached: true, feed: 'bundle.zip', groups: [{ routes: ['01'] }] });
+    // "1" finds the file's "01" (#1617); "10" stays its own route.
+    expect(busesNeeded('hamilton', '01', 'pmPeak')).toMatchObject({ groups: [{ routes: ['01'] }] });
+    expect(busesNeeded('hamilton', '10', 'pmPeak')).toMatchObject({ groups: [] });
     expect(studioFile('hamilton-before-after.json')).toBe(join(bundle, 'hamilton-before-after.json'));
     // This checkout's own file wins over the bundle's.
     writeFileSync(join(root, 'tmp', 'studio', 'hamilton-vehicles.json'), file('own.zip'));

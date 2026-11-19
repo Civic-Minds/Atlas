@@ -20,7 +20,7 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     const res = local.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
     if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
-    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].toLowerCase()}: it may not run then, or its number is written differently.` };
+    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
     const missing = every != null && !STUDIO_TARGETS.includes(every);
     const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
     const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));

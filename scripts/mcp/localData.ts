@@ -198,6 +198,9 @@ export type BusesNeeded =
   | { cached: false }
   | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
 
+/** A route number to compare, without leading zeros: Studio's file names Hamilton's routes "01", "02" (#1617). */
+const routeKey = (r: string) => r.trim().toLowerCase().replace(/^0+(?=\d)/, '');
+
 /**
  * Buses needed to run a route in a period, from Studio's own buses-needed file (CIV-1693), the same figures Studio's page
  * shows. It never runs the calculation itself: on a large agency that takes minutes and loads the Mac (manager,
@@ -209,8 +212,8 @@ export function busesNeeded(slug: string, route: string, period: PeriodKey): Bus
   if (!path) return { cached: false };
   const file = feedFile(slug);
   const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
-  const want = route.trim().toLowerCase();
-  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
+  const want = routeKey(route);
+  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => routeKey(r) === want));
   return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
 }
 
