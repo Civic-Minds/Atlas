@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, TIME_LABEL, loadingText } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, TIME_LABEL, loadingText } from '../../content/noticeCopy';
 import { RouteTitleName } from '../../components/RouteRowName';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -22,6 +22,7 @@ import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import RouteNow from './RouteNow';
+import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
 
@@ -72,6 +73,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // A planner's own cut-offs (CIV-1886), kept across routes while Studio is open.
   const [cutoffs, setCutoffs] = useState<SetCutoffs>({});
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const routeMenu = useChipRow<string>();
   const pickRoute = (r: string | null) => { setRoute(r); if (!r) setDir(null); setPick(null); };
   const m = useLiveBody({ agency: slug, agencyName, s, route, setRoute: pickRoute, dir, setDir, band, measure, pick, setPick });
 
@@ -92,7 +94,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: '', width: 'w-36', arrow: true };
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
-    { key: 'route', label: 'Route', value: route ?? '', options: m.routeOptions, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
+    { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
@@ -124,8 +126,15 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={agencyName}>
           {dataUpTo}
           <PanelBody className="px-3 pt-3 pb-3">
-            {/* CIV-1878 (Ryan): the first thing is picking a route. The stretch list ("Last N service days", "Where the schedule is looser than needed") and its sample lines live in each route's own view. */}
-            <div className="flex [&>section]:w-full">{m.overview}</div>
+            {/* CIV-1878 (Ryan picked option 1): the first thing is a route dropdown listing every route, the map's own chip and dropdown (ChipMenu), so a long list never makes the panel scroll; its list scrolls inside itself. The stretch list lives in each route's own view. */}
+            <div ref={routeMenu.rowRef}>
+              <ChipMenu label={ROUTE_MENU_LABEL} active={false} width="w-full" arrow open={routeMenu.openChip === 'route'} onToggle={() => routeMenu.toggle('route')}
+                panelClassName="!static !mt-1 max-h-[40vh] overflow-y-auto">
+                {m.routeOptions.filter(([k]) => k !== '').map(([k, text, plain]) => (
+                  <button key={k} type="button" aria-label={plain} onClick={() => { m.openRoute(k); routeMenu.setOpenChip(null); }} className={chipRowClass(false)}>{text}</button>
+                ))}
+              </ChipMenu>
+            </div>
             <div className="mt-3"><WidgetPanel widgets={m.summary} /></div>
           </PanelBody>
         </Panel>
