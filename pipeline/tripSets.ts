@@ -16,7 +16,8 @@ import { PERIOD_KEYS, PERIOD_MINUTES, SPARKLINE_HOURS, asNextNight, MINUTES_PER_
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import type { StretchRowValues } from '../shared/routeProperties.js';
 import { DEFAULT_CRITERIA } from './defaults.js';
-import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats } from './transit-phase2.js';
+import { ALL_DAY_MIN_COVERAGE, BURST_MAX_SPAN_MINUTES, MIN_PEAK_BLOCK_DEPARTURES, MIN_SCHEDULE_DEPARTURES, computeHeadwayStats, determineTier } from './transit-phase2.js';
+import { GRACE_MINUTES, GRACE_PERCENT, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER } from '../shared/rules/frequency.js';
 import { ALL_DAY_MIDDAY_MAX_WAIT } from '../shared/worstDirection.js';
 import { NO_PERIOD_SERVICE_TILE_VALUE } from '../shared/pmtilesProps.js';
 import {
@@ -1541,6 +1542,43 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);
     const values = counting.map(filterOf).filter((v): v is number => v != null);
+    {
+      // CIV-238 research 3 (never merged): the worst wait a rider faces in the period on the main stretch, counting
+      // period start to first bus and last bus to period end like any other gap under the settled near-miss allowance;
+      // a true start or end of service keeps the approved +10 (one near-miss slot). fail bit i = N_i passes on the
+      // internal gaps alone but fails once the edges count.
+      const all = [...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b);
+      const t = all.filter(x => x >= start && x < end);
+      if (t.length > 0) {
+        const internal = t.slice(1).map((x, i) => x - t[i]);
+        const open = t[0] - start, close = end - t[t.length - 1];
+        const trueOpen = !(all[0] < start), trueClose = !(all[all.length - 1] >= end);
+        let fail = 0;
+        [10, 15, 20, 30].forEach((n, bit) => {
+          const g = Math.max(GRACE_MINUTES, Math.round(n * GRACE_PERCENT));
+          const gaps = [...internal];
+          let pre = 0, hard = false;
+          for (const [e, isTrue] of [[open, trueOpen], [close, trueClose]] as const) {
+            if (e <= 0) continue;
+            if (!isTrue || e <= n + g) gaps.push(e);
+            else if (e <= n + 10) pre++;
+            else hard = true;
+          }
+          const tier = (hs: number[], preCount: number) => determineTier(hs, t.length, 0, [n], GRACE_MINUTES, 0, GRACE_PERCENT, VIOLATION_PERCENT, VIOLATION_PERCENT_BY_TIER as Record<number, number>, preCount) === String(n);
+          if (tier(internal, 0) && (hard || !tier(gaps, pre))) fail |= 1 << bit;
+          // Variant B (bits 4-7): edge waits get no near-miss grace. A period-boundary edge must be <= N; a true
+          // start or end keeps +10 (one slot).
+          let preB = 0, hardB = false;
+          for (const [e, isTrue] of [[open, trueOpen], [close, trueClose]] as const) {
+            if (e <= n) continue;
+            if (isTrue && e <= n + 10) preB++;
+            else hardB = true;
+          }
+          if (tier(internal, 0) && (hardB || !tier(internal, preB))) fail |= 1 << (bit + 4);
+        });
+        (period[key] as any).research = { fail, open: Math.ceil(open), close: Math.ceil(close), trueOpen, trueClose, maxInternal: internal.length ? Math.ceil(Math.max(...internal)) : null };
+      }
+    }
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
@@ -1718,7 +1756,14 @@ export function rollupRoute(dirs: readonly (DirectionRollup | null)[]): RouteRol
       filterValue: complete && serving.length > 0 && filterValues.every(v => v != null) ? Math.max(...(filterValues as number[])) : null,
       trunkFilterValue: complete && serving.length > 0 && trunkValues.every(v => v != null) ? Math.max(...(trunkValues as number[])) : null,
       runs: known.some(d => d.period[key].runs),
-    };
+      research: (() => {
+        const rs = serving.map(d => (d.period[key] as any).research).filter(Boolean);
+        if (!rs.length) return null;
+        const fail = rs.reduce((m: number, r: any) => m | r.fail, 0);
+        const worst = rs.reduce((a: any, b: any) => (Math.max(b.trueOpen ? 0 : b.open, b.trueClose ? 0 : b.close, b.open, b.close) > Math.max(a.open, a.close) ? b : a));
+        return { ...worst, fail };
+      })(),
+    } as any;
   }
   return {
     period,
@@ -1890,6 +1935,7 @@ export function stampStretchShadow(
     // direction passing, the worst deciding. Where the trunk has no value but the route has (a trunk under the branch
     // minimum), it is the route's own value, so a short-trunk route keeps today's D1 reading and the app can read this
     // alone. Overnight is unchanged: it reads the night verdict, as above.
+    p.researchEdgeRuleByPeriod = byPeriod(k => (route.period[k] as any).research ?? null);
     p.routeTrunkHeadwayByPeriod = byPeriod(k => k === 'overnight' ? route.nightValue : route.period[k].trunkFilterValue ?? route.period[k].filterValue);
     // CIV-1579: which of the row's stops are on its direction's main stretch (1, else empty), run-length encoded
     // (encodeStopRuns), so coverage can count a trunk's stops without its branches. Aligned to the row's stopOrder,
