@@ -151,9 +151,13 @@ export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'long
   if (exact) return exact;
   const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
   if (line.length) return line[0];
-  // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, rail before bus on a tie.
+  // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, then, among routes matched only by
+  // name, one holding the words typed as whole words ("E Line" is METRO E Line, not METRO Blue Line, "bluE LINE"),
+  // then rail before bus.
+  const words = new RegExp(`(^|[^a-z0-9])${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`);
+  const whole = (r: R) => (names(r).some(n => words.test(n)) ? 0 : 1);
   const ranked = routes.map(r => ({ r, rank: routeTextMatchRank({ shortName: r.shortName, longName: r.longName }, q) }))
-    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || rail(a.r) - rail(b.r));
+    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || whole(a.r) - whole(b.r) || rail(a.r) - rail(b.r));
   return ranked[0]?.r ?? null;
 }
 
