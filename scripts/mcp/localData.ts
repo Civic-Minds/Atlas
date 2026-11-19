@@ -20,7 +20,7 @@ import { placeOf, stopToStopRuns } from '../../pipeline/stopToStop';
 import { runningTimeSummary } from '../../pipeline/runningTime';
 import { pooledReadingInWindow } from '../../pipeline/stopPools';
 import { BUNCHED_DEPARTURE_MINUTES } from '../../pipeline/headway-utils';
-import { ATLAS_ROOT, writeIndexFile } from './diskStore';
+import { ATLAS_ROOT, studioFile, writeIndexFile } from './diskStore';
 import { RAIL_MODE_LABELS, availableAgencies, currentStore, forget, periodFigure, routesOn } from './atlasData';
 
 /** The feed file Atlas processed for an agency, newest first: Atlas-worktrees/_feeds/<slug>/*.zip, or ATLAS_MCP_FEEDS_DIR. */
@@ -191,17 +191,15 @@ export async function buildIndex(onProgress?: (done: number, total: number) => v
   return out;
 }
 
-/** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json). */
-export function studioVehiclesPath(slug: string): string { return join(ATLAS_ROOT, 'tmp', 'studio', studioVehiclesFileName(slug)); }
-
-/** The command that builds Studio's buses-needed file for an agency, run once by hand (it takes minutes on a large agency). */
-export function studioVehiclesCommand(slug: string, file: string): string {
-  return `nice -n 15 npx tsx scripts/vehicles-needed.ts ${file} --slug ${slug} --json tmp/studio/${studioVehiclesFileName(slug)}`;
-}
+/** Where Studio's buses-needed file for an agency lives (tmp/studio/<slug>-vehicles.json), or null when it isn't built. */
+export function studioVehiclesPath(slug: string): string | null { return studioFile(studioVehiclesFileName(slug)); }
 
 export type BusesNeeded =
-  | { cached: false; command: string | null }
+  | { cached: false }
   | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
+
+/** A route number to compare, without leading zeros: Studio's file names Hamilton's routes "01", "02" (#1617). */
+const routeKey = (r: string) => r.trim().toLowerCase().replace(/^0+(?=\d)/, '');
 
 /**
  * Buses needed to run a route in a period, from Studio's own buses-needed file (CIV-1693), the same figures Studio's page
@@ -210,11 +208,12 @@ export type BusesNeeded =
  */
 export function busesNeeded(slug: string, route: string, period: PeriodKey): BusesNeeded {
   const path = studioVehiclesPath(slug);
+  // No build command in the answer (#1613): it's a maintainer's shell line with a path on this Mac, of no use to a planner.
+  if (!path) return { cached: false };
   const file = feedFile(slug);
-  if (!existsSync(path)) return { cached: false, command: file ? studioVehiclesCommand(slug, file) : null };
   const v = JSON.parse(readFileSync(path, 'utf8')) as StudioVehiclesFile;
-  const want = route.trim().toLowerCase();
-  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => r.toLowerCase() === want));
+  const want = routeKey(route);
+  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => routeKey(r) === want));
   return { cached: true, feed: v.feed, olderSchedule: !!file && basename(file) !== v.feed, referenceDate: v.referenceDate, groups };
 }
 

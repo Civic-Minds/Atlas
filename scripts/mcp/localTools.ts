@@ -19,8 +19,8 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     const every = args.every != null ? Number(args.every) : null;
     const res = local.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
-    if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.`, ...(res.command ? { toBuild: res.command } : {}) };
-    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].toLowerCase()}: it may not run then, or its number is written differently.` };
+    if (!res.cached) return { agency: a.name, route, period, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
+    if (!res.groups.length) return { agency: a.name, route, period, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
     const missing = every != null && !STUDIO_TARGETS.includes(every);
     const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
     const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
@@ -32,15 +32,16 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
         routesSharingBuses: g.routes,
         scheduledNow: g.scheduled,
         neededAtCurrentFrequency: g.implied,
-        roundTripRunningMinutes: g.runningMin,
-        roundTripLayoverMinutes: g.layoverMin,
+        // Summed over every direction and branch of the group (#1618), not one round trip.
+        runningMinutesAllPatterns: g.runningMin,
+        layoverMinutesAllPatterns: g.layoverMin,
         // The same figures Studio's buses-needed page shows for each branch split (groupAtTarget).
         neededAt: neededAt(groupAtTarget(g, 'current')),
         ...(g.atTargetEven ? { neededAtWithBranchesEven: neededAt(groupAtTarget(g, 'even')) } : {}),
       })),
       targetsNote: `Atlas Studio works buses out only for every ${STUDIO_TARGETS.join(', ')} minutes. For any other frequency, say Atlas has no figure; don't work one out yourself.`,
       ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),
-      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted.",
+      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted. 'runningMinutesAllPatterns' and 'layoverMinutesAllPatterns' add up every direction and branch of the group, so they are not one round trip: never divide them by a frequency to check or replace a count.",
       source: "Atlas Studio's buses-needed file, worked out from the agency's own schedule.",
     };
   },

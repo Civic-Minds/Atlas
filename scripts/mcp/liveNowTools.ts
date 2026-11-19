@@ -44,7 +44,7 @@ export const liveNowHandlers: Record<string, (args: Args) => unknown | Promise<u
     const source = nowSource();
     if (!source) return { agency: a.name, live: null, note: `Atlas records ${a.name}'s vehicles but this server can't read the current recordings yet. Offer the latest recorded week (route_reliability, route_bunching).` };
     const timeZone = LIVE_AGENCY_TIMEZONES[a.slug];
-    if (!timeZone) throw new Error(`No time zone set for ${a.name}'s Live recordings.`);
+    if (!timeZone) return { agency: a.name, live: null, note: `Atlas records ${a.name}'s vehicles but can't read its current recordings yet, so it has no figures for right now. Offer the latest recorded week (route_reliability, route_bunching).` };
 
     const now = nowSec();
     const clock = localClock(now, timeZone);

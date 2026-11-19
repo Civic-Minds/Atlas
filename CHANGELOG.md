@@ -7,6 +7,12 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 ## [Unreleased]
 
 - **On a filtered map, one slower end stop no longer recolours a whole stretch of route**: only the piece next to that stop shows the slower colour, and the rest keeps its own ([#1093](https://github.com/Civic-Minds/Atlas/issues/1093))
+- **Atlas Studio's buses-needed answers no longer call a sum of all a route's patterns its round trip (local only)**: assistants divided it by the frequency and wrongly said Atlas's bus counts were off ([#1618](https://github.com/Civic-Minds/Atlas/issues/1618))
+- **Atlas Studio finds the routes at a corner even where no stop is named for both streets**: asking for routes near Yonge and Finch on YRT found nothing, because YRT names its stops "Finch GO Bus Terminal" and "Yonge St"; it now takes the closest stops on each street ([#1614](https://github.com/Civic-Minds/Atlas/issues/1614))
+- **Atlas Studio finds Hamilton's route 1 in its buses-needed figures (local only)**: Studio's file names it "01", so asking for "1" found nothing ([#1617](https://github.com/Civic-Minds/Atlas/issues/1617))
+- **Atlas Studio finds the buses-needed figures Studio has built for Hamilton and Denver (local only)**: it looked for them in only one of the two places Studio keeps them, so it said it had no figures ([#1616](https://github.com/Civic-Minds/Atlas/issues/1616))
+- **Atlas Studio no longer hands assistants a maintainer's build command when an agency has no buses-needed figures**: the answer carried a shell line with a path on Atlas's own computer, which a planner can't use ([#1613](https://github.com/Civic-Minds/Atlas/issues/1613))
+- **Atlas Studio can say how Boston's recorded routes are running right now**: asking about an MBTA route returned an error, because Live's Boston recordings had no time zone set ([#1612](https://github.com/Civic-Minds/Atlas/issues/1612))
 - **History reads Boston's older years at a typical week, as every newer year already does**: some of MBTA's older periods were read on a holiday-adjacent or odd week, so their frequencies could look off
 - **King County Metro no longer repeats [Seattle's streetcars](https://github.com/Civic-Minds/Atlas/issues/1607)**: its feed also carries the South Lake Union and First Hill streetcars, which were drawn a second time under King County Metro's name
 - **Tillamook no longer repeats [Sunset Empire's](https://github.com/Civic-Minds/Atlas/issues/1604) routes**: its feed bundles three agencies, so Sunset Empire's 5 routes were drawn a second time under Tillamook's name
