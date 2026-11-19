@@ -63,4 +63,9 @@ describe('one frame for every map view (CIV-1828)', () => {
     const offending = views.filter(f => /\bsidebarLeft\b|\bsearchBarWidth\b|sidebarFrameStyle\(/.test(read(f)));
     expect(offending).toEqual([]);
   });
+
+  it('gives no view a toolbar of its own: About and the theme live in the main map\'s top bar and Filters (CIV-1925)', () => {
+    const views = ['src/apps/History.tsx', 'src/apps/LiveVehicles.tsx', 'src/apps/NightService.tsx', 'src/apps/BustangConnections.tsx', ...sourceFiles('src/apps/studio')];
+    expect(views.filter(f => /setLightMode|data-map-overlay="[\w-]*toolbar"/.test(read(f)))).toEqual([]);
+  });
 });
