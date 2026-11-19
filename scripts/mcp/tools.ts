@@ -19,6 +19,15 @@ export * from './toolDefs';
 export * from './toolHelpers';
 export { LIVE_TOOLS };
 
+/** Days after which a schedule comparison may no longer be the agency's latest change (#1624: Hamilton's compared two spring 2026 schedules in November). */
+export const COMPARISON_STALE_DAYS = 45;
+/** A note when a comparison's later schedule is from well before today, so an answer doesn't call a route gone that runs now. */
+export function staleComparisonNote(afterYmd: string, nowMs: number): { staleNote?: string } {
+  const after = Date.parse(`${afterYmd.slice(0, 4)}-${afterYmd.slice(4, 6)}-${afterYmd.slice(6, 8)}T12:00:00Z`);
+  if (Number.isNaN(after) || (nowMs - after) / 86_400_000 <= COMPARISON_STALE_DAYS) return {};
+  return { staleNote: 'This comparison is between schedules as of those dates. The agency may have changed its schedule since, so before saying a route was removed or cut, check route_frequency for today\'s schedule.' };
+}
+
 export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>> = {
   ...liveHandlers,
   list_agencies: async ({ query, region, country, near, km }) => {
@@ -197,6 +206,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
       frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,
+      ...staleComparisonNote(file.after.date, Date.now()),
       ...(from + size < changes.length ? { more: `Call again with offset ${from + size} for the next ${Math.min(size, changes.length - from - size)}.` } : {}),
     };
   },

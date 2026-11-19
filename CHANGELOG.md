@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio warns when its schedule comparison for an agency is months old**: asked what changed at Hamilton, it gave a spring 2026 comparison as the latest and called route 51 removed, though it runs today ([#1624](https://github.com/Civic-Minds/Atlas/issues/1624))
 - **[MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) is one agency everywhere, not one row per feed**: search, the In view list, the map's agency count, the agency browser, Studio and Atlas Studio's rankings and comparisons listed its subway, borough buses and railroads separately, and routes in two of its feeds counted twice; Queens buses are labelled Queens, not Queens Village
 - **Atlas Studio finds the route people mean when two share a name**: "Lakeshore West" on GO Transit found the 18 bus instead of the train line, and "King" on the TTC found the overnight 304 instead of the 504 ([#1623](https://github.com/Civic-Minds/Atlas/issues/1623))
 - **Atlas Studio says when Live's recording of an agency is paused (local only)**: asking how a Montréal or Halifax route was running right now read as a quiet half hour, though nothing is being recorded there ([#1621](https://github.com/Civic-Minds/Atlas/issues/1621))

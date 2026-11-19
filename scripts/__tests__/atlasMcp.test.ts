@@ -216,3 +216,13 @@ describe('route lookup (CIV-1864)', () => {
   });
 });
 
+
+describe('schedule_changes on an old comparison (#1624)', () => {
+  it('adds a note when the later schedule is more than 45 days before today', async () => {
+    const { staleComparisonNote } = await import('../mcp/tools');
+    const nov19 = Date.parse('2026-11-19T12:00:00Z');
+    expect(staleComparisonNote('20260527', nov19).staleNote).toMatch(/check route_frequency/);
+    expect(staleComparisonNote('20261125', nov19)).toEqual({});
+    expect(staleComparisonNote('20261010', nov19)).toEqual({});
+  });
+});
