@@ -396,12 +396,6 @@ export function decideRefreshSkipUnchanged(opts: {
   /** Uncapped expiry stored at the last refresh; the right key to compare a raw peek against (#688). */
   lastPeekedExpiry?: string | null;
   lastFeedVersion?: string | null;
-  /**
-   * The agency reads its feed as of the run date on the old picker (#774), so an unchanged feed
-   * still has new output. CIV-1101: only without a service-week key (the kill switch); with one,
-   * a moved week reprocesses like any other agency.
-   */
-  referenceDateFromRunDate?: boolean;
   /** CIV-1011 stage 4: the picked week's key now (serviceWeekKey) and at the last refresh; a moved week reprocesses. */
   serviceWeek?: string | null;
   lastServiceWeek?: string | null;
@@ -415,7 +409,7 @@ export function decideRefreshSkipUnchanged(opts: {
   contentKey?: string | null;
   lastFeedContentKey?: string | null;
 }): RefreshSkipReason {
-  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired || (opts.referenceDateFromRunDate && !opts.serviceWeek)) return { skip: false };
+  if (opts.forceRefresh || opts.hasSupplementals || opts.feedExpired) return { skip: false };
   if (opts.serviceWeek && opts.serviceWeek !== (opts.lastServiceWeek ?? null)) return { skip: false };
   // The files inside the zip decide when both content keys are known, so a publisher that re-zips the
   // same files every download is not reprocessed weekly. Else, when the last ingested zip's hash is

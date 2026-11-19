@@ -10,7 +10,6 @@
   "feedUrl": "https://passio3.com/ncstateuni/passioTransit/gtfs/google_transit.zip",
   "lastFeedExpiry": "20271231",
   "lastFeedVersion": "20260917",
-  "referenceDateFromRunDate": true,
   "excludeRouteShortNames": [
     "FTB",
     "GRK"

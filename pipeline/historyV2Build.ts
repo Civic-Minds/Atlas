@@ -7,7 +7,6 @@
  */
 import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 import { yearOfRefDate, type HistorySnapshotV2, type HistoryV2SidecarRoute } from '../shared/historyV2.js';
-import type { HolidayPeriodDrop, RepickedPeriod } from './historyRefQuality.js';
 import { afterBuildMonth, getPeriodKeySortValue, labelFromRefDate, parsePeriodKey } from './historyPeriods.js';
 import type { ShapeGap } from './historyShapes.js';
 
@@ -61,16 +60,12 @@ export interface BuildReport {
   mixedMethodRoutes: string[];
   /** Report-only visibility checks per agency (see visibilityCheck); nothing here changes a snapshot. */
   visibility: AgencyVisibility[];
-  /** Sidecar periods left out whole because their reference date is a holiday-week date. */
-  droppedHolidayPeriods: HolidayPeriodDrop[];
-  /** Sidecar periods the v2 backfill read at a normal week of the same feed instead of a holiday or split week (kept, with the new date). */
-  repickedPeriods: RepickedPeriod[];
   /** Years whose routes lack real shape lines (CIV-843). */
   shapeGaps: ShapeGap[];
 }
 
 export function newBuildReport(): BuildReport {
-  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], droppedHolidayPeriods: [], repickedPeriods: [], shapeGaps: [] };
+  return { drops: [], yearDisagreements: [], superseded: 0, mixedMethodRoutes: [], visibility: [], shapeGaps: [] };
 }
 
 export interface VisibilitySpike { route: string; label: string; year: number; value: number; prev: number; next: number }

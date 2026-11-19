@@ -3,9 +3,9 @@
  *
  * CIV-1101 Part B: new snapshots read the week the one service-day model picks by vote
  * (serviceDays.ts pickRiderWeek), so a holiday is a day that loses the vote and no fixed holiday
- * list or Dec 20 - Jan 6 window is needed. New sidecars are stamped `pickedBy: 'vote'` and never
- * flagged holiday. Sidecars already published keep the flags they were written with: the build
- * still reads them (holidayDropFor, repickedFor), so published History does not change.
+ * list or Dec 20 - Jan 6 window is needed. Sidecars are stamped `pickedBy: 'vote'` and never
+ * flagged holiday. CIV-1839: a sidecar that is not vote-picked is an error (assertVotePicked), not a
+ * dropped or re-read period.
  * Lives in its own file; it only reads calendar.txt / calendar_dates.txt / trips.txt rows.
  */
 import JSZip from 'jszip';
@@ -87,14 +87,12 @@ export function refDayTrips(rows: QualityRows, refDate: string): { tripsOnRef: n
 }
 
 /**
- * The stamp for a new sidecar: the week was picked by vote (or, under the kill switch
- * ATLAS_LEGACY_REFERENCE_DATE=1, by the old picker). Never a holiday flag from a date list.
+ * The stamp for a new sidecar: the week was picked by vote. Never a holiday flag from a date list.
+ * A read with no picked week (weekStart null) throws: the old picker's 'legacy' stamp is gone (CIV-1839).
  */
 export function pickedWeekQuality(rows: QualityRows, refDate: string, weekStart: string | null): RefDateQuality {
-  const trips = refDayTrips(rows, refDate);
-  return weekStart
-    ? { holiday: false, reason: `week of ${weekStart} picked by vote`, ...trips, pickedBy: 'vote', weekStart }
-    : { holiday: false, reason: 'read by the old picker (ATLAS_LEGACY_REFERENCE_DATE=1)', ...trips, pickedBy: 'legacy' };
+  if (!weekStart) throw new Error(`no picked week for refDate ${refDate}: the reference week must be picked by vote (CIV-1839 removed the old picker's stamp)`);
+  return { holiday: false, reason: `week of ${weekStart} picked by vote`, ...refDayTrips(rows, refDate), pickedBy: 'vote', weekStart };
 }
 
 /** Parse the three files from a GTFS zip (no stop_times, no shapes). */
@@ -115,39 +113,14 @@ export async function readPickedWeekQuality(buf: Buffer, refDate: string, weekSt
   return pickedWeekQuality(await readQualityRows(buf), refDate, weekStart);
 }
 
-/** A whole sidecar period the build leaves out because its reference date is a holiday-week date. */
-export interface HolidayPeriodDrop {
-  slug: string;
-  periodKey: string;
-  refDate: string;
-  reason: string;
-  routesAffected: number;
-}
-
-/** The drop record for a sidecar flagged holiday (null = keep). A sidecar with no quality field is kept. */
-export function holidayDropFor(slug: string, periodKey: string, sc: Pick<HistoryV2Sidecar, 'refDate' | 'routes' | 'refDateQuality'>): HolidayPeriodDrop | null {
+/**
+ * CIV-1839: every published sidecar must be stamped as picked by vote (refDateQuality.pickedBy 'vote' with a
+ * weekStart). The build and the upload refuse anything else, so an older sidecar (legacy, or holiday-flagged and
+ * re-picked by the retired rule) is never silently dropped, listed or re-read; re-pick it by vote (CIV-1313).
+ * Returns the problem, or null when the sidecar is fine.
+ */
+export function votePickProblem(sc: Pick<HistoryV2Sidecar, 'refDate' | 'refDateQuality'>): string | null {
   const q = sc.refDateQuality;
-  if (!q || q.holiday !== true) return null;
-  return { slug, periodKey, refDate: sc.refDate, reason: q.reason, routesAffected: Object.keys(sc.routes ?? {}).length };
-}
-
-/** A kept sidecar period whose reference date the v2 backfill replaced by a normal week of the same feed. */
-export interface RepickedPeriod {
-  slug: string;
-  periodKey: string;
-  from: string;
-  to: string;
-  fromYear: number;
-  toYear: number;
-  reason: string;
-  tripsOnFrom: number;
-  tripsOnTo: number;
-  routes: number;
-}
-
-/** The re-pick record for a sidecar (null = not re-picked). */
-export function repickedFor(slug: string, periodKey: string, sc: Pick<HistoryV2Sidecar, 'routes' | 'refDateQuality'>): RepickedPeriod | null {
-  const r = sc.refDateQuality?.repicked;
-  if (!r) return null;
-  return { slug, periodKey, ...r, routes: Object.keys(sc.routes ?? {}).length };
+  if (q?.pickedBy === 'vote' && typeof q.weekStart === 'string' && q.holiday !== true) return null;
+  return `not stamped as picked by vote (refDate ${sc.refDate}, pickedBy ${q?.pickedBy ?? 'absent'}${q?.holiday ? ', holiday flag' : ''}${q?.repicked ? ', old re-pick' : ''}); the old reference-date rules are gone, re-pick it by vote (CIV-1313)`;
 }

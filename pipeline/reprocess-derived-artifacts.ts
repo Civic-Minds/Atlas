@@ -125,10 +125,8 @@ interface Agency {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   mergeIdenticalShapeIds?: boolean;
-  referenceDateFromRunDate?: boolean;
   skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
-  nextServiceDatesSkipWeekendEvents?: boolean;
   fare?: number;
   feedUrl?: string | null;
   expiredFeedPin?: ExpiredFeedPin;

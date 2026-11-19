@@ -15,8 +15,8 @@
  * All conflicts are checked before the first write, and a conflict that appears mid-run (a race)
  * stops the run at once. Exactly one agency per run. Every file is validated first (sidecars with
  * parseHistoryV2Sidecar; slug and periodKey must match the path); one bad file refuses the whole run.
- * A period whose sidecar has refDateQuality.holiday and no repick is skipped with a warning
- * (the build would drop it anyway), together with its shapes file.
+ * CIV-1839: a sidecar that is not stamped as picked by vote (refDateQuality.pickedBy 'vote' with a weekStart)
+ * is an error that refuses the run: the build refuses it too, so re-pick it by vote first.
  * The dry run reads the archive bucket only when credentials are configured
  * (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ARCHIVE_BUCKET_NAME).
  *
@@ -34,6 +34,7 @@
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { votePickProblem } from './historyRefQuality.js';
 import { parseHistoryV2Sidecar } from '../shared/historyV2Reader.js';
 import type { HistoryV2Sink } from './historyV2.js';
 import { assertWriteGate, byteLength, hasR2Credentials, isEntryPoint, parseFlags, type Env } from './historyPublishLib.js';
@@ -99,7 +100,7 @@ export function checkPeriodShapes(input: unknown, slug: string, periodKey: strin
   return null;
 }
 
-interface Scan { items: UploadItem[]; skipped: Array<{ periodKey: string; reason: string }>; errors: string[]; warnings: string[] }
+interface Scan { items: UploadItem[]; errors: string[]; warnings: string[] }
 
 function listJson(dir: string): string[] {
   return existsSync(dir) ? readdirSync(dir).filter(f => f.endsWith('.json')).sort() : [];
@@ -107,10 +108,9 @@ function listJson(dir: string): string[] {
 
 /** Read and validate local files. Pure of R2. */
 export function scanLocal(dir: string, slug: string, period?: string): Scan {
-  const out: Scan = { items: [], skipped: [], errors: [], warnings: [] };
+  const out: Scan = { items: [], errors: [], warnings: [] };
   const sidecarDir = resolve(dir, 'history-v2', slug);
   const shapesDir = resolve(dir, 'history-v2-shapes', slug);
-  const skippedPeriods = new Set<string>();
   const sidecarPeriods = new Set<string>();
 
   for (const f of listJson(sidecarDir)) {
@@ -125,12 +125,8 @@ export function scanLocal(dir: string, slug: string, period?: string): Scan {
     const sc = parsed.value;
     if (sc.slug !== slug) { out.errors.push(`${key}: slug in file is ${sc.slug}, path says ${slug}`); continue; }
     if (sc.periodKey !== periodKey) { out.errors.push(`${key}: periodKey in file is ${sc.periodKey}, path says ${periodKey}`); continue; }
-    const q = sc.refDateQuality;
-    if (q?.holiday && !q.repicked) {
-      out.skipped.push({ periodKey, reason: `holiday reference date, no repick (${q.reason}); the build would drop it` });
-      skippedPeriods.add(periodKey);
-      continue;
-    }
+    const notVote = votePickProblem(sc);
+    if (notVote) { out.errors.push(`${key}: ${notVote}`); continue; }
     sidecarPeriods.add(periodKey);
     out.items.push({ key, kind: 'sidecar', periodKey, body, bytes: byteLength(body), state: 'unknown' });
   }
@@ -139,7 +135,6 @@ export function scanLocal(dir: string, slug: string, period?: string): Scan {
     const periodKey = f.slice(0, -'.json'.length);
     if (period && periodKey !== period) continue;
     const key = `history-v2-shapes/${slug}/${f}`;
-    if (skippedPeriods.has(periodKey)) { out.warnings.push(`${key}: skipped with its holiday-period sidecar`); continue; }
     const body = readFileSync(resolve(shapesDir, f), 'utf8');
     let json: unknown;
     try { json = JSON.parse(body); } catch { out.errors.push(`${key}: not valid JSON`); continue; }
@@ -184,7 +179,7 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
     for (const e of scan.errors) log(`  ${e}`);
     return 1;
   }
-  if (scan.items.length === 0 && scan.skipped.length === 0) {
+  if (scan.items.length === 0) {
     log(`REFUSED: no sidecars or shapes found for ${slug}${period ? ` period ${period}` : ''} under ${resolve(dir)}`);
     return 1;
   }
@@ -216,7 +211,6 @@ export async function runUpload(opts: UploadRunOptions): Promise<number> {
     if (i.state === 'conflict' && i.check) for (const c of i.check.changes.slice(0, 20)) log(`      ${c.path}: ${c.before ?? '(absent)'} -> ${c.after ?? '(absent)'}`);
     if (i.state === 'conflict' && i.check && i.check.changes.length > 20) log(`      ... ${i.check.changes.length - 20} more`);
   }
-  for (const s of scan.skipped) log(`  SKIPPED period ${s.periodKey}: ${s.reason}`);
   for (const w of scan.warnings) log(`  warning: ${w}`);
   const t = totals(scan.items);
   log(`Totals: ${t.objects} objects, ${t.bytes} bytes; new ${t.newObjects} (${t.newBytes} bytes), identical ${t.identicalObjects} (${t.identicalBytes} bytes), conflict ${t.conflictObjects} (${t.conflictBytes} bytes), ${ticket ? `replace ${t.replaceObjects}, ` : ''}skipped periods ${scan.skipped.length}`);

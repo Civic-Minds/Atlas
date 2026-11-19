@@ -53,28 +53,19 @@ export interface AgencyFeedConfig {
   routeNumberFromLongName?: boolean;
   /** CIV-1485: History only. A route with no long name keeps the feed's route_desc for the reused-number test. */
   historyNameFromDesc?: boolean;
-  referenceDateFromRunDate?: boolean;
   /** Ignore block trips (only first and last stop timed) when counting departures (Clemson, #1040). */
   skipBlockTripHeadways?: boolean;
   fare?: number;
   supplementalFeedUrls?: string[];
   /** Per supplemental feed URL, a prefix for its route, trip and shape ids where they collide with the main feed's (see supplementalIds.ts). */
   supplementalIdPrefixes?: Record<string, string>;
-  /** The main feed's configured URL; matched against nextServiceDatesFeedUrls. */
   feedUrl?: string | null;
   /**
-   * Feeds (by URL: the main feedUrl or one of supplementalFeedUrls) that give each day or few
-   * days its own short service_id. Each day type is read from one typical real date in the two
-   * weeks after the run date instead of one reference date (LA Metro Rail supplemental, #1019;
-   * Sound Transit main feed, #1035; see serviceDates.ts). Feeds not listed keep the default
-   * calendar logic.
+   * Feeds (by URL) that give each day or few days its own short service_id (LA Metro Rail supplemental, #1019;
+   * Sound Transit main feed, #1035). The feed expiry check watches them (feedExpiryCheck.ts); the week read
+   * treats them like any other feed (CIV-1839 removed the separate day-type read).
    */
   nextServiceDatesFeedUrls?: string[];
-  /**
-   * For the feeds in nextServiceDatesFeedUrls: leave a weekday line's occasional weekend services
-   * out of the Saturday and Sunday read (Sound Transit's Sounder game-day trains, CIV-445).
-   */
-  nextServiceDatesSkipWeekendEvents?: boolean;
 }
 
 export interface AgencyProcessOverrides {
@@ -83,8 +74,6 @@ export interface AgencyProcessOverrides {
   force?: boolean;
   /** Read the feed at this reference date (YYYYMMDD) instead of picking one (tests, one-off tools). */
   referenceDate?: string;
-  /** Keep the old reference-date picker (the new one, stage 4, reads the week from the anchor). */
-  legacyReferenceDate?: boolean;
   /** The new picker's anchor (YYYYMMDD); serviceAnchor() of the run date when unset. History backfills pass the archived zip's own (CIV-1101 Part B). */
   serviceAnchor?: string;
   /** When Atlas first obtained the main feed's file (YYYYMMDD), for the listing-end safeguard. */
@@ -132,14 +121,13 @@ export function agencyProcessOptions(agency: AgencyFeedConfig, overrides: Agency
     skipClusteredJumpRepair: agency.skipClusteredJumpRepair,
     poolSingleTripShapes: agency.poolSingleTripShapes,
     mergeIdenticalShapeIds: agency.mergeIdenticalShapeIds,
-    referenceDateFromRunDate: agency.referenceDateFromRunDate,
     skipBlockTripHeadways: agency.skipBlockTripHeadways,
     manualBaseFare: overrides.manualBaseFare ?? agency.fare,
     force: overrides.force ?? false,
     ...(overrides.referenceDate ? { referenceDate: overrides.referenceDate } : {}),
     // Stage 4 of the reference-date plan (CIV-1011): the live map reads the week from the run date
     // (pickRiderWeek).
-    ...(overrides.legacyReferenceDate ? {} : { riderWeek: true }),
+    riderWeek: true,
     ...(overrides.fileDate ? { fileDate: overrides.fileDate } : {}),
     ...(overrides.serviceAnchor ? { serviceAnchor: overrides.serviceAnchor } : {}),
   };
@@ -225,15 +213,7 @@ export async function processAgencyFeeds(
   }
 
   const options = agencyProcessOptions(agency, overrides);
-  const nextServiceDatesUrls = new Set(agency.nextServiceDatesFeedUrls ?? []);
-  const withNextServiceDates = (url: string | null | undefined): ProcessOptions =>
-    url && nextServiceDatesUrls.has(url) ? {
-      ...options,
-      dayTypesFromNextServiceDates: true,
-      ...(agency.nextServiceDatesSkipWeekendEvents ? { nextServiceDatesSkipWeekendEvents: true } : {}),
-    } : options;
-  // The main feed opts in by its configured URL, whichever source the zip came from (archive, mirror).
-  const primary = await processGtfsBuffer(primaryBuf, onProgress, withNextServiceDates(agency.feedUrl));
+  const primary = await processGtfsBuffer(primaryBuf, onProgress, options);
   const primaryCollection = JSON.parse(primary.geojson) as FeatureCollection;
   const features = primaryCollection.features;
   const featureSources: AgencyFeedResult['featureSources'] = [{ url: null, count: features.length }];
@@ -268,7 +248,7 @@ export async function processAgencyFeeds(
       throw new Error(`${agency.slug}: supplemental feed ${url} reuses ids of an earlier feed (${collisions.map(c => `${c.count} ${c.kind} ids, e.g. ${c.examples.join(', ')}`).join('; ')}); set supplementalIdPrefixes for it in config/agencies/${agency.slug}.json`);
     }
     addIds(seenIds!, ids);
-    const supp = await processGtfsBuffer(buf, onProgress, { ...withNextServiceDates(url), ...(idPrefix ? { idPrefix } : {}) });
+    const supp = await processGtfsBuffer(buf, onProgress, { ...options, ...(idPrefix ? { idPrefix } : {}) });
     const suppCollection = JSON.parse(supp.geojson) as FeatureCollection;
     features.push(...suppCollection.features);
     featureSources.push({ url, count: suppCollection.features.length });

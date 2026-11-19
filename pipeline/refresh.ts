@@ -302,10 +302,8 @@ interface AgencyEntry {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   mergeIdenticalShapeIds?: boolean;
-  referenceDateFromRunDate?: boolean;
   skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
-  nextServiceDatesSkipWeekendEvents?: boolean;
   staged?: boolean;
   hiddenInProduction?: boolean;
   fare?: number;
@@ -477,7 +475,6 @@ async function refreshAgency(
     lastFeedExpiry: agency.lastFeedExpiry,
     lastPeekedExpiry: agency.lastPeekedExpiry,
     lastFeedVersion: agency.lastFeedVersion,
-    referenceDateFromRunDate: agency.referenceDateFromRunDate,
     serviceWeek,
     lastServiceWeek: agency.lastServiceWeek,
     zipDigest: feedDigest,

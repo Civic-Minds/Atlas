@@ -57,10 +57,8 @@ interface Agency extends FeedAvailabilityEntry {
   skipClusteredJumpRepair?: boolean;
   poolSingleTripShapes?: boolean;
   mergeIdenticalShapeIds?: boolean;
-  referenceDateFromRunDate?: boolean;
   skipBlockTripHeadways?: boolean;
   nextServiceDatesFeedUrls?: string[];
-  nextServiceDatesSkipWeekendEvents?: boolean;
   fare?: number;
   lastFeedVersion?: string | null;
   lastRawArchiveKey?: string | null;

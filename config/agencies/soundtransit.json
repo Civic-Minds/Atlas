@@ -30,7 +30,6 @@
   "nextServiceDatesFeedUrls": [
     "https://gtfs.sound.obaweb.org/prod/40_gtfs.zip"
   ],
-  "nextServiceDatesSkipWeekendEvents": true,
   "lastFeedExpiry": "20270328",
   "lastFeedVersion": "SC-Fall-2026.6",
   "lastRefreshedAt": "2026-11-16",

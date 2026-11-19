@@ -25,7 +25,7 @@ import { representativeRep, historyListLowEnd, historyListLowEndByPeriod } from 
 import { buildRouteSnapshots, filterSnapshotsForPublish, isFlatRouteToSkip, joinCandidates, newBuildReport, visibilityCheck, type Candidate } from './historyV2Build.js';
 import type { HistoryV2Sidecar } from '../shared/historyV2.js';
 import { historyRouteKey } from './historyRouteKey.js';
-import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPeriod } from './historyRefQuality.js';
+import { votePickProblem } from './historyRefQuality.js';
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
@@ -405,11 +405,8 @@ async function main() {
   // Joined to the per-route change files by period key, never by label.
   const sidecarRoutes: Record<string, Record<string, Array<{ periodKey: string; v2: HistoryV2Sidecar['routes'][string] & { refDate: string } }>>> = {};
   const sidecarSupplementalPeriods: Record<string, Record<string, string[]>> = {};
-  // v2: sidecar periods whose reference date is a holiday-week date are left out whole (and their
-  // same-period change files with them: they were read from the same date).
-  const holidayDrops: HolidayPeriodDrop[] = [];
-  const repickedPeriods: RepickedPeriod[] = [];
-  const holidayPeriods: Record<string, Set<string>> = {};
+  // CIV-1839: every sidecar must be vote-picked; the others are collected and the build stops (below).
+  const notVotePicked: string[] = [];
   // Each sidecar period's in-service date, so a trip-duration file with the same period key can be
   // dated by when its feed ran, not when it ends (CIV-1124).
   const sidecarRefDates: Record<string, Record<string, string>> = {};
@@ -433,20 +430,15 @@ async function main() {
     const slug = key.split('/')[1];
     const periodKey = key.split('/')[2].replace('.json', '');
     if (typeof sc.refDate === 'string') (sidecarRefDates[slug] ??= {})[periodKey] = sc.refDate;
-    const holidayDrop = holidayDropFor(slug, periodKey, sc);
-    if (holidayDrop) {
-      holidayDrops.push(holidayDrop);
-      (holidayPeriods[slug] ??= new Set()).add(periodKey);
-      continue;
-    }
-    const repicked = repickedFor(slug, periodKey, sc);
-    if (repicked) repickedPeriods.push(repicked);
+    const problem = votePickProblem(sc);
+    if (problem) { notVotePicked.push(`${slug}/${periodKey}: ${problem}`); continue; }
     for (const url of Object.keys(sc.supplementalRoutes ?? {})) ((sidecarSupplementalPeriods[slug] ??= {})[url] ??= []).push(periodKey);
     for (const [routeKey, rec] of Object.entries(sc.routes)) {
       if (isPeriodExcluded(periodExcludes, slug, periodKey, routeKey)) continue;
       ((sidecarRoutes[slug] ??= {})[routeKey] ??= []).push({ periodKey, v2: { ...rec, refDate: sc.refDate } });
     }
   }
+  if (notVotePicked.length) throw new Error(`History build stopped: ${notVotePicked.length} sidecar(s) are not vote-picked (CIV-1839):\n  ${notVotePicked.join('\n  ')}`);
   // 1d. v2 route shapes: history-v2-shapes/{slug}/{periodKey}.json (written only by the v2 backfill with --shapes).
   // Flag-gated like the sidecars: unset, nothing is listed or read.
   const shapePeriods: Record<string, Map<string, HistoryPeriodShapes>> = {};
@@ -474,8 +466,6 @@ async function main() {
   // their own names (Ryan, 2026-11-02).
   const retiredRoutes = JSON.parse(readFileSync(resolve('config/history-retired-routes.json'), 'utf8')) as Record<string, string[]>;
   const buildReport = newBuildReport();
-  buildReport.droppedHolidayPeriods = holidayDrops.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
-  buildReport.repickedPeriods = repickedPeriods.sort((a, b) => a.slug.localeCompare(b.slug) || a.periodKey.localeCompare(b.periodKey));
   const buildYear = new Date().getFullYear();
   const buildYm = yearMonthOf(new Date());
   let tripDurationUndated = 0;
@@ -628,7 +618,7 @@ async function main() {
       if (v2) {
         // v2: join change files with sidecar entries by period key, drop invalid snapshots,
         // order by real date and keep one snapshot per year (see historyV2Build.ts).
-        const candidates: Candidate[] = joinCandidates(holidayPeriods[slug] ? changes.filter(c => !holidayPeriods[slug].has(c.periodKey)) : changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
+        const candidates: Candidate[] = joinCandidates(changes, sidecarRoutes[slug]?.[routeShortName] ?? []);
         const built = buildRouteSnapshots(slug, routeShortName, candidates, buildYear, buildReport, { weekendOnlyRoute: weekendOnlyKeys.has(routeShortName), buildYm });
         for (const b of built) {
           (shapeRouteYears[slug] ??= []).push({ routeKey: routeShortName, year: b.year, periodKey: b.periodKey, lookupKeys: [routeShortName, ...(splitOrigin[slug]?.[routeShortName] ? [splitOrigin[slug][routeShortName]] : []), ...aliasesFor(routeAliases, slug, routeShortName)] });
@@ -822,8 +812,6 @@ async function main() {
     }
     for (const v of buildReport.visibility) for (const note of v.supplementalNotes) console.log(`  ${note}`);
     if (tripDurationUndated) console.log(`  left out ${tripDurationUndated} trip-duration periods with no in-service date`);
-    for (const d of buildReport.droppedHolidayPeriods) console.log(`  dropped holiday period ${d.slug}/${d.periodKey} (refDate ${d.refDate}, ${d.routesAffected} routes): ${d.reason}`);
-    for (const d of buildReport.repickedPeriods) console.log(`  re-picked ${d.slug}/${d.periodKey}: refDate ${d.from} -> ${d.to} (year ${d.fromYear} -> ${d.toYear}, ${d.routes} routes): ${d.reason}`);
     for (const d of buildReport.drops.slice(0, 50)) console.log(`  dropped ${d.slug}/${d.route} "${d.label}": ${d.reason}`);
     // Loud on purpose (CIV-843): a GitHub Actions annotation in CI, a warning line locally.
     for (const g of buildReport.shapeGaps) console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=History shape gap::' : ''}${formatShapeGap(g)}`);

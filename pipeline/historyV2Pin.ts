@@ -1,9 +1,8 @@
 /**
  * CIV-1430: rebuild a published History v2 period at its ORIGINAL reference date (backfill-history-v2.ts --pin-from).
  *
- * Most published MBTA periods were picked by the retired holiday rule, so today's week picker (CIV-1101 Part B)
- * would read a different week and change their weekday values. Pinning reads each zip at the published
- * sidecar's own refDate instead, so a rebuild changes only what the run is meant to add (weekend values).
+ * Pinning reads each zip at the published sidecar's own vote-picked week, so a rebuild changes only what the run
+ * is meant to add (weekend values). Only vote-picked sidecars can be pinned (CIV-1839).
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -38,17 +37,17 @@ export interface PinnedRead {
 }
 
 /**
- * How to read a zip at a published sidecar's date. A sidecar picked by vote (CIV-1101 Part B) re-reads its stored
- * week with today's picker anchored at that week's start; any older sidecar (legacy or re-picked by the retired
- * holiday rule) is read with the old picker at its refDate, exactly as the backfill that wrote it did
- * (`referenceDate` + `legacyReferenceDate`). The caller checks the processor really read `refDate`.
+ * How to read a zip at a published sidecar's date: a vote-picked sidecar (CIV-1101 Part B) re-reads its stored
+ * week with today's picker anchored at that week's start. Any other sidecar (legacy, or re-picked by the retired
+ * holiday rule) throws: the old picker that wrote it is gone (CIV-1839), so it must be re-picked by vote first
+ * (CIV-1313 approved replacement). The caller checks the processor really read `refDate`.
  */
 export function pinnedReadFor(sc: Pick<HistoryV2Sidecar, 'refDate' | 'refDateQuality'>): PinnedRead {
   const q = sc.refDateQuality;
   if (q?.pickedBy === 'vote' && q.weekStart) {
     return { refDate: sc.refDate, how: `vote-picked week from ${q.weekStart}`, overrides: { serviceAnchor: q.weekStart } };
   }
-  return { refDate: sc.refDate, how: 'old picker at the published refDate', overrides: { referenceDate: sc.refDate, legacyReferenceDate: true } };
+  throw new Error(`--pin-from: the published sidecar (refDate ${sc.refDate}) is not stamped as picked by vote (refDateQuality.pickedBy ${q?.pickedBy ?? 'absent'}); the old reference-date picker is gone, so re-pick it by vote first (CIV-1313)`);
 }
 
 /** The published sidecars' raw bodies by period key (the bytes a merge must keep). */

@@ -13,7 +13,6 @@ import { computeRawDepartures, findBlockOnlyTripIds } from './transit-phase1.js'
 import { applyAnalysisCriteria, BURST_MAX_SPAN_MINUTES, determineTierWithEdgeGapAllowance, previousNightTailDays } from './transit-phase2.js';
 import { calculateCorridors } from './transit-logic.js';
 import { detectReferenceDate, getActiveServiceIds } from './transit-calendar.js';
-import { calendarFromNextServiceDates } from './serviceDates.js';
 import { readWeekOf } from './readWeek.js';
 import { dropOneOffRailTrips } from './oneOffServices.js';
 import { prefixGtfsIds } from './supplementalIds.js';
@@ -63,7 +62,6 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
-import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
 export type { GtfsPreprocess };
@@ -556,8 +554,7 @@ export interface ProcessOptions extends GtfsTransformOptions {
    * Stage 4 of the reference-date plan (CIV-1011): read the week riders face from the run date
    * (readWeekOf / pickRiderWeek) instead of detectReferenceDate. Set by processAgencyFeeds for
    * the live map; History backfills and direct callers keep the old picker. An explicit
-   * referenceDate takes precedence; the referenceDateFromRunDate and next-service-dates opt-ins
-   * are ignored while it is on (CIV-1101).
+   * referenceDate takes precedence (CIV-1101).
    */
   riderWeek?: boolean;
   /** The anchor for riderWeek (YYYYMMDD); serviceAnchor() of the run date when unset. Tests pin it. */
@@ -779,11 +776,6 @@ export function weekdayServiceDaysByRouteDir(
   return days;
 }
 
-/** Local run date as YYYYMMDD. */
-function runDateYmd(): string {
-  const d = runNow(); // #1523: ATLAS_RUN_AT pins it
-  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-}
 export { MIN_THIN_REPLACING_DEPARTURES } from './featureDedupe.js';
 
 /** #728: the destination pool at a line's terminal must have this many unique departures (and more than the drawn shape) before its every-gap grade can lift the line's tier. */
@@ -862,21 +854,8 @@ export async function processGtfsBuffer(
   const feedCalendar = gtfs.calendar;
   const feedCalendarDates = gtfs.calendarDates;
   // CIV-1101: the live map reads one model, the week riders face (readWeekOf, pickRiderWeek), for
-  // every agency. The run-date and next-service-dates opt-ins below are read only by the old
-  // picker: History backfills and direct callers.
+  // every agency. Direct callers without riderWeek (the v1 backfills, tests) keep detectReferenceDate.
   const useRiderWeek = !!options?.riderWeek && !options.referenceDate;
-  // Old picker, feed opt-in (an agency's nextServiceDatesFeedUrls): rolling per-day service_ids, read
-  // from one typical real weekday, Saturday and Sunday after the run date. See serviceDates.ts.
-  const nextServiceDates = !useRiderWeek && options?.dayTypesFromNextServiceDates
-    ? calendarFromNextServiceDates(gtfs.calendar ?? [], gtfs.calendarDates ?? [], gtfs.trips ?? [], runDateYmd(), {
-      skipWeekendEvents: options?.nextServiceDatesSkipWeekendEvents,
-    })
-    : null;
-  if (nextServiceDates) {
-    gtfs = { ...gtfs, calendar: nextServiceDates.calendar, calendarDates: [] };
-    const { Weekday, Saturday, Sunday } = nextServiceDates.dates;
-    onStatus?.(`Next service dates: Weekday ${Weekday}, Saturday ${Saturday}, Sunday ${Sunday}`);
-  }
   // Stage 4 (CIV-1011): the week riders face, written back as that week's calendar so every reader
   // below (phase 1, corridors, converging origins, part-week counts) reads it.
   const riderWeek = useRiderWeek
@@ -899,12 +878,8 @@ export async function processGtfsBuffer(
   }
   const refDate = riderWeek
     ? riderWeek.referenceDate
-    : nextServiceDates
-    ? nextServiceDates.referenceDate
     : options?.referenceDate
     ? options.referenceDate
-    : options?.referenceDateFromRunDate
-    ? runDateYmd()
     : detectReferenceDate(gtfs.calendar ?? [], gtfs.calendarDates, gtfs.trips);
   // Union all 7 days, not just Monday/Saturday/Sunday — an agency whose weekday
   // service runs e.g. Tuesday-Friday only (no Monday service at all) had every

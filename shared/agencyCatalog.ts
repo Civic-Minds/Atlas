@@ -68,7 +68,7 @@ export function buildAgencyCatalog(
 ): AgencyCatalogFile {
   const agencies = source
     .filter(agency => isAgencyVisibleInBrowser(agency, { mode }))
-    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, nextServiceDatesSkipWeekendEvents: _nextServiceDatesSkipWeekendEvents, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, internalNote: _internalNote, ...agency }) => agency as unknown as AgencyCatalogEntry);
+    .map(({ feedUrl: _feedUrl, mdbFeedUrl: _mdbFeedUrl, supplementalFeedUrls: _supplementalFeedUrls, nextServiceDatesFeedUrls: _nextServiceDatesFeedUrls, supplementalIdPrefixes: _supplementalIdPrefixes, formerSlugs: _formerSlugs, shortName: _shortName, labelPlace: _labelPlace, internalNote: _internalNote, ...agency }) => agency as unknown as AgencyCatalogEntry);
 
   return { mode, agencyCount: agencies.length, agencies };
 }
