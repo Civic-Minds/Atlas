@@ -16,8 +16,8 @@ import { nameCase, routeShortLabel } from '../utils/format';
 import { agencyNames } from '../utils/agencyName';
 import { feedRefreshCountdownLabel, type FeedRefreshMeta } from '../../shared/feedRefresh';
 import { agencyQualifiesForHistory, agencyQualifiesForHistoryExplore } from '../../shared/historyEligibility';
-import { countriesForAgencies } from '../../shared/regionCountry';
-import { countOf, joinList } from '../../shared/overflowText';
+import { countOf } from '../../shared/overflowText';
+import { coverageAgenciesText, coverageCountriesText } from '../../shared/atlasCoverage';
 import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
@@ -140,12 +140,6 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
   const [historyAgencies, setHistoryAgencies] = useState<HistoryAgencySummary[] | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const countries = useMemo(() => countriesForAgencies(agencies), [agencies]);
-  const countriesLabel = useMemo(() => {
-    if (countries.length === 0) return 'North America';
-    // Keeps its comma before the final "and" so this label reads as it always has.
-    return joinList(countries, { oxford: true });
-  }, [countries]);
 
   useEffect(() => {
     if (!FEATURES.history || historyAgencies || !open) return;
@@ -359,13 +353,13 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
             <div className="h-full flex flex-col min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5">
               <p className="text-xs text-[var(--text-primary)] leading-relaxed">
-                A transit atlas covering agencies across {countriesLabel}.
+                A transit atlas covering agencies across {coverageCountriesText()}.
               </p>
 
               <div>
                 <p className="text-xs font-bold text-[var(--text-muted)] mb-2">Data</p>
                 <p className="text-xs text-[var(--text-dim)] leading-relaxed mb-3">
-                  Covering {agencies.length} transit agencies.
+                  Covering {coverageAgenciesText()} transit agencies.
                   {FEATURES.live && FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}, or check History on ${totalHistoryExploreAgencies}+ agencies.`}
                   {FEATURES.live && !FEATURES.history && ` See live vehicle positions on ${totalLiveAgencies}.`}
                   {!FEATURES.live && FEATURES.history && ` Check History on ${totalHistoryExploreAgencies}+ agencies.`}
