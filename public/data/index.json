@@ -7455,10 +7455,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261119",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261216",
+      "expiredFeedCheckExpiry": "20261219",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7474,7 +7474,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-16"
+        "scoredAt": "2026-11-19"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7483,7 +7483,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "4ae66a9ae07eb3860856e702868de7bfa9db615e018f38d0a7e9e932c46305c4"
+      "refusedFeedSha256": "2e444f9d73ae595306e251f3362b5ebce948d660829d922fb8553994a55c774e"
     },
     {
       "slug": "hocts",
@@ -11520,7 +11520,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-16",
+      "lastRefreshedAt": "2026-11-19",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11539,7 +11539,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261119",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11562,7 +11562,7 @@
           "mismatchRoutes": 1,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-18"
+        "checkedAt": "2026-11-19"
       },
       "timezone": "America/Los_Angeles",
       "feedRefreshStatus": "current",
@@ -11573,9 +11573,9 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261128",
+          "feedExpiry": "20261203",
           "feedVersion": null,
-          "rawArchiveKey": "20261128-7f60d006c782ef11"
+          "rawArchiveKey": "20261203-f2650903df04ad7a"
         }
       ],
       "lastPeekedExpiry": "20270401",
@@ -26834,23 +26834,48 @@
       ],
       "feedUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
       "mdbFeedUrl": "https://files.mobilitydatabase.org/ntd-60081/latest.zip",
-      "lastFeedExpiry": "20260930",
-      "lastFeedVersion": "2.0",
-      "lastRefreshedAt": "2026-08-07",
+      "lastFeedExpiry": "20271231",
+      "lastFeedVersion": "v3",
+      "lastRefreshedAt": "2026-11-19",
       "cities": [
         "Longview, Texas"
       ],
-      "lastFeedCheckAt": "20261116",
-      "expiredFeedCheckCount": 7,
-      "expiredFeedCheckSince": "20260622",
-      "expiredFeedCheckExpiry": "20260930",
+      "lastFeedCheckAt": "20261119",
+      "expiredFeedCheckCount": 0,
+      "expiredFeedCheckSince": null,
+      "expiredFeedCheckExpiry": "20271231",
       "timezone": "America/Chicago",
-      "feedRefreshStatus": "stale",
-      "feedRefreshError": "all available feeds expired (latest 20260930)",
-      "feedRefreshErrorAt": "20261116",
-      "feedRefreshRetryCount": 7,
+      "feedRefreshStatus": "current",
+      "feedRefreshError": null,
+      "feedRefreshErrorAt": null,
+      "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
-      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip"
+      "lastFeedSourceUrl": "https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip",
+      "feedQuality": {
+        "status": "healthy",
+        "score": 100,
+        "reasons": [],
+        "metrics": {
+          "validationErrors": 0,
+          "validationWarnings": 0,
+          "shapeAnomalies": 0,
+          "routeHeadwayMismatches": 0,
+          "featureCount": 12,
+          "feedExpiry": "20271231",
+          "routeCount": 6,
+          "problemShapes": 0,
+          "problemShapeRoutes": 0,
+          "mismatchRoutes": 0,
+          "resumesOn": null
+        },
+        "checkedAt": "2026-11-19"
+      },
+      "lastRawArchiveKey": "20271231-08bad8ebf7c38bcd",
+      "lastFeedContentKey": "b6fd12ad6d27fdc7",
+      "lastPeekedExpiry": "20271231",
+      "lastFeedStart": "20200408",
+      "lastServiceWeek": "31e2e706e99d3f04",
+      "feedObtainedAt": "20261119"
     },
     {
       "slug": "texarkana",
@@ -36923,12 +36948,13 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-18"
+        "checkedAt": "2026-11-18",
+        "scoredAt": "2026-11-19"
       },
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261119",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261125",
+      "expiredFeedCheckExpiry": "20270412",
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
       "feedRefreshErrorAt": null,
@@ -36938,7 +36964,8 @@
       "lastPeekedExpiry": "20261125",
       "lastServiceWeek": "6217a724b65a9523",
       "feedObtainedAt": "20260513",
-      "lastFeedStart": "20260331"
+      "lastFeedStart": "20260331",
+      "heldFeedStart": "20261125"
     },
     {
       "slug": "steamboat-springs",
