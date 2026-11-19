@@ -1,0 +1,20 @@
+# Boston MBTA Green Line only (CIV-1930, chosen by Ryan 2026-11-19). Vehicle positions, archive-only (not a Live agency).
+# Writes to atlas-live like every other archiver (CIV-1906: one Live bucket, kept 60 days), under positions/mbta/.
+# Every minute. Data: MassDOT Developers License Agreement (credit MassDOT as the provider).
+name = "atlas-gtfs-rt-archiver-mbta"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ARCHIVE_SHARD = "mbta"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "atlas-live"
+
+[triggers]
+crons = ["* * * * *"]
+
+[observability]
+enabled = true

@@ -35,7 +35,7 @@ export const STUDIO_DEFAULT_AGENCY = 'kingston';
  * from here, or when an agency or consultant asks for it; the main map and History have no such limit.
  */
 export const PRODUCT_FOCUS = {
-  /** Recorded every minute (TTC and Hamilton, plus Kingston for Studio only): the archive shards marked `recording`. */
+  /** Recorded every minute (TTC, Hamilton and the MBTA Green Line, plus Kingston for Studio only): the archive shards marked `recording`. */
   live: RECORDING_SLUGS,
   /** Agencies with a Schedule Changes file. */
   studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph'],
