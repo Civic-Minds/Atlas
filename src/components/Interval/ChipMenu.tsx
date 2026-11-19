@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { FLOATING_CARD, PANEL_ENTER_TOP, CONTROL_ACTIVE, CONTROL_INACTIVE } from '../../styles';
 import ActiveDot from '../ui/ActiveDot';
 import { FEATURES } from '../../../shared/config';
@@ -41,8 +42,12 @@ export function useChipRow<K extends string>() {
   return { openChip, setOpenChip, toggle, rowRef };
 }
 
-/** One chip and, while open, its dropdown. `active` fills the chip and shows its dot (a set value). */
-export function ChipMenu({ label, active, open, onToggle, panelClassName, className = '', ariaLabel, children }: {
+/**
+ * One chip and, while open, its dropdown. `active` fills the chip and shows its dot (a set value). `width` gives the chip
+ * and its dropdown one shared width, so the chip is never narrower than its own list (CIV-1889). `arrow` adds the
+ * chevron the phone "More" menu's button uses (ModeTab), for a chip that sits among the tabs and must not read as one.
+ */
+export function ChipMenu({ label, active, open, onToggle, panelClassName, className = '', ariaLabel, width, arrow, children }: {
   label: ReactNode;
   active: boolean;
   open: boolean;
@@ -51,15 +56,20 @@ export function ChipMenu({ label, active, open, onToggle, panelClassName, classN
   panelClassName: string;
   className?: string;
   ariaLabel?: string;
+  /** One width (a Tailwind class) for the chip and its dropdown, which then lines up under it. */
+  width?: string;
+  /** A dropdown chevron after the label, turning up while open. */
+  arrow?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div className={`relative ${className}`}>
-      <button onClick={onToggle} className={topBarChipClass(active)} aria-label={ariaLabel}>
+    <div className={`relative ${width ?? ''} ${className}`}>
+      <button onClick={onToggle} className={`${topBarChipClass(active)} ${width ? 'w-full' : ''}`} aria-label={ariaLabel}>
         {label}
+        {arrow && <ChevronDown className={`ml-1 w-3.5 h-3.5 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />}
         <ChipDot show={active} />
       </button>
-      {open && <div className={`${CHIP_PANEL} ${panelClassName}`}>{children}</div>}
+      {open && <div className={`${CHIP_PANEL} ${panelClassName} ${width ? 'left-0 w-full' : ''}`}>{children}</div>}
     </div>
   );
 }

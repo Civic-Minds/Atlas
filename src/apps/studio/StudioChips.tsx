@@ -17,6 +17,10 @@ export interface StudioMenu {
   panelClassName?: string;
   /** The dropdown's own content in place of the list of options (CIV-1886: the cut-offs' rows of choices); `close` shuts it. */
   content?: (close: () => void) => ReactNode;
+  /** One width for the chip and its dropdown, so the chip is at least as wide as its own list (CIV-1889). */
+  width?: string;
+  /** The chip's dropdown chevron, for a menu that sits among the tabs (Live's Measure, CIV-1889). */
+  arrow?: boolean;
 }
 
 /**
@@ -29,7 +33,7 @@ export default function StudioChips({ container, menus }: { container: Element |
   return createPortal(
     <div ref={rowRef} className="hidden sm:flex items-center gap-2 pointer-events-auto">
       {menus.map(m => m && (
-        <ChipMenu key={m.key} label={m.label} active={m.active ?? true}
+        <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
           {m.content ? m.content(() => setOpenChip(null)) : m.options.map(([k, text, plain]) => (
             <button key={k} type="button" aria-pressed={k === m.value} aria-label={plain}
