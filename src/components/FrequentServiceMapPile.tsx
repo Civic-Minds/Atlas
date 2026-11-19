@@ -20,12 +20,19 @@ export const publishedMapFrames: MapFrame[] = [
   { agency: 'Los Angeles Metro', image: '/assets/research/system-maps/los-angeles.jpg', source: 'https://cdn.beta.metro.net/wp-content/uploads/2026/05/04165451/26-1718_SysOverview_HiFreq_online_DCR.pdf' },
   { agency: 'Valley Transportation Authority', image: '/assets/research/system-maps/san-jose.jpg', source: 'https://www.vta.org/sites/default/files/2026-01/ADA-VTA-SystemMap-011226.pdf' },
   { agency: 'Miami-Dade Transit', image: '/assets/research/system-maps/miami.jpg', source: 'https://www.miamidade.gov/resources/transportation_publicworks/documents/system-maps-web.pdf' },
+  { agency: 'VIA Metropolitan Transit', image: '/assets/research/system-maps/via-san-antonio.jpg', source: 'https://www.viainfo.net/wp-content/uploads/2026/08/2026_0824-VIA-System-Map.pdf' },
+  { agency: 'Spokane Transit', image: '/assets/research/system-maps/spokane.jpg', source: 'https://www.spokanetransit.com/wp-content/uploads/2026/09/2_SPO_Msys_FullLayout_260824_WEB.pdf' },
+  { agency: 'Madison Metro Transit', image: '/assets/research/system-maps/madison.jpg', source: 'https://www.cityofmadison.com/metro/documents/maps/system-maps/System_Map.pdf' },
+  { agency: 'CapMetro', image: '/assets/research/system-maps/capmetro.jpg', source: 'https://capmetro.org/docs/default-source/plan-your-trip-docs/destination-schedule-book-docs/high-frequency-map.pdf' },
+  { agency: 'MBTA', image: '/assets/research/system-maps/mbta.jpg', source: 'https://cdn.mbta.com/sites/default/files/2026-08/2026-08-01-frequent-bus-map.pdf' },
+  { agency: 'Winnipeg Transit', image: '/assets/research/system-maps/winnipeg.jpg', source: 'https://www.winnipeg.ca/media/4770' },
+  { agency: 'GRTC', image: '/assets/research/system-maps/grtc.jpg', source: 'https://www.ridegrtc.com/wp-content/uploads/2026/03/GRTC-System-Map-2.pdf' },
 ];
 
 /**
  * CIV-1875: one still pile of paper maps in place of the flicking montage. Every map is placed by hand so nothing lines up:
  * different sizes and shapes, angles up to about 20° with no two alike, heavy overlaps, and several running off the edges.
- * Left, top and width are percentages of the frame; ratio is width over height; Toronto lies on top.
+ * Left, top and width are percentages of the frame; ratio is width over height; Toronto lies on top. The newer maps (CIV-1877) are all agency-published maps of service running now.
  */
 const pileSpots: Record<string, { left: number; top: number; width: number; ratio: number; turn: number }> = {
   vancouver: { left: -7, top: 7, width: 27, ratio: 0.78, turn: -14 },
@@ -39,6 +46,13 @@ const pileSpots: Record<string, { left: number; top: number; width: number; rati
   miami: { left: 84, top: 63, width: 20, ratio: 1.2, turn: 6 },
   washington: { left: 9, top: 24, width: 16, ratio: 0.7, turn: 16 },
   septa: { left: 63, top: 49, width: 27, ratio: 1.35, turn: -6 },
+  'via-san-antonio': { left: 42, top: -10, width: 19, ratio: 1.2, turn: -11 },
+  spokane: { left: -5, top: -6, width: 20, ratio: 1.3, turn: 9.5 },
+  madison: { left: 80, top: -9, width: 22, ratio: 0.9, turn: -17 },
+  capmetro: { left: 60, top: 72, width: 16, ratio: 1.0, turn: 2 },
+  mbta: { left: -2, top: 76, width: 24, ratio: 1.4, turn: -7.5 },
+  winnipeg: { left: 40, top: 78, width: 22, ratio: 1.2, turn: 14 },
+  grtc: { left: 88, top: 40, width: 18, ratio: 0.85, turn: 0.5 },
   toronto: { left: 28, top: 14, width: 38, ratio: 1.05, turn: -1.5 },
 };
 
@@ -50,7 +64,7 @@ export default function FrequentServiceMapPile() {
   const frames = [...publishedMapFrames].sort((a, b) => pileOrder.indexOf(slugOf(a)) - pileOrder.indexOf(slugOf(b)));
   return (
     <figure className="mt-10 w-full overflow-hidden rounded-[1.5rem] border border-[var(--border-primary)]" style={{ backgroundColor: MAP_PILE_PAPER }}>
-      <div className="relative aspect-[12/7]">
+      <div className="relative aspect-[12/7] overflow-hidden">
         {frames.map((frame, index) => {
           const spot = pileSpots[slugOf(frame)];
           return (
