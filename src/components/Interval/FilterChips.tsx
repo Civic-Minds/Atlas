@@ -4,9 +4,9 @@ import { AgencyRegionSection } from '../ui/AgencyList';
 import Pill from '../ui/Pill';
 import PillGroup from '../ui/PillGroup';
 import type { Agency } from '../../App';
-import { PERIOD_LABELS, PERIOD_KEYS } from '../../hooks/useIntervalStats';
+import { PERIOD_KEYS } from '../../hooks/useIntervalStats';
 import type { TimePeriod, ViewportBounds } from '../../hooks/useIntervalStats';
-import { FEATURES, formatPeriodRange, periodKeyForHour } from '../../../shared/config';
+import { FEATURES, periodKeyForHour } from '../../../shared/config';
 import { COMPACT_TOP_BAR_QUERY } from '../ModeTabLabel';
 import { FOLD_OUTLINE_OPEN, FOLD_OUTLINE_SHUT, ModeCollapse } from '../ModeTransition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -22,7 +22,7 @@ import { NIGHT_GRADES, type NightServiceFrequency } from '../../../shared/nightS
 import { useColorMode } from '../../hooks/useColorMode';
 import ArrowLink from '../ui/ArrowLink';
 import LegendItem from '../ui/LegendItem';
-import { DayPicker, FrequencyPicker, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
+import { DayPicker, FrequencyPicker, PeriodChoice, PeriodPicker, PickerSection, useFrequencyOptions } from './pickers';
 import { SideBadge } from '../ui/SideBadge';
 import PanelEmpty from '../ui/PanelEmpty';
 import AgencyName from '../ui/AgencyName';
@@ -415,11 +415,10 @@ export const FilterChips: React.FC<FilterChipsProps> = ({
             <button
               key={p}
               onClick={() => { setPeriod(p); setOpenChip(null); }}
-              className={`${rowBtn(period === p)} flex items-center justify-between gap-3`}
+              className={rowBtn(period === p)}
               aria-pressed={period === p}
             >
-              <span className="whitespace-nowrap">{PERIOD_LABELS[p]}</span>
-              <span className="text-xs opacity-70 shrink-0 whitespace-nowrap">{formatPeriodRange(p)}</span>
+              <PeriodChoice period={p} />
             </button>
           ))}
     </ChipMenu>

@@ -2,12 +2,12 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
 import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -28,10 +28,12 @@ const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
 // Atlas Studio is local only (FEATURES.studio is the dev server); the DEV check keeps it out of deployed bundles entirely.
 const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
+import { parseStudioPath } from '../shared/studioAgencies';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
 import { PageMapOverlayProvider } from './context/PageMapOverlay';
+import { SidebarFrameProvider } from './context/SidebarFrame';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
@@ -63,15 +65,15 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL } from './content/noticeCopy';
-import Panel from './components/ui/Panel';
-import PanelEmpty from './components/ui/PanelEmpty';
+import ViewLoadingPanel from './components/ViewLoadingPanel';
+import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
 import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
 import { splitRouteKey } from './utils/routeKey';
 import { LIVE_MAP_TITLE } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
-import { LIVE_PATH } from '../shared/pagePaths';
+import { FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH } from '../shared/rules/paths';
 import type { AgencyCatalogEntry } from '../shared/agencyCatalog';
 
 /**
@@ -122,20 +124,25 @@ export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> 
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
-  '/apps/frequency': 'frequency',
-  '/apps/history': 'history',
+  [FREQUENCY_PATH]: 'frequency',
+  [HISTORY_PATH]: 'history',
   [LIVE_PATH]: 'live',
   // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
-  '/apps/compare': 'frequency',
+  [COMPARE_PATH]: 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
   [FEATURE_ROUTES.bustangConnections]: 'bustang',
   // Atlas Studio (CIV-1828): a view of the map, as History is; local only.
   [FEATURE_ROUTES.studio]: 'studio',
 };
 
+/** The view an address opens: its own path, or Studio's for any of Studio's paths (/studio/<page>/…, CIV-1924). */
+function appForPath(pathname: string): AppId {
+  return PATH_TO_APP[pathname] ?? (parseStudioPath(pathname) ? 'studio' : 'frequency');
+}
+
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/',
-  history: '/apps/history',
+  history: HISTORY_PATH,
   live: LIVE_PATH,
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
@@ -165,7 +172,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = phoneModes.compareMode;
   const studioOn = FEATURES.studio && phoneModes.mapApps;
-  const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const routedApp: AppId = appForPath(pathname);
   const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
@@ -176,7 +183,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
   // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
-  const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
+  const urlApp: AppId = appForPath(useUrlPathname());
   const modeCatchingUp = urlApp !== routedApp;
 
   // In a local copy, a switched-off Live says so instead of silently redirecting. Deployments keep the redirect.
@@ -259,7 +266,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   }, []);
   // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
-    window.location.pathname.startsWith('/apps/history') ? null : parseAgencyCardParam(window.location.search)
+    window.location.pathname.startsWith(HISTORY_PATH) ? null : parseAgencyCardParam(window.location.search)
   ));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
@@ -394,7 +401,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
   // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
+    window.location.pathname.startsWith(HISTORY_PATH) ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   // CIV-1433: with the day picker on, a day the viewer picks in History is saved as their day, as the map saves it.
@@ -421,6 +428,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const inHistory = activeApp === 'history';
   // Atlas Studio (CIV-1828): its pages draw on the map through PageMapOverlay; the map's own routes, tabs and chips step aside.
   const inStudio = activeApp === 'studio';
+  // Leaving Studio fades its page out the way it came in, as the main map's modes do (CIV-1921).
+  const studioLeaving = useModeLeaving(inStudio, FEATURES.modeTransitions);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
   // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
   const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
@@ -669,6 +678,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -929,37 +939,28 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? (
-                // The shared loading panel, where History's panels open (#1028 item 20).
-                // CIV-1567 (beta): it fades in from its first painted frame rather than appearing in one frame.
-                <ModeFadeInOnMount enabled={FEATURES.modeTransitions}>
-                  {fade => (
-                    <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)} className={fade || undefined}>
-                      <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
-                    </Panel>
-                  )}
-                </ModeFadeInOnMount>
-              ) : null}>
-                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              // The shared loading panel, where History's panels open (#1028 item 20, CIV-1925).
+              <React.Suspense fallback={inHistory ? <ViewLoadingPanel what="history" /> : null}>
+                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
               </React.Suspense>
             )}
-            {studioOn && inStudio && (
-              <React.Suspense fallback={null}>
-                <Studio agencyCatalog={agencies} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
+            {studioOn && (inStudio || studioLeaving) && (
+              <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
+                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
+                <NightService active={inNight} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
               </React.Suspense>
             )}
             {FEATURES.researchApps && inBustang && (
               <React.Suspense fallback={null}>
-                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
+                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}
@@ -974,11 +975,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     onInfoOpen={openInfo}
                     query={deferredQuery}
                     layers={layers}
-                    sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
                     routeRequest={liveRouteRequest}
                     onAgencyClick={handleLiveAgencyClick}
-                    searchBarWidth={isPhone ? undefined : searchBarWidth}
                   />
                 </React.Suspense>
               </div>
@@ -1006,6 +1005,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       </main>
       <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} />
     </div>
+    </SidebarFrameProvider>
     </PageMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>

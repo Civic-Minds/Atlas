@@ -58,6 +58,11 @@ export interface PageMapOverlay {
   padding?: { top: number; bottom: number; left: number; right: number };
   /** The page's sidebar card: the main map's route framing keeps clear of where it really is (routeFramePadding). */
   frameCard?: React.RefObject<HTMLElement | null>;
+  /** The key last framed, kept by whoever owns the map's position (the Studio frame): a page swapped in with the same
+   *  key keeps the map where it is, instead of framing again. Left out, the layer keeps its own, reset when it closes. */
+  framedMemory?: React.MutableRefObject<string | null>;
+  /** Don't frame yet: what's drawn is still loading, so framing it now would frame part of it. */
+  holdFrame?: boolean;
 }
 
 interface ContextValue {

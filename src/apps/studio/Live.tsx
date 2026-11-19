@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL, loadingText } from '../../content/noticeCopy';
+import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL } from '../../content/noticeCopy';
+import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import Panel, { PanelBody } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -8,11 +9,13 @@ import { MapNote } from '../../components/ui/MapNote';
 import LiveMapKey from '../../components/Live/LiveMapKey';
 import { STUDIO_MAP_MEASURES, type MapMeasure } from '../../components/Live/routeMapModel';
 import { PERIOD_BANDS_ONLY } from '../../components/Live/sections/figures';
+import { periodMenuOptions } from '../../components/Interval/pickers';
 import { liveBandNow } from '../../components/Live/liveBandNow';
 import WidgetPanel from '../../components/Live/tool/WidgetPanel';
 import { useLiveBody } from '../../components/Live/tool/useLiveBody';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
+import { useStudioMapFrame } from './StudioMapFrame';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveAgencyName } from '../../hooks/useLiveAgencyName';
 import { useLiveAgency } from '../../LiveAgencyPage';
@@ -43,7 +46,7 @@ export interface LiveProps {
   headerPortal: Element | null;
   /** Right after the Live tab: where the Measure picker sits (CIV-1886). */
   measureSlot: Element | null;
-  /** The sidebar card's place: sidebarFrameStyle(sidebarLeft, searchBarWidth), as History's panels. */
+  /** The sidebar card's place, from the Studio frame (useSidebarFrame), as History's panels. */
   frameStyle: CSSProperties;
 }
 
@@ -52,12 +55,13 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
   const state = useLiveAgency(slug);
   const { agencies } = useAgencies();
   const [band, setBand] = useState<DashboardBand>(() => liveBandNow(agencies.find(a => a.slug === slug)?.timezone));
-  const waiting = state.kind === 'loading' ? loadingText(agencyName) : state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null;
   if (state.kind !== 'done' || state.data.status !== 'ready') {
     return (
       <>
         <StudioChips container={headerPortal} menus={[agencyMenu]} />
-        <Panel sidebar style={frameStyle}><PanelEmpty>{waiting}</PanelEmpty></Panel>
+        {/* One loading panel and one way of saying why there's nothing (CIV-1925 phase 4). */}
+        {state.kind === 'loading' ? <ViewLoadingPanel what={agencyName} />
+          : <Panel sidebar enter style={frameStyle}><PanelEmpty kind={state.kind === 'error' ? 'error' : 'empty'}>{state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null}</PanelEmpty></Panel>}
       </>
     );
   }
@@ -82,9 +86,11 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   onMapPick.current = m.onMapPick;
   const { setOverlay } = usePageMapOverlay();
   const onPick = useMemo(() => (p: MapPick | null) => onMapPick.current(p), []);
+  // Studio's frame owns where the map is framed (CIV-1925); Live only says when what it draws is still loading.
+  const { frameKey, framedMemory, holdFrame } = useStudioMapFrame(m.frameKey !== (route ? `route-${route}` : 'network-all'));
   useEffect(() => {
-    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey: `${slug}:${m.frameKey}`, frameCard: cardRef });
-  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, slug, m.frameKey]);
+    setOverlay({ layer: { kind: 'segments', model: m.model, measure: measure ?? 'late', heat: m.heat }, selected: pick, onPick, anchor: m.anchor, card: m.card, frameKey, framedMemory, holdFrame, frameCard: cardRef });
+  }, [setOverlay, m.model, measure, m.heat, pick, onPick, m.anchor, m.card, frameKey, framedMemory, holdFrame]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
@@ -95,7 +101,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     agencyMenu,
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
-    { key: 'band', label: TIME_LABEL, value: band, options: PERIOD_BANDS_ONLY, onPick: k => setBand(k as DashboardBand), panelClassName: 'w-48' },
+    { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 

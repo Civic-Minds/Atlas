@@ -4,11 +4,14 @@ import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import Panel, { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
+import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
-import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
+import { useStudioMapFrame } from './StudioMapFrame';
+import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
+import { periodMenuOptions } from '../../components/Interval/pickers';
 import { PAGE_NAMES } from '../../../shared/pageNames';
 import { capitalizeFirst } from '../../../shared/headwayText';
 import { dateRange, shortDate } from '../../../shared/dateText';
@@ -113,7 +116,7 @@ export interface FleetProps {
   /** The agency menu, the shell's, first in the top bar. */
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
-  /** The sidebar card's place: sidebarFrameStyle(sidebarLeft, searchBarWidth), as History's panels. */
+  /** The sidebar card's place, from the Studio frame (useSidebarFrame), as History's panels. */
   frameStyle: React.CSSProperties;
 }
 
@@ -132,12 +135,14 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
     ready ? { key: 'route', label: T.route, value: route ?? '', options: routeOptions, onPick: r => setRoute(r || null), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' } : null,
-    periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periods.map(k => [k, PERIOD_LABELS[k]] as const), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-40' } : null,
+    periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periodMenuOptions(periods), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-56' } : null,
   ];
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} />
-      {file === 'missing' && <Panel sidebar style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
+      {/* The shared loading panel while the file comes in, then the shared empty line if there is none (CIV-1925 phase 4). */}
+      {file == null && <ViewLoadingPanel what={agency} />}
+      {file === 'missing' && <Panel sidebar enter style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
       {ready && <Body file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>
   );
@@ -153,11 +158,11 @@ function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
   setRouteRef.current = setRoute;
   const onPick = useMemo(() => (p: MapPick | null) => { if (p?.kind === 'line' && p.route) setRouteRef.current(p.route); }, []);
   const { setOverlay } = usePageMapOverlay();
-  // The agency is in the key: switching agencies frames the new network, not the last one's view.
-  const frameKey = `${file.slug}:${route ? `route-${route}` : 'network'}`;
+  // Studio's frame owns where the map is framed (CIV-1925).
+  const { frameKey, framedMemory, holdFrame } = useStudioMapFrame();
   useEffect(() => {
-    setOverlay({ layer: { kind: 'lines', lines }, selected: null, onPick, highlightRoute: route, frameKey, frameCard: cardRef });
-  }, [setOverlay, lines, onPick, route, frameKey]);
+    setOverlay({ layer: { kind: 'lines', lines }, selected: null, onPick, highlightRoute: route, frameKey, framedMemory, holdFrame, frameCard: cardRef });
+  }, [setOverlay, lines, onPick, route, frameKey, framedMemory, holdFrame]);
   useEffect(() => () => setOverlay(null), [setOverlay]);
 
   const change = route ? file.changes.find(c => c.route === route) ?? null : null;

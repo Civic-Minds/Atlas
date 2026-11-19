@@ -6,6 +6,7 @@
  */
 
 import { STUDIO_DEFAULT_AGENCY } from './rules/focus.js';
+import { STUDIO_PATH } from './rules/paths.js';
 
 /** The agency Studio opens on when the address names none (or one it has no file for): the focus list's demo agency. */
 export { STUDIO_DEFAULT_AGENCY };
@@ -49,7 +50,7 @@ export const studioAgencyListFrom = (file: { agencies: readonly string[] } | 'mi
  */
 export const STUDIO_PAGES = ['live', 'fleet'] as const;
 export type StudioPageKey = (typeof STUDIO_PAGES)[number];
-/** The page an address asks for (?page=); Live otherwise. */
+/** The page an address asks for; Live otherwise. */
 export const studioPageFrom = (param: string | null): StudioPageKey =>
   (STUDIO_PAGES as readonly string[]).includes(param ?? '') ? (param as StudioPageKey) : STUDIO_PAGES[0];
 
@@ -67,4 +68,46 @@ export function studioPageFor(pageParam: string | null, agencyParam: string | nu
     if (list.includes(agencyParam)) return k;
   }
   return STUDIO_PAGES[0];
+}
+
+/**
+ * Where Studio is, read from its address (CIV-1924, the Studio frame): `/studio` (no panel), `/studio/live/<agency>/<route>`
+ * and `/studio/fleet/<agency>/<route>`, the agency and route each optional. Null for any other address, including Studio's
+ * other pages (coverage) and unknown ones, which stay not-found.
+ */
+export interface StudioLocation { page: StudioPageKey | null; agency: string | null; route: string | null }
+
+export function parseStudioPath(pathname: string): StudioLocation | null {
+  const path = pathname.replace(/\/+$/, '');
+  if (path === STUDIO_PATH) return { page: null, agency: null, route: null };
+  if (!path.startsWith(`${STUDIO_PATH}/`)) return null;
+  const parts = path.slice(STUDIO_PATH.length + 1).split('/');
+  if (parts.length > 3 || parts.some(p => !p) || !(STUDIO_PAGES as readonly string[]).includes(parts[0])) return null;
+  const decode = (s: string | undefined) => {
+    if (!s) return null;
+    try { return decodeURIComponent(s); } catch { return s; }
+  };
+  return { page: parts[0] as StudioPageKey, agency: decode(parts[1]), route: decode(parts[2]) };
+}
+
+/** The address for a place in Studio; a route without an agency is dropped, as the address has no place for it. */
+export function studioPath({ page, agency, route }: StudioLocation): string {
+  if (!page) return STUDIO_PATH;
+  const seg = [page, agency, agency ? route : null].filter((s): s is string => !!s).map(encodeURIComponent);
+  return `${STUDIO_PATH}/${seg.join('/')}`;
+}
+
+/** The query keys Studio's addresses used before they became paths (CIV-1924). */
+export const STUDIO_LEGACY_PARAMS = ['page', 'agency', 'route', 'panel'] as const;
+
+/**
+ * An old query address (`/studio?page=live&agency=ttc&route=504`, `?panel=closed`) as its path, or null when the address
+ * has none of those keys. With no page named, the page is left for Studio to pick (studioPageFor), so the agency is kept.
+ */
+export function studioLegacyLocation(search: string): StudioLocation | null {
+  const q = new URLSearchParams(search);
+  if (!STUDIO_LEGACY_PARAMS.some(k => q.has(k))) return null;
+  const named = q.get('page');
+  const page = q.get('panel') === 'closed' ? null : named && (STUDIO_PAGES as readonly string[]).includes(named) ? named as StudioPageKey : null;
+  return { page, agency: q.get('agency'), route: page ? q.get('route') : null };
 }
