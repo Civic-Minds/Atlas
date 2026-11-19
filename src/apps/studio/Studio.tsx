@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router';
 import { Activity, Bus } from 'lucide-react';
@@ -86,7 +86,6 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
   const agencyMenu: StudioMenu | null = page && slug ? { key: 'agency', label: AGENCY_COLUMN, value: slug, options: agencyOptions, onPick: s => go({ agency: s, route: null }), after: selected ? <AgencyDataSourceLink agency={{ slug: selected.slug, websiteUrl: selected.websiteUrl ?? undefined }} /> : null } : null;
   // The active page's tab toggles its panel off, like the main map's mode tabs (#1588): Studio stays open on its own map with the
   // agency still chosen and no panel (?panel=closed); any tab opens its page again.
-  const [measureSlot, setMeasureSlot] = useState<HTMLElement | null>(null);
   // Opening Studio with no page in the address is the same state: its map, the remembered agency, no panel (Ryan: Live and Fleet open only when clicked).
   const closed = !loc.page;
   // The map's framing is the frame's (CIV-1925, CIV-1921): one key per agency and route, and the key last framed, kept across pages.
@@ -124,8 +123,6 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
           return (
             <Fragment key={k}>
               <ModeTab icon={<Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />} label={STUDIO_PAGE_NAMES[k]} active={!closed && page === k} onClick={() => pickPage(k)} />
-              {/* CIV-1886 (Ryan: "should measure be beside the live button when u open it"): Live's Measure picker sits right after its tab. */}
-              {k === 'live' && !closed && page === 'live' && <span ref={setMeasureSlot} className="contents" />}
             </Fragment>
           );
         }),
@@ -140,7 +137,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
             <Fleet key={v.slug} slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
           {!v.noData && v.page === 'live' && v.slug && (
-            <Live key={v.slug} slug={v.slug} measureSlot={open ? measureSlot : null} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+            <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
         </div>
       )}

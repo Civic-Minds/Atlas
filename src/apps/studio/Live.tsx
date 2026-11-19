@@ -44,13 +44,11 @@ export interface LiveProps {
   /** The agency menu, the shell's, first in the top bar. */
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
-  /** Right after the Live tab: where the Measure picker sits (CIV-1886). */
-  measureSlot: Element | null;
   /** The sidebar card's place, from the Studio frame (useSidebarFrame), as History's panels. */
   frameStyle: CSSProperties;
 }
 
-export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, measureSlot, frameStyle }: LiveProps) {
+export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, frameStyle }: LiveProps) {
   const agencyName = useLiveAgencyName(slug);
   const state = useLiveAgency(slug);
   const { agencies } = useAgencies();
@@ -65,10 +63,10 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
       </>
     );
   }
-  return <Ready slug={slug} agencyName={agencyName} s={state.data.summary} route={route} setRoute={setRoute} band={band} setBand={setBand} agencyMenu={agencyMenu} headerPortal={headerPortal} measureSlot={measureSlot} frameStyle={frameStyle} />;
+  return <Ready slug={slug} agencyName={agencyName} s={state.data.summary} route={route} setRoute={setRoute} band={band} setBand={setBand} agencyMenu={agencyMenu} headerPortal={headerPortal} frameStyle={frameStyle} />;
 }
 
-function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu, headerPortal, measureSlot, frameStyle }: Omit<LiveProps, 'route'> & {
+function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu, headerPortal, frameStyle }: Omit<LiveProps, 'route'> & {
   agencyName: string; s: Parameters<typeof useLiveBody>[0]['s']; route: string | null; band: DashboardBand; setBand: (b: DashboardBand) => void;
 }) {
   const [measure, setMeasure] = useState<MapMeasure | null>(null);
@@ -102,6 +100,8 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
+    // With the filters: Agency, Route, Time of day, Measure (Ryan, 2026-11-19; it sat beside the Live tab since CIV-1886).
+    measureMenu,
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
@@ -112,7 +112,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   return (
     <>
       <StudioChips container={headerPortal} menus={menus} />
-      <StudioChips container={measureSlot} menus={[measureMenu]} />
       {route && label ? (
         <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">

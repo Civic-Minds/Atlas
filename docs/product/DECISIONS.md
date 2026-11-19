@@ -181,7 +181,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: their data is not being refreshed, and the design is still in progress.
   - Source: [decision log](#decision-log) (2026-11-15)
 - **Desktop only, one top bar**
-  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar, with the map key as a card floating at the map's bottom left (since CIV-1821).
+  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar (in Studio's Live, Measure sits with the filters: Agency, Route, Time of day; Ryan, 2026-11-19), with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
 - **Math explanations stay visible**
