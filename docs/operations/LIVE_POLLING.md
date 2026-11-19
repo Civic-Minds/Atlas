@@ -4,7 +4,7 @@ Reference for Atlas's live GTFS-RT integration status — which agencies are pol
 
 For where this fits in the platform's future direction, see [Live Data Infrastructure](../roadmap/TECHNICAL.md#live-data-infrastructure).
 
-**Status (checked against Cloudflare 2026-11-15, CIV-1689):** TTC vehicle positions are recorded every minute by the ttc-positions Worker (cron `* * * * *`, in `wrangler.toml` again since CIV-1689) Hamilton (HSR) vehicle positions are recorded every minute again from 2026-11-18 (Ryan) (`wrangler.hamilton.toml`). Kingston Transit is recorded every minute too (CIV-1682), and so is Boston's MBTA Green Line (CIV-1930, positions only, `wrangler.mbta.toml`). All four go to atlas-live, kept 60 days (CIV-1906). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused: no cron since 2026-10-14, and the old 30-day rule deleted all their data. Run `npm run audit-live-state` to see the live crons, the newest snapshot per prefix and the lifecycle rules.
+**Status (checked against Cloudflare 2026-11-15, CIV-1689):** TTC vehicle positions are recorded every minute by the ttc-positions Worker (cron `* * * * *`, in `wrangler.toml` again since CIV-1689) Hamilton (HSR) vehicle positions are recorded every minute again from 2026-11-18 (Ryan) (`wrangler.hamilton.toml`). Kingston Transit is recorded every minute too (CIV-1682), and so is Boston's MBTA (Green, Silver and Mattapan lines and buses 23, 57, 66 and 111; CIV-1930, positions only, `wrangler.mbta.toml`). All four go to atlas-live, kept 60 days (CIV-1906). The other three Workers (ttc-trips, STM, Burlington/Halifax) are paused: no cron since 2026-10-14, and the old 30-day rule deleted all their data. Run `npm run audit-live-state` to see the live crons, the newest snapshot per prefix and the lifecycle rules.
 
 ---
 
@@ -105,7 +105,7 @@ Written to `{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. None of the five agencies 
 
 ### Vehicle-position archives (every 1 min; TTC, Hamilton and Kingston only)
 
-Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. TTC and Hamilton are recorded now (Burlington, STM and Halifax are paused and their data has expired); Kingston and the MBTA Green Line (route ids Green-B to Green-E only) are recorded too. Used for live history and measured headway/speed analysis.
+Written to `positions/{slug}/{YYYY-MM-DD}/{unix-seconds}.json`. TTC and Hamilton are recorded now (Burlington, STM and Halifax are paused and their data has expired); Kingston and the MBTA (route ids Green-B to Green-E, Mattapan, the Silver Line 741, 742, 743, 746, 749 and 751, and buses 23, 57, 66 and 111 only) are recorded too. Used for live history and measured headway/speed analysis.
 
 | Agency | Slug | Filter |
 |--------|------|--------|

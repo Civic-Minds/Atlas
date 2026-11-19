@@ -45,14 +45,15 @@ describe('liveArchiveFeeds', () => {
     expect(LIVE_ARCHIVE_BUCKET_BY_SLUG.kingston).toBeUndefined();
   });
 
-  it('records the MBTA Green Line only: positions, archive-only, route ids Green-B to Green-E (CIV-1930)', () => {
+  it('records the MBTA Green, Silver and Mattapan lines and buses 23, 57, 66 and 111: positions, archive-only (CIV-1930)', () => {
     const pos = LIVE_ARCHIVE_POSITION_FEEDS.find(f => f.slug === 'mbta');
     expect(pos?.archiveOnly).toBe(true);
     expect(pos?.url).toBe('https://cdn.mbta.com/realtime/VehiclePositions.pb');
     expect(pos?.apiKeyHeader).toBeUndefined();
     const filter = new RegExp(pos!.routeFilterSource);
-    for (const id of ['Green-B', 'Green-C', 'Green-D', 'Green-E']) expect(filter.test(id), id).toBe(true);
-    for (const id of ['Red', 'Orange', 'Blue', 'Mattapan', 'Green', 'Green-A', 'Green-BX', '1', 'CR-Providence']) expect(filter.test(id), id).toBe(false);
+    // Green B-E, Mattapan, Silver Line SL1 741, SL2 742, SL3 743, SL5 749, SLW 746, SL4 751, then buses 111, 57, 66, 23.
+    for (const id of ['Green-B', 'Green-C', 'Green-D', 'Green-E', 'Mattapan', '741', '742', '743', '746', '749', '751', '111', '57', '66', '23']) expect(filter.test(id), id).toBe(true);
+    for (const id of ['Red', 'Orange', 'Blue', 'Green', 'Green-A', 'Green-BX', '1', 'CR-Providence', '57A', '66A', '111A', '570', '2', '230', '231', '28', '74', '7410', '1111', 'Shuttle-AshmontMattapan', 'Mattapan Line', ' 57']) expect(filter.test(id), id).toBe(false);
     expect(LIVE_ARCHIVE_TRIP_FEEDS.some(f => f.slug === 'mbta')).toBe(false);
     expect(LIVE_VEHICLE_POSITIONS_FEEDS.mbta).toBeUndefined();
     expect(LIVE_ARCHIVE_SHARDS.find(s => s.id === 'mbta')).toMatchObject({ positionSlugs: ['mbta'], tripSlugs: [] });

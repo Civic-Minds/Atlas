@@ -1,4 +1,4 @@
-# Boston MBTA Green Line only (CIV-1930, chosen by Ryan 2026-11-19). Vehicle positions, archive-only (not a Live agency).
+# Boston MBTA (CIV-1930, chosen by Ryan 2026-11-19): Green, Silver and Mattapan lines and buses 23, 57, 66 and 111. Vehicle positions, archive-only (not a Live agency).
 # Writes to atlas-live like every other archiver (CIV-1906: one Live bucket, kept 60 days), under positions/mbta/.
 # Every minute. Data: MassDOT Developers License Agreement (credit MassDOT as the provider).
 name = "atlas-gtfs-rt-archiver-mbta"
