@@ -74,10 +74,6 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: with section colours, a row whose line has a slower end under the tail minimum (FREQUENCY_RULES rule 3, D1: 5 stops and 1 km) reads the route's own number, as the route list and chooser do; the map's section colours show the slow end. It replaces CIV-1595's range ("every 10–20 min") and single slow number (TTC 927 midday "every 306").
   - Why: one calculation per fact, so card, list and chooser agree, and one big slow number doesn't read as the whole route.
   - Source: Ryan, CIV-1579 (2026-11-15, option 1)
-- **One odd stop doesn't recolour a stretch**
-  - What: on the filtered map, a drawn stretch of 3 or more stops takes the colour of its worst stop, except when exactly one stop is one tier worse than all the others: that stop is left out and the whole stretch takes the others' colour. Not when the stop just past a stretch end is as slow (a slower section starts there), nor when that stop's longest gap is 2 or more tiers worse than the others' (a real hole). Numbers in `shared/rules/frequency.ts` (`LONE_STOP_*`).
-  - Why: Ryan, "1 single stop seems like an oddity more than anything". A fixed one stop, not a share of the stretch, because two separate slow stops could be two real slow spots.
-  - Source: [decision log](#decision-log) (2026-11-18); [#1093](https://github.com/Civic-Minds/Atlas/issues/1093)
 - **A selected route obeys the map's filters**
   - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
   - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
@@ -278,7 +274,9 @@ Ryan, 2026-11-19 (CIV-1142): "learn more is only in the notice at the bottom". H
 ### 2026-11-18 — Research chart defaults
 Ryan, 2026-11-18 (CIV-1173): picked 1A, 2A, 3A, 4A and 5A on the chart kit review page. Ranked bars for rankings; columns for spreads along a scale; a split bar for shares of a whole; dot pairs for two values compared; empty steps kept on a fixed scale (a 60-min row at 0 is shown, not dropped). He noted the A/B pairs are different chart types for different jobs, so each kind keeps the design its page already uses. Style rule: [VISUAL.md](../style/VISUAL.md), Charts, graphs and graphics.
 
-### 2026-11-18 — One odd stop doesn't recolour a stretch
+### 2026-11-18 — One odd stop doesn't recolour a stretch (superseded)
+Superseded by V0 end-stop rule (decision 2026-11-19/20, Ryan: "You decide"; chose understate over overstate). Text kept below for history; the rule was reverted (2b698d123).
+
 Ryan, 2026-11-18 (#1093), after the "end piece" option (V0): "If it's literally only 1 stop then I think we should figure out a way to make an exception", then "I don't know if the exception should be based on a % of stops the route has or what but 1 single stop seems like an oddity more than anything", then approved the proposal as written: "1". On the filtered map a drawn stretch of at least 3 stops (`LONE_STOP_MIN_STRETCH_STOPS`) normally takes its worst stop's colour. When exactly one stop is one public tier worse (`LONE_STOP_TIERS_WORSE`) than every other stop, the whole stretch, that stop's own segment included, takes the worst of the others. Two guards keep it from hiding real slower service: a lone end stop whose neighbour past the stretch is as slow is the start of a slower section; a lone stop whose longest gap is 2 or more tiers (`LONE_STOP_GAP_GUARD_TIERS`) worse than the others' is a real hole. A fixed one stop was chosen over a share of the stretch's stops because several separate slow stops could be real slow spots. Measured on release-mwl8qwjk (every cached agency, weekday, Saturday and Sunday, AM peak to evening, every public threshold): 696 stretches and 17,722 stop-to-stop segments get a better colour, about 1% of drawn stretches, none worse; most are one-minute differences (16 among 15s). Hand-checks: TTC 96 and TTC 52 recolour; Hamilton 35 (a slower section past the end) and LA Metro 33 (a 54-minute gap at the last stop) don't.
 
 ### 2026-11-18 — The MCP answers bunching and gaps right now
