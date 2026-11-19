@@ -1,8 +1,9 @@
 /**
  * Local only (CIV-1893): Studio's "right now" view of a route, answered by the same code as the MCP's route_now
  * (scripts/mcp/liveNowTools.ts: liveNowHandlers.route_now, over shared/liveNow.ts), so the two never disagree.
- * It reads the Live recorder's last half hour with the MCP's read-only token (ATLAS_MCP_R2_READ_*, in the environment the
- * dev API starts with, as the MCP reads it; never the write keys). Without it, it answers `available: false`.
+ * It reads the Live recorder's last half hour with the MCP's read-only token, loaded the way the MCP loads it
+ * (scripts/mcp/liveNowData.ts readTokenEnv: the environment, else the credentials file; never the write keys, never
+ * logged), so any restart works. Without the token it answers `available: false`.
  */
 import { liveNowHandlers } from '../scripts/mcp/liveNowTools.js';
 import { nowSource } from '../scripts/mcp/liveNowData.js';
