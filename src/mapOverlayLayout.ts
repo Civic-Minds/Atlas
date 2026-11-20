@@ -30,6 +30,9 @@ export const MAP_OVERLAY_ROWS = {
 /** The side insets. */
 export const MAP_OVERLAY_EDGES = {
   left: 'left-6',
+  /** sm and up: the sidebar cards' left edge (--sidebar-left, in line with the search bar), for the map key (CIV-1922); the
+   *  1.5rem inset where no sidebar edge is set (the map apps, whose sidebar sits at that inset). */
+  sidebarLeft: 'sm:left-[var(--sidebar-left,1.5rem)]',
   phoneLeft: 'max-sm:left-6',
   /** The footer row stops short of the map controls. */
   footerRight: 'right-14',
@@ -85,7 +88,9 @@ export const MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS = `max-sm:absolute max-s
 export const MAP_COUNTS_PHONE_SLOT = `max-sm:absolute ${R.phoneCounts} ${E.phoneLeft}`;
 /** The map key (Settings, "Show map legend"): bottom-left above the footer row; phones one row higher, above the
  *  loading and count pills (CIV-1070: the loading pill covered its last row). */
-export const MAP_LEGEND_SLOT = `absolute ${R.phoneAboveCounts} ${R.aboveFooter} ${E.left}`;
+// CIV-1922 (Ryan chose 1: "This alignment looks so bad"): on sm and up the key lines up with the sidebar cards' left edge on
+// every map, so a card and the key below it share one edge; phones keep the 1.5rem inset. MapLegendCard sets --sidebar-left.
+export const MAP_LEGEND_SLOT = `absolute ${R.phoneAboveCounts} ${R.aboveFooter} ${E.left} ${E.sidebarLeft}`;
 /** Map apps (Studio, the Live tool; CIV-1821): the sidebar column, at the map's left inset from just under the top bar
  *  down to the row above the map key and the footer, as the notice pill stops (the key's height is 0 without a key). */
 export const MAP_APP_SIDEBAR_SLOT = `absolute top-3 ${E.left} bottom-[calc(2rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]`;
