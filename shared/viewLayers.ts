@@ -30,6 +30,14 @@ export function viewShowsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<
   return viewAllowsOnDemand(view) && (selectedModes.size === 0 || selectedModes.has(ON_DEMAND_MODE));
 }
 
+/**
+ * Whether the map draws on-demand areas, the one test for loading them and for saying they failed (#1635): the view
+ * shows them and the map draws its route layers. Studio (no route layers) draws none, so never reports them.
+ */
+export function mapDrawsOnDemand(view: MapViewKind, selectedModes: ReadonlySet<number>, routeLayers: boolean): boolean {
+  return routeLayers && viewShowsOnDemand(view, selectedModes);
+}
+
 /** Mode options a view offers: research views drop On-demand. */
 export function modesForView<T extends { id: number }>(modes: ReadonlyArray<T>, view: MapViewKind): ReadonlyArray<T> {
   return viewAllowsOnDemand(view) ? modes : modes.filter(m => m.id !== ON_DEMAND_MODE);

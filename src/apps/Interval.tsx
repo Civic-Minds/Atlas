@@ -25,7 +25,7 @@ import { AgencyCard } from '../components/Interval/AgencyCard';
 import { MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_COUNTS_PHONE_SLOT, mapFooterStyle, TRANSITION_BASE, TRANSITION_SLOW, Z_PANEL, MAP_BADGE, MAP_BADGE_COUNT, MAP_BADGE_LABEL, SIDEBAR_CARD_TOP, SIDEBAR_CARD_TOP_DESKTOP, Z_PANEL_RAISED } from '../styles';
 import type { Agency } from '../App';
 import type { OpenInfoFn } from '../components/InfoPanel';
-import { mapViewKind, viewAllowsOnDemand, viewShowsOnDemand } from '../../shared/viewLayers';
+import { mapDrawsOnDemand, mapViewKind, viewAllowsOnDemand } from '../../shared/viewLayers';
 import { ON_DEMAND_MODE } from '../../shared/modes';
 import { FEATURES, VIEWPORT_BBOX_PAD } from '../../shared/config';
 import { countOf, plural } from '../../shared/overflowText';
@@ -507,8 +507,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
   // load, so 640-767 keeps the centred spot above the row and phones show it in the map's "Error" pill.
   const footerHasNoticeRoom = useMediaQuery(FOOTER_NOTICE_MEDIA_QUERY);
   const onDemandStatus = useOnDemandStatus();
+  // #1635: only where the map draws on-demand areas (the same test as MapCanvas's); Studio draws none, so no notice.
   const onDemandFailedInFooter = footerHasNoticeRoom && onDemandStatus === 'error' && FEATURES.onDemand
-    && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+    && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
   const compareAvailable = phoneModeFlags(isPhoneScreen).compareMode && showRouteLayers && !nightServiceView
     && !frequentServiceView && !liveRoutesOnly && !filterToAgencies;
   // Side B from a link's own settings; at /apps/compare without them, B starts from A's settings as the tab does.

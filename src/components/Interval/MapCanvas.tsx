@@ -50,7 +50,7 @@ import { describeMapExport, type MapExportBox, type MapExportDetails, type MapEx
 import { routeLabels } from '../../utils/format';
 import { canCountRenderedRoutes } from '../../utils/compareSides';
 import type { FrequentServiceFrequency, FrequentServiceWindow } from '../../../shared/frequentService';
-import { mapViewKind, viewShowsOnDemand } from '../../../shared/viewLayers';
+import { mapDrawsOnDemand, mapViewKind } from '../../../shared/viewLayers';
 import { useOnDemandStatus, useReportOnDemandVisible } from '../../hooks/useOnDemandData';
 import { FEATURES } from '../../../shared/config';
 import { trackEvent, withShareTags, SHARE_UTM_MEDIUM_LINK, type ShareMedium } from '../../lib/analytics';
@@ -513,7 +513,8 @@ const MapCanvasInner: React.FC<MapCanvasProps> = ({
   // Each zone and stop is filtered on its own hours (zones/stops that aren't
   // running are hidden, like fixed routes); ones with no hours on file stay
   // visible but are drawn muted so they never read as confirmed service.
-  const onDemandShown = FEATURES.onDemand && viewShowsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes);
+  // #1635: on-demand areas are part of the route map; a view without route layers (Studio) neither loads nor reports them.
+  const onDemandShown = FEATURES.onDemand && mapDrawsOnDemand(mapViewKind({ nightServiceView, frequentServiceView, liveRoutesOnly }), selectedModes, showRouteLayers);
   // Phones: the error notices go to Interval's footer row as one "Error" pill (CIV-1057).
   const phoneErrorsKey = isPhone ? JSON.stringify([
     ...(onDemandStatus === 'error' && onDemandShown ? [ON_DEMAND_AREAS_FAILED] : []),
