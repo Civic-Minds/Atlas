@@ -1,23 +1,20 @@
 import { useEffect, useState } from 'react';
-import Widget from '../../components/Live/tool/Widget';
 import Card from '../../components/ui/Card';
 import DataTable from '../../components/ui/DataTable';
 import { STUDIO_NOW_PENDING as W, STUDIO_ROUTE_NOW_PENDING as T } from '../../../shared/liveWording';
 import { countText } from '../../../shared/numberText';
-import { betweenLabel, stretchLabel } from '../../utils/stopLabel';
+import { betweenLabel } from '../../utils/stopLabel';
 
 /**
  * CIV-1893: a route right now, in Studio's Live route view. The numbers are the MCP's route_now answer (the dev API runs
  * the same code, shared/liveNow.ts): the time of the reading and its age, where vehicles are bunched, where riders have
- * waited longest, each with the shared definitions under it. Only agencies the recorder reads every minute have it.
+ * waited longest. Only agencies the recorder reads every minute have it.
  */
 interface Stretch { fromStop: string; toStop: string; stops: number; minutes: number; minAgo?: number; scheduledGapMin: number | null }
 interface Direction { direction: string; vehiclesNow: number; standingNow: number; bunchedNow: Stretch[]; gappedNow: Stretch[] }
-interface Answer { asOf?: string; dataAgeMin?: number; live?: null; directions?: Direction[]; definitions?: { bunched: string; gapped: string } }
+interface Answer { asOf?: string; dataAgeMin?: number; live?: null; directions?: Direction[] }
 type Ready = Answer & { directions: Direction[] };
 const REFRESH_MS = 60_000;
-/** The sidebar doesn't scroll: the closest pairs and the longest waits lead, the rest are counted. */
-const SHOWN = 1;
 
 export const ROUTE_NOW_URL = '/api/route-now';
 
@@ -39,47 +36,16 @@ function useRouteNow(agency: string, route: string): Ready | null {
   return answer == null || answer === 'none' || answer.live === null || !answer.directions ? null : answer as Ready;
 }
 
+/**
+ * CIV-1828 (Ryan's pick, option A): Right now in the week table's look, one row per direction (the column says it's a
+ * direction), moving and standing vehicles together, and how many stretches are bunched or have a long gap; under it the
+ * closest pair and the longest wait, each "between X and Y". The definitions are in About (the week table's Learn more).
+ */
 export default function RouteNow({ agency, route }: { agency: string; route: string }) {
   const answer = useRouteNow(agency, route);
   if (!answer) return null;
-  const stretches = (list: Stretch[], line: (x: Stretch) => string) => [
-    ...list.slice(0, SHOWN).map(x => (
-      <li key={`${x.fromStop}>${x.toStop}`} className="list-none">
-        <span className="block font-bold">{stretchLabel(x.fromStop, x.toStop)}</span>
-        <span className="block text-[var(--text-secondary)]">{line(x)}</span>
-      </li>
-    )),
-    ...(list.length > SHOWN ? [<li key="more" className="list-none text-[var(--text-dim)]">{W.more(list.length - SHOWN)}</li>] : []),
-  ];
-  return (
-    <Widget title={W.title} size="medium">
-      {answer.asOf != null && answer.dataAgeMin != null && <p className="m-0 mb-2 text-xs leading-4 text-[var(--text-dim)]">{W.reading(answer.asOf, answer.dataAgeMin)}</p>}
-      {answer.directions.map(d => (
-        <div key={d.direction} className="mb-3 text-sm">
-          <p className="m-0 font-bold">{d.direction}</p>
-          <p className="m-0 text-xs text-[var(--text-dim)]">{W.vehicles(d.vehiclesNow, d.standingNow)}</p>
-          <p className="m-0 mt-1 text-xs font-bold text-[var(--text-muted)]">{W.bunchedTitle}</p>
-          {d.bunchedNow.length ? <ul className="m-0 p-0">{stretches([...d.bunchedNow].sort((a, b) => a.minutes - b.minutes), x => W.bunchedLine(x.minutes, x.minAgo ?? 0))}</ul> : <p className="m-0 text-[var(--text-secondary)]">{W.noBunched}</p>}
-          <p className="m-0 mt-1 text-xs font-bold text-[var(--text-muted)]">{W.gappedTitle}</p>
-          {d.gappedNow.length ? <ul className="m-0 p-0">{stretches([...d.gappedNow].sort((a, b) => b.minutes - a.minutes), x => W.gappedLine(x.minutes, x.scheduledGapMin))}</ul> : <p className="m-0 text-[var(--text-secondary)]">{W.noGapped}</p>}
-        </div>
-      ))}
-      {answer.definitions && <p className="m-0 text-xs leading-4 text-[var(--text-dim)]">{answer.definitions.bunched} {answer.definitions.gapped}</p>}
-    </Widget>
-  );
-}
-
-/**
- * CIV-1828 redesign options: Right now as the week table's look, one row per direction (the column says it's a direction),
- * moving and standing vehicles together, and how many stretches are bunched or have a long gap. `places` (option A) names
- * the closest pair and the longest wait under the table, each "between X and Y". The definitions are in About (the week
- * table's Learn more), not under this card.
- */
-export function RouteNowTable({ agency, route, places }: { agency: string; route: string; places: boolean }) {
-  const answer = useRouteNow(agency, route);
-  if (!answer) return null;
-  const closest = places ? answer.directions.flatMap(d => d.bunchedNow).sort((a, b) => a.minutes - b.minutes)[0] : undefined;
-  const longest = places ? answer.directions.flatMap(d => d.gappedNow).sort((a, b) => b.minutes - a.minutes)[0] : undefined;
+  const closest = answer.directions.flatMap(d => d.bunchedNow).sort((a, b) => a.minutes - b.minutes)[0];
+  const longest = answer.directions.flatMap(d => d.gappedNow).sort((a, b) => b.minutes - a.minutes)[0];
   const lines = [
     ...(closest ? [T.bunchedAt(betweenLabel(closest.fromStop, closest.toStop), closest.minutes)] : []),
     ...(longest ? [T.gappedAt(betweenLabel(longest.fromStop, longest.toStop), longest.minutes, longest.scheduledGapMin)] : []),

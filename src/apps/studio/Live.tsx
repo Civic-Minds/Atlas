@@ -25,9 +25,8 @@ import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
 import LiveGlance from './LiveGlance';
-import RouteNow, { RouteNowTable } from './RouteNow';
+import RouteNow from './RouteNow';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
-import { useLocation } from 'react-router';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
 
@@ -109,18 +108,10 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
-  // CIV-1828 redesign: two options for Ryan to pick from, side by side on the same build (?option=a or ?option=b); with
-  // neither, today's panel. Temporary: the picked option replaces the switch.
-  const variant = new URLSearchParams(useLocation().search).get('option');
-  const panelOption: 'a' | 'b' | null = variant === 'a' || variant === 'b' ? variant : null;
+  // CIV-1828 (Ryan picked option A with B's chart: "in A the chart is bad in B the chart is good"): Right now first with
+  // its places named, then the week, late departures by hour and the late stops. No trip time card.
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
-  const loading = m.routeBody?.filter(w => w.key === 'loading') ?? [];
-  // A: Right now first, places named; then the week, trip time and the late stops. B: the week first, Right now as counts
-  // only, then late by hour and the late stops.
-  // Each option leaves one card out so the panel fits without scrolling: A the late-by-hour chart, B the trip time card.
-  const optionBody = panelOption === 'a' ? [...loading, ...byKey(['falls-behind', 'week', 'run-time', 'problems'])]
-    : panelOption === 'b' ? [...loading, ...byKey(['falls-behind', 'week'])] : null;
-  const optionTail = panelOption === 'b' ? [...byKey(['late-hours', 'problems'])] : [];
+  const routeWidgets = byKey(['loading', 'falls-behind', 'week', 'late-hours', 'problems']);
 
   const routeRow = route ? s.routes.find(r => r.route === route) : null;
   const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
@@ -135,23 +126,10 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               <SidebarCardHeaderBlock>
                 <SidebarCardHeader back={{ to: agencyName, onClick: m.backToNetwork }} title={<RouteTitleName label={label} />} />
               </SidebarCardHeaderBlock>
-              {panelOption === 'a' ? (
-                <div className="flex flex-col gap-3">
-                  <RouteNowTable agency={slug} route={route} places />
-                  {optionBody && <WidgetPanel widgets={optionBody} />}
-                </div>
-              ) : panelOption === 'b' ? (
-                <div className="flex flex-col gap-3">
-                  {optionBody && <WidgetPanel widgets={optionBody} />}
-                  <RouteNowTable agency={slug} route={route} places={false} />
-                  <WidgetPanel widgets={optionTail} />
-                </div>
-              ) : (
-                <>
-                  <RouteNow agency={slug} route={route} />
-                  {m.routeBody && <WidgetPanel widgets={m.routeBody} />}
-                </>
-              )}
+              <div className="flex flex-col gap-3">
+                <RouteNow agency={slug} route={route} />
+                <WidgetPanel widgets={routeWidgets} />
+              </div>
               {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
             </SidebarCardShell>
           </PanelBody>
