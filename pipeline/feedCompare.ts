@@ -116,6 +116,11 @@ export function dayCoverage(listed: ReadonlySet<string>, read: ReadonlySet<strin
   return { listedTrips, readListedTrips, unlistedTrips };
 }
 
+/** Whether two days run the same service ids. */
+export function sameServices(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
+  return a.size === b.size && [...a].every(id => b.has(id));
+}
+
 export function dayNameOf(ymd: string): DayName {
   return DAYS_SUNDAY_FIRST[new Date(Date.UTC(+ymd.slice(0, 4), +ymd.slice(4, 6) - 1, +ymd.slice(6, 8))).getUTCDay()];
 }
@@ -207,14 +212,18 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
   });
   if (!seen) throw new Error('processGtfsBuffer did not report its service days');
   const { gtfs, active, ref, listed } = seen as Seen;
-  if (dateInWeek(ref, 'Monday') !== dateInWeek(ymd, 'Monday')) {
-    // The week riders face around the date is another week: the feed has no service that week, or the date is outside it.
+  const dayName = dayNameOf(ymd);
+  if (dateInWeek(ref, 'Monday') !== dateInWeek(ymd, 'Monday') && !sameServices(servicesListedOn(listed, ymd), active.get(dayName) ?? new Set<string>())) {
+    // The week riders face around the date is another week (#1630: YRT's Nov 16 week has a Friday without school trips,
+    // so the picker reads Nov 9-15). That week reads the date only when its day runs exactly the date's services;
+    // otherwise the feed has no service that week, or the date runs a schedule of its own.
     const tripsOn = (ids: ReadonlySet<string>) => (gtfs.trips ?? []).filter(t => ids.has(t.service_id)).length;
     const listedHere = tripsOn(servicesListedOn(listed, ymd));
-    throw new DateNotReadError(dateReadProblem(listedHere, 0, ymd) ?? `Asked for the week of ${fmtDate(ymd)}, but the pipeline read the week of ${fmtDate(ref)}.`);
+    throw new DateNotReadError(listedHere === 0
+      ? dateReadProblem(0, 0, ymd)!
+      : `The pipeline reads the week of ${fmtDate(ref)} for this schedule, and its ${dayName} runs other services than ${fmtDate(ymd)}. Pick a date in that week, or another date in the same schedule.`);
   }
 
-  const dayName = dayNameOf(ymd);
   const tripsByService = new Map<string, number>();
   for (const t of gtfs.trips ?? []) tripsByService.set(t.service_id, (tripsByService.get(t.service_id) ?? 0) + 1);
   const { listedTrips, readListedTrips } = dayCoverage(servicesListedOn(listed, ymd), active.get(dayName) ?? new Set<string>(), tripsByService);
