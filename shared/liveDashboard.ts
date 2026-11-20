@@ -332,20 +332,19 @@ export function freshness(v3: LiveV3, route: string, now: number): Freshness {
 // --- running time, extra wait, service delivered and the week-over-week comparison ---
 
 
-/** "Scheduled 22 min · usually 27 · 1 in 10 over 34 min" (with the hour when one is given). */
+/** "Scheduled 22 min · usually 27" (with the hour when one is given). */
 export function runningTimeSentence(label: string, r: RunTimeFigures | null | undefined, atHour?: number): string {
   if (!r) return `${label}: too few trips were measured over the main stretch to say.`;
   if (r.n < LIVE_MIN_SAMPLE) return `${label}: too few trips (${r.n}) were measured from end to end to say.`;
   return `${label}: ${runningTimeFigures(r)}${atHour != null ? ` at ${hourTime(atHour)}` : ''}.`;
 }
 
-/** The figures of that sentence without the label: "scheduled 34 min · usually 31 · 1 in 10 over 37 min". A missing figure is left out, never invented. */
-export function runningTimeFigures(r: { scheduledMin?: number | null; typicalMin?: number | null; p90Min?: number | null }): string {
+/** The figures of that sentence without the label: "scheduled 34 min · usually 31". A missing figure is left out, never invented. */
+export function runningTimeFigures(r: { scheduledMin?: number | null; typicalMin?: number | null }): string {
   const ok = (x: number | null | undefined): x is number => typeof x === 'number' && Number.isFinite(x);
   const parts: string[] = [];
   if (ok(r.scheduledMin)) parts.push(`scheduled ${runTimeAmount(r.scheduledMin)}`);
   if (ok(r.typicalMin)) parts.push(`usually ${parts.length ? Math.round(r.typicalMin) : runTimeAmount(r.typicalMin)}`);
-  if (ok(r.p90Min)) parts.push(`1 in 10 over ${runTimeAmount(r.p90Min)}`);
   return parts.join(' · ');
 }
 
