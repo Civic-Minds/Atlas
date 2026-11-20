@@ -188,7 +188,7 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
   - Source: Linear CIV-293, comments of 2026-10-17 (14:42 and 14:56 UTC)
-  - Exception (Ryan, 2026-11-19): in Studio's Live view the week table's two explanation lines (what Bunching's two figures are, and what grey means) live in Studio's About panel, Live part. The side panel keeps the short bunching definition with a Learn more link that opens it, and the map key keeps its short definition.
+  - Exception (Ryan to the manager in chat, 2026-11-19: "1", then "Might be better actually" when asked "Bunching is XYZ then learn more?"; logged on CIV-1828): in Studio's Live view the week table's two explanation lines (what Bunching's two figures are, and what grey means) live in Studio's About panel, Live part. The side panel keeps the short bunching definition with a Learn more link that opens it, and the map key keeps its short definition.
 - **Understood at a glance, no scrolling or collapsing in sidebars**
   - What: both sidebars show everything at once; if it does not fit, show less rather than cram.
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
