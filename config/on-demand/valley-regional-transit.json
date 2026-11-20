@@ -1,0 +1,185 @@
+{
+  "slug": "valley-regional-transit",
+  "area": {
+    "serviceName": "VRT On-Demand",
+    "sourceUrl": "https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/",
+    "sourceLabel": "Route 150 VRT On-Demand page and service-area shapefile (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-20",
+    "bookingInfo": "Book in the VRT Booking app, at rideVRT.org/booking or call VRT Customer Service at 208-345-7433.",
+    "bookingUrl": "https://www.valleyregionaltransit.org/booking/",
+    "pickup": {
+      "method": "virtual-stops"
+    },
+    "tripRules": "Trips can start and end anywhere in the zone.",
+    "zoneMetadata": {
+      "Caldwell": {
+        "serviceName": "VRT On-Demand",
+        "serviceHours": "Monday to Friday 6 a.m. to 8 p.m. No weekend service.",
+        "hoursNote": "Holiday hours aren't stated on the route page.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 20
+            }
+          ],
+          "Saturday": [],
+          "Sunday": []
+        },
+        "hoursSource": {
+          "url": "https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/",
+          "retrievedAt": "2026-11-20"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "valley-regional-transit",
+        "serviceType": "on-demand",
+        "sourceUrl": "https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/",
+        "sourceLabel": "Route 150 VRT On-Demand service-area shapefile (agency-supplied)",
+        "sourceRetrievedAt": "2026-11-16",
+        "areaName": "Caldwell"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -116.670032,
+              43.688156
+            ],
+            [
+              -116.669894,
+              43.677346
+            ],
+            [
+              -116.668014,
+              43.677344
+            ],
+            [
+              -116.668023,
+              43.674185
+            ],
+            [
+              -116.663583,
+              43.674199
+            ],
+            [
+              -116.663583,
+              43.6737
+            ],
+            [
+              -116.643014,
+              43.673922
+            ],
+            [
+              -116.642892,
+              43.663005
+            ],
+            [
+              -116.613156,
+              43.663279
+            ],
+            [
+              -116.613042,
+              43.626643
+            ],
+            [
+              -116.616796,
+              43.626554
+            ],
+            [
+              -116.61677,
+              43.624875
+            ],
+            [
+              -116.613217,
+              43.6225
+            ],
+            [
+              -116.613223,
+              43.617323
+            ],
+            [
+              -116.616416,
+              43.619515
+            ],
+            [
+              -116.617514,
+              43.619497
+            ],
+            [
+              -116.617495,
+              43.619825
+            ],
+            [
+              -116.620001,
+              43.621546
+            ],
+            [
+              -116.623486,
+              43.619474
+            ],
+            [
+              -116.62524,
+              43.619468
+            ],
+            [
+              -116.625277,
+              43.619522
+            ],
+            [
+              -116.628125,
+              43.619475
+            ],
+            [
+              -116.628123,
+              43.615757
+            ],
+            [
+              -116.632756,
+              43.615753
+            ],
+            [
+              -116.632724,
+              43.60454
+            ],
+            [
+              -116.693186,
+              43.603995
+            ],
+            [
+              -116.693269,
+              43.618479
+            ],
+            [
+              -116.713206,
+              43.618295
+            ],
+            [
+              -116.71334,
+              43.669845
+            ],
+            [
+              -116.708274,
+              43.669895
+            ],
+            [
+              -116.682137,
+              43.688108
+            ],
+            [
+              -116.670032,
+              43.688156
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "notes": "Zone from '150 VRT On Demand.zip', sent by Valley Regional Transit (Capital Projects Manager, prepared by an Associate Planner) to Atlas Outreach on 2026-11-16: one polygon (ShortName 150, LngName '150 - VRT On-Demand Nampa/Caldwell', SvcArea 'Caldwell', file dated 2026-11-16), in WGS 84 / Pseudo-Mercator, reprojected to WGS84 with ogr2ogr, shape otherwise as given (about 57 km2, Caldwell). Named Caldwell, as the file names it. Open question: the route page also lists Nampa destinations (CWI Nampa, St. Luke's and Saint Alphonsus Nampa), which sit outside this polygon; whether they are a second zone the file leaves out is to be asked of VRT. Hours and fares from the route page (October 2026 schedule): Monday to Friday 6 AM to 8 PM, Saturday closed, Sunday not listed; no holiday hours there. Fare $1.50 single ride, $2.50 all-day; some trips are offered as a Lyft ride at $2, which riders may decline. Riders are picked up near their location and meet the vehicle where the app says (virtual stops). Open to everyone who books; no eligibility rule is stated."
+}
