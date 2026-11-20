@@ -70,8 +70,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'theride': { serviceName: 'FlexRide East', url: 'https://www.theride.org/services/flexride' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.metrolinkok.org/getting-around/other-services-programs/microlink/
   'tulsa-transit': { serviceName: 'Broken Arrow On-Demand', url: 'https://www.metrolinkok.org/getting-around/other-services-programs/microlink/' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/
-  'valley-regional-transit': { serviceName: 'Route 150 On-Demand', url: 'https://www.valleyregionaltransit.org/routes/nampa-caldwell-ondemand/' },
   'fast-ca': { serviceName: 'FAST Connect' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.metro.net/riding/micro/
   'lacmta': { serviceName: 'Metro Micro', url: 'https://www.metro.net/riding/micro/' },
