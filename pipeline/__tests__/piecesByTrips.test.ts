@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { piecesByTripsEnabled } from '../../shared/rules/flags';
 import { PERIOD_MINUTES } from '../../shared/rules/periods';
 import { LEGACY_PIECE_MINIMUM, pieceMinimum } from '../pieceParams';
-import { directionPieceReadings, headlineTrunk, patternPools, poolAt, readFeaturePieces, sharerPieces } from '../pieces';
+import { directionPieceReadings, headlineTrunk, isRegularPieceInPeriod, patternPools, poolAt, readFeaturePieces, sharerPieces } from '../pieces';
 import { alignedSharedRuns, qualifyingSharedRuns } from '../sharedStretch';
 import { directionStretches, rollupDirection, stretchFilterValue, stretchPeriods, type DirectionStretches, type DirectionTrip } from '../tripSets';
 
@@ -68,7 +68,7 @@ describe('branches as pieces of their own', () => {
     expect(build('skip', [{ times: every(360, 1380, 20), stops: trunk }, { times: every(370, 1380, 20), stops: skipper }]).tails).toEqual([]);
   });
 
-  it('on: one-off variants (3 trips in a burst, a garage run) are still not regular patterns, so no piece and no reading (limited-trips display for them is a follow-up)', () => {
+  it('on: one-off variants (3 trips in a burst, a garage run) are still not regular patterns, so no piece and no reading (the no-number display for them is a follow-up)', () => {
     const d = withFlag(() => build('variant', [
       { times: every(360, 1380, 15), stops: trunk },
       { times: [600, 605, 610], stops: [...trunk, ...tail.slice(0, 2)] },
@@ -138,7 +138,7 @@ describe('with B1, B2 and B3 on the new pieces', () => {
     expect(r.pieces[1].periods[MIDDAY]).toEqual({ t: 'tail', v: 164, every: 30, until: 736 });
   });
 
-  it('B3 + B4: a 1-stop branch gets a treatment of its own (a reading, or limited trips)', () => {
+  it('B3 + B4: a 1-stop branch gets a treatment of its own (a reading, or no number)', () => {
     const d = withFlag(() => build('b3', [
       { times: every(360, 1380, 15), stops: trunk },
       { times: every(367, 1380, 30), stops: [...trunk, tail[0]] },
@@ -187,7 +187,7 @@ describe('with B1, B2 and B3 on the new pieces', () => {
     const skipper = trunk.filter((_, i) => i !== 9);
     const d = withFlag(() => build('m101', [
       { times: every(360, 1380, 10), stops: trunk }, // the local, all day
-      { times: every(1170, 1440, 10), stops: skipper }, // the limited, from 19:30 only
+      { times: every(1140, 1440, 10), stops: skipper }, // the limited, from 19:00 only (the whole evening)
     ]));
     expect(d.tails).toHaveLength(1);
     const tl = d.tails[0];
@@ -221,5 +221,16 @@ describe('with B1, B2 and B3 on the new pieces', () => {
     const stops = new Map(a.map((id, i) => [id, { lat: 43.6, lon: -79.4 + i * 0.0005 }] as const));
     expect(withFlag(() => qualifyingSharedRuns(a, a, stops).length)).toBe(0);
     expect(withFlag(() => qualifyingSharedRuns(a, a, stops, a, LEGACY_PIECE_MINIMUM).length)).toBe(0);
+  });
+});
+
+describe('B4 boundary test: regular means the 3+ even trips run the whole period (no half-period floor)', () => {
+  const { start, end } = PERIOD_MINUTES.midday;
+  const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let m = from; m <= to; m += step) out.push(m); return out; };
+  it('a run over the whole period is regular; a 3-trip burst and a 3-trip uneven run are not, though the burst reads on the card (B3)', () => {
+    expect(isRegularPieceInPeriod(every(start, end - 1, 20), start, end)).toBe(true);
+    expect(isRegularPieceInPeriod([700, 720, 740], start, end)).toBe(false);
+    expect(isRegularPieceInPeriod([700, 705, 780], start, end)).toBe(false);
+    expect(isRegularPieceInPeriod([700, 720], start, end)).toBe(false);
   });
 });

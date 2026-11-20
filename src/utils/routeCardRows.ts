@@ -100,7 +100,7 @@ export interface RouteCardModelInput {
   stretchValues?: boolean;
   /** #1506: the map colours lines section by section (beta, FEATURES.segmentColours); see RouteCardRowContext.sectionColours. */
   sectionColours?: boolean;
-  /** CIV-1959 B3: the trunk line and each branch's own reading or limited trips, from the pieceReadings data. Off until Ryan approves the wording (BRANCH_READINGS_ENABLED). */
+  /** CIV-1959 B3: the trunk line and each branch's own reading or no number, from the pieceReadings data. Behind BRANCH_READINGS_ENABLED. */
   branchReadings?: boolean;
 }
 
@@ -303,7 +303,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     let finalRows = rows;
     // CIV-1959 B3 (BRANCH_READINGS_ENABLED, data from ATLAS_BRANCH_READINGS=1): with the headline from the trunk, the branch wait
     // must be visible. The trunk is one line, always shown (no 0.65 rule), and each branch is its own line from its piece:
-    // a reading, "every N until HH:MM" for a tail, or limited trips (no number). A branch the card hid for the period (#1115)
+    // a reading, "every N until HH:MM" for a tail, or the no-number words (noNumberRowLabel) for a piece with too few or uneven trips. A branch the card hid for the period (#1115)
     // gets its line back. The main stretch's own row stays (it names a destination) and the trunk line is left out only when that row already reads the same number.
     const slotFeatures = branchReadings && stretchMode && !nightView ? stretchRowFeatures(group.directionFeatures ?? [], period).filter(d => d.stretchRole === 'tail') : [];
     // A branch with no feature of its own has no destination to name: it has no line, as today. With none that can be named, the card keeps today's rows.
@@ -337,8 +337,8 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         const row = rowOf(d, i);
         // A piece's reading counts every trip on that stretch, so it stands for the row only where all of the row's own trips run it
         // (stretchRowPeriods, as rowStretchReading has it), and never reads better than the row's own number today: a destination
-        // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). Limited
-        // trips holds either way: the row's trips are a part of the piece's.
+        // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). A piece with no number
+        // holds either way: the row's trips are a part of the piece's.
         const stands = d.stretchRowPeriods?.includes(period as PeriodKey) ?? false;
         const existed = rows.some(r => r.feature === d);
         return [{ ...row, display: (hoveredHour: number | null): CardRowDisplay => {
@@ -349,8 +349,10 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
             if (t.t === 'reading' && (!existed || today == null || t.v < today)) return shown;
             if (t.t === 'tail' && today != null && t.v < today) return shown;
           }
-          const own = branchRowValue(shown.value, t);
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: true, valueEnd: false };
+          // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
+          const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
+          const noNumber = t.t === 'limited';
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
         } }];
       });
       finalRows = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];

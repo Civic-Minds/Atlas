@@ -106,7 +106,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   layers: Record<string, GeoJSON.FeatureCollection>;
   day: string;
   period: TimePeriod;
-  /** CIV-1959 B3: a stop on a branch shows its piece's reading, tail words or limited trips (off until Ryan approves the wording). */
+  /** CIV-1959 B3: a stop on a branch shows its piece's reading, tail words or the no-number words. */
   branchReadings?: boolean;
 }): StopRoute[] {
   type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
