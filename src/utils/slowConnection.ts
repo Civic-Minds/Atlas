@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { APP_URL, currentSearch, readUrlParam } from './urlSchema';
 
 /** The parts of the browser's Network Information API that Atlas reads (Chromium only; other browsers report none). */
 export interface ConnectionHints {
@@ -20,8 +21,7 @@ function currentConnection(): (ConnectionHints & EventTarget) | null {
 
 /** `?slowconnection=1` pretends the connection is slow, so the prompt can be tried on any browser. Read only when the feature is on. */
 function forcedSlow(): boolean {
-  if (typeof window === 'undefined') return false;
-  return new URLSearchParams(window.location.search).get('slowconnection') === '1';
+  return readUrlParam(currentSearch(), APP_URL.forceSlowConnection) === true;
 }
 
 export function useSlowConnection(enabled: boolean): boolean {
