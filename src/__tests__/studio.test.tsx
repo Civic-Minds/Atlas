@@ -129,6 +129,7 @@ describe('Studio pages (CIV-1828)', () => {
   it('opens Live unless the address asks for Fleet', () => {
     expect(studioPageFrom(null)).toBe('live');
     expect(studioPageFrom('fleet')).toBe('fleet');
+    expect(studioPageFrom('changes')).toBe('changes');
     expect(studioPageFrom('vehicles')).toBe('live');
   });
 
@@ -141,7 +142,8 @@ describe('Studio pages (CIV-1828)', () => {
 });
 
 describe('Studio opens the page that has the address\'s agency (CIV-1828)', () => {
-  const lists = { live: ['ttc'], fleet: ['kingston', 'hamilton', 'rtd-denver'] };
+  const fleetAgencies = ['kingston', 'hamilton', 'rtd-denver'];
+  const lists = { live: ['ttc'], fleet: fleetAgencies, changes: fleetAgencies };
   it('never swaps the agency: RTD with no page opens Fleet, TTC opens Live', () => {
     expect(studioPageFor(null, 'rtd-denver', lists)).toBe('fleet');
     expect(studioPageFor(null, 'ttc', lists)).toBe('live');
@@ -152,9 +154,9 @@ describe('Studio opens the page that has the address\'s agency (CIV-1828)', () =
     expect(studioPageFor(null, 'nowhere', lists)).toBe('live');
   });
   it('waits for the lists it needs before choosing', () => {
-    expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null })).toBeNull();
-    expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null })).toBeNull();
-    expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null })).toBe('live');
+    expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null, changes: null })).toBeNull();
+    expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null, changes: null })).toBeNull();
+    expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null, changes: null })).toBe('live');
   });
 });
 
@@ -168,7 +170,7 @@ describe('Studio path addresses (CIV-1924)', () => {
   });
 
   it('leaves Studio\'s other pages and unknown addresses alone', () => {
-    for (const p of ['/studio/coverage', '/studio/changes', '/studio/live/ttc/504/x', '/studio//ttc', '/', '/studios']) expect(parseStudioPath(p)).toBeNull();
+    for (const p of ['/studio/coverage', '/studio/live/ttc/504/x', '/studio//ttc', '/', '/studios']) expect(parseStudioPath(p)).toBeNull();
   });
 
   it('writes the same addresses back', () => {

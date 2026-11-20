@@ -46,9 +46,9 @@ export const studioAgencyListFrom = (file: { agencies: readonly string[] } | 'mi
 /**
  * Studio's pages (CIV-1828), in the page menu's order; the first opens by default. Live is the first page (ROADMAP,
  * Ryan 2026-11-17); Fleet is a placeholder name (Ryan: "We can add Fleet as a placeholder perhaps") showing the
- * buses-needed and schedule work until the second page is decided.
+ * agency's buses needed; Schedule Changes is its own page (Ryan, 2026-11-19, CIV-1922).
  */
-export const STUDIO_PAGES = ['live', 'fleet'] as const;
+export const STUDIO_PAGES = ['live', 'fleet', 'changes'] as const;
 export type StudioPageKey = (typeof STUDIO_PAGES)[number];
 /** The page an address asks for; Live otherwise. */
 export const studioPageFrom = (param: string | null): StudioPageKey =>

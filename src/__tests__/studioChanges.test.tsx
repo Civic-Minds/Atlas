@@ -8,9 +8,9 @@ vi.mock('../../shared/config', async (importOriginal) => {
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioRouteTable, periodFigure, smallChangeParts } = await import('../apps/studio/StudioRouteTable');
+const { StudioRouteTable, periodFigure, pairFigures, smallChangeParts } = await import('../apps/studio/StudioRouteTable');
 const { STUDIO_CHANGES_TEXT } = await import('../../shared/studioWording');
-const { changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../apps/studio/fleetModel');
+const { agencyFleet, changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../apps/studio/fleetModel');
 
 const day = (headway: Record<string, number>, trips: number, first: number | null, last: number, runs: number[]) =>
   ({ headway, trips, first, last, runMinutes: Object.fromEntries(runs.map((r, i) => [String(i), r])) });
@@ -171,5 +171,16 @@ describe('Studio map page (CIV-1731)', () => {
     expect(periodFigure({ ...d, edge: undefined }, 'midday')).toBe('102 min');
     expect(STUDIO_CHANGES_TEXT.unchangedCount(25)).toBe('25 other routes didn’t change');
     expect(STUDIO_CHANGES_TEXT.unchangedCount(1)).toBe('1 other route didn’t change');
+  });
+
+  it('reads both sides of a figure in one format, and adds the agency\'s buses up (CIV-1922)', () => {
+    const d = { headway: { midday: 10 }, trips: 20, first: 360, last: 1200, runMinutes: [30], edge: { midday: { until: 1172, every: 10 } } };
+    const plain = { headway: { midday: 15 }, trips: 20, first: 360, last: 1200, runMinutes: [30] };
+    expect(pairFigures(d, plain, 'midday')).toEqual({ before: 'every 10 min until 7:32 PM', after: 'every 15 min' });
+    expect(pairFigures(plain, plain, 'midday')).toEqual({ before: '15 min', after: '15 min' });
+    const g = (scheduled: number, at: Record<number, number>) => ({ routes: ['1'], scheduled, implied: scheduled, runningMin: 60, layoverMin: null, atTarget: at });
+    const v = { slug: 'x', feed: 'x.zip', referenceDate: '2026-11-01', periods: { midday: [g(3, { 10: 6, 15: 4 }), g(2, { 10: 4 })] } };
+    expect(agencyFleet(v, 'midday')).toMatchObject({ scheduled: 5, implied: 5, atTarget: { 10: 10 } });
+    expect(agencyFleet(v, 'evening')).toBeNull();
   });
 });

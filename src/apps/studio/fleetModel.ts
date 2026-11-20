@@ -1,10 +1,10 @@
 import { frequencyChange } from '../../../shared/frequencyChange';
 import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
 import { RUN_STEP_MIN, SPAN_STEP_MIN, TRIP_STEP, changeSize, periodChange, routeFrequencyChange, type StudioBeforeAfterFile, type StudioPeriodChange, type StudioRouteChange } from '../../../shared/studioBeforeAfter';
-import type { StudioVehicleGroup, StudioVehiclesFile } from '../../../shared/studioVehicles';
+import { STUDIO_TARGETS, type StudioVehicleGroup, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import type { MapLine } from '../../context/PageMapOverlay';
 import { STUDIO_CHANGES_TEXT } from '../../../shared/studioWording';
-import { periodFigure, routeFigureRows, routeTitle } from './StudioRouteTable';
+import { pairFigures, routeFigureRows, routeTitle } from './StudioRouteTable';
 
 /**
  * Fleet's figures (Atlas Studio, CIV-1731, CIV-1828): the change list's groups and rows, each route's change colour at
@@ -100,7 +100,7 @@ function movedSteps(c: StudioRouteChange, key: string): number {
  * the route table's own label.
  */
 export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
-  const here = { before: periodFigure(c.before, period), after: periodFigure(c.after, period) };
+  const here = pairFigures(c.before, c.after, period);
   if (!c.before || !c.after) {
     // Added or removed: this time of day's figure, or where it has none, the first time of day the route ran.
     if (here.before !== here.after) return { label: null, ...here };
@@ -119,4 +119,20 @@ export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
 /** The group of routes that share buses with this route, at the time of day. */
 export function groupFor(vehicles: StudioVehiclesFile, route: string, period: PeriodKey): StudioVehicleGroup | null {
   return vehicles.periods[period]?.find(g => g.routes.includes(route)) ?? null;
+}
+
+/**
+ * The whole agency's buses at the time of day (CIV-1922): the groups' own figures added up (groups share no routes, so
+ * no bus counts twice), as one group the buses table reads. A target where any group has no figure has none. Nothing is
+ * calculated again here: each number is the engine's (scripts/vehicles-needed.ts).
+ */
+export function agencyFleet(vehicles: StudioVehiclesFile, period: PeriodKey): StudioVehicleGroup | null {
+  const groups = vehicles.periods[period];
+  if (!groups?.length) return null;
+  const atTarget: StudioVehicleGroup['atTarget'] = {};
+  for (const hw of STUDIO_TARGETS) {
+    const figures = groups.map(g => g.atTarget[hw]);
+    if (figures.every((n): n is number => typeof n === 'number')) atTarget[hw] = figures.reduce((x, n) => x + n, 0);
+  }
+  return { routes: [], scheduled: groups.reduce((x, g) => x + g.scheduled, 0), implied: groups.reduce((x, g) => x + g.implied, 0), runningMin: 0, layoverMin: null, atTarget };
 }

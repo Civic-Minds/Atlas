@@ -19,16 +19,18 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesTitleText } from '../../../shared/studioWording';
 import { StudioRouteTable, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
 /**
- * Fleet (CIV-1828, a placeholder name), a page of Atlas Studio on the main map: how an agency's schedule changed between
- * two files (CIV-1715, CIV-1806) and, for an open route, the buses its group needs (CIV-1693, CIV-1827). The sidebar is
+ * Fleet (CIV-1828, a placeholder name) and Schedule Changes, two pages of Atlas Studio on the main map (CIV-1922: Fleet
+ * leads with the fleet, Schedule Changes is its own page). Fleet: the agency's buses needed and, for an open route, the
+ * buses its group needs (CIV-1693, CIV-1827). Schedule Changes: how the agency's schedule changed between two files
+ * (CIV-1715, CIV-1806). The sidebar is
  * the main map's card (Panel sidebar), the map draws through the page overlay, the key sits in the map's key slot.
  * Local only (FEATURES.studio): both files come from scripts run on this Mac and are served by the Vite dev server.
  */
@@ -107,7 +109,12 @@ function FleetMapKey({ beforeDate, afterDate }: { beforeDate: string; afterDate:
   );
 }
 
+/** Which of the two pages this is. */
+export type FleetView = 'fleet' | 'changes';
+
 export interface FleetProps {
+  /** Fleet, or the Schedule Changes page that shares its map and data. */
+  view?: FleetView;
   slug: string;
   /** The agency's short name. */
   agency: string;
@@ -120,7 +127,7 @@ export interface FleetProps {
   frameStyle: React.CSSProperties;
 }
 
-export default function Fleet({ slug, agency, route, setRoute, agencyMenu, headerPortal, frameStyle }: FleetProps) {
+export default function Fleet({ view = 'fleet', slug, agency, route, setRoute, agencyMenu, headerPortal, frameStyle }: FleetProps) {
   const file = useDevFile<StudioBeforeAfterFile>(studioBeforeAfterDevUrl(slug));
   const vehicles = useDevFile<StudioVehiclesFile>(studioVehiclesDevUrl(slug));
   const [period, setPeriod] = useState<PeriodKey>(DEFAULT_PERIOD);
@@ -143,16 +150,20 @@ export default function Fleet({ slug, agency, route, setRoute, agencyMenu, heade
       {/* The shared loading panel while the file comes in, then the shared empty line if there is none (CIV-1925 phase 4). */}
       {file == null && <ViewLoadingPanel what={agency} />}
       {file === 'missing' && <Panel sidebar enter style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
-      {ready && <Body file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
+      {ready && <Body view={view} file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>
   );
 }
 
-function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
-  file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
+function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyle }: {
+  view: FleetView; file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const lines = useMemo(() => studioMapLines(file, period, route), [file, period, route]);
+  // Fleet's map has no change story: the newer schedule's lines in one colour (its route list is Schedule Changes').
+  const lines = useMemo(() => {
+    const all = studioMapLines(file, period, route);
+    return view === 'changes' ? all : all.filter(l => !l.dashed).map(l => ({ ...l, color: CHANGE_COLOR.same }));
+  }, [file, period, route, view]);
   // The map's pick in a ref: a new callback each render would redraw the overlay every time.
   const setRouteRef = useRef(setRoute);
   setRouteRef.current = setRoute;
@@ -184,17 +195,29 @@ function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
               <SidebarCardHeaderBlock>
                 <SidebarCardHeader back={{ to: agency, onClick: () => setRoute(null) }} title={<RouteTitleName label={routeLabel} />} />
               </SidebarCardHeaderBlock>
-              {change && (
+              {view === 'changes' && change && (
                 <SidebarCardSection label={PAGE_NAMES.studioChanges}>
                   <StudioRouteTable change={change} beforeDate={file.before.date} afterDate={file.after.date} period={period} />
                 </SidebarCardSection>
               )}
-              <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date)) || PAGE_NAMES.studioVehicles}>
-                {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-                  : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} /> : null}
-              </SidebarCardSection>
+              {view === 'fleet' && (
+                <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date)) || PAGE_NAMES.studioVehicles}>
+                  {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
+                    : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} /> : null}
+                </SidebarCardSection>
+              )}
             </SidebarCardShell>
           </PanelBody>
+        </Panel>
+      ) : view === 'fleet' ? (
+        // CIV-1922: Fleet opens on the fleet itself, the buses the whole agency needs at the time of day.
+        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioVehicles}>
+          <PanelTitleBar title={PAGE_NAMES.studioVehicles} />
+          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-3">
+            <p className="m-0 mb-2 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date)}</p>
+            {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
+              : vehicles ? <StudioGroupFigures group={agencyFleet(vehicles, period)} showRunning={false} /> : null}
+          </div>
         </Panel>
       ) : (
         <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioChanges}>
@@ -206,7 +229,7 @@ function Body({ file, vehicles, agency, period, route, setRoute, frameStyle }: {
           <ChangeList file={file} period={period} route={route} onPick={setRoute} />
         </Panel>
       )}
-      <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />
+      {view === 'changes' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
   );
 }

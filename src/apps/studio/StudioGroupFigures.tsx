@@ -40,7 +40,7 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
  * time and layover in one line. A shared middle's trips keep the branches' current mix (CIV-1712's choice is gone: its
  * words were never approved and read as nothing to a planner).
  */
-export function StudioGroupFigures({ group }: { group: StudioVehicleGroup | null }) {
+export function StudioGroupFigures({ group, showRunning = true }: { group: StudioVehicleGroup | null; showRunning?: boolean }) {
   if (!group) return <p className="m-0 text-sm text-[var(--text-muted)]">{T.noService}</p>;
   return (
     <>
@@ -61,10 +61,10 @@ export function StudioGroupFigures({ group }: { group: StudioVehicleGroup | null
         ]}
       />
     </ScrollX>
-    <p className="m-0 mt-2 text-sm">
+    {showRunning && <p className="m-0 mt-2 text-sm">
       <span className="text-[var(--text-muted)]">{T.running}</span> {runTimeAmount(group.runningMin)}
       {' · '}<span className="text-[var(--text-muted)]">{T.layover}</span> {runTimeAmount(group.layoverMin)}
-    </p>
+    </p>}
     </>
   );
 }
