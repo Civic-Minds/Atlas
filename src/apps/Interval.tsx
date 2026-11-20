@@ -1530,7 +1530,8 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* The notice, then the counts: one group at the row's right end, so the notice sits beside the loading pill.
           It is its own overlay and never fades with the counts, since nothing may hide it (CIV-50). */}
       <div className={MAP_FOOTER_RIGHT_SLOT}>
-      {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page. */}
+      {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page,
+          and takes no room there, so the pill ends where the loading pill does (CIV-1961, Ryan: "Look at this too it's not aligned"). */}
       {pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
         <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2`}>{pagePill}</div>
       )}
@@ -1541,7 +1542,7 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       )}
       {((stats && (stats.total > 0 || !isLoading)) || researchCounts || isLoading || isTilesLoading || isBasemapLoading || failedSlugs.size > 0 || phoneErrorsInRow || liveRetrySeconds != null) && (
         // An error never fades (CIV-50): with the phone's "Error" pill in the row, or Live's "Unable to load", the row stays.
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${compareActive ? MAP_COUNTS_COMPARE_SLOT : ''} ${Z_PANEL} shrink-0 flex gap-2 transition-all ${TRANSITION_SLOW} ${countsRowShown || liveRetrySeconds != null ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${pagePill && !(countsRowShown || liveRetrySeconds != null) ? 'hidden' : ''}`}>
           {/* CIV-1768 (Ryan: "where the 'loading' pill on the regular map usually is"): while every Live feed in view
               is down, the loading badge reads "Unable to load · Retrying in 12s", counting down to Live's next try. */}
           {(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
