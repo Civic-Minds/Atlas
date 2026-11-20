@@ -99,7 +99,7 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
 });
 
 describe('Studio agencies, from the built files (CIV-1806, CIV-1827)', () => {
-  it('lists every agency with a Schedule Changes file, Kingston first, and nothing typed by hand', () => {
+  it('lists every agency with a Schedules file, Kingston first, and nothing typed by hand', () => {
     expect(studioAgenciesFromFiles(['rtd-denver-before-after.json', 'hamilton-before-after.json', 'kingston-before-after.json', 'kingston-vehicles.json', 'hamilton-vehicles.json']))
       .toEqual(['kingston', 'hamilton', 'rtd-denver']);
   });
@@ -129,7 +129,8 @@ describe('Studio pages (CIV-1828)', () => {
   it('opens Live unless the address asks for Fleet', () => {
     expect(studioPageFrom(null)).toBe('live');
     expect(studioPageFrom('fleet')).toBe('fleet');
-    expect(studioPageFrom('changes')).toBe('changes');
+    expect(studioPageFrom('schedules')).toBe('schedules');
+    expect(studioPageFrom('changes')).toBe('live');
     expect(studioPageFrom('vehicles')).toBe('live');
   });
 
@@ -143,7 +144,7 @@ describe('Studio pages (CIV-1828)', () => {
 
 describe('Studio opens the page that has the address\'s agency (CIV-1828)', () => {
   const fleetAgencies = ['kingston', 'hamilton', 'rtd-denver'];
-  const lists = { live: ['ttc'], fleet: fleetAgencies, changes: fleetAgencies };
+  const lists = { live: ['ttc'], fleet: fleetAgencies, schedules: fleetAgencies };
   it('never swaps the agency: RTD with no page opens Fleet, TTC opens Live', () => {
     expect(studioPageFor(null, 'rtd-denver', lists)).toBe('fleet');
     expect(studioPageFor(null, 'ttc', lists)).toBe('live');
@@ -154,9 +155,9 @@ describe('Studio opens the page that has the address\'s agency (CIV-1828)', () =
     expect(studioPageFor(null, 'nowhere', lists)).toBe('live');
   });
   it('waits for the lists it needs before choosing', () => {
-    expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null, changes: null })).toBeNull();
-    expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null, changes: null })).toBeNull();
-    expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null, changes: null })).toBe('live');
+    expect(studioPageFor(null, 'rtd-denver', { live: null, fleet: null, schedules: null })).toBeNull();
+    expect(studioPageFor(null, 'rtd-denver', { live: ['ttc'], fleet: null, schedules: null })).toBeNull();
+    expect(studioPageFor(null, 'ttc', { live: ['ttc'], fleet: null, schedules: null })).toBe('live');
   });
 });
 
@@ -166,6 +167,7 @@ describe('Studio path addresses (CIV-1924)', () => {
     expect(parseStudioPath('/studio/')).toEqual({ page: null, agency: null, route: null });
     expect(parseStudioPath('/studio/live/ttc/504')).toEqual({ page: 'live', agency: 'ttc', route: '504' });
     expect(parseStudioPath('/studio/fleet/kingston')).toEqual({ page: 'fleet', agency: 'kingston', route: null });
+    expect(parseStudioPath('/studio/schedules/kingston')).toEqual({ page: 'schedules', agency: 'kingston', route: null });
     expect(parseStudioPath('/studio/fleet/kingston/A%2FB')).toEqual({ page: 'fleet', agency: 'kingston', route: 'A/B' });
   });
 
@@ -184,6 +186,7 @@ describe('Studio path addresses (CIV-1924)', () => {
     expect(studioLegacyLocation('?page=live&agency=ttc&route=504')).toEqual({ page: 'live', agency: 'ttc', route: '504' });
     expect(studioLegacyLocation('?page=fleet&agency=ttc&panel=closed')).toEqual({ page: null, agency: 'ttc', route: null });
     expect(studioLegacyLocation('?agency=rtd-denver')).toEqual({ page: null, agency: 'rtd-denver', route: null });
+    expect(studioLegacyLocation('?page=changes&agency=kingston')).toEqual({ page: 'schedules', agency: 'kingston', route: null });
     expect(studioLegacyLocation('?lat=43')).toBeNull();
   });
 });

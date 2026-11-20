@@ -29,7 +29,7 @@ export const INTERNAL_GROUPS: readonly InternalGroup[] = [
   {
     heading: 'Tools',
     pages: [
-      { title: 'Studio', description: 'Schedule changes and buses needed, for one agency at a time.', path: STUDIO_PATH },
+      { title: 'Studio', description: 'Schedules and buses needed, for one agency at a time.', path: STUDIO_PATH },
       { title: 'Coverage', description: 'What each agency has: map, History, Live, Studio and the MCP’s figures.', path: STUDIO_COVERAGE_PATH },
       { title: MCP_DOCS.title, description: MCP_DOCS.card, path: MCP_DOCS_PATH },
     ],

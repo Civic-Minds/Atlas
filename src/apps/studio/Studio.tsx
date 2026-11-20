@@ -30,7 +30,7 @@ import { StudioMapFrameProvider, studioFrameKey } from './StudioMapFrame';
  * Local only (FEATURES.studio).
  */
 
-const PAGE_ICONS: Record<StudioPageKey, typeof Bus> = { live: Activity, fleet: Bus, changes: GitCompare };
+const PAGE_ICONS: Record<StudioPageKey, typeof Bus> = { live: Activity, fleet: Bus, schedules: GitCompare };
 
 export interface StudioProps {
   agencyCatalog: Agency[];
@@ -70,7 +70,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
   // The address's page, or the first page that has the address's agency (studioPageFor); null until the lists load.
   // CIV-1883 (Ryan: "The city should be persistent"): the address's agency, else the one Studio was last on in this browser.
   const wantedAgency = legacy?.agency ?? loc.agency ?? getSavedStudioAgency();
-  const page = studioPageFor(loc.page, wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList), changes: listOf(fleetList) });
+  const page = studioPageFor(loc.page, wantedAgency, { live: listOf(liveList), fleet: listOf(fleetList), schedules: listOf(fleetList) });
   const pageAgencies = page ? listOf(page === 'live' ? liveList : fleetList) : null;
   // CIV-1883: a page without data for the chosen agency keeps the agency and says so (no silent swap to another one).
   const noData = !!(page && wantedAgency && pageAgencies && pageAgencies.length > 0 && !pageAgencies.includes(wantedAgency) && loc.page);
@@ -136,8 +136,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
           {!v.noData && v.page === 'fleet' && v.slug && (
             <Fleet key={v.slug} slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
-          {!v.noData && v.page === 'changes' && v.slug && (
-            <Fleet key={v.slug} view="changes" slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
+          {!v.noData && v.page === 'schedules' && v.slug && (
+            <Fleet key={v.slug} view="schedules" slug={v.slug} agency={v.agency} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />
           )}
           {!v.noData && v.page === 'live' && v.slug && (
             <Live key={v.slug} slug={v.slug} route={v.route} setRoute={setRoute} agencyMenu={agencyMenu} headerPortal={chips} frameStyle={frameStyle} />

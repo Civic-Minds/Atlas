@@ -64,8 +64,9 @@ export const RESEARCH_PATH = '/research';
 /** Atlas Studio (CIV-1693), local only: the section opens its first page, the buses-needed calculator. */
 export const STUDIO_PATH = '/studio';
 export const STUDIO_VEHICLES_PATH = '/studio/vehicles';
-/** CIV-1715: Studio's before/after schedule comparison. */
+/** CIV-1715: Studio's before/after schedule comparison, now the Schedules page (CIV-1922); the old address redirects there. */
 export const STUDIO_CHANGES_PATH = '/studio/changes';
+export const STUDIO_SCHEDULES_PATH = '/studio/schedules';
 /** CIV-1871: what each agency has across the products. Local only; a plain address until the Internal menu is chosen. */
 export const STUDIO_COVERAGE_PATH = '/studio/coverage';
 

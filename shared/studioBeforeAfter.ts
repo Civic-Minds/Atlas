@@ -1,5 +1,5 @@
 /**
- * CIV-1715: the Studio "Schedule Changes" page's data, one file per agency. Built from CIV-1684's comparison
+ * CIV-1715: the Studio "Schedules" page's data, one file per agency. Built from CIV-1684's comparison
  * (pipeline/feedCompare.ts) by `scripts/compare-feed-dates.ts --json tmp/studio/<slug>-before-after.json` and served
  * only by the Vite dev server at studioBeforeAfterDevUrl (vite.config.ts); never uploaded to R2 or built into a
  * deployment. The input type is structural (a FeedComparison fits it) so nothing here pulls the pipeline into the app.
