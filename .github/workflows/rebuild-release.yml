@@ -493,6 +493,11 @@ jobs:
           for pair in $ALLOW_INPUT; do allow_args+=(--allow "$pair"); done
           REPROCESS_CONCURRENCY="$CONCURRENCY_INPUT" REPROCESS_SHARDS="$SHARDS_INPUT" bash pipeline/reprocess-sharded.sh --write --run-prefix "$RUN_PREFIX" ${allow_args[@]+"${allow_args[@]}"}
         env:
+          # CIV-1959 (#1620, #1086): the four pieces switches, set as repo variables so publish and the weekly refresh always agree. Unset = empty = off.
+          ATLAS_HEADLINE_FROM_TRUNK: ${{ vars.ATLAS_HEADLINE_FROM_TRUNK }}
+          ATLAS_PIECE_READING: ${{ vars.ATLAS_PIECE_READING }}
+          ATLAS_BRANCH_READINGS: ${{ vars.ATLAS_BRANCH_READINGS }}
+          ATLAS_PIECES_BY_TRIPS: ${{ vars.ATLAS_PIECES_BY_TRIPS }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
           R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}

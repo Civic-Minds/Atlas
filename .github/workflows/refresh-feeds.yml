@@ -78,6 +78,11 @@ jobs:
           fi
         env:
           ALLOW_INPUT: ${{ inputs.allow }}
+          # CIV-1959 (#1620, #1086): the four pieces switches, set as repo variables so publish and the weekly refresh always agree. Unset = empty = off.
+          ATLAS_HEADLINE_FROM_TRUNK: ${{ vars.ATLAS_HEADLINE_FROM_TRUNK }}
+          ATLAS_PIECE_READING: ${{ vars.ATLAS_PIECE_READING }}
+          ATLAS_BRANCH_READINGS: ${{ vars.ATLAS_BRANCH_READINGS }}
+          ATLAS_PIECES_BY_TRIPS: ${{ vars.ATLAS_PIECES_BY_TRIPS }}
           # CIV-1425/CIV-1431: MBTA's History sidecars also store Saturday/Sunday per-period and shared-stretch values.
           ATLAS_HISTORY_WEEKEND_PERIODS: mbta
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
