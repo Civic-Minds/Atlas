@@ -46,7 +46,7 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
-import { PIECE_PARAMS, trunkLongEnough } from './pieces.js';
+import { PIECE_PARAMS, headlineTrunk, trunkLongEnough } from './pieces.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
@@ -142,6 +142,11 @@ export interface DirectionStretches {
    * only the pieces that run at night must pass.
    */
   disconnected?: boolean;
+  /**
+   * CIV-1959 B1 (ATLAS_HEADLINE_FROM_TRUNK=1, set by the caller; off = today): the direction's value, coverage and filter
+   * value are read from the trunk alone, never a branch or tail, where headlineTrunk finds a real shared core.
+   */
+  headlineFromTrunk?: boolean;
   /**
    * #899's midday input as main's rule reads it: the direction's longest midday wait at its
    * best-served stop over every trip, and whether that stop has a typical midday gap. Set by the
@@ -1473,8 +1478,11 @@ export function periodOneGap(stretchTimes: readonly number[], start: number, end
 /** D1 and D3: the direction value is the worst counting stretch; night needs the main stretch and every tail that runs at night. */
 export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   if (!d.main) return null;
-  // The guard's narrowing does not reach the closures below.
-  const mainStretch = d.main;
+  // CIV-1959 B1: with the switch on and a real shared core, only the trunk is read for the headline (D1's "the slower
+  // branch decides" no longer applies to it). Branches keep their own rows, and the night, all-day and Frequent Service
+  // verdicts still read them. No trunk (a hub): the slowest piece sets it, as before.
+  const trunkOnly = d.headlineFromTrunk === true && headlineTrunk(d) != null;
+  const headlinePieces: readonly Stretch[] = trunkOnly ? [d.main] : [d.main, ...d.tails];
   const main = stretchPeriods(d.main);
   const tails = d.tails.map(stretchPeriods);
   // #1072, rule 3: a tail that runs only part of a period because a sibling branch takes over the
@@ -1509,7 +1517,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
   const handover = Object.fromEntries(PERIOD_WINDOWS.map(({ key, start, end }) => [key, d.tails.map((_, i) => handsOver(i, key, start, end))])) as Record<PeriodKey, boolean[]>;
   const period = {} as DirectionRollup['period'];
   for (const { key } of PERIOD_WINDOWS) {
-    const counting = [main[key], ...tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key]))].filter(p => p.counts && p.value != null);
+    const counting = [main[key], ...(trunkOnly ? [] : tails.map((t, i) => (handover[key][i] ? turnTaking(t[key]) : t[key])))].filter(p => p.counts && p.value != null);
     period[key] = {
       value: counting.length > 0 ? Math.max(...counting.map(p => p.value!)) : null,
       coverage: counting.length > 0 ? Math.max(...counting.map(p => p.coverage ?? 0)) : null,
@@ -1540,7 +1548,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // window wait as "every N" (MBTA 23 Sunday overnight to Ashmont: every 196). A sparse main
     // stretch leaves the direction without a value, a sparse tail drops out.
     const sparse = (s: Stretch | null | undefined) => s != null && key === 'overnight' && isSparseOvernightWindow(s.times);
-    const countingStretches = [d.main, ...d.tails]
+    const countingStretches = headlinePieces
       .map((st, i) => ({ st, stretch: (i === 0 ? 'main' : i - 1) as 'main' | number, p: i === 0 ? main[key] : handover[key][i - 1] ? turnTaking(tails[i - 1][key]) : tails[i - 1][key] }))
       .filter(({ st, p }, i) => p.counts && (i === 0 ? runs && !sparse(d.main) : !sparse(st)));
     const counting = countingStretches.map(c => c.p);
@@ -1563,7 +1571,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     // edge of every stretch that starts or ends in it, and the slowest decides (D1), as the filter
     // value's setter does: TTC 110 Sunday AM's trunk runs every 15 from 7:52, its branches every 30.
     // The filter value stays null there (D8).
-    const partial = () => [mainStretch, ...d.tails]
+    const partial = () => headlinePieces
       .map((st, i) => ({ edge: periodPartialEdge(st.times, start, end), stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
       .filter((c): c is { edge: StretchPeriodEdge; stretch: 'main' | number } => c.edge != null)
       .reduce<{ edge: StretchPeriodEdge; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.edge.every > worst.edge.every ? c : worst), null);
@@ -1578,7 +1586,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
       // the direction never reads a faster spacing than one of its branches (TTC 110 Sunday AM
       // southbound: the trunk every 15 from 8:07, Kipling every 30 through the period). The branch's
       // own late start or early end is read as its row's is (CIV-1251); with none, there is no edge.
-      const slowerThrough = slowest && [mainStretch, ...d.tails]
+      const slowerThrough = slowest && headlinePieces
         .map((st, i) => ({ st, own: i === 0 ? main[key] : tails[i - 1][key], stretch: (i === 0 ? 'main' : i - 1) as 'main' | number }))
         .filter(c => c.own.counts && c.own.headway != null && c.own.headway > slowest.edge.every && runsThroughPeriod(c.st.times, start, end, c.own.sustained))
         .reduce<{ own: StretchPeriod; st: Stretch; stretch: 'main' | number } | null>((worst, c) => (worst == null || c.own.headway! > worst.own.headway! ? c : worst), null);
