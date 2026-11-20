@@ -242,3 +242,13 @@ export function pieceReadingEnabled(envValue: string | undefined): boolean {
 export function branchReadingsEnabled(envValue: string | undefined): boolean {
   return envValue === '1';
 }
+
+/**
+ * CIV-1959 B4 (#1620, #1086): the pipeline switch for "pieces come from which trips serve them, with no 5-stop / 1 km minimum":
+ * ATLAS_PIECES_BY_TRIPS=1, exactly (pipeline/pieceParams.ts reads the env). A change in the trip set is a new piece, and a
+ * one-stop branch is still a piece. Unset (every normal build, the weekly refresh and rebuild-release) the published output
+ * is byte-identical to what it was before the switch existed.
+ */
+export function piecesByTripsEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}

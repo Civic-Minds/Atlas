@@ -22,6 +22,7 @@
  * inside the gap the schedule gives, so it is counted as layover and flagged.
  */
 import { alignedSharedRuns, qualifyingSharedRuns } from './sharedStretch.js';
+import { LEGACY_PIECE_MINIMUM } from './pieceParams.js';
 import { concurrentAt, median, vehiclesForHeadway, type TripRun } from './vehiclesNeeded.js';
 
 /** A gap between a block's trips longer than this is a lay-up or a garage trip, not layover. */
@@ -340,7 +341,7 @@ function classify(patterns: Pattern[], places?: Places): Trunk[] {
         const [a, b] = comparableLegs(full[i], full[j])[0] ?? [];
         if (!a || !b) continue;
         const ka = stationKeys(a.stopIds, places);
-        const shared = qualifyingSharedRuns(ka, stationKeys(b.stopIds, places), coords, a.stopIds);
+        const shared = qualifyingSharedRuns(ka, stationKeys(b.stopIds, places), coords, a.stopIds, LEGACY_PIECE_MINIMUM); // buses_needed keeps 5 stops / 1 km whatever ATLAS_PIECES_BY_TRIPS says (CIV-1959 B4 dependency note)
         if (shared.length === 0) continue;
         full[i].role = 'branch';
         full[j].role = 'branch';

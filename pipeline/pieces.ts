@@ -23,7 +23,7 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { collapseBunched, computeStopSharers, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, POOLED_MAX_GAP_TYPICAL_RATIO, type StopSharers } from './stopPools.js';
 import type { DirectionStretches, Stretch } from './tripSets.js';
 
-export { PIECE_PARAMS } from './pieceParams.js';
+export { PIECE_PARAMS, pieceMinimum, piecesByTripsFromEnv } from './pieceParams.js';
 import { PIECE_PARAMS } from './pieceParams.js';
 
 export type PieceKind = 'trunk' | 'branch' | 'shortTurn';
@@ -85,7 +85,10 @@ export function headlineFromTrunkFromEnv(): boolean {
 export function headlineTrunk(d: Pick<DirectionStretches, 'main' | 'tails' | 'disconnected'>): Stretch | null {
   const main = d.main;
   if (!main || d.disconnected || !trunkLongEnough(main)) return null;
-  if (d.tails.length > 0 && d.tails.every(t => main.stops.length < t.stops.length)) return null;
+  // The branches the trunk feeds are the legacy-sized ones (5 stops / 1 km): under ATLAS_PIECES_BY_TRIPS a 1-stop branch is a piece too, but it
+  // must not switch the hub fallback off (TTC 501: an 11-stop core with three long branches would then read its core, 10 -> 5).
+  const feeding = d.tails.filter(t => t.stops.length >= PIECE_PARAMS.minStops && t.lengthKm >= PIECE_PARAMS.minKm);
+  if (feeding.length > 0 && feeding.every(t => main.stops.length < t.stops.length)) return null;
   return main;
 }
 
@@ -343,6 +346,12 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
     ...(leadOk ? {} : { from: t[0] }),
     ...(trailOk ? {} : { until: t[t.length - 1] }),
   };
+}
+
+/** Rule D's test: the piece is regular in a period when it has a reading or a part-period tail there (3+ even trips covering half), not limited trips. */
+export function isRegularPieceInPeriod(times: readonly number[], start: number, end: number): boolean {
+  const t = classifyPiecePeriod(times, start, end);
+  return t != null && t.t !== 'limited';
 }
 
 /**
