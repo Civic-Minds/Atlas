@@ -273,7 +273,8 @@ export function readFeaturePieces(ctx: PieceReadContext): PieceCell[] {
 
 /**
  * The piece readings to publish (`piecePeriodHeadways`): per stop and period, the piece reading where the stop takes it and
- * its published own value differs. A stop that breaks off, has no published value, or already reads the piece value gets no
+ * its published own value differs. A stop whose published own value is more than one public tier worse than the piece reading
+ * breaks off too (the tier test is also run on the published value, not only on the stop's re-read). A stop that breaks off, has no published value, or already reads the piece value gets no
  * entry, so the map reads its own published value there. Never changes a stop's own published value.
  */
 export function pieceReadingOverlay(
@@ -284,6 +285,8 @@ export function pieceReadingOverlay(
   for (const c of cells) {
     const own = published[c.stop]?.[c.period];
     if (!c.kept || own == null || own === c.pieceValue) continue;
+    // Arm A's tier test is on the value a rider sees: the re-read at the stop can differ from its published value (DRT 905: read 30, published 90).
+    if (publicTierIndex(own) - publicTierIndex(c.pieceValue) > 1) continue;
     (out[c.stop] ??= {})[c.period] = c.pieceValue;
   }
   return out;

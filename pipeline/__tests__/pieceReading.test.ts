@@ -54,6 +54,21 @@ describe('one reading per piece, Arm A (CIV-1959 B2)', () => {
     expect(c.kept).toBe(true);
   });
 
+  it('a stop whose published value is two or more tiers worse than the piece breaks off, even if its re-read is close (DRT 905-like)', () => {
+    const ctx = piece(fifteens());
+    const cells = readFeaturePieces(ctx);
+    expect(cell(ctx, 's2')!.kept).toBe(true); // its re-read is 15
+    const published = { s2: { midday: 90 }, s3: { midday: 20 } };
+    expect(pieceReadingOverlay(cells, published)).toEqual({ s3: { midday: 15 } }); // 90 is 5 tiers worse: own value and colour stay; 20 is one tier worse: ignored for the piece
+  });
+
+  it('SEPTA 124-like: piece 36, stop 88 (31-60 and over 60 are one tier apart): ignored for the piece, own value kept', () => {
+    const ctx = piece(Array.from({ length: 9 }, () => every(1140, 1380, 36)));
+    expect(cell(ctx, 's2', 'evening')!.pieceValue).toBe(36);
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { evening: 88 } })).toEqual({ s2: { evening: 36 } });
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { evening: 36 } })).toEqual({});
+  });
+
   it('a stop that fails the evenness test breaks off even within one tier', () => {
     const uneven = { step: 1 as const, value: 18, list: [540, 555, 570, 585, 600, 640] };
     expect(listIsEvenAgainst(uneven.list, 15)).toBe(false); // 40 over max(1.6 x 15, 15 + 5)
