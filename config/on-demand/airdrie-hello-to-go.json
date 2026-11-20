@@ -1,0 +1,4526 @@
+{
+  "slug": "airdrie-hello-to-go",
+  "agency": {
+    "slug": "airdrie-hello-to-go",
+    "name": "Airdrie Hello To Go",
+    "region": "Alberta",
+    "center": [
+      51.278785,
+      -114.010678
+    ],
+    "url": "",
+    "bbox": [
+      51.250393,
+      -114.04841,
+      51.307178,
+      -113.972946
+    ],
+    "cities": [
+      "Airdrie, Alberta"
+    ],
+    "displayArea": "Airdrie",
+    "onDemandOnly": true,
+    "websiteUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651",
+    "timezone": "America/Edmonton"
+  },
+  "area": {
+    "serviceName": "Hello To Go",
+    "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651",
+    "sourceLabel": "City of Airdrie Hello To Go page and the City's Hello To Go stop network (agency-supplied)",
+    "sourceRetrievedAt": "2026-11-20",
+    "bookingInfo": "Book in the Hello To Go app, at book.hellotogo.rideco.com or call 403-948-8875 (Monday to Friday 8:30 a.m. to 4:30 p.m.), up to seven days ahead.",
+    "bookingUrl": "https://book.hellotogo.rideco.com",
+    "pickup": {
+      "method": "fixed-stops"
+    },
+    "zoneMetadata": {
+      "Airdrie": {
+        "serviceName": "Hello To Go",
+        "serviceHours": "Monday to Friday 6 a.m. to 11 p.m.; Saturday 7 a.m. to 11 p.m.; Sunday 8 a.m. to 6 p.m.",
+        "hoursNote": "No service on New Year's Day, Family Day, Good Friday, Victoria Day, Canada Day, Heritage Day, Labour Day, Thanksgiving Day, Remembrance Day, Christmas Day and Boxing Day.",
+        "availability": {
+          "Weekday": [
+            {
+              "startHour": 6,
+              "endHour": 23
+            }
+          ],
+          "Saturday": [
+            {
+              "startHour": 7,
+              "endHour": 23
+            }
+          ],
+          "Sunday": [
+            {
+              "startHour": 8,
+              "endHour": 18
+            }
+          ]
+        },
+        "hoursSource": {
+          "url": "https://www.airdrie.ca/index.cfm?serviceID=2651",
+          "retrievedAt": "2026-11-20"
+        }
+      }
+    }
+  },
+  "features": [],
+  "stopFeatures": [
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at East Lake Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.992848,
+          51.289772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at East Lake Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989809,
+          51.296492
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 1st Av at Woodside Ga",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.030569,
+          51.29281
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 1st Av at Canals Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033342,
+          51.292726
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Veterans Bv at Woodside Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.039937,
+          51.299882
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Veterans Bv at Woodside Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.03189,
+          51.29986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Veterans Bv at CPR Tracks",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020095,
+          51.299908
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Veterans Bv at 8th St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.026518,
+          51.300155
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Veterans Bv at Williamstown Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033933,
+          51.300177
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at Meadowbrook Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989685,
+          51.275625
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at Thorburn Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989701,
+          51.280976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB East Lake Cr at East Lake Bv (Ron Ebbesen Arena)",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.997524,
+          51.285784
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 1st Av at Woodside Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.034665,
+          51.292776
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Yankee Valley Bv at Market St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.99261,
+          51.27096
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Yankee Valley Bv at Market St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.99295,
+          51.270637
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Sierra Springs Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.005407,
+          51.264558
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB 8th St at Canoe Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025383,
+          51.290393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at 1st Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013275,
+          51.292938
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Jensen Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013337,
+          51.295161
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at 6th Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013538,
+          51.297667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Flett Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013273,
+          51.298849
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Gateway Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013189,
+          51.301966
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Gateway Lk at Gateway Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012457,
+          51.305185
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Centre Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013546,
+          51.29106
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at City Hall",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013294,
+          51.287744
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Safeway",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013572,
+          51.287716
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Eldorado Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.009399,
+          51.281172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at St Paul's Church",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.009374,
+          51.280874
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Summerfield Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.010667,
+          51.272507
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Yankee Valley Bv at Coopers Crossing Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016402,
+          51.270694
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 1st Av at Fairways Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.043909,
+          51.292783
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 1st Av at Canoe Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.029402,
+          51.292708
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at East Lake Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990031,
+          51.295861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at East Lake Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990032,
+          51.293738
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at East Lake Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.996178,
+          51.285404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at Big Hill Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.992682,
+          51.283169
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at East Lake Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995723,
+          51.286168
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at Big Springs Dr (North)",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989965,
+          51.279872
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at Big Springs Dr (South)",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.98994,
+          51.272932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Bv at Meadowbrook Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989683,
+          51.273874
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kingsview Bv at Yankee Valley Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990113,
+          51.270072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kingsview Bv at Kings Heights Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989892,
+          51.268494
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Kings Heights Dr at Kingsland Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.988566,
+          51.26757
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kings Heights Dr at Kings Heights Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.984361,
+          51.266275
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Chinook Winds Dr at Chinook Winds Pl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.029327,
+          51.269098
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Yankee Valley Bv at Luxstone Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.017561,
+          51.270958
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Chinook Winds Dr at Chinook Winds Park",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.032369,
+          51.264035
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB 8th St at Luxstone Ld",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025403,
+          51.278312
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Windsong Dr at Windsong Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.029441,
+          51.261191
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Summerfield Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.009872,
+          51.27259
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB 8th St at Bayside Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025345,
+          51.273777
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB 8th St at Bayside Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025411,
+          51.286187
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at Railway Ga",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025023,
+          51.285788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at Luxstone Ld",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025035,
+          51.279143
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kings Heights Ga at Kings Heights Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.981562,
+          51.267568
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Kings Heights Bv at Kingsland Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.988602,
+          51.26736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Ridgegate Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013424,
+          51.284606
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Elk Hi",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013262,
+          51.2858
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at 1st Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013608,
+          51.29333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Gateway Dr at Superstore",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.011598,
+          51.301874
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Genesis Place",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.993302,
+          51.283597
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at East Lake Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.993838,
+          51.289351
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at Bayside Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024956,
+          51.273431
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at Railway Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025016,
+          51.290182
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at Willowbrook Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025057,
+          51.298952
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8th St at 1st Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024974,
+          51.293361
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at 4th Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013583,
+          51.295094
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "South Transit Terminal",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.006484,
+          51.257265
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Coop",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008486,
+          51.268611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Main St at Sierra Springs Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004619,
+          51.263932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Main St at Co-op",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008194,
+          51.268434
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8 St at Cooper Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024861,
+          51.266919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 1 Av at Sagewood Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.041959,
+          51.292706
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Veterans Bv at East Lake Rp",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.994252,
+          51.299822
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Veterans Bv at Highland Park Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.994496,
+          51.300156
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 24 St at Fairways Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.04841,
+          51.297848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB 8 St at Coopers Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024835,
+          51.260949
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB 8 St at Woodside Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025406,
+          51.297663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Bv at Big Springs Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989947,
+          51.275519
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Reunion Av at Reunion Playground",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.046953,
+          51.303269
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Reunion Bv at Reunion Gr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.040374,
+          51.302927
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Williamstown Bv at Herons Crossing School",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033907,
+          51.304179
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Fairways Ci at Fairways Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.046449,
+          51.296976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Woodside Bv at Woodside Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.040837,
+          51.297627
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Woodside Dr at Woodside Golf Course",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.034751,
+          51.296973
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Willow Brook Dr at 300 Willowbrook Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024235,
+          51.297436
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 6 Av at Fletcher Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.0163,
+          51.298145
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Stonegate Wy at Stonegate Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016975,
+          51.304665
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Gateway Dr at Gateway Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004946,
+          51.306378
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Gateway Rd at Gateway Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008859,
+          51.30405
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Silver Springs Wy at 8 St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.025007,
+          51.304358
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Silver Creek Bv at Silver Creek Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02482,
+          51.302174
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Jensen Dr at Jensen Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.00814,
+          51.29726
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 3 Av at Allen St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.005408,
+          51.294583
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 1 Av at Virgina St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.006944,
+          51.292723
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB 1 Av at Cedarwood Station",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.018345,
+          51.292761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Edmonton Tr Service Rd at Centre Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.001466,
+          51.291154
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Edmonton Tr at Town and Country Centre",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.002102,
+          51.29679
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Allen St at Centre Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.00381,
+          51.291161
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Allen St at Acacia Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004677,
+          51.286135
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Ashwood Rd at Albert St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.010677,
+          51.288108
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Erin Dr at Elizabeth Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004423,
+          51.28296
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Erin Dr at Summerfield Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.005778,
+          51.279436
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Summerfield Bv at Summerfield Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008354,
+          51.273953
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Sagewood Dr at Sagewood Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.042793,
+          51.28883
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Sagewood Dr at Canals Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.034702,
+          51.288998
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Canoe Av at Canoe Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.030893,
+          51.286753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Railway Av at MacKenzie Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022176,
+          51.289899
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB MacKenzie Wy at Iron Horse Condos",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02304,
+          51.287684
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Towerlane Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.01768,
+          51.287317
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Ridgegate Wy at Rideau Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.015488,
+          51.285147
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Towerlane Dr at Centre Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.01659,
+          51.290622
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Midtown Pkwy at Midtown Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022024,
+          51.280878
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Luxstone Dr at Luxstone Ld",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.0215,
+          51.278287
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Luxstone Bv at Luxstone Pk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.017058,
+          51.273483
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Luxstone Bv at Luxstone Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022138,
+          51.276249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Luxstone Bv at Luxstone Sq",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.021247,
+          51.272609
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Bayside Dr at Bayside Ln",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.031765,
+          51.279234
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Bayside Bv at Baywater Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.037323,
+          51.276055
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Baywater St at Baywater Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033898,
+          51.277133
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Baywater Dr at Baywater Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.040405,
+          51.272986
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Bayview St at Bayview Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.042769,
+          51.273533
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Bayview St at Baysprings Gd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.043851,
+          51.276172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Bayspring Lk at Bayspring Tr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.04664,
+          51.27455
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Chinook Gate Bv at Chinook Gate Pk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.042705,
+          51.26976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Windsong Bv at 40 Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.032474,
+          51.255618
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Hillcrest Av at Hillcrest Sq",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02232,
+          51.250393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Hillcrest Av at Hillcrest Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.019983,
+          51.250427
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Hillcrest Dr at Hillcrest Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.015273,
+          51.251478
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Hillcrest Dr at Hillcrest Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016188,
+          51.254633
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Hillcrest Wy at Hillcrest Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022234,
+          51.253247
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Hillcrest Dr at Hillcrest Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020778,
+          51.254289
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB South Point Gt at South Point Gr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012118,
+          51.253843
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Reynolds Gt at 40 Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.013188,
+          51.25675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Dr at Morningside Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012352,
+          51.260468
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Dr at Morningside Pk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.011669,
+          51.262919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Dr at Morningside Pt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012954,
+          51.267845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Dr at Coopers Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020845,
+          51.266375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Dr at Coopers Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.017666,
+          51.263057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Bv at 40 Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020768,
+          51.257153
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Sierra Springs Dr at Coop",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004131,
+          51.26902
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kingsview Bv at Market Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.991065,
+          51.267747
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kingsview Bv at Kingsview Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.993947,
+          51.265846
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kingsview Bv at Kingsview Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995504,
+          51.261172
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kings Heights Wy at Sharp Hill Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.991716,
+          51.256734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Kings Heights Wy at Kingsbridge Pl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.988245,
+          51.259081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kings Heights Dr at Kings Heights Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.98466,
+          51.259966
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kings Heights Rd at Kingsbridge Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990789,
+          51.261851
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Kings Heights Rd at Kingston Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.987647,
+          51.26393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Ravenswood Dr at Ravenslea Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.97576,
+          51.266515
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Ravenswood Vw at Ravensmoor Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.972946,
+          51.267674
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Meadowbrook Dr at Marquis Pl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983107,
+          51.273183
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Meadowbrook Dr at 200 Meadowbrook By",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.979592,
+          51.275449
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Meadowbrook Dr at Mayfair Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.985771,
+          51.276072
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Meadowlark Rd at Thornbird Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983665,
+          51.278043
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Thorburn Dr at Tipping Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.985522,
+          51.279834
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Tanner Dr at Tucker Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.984971,
+          51.282673
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Big Springs Wy at Big Springs Hi",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.993239,
+          51.278837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Big Springs Wy at Springs Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.991903,
+          51.276552
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Big Springs Dr at Big Hill Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995774,
+          51.280203
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Big Springs Dr at Spring Haven Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.998429,
+          51.276895
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Big Springs Dr at Spring Haven Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995754,
+          51.273337
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Cr at East Lake Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.999058,
+          51.289853
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Cr at East Lake Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.999001,
+          51.292582
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB East Lake Av at East Lake Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.996098,
+          51.295661
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB East Lake Hi at Recycling Depot",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.981706,
+          51.286877
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB East Lake Rd at East Lake Parking Lot",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.984948,
+          51.288804
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB East Lake Ci at Lakeside Business Centre",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983921,
+          51.291266
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Rd at Veterans Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.978547,
+          51.298972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Rd at East Lake Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.980482,
+          51.293787
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Highland Park Wy at Hamilton Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.987738,
+          51.302699
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Highland Park Cm at Airdrie Transit Operations Centre",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.980857,
+          51.30317
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Hamilton Bv at Highland Park Ln",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.989807,
+          51.307178
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Highland Park Bv at Highland Park Cv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.997632,
+          51.304193
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Wy at East Lake Gr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.996354,
+          51.291292
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Windsong Bv at Osborne Pk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.032525,
+          51.253444
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Osborne Dr at Windsong Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.03344,
+          51.250545
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Allen St at Elston Pl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.007435,
+          51.284121
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Allen St at Erin Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.006618,
+          51.284477
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB East Lake Rd at East Lake Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.980681,
+          51.29393
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Rd at Veterans Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.978305,
+          51.298938
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB East Lake Ci at East Lake Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.984279,
+          51.29141
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB East Lake Rd at East Lake Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990466,
+          51.289173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB East Lake Av at East Lake Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.996343,
+          51.295517
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Alberta Agricultural Centre",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.997667,
+          51.297438
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Rp at East Lake Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.998815,
+          51.292552
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB East Lake Cr at East Lake Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.999192,
+          51.288471
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Big Springs Dr at Spring Haven Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995235,
+          51.273211
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Big Springs Dr at Big Hill Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.998216,
+          51.278181
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Big Hill Rd at Big Springs Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995595,
+          51.280423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Big Springs Wy at 100 Springs Ct",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.991769,
+          51.277234
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Big Springs Wy at Big Springs Ct",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.993275,
+          51.278661
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Tanner Dr at Thorndale Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.985617,
+          51.282453
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Thorburn Dr at Tipping Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.985505,
+          51.279972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Meadowlark Rd at Meadowbrook Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983468,
+          51.277576
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Meadowbrook Dr at Maple Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.985236,
+          51.276035
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Meadowbrook Dr at 200 Meadowbrook By",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.979785,
+          51.275608
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Meadowbrook Dr at Meadow Pl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.983083,
+          51.273319
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Ravenswood Vw at Ravenskirk Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.97378,
+          51.267499
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Kings Heights Rd at Kingston Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.987767,
+          51.264061
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kings Heights Rd at Kingsbridge Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.990935,
+          51.261845
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Kings Heights Dr at Kings Heights Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.98493,
+          51.260058
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Kings Heights Wy at Kingsbridge Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.98834,
+          51.259234
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Sharp Hill Wy at Kings Heights Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.992345,
+          51.256479
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kingsview Bv at Sharp Hill Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.994766,
+          51.257073
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kingsview Bv at Kingsview Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.995058,
+          51.262173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Kingsview Bv at Kingsview Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -113.992523,
+          51.266246
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Sierra Springs Dr at Mr. Mikes",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.00353,
+          51.268397
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Bv at 40 Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020449,
+          51.256654
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Coopers Dr at Coopers Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.017492,
+          51.262834
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Dr at Coopers Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02094,
+          51.266218
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Dr at Morningside Pt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012681,
+          51.267465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Dr at Morningside Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.011651,
+          51.263438
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Coopers Dr at Morningside Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012596,
+          51.260487
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB South Point Gt at South Point Gr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.012355,
+          51.253782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Hillcrest Wy at Hillcrest St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.023037,
+          51.253311
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Hillcrest Dr at Hillcrest Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016482,
+          51.254549
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Hillcrest Dr at Hillcrest Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.015524,
+          51.251436
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Hillcrest Dr at Hillcrest Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02091,
+          51.254508
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Hillcrest Av at Hillcrest Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.023235,
+          51.25055
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Windsong Bv at 40 Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.032119,
+          51.256367
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Bayspring Lk at Bayspring Tr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.046164,
+          51.274681
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Bayview St at Bayview Lk",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.043648,
+          51.276425
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Bayview St at Bayview Ci",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.043052,
+          51.274024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Baywater Dr at Baywater Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.040252,
+          51.272872
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Baywater St at Baywater Playground",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033728,
+          51.27708
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Bayside Bv at Baywater Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.03752,
+          51.276228
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Bayside Dr at Bayside Ln",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.031598,
+          51.279578
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Luxstone Bv at Luxstone Sq",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.021218,
+          51.272423
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Luxstone Bv at Luxstone Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022168,
+          51.276426
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Luxstone Bv at Luxstone Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016861,
+          51.27379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Luxstone Dr at Luxstone Ld",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.021721,
+          51.278292
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Centre Av at Railway Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.016865,
+          51.291403
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Ridgegate Wy at Ridgebrook Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.015871,
+          51.285055
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Mackenzie Wy at Green Space",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.022362,
+          51.288547
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Canoe Dr at Canoe Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.030728,
+          51.287406
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Sagewood Dr at Canals Cl",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.034863,
+          51.288858
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Sagewood Dr at Sagewood Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.04312,
+          51.288607
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Summerfield Bv at Summerwood Rd",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008647,
+          51.274047
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Erin Dr at Main St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.007011,
+          51.279499
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Erin Dr at Edendale Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.004969,
+          51.283519
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Allen St at Erin Dr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.00491,
+          51.285652
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Allen St at Centre Av",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.003982,
+          51.29094
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 1 Av at Edmunds Wy",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.020098,
+          51.292654
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB 1 Av at Smith St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008635,
+          51.292588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Jensen Dr at Jensen Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.008329,
+          51.297769
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Silver Creek Bv at 8 St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.024947,
+          51.302009
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Silver Springs Wy at 8 St",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.02501,
+          51.304526
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Gateway Rd at Gateway Ri",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.00803,
+          51.303953
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Gateway Dr at Bottle Depot",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.006196,
+          51.306638
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Woodside Dr at Woodside Golf Course",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.034533,
+          51.297033
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Woodside Bv at Woodside Ct",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.041035,
+          51.297478
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Fairways Ci at Fairways Cr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.04654,
+          51.297465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Williamstown Bv at Reunion Tr",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.033688,
+          51.304559
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "EB Reunion Bv at Reunion Lp",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.042677,
+          51.302994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Reunion Av at Reunion Bv",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.0468,
+          51.303608
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "WB Reunion Bv at Reunion He",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.036685,
+          51.303111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Canoe Rd at Canoe Sq",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.028489,
+          51.289416
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Canoe Rd at Canoe Gt",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.028324,
+          51.28935
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Midtown Bv at Midtown Xi",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.023541,
+          51.284132
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "NB Bayside Blvd at Baywater Grn",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.036214,
+          51.280474
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "agencySlug": "airdrie-hello-to-go",
+        "serviceType": "on-demand",
+        "stopName": "SB Bayside Blvd at Baywater Cmn",
+        "areaName": "Airdrie",
+        "sourceUrl": "https://www.airdrie.ca/index.cfm?serviceID=2651"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.036222,
+          51.28067
+        ]
+      }
+    }
+  ],
+  "notes": "Stop-based: only stops are drawn, no service-area outline. Stops from 'Hello To Go.kml' (the Hello To Go MyMap: every pickup and drop-off location, bus stops and virtual stops), sent by Tanner Rusk (City of Airdrie, Transit Administrator) to Atlas Outreach on 2026-11-20. The City has no GIS file of the service area; it 'generally covers most developed areas of Airdrie, as shown within the rider application', so no outline is drawn (understate, never overstate). All 262 stops kept, names as in the file. Hours, holidays, booking and pickup from the City's Hello To Go page, retrieved 2026-11-20. Fare is the local fare (the page links to the fares page)."
+}
