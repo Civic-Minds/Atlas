@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { existsSync, statSync, createReadStream, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
+import { execSync } from 'child_process';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
 import { historyYearCounts } from './shared/historyEligibility';
 import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
@@ -32,6 +33,24 @@ function assertDevEnv(env: Record<string, string>): void {
     'New worktrees: scripts/new-worktree.sh <name> <branch> does this for you.',
     'Set ATLAS_SKIP_ENV_CHECK=1 to start anyway.',
   ].join('\n')));
+}
+
+/**
+ * The local copy of the published history-config.json, the one the Atlas Studio MCP reads (scripts/mcp/diskStore.ts):
+ * ATLAS_MCP_HISTORY_FILE when set, this checkout's tmp/history-cache, else the main checkout's. A worktree has no
+ * tmp/ of its own, so without the last step the coverage page showed every History year count as "—" (CIV-1968).
+ */
+function localHistoryFile(): string {
+  const rel = 'tmp/history-cache/history-config.json';
+  if (process.env.ATLAS_MCP_HISTORY_FILE) return process.env.ATLAS_MCP_HISTORY_FILE;
+  const own = resolve(rel);
+  if (existsSync(own)) return own;
+  try {
+    const common = execSync('git rev-parse --path-format=absolute --git-common-dir', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    const main = resolve(common, '..', rel);
+    if (existsSync(main)) return main;
+  } catch { /* not a git checkout: the copy counts as missing */ }
+  return own;
 }
 
 export default defineConfig(({ mode, command, isPreview }) => {
@@ -206,7 +225,7 @@ export default defineConfig(({ mode, command, isPreview }) => {
           }
           // Distinct History years for every archived agency, from the local copy of the published history-config.json (the file the MCP reads); none where the copy is missing.
           let historyYears: Record<string, number> = {};
-          const historyFile = resolve('tmp/history-cache/history-config.json');
+          const historyFile = localHistoryFile();
           if (existsSync(historyFile)) { try { historyYears = historyYearCounts(JSON.parse(readFileSync(historyFile, 'utf8'))); } catch { /* an unreadable copy counts as none */ } }
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store');
