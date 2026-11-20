@@ -22,7 +22,7 @@ export interface CoverageSources {
   liveArchiveSlugs: readonly string[];
   /** Agencies on Live's map (LIVE_AGENCY_SLUGS). */
   liveMapSlugs: readonly string[];
-  /** Agencies with a Schedule Changes file, and with a buses-needed file (tmp/studio, the dev server's listing). */
+  /** Agencies with a Schedules file, and with a buses-needed file (tmp/studio, the dev server's listing). */
   studioSlugs: readonly string[];
   vehiclesSlugs: readonly string[];
   /** Live coverage files read from this Mac (what releaseLivePrivate writes), by agency; empty where none. */

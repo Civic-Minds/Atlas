@@ -1,5 +1,5 @@
 /**
- * Which agencies Atlas Studio offers (CIV-1827 follow-up): those with a built Schedule Changes file,
+ * Which agencies Atlas Studio offers (CIV-1827 follow-up): those with a built Schedules file,
  * tmp/studio/<slug>-before-after.json (scripts/compare-feed-dates.ts), read from the folder rather than typed by hand.
  * A newly built file appears in the agency menu with no code change. The Vite dev server lists the folder at
  * STUDIO_MANIFEST_DEV_URL (vite.config.ts); nothing here is uploaded or built into a deployment.
@@ -20,8 +20,8 @@ export const STUDIO_COVERAGE_DEV_URL = '/dev-studio/coverage.json';
 const BEFORE_AFTER = /^([\w-]+)-before-after\.json$/;
 
 /**
- * The agencies with a Schedule Changes file among a folder's file names, in the menu's order: the default first, then
- * the rest by slug. A buses-needed file alone doesn't add an agency: the page needs its Schedule Changes file.
+ * The agencies with a Schedules file among a folder's file names, in the menu's order: the default first, then
+ * the rest by slug. A buses-needed file alone doesn't add an agency: the page needs its Schedules file.
  */
 export function studioAgenciesFromFiles(fileNames: readonly string[]): string[] {
   const slugs = fileNames.map(f => BEFORE_AFTER.exec(f)?.[1]).filter((s): s is string => !!s);
@@ -46,9 +46,9 @@ export const studioAgencyListFrom = (file: { agencies: readonly string[] } | 'mi
 /**
  * Studio's pages (CIV-1828), in the page menu's order; the first opens by default. Live is the first page (ROADMAP,
  * Ryan 2026-11-17); Fleet is a placeholder name (Ryan: "We can add Fleet as a placeholder perhaps") showing the
- * agency's buses needed; Schedule Changes is its own page (Ryan, 2026-11-19, CIV-1922).
+ * agency's buses needed; Schedules is its own page (Ryan, 2026-11-19, CIV-1922: "I said to make a page called Schedules"; its old /studio/changes addresses redirect).
  */
-export const STUDIO_PAGES = ['live', 'fleet', 'changes'] as const;
+export const STUDIO_PAGES = ['live', 'fleet', 'schedules'] as const;
 export type StudioPageKey = (typeof STUDIO_PAGES)[number];
 /** The page an address asks for; Live otherwise. */
 export const studioPageFrom = (param: string | null): StudioPageKey =>
@@ -108,6 +108,6 @@ export function studioLegacyLocation(search: string): StudioLocation | null {
   const q = new URLSearchParams(search);
   if (!STUDIO_LEGACY_PARAMS.some(k => q.has(k))) return null;
   const named = q.get('page');
-  const page = q.get('panel') === 'closed' ? null : named && (STUDIO_PAGES as readonly string[]).includes(named) ? named as StudioPageKey : null;
+  const page = q.get('panel') === 'closed' ? null : named === 'changes' ? 'schedules' : named && (STUDIO_PAGES as readonly string[]).includes(named) ? named as StudioPageKey : null;
   return { page, agency: q.get('agency'), route: page ? q.get('route') : null };
 }

@@ -27,9 +27,9 @@ import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
 /**
- * Fleet (CIV-1828, a placeholder name) and Schedule Changes, two pages of Atlas Studio on the main map (CIV-1922: Fleet
- * leads with the fleet, Schedule Changes is its own page). Fleet: the agency's buses needed and, for an open route, the
- * buses its group needs (CIV-1693, CIV-1827). Schedule Changes: how the agency's schedule changed between two files
+ * Fleet (CIV-1828, a placeholder name) and Schedules, two pages of Atlas Studio on the main map (CIV-1922: Fleet
+ * leads with the fleet, Schedules is its own page). Fleet: the agency's buses needed and, for an open route, the
+ * buses its group needs (CIV-1693, CIV-1827). Schedules: how the agency's schedule changed between two files
  * (CIV-1715, CIV-1806). The sidebar is
  * the main map's card (Panel sidebar), the map draws through the page overlay, the key sits in the map's key slot.
  * Local only (FEATURES.studio): both files come from scripts run on this Mac and are served by the Vite dev server.
@@ -110,10 +110,10 @@ function FleetMapKey({ beforeDate, afterDate }: { beforeDate: string; afterDate:
 }
 
 /** Which of the two pages this is. */
-export type FleetView = 'fleet' | 'changes';
+export type FleetView = 'fleet' | 'schedules';
 
 export interface FleetProps {
-  /** Fleet, or the Schedule Changes page that shares its map and data. */
+  /** Fleet, or the Schedules page that shares its map and data. */
   view?: FleetView;
   slug: string;
   /** The agency's short name. */
@@ -159,10 +159,10 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
   view: FleetView; file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  // Fleet's map has no change story: the newer schedule's lines in one colour (its route list is Schedule Changes').
+  // Fleet's map has no change story: the newer schedule's lines in one colour (its route list is Schedules').
   const lines = useMemo(() => {
     const all = studioMapLines(file, period, route);
-    return view === 'changes' ? all : all.filter(l => !l.dashed).map(l => ({ ...l, color: CHANGE_COLOR.same }));
+    return view === 'schedules' ? all : all.filter(l => !l.dashed).map(l => ({ ...l, color: CHANGE_COLOR.same }));
   }, [file, period, route, view]);
   // The map's pick in a ref: a new callback each render would redraw the overlay every time.
   const setRouteRef = useRef(setRoute);
@@ -195,8 +195,8 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
               <SidebarCardHeaderBlock>
                 <SidebarCardHeader back={{ to: agency, onClick: () => setRoute(null) }} title={<RouteTitleName label={routeLabel} />} />
               </SidebarCardHeaderBlock>
-              {view === 'changes' && change && (
-                <SidebarCardSection label={PAGE_NAMES.studioChanges}>
+              {view === 'schedules' && change && (
+                <SidebarCardSection label={PAGE_NAMES.studioSchedules}>
                   <StudioRouteTable change={change} beforeDate={file.before.date} afterDate={file.after.date} period={period} />
                 </SidebarCardSection>
               )}
@@ -220,8 +220,8 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
           </div>
         </Panel>
       ) : (
-        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioChanges}>
-          <PanelTitleBar title={PAGE_NAMES.studioChanges} />
+        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
+          <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
           <div className="shrink-0 px-4 pt-3">
             <p className="m-0 text-sm">{intro}</p>
             {leftOut.map(n => <p key={n} className="m-0 mt-1 text-sm text-[var(--text-muted)]">{n}</p>)}
@@ -229,7 +229,7 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
           <ChangeList file={file} period={period} route={route} onPick={setRoute} />
         </Panel>
       )}
-      {view === 'changes' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
+      {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
   );
 }

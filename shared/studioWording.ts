@@ -12,7 +12,7 @@ import { PAGE_NAMES } from './pageNames';
 const ROUTES = 'Routes';
 
 /** The page menu's entries (CIV-1828): Live (Ryan and Strategy, 2026-11-17), and Fleet, a placeholder name (Ryan, 2026-11-17). */
-export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet', changes: 'Schedule Changes' } as const;
+export const STUDIO_PAGE_NAMES = { live: 'Live', fleet: 'Fleet', schedules: PAGE_NAMES.studioSchedules } as const;
 
 export const STUDIO_MAP_TEXT = {
   route: 'Route',

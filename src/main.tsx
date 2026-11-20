@@ -20,6 +20,7 @@ import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import ScrollToTop from './components/ScrollToTop';
 import { parseStudioPath } from '../shared/studioAgencies';
+import { STUDIO_SCHEDULES_PATH } from '../shared/rules/paths';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { withoutMapPosition } from './lib/analytics';
@@ -50,6 +51,13 @@ const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import
 function NightServiceRedirect() {
   const { search, hash } = useLocation();
   return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
+}
+
+/** CIV-1922: Studio's Schedule Changes page is now Schedules; its old addresses (/studio/changes/…) open the same place. */
+function StudioChangesRedirect() {
+  const { pathname, search, hash } = useLocation();
+  const rest = pathname.slice(FEATURE_ROUTES.studioChanges.length);
+  return <Navigate to={`${STUDIO_SCHEDULES_PATH}${rest}${search}${hash}`} replace />;
 }
 
 /** The map answers only the addresses the site knows; anything else gets the not-found page. */
@@ -116,7 +124,7 @@ ReactDOM.createRoot(rootElement).render(
           {FEATURES.internal && <Route path={FEATURE_ROUTES.mcpDocs} element={<McpDocsPage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioCoverage} element={<StudioCoveragePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
-          {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
+          {FEATURES.studio && <Route path={`${FEATURE_ROUTES.studioChanges}/*`} element={<StudioChangesRedirect />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
