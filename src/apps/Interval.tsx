@@ -1533,7 +1533,9 @@ export default function Interval({ agencies, allAgencies, lightMode, setLightMod
       {/* A page's pill (Studio's "Data up to") in the loading pill's own slot; the counts row beside it stays hidden in a page,
           and takes no room there, so the pill ends where the loading pill does (CIV-1961, Ryan: "Look at this too it's not aligned"). */}
       {pagePill && !(isLoading || isTilesLoading || isBasemapLoading || liveRetrySeconds != null) && (
-        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2`}>{pagePill}</div>
+        // CIV-1961 (Ryan: "Why does it show the hand cursor when i hover over this"): the pill takes the pointer, as the counts row
+        // does, so the map under it no longer shows its hand cursor through it.
+        <div data-map-overlay="counts" className={`${MAP_COUNTS_PHONE_SLOT} ${Z_PANEL} shrink-0 flex gap-2 pointer-events-auto`}>{pagePill}</div>
       )}
       {onDemandFailedInFooter && (
         <div data-map-overlay="notice" className={`${MAP_FOOTER_NOTICE_SLOT} ${Z_PANEL}`}>
