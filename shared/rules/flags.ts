@@ -208,3 +208,12 @@ export const FEATURE_ROUTES = {
 export function historyV2Enabled(envValue: string | undefined): boolean {
   return envValue === '1';
 }
+
+/**
+ * CIV-1959 B1 (#1620, #1086): the pipeline switch for "a direction's headline comes from its trunk, never a branch or tail":
+ * ATLAS_HEADLINE_FROM_TRUNK=1, exactly (pipeline/pieces.ts reads the env). Unset (every normal build, the weekly refresh and
+ * rebuild-release) the published output is byte-identical to what it was before the switch existed.
+ */
+export function headlineFromTrunkEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}

@@ -63,7 +63,7 @@ import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
-import { patternPools } from './pieces.js';
+import { headlineFromTrunkFromEnv, patternPools } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
@@ -4015,6 +4015,8 @@ export async function processGtfsBuffer(
       if (gtfs.synthesizedDirectionRouteIds?.has(feature.properties.routeId as string)) synthesizedGroups.add(shortName);
     }
     const stretchesByKey = new Map<string, DirectionStretches>();
+    // CIV-1959 B1: ATLAS_HEADLINE_FROM_TRUNK=1, off by default (pipeline/pieces.ts).
+    const headlineFromTrunk = headlineFromTrunkFromEnv();
     const branchReadRollups = new Map<string, ReturnType<typeof rollupDirection>>();
     for (const [gKey, trips] of stretchVisitsByGroup) {
       const day = gKey.slice(gKey.lastIndexOf('::') + 2);
@@ -4037,6 +4039,7 @@ export async function processGtfsBuffer(
       const nightTrips = nightOnlyTrips(directionTrips);
       if (nightTrips.length > 0) stretches.night = directionStretches(gKey, nightTrips, coord, directionTrips, 'mostVisits');
       stretches.midday899 = directionMidday899(gKey);
+      if (headlineFromTrunk) stretches.headlineFromTrunk = true;
       // CIV-1332: whether other service picks riders up soon after a night-only route's last bus, at each stretch's stop.
       stretches.handoverAt = stopId => nightHandoverAt(day, stopId, groupRoute);
       stretches.nextDaysAt = stopId => nextDaysAt(groupRoute, groupDir, day, stopId);
@@ -4052,6 +4055,7 @@ export async function processGtfsBuffer(
       if (correctionsFor(options?.branchReadCorrections, gKey).length > 0) {
         const pooled = directionStretches(gKey, directionTrips, coord, directionTrips, 'shared', mainRefStop, true);
         pooled.midday899 = stretches.midday899;
+        pooled.headlineFromTrunk = stretches.headlineFromTrunk;
         pooled.handoverAt = stretches.handoverAt;
         pooled.nextDaysAt = stretches.nextDaysAt;
         branchReadRollups.set(gKey, rollupDirection(pooled));

@@ -14,6 +14,7 @@
  * but only on the aligned run for the long pattern, so a piece keeps pools per owning pattern,
  * never one symmetric member list. Later commits build the reading rule on these pieces.
  */
+import { headlineFromTrunkEnabled } from '../shared/rules/flags.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { computeStopSharers, type StopSharers } from './stopPools.js';
 import type { DirectionStretches, Stretch } from './tripSets.js';
@@ -64,4 +65,22 @@ export function trunkLongEnough(main: Pick<Stretch, 'stops' | 'lengthKm'>): bool
 export function directionPieces(d: Pick<DirectionStretches, 'main' | 'tails'>, pools?: PiecePools): Piece[] {
   const of = (kind: PieceKind, s: Stretch): Piece => ({ kind, stops: s.stops, lengthKm: s.lengthKm, refStop: s.refStop, tripCount: s.tripCount, stretch: s, pools });
   return [...(d.main ? [of('trunk', d.main)] : []), ...d.tails.map(t => of('branch', t))];
+}
+
+/** True when this process was started with ATLAS_HEADLINE_FROM_TRUNK=1 (CIV-1959 B1). Off by default. */
+export function headlineFromTrunkFromEnv(): boolean {
+  return headlineFromTrunkEnabled(process.env.ATLAS_HEADLINE_FROM_TRUNK);
+}
+
+/**
+ * CIV-1959 B1: the piece a direction's headline is read from, or null when there is no real shared core and the slowest
+ * piece sets the headline as before (the hub fallback). No trunk when: the regular patterns share no stop (disconnected
+ * pieces), the trunk is under the piece minimum (trunkLongEnough, kept until B4), or it is shorter than every branch it
+ * feeds (a hub-and-spoke route: a 2-stop core is not what riders on a 12-stop spoke ride).
+ */
+export function headlineTrunk(d: Pick<DirectionStretches, 'main' | 'tails' | 'disconnected'>): Stretch | null {
+  const main = d.main;
+  if (!main || d.disconnected || !trunkLongEnough(main)) return null;
+  if (d.tails.length > 0 && d.tails.every(t => main.stops.length < t.stops.length)) return null;
+  return main;
 }
