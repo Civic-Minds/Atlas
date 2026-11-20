@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio finds a route's bus count by its name (local only)**: asking for YRT's "Viva Blue" found nothing until the assistant guessed the file's own name for it ([#1632](https://github.com/Civic-Minds/Atlas/issues/1632))
 - **History opens [MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) as one agency (beta)**: its subway and five bus feeds were seven separate entries; now one list entry shows every borough's routes on one map, with a route that moved between feeds kept as one row
 - **The Night list shows [MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) as one agency**: its subway, borough buses and railroads each had their own section, unlike the rest of the site
 - **Atlas Studio can answer "what's running right now" from the schedule**: it works out the time, day and part of the day in the agency's own city and says what it used, instead of the assistant guessing ([#1627](https://github.com/Civic-Minds/Atlas/issues/1627))

@@ -19,7 +19,10 @@ export const localHandlers: Record<string, (args: Args) => unknown | Promise<unk
     const nowInfo = now ? { ...nowBlock(now), ...(now.day !== 'Weekday' ? { nowDayNote: `It's ${now.day} there now, but buses-needed figures are for a weekday.` } : {}) } : {};
     const route = String(args.route ?? '');
     const every = args.every != null ? Number(args.every) : null;
-    const res = local.busesNeeded(a.slug, route, key);
+    // The file names routes by short name ("blue" for Viva Blue, #1632): resolve the name as the other tools do, then fall back to it as typed.
+    const named = data.findRoute(await data.routeList(a, 'Weekday'), route);
+    const tried = named ? local.busesNeeded(a.slug, named.shortName, key) : null;
+    const res = tried?.cached && tried.groups.length ? tried : local.busesNeeded(a.slug, route, key);
     const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
     if (!res.cached) return { agency: a.name, route, period, ...nowInfo, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
     if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };

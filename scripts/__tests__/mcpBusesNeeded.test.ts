@@ -41,3 +41,18 @@ describe('buses_needed answer fields (#1618)', () => {
     expect(src).toMatch(/runningMinutesAllPatterns/);
   });
 });
+
+describe('buses_needed finds a route by its name (#1632)', () => {
+  it('resolves "Dufferin" to route 29 in the file, as the other tools do', async () => {
+    const { readFileSync } = await import('node:fs');
+    const fx = JSON.parse(readFileSync(join(import.meta.dirname, '../../src/utils/__tests__/fixtures/ttc-29-weekday.json'), 'utf8')) as { features: Array<{ properties: Record<string, unknown> }> };
+    const features = fx.features.map(f => ({ ...f, geometry: { type: 'LineString', coordinates: [[0, 0], [0, 1]] } }));
+    const data = await import('../mcp/atlasData');
+    const { memoryStore } = await import('../../shared/mcpMemoryStore');
+    data.useStore(memoryStore({ catalog: [{ slug: 'fixture', name: 'Fixture Transit', region: 'Ontario', lastFeedExpiry: '20271231' }] as never, meta: { fixture: { shortName: 'FX', parentAgency: null } }, files: { fixture: features as never } }));
+    writeFileSync(join(root, 'tmp', 'studio', 'fixture-vehicles.json'), JSON.stringify({ feed: 'f.zip', referenceDate: '2026-11-17', periods: { pmPeak: [{ routes: ['29'], scheduled: 9, implied: 9, runningMin: 60, layoverMin: 10, atTarget: { 10: 7 } }] } }));
+    const { localHandlers } = await import('../mcp/localTools');
+    const res = await localHandlers.buses_needed({ agency: 'Fixture Transit', route: 'Dufferin', period: 'PM peak' }) as { groups?: Array<{ routesSharingBuses: string[]; scheduledNow: number }> };
+    expect(res.groups?.[0]).toMatchObject({ routesSharingBuses: ['29'], scheduledNow: 9 });
+  });
+});
