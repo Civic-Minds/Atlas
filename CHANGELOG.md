@@ -6,7 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
-- **Studio Live shows routes and days on one line (local only)**: "9 routes recorded · 15 days, Nov 2–16" instead of two lines
+- **Studio Live shows routes and days on one line (local only)**: "9 routes recorded · 15 days of data, Nov 2–16" instead of two lines
 - **Studio says it's loading, in the map's own loading panel (local only)**: opening Studio or its Fleet page showed an empty map until the data arrived
 - **Studio's menus look like the main map's (local only)**: its Time menus list each period's hours as the map's Time chip does, and its cut-off settings use the map's own settings rows
 - **Studio's pages have their own addresses (local only)**: /studio/live/ttc/504 and /studio/fleet/kingston, so a link opens the page, agency and route it names; the old ?page= links still open the same place
