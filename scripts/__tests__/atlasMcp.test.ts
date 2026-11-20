@@ -156,7 +156,7 @@ describe('Live files in the private bucket (CIV-1860)', () => {
     expect(liveFiguresReady(v3(LIVE_MIN_DAYS_TO_SHOW - 1))).toBe(false);
     expect(liveFiguresReady(v3(LIVE_MIN_DAYS_TO_SHOW))).toBe(true);
     const c = liveCoverage('kingston', ['2026-11-15', '2026-11-16', '2026-11-17'], '2026-11-18');
-    const before = coverageLimits(c, 0);
+    const before = coverageLimits(c, 0, '2026-11-18'); // pinned: the earliest-figures day depends on today
     expect(before.join(' ')).toMatch(/3 service days, 2026-11-15 to 2026-11-17/);
     expect(before.join(' ')).toMatch(new RegExp(`at least ${LIVE_MIN_DAYS_TO_SHOW} good days`));
     expect(before.join(' ')).toMatch(new RegExp(`earliest figures are on 2026-11-${15 + LIVE_MIN_DAYS_TO_SHOW + 1}`));
