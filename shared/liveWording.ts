@@ -338,17 +338,6 @@ export const STUDIO_NOW_PENDING = {
   title: 'Right now',
   /** The reading's time and how old it is: "Reading from 8:26 PM, 0.7 min ago". */
   reading: (clock: string, ageMin: number): string => `Reading from ${clock}, ${minutesText(ageMin)} ago`,
-  vehicles: (moving: number, standing: number): string => `${countText(moving)} moving, ${countText(standing)} standing`,
-  bunchedTitle: 'Bunched now',
-  gappedTitle: 'Long gaps now',
-  noBunched: 'No bunching now',
-  noGapped: 'No long gaps now',
-  /** A bunched stretch: its closest pair and how long ago the later vehicle passed. */
-  bunchedLine: (min: number, agoMin: number): string => `Closest pair ${minutesText(min)} apart, ${minutesText(agoMin)} ago`,
-  /** A gapped stretch: the longest wait so far against the scheduled gap. */
-  gappedLine: (waitMin: number, scheduledMin: number | null): string => `${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
-  /** Past the stretches shown: the rest are counted, not listed (a sidebar doesn't scroll). */
-  more: (n: number): string => `and ${countText(n)} more`,
 } as const;
 
 /**
