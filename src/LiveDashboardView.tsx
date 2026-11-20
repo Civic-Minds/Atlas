@@ -23,6 +23,7 @@ import { ALONG_ROUTE_TITLE, DELAY_STARTS_LABEL, LATE_BY_HOUR_TITLE, LATE_STOPS_T
 import { LIVE_FEW_MEASUREMENTS, LIVE_NO_STOPS_MEASURED, LIVE_NO_WEEK_COMPARISON, liveDrawError, DIRECTION_SHOWN_LABEL, LIVE_FULL_REPORT_VIEW, LIVE_EVERY_STOP_LINK, MEASURE_LABEL, THIS_WEEK_COLUMN, LAST_WEEK_COLUMN, LIVE_ALONG_ROUTE_INTRO, LIVE_DIRECTION_PICK_NOTE, LEARN_MORE_LABEL } from './content/noticeCopy';
 import { countText } from '../shared/numberText';
 import { SubsectionTitle } from './components/ui/PageTitle';
+import { CardHelpNotice } from './components/Interval/cardUi';
 import { LIVE_MIN_SAMPLE } from '../shared/rules/live';
 
 const MIN_N = LIVE_MIN_SAMPLE;
@@ -115,9 +116,9 @@ export function WeekTable({ tiles, notes: givenNotes, caption, captionTitle, sco
       )}
       {caption && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75" title={captionTitle}>{caption}</p>}
       {aboutLive && split && (
-        <p className={`m-0 text-xs leading-4 text-[var(--text-dim)] opacity-75 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`}>
-          {bunchingShortNote()} <button type="button" onClick={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))} className="cursor-pointer border-0 bg-transparent p-0 text-xs underline hover:text-[var(--accent)]">{LEARN_MORE_LABEL}</button>
-        </p>
+        // The main map's notice and Learn more link (CardHelpNotice: its text size and its arrow), not a look of Studio's own.
+        <CardHelpNotice message={bunchingShortNote()} actionLabel={LEARN_MORE_LABEL} onLearnMore={() => window.dispatchEvent(new Event(OPEN_ABOUT_LIVE_EVENT))}
+          className={`m-0 ${notes?.length || excluding ? 'mt-0.5' : 'mt-1 border-t border-[var(--border-primary)] pt-1'}`} />
       )}
     </Card>
   );
