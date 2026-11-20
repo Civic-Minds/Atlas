@@ -15,6 +15,7 @@ import { agencyGroupName, groupAgencies, groupHome } from '../../shared/agencyGr
 import { PARENT_AGENCIES } from '../../shared/parentAgencyList';
 import { needAgency, needPeriod, mapLink, validThrough, SOURCE, windowNote, nowAt, nowBlock, periodOrNow, windowOrNow, type Args } from './toolHelpers';
 import { isNow } from './nowClock';
+import { STUDIO_TARGETS, groupAtTarget } from '../../shared/studioVehicles';
 
 export * from './toolDefs';
 export * from './toolHelpers';
@@ -181,6 +182,44 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     }));
     const zones = now ? [...new Set(await Promise.all(rows.map(async r => (await data.timeZoneOf(r.slugs[0])) ?? now.timeZone)))] : [];
     return { ...(now ? { ...nowBlock(now), ...(zones.length > 1 ? { nowZones: `These agencies keep different time zones (${zones.join(', ')}); "now" is ${rows[0].agency}'s.` } : {}) } : {}), day: dayType, period: `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`, every: minutes, agencies: rows.map(({ slugs: _slugs, ...row }) => row), mapLink: mapLink({ agencies: rows.flatMap(r => r.slugs), day: dayType, period: key, every: minutes }), source: SOURCE };
+  },
+  buses_needed: async (args) => {
+    const a = await needAgency(args.agency);
+    // period "now" (#1627): the agency's current part of the day. The figures are for a representative weekday.
+    const { key, now } = await periodOrNow(a, args.period, null);
+    const nowInfo = now ? { ...nowBlock(now), ...(now.day !== 'Weekday' ? { nowDayNote: `It's ${now.day} there now, but buses-needed figures are for a weekday.` } : {}) } : {};
+    const route = String(args.route ?? '');
+    const every = args.every != null ? Number(args.every) : null;
+    // The file names routes by short name ("blue" for Viva Blue, #1632): resolve the name as the other tools do, then fall back to it as typed.
+    const named = data.findRoute(await data.routeList(a, 'Weekday'), route);
+    const tried = named ? await data.busesNeeded(a.slug, named.shortName, key) : null;
+    const res = tried?.cached && tried.groups.length ? tried : await data.busesNeeded(a.slug, route, key);
+    const period = `${PERIOD_LABELS[key]} (${formatPeriodRange(key)})`;
+    if (!res.cached) return { agency: a.name, route, period, ...nowInfo, answer: `Atlas Studio has no buses-needed figures for ${a.name} yet. They are worked out once per agency ahead of time, not while you wait. Don't estimate a number yourself.` };
+    if (!res.groups.length) return { agency: a.name, route, period, ...nowInfo, answer: `Route ${route} isn't in ${a.name}'s buses-needed figures for the ${PERIOD_LABELS[key].replace(/^(?![AP]M)\w/, c => c.toLowerCase())}: it may not run then, or its number is written differently.` };
+    const missing = every != null && !STUDIO_TARGETS.includes(every);
+    const targets = every != null && !missing ? [every] : [...STUDIO_TARGETS];
+    const neededAt = (at: Partial<Record<number, number>>) => Object.fromEntries(targets.filter(t => at[t] != null).map(t => [headwayEvery(t), at[t]]));
+    return {
+      agency: a.name, route, period, ...nowInfo,
+      ...(res.olderSchedule ? { note: `These figures come from an older schedule file (${res.feed}) than the newest one on this Mac.` } : {}),
+      day: `A representative weekday in the week of ${res.referenceDate}.`,
+      groups: res.groups.map(g => ({
+        routesSharingBuses: g.routes,
+        scheduledNow: g.scheduled,
+        neededAtCurrentFrequency: g.implied,
+        // Summed over every direction and branch of the group (#1618), not one round trip.
+        runningMinutesAllPatterns: g.runningMin,
+        layoverMinutesAllPatterns: g.layoverMin,
+        // The same figures Studio's buses-needed page shows for each branch split (groupAtTarget).
+        neededAt: neededAt(groupAtTarget(g, 'current')),
+        ...(g.atTargetEven ? { neededAtWithBranchesEven: neededAt(groupAtTarget(g, 'even')) } : {}),
+      })),
+      targetsNote: `Atlas Studio works buses out only for every ${STUDIO_TARGETS.join(', ')} minutes. For any other frequency, say Atlas has no figure; don't work one out yourself.`,
+      ...(missing ? { warning: `Atlas Studio works these out only for every ${STUDIO_TARGETS.join(', ')} minutes, not every ${every}. Give the nearest of those; don't work out ${every} yourself.` } : {}),
+      howToRead: "'scheduledNow' is buses on these routes at the middle of the period; 'neededAtCurrentFrequency' is buses needed at each pattern's own frequency (running time plus layover, divided by the minutes between buses, rounded up once for the group). Where branches share a middle section, a target is for that middle, and its trips go to the branches in their current shares ('WithBranchesEven' splits them evenly). Trips to and from the garage are not in schedules and not counted. 'runningMinutesAllPatterns' and 'layoverMinutesAllPatterns' add up every direction and branch of the group, so they are not one round trip: never divide them by a frequency to check or replace a count.",
+      source: "Atlas Studio's buses-needed file, worked out from the agency's own schedule.",
+    };
   },
   routes_near: async ({ agency: q, place, metres, when }) => {
     const a = await needAgency(q);

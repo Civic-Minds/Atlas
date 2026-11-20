@@ -4,13 +4,27 @@
  * (tmp/process-preview/<slug>/); ATLAS_MCP_DATA_DIR points at another folder.
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { parentAgency } from '../../shared/parentAgencyList';
 import type { StudioBeforeAfterFile } from '../../shared/studioBeforeAfter';
+import { studioVehiclesFileName, type StudioVehiclesFile } from '../../shared/studioVehicles';
 import type { AtlasStore, IndexedAgency, McpAgency, McpAgencyMeta, McpFeature, McpHistoryAgency, McpStop } from '../../shared/mcpStore';
 
 /** The Atlas checkout the server reads (this file's repo by default). */
 export const ATLAS_ROOT = resolve(process.env.ATLAS_ROOT ?? join(import.meta.dirname, '..', '..'));
+
+/** The newest schedule file on this Mac for an agency (Atlas-worktrees/_feeds/<slug>/), or null. */
+export function feedFile(slug: string): string | null {
+  const root = process.env.ATLAS_MCP_FEEDS_DIR ?? join(ATLAS_ROOT, '..', 'Atlas-worktrees', '_feeds');
+  const dir = join(root, slug);
+  if (!existsSync(dir)) return null;
+  // Files are named by the date their service runs to (20271008-fresh.zip): the latest date is the newest schedule.
+  // A copy made later can have a newer modified time than a newer schedule (Kingston), so the name decides, then the time.
+  const dateOf = (n: string) => /^(\d{8})/.exec(n)?.[1] ?? '';
+  const zips = readdirSync(dir).filter(n => n.endsWith('.zip'))
+    .sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || statSync(join(dir, a)).mtimeMs - statSync(join(dir, b)).mtimeMs);
+  return zips.length ? join(dir, zips[zips.length - 1]) : null;
+}
 
 /**
  * A file Studio built for an agency (tmp/studio/<name>): in this checkout, else in the bundle worktree where Studio's dev
@@ -134,6 +148,11 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
       const file = studioFile(`${slug}-before-after.json`);
       return file ? JSON.parse(readFileSync(file, 'utf8')) as StudioBeforeAfterFile : null;
     },
+    async vehicles(slug) {
+      const file = studioFile(studioVehiclesFileName(slug));
+      return file ? JSON.parse(readFileSync(file, 'utf8')) as StudioVehiclesFile : null;
+    },
+    async newestFeedName(slug) { const f = feedFile(slug); return f ? basename(f) : null; },
     allHistory,
     evict(slug) { features.delete(slug); },
   };

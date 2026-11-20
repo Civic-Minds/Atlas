@@ -6,6 +6,7 @@
 import type { DayType } from './rules/days';
 import type { PeriodKey } from './config';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
+import type { StudioVehiclesFile } from './studioVehicles';
 
 /** One public agency as the catalog lists it. */
 export interface McpAgency { slug: string; name: string; /** Its parent agency's slug (config/parent-agencies.json), when it is one feed of a larger agency. */ parentAgency?: string; region?: string; cities?: string[]; lastFeedExpiry?: string | null; lastRefreshedAt?: string | null; betaOnly?: boolean; center?: [number, number] }
@@ -65,6 +66,10 @@ export interface AtlasStore {
   historyRoute(slug: string, i: number): Promise<McpHistoryRoute | null>;
   /** Studio's schedule comparison for an agency, or null when none was built. */
   comparison(slug: string): Promise<StudioBeforeAfterFile | null>;
+  /** Studio's buses-needed file for an agency, or null when none was built (CIV-1977: the hosted server reads it from the split release). */
+  vehicles(slug: string): Promise<StudioVehiclesFile | null>;
+  /** Optional, local only: the newest schedule file on this Mac for an agency, to say when a buses-needed file is from an older one. */
+  newestFeedName?(slug: string): Promise<string | null>;
   /**
    * Optional, from here on: ready-made pieces a hosted store reads in small files (the split release). A store without
    * them is read through its route features and index and made on the fly, with the same functions.
