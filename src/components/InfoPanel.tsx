@@ -23,7 +23,7 @@ import type { Agency } from '../App';
 import { isAgencyFeedExpired } from '../../shared/feedAvailability';
 import { trackEvent } from '../lib/analytics';
 import { OutboundLink } from './OutboundLink';
-import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK } from '../content/noticeCopy';
+import { SEARCH_AGENCIES_PLACEHOLDER, routeRatingLead, DOCS_PAGE_TITLE, CLOSE_PLACES, closeLabel, REPORT_A_PROBLEM, betaRolloutLead, EDGE_GAP_ALLOWANCE_LEAD, EXPIRED_FEED_EXPLANATION, expiredFeedCheckHistory, expiredFeedNotice, EXPLAINER_LAYOUT, EXPLAINER_PIECES, EXPLAINERS, type ExplainerLayoutKey, type ExplainerLink, type HelpTopic, listingEndedPanelLead, newScheduleDataLead, officialDataOnlyNotice, NO_AGENCIES_MATCH, NO_ROUTE_SHAPE_NOTICE, pieceText, PRIVACY_SETTINGS_TITLE, ROUTE_DATA_QUALITY_LEAD, WEEKDAY_VARIATION_LEAD, VIEW_ON_MAP, HISTORY_TAG, LIVE_TAG, FEEDBACK_LABEL, clearAgencyFiltersTitle, SOURCES_LEAD, SOURCES_FALLBACK } from '../content/noticeCopy';
 import RegionFilterPills from './RegionFilterPills';
 import ListRow from './ui/ListRow';
 import { AgencyList, AgencyListRow, AgencyRegionSection } from './ui/AgencyList';
@@ -35,7 +35,7 @@ import { PAGE_NAMES } from '../../shared/pageNames';
 
 interface HistoryAgencySummary { slug: string; name: string; region: string; routes: unknown[] }
 
-type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'sources';
+type View = 'home' | 'agencies' | 'agency-detail' | 'outdated-schedule' | 'new-schedule-data' | 'corrected-data' | 'beta-rollout' | 'route-data-quality' | 'no-route-shape' | 'edge-gap-allowance' | 'weekday-variation' | 'route-rating' | 'official-data' | 'sources';
 export type Tab = 'about' | 'agencies' | 'history' | 'live';
 export type InfoFeatureFilter = 'all' | 'live' | 'history';
 type AgencyListFilter = InfoFeatureFilter | 'outdated';
@@ -190,6 +190,7 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
         : helpContext?.topic === 'edge-gap-allowance' ? 'edge-gap-allowance'
         : helpContext?.topic === 'weekday-variation' ? 'weekday-variation'
         : helpContext?.topic === 'route-rating' ? 'route-rating'
+        : helpContext?.topic === 'official-data' ? 'official-data'
         : tabToView(defaultTab ?? 'about'),
       );
       setAgencyFeatureFilters(featureFilter === 'all' ? new Set() : new Set([featureFilter]));
@@ -534,6 +535,9 @@ export default function InfoPanel({ open, onClose, agencies, defaultTab, feature
           )}
           {view === 'beta-rollout' && (
             <ExplainerBody layout="beta-rollout" helpContext={helpContext} lead={helpContext?.agencyName ? betaRolloutLead(helpContext.agencyName) : ''} />
+          )}
+          {view === 'official-data' && (
+            <ExplainerBody layout="official-data" helpContext={helpContext} lead={helpContext?.agencyName ? officialDataOnlyNotice(helpContext.agencyName) : ''} />
           )}
           {view === 'route-data-quality' && <ExplainerBody layout="route-data-quality" lead={ROUTE_DATA_QUALITY_LEAD} helpContext={helpContext} />}
           {view === 'no-route-shape' && <ExplainerBody layout="no-route-shape" lead={NO_ROUTE_SHAPE_NOTICE} helpContext={helpContext} />}

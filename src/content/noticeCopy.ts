@@ -714,6 +714,8 @@ export const EXPLAINERS = {
   'edge-gap-allowance': { code: 'E7', title: 'First and last trips' },
   'weekday-variation': { code: 'E8', title: 'Weekday variation' },
   'route-rating': { code: 'E9', title: 'Route rating' },
+  /** E10 (CIV-1978): title and paragraph 2 pending Ryan's word-for-word OK. */
+  'official-data': { code: 'E10', title: 'Official data' },
 } as const;
 export type HelpTopic = keyof typeof EXPLAINERS;
 
@@ -771,6 +773,8 @@ export const EXPLAINER_PIECES = {
   REPORT_WITH_FLAG: { code: 'X14', text: "If something looks wrong, report it with the flag on this card." },
   // Paragraph 2 of E9 (CIV-1199), after X9.
   STRETCH_AND_BRANCHES_SEPARATE: { code: 'X15', text: "We check the shared stretch and each branch separately, which means one busier part can’t make the whole route look more frequent than it is." },
+  // Paragraph 2 of E10 (CIV-1978), pending Ryan's word-for-word OK.
+  OFFICIAL_DATA_AS_PUBLISHED: { code: 'X16', text: "This data is shown as the agency published it." },
 } as const satisfies Record<string, ExplainerPieceDef>;
 export type ExplainerPiece = keyof typeof EXPLAINER_PIECES;
 export const pieceText = (piece: ExplainerPiece): string => EXPLAINER_PIECES[piece].text;
@@ -789,6 +793,7 @@ export const EXPLAINER_LAYOUT: Record<ExplainerLayoutKey, { p2: readonly Explain
   'edge-gap-allowance': { p2: ['MIDDAY_GAPS'] },
   'weekday-variation': { p2: ['WEEKDAYS_SEPARATE'], p3: 'AGENCY_WEBSITE_EACH_DAY' },
   'route-rating': { p2: ['STRETCH_AND_BRANCHES_SEPARATE'], p3: 'REPORT_WITH_FLAG' },
+  'official-data': { p2: ['OFFICIAL_DATA_AS_PUBLISHED'], p3: 'AGENCY_WEBSITE_CURRENT' },
 };
 
 /**
@@ -806,6 +811,7 @@ export const NOTICE_EXPLAINERS = {
   N14: 'edge-gap-allowance',
   /** CIV-1199 case 1: only when every row meets the filter but a part of the route doesn't (routeCardNotices learnMore). */
   N12: 'route-rating',
+  N127: 'official-data',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
@@ -821,6 +827,12 @@ export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-de
 // N126 on-demand-partial: on-demand coverage is partial, so a place with no shading isn't read as having no service. Shown as
 // the map key's last line and under On-demand in the Mode menu (CIV-23; Ryan's word-for-word OK, 2026-11-11).
 export const ON_DEMAND_PARTIAL_COVERAGE = 'Some on-demand zones aren\u2019t on the map yet.';
+
+// N127 official-data-only (CIV-1978; Ryan, 2026-11-20, word for word: "Actually 2 but as one sentence with a comma and the
+// Learn More link"): an on-demand service whose stops come only from the agency's official data, which can't be checked
+// against another source. Shown at the foot of the on-demand card for the services in ON_DEMAND_OFFICIAL_DATA_ONLY.
+export const officialDataOnlyNotice = (agencyName: string): string =>
+  `This on-demand service’s stops are from ${agencyPossessive(agencyNames(agencyName).card.primary)} official data, and their accuracy can’t be confirmed.`;
 
 // N125 on-demand-pickup: how riders board an on-demand zone (CIV-941, moved here from shared/onDemandAvailability.ts unchanged).
 /**
