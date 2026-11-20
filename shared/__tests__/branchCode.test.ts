@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { branchBase, branchCodeOf, headsignBranchCode } from '../branchCode';
-import { buildRouteCardModel, rowBranchCode, withBranchCode } from '../../src/utils/routeCardRows';
+import { rowBranchCode, withBranchCode } from '../../src/utils/routeCardRows';
 
 describe('branch IDs the data names (CIV-1456)', () => {
   it('takes a route number plus one branch letter, never an express, limited, rapid or direction letter', () => {
