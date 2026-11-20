@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACEHOLDER, TIME_LABEL } from '../../content/noticeCopy';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
-import Panel, { PanelBody } from '../../components/ui/Panel';
+import { PanelBody } from '../../components/ui/Panel';
+import StudioPanel from './StudioPanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { MapNote } from '../../components/ui/MapNote';
@@ -20,7 +21,6 @@ import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveAgencyName } from '../../hooks/useLiveAgencyName';
 import { useLiveAgency } from '../../LiveAgencyPage';
 import { DataUpTo } from '../../LiveRoutePage';
-import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
@@ -59,7 +59,7 @@ export default function Live({ slug, route, setRoute, agencyMenu, headerPortal, 
         <StudioChips container={headerPortal} menus={[agencyMenu]} />
         {/* One loading panel and one way of saying why there's nothing (CIV-1925 phase 4). */}
         {state.kind === 'loading' ? <ViewLoadingPanel what={agencyName} />
-          : <Panel sidebar enter style={frameStyle}><PanelEmpty kind={state.kind === 'error' ? 'error' : 'empty'}>{state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null}</PanelEmpty></Panel>}
+          : <StudioPanel style={frameStyle}><PanelEmpty kind={state.kind === 'error' ? 'error' : 'empty'}>{state.kind === 'error' ? state.reason : state.data.status !== 'ready' ? state.data.reason : null}</PanelEmpty></StudioPanel>}
       </>
     );
   }
@@ -114,7 +114,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     <>
       <StudioChips container={headerPortal} menus={menus} />
       {route && label ? (
-        <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={label.text}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">
             <SidebarCardShell>
               <SidebarCardHeaderBlock>
@@ -125,15 +125,15 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
               {m.v3 && <CutoffFigures v3={m.v3} band={band} set={cutoffs} />}
             </SidebarCardShell>
           </PanelBody>
-        </Panel>
+        </StudioPanel>
       ) : (
-        <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={agencyName}>
-          <PanelBody className="px-3 pt-3 pb-3">
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={agencyName}>
+          <PanelBody className="px-4 pt-3 pb-3">
             {/* CIV-1878 (Ryan, "1"): one route selector, the top bar's Route chip (its list scrolls inside the chip); the panel opens with the at-a-glance lines and the week table. */}
             <LiveGlance s={s} days={m.networkDates} />
             <WidgetPanel widgets={m.summary} />
           </PanelBody>
-        </Panel>
+        </StudioPanel>
       )}
       {measure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>}
       {m.note && <MapNote>{m.note}</MapNote>}

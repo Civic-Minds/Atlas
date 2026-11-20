@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
-import Panel, { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
+import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
+import StudioPanel from './StudioPanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
-import { SIDEBAR_CARD_ABOVE_KEY } from '../../mapOverlayLayout';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from './StudioMapFrame';
@@ -149,7 +149,7 @@ export default function Fleet({ view = 'fleet', slug, agency, route, setRoute, a
       <StudioChips container={headerPortal} menus={menus} />
       {/* The shared loading panel while the file comes in, then the shared empty line if there is none (CIV-1925 phase 4). */}
       {file == null && <ViewLoadingPanel what={agency} />}
-      {file === 'missing' && <Panel sidebar enter style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></Panel>}
+      {file === 'missing' && <StudioPanel style={frameStyle}><PanelEmpty>{C.noData}</PanelEmpty></StudioPanel>}
       {ready && <Body view={view} file={ready} vehicles={vehicles} agency={agency} period={period} route={route} setRoute={setRoute} frameStyle={frameStyle} />}
     </>
   );
@@ -189,7 +189,7 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
       {route && routeLabel ? (
         // CIV-1827: one card for the open route, as the main map's route card: the way back, the route's name, what
         // changed between the two dates, then what running it at other frequencies takes.
-        <Panel sidebar wide enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={routeLabel.text}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={routeLabel.text}>
           <PanelBody className="px-4 pt-4 pb-2">
             <SidebarCardShell>
               <SidebarCardHeaderBlock>
@@ -208,26 +208,26 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
               )}
             </SidebarCardShell>
           </PanelBody>
-        </Panel>
+        </StudioPanel>
       ) : view === 'fleet' ? (
         // CIV-1922: Fleet opens on the fleet itself, the buses the whole agency needs at the time of day.
-        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioVehicles}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioVehicles}>
           <PanelTitleBar title={PAGE_NAMES.studioVehicles} />
           <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-3">
             <p className="m-0 mb-2 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date)}</p>
             {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
               : vehicles ? <StudioGroupFigures group={agencyFleet(vehicles, period)} showRunning={false} /> : null}
           </div>
-        </Panel>
+        </StudioPanel>
       ) : (
-        <Panel sidebar enter ref={cardRef} className={SIDEBAR_CARD_ABOVE_KEY} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
           <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
           <div className="shrink-0 px-4 pt-3">
             <p className="m-0 text-sm">{intro}</p>
             {leftOut.map(n => <p key={n} className="m-0 mt-1 text-sm text-[var(--text-muted)]">{n}</p>)}
           </div>
           <ChangeList file={file} period={period} route={route} onPick={setRoute} />
-        </Panel>
+        </StudioPanel>
       )}
       {view === 'schedules' && <FleetMapKey beforeDate={file.before.date} afterDate={file.after.date} />}
     </>
