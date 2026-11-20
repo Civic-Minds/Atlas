@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's late-stops table and Explore cards no longer show a "1 in 10 leave" figure (local only)**: it read as a riddle; the typical delay and share late already say how late a stop runs, as Studio does
 - **The Atlas Studio pilot server can say how many buses a route needs**: bus counts only worked on Atlas's own computer, so pilot testers couldn't ask ([#1634](https://github.com/Civic-Minds/Atlas/issues/1634))
 - **Atlas Studio's schedule changes show each route's trips beside its frequency**: OC Transpo's route 6 read as cut to every 38 minutes, though it runs about as many trips as before ([#1633](https://github.com/Civic-Minds/Atlas/issues/1633))
 - **Atlas Studio finds a route's bus count by its name (local only)**: asking for YRT's "Viva Blue" found nothing until the assistant guessed the file's own name for it ([#1632](https://github.com/Civic-Minds/Atlas/issues/1632))
