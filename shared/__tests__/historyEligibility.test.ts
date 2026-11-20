@@ -4,6 +4,7 @@ import {
   agencyQualifiesForHistory,
   agencyQualifiesForHistoryExplore,
   distinctSnapshotYears,
+  historyYearCounts,
   MIN_HISTORY_DISTINCT_YEARS,
 } from '../historyEligibility';
 
@@ -109,5 +110,14 @@ describe('historyEligibility', () => {
       expect(agencyQualifiesForHistory(nine, opts)).toBe(false);
       expect(agencyQualifiesForHistory({ routes: [{ snapshots: [...real, 2026].map(year => ({ year })) }] }, opts)).toBe(true);
     });
+  });
+
+  it('counts every archived agency\'s real years, under-10 ones included, and leaves out agencies with none', () => {
+    const rows = [
+      { slug: 'a', routes: [{ snapshots: [{ year: 2020 }, { year: 2022 }] }] },
+      { slug: 'b', coverageYears: [2010, 2011, 2012], routes: [{ snapshots: [{ year: 2020 }] }] },
+      { slug: 'c', routes: [] },
+    ];
+    expect(historyYearCounts(rows, { buildYear: 2026 })).toEqual({ a: 2, b: 1 });
   });
 });

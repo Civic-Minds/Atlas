@@ -1076,6 +1076,12 @@ export const COVERAGE_COLUMNS = {
   mcp: 'MCP',
 } as const;
 
+/** The History cell: the pill for agencies in public History (10 years or more), and the count for those with fewer archived years. */
+export const COVERAGE_HISTORY = {
+  public: '10+ years',
+  years: (n: number) => (n === 1 ? '1 year' : `${n} years`),
+} as const;
+
 /** What a Live cell lists, as small tags in the agencies-page style. */
 export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report' } as const;
 

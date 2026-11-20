@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { existsSync, statSync, createReadStream, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { DEFAULT_BETA_R2_PUBLIC_URL, DEFAULT_R2_PUBLIC_URL } from './shared/config';
+import { historyYearCounts } from './shared/historyEligibility';
 import { STUDIO_COVERAGE_DEV_URL, STUDIO_MANIFEST_DEV_URL, studioAgenciesFromFiles } from './shared/studioAgencies';
 import { featuresForEnv, pickSwitches, type FlagsFile } from './scripts/featureFlags';
 
@@ -203,9 +204,14 @@ export default defineConfig(({ mode, command, isPreview }) => {
               if (existsSync(f)) { try { coverage[slug] = JSON.parse(readFileSync(f, 'utf8')); } catch { /* an unreadable file counts as none */ } }
             }
           }
+          // Distinct History years for every archived agency, from the local copy of the published history-config.json (the file the MCP reads); none where the copy is missing.
+          let historyYears: Record<string, number> = {};
+          const historyFile = resolve('tmp/history-cache/history-config.json');
+          if (existsSync(historyFile)) { try { historyYears = historyYearCounts(JSON.parse(readFileSync(historyFile, 'utf8'))); } catch { /* an unreadable copy counts as none */ } }
           res.setHeader('Content-Type', 'application/json');
           res.setHeader('Cache-Control', 'no-store');
           res.end(JSON.stringify({
+            historyYears,
             studio: studioAgenciesFromFiles(names),
             vehicles: names.map(f => /^([\w-]+)-vehicles\.json$/.exec(f)?.[1]).filter(Boolean),
             coverage,

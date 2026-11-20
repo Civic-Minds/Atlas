@@ -18,6 +18,8 @@ export interface CoverageSources {
   agencies: ReadonlyArray<{ slug: string; name: string; /** The place beside the name when the name alone isn't unique ("MTA NYCT Bus", Manhattan), as the agencies page shows it. */ place?: string }>;
   /** History's agencies (shared/data/history-agencies.json). */
   historySlugs: readonly string[];
+  /** Distinct History years of every archived agency, public or not (the dev server reads the local history-config copy); empty where unknown. */
+  historyYears?: Readonly<Record<string, number>>;
   /** Every agency Live's archivers know (LIVE_ARCHIVE_SLUGS). */
   liveArchiveSlugs: readonly string[];
   /** Agencies on Live's map (LIVE_AGENCY_SLUGS). */
@@ -36,6 +38,8 @@ export interface CoverageRow {
   place: string | null;
   focus: boolean;
   history: boolean;
+  /** Distinct History years in the archive; 0 where none (or not read). Public History needs 10 (MIN_HISTORY_DISTINCT_YEARS). */
+  historyYears: number;
   /** Live: recorded now, on Live's own map, and whether it has a Live report page (a paused recorder gives nothing usable, so it isn't shown). */
   liveRecorded: boolean;
   liveRealtime: boolean;
@@ -81,6 +85,7 @@ export function coverageRows(s: CoverageSources): CoverageRow[] {
       place: a.place ?? null,
       focus: isFocusAgency(a.slug),
       history: s.historySlugs.includes(a.slug),
+      historyYears: s.historyYears?.[a.slug] ?? 0,
       liveRecorded: recordedNow(a.slug, s),
       liveRealtime: s.liveMapSlugs.includes(a.slug),
       liveReport: recordedNow(a.slug, s),
