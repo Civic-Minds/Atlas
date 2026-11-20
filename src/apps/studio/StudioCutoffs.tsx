@@ -9,10 +9,11 @@ import { MISSING_VALUE } from '../../../shared/missingValue';
 import { percentText } from '../../../shared/numberText';
 import { weekForBand, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
 import { DEFAULT_CUTOFFS, cutoffFactorText, cutoffMinutesText, figuresAtCutoffs, type CustomFigure, type Cutoffs } from '../../../shared/liveCutoffs';
+import { STUDIO_SETTINGS_TEXT as S } from '../../../shared/liveWording';
 import type { StudioMenu } from './StudioChips';
 
 /**
- * Planners' own cut-offs in Studio's Live view (CIV-1886, the Studio half of CIV-1869): a Cut-offs chip in the top bar
+ * Planners' own cut-offs in Studio's Live view (CIV-1886, the Studio half of CIV-1869): a Settings chip in the top bar (the chip and its rows in Ryan's approved words, STUDIO_SETTINGS_TEXT)
  * and, in a picked route's card, the week's figures at those cut-offs beside the standard week table. The calculation is
  * the MCP's own (shared/liveCutoffs.ts figuresAtCutoffs); rankings and the standard figures stay on the standard cut-offs.
  */
@@ -30,11 +31,8 @@ export const STUDIO_CUTOFF_PRESETS: Record<keyof Cutoffs, readonly number[]> = {
 const ORDER: ReadonlyArray<keyof Cutoffs> = ['lateAfterMin', 'earlyBeforeMin', 'bunchedWithinMin', 'gappedFactor'];
 const FIGURE_KEY = { lateAfterMin: 'late', earlyBeforeMin: 'early', bunchedWithinMin: 'bunched', gappedFactor: 'gapped' } as const;
 
-/** Pending Ryan's word-for-word OK (CIV-1886 wording list): placeholders until then. */
+/** The card's wording, pending Ryan's word-for-word OK (CIV-1886 wording list); the chip and its rows are approved (STUDIO_SETTINGS_TEXT). */
 export const STUDIO_CUTOFFS_PENDING = {
-  chip: 'Cut-offs',
-  rowName: { lateAfterMin: 'Late: more than', earlyBeforeMin: 'Early: ahead by at least', bunchedWithinMin: 'Bunched: gap under', gappedFactor: 'Gapped: gap over' } as Record<keyof Cutoffs, string>,
-  choice: (k: keyof Cutoffs, v: number) => `${k === 'gappedFactor' ? `${cutoffFactorText(v)} scheduled` : cutoffMinutesText(v)}${v === DEFAULT_CUTOFFS[k] ? ' (standard)' : ''}`,
   reset: 'Use the standard cut-offs',
   title: 'Your cut-offs',
   figure: (k: keyof Cutoffs, v: number) => ({
@@ -49,6 +47,9 @@ export const STUDIO_CUTOFFS_PENDING = {
 } as const;
 const W = STUDIO_CUTOFFS_PENDING;
 
+/** A choice as its number alone, in the cut-offs' own half steps ("5½", "1½"); the row's unit follows the numbers. */
+const settingNumber = (v: number): string => { const w = Math.floor(v); return v - w === 0.5 ? `${w || ''}½` : String(v); };
+
 const isSet = (set: SetCutoffs) => ORDER.some(k => set[k] != null);
 
 /** The chip's menu: four rows of choices and a way back to the standard. Its chip is filled while any cut-off is set. */
@@ -59,15 +60,17 @@ export function cutoffsMenu(set: SetCutoffs, onChange: (next: SetCutoffs) => voi
         const current = set[k] ?? DEFAULT_CUTOFFS[k];
         return (
           // The main map's Settings rows (PickerSection over segment pills, CIV-1925 phase 3), not a look of Studio's own.
-          <div key={k} role="group" aria-label={W.rowName[k]}>
-            <PickerSection title={W.rowName[k]}>
-              <div className="flex flex-wrap gap-1">
+          <div key={k} role="group" aria-label={S.rows[k]}>
+            <PickerSection title={S.rows[k]}>
+              {/* Ryan's approved rows (CIV-1893, "Sure for now"): numbers in a row, the unit once after them, the standard in bold. */}
+              <div className="flex flex-wrap items-center gap-1">
                 {STUDIO_CUTOFF_PRESETS[k].map(v => (
                   <Pill key={v} size="segment" selected={v === current}
                     onClick={() => onChange({ ...set, [k]: v === DEFAULT_CUTOFFS[k] ? undefined : v })}>
-                    {W.choice(k, v)}
+                    <span className={v === DEFAULT_CUTOFFS[k] ? 'font-black' : undefined}>{settingNumber(v)}</span>
                   </Pill>
                 ))}
+                <span className="ml-1 text-xs text-[var(--text-muted)]">{S.units[k]}</span>
               </div>
             </PickerSection>
           </div>
@@ -76,7 +79,7 @@ export function cutoffsMenu(set: SetCutoffs, onChange: (next: SetCutoffs) => voi
       {isSet(set) && <button type="button" className={chipRowClass(false)} onClick={() => { onChange({}); close(); }}>{W.reset}</button>}
     </div>
   );
-  return { key: 'cutoffs', label: W.chip, value: '', options: [], onPick: () => {}, content, active: isSet(set), panelClassName: 'w-80' };
+  return { key: 'cutoffs', label: S.chip, value: '', options: [], onPick: () => {}, content, active: isSet(set), panelClassName: 'w-80' };
 }
 
 interface Row { key: keyof Cutoffs; label: string; now: CustomFigure | undefined; last: CustomFigure | undefined }

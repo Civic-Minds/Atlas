@@ -121,6 +121,15 @@ export function stretchLabel(fromName: string, toName: string): string {
   return a.toLowerCase() === b.toLowerCase() ? a : `${a} to ${b}`;
 }
 
+/**
+ * A stretch as a place in a sentence, its kind said in the words (CIV-1828, Ryan: "Is this destinations or parts of the
+ * route or what?"): "between Church St and Dundas Station", or "at Church St" when both ends are the one place.
+ */
+export function betweenLabel(fromName: string, toName: string): string {
+  const [a, b] = stretchEnds(fromName, toName);
+  return a.toLowerCase() === b.toLowerCase() ? `at ${a}` : `between ${a} and ${b}`;
+}
+
 /** Words that make a side of " and " a place rather than a street ("Jane and Finch Station", "Guild Park and Gardens"). */
 const PLACE_WORDS = /\b(station|stn|college|park|gardens?|hospital|centre|center|library|mall|plaza|loop|square|village|campus|school|university|terminal|beach)\b/i;
 const STREET_SIDE = /^[A-Z][A-Za-z.'-]*( [A-Z][A-Za-z.'-]*){0,2}$/;

@@ -351,5 +351,19 @@ export const STUDIO_NOW_PENDING = {
   more: (n: number): string => `and ${countText(n)} more`,
 } as const;
 
+/**
+ * CIV-1828, the route panel redesign's two options (2026-11-20): wording pending Ryan's pick. "Right now" as one table row
+ * per direction, so a direction, a stretch and a stop each read as what they are (Ryan: "Is this destinations or parts of
+ * the route or what?"). Option A also names the worst stretches under the table, each as "between X and Y".
+ */
+export const STUDIO_ROUTE_NOW_PENDING = {
+  columns: { direction: 'Direction', vehicles: 'Vehicles', bunched: 'Bunched', gapped: 'Long gaps' },
+  /** "Bunched between Beverley St and Shaw St: 0.9 min apart". `place` is betweenLabel's. */
+  bunchedAt: (place: string, min: number): string => `Bunched ${place}: ${minutesText(min)} apart`,
+  /** "Long gap between Mountstephen St and Wolfrey Ave: 24 min wait, scheduled every 7 min". */
+  gappedAt: (place: string, waitMin: number, scheduledMin: number | null): string =>
+    `Long gap ${place}: ${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
+} as const;
+
 /** "Last 17 service days, Sep 30 – Oct 16": the days a route's figures cover (the method note's own words, CIV-910). */
 export const serviceDaysText = (days: number, first: string, last: string): string => `Last ${days} service days, ${dateRange(first, last)}`;
