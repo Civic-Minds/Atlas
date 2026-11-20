@@ -3,7 +3,7 @@ import { DAYTIME_PERIOD_KEYS } from '../../../shared/rules/periods';
 import DataTable from '../../components/ui/DataTable';
 import { routeLabels } from '../../utils/format';
 import { PERIOD_KEYS, PERIOD_LABELS, type PeriodKey } from '../../../shared/config';
-import { headwayAmount, headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
+import { headwayAmount, headwayEvery, headwayEveryRange, periodShapeParts } from '../../../shared/headwayText';
 import { clockTime } from '../../../shared/timeText';
 import { countText } from '../../../shared/numberText';
 import { MISSING_VALUE } from '../../../shared/missingValue';
@@ -48,6 +48,17 @@ export function pairFigures(b: StudioRouteDay | null, a: StudioRouteDay | null, 
   if (!b?.edge?.[k] && !a?.edge?.[k]) return { before: periodFigure(b, k), after: periodFigure(a, k) };
   const side = (d: StudioRouteDay | null) => (!d ? MISSING_VALUE : d.edge?.[k] ? periodFigure(d, k) : d.headway[k] != null ? headwayEvery(d.headway[k]) : MISSING_VALUE);
   return { before: side(b), after: side(a) };
+}
+/**
+ * A time of day's figure for a list cell (CIV-1922, Ryan: "This also looks bad"): the frequency in one short format on
+ * every row ("15 min"), and where the period starts late or ends early, that time on its own line ("from 2:28 PM"), so a
+ * narrow column never wraps a sentence and short and long figures never mix.
+ */
+export function periodCell(d: StudioRouteDay | null, k: PeriodKey): { main: string; note: string | null } {
+  if (!d) return { main: MISSING_VALUE, note: null };
+  const edge = d.edge?.[k];
+  if (!edge) return { main: headwayAmount(d.headway[k]), note: null };
+  return { main: headwayAmount(edge.every), note: periodShapeParts(periodEdgeText(edge)).note };
 }
 const clockOrMissing = (m: number | null | undefined) => (m == null ? MISSING_VALUE : clockTime(m));
 

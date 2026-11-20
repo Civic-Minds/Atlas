@@ -20,7 +20,7 @@ import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
 import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesTitleText } from '../../../shared/studioWording';
-import { StudioRouteTable, routeTitle } from './StudioRouteTable';
+import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
 import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
@@ -40,7 +40,7 @@ const C = STUDIO_CHANGES_TEXT;
 
 /** The list's columns: change dot, the route (number and name), then the older and newer dates' figures, each under its
  * date. The main map's card width: the number and name share one column so the name keeps room to read. */
-const ROW_GRID = 'grid grid-cols-[0.5rem_minmax(0,1fr)_4.25rem_4.25rem] items-center gap-x-2';
+const ROW_GRID = 'grid grid-cols-[0.5rem_minmax(0,1fr)_5.25rem_5.25rem] items-center gap-x-2';
 
 /** The change list: every changed route by group; a click opens the route. Only the rows scroll. */
 function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; route: string | null; onPick: (r: string) => void }) {
@@ -71,9 +71,17 @@ function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFi
                         <span className="font-bold">{l.primary}</span>{l.secondary && <span className="text-[var(--text-secondary)]"> {l.secondary}</span>}
                         {f.label && <span className="block text-xs text-[var(--text-muted)]">{f.label}</span>}
                       </span>
-                      <span className="text-right">{f.before}</span>
-                      {/* No bold on the newer figure (Ryan, CIV-1806: "Does bold mean better frequency?"). */}
-                      <span className="text-right">{f.after}</span>
+                      {/* One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
+                          figure (Ryan, CIV-1806: "Does bold mean better frequency?"). */}
+                      {(['before', 'after'] as const).map(side => {
+                        const cell = (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null };
+                        return (
+                          <span key={side} className="text-right">
+                            <span className="block whitespace-nowrap">{cell.main}</span>
+                            {cell.note && <span className="block whitespace-nowrap text-xs text-[var(--text-muted)]">{cell.note}</span>}
+                          </span>
+                        );
+                      })}
                     </button>
                   </li>
                 );

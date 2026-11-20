@@ -29,11 +29,12 @@ export const STUDIO_MAP_TEXT = {
 export const STUDIO_CHANGES_TEXT = {
   intro: (agency: string, day: string, before: string, after: string) => `How the ${agency} ${day} schedule changed between ${before} and ${after}.`,
   leftOut: (days: string, newer: boolean) => `${days} aren’t compared: the ${newer ? 'newer' : 'older'} schedule file’s calendar leaves out many of their trips.`,
-  frequencyTitle: 'Frequency or Trips Changed',
-  hoursTitle: 'First or Last Trip or Trip Time Changed',
-  addedTitle: (n: number) => plural(n, 'Route Added', 'Routes Added'),
-  removedTitle: (n: number) => plural(n, 'Route Removed', 'Routes Removed'),
-  smallTitle: 'Small Changes',
+  // The change list's group labels are map panel labels, so sentence case (docs/style/VISUAL.md Case; CIV-1922).
+  frequencyTitle: 'Frequency or trips changed',
+  hoursTitle: 'First or last trip or trip time changed',
+  addedTitle: (n: number) => plural(n, 'Route added', 'Routes added'),
+  removedTitle: (n: number) => plural(n, 'Route removed', 'Routes removed'),
+  smallTitle: 'Small changes',
   smallIntro: 'Frequency or trip time moved by less than 5 min, first or last trip by less than 15 min, or trips by 1 or 2.',
   // Ryan (CIV-1806): "25 other routes didn't change", the agency's own count.
   unchangedCount: (n: number) => `${n} other ${plural(n, 'route')} didn’t change`,

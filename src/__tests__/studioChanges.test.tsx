@@ -1,6 +1,6 @@
 import { render, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { changeSize, periodChange, studioBeforeAfterFile, type StudioComparisonInput } from '../../shared/studioBeforeAfter';
+import { changeSize, periodChange, studioBeforeAfterFile, type StudioComparisonInput, type StudioRouteDay } from '../../shared/studioBeforeAfter';
 
 const flags = vi.hoisted(() => ({ studio: true }));
 vi.mock('../../shared/config', async (importOriginal) => {
@@ -8,7 +8,7 @@ vi.mock('../../shared/config', async (importOriginal) => {
   return { ...actual, FEATURES: new Proxy(actual.FEATURES, { get: (t, k) => (k === 'studio' ? flags.studio : (t as Record<string | symbol, unknown>)[k]) }) };
 });
 
-const { StudioRouteTable, periodFigure, pairFigures, smallChangeParts } = await import('../apps/studio/StudioRouteTable');
+const { StudioRouteTable, periodCell, periodFigure, pairFigures, smallChangeParts } = await import('../apps/studio/StudioRouteTable');
 const { STUDIO_CHANGES_TEXT } = await import('../../shared/studioWording');
 const { agencyFleet, changeGroups, routeChangeAt, rowFigure, studioMapLines, CHANGE_COLOR } = await import('../apps/studio/fleetModel');
 
@@ -118,10 +118,10 @@ describe('Studio map page (CIV-1731)', () => {
   it('groups the changes as the page did: frequency or trips, first or last trip, removed, small', () => {
     expect(changeGroups(FILE).map(g => [g.title, g.routes.map(c => c.route)])).toEqual([
       // CIV-1814 item 38: by the biggest move in grades, a start (12's AM peak) above 10's one-grade moves.
-      ['Frequency or Trips Changed', ['12', '10']],
-      ['First or Last Trip or Trip Time Changed', ['2']],
-      ['Route Removed', ['7B']],
-      ['Small Changes', ['1']],
+      ['Frequency or trips changed', ['12', '10']],
+      ['First or last trip or trip time changed', ['2']],
+      ['Route removed', ['7B']],
+      ['Small changes', ['1']],
     ]);
   });
 
@@ -139,16 +139,23 @@ describe('Studio map page (CIV-1731)', () => {
 
   it('shows the figure that changed, older and newer in their own columns (CIV-1806)', () => {
     // The time of day's frequency where it changed, or where the route was removed: no name, the date columns say it.
-    expect(rowFigure(change('10'), 'midday')).toEqual({ label: null, before: '60 min', after: '30 min' });
-    expect(rowFigure(change('7B'), 'evening')).toEqual({ label: null, before: '96 min', after: '—' });
+    expect(rowFigure(change('10'), 'midday')).toEqual({ key: 'midday', label: null, before: '60 min', after: '30 min' });
+    expect(rowFigure(change('7B'), 'evening')).toEqual({ key: 'evening', label: null, before: '96 min', after: '—' });
     // A removed route with no figure at this time of day shows the time of day it ran, named.
-    expect(rowFigure(change('7B'), 'midday')).toEqual({ label: 'Evening', before: '96 min', after: '—' });
+    expect(rowFigure(change('7B'), 'midday')).toEqual({ key: 'evening', label: 'Evening', before: '96 min', after: '—' });
     // Unchanged at this time of day: the figure that did change, named, never the unchanged one.
-    expect(rowFigure(change('10'), 'amPeak')).toEqual({ label: 'Midday', before: '60 min', after: '30 min' });
+    expect(rowFigure(change('10'), 'amPeak')).toEqual({ key: 'midday', label: 'Midday', before: '60 min', after: '30 min' });
     // A first or last trip or trip time row shows that figure, not the frequency.
     const hours = rowFigure(change('2'), 'midday');
     expect(hours.label).toMatch(/^(First trip|Last trip|Trip time)$/);
     expect(hours.before).not.toBe(hours.after);
+  });
+
+  it('writes a list cell in one short format, a late start or early end on its own line (CIV-1922)', () => {
+    const day = { headway: { midday: 15, pmPeak: 10 }, trips: 40, first: 360, last: 1300, runMinutes: [20], edge: { pmPeak: { every: 10, until: 19 * 60 + 32 } } } as unknown as StudioRouteDay;
+    expect(periodCell(day, 'midday')).toEqual({ main: '15 min', note: null });
+    expect(periodCell(day, 'pmPeak')).toEqual({ main: '10 min', note: 'until 7:32 PM' });
+    expect(periodCell(null, 'midday')).toEqual({ main: '—', note: null });
   });
 
   it('draws newer shapes, a removed route\'s older one dashed, and the picked route\'s older shape under it', () => {

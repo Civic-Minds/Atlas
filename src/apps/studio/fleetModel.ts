@@ -72,7 +72,8 @@ export function studioMapLines(file: StudioBeforeAfterFile, period: PeriodKey, p
 }
 
 /** What a list row shows (CIV-1806): one figure, older and newer, and its name when it isn't the time of day's frequency. */
-export interface RowFigure { label: string | null; before: string; after: string }
+/** `key`: the route table row the figure comes from (a time of day, trips, first or last trip, trip time). */
+export interface RowFigure { key: string; label: string | null; before: string; after: string }
 
 /** The figures each group's rows choose from: a frequency or trips change, its frequencies and trips; a first or last
  * trip or trip time change, those; a small change, any. */
@@ -103,17 +104,17 @@ export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
   const here = pairFigures(c.before, c.after, period);
   if (!c.before || !c.after) {
     // Added or removed: this time of day's figure, or where it has none, the first time of day the route ran.
-    if (here.before !== here.after) return { label: null, ...here };
+    if (here.before !== here.after) return { key: period, label: null, ...here };
     const ran = routeFigureRows(c).find(r => (PERIOD_KEYS as readonly string[]).includes(r.key) && r.before !== r.after);
-    return ran ? { label: ran.label, before: ran.before, after: ran.after } : { label: null, ...here };
+    return ran ? { key: ran.key, label: ran.label, before: ran.before, after: ran.after } : { key: period, label: null, ...here };
   }
-  if (movedSteps(c, period) >= 1) return { label: null, ...here };
+  if (movedSteps(c, period) >= 1) return { key: period, label: null, ...here };
   const keys = GROUP_KEYS[changeSize(c.before, c.after)];
   const changed = routeFigureRows(c).filter(r => r.before !== r.after && (!keys || keys.includes(r.key)));
   // A frequency that changed grade comes before trips (the group leads with frequency); otherwise the biggest move.
   const tier = (key: string) => ((PERIOD_KEYS as readonly string[]).includes(key) && movedSteps(c, key) >= 1 ? 1 : 0);
   const pick = changed.reduce<(typeof changed)[number] | null>((best, r) => (!best || tier(r.key) > tier(best.key) || (tier(r.key) === tier(best.key) && movedSteps(c, r.key) > movedSteps(c, best.key)) ? r : best), null);
-  return pick ? { label: pick.key === period ? null : pick.label, before: pick.before, after: pick.after } : { label: null, ...here };
+  return pick ? { key: pick.key, label: pick.key === period ? null : pick.label, before: pick.before, after: pick.after } : { key: period, label: null, ...here };
 }
 
 /** The group of routes that share buses with this route, at the time of day. */
