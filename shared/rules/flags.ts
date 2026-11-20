@@ -9,7 +9,7 @@ import { RESEARCH_PATH, STUDIO_CHANGES_PATH, STUDIO_COVERAGE_PATH, STUDIO_PATH, 
 // Live and History cover a tiny sliver of agencies with no scaling plan yet (Ryan, 2026-07-29) --
 // off by default until that's resolved. Env-driven rather than a hardcoded constant so production
 // and beta can build the same main commit with different feature exposure.
-function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED'): boolean {
+function envFlag(name: 'VITE_LIVE_ENABLED' | 'VITE_LIVE_REPORTS_ENABLED' | 'VITE_HISTORY_ENABLED' | 'VITE_BETA_BUILD' | 'VITE_PREVIEW_BUILD' | 'VITE_CARD_CLICK_TO_FLAG_ENABLED' | 'VITE_UNEVEN_BANNER_ENABLED' | 'VITE_HISTORY_DAY_PICKER_ENABLED' | 'VITE_BRANCH_READINGS_ENABLED'): boolean {
   return typeof import.meta !== 'undefined' && import.meta?.env?.[name] === 'true';
 }
 
@@ -29,6 +29,10 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
+// CIV-1959 B3 (#1620): the cards show each branch's own reading beside the trunk's, and "Limited trips" for a branch with too few
+// trips to read. Off everywhere until Ryan approves the wording (docs/FEATURE_FLAGS.md); reads only data the pipeline switch
+// ATLAS_BRANCH_READINGS=1 wrote, so it does nothing on any published file today.
+export const BRANCH_READINGS_ENABLED = envFlag('VITE_BRANCH_READINGS_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';
 
 function getAtlasMode(): AtlasMode {
@@ -174,6 +178,7 @@ export const FEATURES = {
   connectionsBar: CONNECTIONS_BAR_ENABLED,
   agencyHoursBar: AGENCY_HOURS_BAR_ENABLED,
   studio: STUDIO_ENABLED,
+  branchReadings: BRANCH_READINGS_ENABLED,
 } as const;
 
 /** The flags the SEO title and description depend on, read the same way by the client hook and the prerender. */
@@ -225,5 +230,15 @@ export function headlineFromTrunkEnabled(envValue: string | undefined): boolean 
  * rebuild-release) the published output is byte-identical to what it was before the switch existed.
  */
 export function pieceReadingEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}
+
+/**
+ * CIV-1959 B3 (#1620, #1086): the pipeline switch for "each branch gets its own reading on the cards, and a piece with too few
+ * trips is limited": ATLAS_BRANCH_READINGS=1, exactly (pipeline/pieces.ts reads the env). It publishes one new field
+ * (pieceReadings) and changes nothing else. Unset (every normal build, the weekly refresh and rebuild-release) the published
+ * output is byte-identical to what it was before the switch existed. The client switch is BRANCH_READINGS_ENABLED.
+ */
+export function branchReadingsEnabled(envValue: string | undefined): boolean {
   return envValue === '1';
 }

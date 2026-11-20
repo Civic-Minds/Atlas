@@ -14,10 +14,11 @@
  * but only on the aligned run for the long pattern, so a piece keeps pools per owning pattern,
  * never one symmetric member list. Later commits build the reading rule on these pieces.
  */
-import { headlineFromTrunkEnabled, pieceReadingEnabled } from '../shared/rules/flags.js';
+import { branchReadingsEnabled, headlineFromTrunkEnabled, pieceReadingEnabled } from '../shared/rules/flags.js';
+import type { PieceReadingEntry, PieceReadings, PieceTreatment } from '../shared/pieceReadings.js';
 import { PERIOD_MINUTES, type PeriodKey } from '../shared/rules/periods.js';
 import { PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
-import { departuresInWindow, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
+import { departuresInWindow, HEADLINE_MIN_DEPARTURES, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { collapseBunched, computeStopSharers, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, POOLED_MAX_GAP_TYPICAL_RATIO, type StopSharers } from './stopPools.js';
 import type { DirectionStretches, Stretch } from './tripSets.js';
@@ -283,4 +284,99 @@ export function pieceReadingOverlay(
     (out[c.stop] ??= {})[c.period] = c.pieceValue;
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// CIV-1959 B3: what each piece of a direction shows in each period (behind ATLAS_BRANCH_READINGS=1, off by default).
+//
+// Rule D (the #1086 branch-definition investigation, comment 7022580375), read on today's trunk and branches (B4 changes the
+// boundaries): a piece reads in a period when its own trips are at least HEADLINE_MIN_DEPARTURES, evenly spaced, and cover at
+// least half the period. The order of the treatments, first match wins:
+//   1. no trips in the period                          -> no entry
+//   2. under 3 trips, or not evenly spaced             -> limited trips (no number, never sets a headline)
+//   3. covers under half the period                    -> limited trips
+//   4. 3+ even trips, covers half or more, but one edge wait is long (it stops or starts inside the period) -> tail:
+//      "every N until HH:MM" with its full-window wait as the value (RTD 15 Saturday midday: every 30 until 12:16, wait 164)
+//   5. everything passes                               -> reading (trunk or branch)
+// "Covers" counts the period from its start (or to its end) when the wait to the first (or from the last) trip is within the
+// evenness allowance, so a run that begins a little after the period starts still covers it from the start.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** True when this process was started with ATLAS_BRANCH_READINGS=1 (CIV-1959 B3). Off by default. */
+export function branchReadingsFromEnv(): boolean {
+  return branchReadingsEnabled(process.env.ATLAS_BRANCH_READINGS);
+}
+
+/** Rule D's coverage floor: the share of the period a piece's trips must cover. Not yet approved by Ryan (needs his word-for-word OK before the flag goes on). */
+export const PIECE_MIN_PERIOD_COVER = 0.5;
+
+/**
+ * One piece's treatment in one period window, from its departures at its reference stop (GTFS minutes). Null when it has no trip
+ * in the window. `readingValue` is the value a full reading publishes (the stretch's own filter value, so the trunk row and the
+ * headline are one calculation); without it the piece's typical spacing is used.
+ */
+export function classifyPiecePeriod(times: readonly number[], start: number, end: number, readingValue?: number | null): PieceTreatment | null {
+  const t = departuresInWindow(times, start, end, false);
+  if (t.length === 0) return null;
+  if (t.length < HEADLINE_MIN_DEPARTURES) return { t: 'limited' };
+  const typical = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
+  if (typical == null || typical <= 0) return { t: 'limited' };
+  const gaps = gapsOf(t);
+  const mean = (t[t.length - 1] - t[0]) / (t.length - 1);
+  const inner = Math.max(...gaps);
+  // Evenly spaced: the existing 1.75 x mean with the 5-minute grace (the pooled test's first clause; its 1.6 x value clause is a
+  // second test on a reading and does not apply to a piece with no value yet).
+  if (inner > Math.max(POOLED_MAX_GAP_RATIO * mean, Math.round(mean) + POOLED_MAX_GAP_GRACE_MINUTES)) return { t: 'limited' };
+  const every = Math.max(typical, Math.round(mean));
+  const allowance = Math.max(POOLED_MAX_GAP_RATIO * every, every + POOLED_MAX_GAP_GRACE_MINUTES);
+  const lead = t[0] - start;
+  const trail = end - t[t.length - 1];
+  const leadOk = lead <= allowance;
+  const trailOk = trail <= allowance;
+  const covered = ((trailOk ? end : t[t.length - 1]) - (leadOk ? start : t[0])) / (end - start);
+  if (covered < PIECE_MIN_PERIOD_COVER) return { t: 'limited' };
+  if (leadOk && trailOk) return { t: 'reading', v: readingValue ?? every };
+  return {
+    t: 'tail',
+    v: Math.ceil(Math.max(lead, inner, trail)),
+    every,
+    ...(leadOk ? {} : { from: t[0] }),
+    ...(trailOk ? {} : { until: t[t.length - 1] }),
+  };
+}
+
+/**
+ * A direction's pieces and their treatment in every read period (PIECE_READING_PERIODS; overnight keeps the night verdict).
+ * `stretchValue` gives a stretch's own filter value in a period, so a full reading is the number the card already reads.
+ * Only pieces with at least one period entry are kept; null when none has, so a direction with nothing to say gets no field.
+ */
+export function directionPieceReadings(
+  d: Pick<DirectionStretches, 'main' | 'tails'>,
+  stretchValue: (stretch: Stretch, period: PeriodKey) => number | null,
+): PieceReadings | null {
+  const entry = (kind: 'trunk' | 'branch', index: number, s: Stretch): PieceReadingEntry => {
+    const periods: PieceReadingEntry['periods'] = {};
+    for (const key of PIECE_READING_PERIODS) {
+      const { start, end } = PERIOD_MINUTES[key];
+      const treatment = classifyPiecePeriod(s.times, start, end, stretchValue(s, key));
+      if (treatment) periods[key] = treatment;
+    }
+    return { kind, index, stopCount: s.stops.length, refStop: s.refStop, periods };
+  };
+  const pieces = [
+    ...(d.main ? [entry('trunk', 0, d.main)] : []),
+    ...d.tails.map((t, i) => entry('branch', i, t)),
+  ];
+  return pieces.some(p => Object.keys(p.periods).length > 0) ? { pieces } : null;
+}
+
+/** The readings with each piece's stop list kept only where `own` says this feature stands for the piece (the file carries each list once per feature of its slot). */
+export function pieceReadingsForFeature(readings: PieceReadings, d: Pick<DirectionStretches, 'main' | 'tails'>, role: 'main' | 'tail' | 'variant' | undefined, index: number | undefined): PieceReadings {
+  return {
+    pieces: readings.pieces.map(p => {
+      const own = p.kind === 'trunk' ? role === 'main' : role === 'tail' && index === p.index;
+      const stops = p.kind === 'trunk' ? d.main?.stops : d.tails[p.index]?.stops;
+      return own && stops ? { ...p, stops: [...stops] } : p;
+    }),
+  };
 }

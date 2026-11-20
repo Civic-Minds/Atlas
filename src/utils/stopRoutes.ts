@@ -2,6 +2,8 @@ import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { branchDisplayPeriodHeadway, buildRouteFacts, buildRouteStopMetric, metricValueForPeriod, type HeadwayMetric, type RouteLabel } from './routeFacts';
 import { buildSharedStopIndex } from '../../shared/sharedStops';
 import { partPeriodText, periodEdgeText } from './effectiveHeadway';
+import { stopBranchReading } from './branchReadings';
+import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
 import { routeCardSharedStretchEdge } from './routeCardRows';
 import { hasRegularServiceInPeriod } from './stretchCard';
 import { agencyNames } from './agencyName';
@@ -96,7 +98,7 @@ export function stopRouteBestHeadway(branches: readonly StopBranch[], period: Ti
 }
 
 /** Every route that serves the stop (or its siblings) in the day and period, with one branch per direction and destination. */
-export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePeriodBitsByAgency, layers, day, period }: {
+export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePeriodBitsByAgency, layers, day, period, branchReadings = BRANCH_READINGS_ENABLED }: {
   siblingIdsByAgency: Record<string, Set<string>>;
   routesByAgency: Record<string, Set<string>>;
   /** CIV-1052: each route's routePeriodBits at the stop and its siblings (undefined where a stop has no field). */
@@ -104,8 +106,10 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   layers: Record<string, GeoJSON.FeatureCollection>;
   day: string;
   period: TimePeriod;
+  /** CIV-1959 B3: a stop on a branch shows its piece's reading, tail words or limited trips (off until Ryan approves the wording). */
+  branchReadings?: boolean;
 }): StopRoute[] {
-  type Branch = { rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
+  type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
@@ -194,6 +198,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           rowHeadway: branchDisplayPeriodHeadway(p, period),
           directionId: dirId,
           ...(periodText ? { periodText } : {}),
+          stopId: matchingStopId,
           dirKey,
           patterns,
         });
@@ -212,6 +217,17 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       }
       const edge = sharedEdgeByKey.get(b.dirKey);
       if (edge) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
+    }
+  }
+  // CIV-1959 B3 (BRANCH_READINGS_ENABLED): a stop on a branch shows its own piece, never the trunk's figure.
+  if (branchReadings && period !== 'all') {
+    for (const entry of routeMap.values()) {
+      for (const b of entry.branches.values()) {
+        const reading = b.stopId ? stopBranchReading(directionFeaturesByKey.get(b.dirKey), b.stopId, period) : null;
+        if (!reading) continue;
+        if (reading.periodText != null) { b.periodText = reading.periodText; b.rowHeadway = null; }
+        else if (reading.rowHeadway != null) b.rowHeadway = reading.rowHeadway;
+      }
     }
   }
   // Two patterns to one destination (TTC 29's two northbound trips to Wilson, from either loop) are one row, and

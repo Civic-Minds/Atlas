@@ -46,7 +46,7 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
-import { PIECE_PARAMS, headlineTrunk, trunkLongEnough } from './pieces.js';
+import { PIECE_PARAMS, branchReadingsFromEnv, directionPieceReadings, headlineTrunk, pieceReadingsForFeature, trunkLongEnough } from './pieces.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
@@ -1799,6 +1799,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchRole',
   'stretchIndex',
   'stretchCovers',
+  'pieceReadings',
   'headwayByPeriodSustainedMid',
 ] as const;
 
@@ -1855,6 +1856,14 @@ export function stampStretchShadow(
   };
   const byPeriod = <T>(pick: (key: PeriodKey) => T) =>
     Object.fromEntries(PERIOD_WINDOWS.map(({ key }) => [key, pick(key)])) as Record<PeriodKey, T>;
+  const branchReadings = branchReadingsFromEnv();
+  const pieceReadingsByKey = new Map<string, ReturnType<typeof directionPieceReadings>>();
+  const periodsByStretch = new Map<Stretch, Record<PeriodKey, StretchPeriod>>();
+  const stretchPeriodsOf = (st: Stretch) => {
+    let v = periodsByStretch.get(st);
+    if (!v) { v = stretchPeriods(st); periodsByStretch.set(st, v); }
+    return v;
+  };
   for (const feature of features) {
     const slot = slotOf(feature);
     if (!slot) continue;
@@ -1953,6 +1962,13 @@ export function stampStretchShadow(
       else delete p.stretchCovers;
     }
     p.stretchMeta = featureStretchMeta(stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined, rowsOf);
+    // CIV-1959 B3 (ATLAS_BRANCH_READINGS=1, off by default): the direction's pieces and what each shows per period. A new field
+    // only; nothing above or below changes with it set.
+    if (branchReadings) {
+      if (!pieceReadingsByKey.has(key)) pieceReadingsByKey.set(key, directionPieceReadings(stretches, (st, k) => stretchFilterValue(stretchPeriodsOf(st)[k])));
+      const readings = pieceReadingsByKey.get(key);
+      if (readings) p.pieceReadings = pieceReadingsForFeature(readings, stretches, p.stretchRole as 'main' | 'tail' | 'variant' | undefined, p.stretchIndex as number | undefined);
+    }
     // CIV-995 (b): the periods in which every one of the row's own trips is counted at its stretch's reference stop, from
     // the trip ids (not counts). Only there may the card read the stretch's values for the row; elsewhere, its own trips.
     const ownSlot = p.stretchRole === 'main' ? stretches.main : p.stretchRole === 'tail' ? stretches.tails[p.stretchIndex as number] : null;
