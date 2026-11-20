@@ -217,3 +217,13 @@ export function historyV2Enabled(envValue: string | undefined): boolean {
 export function headlineFromTrunkEnabled(envValue: string | undefined): boolean {
   return envValue === '1';
 }
+
+/**
+ * CIV-1959 B2 (#1620, #1086): the pipeline switch for "one reading per piece, with Arm A": ATLAS_PIECE_READING=1, exactly
+ * (pipeline/pieces.ts reads the env). It publishes the piece reading as a parallel field (piecePeriodHeadways) for the map's
+ * stretch colour and never changes a stop's own published value. Unset (every normal build, the weekly refresh and
+ * rebuild-release) the published output is byte-identical to what it was before the switch existed.
+ */
+export function pieceReadingEnabled(envValue: string | undefined): boolean {
+  return envValue === '1';
+}

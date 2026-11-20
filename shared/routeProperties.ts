@@ -78,6 +78,12 @@ export interface RouteProperties {
   /** #879: drawn stops with no boardable stop time (pickup_type 1 on every visit); never graded, coloured from their neighbours. */
   dropOffOnlyStops?: string[];
   stopPeriodHeadways?: Record<string, HeadwayByPeriod>;
+  /**
+   * CIV-1959 B2 (pipeline ATLAS_PIECE_READING=1, agency JSON only): per stop and period, the reading of the piece the stop
+   * belongs to, only where the stop takes the piece's reading and its own value in stopPeriodHeadways differs. The map's
+   * stretch colour reads this first; the stop card and stopPeriodHeadways keep the stop's own value.
+   */
+  piecePeriodHeadways?: Record<string, HeadwayByPeriod>;
   stopOrder?: string[];
   stopPositions?: number[];
   /**
