@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { remapKeysByPeriod, type HistoryPeriodRemaps } from '../historyRouteConfig.js';
+import { remapKeysByPeriod, seedSidecarOnlyKeys, type HistoryPeriodRemaps } from '../historyRouteConfig.js';
 
 // CIV-437: LA Metro rail keys are route_ids. 806 is Expo until 2022; 804 is Gold until 2022, then the E Line.
 describe('History period-scoped key remaps (CIV-437)', () => {
@@ -36,5 +36,46 @@ describe('History period-scoped key remaps (CIV-437)', () => {
     const r = remapKeysByPeriod({ '804': [item('20221231', 'x'), item('20230101', 'y')] }, remaps.lacmta, i => i.periodKey).routes;
     expect(r['L Gold'].map(i => i.line)).toEqual(['x']);
     expect(r['804'].map(i => i.line)).toEqual(['y']);
+  });
+});
+
+// CIV-437 follow-up: build-history lists only keys in its archive map; a key the remap creates only in the sidecars
+// (L Gold) must be added there, the way build-history's remap block does it.
+describe('build-history keeps a key the remap creates only in the sidecars (CIV-437)', () => {
+  const remaps = JSON.parse(readFileSync('config/history-period-remaps.json', 'utf8')) as HistoryPeriodRemaps;
+  type E = { periodKey: string };
+  const e = (periodKey: string): E => ({ periodKey });
+  /** build-history's order: seed sidecar-only keys, remap both maps, then seed the remap's new sidecar keys. */
+  function build(slug: string, archiveIn: Record<string, E[]>, sidecarIn: Record<string, E[]>) {
+    const archive: Record<string, E[]> = { ...archiveIn };
+    for (const k of Object.keys(sidecarIn)) archive[k] ??= [];
+    const rules = remaps[slug];
+    if (!rules) return archive;
+    const a = remapKeysByPeriod(archive, rules, x => x.periodKey).routes;
+    seedSidecarOnlyKeys(a, remapKeysByPeriod(sidecarIn, rules, x => x.periodKey).routes);
+    return a;
+  }
+  const years = (from: number, to: number, mmdd: string) => Array.from({ length: to - from + 1 }, (_, i) => e(`${from + i}${mmdd}`));
+
+  it('LA Metro: L Gold (2016-2022) is listed, beside 804 and the other rail lines', () => {
+    const sidecar = { '801': years(2016, 2025, '0907'), '804': years(2016, 2025, '0907'), '806': years(2016, 2022, '0907'), '807': years(2023, 2025, '0907') };
+    const out = build('lacmta', { '2': [e('20190615')] }, sidecar);
+    // 806 stays listed with no entries in either map (all its periods moved to 804), so the build skips it.
+    expect(Object.keys(out).sort()).toEqual(['2', '801', '804', '806', '807', 'L Gold']);
+    expect(out['806']).toEqual([]);
+    expect(out['L Gold']).toEqual([]); // the entries are the sidecar's; the archive map only lists the key
+    expect(out['2']).toEqual([e('20190615')]);
+  });
+
+  it('only LA Metro has remap rules, so no other agency can gain a key', () => {
+    expect(Object.keys(remaps)).toEqual(['lacmta']);
+    const sidecar = { '10': [e('20200101')], '11': [e('20210101')] };
+    expect(Object.keys(build('ttc', { '10': [e('20190101')] }, sidecar)).sort()).toEqual(['10', '11']);
+  });
+
+  it('adds nothing when every sidecar key is already listed', () => {
+    const archive: Record<string, E[]> = { a: [], b: [e('20200101')] };
+    expect(seedSidecarOnlyKeys(archive, { a: [e('20200101')], b: [] })).toEqual([]);
+    expect(archive).toEqual({ a: [], b: [e('20200101')] });
   });
 });
