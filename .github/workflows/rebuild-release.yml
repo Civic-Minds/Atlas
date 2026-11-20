@@ -62,6 +62,11 @@ on:
         description: 'Dry run only (#1523). Pin the run date every date read uses, as an ISO UTC time (e.g. 2026-11-15T04:00:00Z), so a base and fix pair read the same service day. Give both runs of a pair the same value (or the base run''s runAt from its build-settings.json). Empty: now, recorded in build-settings.json.'
         required: false
         type: string
+      flags:
+        description: 'DRY RUN ONLY (the publish job never reads it). Space-separated feature flags to turn on for a dry run (allowlist: ATLAS_HEADLINE_FROM_TRUNK ATLAS_PIECE_READING ATLAS_BRANCH_READINGS ATLAS_PIECES_BY_TRIPS)'
+        required: false
+        default: ''
+        type: string
       resume_run_id:
         description: 'Publish only. The run id of the earlier run to resume (its saved stamps and release manifest are downloaded, and its staged agency files under atlas/runs/<id>/ are used). Required for every start_at after reprocess.'
         required: false
@@ -102,7 +107,26 @@ jobs:
       AGENCIES_INPUT: ${{ inputs.agencies }}
       RUN_AT_INPUT: ${{ inputs.run_at }}
       NODE_OPTIONS: --max-old-space-size=8192
+    # GUARD: the dry run turns the CIV-1959 switches on only through the `flags` input (step below),
+    # never through vars.ATLAS_*; the publish job reads vars.ATLAS_* and never the `flags` input.
+    # Keep it that way, or a dry run and a publish stop matching what was reviewed.
     steps:
+      - name: Dry-run feature flags (allowlist, empty = none)
+        env:
+          FLAGS_INPUT: ${{ inputs.flags }}
+        run: |
+          allowed=" ATLAS_HEADLINE_FROM_TRUNK ATLAS_PIECE_READING ATLAS_BRANCH_READINGS ATLAS_PIECES_BY_TRIPS "
+          for flag in $FLAGS_INPUT; do
+            case "$allowed" in
+              *" $flag "*) ;;
+              *) echo "Unknown flag: $flag. Allowed:$allowed"; exit 1 ;;
+            esac
+          done
+          for flag in $FLAGS_INPUT; do
+            echo "$flag=1" >> "$GITHUB_ENV"
+            echo "Flag on for this dry run: $flag"
+          done
+
       - name: Check the inputs and the read-only keys
         env:
           RO_KEY: ${{ secrets.R2_RO_ACCESS_KEY_ID }}
