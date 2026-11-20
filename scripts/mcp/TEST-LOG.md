@@ -33,6 +33,7 @@ Atlas Studio MCP has its own version, separate from the Atlas app's, shown to cl
 | 0.13.2 | 2026-11-19 | CIV-1910 round fixes: route_now for the MBTA (#1612); buses_needed finds Studio's built files, matches "1" to "01", drops the build command and names its summed times as sums (#1613, #1616-#1618); routes_near finds corners where no stop is named for both streets (#1614); route_history judges doubtful old figures against today's schedule (#1619) |
 | 0.14.0 | 2026-11-19 | Schedule tools take "now" (#1627): the agency's local time, day type and part of the day, stated in the answer. Also route lookup names other routes of the same name (#1623), list_agencies include_parts (#1625), stale comparison note (#1624) |
 | 0.15.0 | 2026-11-20 | "What changed" and bus counts for YRT, HSR, TransLink, MBTA and OC Transpo (CIV-1969); buses_needed finds routes by name (#1632); schedule_changes gives trips beside grades (#1633) |
+| 0.15.1 | 2026-11-20 | buses_needed on the hosted server: Studio's file rides the split release (CIV-1977, #1634) |
 
 ## Questions
 
