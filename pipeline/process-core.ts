@@ -62,7 +62,8 @@ import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEA
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
 import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
-import { buildPooledStopMap, computeStopSharers, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
+import { patternPools } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
@@ -2208,7 +2209,7 @@ export async function processGtfsBuffer(
   const stopSharersByPool = new Map<string, ReadonlyMap<string, StopSharers>>();
   const stopSharersFor = (poolKey: string): ReadonlyMap<string, StopSharers> => {
     let hit = stopSharersByPool.get(poolKey);
-    if (!hit) { hit = computeStopSharers(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
+    if (!hit) { hit = patternPools(sharedPatternsOf(poolKey), stopsById, childToParent); stopSharersByPool.set(poolKey, hit); }
     return hit;
   };
   // CIV-850: each rush-hour-only bus pattern's stop sequence (its longest trip on the day, as

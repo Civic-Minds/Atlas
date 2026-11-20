@@ -3,7 +3,7 @@
  *
  * One answer to "which trips speak for a route direction": the direction's main stretch (the stops
  * every regular pattern serves) and its tails (a regular pattern's own run of at least
- * SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM off the main stretch). Every other
+ * PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm off the main stretch). Every other
  * pattern is a variant: it forms no stretch, and its trips count wherever they serve. A stretch is
  * measured at its middle stop (decision D2) with every trip that serves it, at that trip's own
  * time there.
@@ -46,7 +46,7 @@ import {
   HEADLINE_MIN_DEPARTURES,
   nightServiceDepartureTimes,
 } from './headway-utils.js';
-import { SHARED_STRETCH_MIN_KM, SHARED_STRETCH_MIN_STOPS } from './sharedStretch.js';
+import { PIECE_PARAMS, trunkLongEnough } from './pieces.js';
 import { SAME_TERMINAL_METERS } from './featureDedupe.js';
 import { boardingMainStretchWait, riderWait } from './routeGrading.js';
 import { EARTH_RADIUS_KM } from '../shared/rules/limits.js';
@@ -304,8 +304,8 @@ export function directionStretches(
   // (MBTA Providence, PM: the shared trunk every 25 while Providence trains run every 66). Here a
   // pattern that is not regular takes in the trips that serve a subset of its stops, in order,
   // between the same two end stops, when together they run steadily by day, and only when the
-  // pattern reaches a branch: a run of stops long enough to be a tail (SHARED_STRETCH_MIN_STOPS and
-  // _KM) that no regular pattern serves. Off by default: process-core asks for it only for the
+  // pattern reaches a branch: a run of stops long enough to be a tail (PIECE_PARAMS.minStops and
+  // minKm) that no regular pattern serves. Off by default: process-core asks for it only for the
   // route-direction-days in an agency's branchReadCorrections, and uses the result only for the
   // periods named there.
   if (steadyByDay && poolBranchSkippers) {
@@ -314,7 +314,7 @@ export function directionStretches(
       let run: string[] = [];
       for (const stop of [...p.stops, null]) {
         if (stop != null && !regularStops.has(stop)) { run.push(stop); continue; }
-        if (run.length >= SHARED_STRETCH_MIN_STOPS && (runKm(run, stopCoord) ?? 0) >= SHARED_STRETCH_MIN_KM) return true;
+        if (run.length >= PIECE_PARAMS.minStops && (runKm(run, stopCoord) ?? 0) >= PIECE_PARAMS.minKm) return true;
         run = [];
       }
       return false;
@@ -427,7 +427,7 @@ export function directionStretches(
       if (run.length > 0) runs.push(run);
       run = [];
     }
-    return runs.every(r => r.length < SHARED_STRETCH_MIN_STOPS || (runKm(r, stopCoord) ?? 0) < SHARED_STRETCH_MIN_KM);
+    return runs.every(r => r.length < PIECE_PARAMS.minStops || (runKm(r, stopCoord) ?? 0) < PIECE_PARAMS.minKm);
   };
   const minorShortTurn = (p: (typeof regular)[number]) => p.trips.length < SHORT_TURN_MIN_SHARE * withVisits.length
     && regular.some(other => other !== p && other.stops.length > p.stops.length && liesOn(p, other));
@@ -522,10 +522,10 @@ export function directionStretches(
       // A disconnected piece is not a branch off the main stretch, so it is a stretch of its
       // own whatever its length (NYC subway S's 4-stop Franklin Av shuttle).
       const wholePiece = disconnected && run.length === pattern.stops.length;
-      if (wholePiece || run.length >= SHARED_STRETCH_MIN_STOPS) {
+      if (wholePiece || run.length >= PIECE_PARAMS.minStops) {
         const length = runKm(run, stopCoord);
         const key = [...run].sort().join('>');
-        if (length != null && (wholePiece || length >= SHARED_STRETCH_MIN_KM) && !segments.has(key)) segments.set(key, { stops: run, km: length });
+        if (length != null && (wholePiece || length >= PIECE_PARAMS.minKm) && !segments.has(key)) segments.set(key, { stops: run, km: length });
       }
       run = [];
       runSet = null;
@@ -1277,7 +1277,7 @@ export interface DirectionRollup {
     /**
      * CIV-1579 shadow: the main stretch's own filter value (stretchFilterValue), gated as filterValue
      * is (the main stretch counts, runs through the period, not a sparse overnight), and only when the
-     * main stretch is at least SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM long, the
+     * main stretch is at least PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm long, the
      * branch minimum (Ryan, 2026-11-15). Nothing reads it yet.
      */
     trunkFilterValue: number | null;
@@ -1530,7 +1530,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     };
   }
   // CIV-1579: a trunk shorter than a branch may be (5 stops, 1 km) has no trunk value.
-  const trunkLongEnough = d.main.stops.length >= SHARED_STRETCH_MIN_STOPS && d.main.lengthKm >= SHARED_STRETCH_MIN_KM;
+  const trunkReadable = trunkLongEnough(d.main);
   // Step 5a: the filter value and whether the direction runs, per period.
   for (const { key, start, end } of PERIOD_WINDOWS) {
     const runs = runsThroughPeriod(d.main.times, start, end, main[key].sustained);
@@ -1548,7 +1548,7 @@ export function rollupDirection(d: DirectionStretches): DirectionRollup | null {
     period[key].runs = runs;
     period[key].hasService = departuresInWindow(d.main.times, start, end, true).length > 0;
     period[key].filterValue = runs && !sparse(d.main) && values.length > 0 ? Math.max(...values) : null;
-    period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkLongEnough ? filterOf(main[key]) : null;
+    period[key].trunkFilterValue = runs && !sparse(d.main) && main[key].counts && trunkReadable ? filterOf(main[key]) : null;
     period[key].edgeWaitFail = key === 'overnight' ? 0 : edgeWaitFailMask([...new Set(forCrossMidnightWindow([...d.main.times], end))].sort((a, b) => a - b), start, end);
     const setterAt = period[key].filterValue == null ? undefined : countingStretches.find(c => filterOf(c.p) === period[key].filterValue);
     const setter = setterAt?.p;
