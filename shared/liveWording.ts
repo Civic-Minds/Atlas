@@ -300,9 +300,9 @@ export const STUDIO_LIVE_PENDING = {
  * how departures split this week between on time and more than 5½ min late.
  */
 export const STUDIO_GLANCE = {
-  /** One line, after each bold count: "9 routes recorded · 15 days, Nov 2–16" (Ryan, 2026-11-19; the app's usual " · " between joined facts). */
+  /** One line, after each bold count: "9 routes recorded · 15 days of data, Nov 2–16" (Ryan, 2026-11-19, CIV-1966: one line, his wording kept; the app's usual " · " between joined facts). */
   routes: 'routes recorded',
-  days: (dates: string): string => `days, ${dates}`,
+  days: (dates: string): string => `days of data, ${dates}`,
   join: ' · ',
   barTitle: 'Departures this week',
   onTime: 'On time',
