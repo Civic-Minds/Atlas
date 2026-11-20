@@ -198,3 +198,30 @@ describe('on-demand card sections (CIV-1427)', () => {
     expect(screen.getByText('Trips must start and end in the same zone.')).toBeInTheDocument();
   });
 });
+
+// CIV-1987: Barrie's whole-service card (CIV-1978 dry-run entry): text hours for the service, structured hours only per zone.
+describe('whole-service card whose hours are set per zone', () => {
+  const hours = 'Monday to Friday 5:30 a.m. to midnight, Saturday 6:30 a.m. to midnight, Sunday 8:30 a.m. to 10 p.m.';
+  const availability = { Weekday: [{ startHour: 5.5, endHour: 24 }], Saturday: [{ startHour: 6.5, endHour: 24 }], Sunday: [{ startHour: 8.5, endHour: 22 }] };
+  const zone = { serviceName: 'Transit ON Demand', serviceHours: hours, availability };
+  const barrie = {
+    slug: 'barrie', name: 'Barrie Transit', region: 'Ontario', center: [44.39, -79.69], url: '',
+    onDemandServiceArea: {
+      serviceName: 'Transit ON Demand', serviceHours: hours, pickup: { method: 'fixed-stops' }, features: [],
+      stopFeatures: [{ type: 'Feature', properties: { areaName: 'Zone A', stopName: '49 Coulter Street' }, geometry: { type: 'Point', coordinates: [-79.7, 44.4] } }],
+      zoneMetadata: { 'Zone A': zone, 'Zone B': zone },
+    },
+  } as unknown as Agency;
+
+  it('shows the published hours with no "Hours unavailable" note', () => {
+    renderZoneCard(null, 'Weekday', 'midday', barrie);
+    expect(screen.queryByText('Hours unavailable')).toBeNull();
+    expect(screen.queryByTestId('on-demand-running-note')).toBeNull();
+    expect(screen.getByText(hours)).toBeInTheDocument();
+  });
+
+  it("a zone's own card keeps its running note", () => {
+    renderZoneCard('Zone A', 'Weekday', 'midday', barrie);
+    expect(screen.getByTestId('on-demand-running-note')).toHaveTextContent('Running during weekday midday');
+  });
+});
