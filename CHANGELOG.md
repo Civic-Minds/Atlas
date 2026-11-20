@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Atlas Studio's schedule changes show each route's trips beside its frequency**: OC Transpo's route 6 read as cut to every 38 minutes, though it runs about as many trips as before ([#1633](https://github.com/Civic-Minds/Atlas/issues/1633))
 - **Atlas Studio finds a route's bus count by its name (local only)**: asking for YRT's "Viva Blue" found nothing until the assistant guessed the file's own name for it ([#1632](https://github.com/Civic-Minds/Atlas/issues/1632))
 - **History opens [MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) as one agency (beta)**: its subway and five bus feeds were seven separate entries; now one list entry shows every borough's routes on one map, with a route that moved between feeds kept as one row
 - **The Night list shows [MTA New York](https://github.com/Civic-Minds/Atlas/issues/1610) as one agency**: its subway, borough buses and railroads each had their own section, unlike the rest of the site

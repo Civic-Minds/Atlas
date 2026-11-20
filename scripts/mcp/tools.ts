@@ -224,9 +224,10 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
       compares: `${file.day ?? 'one day'} service on ${date(file.before.date)} (before) with ${date(file.after.date)} (after)`,
       agency: a.name, scheduleValidThrough: validThrough(a),
       routesAdded: paired.filter(c => !c.before).map(c => c.route), routesRemoved: paired.filter(c => !c.after).map(c => c.route),
-      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
+      frequencyChanges: changes.slice(from, from + size).map(c => ({ route: c.route, name: c.name, period: `${c.period} (${c.hours})`, before: c.before == null ? 'no service' : headwayEvery(c.before), after: c.after == null ? 'no service' : headwayEvery(c.after), better: c.better, ...(c.tripsBefore != null && c.tripsAfter != null ? { tripsPerDay: `${c.tripsBefore} → ${c.tripsAfter}` } : {}), ...(c.publicChange ? {} : { sameOnTheMap: true }) })),
       frequencyChangeCount: changes.length, shown: `${from + 1}–${Math.min(from + size, changes.length)}`,
       ...staleComparisonNote(file.after.date, Date.now()),
+      howToRead: "before and after are Atlas's frequency grades: the route's slower direction and quietest part, as the map colours it. tripsPerDay is the route's trips that day. A big grade change with about the same trips usually means one long gap or a branch end, not a cut: check route_frequency's 'shown' before calling it one.",
       ...(from + size < changes.length ? { more: `Call again with offset ${from + size} for the next ${Math.min(size, changes.length - from - size)}.` } : {}),
     };
   },

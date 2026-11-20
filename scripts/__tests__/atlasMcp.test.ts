@@ -231,3 +231,14 @@ describe('schedule_changes on an old comparison (#1624)', () => {
     expect(staleComparisonNote('20261010', nov19)).toEqual({});
   });
 });
+
+describe('schedule_changes gives trips beside the grades (#1633)', () => {
+  it('carries each changed route\'s trips before and after', async () => {
+    const { frequencyChanges } = await import('../mcp/atlasData');
+    const side = (pm: number, trips: number) => ({ headway: { amPeak: 15, midday: 15, pmPeak: pm, evening: 30, late: 31 }, trips, first: 300, last: 1580, runMinutes: [64, 68] });
+    const file = { slug: 'x', before: { file: 'a', date: '20260819' }, after: { file: 'b', date: '20261209' }, day: 'Weekday', leftOut: [], unchanged: 0, lines: [],
+      changes: [{ route: '6', name: 'Greenboro <> Rockcliffe', before: side(15, 154), after: side(38, 148), size: 'frequency' }] } as never;
+    const pm = frequencyChanges(file).find(c => c.period === 'PM peak')!;
+    expect([pm.before, pm.after, pm.tripsBefore, pm.tripsAfter]).toEqual([15, 38, 154, 148]);
+  });
+});

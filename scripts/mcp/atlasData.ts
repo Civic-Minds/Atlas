@@ -318,11 +318,11 @@ export function pairedChanges(file: StudioBeforeAfterFile): StudioBeforeAfterFil
 
 /** Frequency changes in a comparison, by the shared rule (a grade move on the one scale), biggest first. */
 export function frequencyChanges(file: StudioBeforeAfterFile) {
-  const out: Array<{ route: string; name: string | null; period: string; hours: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean }> = [];
+  const out: Array<{ route: string; name: string | null; period: string; hours: string; before: number | null; after: number | null; steps: number; better: boolean; publicChange: boolean; tripsBefore: number | null; tripsAfter: number | null }> = [];
   for (const c of pairedChanges(file)) for (const period of PERIOD_KEYS) {
     const before = c.before?.headway[period] ?? null, after = c.after?.headway[period] ?? null;
     const change = frequencyChange(before, after);
-    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], hours: formatPeriodRange(period), before, after, steps: change.steps, better: change.better, publicChange: change.publicChange });
+    if (change) out.push({ route: c.route, name: c.name, period: PERIOD_LABELS[period], hours: formatPeriodRange(period), before, after, steps: change.steps, better: change.better, publicChange: change.publicChange, tripsBefore: c.before?.trips ?? null, tripsAfter: c.after?.trips ?? null });
   }
   return out.sort((a, b) => b.steps - a.steps || Number(b.publicChange) - Number(a.publicChange));
 }
