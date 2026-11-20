@@ -96,14 +96,14 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
     ? { key: 'direction', label: DIRECTION_LABEL, value: String(m.shown), options: m.ids.map(id => [String(id), m.v3!.directionLabels[String(id)]] as const), onPick: d => { setDir(Number(d)); setPick(null); }, panelClassName: 'w-56' }
     : null;
-  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: '', width: 'w-36', arrow: true };
+  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: '', width: 'w-36' };
   const menus: (StudioMenu | null)[] = [
+    // CIV-1960 (Ryan: "Measure should be on the left side of the filters"; "And no need for the drop down arrow beside the word Measure").
+    measureMenu,
     agencyMenu,
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
-    // With the filters: Agency, Route, Time of day, Measure (Ryan, 2026-11-19; it sat beside the Live tab since CIV-1886).
-    measureMenu,
     route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
