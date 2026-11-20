@@ -17,7 +17,7 @@
 import { branchReadingsEnabled, headlineFromTrunkEnabled, pieceReadingEnabled } from '../shared/rules/flags.js';
 import type { PieceReadingEntry, PieceReadings, PieceTreatment } from '../shared/pieceReadings.js';
 import { PERIOD_MINUTES, type PeriodKey } from '../shared/rules/periods.js';
-import { PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
+import { headwayGradeOn, PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
 import { departuresInWindow, HEADLINE_MIN_DEPARTURES, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { collapseBunched, computeStopSharers, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, POOLED_MAX_GAP_TYPICAL_RATIO, type StopSharers } from './stopPools.js';
@@ -105,7 +105,7 @@ export function pieceReadingFromEnv(): boolean {
 // read from the stops' own pooled lists (the ladder below; the median of the stops' own readings). Arm A (Ryan: "Then we should ignore the 16"):
 // a stop takes the piece reading only if (i) its own reading, read the same way with that stop as the reference, is at most
 // one public tier worse than the piece value and (ii) its own list passes the evenness test against the piece value; every
-// other stop breaks off with its own reading. A stop that takes the piece reading although its own reading differs is
+// other stop breaks off with its own reading. A stop whose own value is in the Infrequent grade (past the last public tier) never takes a faster piece reading. A stop that takes the piece reading although its own reading differs is
 // IGNORED for the piece, never overwritten (Ryan: "Not overwrite it but ignore it"): its own published value stays.
 // Overnight is not read (CIV-1764 is not landed).
 // ---------------------------------------------------------------------------------------------------------------------
@@ -118,6 +118,13 @@ const publicTierIndex = (value: number): number => {
   const i = PUBLIC_TIER_MAXES.findIndex(max => value <= max);
   return i < 0 ? PUBLIC_TIER_MAXES.length : i;
 };
+
+/** Infrequent: past the last public tier (Ryan: "if it is less than hourly then it is infrequent"). */
+const isInfrequent = (value: number): boolean => headwayGradeOn(value, PUBLIC_TIER_MAXES) === null;
+
+/** Arm A's grade tests on one own value against the piece value: at most one public tier worse, and a stop in the Infrequent grade never takes a faster piece reading. */
+export const withinArmATiers = (ownValue: number, pieceValue: number): boolean =>
+  publicTierIndex(ownValue) - publicTierIndex(pieceValue) <= 1 && !(isInfrequent(ownValue) && !isInfrequent(pieceValue));
 
 const gapsOf = (list: readonly number[]): number[] => list.slice(1).map((t, i) => t - list[i]);
 
@@ -209,7 +216,7 @@ export function readPieceAt(ctx: PieceReadContext, stops: readonly string[], ref
  */
 export function armAKeeps(own: PieceRead, pieceValue: number): boolean {
   return own.step !== 0 && own.value != null && own.list.length >= 3
-    && publicTierIndex(own.value) - publicTierIndex(pieceValue) <= 1
+    && withinArmATiers(own.value, pieceValue)
     && listIsEvenAgainst(own.list, pieceValue);
 }
 
@@ -286,7 +293,7 @@ export function pieceReadingOverlay(
     const own = published[c.stop]?.[c.period];
     if (!c.kept || own == null || own === c.pieceValue) continue;
     // Arm A's tier test is on the value a rider sees: the re-read at the stop can differ from its published value (DRT 905: read 30, published 90).
-    if (publicTierIndex(own) - publicTierIndex(c.pieceValue) > 1) continue;
+    if (!withinArmATiers(own, c.pieceValue)) continue;
     (out[c.stop] ??= {})[c.period] = c.pieceValue;
   }
   return out;
