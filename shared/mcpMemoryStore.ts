@@ -1,5 +1,6 @@
 import type { AtlasStore, McpAgency, McpAgencyMeta, McpFeature, McpStop, IndexedAgency, McpHistoryAgency } from './mcpStore';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
+import type { StudioVehiclesFile } from './studioVehicles';
 
 /** An in-memory store (CIV-1840): tests, and anything that already holds the data. Same answers as the disk store from the same data. */
 export interface MemoryData {
@@ -10,6 +11,7 @@ export interface MemoryData {
   index?: IndexedAgency[] | null;
   history?: McpHistoryAgency[] | null;
   comparisons?: Record<string, StudioBeforeAfterFile>;
+  vehicles?: Record<string, StudioVehiclesFile>;
 }
 
 export function memoryStore(d: MemoryData): AtlasStore {
@@ -26,5 +28,6 @@ export function memoryStore(d: MemoryData): AtlasStore {
     async historyIndex(slug) { const ag = d.history?.find(a => a.slug === slug); return ag ? ag.routes.map(r => [r.routeShortName, r.routeName ?? null]) : null; },
     async historyRoute(slug, i) { return d.history?.find(a => a.slug === slug)?.routes[i] ?? null; },
     async comparison(slug) { return d.comparisons?.[slug] ?? null; },
+    async vehicles(slug) { return d.vehicles?.[slug] ?? null; },
   };
 }

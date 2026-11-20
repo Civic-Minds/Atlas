@@ -33,6 +33,7 @@ import { pairChanges } from '../../shared/scheduleChangePairing';
 import { HEADWAY_NO_SERVICE_FROM, NEARBY_ROUTES_RADIUS_M } from '../../shared/rules/limits';
 import { DAYTIME_PERIOD_KEYS } from '../../shared/rules/periods';
 import { placeParts, stopMatchText } from '../../shared/stopNameText';
+import type { StudioVehicleGroup } from '../../shared/studioVehicles';
 
 
 type Feature = McpFeature;
@@ -639,4 +640,27 @@ export async function routeHistory(agency: CatalogAgency, routeQuery: string, da
     }).filter(([, v]) => v != null)) })), ...(current ? [current] : [])],
     ...(flagged ? { warning: `${flagged} figure(s) marked doubtful: every 3 minutes or less in an old schedule, on a route that now runs every 30 minutes or more. These are most likely data errors, not real service; don't report them as fact.` } : {}),
   };
+}
+
+// ---- Buses needed (CIV-1693; read through the store since CIV-1977, so the hosted server has it too) ----
+
+export type BusesNeeded =
+  | { cached: false }
+  | { cached: true; feed: string; olderSchedule: boolean; referenceDate: string; groups: StudioVehicleGroup[] };
+
+/** A route number to compare, without leading zeros: Studio's file names Hamilton's routes "01", "02" (#1617). */
+const routeKey = (r: string) => r.trim().toLowerCase().replace(/^0+(?=\d)/, '');
+
+/**
+ * Buses needed to run a route in a period, from Studio's own buses-needed file (the same figures Studio's page shows).
+ * It never runs the calculation itself: on a large agency that takes minutes (manager, 2026-11-17: "buses_needed must
+ * not spawn an 8-minute calculation per question"). Where no file exists it says so, with no build command (#1613).
+ */
+export async function busesNeeded(slug: string, route: string, period: PeriodKey): Promise<BusesNeeded> {
+  const v = await store.vehicles(slug);
+  if (!v) return { cached: false };
+  const newest = store.newestFeedName ? await store.newestFeedName(slug) : null;
+  const want = routeKey(route);
+  const groups = (v.periods[period] ?? []).filter(g => g.routes.some(r => routeKey(r) === want));
+  return { cached: true, feed: v.feed, olderSchedule: !!newest && newest !== v.feed, referenceDate: v.referenceDate, groups };
 }
