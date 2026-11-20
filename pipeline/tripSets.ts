@@ -555,7 +555,7 @@ export function directionStretches(
   }
   const merged = [...segments.values()];
   // CIV-1959 B4: a tail under the legacy minimum exists only with ATLAS_PIECES_BY_TRIPS, and only a regular one may be a piece
-  // (rule D: 3+ trips, evenly spaced, covering half the period, in at least one daytime period). One-off and irregular runs (garage,
+  // (3+ evenly spaced trips that run a whole daytime period, with no half-period floor: a short burst is no boundary). One-off and irregular runs (garage,
   // school, a single trip, uneven bursts) never split a piece.
   const regularInCache = new Map<(typeof regular)[number], Map<string, boolean>>();
   const regularIn = (q: (typeof regular)[number], start: number, end: number): boolean => {

@@ -343,10 +343,14 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   };
 }
 
-/** Rule D's test: the piece is regular in a period when it has a reading or a part-period tail there (3+ even trips covering half), not limited trips. */
+/**
+ * B4's boundary test: a pattern is regular in a period when its 3+ evenly spaced trips run the whole period (a plain reading). A
+ * part-period burst (a tail on the card, even with a number) is not a boundary, or M101's short-turn bursts split its one piece
+ * into 12-15 (dropping the 0.5 floor with tails counting did exactly that).
+ */
 export function isRegularPieceInPeriod(times: readonly number[], start: number, end: number): boolean {
   const t = classifyPiecePeriod(times, start, end);
-  return t != null && t.t !== 'limited';
+  return t != null && t.t === 'reading';
 }
 
 /**
