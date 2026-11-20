@@ -53,6 +53,8 @@ export interface RouteProperties {
   routeShortName: string | null;
   routeLongName: string | null;
   routeVariant?: string | null;
+  /** CIV-1456: the branch ID the trip headsign leads with (TTC 52A), set by processing; display only, never a grouping key. */
+  branchCode?: string | null;
   agencyName?: string;
   headsign?: string | null;
   busSubType?: 'brt' | 'express' | 'coach' | 'local';
