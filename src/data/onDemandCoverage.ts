@@ -28,8 +28,6 @@ export const ON_DEMAND_NOT_MAPPED: Readonly<Record<string, OnDemandNotMapped>> =
   'sct': { serviceName: 'Suffolk On-Demand', url: 'https://sctbus.org/On-Demand' },
   // Confirmed 2026-10-27 (CIV-1063): https://info.winnipegtransit.com/en/service/on-request
   'winnipeg': { serviceName: 'On-Request', url: 'https://info.winnipegtransit.com/en/service/on-request' },
-  // Confirmed 2026-10-27 (CIV-1063): https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand
-  'barrie': { serviceName: 'Barrie On-Demand', url: 'https://www.barrie.ca/services-payments/transportation-parking/barrie-transit/transit-demand' },
   // Confirmed 2026-10-27 (CIV-1063): https://www.fredericton.ca/node/457593
   'fredericton': { serviceName: 'On-demand service', url: 'https://www.fredericton.ca/node/457593' },
   // Confirmed 2026-10-27 (CIV-1063): https://stlaval.ca/horaire/taxi/info
