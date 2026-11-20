@@ -47,6 +47,7 @@ import { effectiveFeedExpiry } from './feedFreshness.js';
 import { recordedFeedExpiry } from './refreshMeta.js';
 import { routeDataQualityWarningForShape } from './routeDataQuality.js';
 import { deriveRouteBranch } from '../shared/routeBranch.js';
+import { headsignBranchCode } from '../shared/branchCode.js';
 import { isRailRoute } from './routeMode.js';
 import { computePeriodCoverageHeadways, departuresInWindow, periodMedianHeadway } from './headway-utils.js';
 import { isNightRouteDirection, nextServiceDay, nightStartsBeforeWindow, overnightPeriodValues, overnightWindowTimes } from './overnightTerminal.js';
@@ -1347,6 +1348,8 @@ export async function processGtfsBuffer(
   // emit two overlapping features per line. When duplicates exist, keep the lower headway
   // (more frequent / more trips active in the analysis window).
   const dedupedFeatures = new Map<string, GeoJsonFeature>();
+  // CIV-1456: the branch IDs the raw headsigns of each slot lead with (TTC 52A), before cleaning drops them.
+  const slotBranchCodes = new Map<string, Set<string | null>>();
   // What dedupe knows about the pattern holding each slot (featureDedupe.ts).
   const dedupedPattern = new Map<string, DedupePattern>();
   // Feature → the shapeId it was actually built from, so the per-stop headway
@@ -1470,6 +1473,8 @@ export async function processGtfsBuffer(
     const dedupeKey = cleanedForDedup
       ? `${groupName}::${result.dir}::${result.day}::${cleanedForDedup}::${branchKey}`
       : `${groupName}::${result.dir}::${result.day}::${branchKey}`;
+    if (!slotBranchCodes.has(dedupeKey)) slotBranchCodes.set(dedupeKey, new Set());
+    slotBranchCodes.get(dedupeKey)!.add(headsignBranchCode(result.headsign, shortName));
     const existing = dedupedFeatures.get(dedupeKey);
     const incumbent = dedupedPattern.get(dedupeKey);
     const initialPeriodHeadways = computePeriodHeadways(result.times);
@@ -1605,6 +1610,13 @@ export async function processGtfsBuffer(
     if (result.partialWeekday || result.previousNightTailOnly) partialWeekdayFeatures.add(newFeature);
     else partialWeekdayFeatures.delete(newFeature);
     if (result.rushHourOnly) rushHourOnlyFeatures.add(newFeature);
+  }
+  // CIV-1456: a row carries a branch ID only when every pattern in its slot names the same one (display only: no key,
+  // grouping or value reads it). A slot mixing a coded and an uncoded headsign, or two codes, gets none.
+  for (const [dedupeKey, feature] of dedupedFeatures) {
+    const codes = slotBranchCodes.get(dedupeKey);
+    const only = codes && codes.size === 1 ? [...codes][0] : null;
+    if (only) feature.properties.branchCode = only;
   }
   // CIV-321 S4: a kept row whose slot has a rated pattern serving every stop it draws and more (GO KI
   // Union-bound: the Kitchener trains past the Mount Pleasant short turns) carries that longer shape as

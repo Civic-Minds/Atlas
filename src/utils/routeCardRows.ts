@@ -231,8 +231,19 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   });
   // CIV-1456: a branch row leads with the branch ID the agency's data names (TTC 52A, GO 41G, Halifax 10B); no ID, no change.
   const base = branchBase(input.routeShortName ?? '');
+  // A row speaks for one branch only when nothing else to its destination in that direction carries another ID (or none):
+  // a row that stands for 10A, 10B and 10C to one stop, or a stretch row several variants share, gets no ID.
+  const destinationKey = (d: ShapeProperties) => (d.headsign ?? '').trim().toLowerCase();
+  const rowCode = (group: RouteCardDirectionGroup, d: ShapeProperties): string | null => {
+    const code = rowBranchCode(d, base);
+    if (!code) return null;
+    const key = destinationKey(d);
+    if (group.realTier.filter(r => destinationKey(r) === key).length > 1) return code;
+    const peers = (group.directionFeatures ?? directions.filter(x => dirIdNum(x.directionId) === dirIdNum(group.dirId))).filter(x => destinationKey(x) === key);
+    return peers.every(p => rowBranchCode(p, base) === code) ? code : null;
+  };
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
-    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowBranchCode(direction, base));
+    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowCode(group, direction));
   const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
