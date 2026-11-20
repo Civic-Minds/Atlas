@@ -24,6 +24,7 @@ import { ALL_DAYS, WEEKDAYS } from '../shared/dayTypes.js';
 import { getActiveServiceIds } from './transit-calendar.js';
 import { readWeekOf } from './readWeek.js';
 import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
+import { PIECE_PARAMS } from './pieceParams.js';
 
 /**
  * Both origins must run on the same calendar day the pipeline draws: on at least one of the
@@ -82,7 +83,7 @@ export function clearLoneOriginRows(features: Array<{ properties: Record<string,
   return cleared;
 }
 
-export const MIN_SHARED_STOPS = 5;
+export const MIN_SHARED_STOPS = PIECE_PARAMS.convergingMinSharedStops;
 /** Each origin must be a real service: at least this many trips and MIN_TRIP_SHARE of the slot's trips. */
 export const MIN_TRIPS = 8;
 /** CapMetro gives every 4-6 trip block its own shape, some from another first stop: a one-block origin is not a starting branch. */

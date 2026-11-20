@@ -14,7 +14,7 @@
  *
  * Pattern structure reuses the pipeline's shared-stretch rule (sharedStretch.ts): a pattern whose
  * stops lie in order inside a longer pattern of the same route is a short turn of it; two patterns
- * that share a qualifying stretch (SHARED_STRETCH_MIN_STOPS stops and SHARED_STRETCH_MIN_KM) and
+ * that share a qualifying stretch (PIECE_PARAMS.minStops stops and PIECE_PARAMS.minKm) and
  * each have stops of their own are branches, and the stretch they share is the trunk.
  *
  * Not in GTFS and never estimated: pull-out and pull-in between the garage and the first or last
