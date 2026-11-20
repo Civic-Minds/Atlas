@@ -37,7 +37,7 @@ export function worstStopRows(v3: LiveV3, data: DashboardBandData, dir: number |
 
 /**
  * The stops most often late. `columns` 'compact' is the dashboard's three columns; 'full' adds the late-share bar, the
- * typical delay, the 1-in-10 figure and the departure count. With `id` the list is a titled Section (`shrink`,
+ * typical delay and the departure count. With `id` the list is a titled Section (`shrink`,
  * `boundary` as on Section); without it, it is the dashboard's own card, a section of its own with `footerLink`.
  * `intro` adds the thresholds line; `notRanked` the note about stops whose delay is less exact; `onPick`/`canPick`
  * turn stop names into buttons that choose the stop.
@@ -48,7 +48,6 @@ export default function WorstStopsSection({ v3, data, dir, uncertain, limit, col
   intro?: boolean; notRanked?: boolean;
   onPick?: (directionId: number, stopId: string) => void; canPick?: (directionId: number, stopId: string) => boolean;
   footerLink?: { text: string; href: string; onClick: () => void };
-  /** The 1-in-10 column's set width (Full analysis sets one; Explore does not). */
   /** CIV-1405: the list shown as a map of the route instead of a table; each stop's card holds its figures. */
   map?: { agency: string; route: string };
 }): ReactNode {

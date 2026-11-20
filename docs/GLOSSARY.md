@@ -98,11 +98,6 @@ Every entry in this section is **on feature/live-local-poc, not main yet**, unle
   - Rounding: nearest ½ min (`halfMinutes`). Colour and flags test the raw seconds: amber from 30 s, red from 60 s. A stop pair is listed only from 30 s.
   - Minimum sample: 30 passes and 5 days (`MIN_SEGMENT_TRIPS`, `MIN_DAYS`).
   - Excludes: stop pairs touching main pattern ends.
-- **the 1-in-10 (p90)**: `gainedP90Sec`, the nearest-rank 90th percentile of (actual minus scheduled).
-  - Card wording: "1 in 10 take {X}+ min longer". It is shown only when it is greater than the typical value.
-  - Rounding: down toward zero (`halfMinutesDown`). That is why "+" is honest here and only here.
-  - Never use "at least" or "+" on any value rounded to nearest.
-  - Minimum sample and exclusions: the same as the typical value.
 - **"looser than needed"**: `isPadded`. The typical pass is at least 30 s under schedule (`gainedMedianSec ≤ −30`) and `gainedP90Sec ≤ 0`, so 9 in 10 passes are at or under the timetable.
   - Card heading: "Where the schedule is looser than needed".
   - Card row: "The schedule allows {X} more than vehicles need". The map colour is the "early" blue.
@@ -174,7 +169,6 @@ These measures are different things. Never combine them, convert one into anothe
 | midday variant | `middayVariant` | "limited service", headline blank | not a serviceClass |
 | pooled stop value | `stopHeadways` on a shared stretch | the card says the value is pooled | |
 | `gainedMedianSec` (Live) | `segmentDelayView.ts` | "Takes X longer than scheduled" | branch only |
-| `gainedP90Sec` (Live) | | "1 in 10 take X+ min longer" | branch only |
 | `isPadded` (Live) | | "looser than needed", "The schedule allows X more than vehicles need" | branch only |
 | `excessWaitSec` / EWT (Live) | | "Extra wait" (footer), "riders waited X longer than the schedule implies" (row) | branch only |
 | `detectHolds` / `HoldEvent` (Live) | | "Stood still", "Standing still" | branch only; never "hold" |

@@ -241,8 +241,8 @@ describe('Live route dashboard', () => {
     expect(screen.getByText(/are trips we couldn’t judge as run or not run\. We left out 3 of them from Delivered\./)).toBeTruthy();
     // Run time is a dot on a line per pattern: the figures are the row's hover text and screen-reader text.
     // Each opens with its direction, and the main row is introduced by the stretch line above it.
-    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
-    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 · 1 in 10 over 34 min \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByText(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
+    expect(screen.getByTitle(/^\w+bound: scheduled 22 min · usually 27 \(120 trips\)$/)).toBeTruthy();
     expect(screen.getByText(/Westbound: too few trips were measured over the main stretch/)).toBeTruthy();
     // The extra wait sentence is gone from Full analysis (the table gives the figures); Method keeps the definition.
     expect(screen.queryByText(/riders at Spadina & Queens Quay wait about/)).toBeNull();
