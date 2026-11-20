@@ -278,6 +278,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-20 — A route's headline comes from its trunk (CIV-1959 B1)
+Ryan, on CIV-1959 (#1086): "The 900 because we keep using it like the core section should realistically be the same frequency/headway relatively across the entire thing then the branches individually should be too - like if we look at it as 'pieces' of a route". The principle he gave for the readings: "when a portion of the route exists and isn't subject to short-turns or branching etc then a single stop being a little bit off (or even a couple stops) shouldn't fuck the entire thing up."
+
+A direction's headline (its value, coverage and filter value, and so the route's) is read from its trunk, the main section every regular trip shares, never from a branch or a tail, so a slow branch no longer sets the route's number. Where there is no real shared core (the trunk is under the piece minimum, the regular trips share no stop, or the trunk is shorter than every branch it feeds, as on a hub) the slowest piece sets the headline as before. This reverses D1 (the slowest stretch decides) for the headline only; each branch keeps its own row, and the night, all-day and Frequent Service verdicts still read the branches. It is behind `ATLAS_HEADLINE_FROM_TRUNK`, default OFF, and stays off until B3 shows each branch's own reading on the cards, so a rider never sees a branch hidden behind a faster trunk number. In the local dry run (11 agencies) every changed headline moved to a lower or equal tier, none worse. No CHANGELOG entry while the flag is off.
+
 ### 2026-11-19 — One entry per agency or region, everywhere
 CIV-1963 (#1610): Studio Coverage listed MTA New York's feeds as separate rows while the agency index and the map's picker showed one MTA New York. The rule is now one entry per agency or region on every screen and tool that lists, counts, ranks or compares agencies, with a route in two of a parent's feeds counted once (as its own page already counted them). Feeds are not merged in the pipeline; `shared/agencyGroups.ts` groups them at read time for the site and the MCP tools alike.
 
