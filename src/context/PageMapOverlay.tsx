@@ -63,6 +63,9 @@ export interface PageMapOverlay {
   framedMemory?: React.MutableRefObject<string | null>;
   /** Don't frame yet: what's drawn is still loading, so framing it now would frame part of it. */
   holdFrame?: boolean;
+  /** A pill for the map's loading-pill spot (the counts row): it shows once the map has finished loading, never beside the
+   *  loading pill (Studio's "Data up to" date). */
+  statusPill?: ReactNode;
 }
 
 interface ContextValue {
