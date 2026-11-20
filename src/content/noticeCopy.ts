@@ -1099,3 +1099,7 @@ export const COVERAGE_TEXT = {
 
 /** CIV-1890 (Ryan, 2026-11-18, word for word): the About menu inside Studio, in place of the public atlas's text. */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
+
+/** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
+export const STUDIO_ABOUT_LIVE_HEADING = 'Live';
+export const LEARN_MORE_LABEL = 'Learn more';

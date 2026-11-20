@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio's Live Measure menu sits with the other filters (local only)**: it was a separate button beside the Live tab; it now sits next to Agency, Route and Time of day
+- **Studio's Live side panel is shorter (local only)**: the two lines explaining Bunching's figures and the grey colour moved to Studio's About panel, with a Learn more link under the week table
 - **Studio says it's loading, in the map's own loading panel (local only)**: opening Studio or its Fleet page showed an empty map until the data arrived
 - **Studio's menus look like the main map's (local only)**: its Time menus list each period's hours as the map's Time chip does, and its cut-off settings use the map's own settings rows
 - **Studio's pages have their own addresses (local only)**: /studio/live/ttc/504 and /studio/fleet/kingston, so a link opens the page, agency and route it names; the old ?page= links still open the same place
