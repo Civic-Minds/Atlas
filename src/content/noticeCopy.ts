@@ -187,11 +187,6 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 // D1 route-limited: a list value with no steady frequency ("limited" in place of a number).
 export const LIMITED_SERVICE_LABEL = 'limited';
 /**
- * CIV-1959 B3 (DRAFT wording, not approved; behind BRANCH_READINGS_ENABLED): a branch or tail with some trips in the period but
- * too few, too uneven or too short a run to read. No number; it never sets a headline. Needs Ryan's word-for-word OK.
- */
-export const LIMITED_TRIPS_LABEL = 'limited trips';
-/**
  * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
  * overnight"; a time period: D2. The card has no All day row (CIV-1279: the map has no All day, so no rider reaches one).
  */

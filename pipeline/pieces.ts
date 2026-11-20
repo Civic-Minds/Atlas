@@ -293,25 +293,22 @@ export function pieceReadingOverlay(
 // CIV-1959 B3: what each piece of a direction shows in each period (behind ATLAS_BRANCH_READINGS=1, off by default).
 //
 // Rule D (the #1086 branch-definition investigation, comment 7022580375), read on today's trunk and branches (B4 changes the
-// boundaries): a piece reads in a period when its own trips are at least HEADLINE_MIN_DEPARTURES, evenly spaced, and cover at
-// least half the period. The order of the treatments, first match wins:
+// boundaries): a piece reads in a period when its own trips are at least HEADLINE_MIN_DEPARTURES and evenly spaced. There is no
+// coverage floor (Ryan: "You decide but an arbitrary number like 2 hours seems not ideal"). The order, first match wins:
 //   1. no trips in the period                          -> no entry
-//   2. under 3 trips, or not evenly spaced             -> limited trips (no number, never sets a headline)
-//   3. covers under half the period                    -> limited trips
-//   4. 3+ even trips, covers half or more, but one edge wait is long (it stops or starts inside the period) -> tail:
-//      "every N until HH:MM" with its full-window wait as the value (RTD 15 Saturday midday: every 30 until 12:16, wait 164)
-//   5. everything passes                               -> reading (trunk or branch)
-// "Covers" counts the period from its start (or to its end) when the wait to the first (or from the last) trip is within the
-// evenness allowance, so a run that begins a little after the period starts still covers it from the start.
+//   2. under 3 trips, or not evenly spaced             -> no number (never sets a headline)
+//   3. 3+ even trips, but an edge wait is long (it starts or stops inside the period) -> tail:
+//      "every N until HH:MM" / "from HH:MM" (both when it does both), with its full-window wait as the value (RTD 15 Saturday
+//      midday: every 30 until 12:16, wait 164); the full-window wait is what colours and what any headline would read
+//   4. everything passes                               -> reading (trunk or branch)
+// An edge is "inside the period" when the wait to the first (or from the last) trip is beyond the evenness allowance, so a run
+// that begins a little after the period starts still reads as a plain reading.
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** True when this process was started with ATLAS_BRANCH_READINGS=1 (CIV-1959 B3). Off by default. */
 export function branchReadingsFromEnv(): boolean {
   return branchReadingsEnabled(process.env.ATLAS_BRANCH_READINGS);
 }
-
-/** Rule D's coverage floor: the share of the period a piece's trips must cover. Not yet approved by Ryan (needs his word-for-word OK before the flag goes on). */
-export const PIECE_MIN_PERIOD_COVER = 0.5;
 
 /**
  * One piece's treatment in one period window, from its departures at its reference stop (GTFS minutes). Null when it has no trip
@@ -336,8 +333,6 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   const trail = end - t[t.length - 1];
   const leadOk = lead <= allowance;
   const trailOk = trail <= allowance;
-  const covered = ((trailOk ? end : t[t.length - 1]) - (leadOk ? start : t[0])) / (end - start);
-  if (covered < PIECE_MIN_PERIOD_COVER) return { t: 'limited' };
   if (leadOk && trailOk) return { t: 'reading', v: readingValue ?? every };
   return {
     t: 'tail',

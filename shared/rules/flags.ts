@@ -29,8 +29,8 @@ export const CARD_CLICK_TO_FLAG_ENABLED = envFlag('VITE_CARD_CLICK_TO_FLAG_ENABL
 // is worth surfacing to a rider needed more real-feed tuning than a single main push should
 // carry -- beta only until it's been validated against a lot more agencies (2026-08-08).
 export const UNEVEN_BANNER_ENABLED = envFlag('VITE_UNEVEN_BANNER_ENABLED');
-// CIV-1959 B3 (#1620): the cards show each branch's own reading beside the trunk's, and "Limited trips" for a branch with too few
-// trips to read. Off everywhere until Ryan approves the wording (docs/FEATURE_FLAGS.md); reads only data the pipeline switch
+// CIV-1959 B3 (#1620): the cards show each branch's own reading beside the trunk's, and the existing no-number words ("Runs irregularly in this
+// period") for a branch with too few trips to read. Off everywhere until the dry run is reviewed (docs/FEATURE_FLAGS.md); reads only data the pipeline switch
 // ATLAS_BRANCH_READINGS=1 wrote, so it does nothing on any published file today.
 export const BRANCH_READINGS_ENABLED = envFlag('VITE_BRANCH_READINGS_ENABLED');
 export type AtlasMode = 'public' | 'preview' | 'beta' | 'dev';

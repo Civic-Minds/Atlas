@@ -87,7 +87,7 @@ export interface RouteProperties {
   piecePeriodHeadways?: Record<string, HeadwayByPeriod>;
   /**
    * CIV-1959 B3 (ATLAS_BRANCH_READINGS=1, agency JSON only): the direction's trunk and each branch with its treatment per
-   * period (a reading, a part-period tail, or limited trips). Only the cards read it, behind BRANCH_READINGS_ENABLED.
+   * period (a reading, a part-period tail, or too few or uneven trips for a number). Only the cards read it, behind BRANCH_READINGS_ENABLED.
    */
   pieceReadings?: PieceReadings;
   stopOrder?: string[];

@@ -5,6 +5,7 @@ import { buildDirectionGroups } from '../routeCardDirectionGroups';
 import { buildRouteCardModel, reportRowValueText } from '../routeCardRows';
 import { directionPieceTreatments, stopBranchReading } from '../branchReadings';
 import { buildStopRoutes } from '../stopRoutes';
+import { HEADWAY_TIERS } from '../../../shared/config';
 
 // CIV-1959 B3 (#1620, #1086): the route card's trunk line and branch lines, and the stop card's branch words. Every fixture is
 // hand-set from the shape the pipeline writes (pipeline/__tests__/branchReadings.test.ts builds the same pieces from trips).
@@ -57,13 +58,27 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     const m = card([withReadings(readings({ t: 'reading', v: 20 }), 'main'), withReadings(readings({ t: 'reading', v: 20 }), 'tail')], 'midday', true);
     expect(lines(m)).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 20 min']);
   });
-  it('a branch with limited trips shows no number and no figure from the trunk', () => {
+  it('a branch with too few trips shows no number and no figure from the trunk', () => {
     const r = readings({ t: 'limited' });
     const m = card([withReadings(r, 'main'), withReadings(r, 'tail')], 'midday', true);
-    expect(lines(m)).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: limited trips']);
+    expect(lines(m)).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: Runs irregularly in this period']);
     const branch = m.groups[0].rows.find(r => r.feature.stretchRole === 'tail')!.display(null).value;
     expect(branch.headway).toBeUndefined();
     expect(branch.isLimited).toBe(true);
+  });
+  it('a branch past the last tier reads as every other row past it does (the number, coloured Infrequent), never its own words', () => {
+    const r = readings({ t: 'reading', v: 120 });
+    const m = card([withReadings(r, 'main'), withReadings(r, 'tail')], 'midday', true);
+    const row = m.groups[0].rows.find(x => x.feature.stretchRole === 'tail')!;
+    expect(reportRowValueText(row)).toBe('every 120 min');
+    expect(HEADWAY_TIERS.find(t => (row.display(null).value.colorHeadway ?? 0) <= t.max)?.label).toBe('Infrequent');
+  });
+  it('a tail whose full-window wait is over 60 prints its own spacing and colours Infrequent at the wait', () => {
+    const r = readings({ t: 'tail', v: 164, every: 30, until: 736 });
+    const m = card([withReadings(r, 'main'), withReadings(r, 'tail')], 'midday', true);
+    const row = m.groups[0].rows.find(x => x.feature.stretchRole === 'tail')!;
+    expect(reportRowValueText(row)).toBe('every 30 min until 12:16 PM');
+    expect(HEADWAY_TIERS.find(t => (row.display(null).value.colorHeadway ?? 0) <= t.max)?.label).toBe('Infrequent');
   });
   it('a part-period tail reads every N until HH:MM on its own line, coloured at its full-window wait', () => {
     const r = readings({ t: 'tail', v: 164, every: 30, until: 736 });
@@ -107,8 +122,8 @@ describe('stop card branch words (CIV-1959 B3)', () => {
     const r: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }, stops('t', 20)), piece('branch', 0, { midday: t }, stops('x', 8))] };
     return [withReadings(r, 'main'), withReadings(r, 'tail')];
   };
-  it('a stop on a limited branch shows limited trips, never the trunk figure; a trunk stop is untouched', () => {
-    expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 'x3', 'midday')).toEqual({ periodText: 'limited trips' });
+  it('a stop on a limited branch shows the no-number words, never the trunk figure; a trunk stop is untouched', () => {
+    expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 'x3', 'midday')).toEqual({ periodText: 'Runs irregularly in this period' });
     expect(stopBranchReading(readingsWithStops({ t: 'limited' }), 't3', 'midday')).toBeNull();
   });
   it('a stop on a tail shows its spacing with when it stops; on a reading branch, the branch number', () => {
@@ -129,9 +144,9 @@ describe('stop card branch words (CIV-1959 B3)', () => {
     const off = JSON.stringify(buildStopRoutes(args(f, false)));
     const plain = JSON.stringify(buildStopRoutes(args([withReadings(undefined, 'main'), withReadings(undefined, 'tail')], false)));
     expect(off).toBe(plain);
-    // On: the branch's row for the stop says limited trips, with no number.
+    // On: the branch's row for the stop says the no-number words, with no number.
     const on = buildStopRoutes(args(f, true)).flatMap(r => r.branches).find(b => b.headsign === 'Pearson Airport');
-    expect(on?.periodText).toBe('limited trips');
+    expect(on?.periodText).toBe('Runs irregularly in this period');
     expect(on?.rowHeadway).toBeNull();
   });
 });
