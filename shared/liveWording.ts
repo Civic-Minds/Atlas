@@ -54,10 +54,6 @@ export const NOT_MEASURED_VALUE = 'not measured';
 export const DELAY_NOT_MEASURED = 'Delay not measured';
 /** A chart or strip mark resting on sparse location reports (Ryan, CIV-1795: the approved hover line's words; was "Less exact"). */
 export const LESS_EXACT_LABEL = 'Fewer location reports';
-/** The 90th-percentile delay column and figure (Ryan, CIV-1795 question 6, option b): "1 in 10 leave: 6+ min late". */
-export const P90_LATER_LABEL = '1 in 10 leave';
-/** That figure's value: "6+ min late", the minutes written by minutesText. */
-export const p90LateText = (min: number): string => `${minutesText(min).replace(/ min$/, '+ min')} late`;
 /** The back link from a report page to the Live map app. */
 export const OPEN_LIVE_LABEL = 'Open Live';
 /** The link from a report page to the same route or agency on the Live map. */
