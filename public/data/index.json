@@ -7455,10 +7455,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261120",
+      "lastFeedCheckAt": "20261121",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261220",
+      "expiredFeedCheckExpiry": "20261221",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7474,7 +7474,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-20"
+        "scoredAt": "2026-11-21"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7483,7 +7483,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "973567e469bee5444ab83075ab7d5aff3dd49742f40ccb27c682a4ef64a57eac"
+      "refusedFeedSha256": "d7b823c950d945a3dd2eed4a98d70092e93edd181e23acc5694f637131eecb41"
     },
     {
       "slug": "hocts",
@@ -11520,7 +11520,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-20",
+      "lastRefreshedAt": "2026-11-21",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11539,7 +11539,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261120",
+      "lastFeedCheckAt": "20261121",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11573,9 +11573,9 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261204",
+          "feedExpiry": "20261205",
           "feedVersion": null,
-          "rawArchiveKey": "20261204-9819fc0bd52c6a85"
+          "rawArchiveKey": "20261205-e76ff11c3ecd4bff"
         }
       ],
       "lastPeekedExpiry": "20270401",
@@ -24157,10 +24157,10 @@
       "lastFeedExpiry": "20261121",
       "lastFeedVersion": "S1000093",
       "lastRefreshedAt": "2026-11-02",
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261121",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261121",
+      "expiredFeedCheckExpiry": "20270410",
       "timezone": "America/Denver",
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://evta.org/gtfs.zip",
@@ -24182,7 +24182,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-21"
+        "checkedAt": "2026-11-21",
+        "scoredAt": "2026-11-21"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24190,7 +24191,8 @@
       "feedRefreshRetryCount": 0,
       "lastServiceWeek": "f84c82af76e2c786",
       "feedObtainedAt": "20260416",
-      "lastFeedStart": "20260412"
+      "lastFeedStart": "20260412",
+      "heldFeedStart": "20261122"
     },
     {
       "slug": "all-points-transit",
