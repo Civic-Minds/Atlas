@@ -71,7 +71,7 @@ export const RELEASES: { version: string; date: string }[] = [
 
 export const WHATS_NEW: WhatsNewFeature[] = [
   { lead: 'Route branches', isNew: true, public: { version: '3.5.0', text: "a route's colour and filter result come from the stretch all its branches share, and each branch has its own line on the route card" } },
-  { lead: 'MTA New York', isNew: true, public: { version: '3.5.0', text: 'now one agency everywhere, not one row per subway, bus and railroad feed' } },
+  { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York's subway, buses and railroads" } },
   { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday' } },
   { lead: 'Frequent filter', public: { version: '3.5.0', text: 'a route whose first bus comes late or whose last bus leaves early no longer passes for that time of day' } },
   { lead: 'Page changes', public: { version: '3.5.0', text: 'moving between Atlas pages no longer reloads the page' } },
