@@ -19,7 +19,6 @@
     "Sterling, Colorado"
   ],
   "timezone": "America/Denver",
-  "hiddenInProduction": true,
   "lastFeedSourceKind": "configured",
   "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip",
   "lastFeedCheckAt": "20261116",

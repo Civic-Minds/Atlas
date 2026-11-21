@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Three more Colorado agencies are on the map**: Steamboat Springs Transit, Gunnison Valley RTA and Prairie Express, once the next data release publishes
 - **Studio's Live Measure menu sits with the other filters (local only)**: it was a separate button beside the Live tab; it now sits next to Agency, Route and Time of day
 - **Studio's Live side panel is shorter (local only)**: the two lines explaining Bunching's figures and the grey colour moved to Studio's About panel, with a Learn more link under the week table
 - **Studio's Live shows the data date in the map's loading-pill spot (local only)**: "Data up to Nov 16" sat inside the sidebar card; it now appears bottom of the map once loading finishes
