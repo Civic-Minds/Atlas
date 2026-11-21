@@ -256,8 +256,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setInfoHelpContext(null);
   }, []);
   // Studio's Live view: Learn more opens About at its Live part.
+  // CIV-2021: the request is kept here and handed to the panel, which may not be loaded yet when the link fires (it loads
+  // lazily on first open, so a listener of its own missed the first click and About opened at the top).
+  const [aboutLiveAsk, setAboutLiveAsk] = useState(0);
   useEffect(() => {
-    const on = () => openInfo('about');
+    const on = () => { openInfo('about'); setAboutLiveAsk(n => n + 1); };
     window.addEventListener(OPEN_ABOUT_LIVE_EVENT, on);
     return () => window.removeEventListener(OPEN_ABOUT_LIVE_EVENT, on);
   }, [openInfo]);
@@ -1026,7 +1029,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </div>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} scrollToLive={aboutLiveAsk} />
     </div>
     </SidebarFrameProvider>
     </PageMapOverlayProvider>

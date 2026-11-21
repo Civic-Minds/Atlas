@@ -32,7 +32,7 @@ export interface Kpi {
 
 const round1 = (x: number) => Math.round(x * 10) / 10;
 /** The Bunching tile shows its two parts when the file has them (CIV-302): "7% · 21%" over "too close · too far apart". */
-const bunchSplit = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
+const bunchSplitOf = (b: { bunched?: number; gapped?: number }) => b.bunched != null && b.gapped != null;
 const BUNCHING_SPLIT_CAPTION = 'too close · too far apart';
 export const bunchingIsSplit = (k: Pick<Kpi, 'key' | 'sub'>): boolean => k.key === 'bunching' && k.sub === BUNCHING_SPLIT_CAPTION;
 
@@ -75,7 +75,9 @@ function runTimeCaption(typicalMin: number, scheduledMin: number): string {
 }
 
 /** The tiles that have a figure this week (a measure with nothing behind it is left out, not shown as a dash). `runTimeScope` is the Run time tile's second caption line. */
-export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = {}, runTimeScope?: string): Kpi[] {
+/** oneBunchingFigure: Bunching as its one total share, never its two parts (CIV-2021, Studio: "0% · 0%" read as two unlabelled numbers). */
+export function kpiTiles(w: NonNullable<LiveV3['weekly']>, daily: DailyValues = {}, runTimeScope?: string, { oneBunchingFigure = false }: { oneBunchingFigure?: boolean } = {}): Kpi[] {
+  const bunchSplit = (b: { bunched?: number; gapped?: number }) => !oneBunchingFigure && bunchSplitOf(b);
   const t = w.thisWeek, l = w.lastWeek;
   const nThis = t.healthyDates.length, nLast = l.healthyDates.length;
   const mk = (key: CompareKey, label: string, value: string, sub: string, n: number, unit: string, nLast: number | null, delta: Kpi['delta'], last: string | null): Kpi => ({ key, label, value, sub, n, unit, nLastWeek: nLast, delta, lastWeekText: last });

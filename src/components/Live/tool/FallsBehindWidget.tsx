@@ -16,6 +16,8 @@ export default function FallsBehindWidget({ label, slower, looser, showRoute, da
 }) {
   const [open, setOpen] = useState(false);
   const days = dates.length ? serviceDaysText(dates.length, dates[0], dates[dates.length - 1]) : null;
+  // CIV-1878 (Ryan: "Why would that not be inside the route when u click it"): the sample under a figure only in a route's own view.
+  const sample = (x: TimeLossListRow): string[] => (showRoute ? [] : [W.sample(x.row.passes, x.row.days)]);
   const item = (x: TimeLossListRow, lines: string[]) => (
     <li key={`${x.route}:${x.directionId}:${x.row.fromStopId}>${x.row.toStopId}`} className="list-none">
       <button type="button" onClick={() => onPick(x)} className="w-full rounded-lg px-1.5 py-1.5 text-left text-sm hover:bg-[var(--bg-hover)] max-sm:min-h-[44px]">
@@ -28,14 +30,14 @@ export default function FallsBehindWidget({ label, slower, looser, showRoute, da
     <Widget label={label} size="medium">
       {days && <p className="m-0 mb-1 text-xs leading-4 text-[var(--text-dim)]">{days}</p>}
       <ul className="m-0 p-0">
-        {slower.map(x => item(x, [timeLostLine(x.row.typicalMin), W.sample(x.row.passes, x.row.days)]))}
+        {slower.map(x => item(x, [timeLostLine(x.row.typicalMin), ...sample(x)]))}
       </ul>
       {looser.length > 0 && (
         <div className="mt-2 border-t border-[var(--border-primary)] pt-2">
           <button type="button" aria-expanded={open} onClick={() => setOpen(o => !o)} className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)]">
             {open ? '▾' : '▸'} {W.looserTitle}
           </button>
-          {open && <ul className="m-0 mt-1 p-0">{looser.map(x => item(x, [W.looserLine(-x.row.typicalMin), W.sample(x.row.passes, x.row.days)]))}</ul>}
+          {open && <ul className="m-0 mt-1 p-0">{looser.map(x => item(x, [W.looserLine(-x.row.typicalMin), ...sample(x)]))}</ul>}
         </div>
       )}
     </Widget>
