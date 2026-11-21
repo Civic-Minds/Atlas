@@ -7,13 +7,13 @@ import { MODE_EASE_MS } from '../components/ModeTransition';
 vi.mock('../apps/studio/useDevFile', () => ({ useDevFile: (url: string) => ({ agencies: url.includes('live') ? ['ttc', 'kingston'] : ['kingston', 'hamilton'] }) }));
 // Each page shows the frame key Studio hands it and the key the map last framed (CIV-1925).
 vi.mock('../apps/studio/Live', async () => {
-  const { useStudioMapFrame } = await import('../apps/studio/StudioMapFrame');
+  const { useStudioMapFrame } = await import('../context/StudioMapFrame');
   const { useEffect } = await import('react');
   // Live frames its drawing on mount, as PageMapLayer does with the map.
   return { default: () => { const f = useStudioMapFrame(); useEffect(() => { f.framedMemory.current = f.frameKey; }); return <div>live panel</div>; } };
 });
 vi.mock('../apps/studio/Fleet', async () => {
-  const { useStudioMapFrame } = await import('../apps/studio/StudioMapFrame');
+  const { useStudioMapFrame } = await import('../context/StudioMapFrame');
   return { default: () => { const f = useStudioMapFrame(); return <div>fleet panel <span data-testid="frame">{f.frameKey}|{f.framedMemory.current ?? ''}</span></div>; } };
 });
 

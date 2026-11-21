@@ -3,7 +3,7 @@ import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
 import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
-import StudioPanel from './StudioPanel';
+import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
@@ -12,7 +12,7 @@ import RouteListRow, { RouteListColumns, RouteListHeader } from '../../component
 import AgencyGroupHeader from '../../components/ui/AgencyGroupHeader';
 import { LIST_ROW_DIM } from '../../styles';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
-import { useStudioMapFrame } from './StudioMapFrame';
+import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
 import { periodMenuOptions } from '../../components/Interval/pickers';
 import { PAGE_NAMES } from '../../../shared/pageNames';

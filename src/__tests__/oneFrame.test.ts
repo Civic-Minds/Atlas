@@ -45,7 +45,7 @@ describe('one frame for every map view (CIV-1828)', () => {
 
   it('leaves the map, the agency, the route and the address to the Studio frame (CIV-1925)', () => {
     // Pages supply their panel and their own chips; the frame (Studio.tsx, StudioMapFrame.tsx) owns the rest.
-    const frame = ['src/apps/studio/Studio.tsx', 'src/apps/studio/StudioMapFrame.tsx'];
+    const frame = ['src/apps/studio/Studio.tsx', 'src/context/StudioMapFrame.tsx'];
     const pages = sourceFiles('src/apps/studio').filter(f => !frame.includes(f));
     const rules: [string, RegExp][] = [
       ['reads or writes the address', /useSearchParams|setSearchParams|syncUrlParams/],

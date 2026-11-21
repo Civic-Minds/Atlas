@@ -1,5 +1,5 @@
 import { createContext, useContext, type MutableRefObject, type ReactNode } from 'react';
-import type { PageMapOverlay } from '../../context/PageMapOverlay';
+import type { PageMapOverlay } from './PageMapOverlay';
 
 /**
  * Where Studio's map is framed (CIV-1925, CIV-1921). The Studio frame owns it, not its pages: one key per agency and route,

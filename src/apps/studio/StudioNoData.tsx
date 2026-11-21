@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { PanelBody } from '../../components/ui/Panel';
-import StudioPanel from './StudioPanel';
+import StudioPanel from '../../components/ui/WidePanel';
 import LinkCard from '../../components/ui/LinkCard';
 import { STUDIO_CHANGES_TEXT } from '../../../shared/studioWording';
 import StudioChips, { type StudioMenu } from './StudioChips';

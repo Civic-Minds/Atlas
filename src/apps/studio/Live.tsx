@@ -3,7 +3,7 @@ import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACE
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import { PanelBody } from '../../components/ui/Panel';
-import StudioPanel from './StudioPanel';
+import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { MapNote } from '../../components/ui/MapNote';
@@ -16,7 +16,7 @@ import WidgetPanel from '../../components/Live/tool/WidgetPanel';
 import { useLiveBody } from '../../components/Live/tool/useLiveBody';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
-import { useStudioMapFrame } from './StudioMapFrame';
+import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveAgencyName } from '../../hooks/useLiveAgencyName';
 import { useLiveAgency } from '../../LiveAgencyPage';
