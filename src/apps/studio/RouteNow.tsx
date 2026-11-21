@@ -59,9 +59,9 @@ export default function RouteNow({ agency, route }: { agency: string; route: str
         rowKey={d => d.direction}
         columns={[
           { key: 'direction', header: <span className={FIGURE_ROW_HEAD}>{T.columns.direction}</span>, rowHeader: true, className: `whitespace-nowrap ${FIGURE_ROW_LABEL}`, cell: d => d.direction },
-          { key: 'vehicles', header: <span className={`${FIGURE_HEAD} whitespace-nowrap`}>{T.columns.vehicles}</span>, className: FIGURE_MAIN, cell: d => countText(d.vehiclesNow + d.standingNow) },
-          { key: 'bunched', header: <span className={`${FIGURE_HEAD} whitespace-nowrap`}>{T.columns.bunched}</span>, className: FIGURE_MAIN, cell: d => countText(d.bunchedNow.length) },
-          { key: 'gapped', header: <span className={`${FIGURE_HEAD} whitespace-nowrap`}>{T.columns.gapped}</span>, className: FIGURE_MAIN, cell: d => countText(d.gappedNow.length) },
+          { key: 'vehicles', header: <span className={FIGURE_HEAD}>{T.columns.vehicles}</span>, className: FIGURE_MAIN, cell: d => countText(d.vehiclesNow + d.standingNow) },
+          { key: 'bunched', header: <span className={FIGURE_HEAD}>{T.columns.bunched}</span>, className: FIGURE_MAIN, cell: d => countText(d.bunchedNow.length) },
+          { key: 'gapped', header: <span className={FIGURE_HEAD}>{T.columns.gapped}</span>, className: FIGURE_MAIN, cell: d => countText(d.gappedNow.length) },
         ]}
       />
       {lines.length > 0 && <FigureNotes lines={lines} tone="secondary" />}
