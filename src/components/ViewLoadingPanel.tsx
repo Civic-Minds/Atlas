@@ -22,3 +22,8 @@ export default function ViewLoadingPanel({ what }: { what: string }) {
     </ModeFadeInOnMount>
   );
 }
+
+/** The same loading line inside an open card, where only one section is still loading (CIV-2003: Fleet's vehicles). */
+export function CardLoadingLine({ what }: { what: string }) {
+  return <PanelEmpty kind="loading" inline>{loadingText(what)}</PanelEmpty>;
+}
