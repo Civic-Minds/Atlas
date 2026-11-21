@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's list of overlapping vehicles leads with each vehicle**: rows read "Streetcar 4632 · 501", not "501 Streetcar 4632", since each row is one vehicle
 - **Live's route list names its agency**: "Live · TTC" with one agency in view, and a short heading over each agency's routes when several are on screen, so the list says whose routes these are
 - **Live's route and vehicle cards go "← Back to Live"**: the link named the route's agency but led to the Live list, which shows whatever agencies are on screen
 - **Live's bunching table reads each change as "10% → 41%" and the figures' build time moved to About**: the "+31 pt" fallback read as jargon, and the build time now sits where the schedule's own update date is shown

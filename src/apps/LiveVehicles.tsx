@@ -24,7 +24,7 @@ import RouteCardTitle from '../components/RouteCardTitle';
 import { getVehicleColors, getVehicleStatus } from '../utils/colors';
 import { useColorVision } from '../context/ColorVisionContext';
 import { effectiveMode, knownModeLabel, type EffectiveModeInput } from '../../shared/modes';
-import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel } from '../utils/format';
+import { cleanRouteShortName, cleanRouteDisplayName, routeListCompanionName, vehicleModeWord, vehicleModeCount, nameCase, routeShortLabel, GENERIC_VEHICLE } from '../utils/format';
 import { agencyNames, agencyShortNameBySlug } from '../utils/agencyName';
 import { liveScheduledHeadway } from '../utils/liveScheduledHeadway';
 import { routeDirectionOverrides } from '../utils/routeCardDirectionGroups';
@@ -39,7 +39,7 @@ import { buildRouteKey, routeFeatureForShortName, routeKeyForShortName, splitRou
 import type { MapFocus } from '../utils/routeFocus';
 import { getNowDay } from '../../shared/dayTypes';
 import { capitalizeFirst, headwayAbout, headwayEvery } from '../utils/headwayText';
-import { cardTripEnd, delayLabel, placedRows, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
+import { cardTripEnd, delayLabel, placedRows, vehicleCardName, vehicleCardRows, vehicleRowName } from '../components/Live/vehicleCardModel';
 import Panel, { PanelBody, PanelTitleBar } from '../components/ui/Panel';
 import LiveRoutePerformance from '../components/Live/LiveRoutePerformance';
 import { useLiveFeeds } from '../hooks/useLiveFeeds';
@@ -504,6 +504,19 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     },
     [routeFeature],
   );
+  /**
+   * CIV-2044: the noun a vehicle row leads with, "Streetcar 4632": the vehicle word, or the mode's own name where the
+   * vehicle word alone would be "Vehicle" (a streetcar shows its bare number elsewhere, CIV-926).
+   */
+  const vehicleNounFor = useCallback(
+    (agencySlug: string, routeShortName: string) => {
+      const word = modeWordFor(agencySlug, routeShortName);
+      if (word !== GENERIC_VEHICLE) return word;
+      const props = routeFeature(agencySlug, routeShortName)?.properties as EffectiveModeInput | null | undefined;
+      return (props?.routeType == null ? null : knownModeLabel(effectiveMode({ ...props, agencySlug }))) ?? word;
+    },
+    [modeWordFor, routeFeature],
+  );
   const selectedRouteModeWord = useMemo(
     () => (selectedGroup ? modeWordFor(selectedGroup.agencySlug, selectedGroup.routeShortName) : 'Bus'),
     [selectedGroup, modeWordFor],
@@ -920,11 +933,13 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
               pickVehicles.map((v, i) => {
                 const modeWord = modeWordFor(v.agencySlug, v.routeShortName);
                 const colors = getVehicleColors(v.status, colorMode);
+                // CIV-2044 (Ryan: "1", "Streetcar 4632 · 501"): each row is one vehicle, so it leads with the vehicle.
+                const number = vehicleCardName(v, GENERIC_VEHICLE);
                 return (
                   <RouteListRow
                     key={v.id}
-                    shortName={cleanRouteShortName(v.routeShortName)}
-                    name={vehicleRowName(v, i, modeWord)}
+                    shortName={number ? `${vehicleNounFor(v.agencySlug, v.routeShortName)} ${number}` : vehicleRowName(v, i, modeWord)}
+                    name={`· ${cleanRouteShortName(v.routeShortName)}`}
                     onClick={() => openVehicleCard(v)}
                     variant="spaced"
                     right={delayLabel(v) ? (
