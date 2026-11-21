@@ -7,7 +7,10 @@ import StudioPanel from './StudioPanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
-import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
+import { CardBodyText, CardSectionLabel, SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardSection, SidebarCardShell } from '../../components/Interval/cardUi';
+import RouteListRow, { RouteListColumns, RouteListHeader } from '../../components/RouteListRow';
+import AgencyGroupHeader from '../../components/ui/AgencyGroupHeader';
+import { LIST_ROW_DIM } from '../../styles';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
 import { useStudioMapFrame } from './StudioMapFrame';
 import { PERIOD_KEYS, type PeriodKey } from '../../../shared/config';
@@ -38,63 +41,34 @@ import { useDevFile } from './useDevFile';
 const T = STUDIO_MAP_TEXT;
 const C = STUDIO_CHANGES_TEXT;
 
-/** The list's columns: change dot, the route (number and name), then the older and newer dates' figures, each under its
- * date. The main map's card width: the number and name share one column so the name keeps room to read. */
-const ROW_GRID = 'grid grid-cols-[0.5rem_minmax(0,1fr)_5.25rem_5.25rem] items-center gap-x-2';
-
 /** The change list: every changed route by group; a click opens the route. Only the rows scroll. */
 function ChangeList({ file, period, route, onPick }: { file: StudioBeforeAfterFile; period: PeriodKey; route: string | null; onPick: (r: string) => void }) {
   const groups = useMemo(() => changeGroups(file), [file]);
+  // CIV-2003: the main map's route rows (RouteListRow), headings and panel body; one column per compared date, each value
+  // under its date (CIV-1806); the time of day is the top bar's.
   return (
-    <section aria-label={T.routes} className="flex min-h-0 flex-1 flex-col px-2 pb-2">
-      {/* One column per compared date, each value under its date (CIV-1806); the time of day is the top bar's. */}
-      <div className={`${ROW_GRID} shrink-0 px-2 pt-3 text-xs font-bold text-[var(--text-muted)]`}>
-        <span className="col-span-2">{T.routes}</span>
-        <span className="text-right">{dateRange(file.before.date, file.before.date)}</span>
-        <span className="text-right">{dateRange(file.after.date, file.after.date)}</span>
-      </div>
-      <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto">
-        {groups.map(g => (
-          <div key={g.key} className="mt-2">
-            {/* The heading stays in the route columns and wraps there; nothing crosses the date columns (Ryan, CIV-1806). */}
-            <div className={`${ROW_GRID} px-2`}><h3 className="col-span-2 m-0 text-xs font-bold text-[var(--text-muted)]">{g.title}</h3></div>
-            <ul className="m-0 p-0">
-              {g.routes.map(c => {
-                const l = routeTitle(c);
-                const f = rowFigure(c, period);
-                return (
-                  <li key={c.route} className="list-none">
-                    <button type="button" onClick={() => onPick(c.route)} aria-current={c.route === route ? 'true' : undefined}
-                      className={`${ROW_GRID} w-full items-start rounded-xl px-2 py-0.5 text-left text-sm ${c.route === route ? 'bg-[var(--accent-selected-bg)]' : 'hover:bg-[var(--bg-hover)]'}`}>
-                      <span aria-hidden className="mt-1.5 h-2 w-2 rounded-full" style={{ background: CHANGE_COLOR[routeChangeAt(file, c.route, period)] }} />
-                      <span className="min-w-0">
-                        <span className="font-bold">{l.primary}</span>{l.secondary && <span className="text-[var(--text-secondary)]"> {l.secondary}</span>}
-                        {f.label && <span className="block text-xs text-[var(--text-muted)]">{f.label}</span>}
-                      </span>
-                      {/* One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
-                          figure (Ryan, CIV-1806: "Does bold mean better frequency?"). */}
-                      {(['before', 'after'] as const).map(side => {
-                        const cell = (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null };
-                        return (
-                          <span key={side} className="text-right">
-                            <span className="block whitespace-nowrap">{cell.main}</span>
-                            {cell.note && <span className="block whitespace-nowrap text-xs text-[var(--text-muted)]">{cell.note}</span>}
-                          </span>
-                        );
-                      })}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+    <section aria-label={T.routes} className="flex min-h-0 flex-1 flex-col">
+      <RouteListHeader label={T.routes} columns={[dateRange(file.before.date, file.before.date), dateRange(file.after.date, file.after.date)]} />
+      <PanelBody className="pb-2">
+        {groups.map((g, i) => (
+          <div key={g.key}>
+            <AgencyGroupHeader rule={i === 0 ? 'none' : 'above'}>{g.title}</AgencyGroupHeader>
+            {g.routes.map(c => {
+              const l = routeTitle(c);
+              const f = rowFigure(c, period);
+              // One short figure per cell, a late start or early end on its own line (CIV-1922). No bold on the newer
+              // figure (Ryan, CIV-1806: "Does bold mean better frequency?").
+              const cells = (['before', 'after'] as const).map(side => (PERIOD_KEYS as readonly string[]).includes(f.key) ? periodCell(c[side], f.key as PeriodKey) : { main: f[side], note: null });
+              return (
+                <RouteListRow key={c.route} shortName={l.primary} name={l.secondary ?? undefined} dotColor={CHANGE_COLOR[routeChangeAt(file, c.route, period)]}
+                  subtitle={f.label ? <span className={`block ${LIST_ROW_DIM}`}>{f.label}</span> : undefined}
+                  right={<RouteListColumns cells={cells} />} selected={c.route === route} onClick={() => onPick(c.route)} />
+              );
+            })}
           </div>
         ))}
-        {file.unchanged.length > 0 && (
-          <div className={`${ROW_GRID} mt-2 px-2`}>
-            <p className="col-span-2 m-0 text-sm text-[var(--text-secondary)]">{C.unchangedCount(file.unchanged.length)}</p>
-          </div>
-        )}
-      </div>
+        {file.unchanged.length > 0 && <CardBodyText className="px-4">{C.unchangedCount(file.unchanged.length)}</CardBodyText>}
+      </PanelBody>
     </section>
   );
 }
@@ -110,7 +84,7 @@ function FleetMapKey({ beforeDate, afterDate }: { beforeDate: string; afterDate:
   ];
   return (
     <MapLegendCard label={MAP_COLOURS_LABEL}>
-      <p className="m-0 mb-1.5 text-xs font-bold text-[var(--text-muted)]">{T.keyTitle}</p>
+      <CardSectionLabel className="!mb-1.5">{T.keyTitle}</CardSectionLabel>
       <MapKey stepsClassName="grid grid-cols-2 gap-x-2 gap-y-0.5" steps={steps} />
       <MapKey stepsClassName="mt-1.5 grid grid-cols-2 gap-x-2 gap-y-0.5" steps={sides} />
     </MapLegendCard>
@@ -230,9 +204,9 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
       ) : (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>
           <PanelTitleBar title={PAGE_NAMES.studioSchedules} />
-          <div className="shrink-0 px-4 pt-3">
-            <p className="m-0 text-sm">{intro}</p>
-            {leftOut.map(n => <p key={n} className="m-0 mt-1 text-sm text-[var(--text-muted)]">{n}</p>)}
+          <div className="shrink-0 px-4 pt-2">
+            <CardBodyText>{intro}</CardBodyText>
+            {leftOut.map(n => <CardBodyText key={n}>{n}</CardBodyText>)}
           </div>
           <ChangeList file={file} period={period} route={route} onPick={setRoute} />
         </StudioPanel>

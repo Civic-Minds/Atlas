@@ -1,5 +1,5 @@
 import React from 'react';
-import { LIST_ROW_PRIMARY, SELECTION_ACTIVE_TEXT } from '../styles';
+import { LIST_ROW_DIM, LIST_ROW_PRIMARY, PANEL_SECTION_HEAD, SELECTION_ACTIVE_TEXT } from '../styles';
 import ListRow from './ui/ListRow';
 import RouteRowName from './RouteRowName';
 
@@ -43,12 +43,15 @@ export default function RouteListRow({
       <RouteRowName shortName={shortName} name={name} nameClassName="text-xs" />
     </p>
   );
+  // With a subtitle too (CIV-2003, Studio's Schedules), the dot sits on the name's first line and the subtitle lines up
+  // under the name; a row with only a dot is unchanged.
   const label = dotColor ? (
-    <div className="flex items-center gap-2 min-w-0">
-      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dotColor }} />
+    <div className={`flex ${subtitle ? 'items-start' : 'items-center'} gap-2 min-w-0`}>
+      <span className={`w-2 h-2 rounded-full shrink-0${subtitle ? ' mt-0.5' : ''}`} style={{ background: dotColor }} />
       {text}
     </div>
   ) : text;
+  const sub = subtitle && dotColor ? <div className="pl-4">{subtitle}</div> : subtitle;
   return (
     <ListRow
       variant={variant === 'spaced' ? 'spaced' : 'divided'}
@@ -68,11 +71,41 @@ export default function RouteListRow({
         <>
           <div className="min-w-0 flex-1">
             {label}
-            {subtitle}
+            {sub}
           </div>
           {right}
         </>
       )}
     </ListRow>
+  );
+}
+
+/** One figure cell in RouteListColumns: the figure, and a short note under it in the dim row style. */
+export interface RouteListCell { main: React.ReactNode; note?: React.ReactNode }
+
+/**
+ * Figures in fixed columns at a route row's right end, as `right` (CIV-2003: Studio's Schedules, one column per compared
+ * date). RouteListHeader names the columns with the same widths, so each figure sits under its heading.
+ */
+export function RouteListColumns({ cells }: { cells: readonly RouteListCell[] }) {
+  return (
+    <span className="grid shrink-0 gap-x-2 text-right text-xs" style={{ gridTemplateColumns: `repeat(${cells.length}, 5.25rem)` }}>
+      {cells.map((c, i) => (
+        <span key={i}>
+          <span className="block whitespace-nowrap">{c.main}</span>
+          {c.note && <span className={`block whitespace-nowrap ${LIST_ROW_DIM}`}>{c.note}</span>}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** The heading row over a list of RouteListRows with RouteListColumns: the list's name, then each column's. */
+export function RouteListHeader({ label, columns }: { label: React.ReactNode; columns: readonly React.ReactNode[] }) {
+  return (
+    <div className={`${PANEL_SECTION_HEAD} flex items-end justify-between gap-2`}>
+      <span>{label}</span>
+      <RouteListColumns cells={columns.map(main => ({ main }))} />
+    </div>
   );
 }
