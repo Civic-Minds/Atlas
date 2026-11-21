@@ -12,7 +12,7 @@ import DataTable, { type DataTableColumn, type DataTableSort } from './component
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import PageSection, { PageTable, PAGE_SECTION_NOTE } from './components/ui/PageSection';
 import { PageTitle } from './components/ui/PageTitle';
-import { loadingText } from './content/noticeCopy';
+import PageLoadState from './components/ui/PageLoadState';
 import { DIAGNOSTICS_UNEVEN_PATH, INTERNAL_GROUPS } from '../shared/internalPages';
 import type { Agency } from './App';
 import { delayAmount, headwayAbout } from './utils/headwayText';
@@ -168,13 +168,8 @@ export default function DiagnosticsUnevenPage() {
     <DocsPageLayout width="wide">
       <PageTitle>{page.title}</PageTitle>
       <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-muted)]">{page.description}</p>
-      {agenciesLoadState === 'loading' || isLoading ? (
-        <p className="mt-12 text-sm text-[var(--text-dim)]">{loadingText('the agencies')}</p>
-      ) : agenciesLoadState === 'error' ? (
-        <div className="mt-12 flex flex-col items-start gap-3 text-sm text-[var(--text-dim)]">
-          <p>Could not load agency data.</p>
-          <Pill tone="outline" size="segment" onClick={retry}>Retry</Pill>
-        </div>
+      {agenciesLoadState === 'loading' || agenciesLoadState === 'error' || isLoading ? (
+        <PageLoadState state={agenciesLoadState === 'error' && !isLoading ? 'error' : 'loading'} what="the agencies" onRetry={retry} />
       ) : (
         <PageSection id="uneven-flagged" title="Flagged Directions" intro={`${countText(sorted.length)} on a ${day.toLowerCase()}.`}>
           <div className="mt-4 flex gap-1.5">
