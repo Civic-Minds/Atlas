@@ -38,8 +38,12 @@ describe('one list of live agencies (CIV-1691)', () => {
 
   // CIV-1899: the focus areas are places (a region's agencies, live or not), not a list of live agencies; only that block is
   // skipped. Which agencies are recorded comes from the archive shards, so the rest of focus.ts is checked like any file.
+  // CIV-2046: STUDIO_FOCUS_AGENCIES is Studio's product focus (Schedules and vehicles-needed files), not a Live list; only
+  // that one named export is skipped too.
   const withoutFocusAreas = (f: string, text: string) =>
-    f === 'shared/rules/focus.ts' ? text.replace(/export const FOCUS_AREAS[\s\S]*?\n\];/, '') : text;
+    f === 'shared/rules/focus.ts'
+      ? text.replace(/export const FOCUS_AREAS[\s\S]*?\n\];/, '').replace(/export const STUDIO_FOCUS_AGENCIES = \[[^\]]*\] as const;/, '')
+      : text;
 
   it('has no hand-typed array or set of live agency slugs', () => {
     const lists = code.filter(f => {
