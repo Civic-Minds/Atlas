@@ -106,7 +106,7 @@ describe('Studio route before/after table (CIV-1715, in the sidebar since CIV-17
     const r12 = routeBlock('12');
     expect([...r12.querySelectorAll('tbody th')].slice(0, 3).map(c => c.textContent)).toEqual(['Route', 'Stops', 'Trip time']);
     expect(rowCells(r12, 'Stops')).toEqual(['Stops', '10', '26–28']);
-    expect(rowCells(r12, 'Route')).toEqual(['Route', '[Placeholder: Cambrai – Downtown]', '[Placeholder: Cambrai – St. Lawrence College]']);
+    expect(rowCells(r12, 'Route')).toEqual(['Route', 'Cambrai – Downtown', 'Cambrai – St. Lawrence College']);
   });
 
   it('says a small change in one line, only what differs', () => {
