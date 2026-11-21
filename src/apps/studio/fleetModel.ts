@@ -122,6 +122,13 @@ export function agencyRouteCount(vehicles: StudioVehiclesFile, period: PeriodKey
   return (vehicles.periods[period] ?? []).reduce((n, g) => n + g.routes.length, 0);
 }
 
+/** The modes a route, or the whole agency, runs at any time of day: for the no-service line when the time picked has none (CIV-2002). */
+export function modesFor(vehicles: StudioVehiclesFile, route: string | null): number[] | undefined {
+  const groups = Object.values(vehicles.periods).flatMap(gs => gs ?? []).filter(g => route == null || g.routes.includes(route));
+  if (!groups.length || groups.some(g => !g.modes)) return undefined;
+  return [...new Set(groups.flatMap(g => g.modes ?? []))].sort((x, y) => x - y);
+}
+
 /** The group of routes that share buses with this route, at the time of day. */
 export function groupFor(vehicles: StudioVehiclesFile, route: string, period: PeriodKey): StudioVehicleGroup | null {
   return vehicles.periods[period]?.find(g => g.routes.includes(route)) ?? null;

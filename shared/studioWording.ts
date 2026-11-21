@@ -66,13 +66,14 @@ export const fleetNetworkText = (modes: readonly number[] | undefined) => {
   return { ifEveryRouteRan: 'If every route ran', asScheduled: 'As scheduled', count: word.charAt(0).toUpperCase() + word.slice(1) };
 };
 
+/** A time of day with no service: "No trains at this time of day." (CIV-2002: by mode, as the rest of Fleet). */
+export const noServiceText = (modes: readonly number[] | undefined) => `No ${vehiclesWord(modes)} at this time of day.`;
+
 export const STUDIO_VEHICLES_TEXT = {
   routes: ROUTES,
-  scheduled: 'Scheduled now',
   needed: 'Needed',
   running: 'Running time, all directions and branches',
   layover: 'Layover',
-  noService: 'No buses at this time of day.',
 } as const;
 
 /**

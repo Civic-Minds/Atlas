@@ -23,7 +23,7 @@ import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesNeededTit
 import Widget from '../../components/Live/tool/Widget';
 import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, changeGroups, modesFor, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
@@ -170,6 +170,9 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
   const cardRef = useRef<HTMLDivElement | null>(null);
   const fleet = useMemo(() => (vehicles && vehicles !== 'missing' ? agencyFleet(vehicles, period) : null), [vehicles, period]);
   const routeGroup = route && vehicles && vehicles !== 'missing' ? groupFor(vehicles, route, period) : null;
+  // The words follow the modes even at a time of day with no service (CIV-2002).
+  const routeModes = routeGroup?.modes ?? (route && vehicles && vehicles !== 'missing' ? modesFor(vehicles, route) : undefined);
+  const agencyModes = fleet?.modes ?? (vehicles && vehicles !== 'missing' ? modesFor(vehicles, null) : undefined);
   // Fleet's map has no change story: the newer schedule's lines in one colour (its route list is Schedules').
   const lines = useMemo(() => {
     const all = studioMapLines(file, period, route);
@@ -212,9 +215,9 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
                 </SidebarCardSection>
               )}
               {view === 'fleet' && (
-                <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeGroup?.modes) || vehiclesNeededTitle(routeGroup?.modes)}>
+                <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeModes) || vehiclesNeededTitle(routeModes)}>
                   {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} /> : null}
+                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} /> : null}
                 </SidebarCardSection>
               )}
             </SidebarCardShell>
@@ -223,14 +226,14 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
       ) : view === 'fleet' ? (
         // CIV-1922: Fleet opens on the fleet itself, the vehicles the whole agency needs at the time of day. CIV-2002 (Ryan:
         // "This panel looks different than any other panel in Atlas"): Live's agency panel, a plain body and one Widget card.
-        <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(fleet?.modes)}>
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(agencyModes)}>
           <PanelBody className="custom-scrollbar overflow-y-auto px-4 pt-3 pb-3">
             {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
               : vehicles ? (
                 <>
                   {fleet && <p className="m-0 mb-3 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</p>}
-                  <Widget title={vehiclesNeededTitle(fleet?.modes)}>
-                    <StudioGroupFigures group={fleet} showRunning={false} network />
+                  <Widget title={vehiclesNeededTitle(agencyModes)}>
+                    <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} />
                   </Widget>
                 </>
               ) : null}
