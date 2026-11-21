@@ -272,10 +272,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return true;
     });
   }, []);
-  // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
-  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
-    window.location.pathname.startsWith(HISTORY_PATH) ? null : parseAgencyCardParam(window.location.search)
-  ));
+  // The agency card opens from a link's ?operator= (CIV-919); in History the same address opens History on that agency (CIV-2008).
+  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => parseAgencyCardParam(window.location.search));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
@@ -346,6 +344,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return localStorage.getItem('atlas_pref_data_saver') === 'true';
     })()
   ));
+  // CIV-2006: the same general settings in Studio's Settings menu.
+  const studioSettings = useMemo(() => ({ lightMode, setLightMode, showMapLegend, setShowMapLegend, dataSaver, setDataSaver }), [lightMode, showMapLegend, dataSaver]);
 
   useEffect(() => {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_hide_low_quality', String(hideLowQuality));
@@ -373,6 +373,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   );
 
   const [searchFocused, setSearchFocused] = useState(false);
+  // CIV-2001: Studio reads the same search box (StudioSearch.tsx).
+  const studioSearch = useMemo(() => ({ query, focused: searchFocused, setQuery, setFocused: setSearchFocused }), [query, searchFocused]);
   // On phones the search box is too narrow to read what you type (#698), so while it is
   // focused it takes the whole top bar and the other header buttons step aside.
   const phoneSearchExpanded = isPhone && searchFocused;
@@ -691,7 +693,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
     <PageMapOverlayProvider>
-    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
+    {/* CIV-2001: Studio's panels keep their own width beside its search box; they start at the box's left edge as before. */}
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone || inStudio ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -719,8 +722,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         <div className="flex-1 min-w-0 sm:flex">
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
-        {/* Studio (CIV-1828) searches nothing yet: the box is left out, as the phone's resting search is, and the tabs close up. */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed || inStudio ? 'hidden' : ''}`}>
+        {/* CIV-2001: Studio uses this same box for its page's routes (StudioSearch.tsx); the map's own search stays off there. */}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
@@ -966,7 +969,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             )}
             {studioOn && (inStudio || studioLeaving) && (
               <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
-                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
+                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} settings={studioSettings} searchBox={studioSearch} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (

@@ -104,8 +104,6 @@ export const MAP_BADGE_COUNT = 'text-xs font-black text-[var(--text-primary)]';
 export const PHONE_TAP_AREA = "relative max-sm:after:absolute max-sm:after:inset-x-0 max-sm:after:-inset-y-[10px] max-sm:after:content-['']";
 
 export const MAP_BADGE_LABEL = 'text-xs font-semibold leading-none text-[var(--text-muted)]';
-/** The same label in the caution tone (a stale reading), so no caller overrides the colour with !important. */
-export const MAP_BADGE_LABEL_CAUTION = 'text-xs font-bold leading-none text-[var(--status-caution-text)]';
 
 /** Full-width border-b list row — suggestion lists, route lists, any clickable row inside a panel */
 export const LIST_ROW = 'flex items-center justify-between w-full px-4 py-2.5 border-b border-[var(--border-primary)] last:border-0 hover:bg-[var(--bg-btn-hover)] transition-colors text-left group';
@@ -195,7 +193,7 @@ export const Z_PANEL_RAISED = 'z-[1001]'; // One step above the panels: Compare'
 // Map overlay slots: one layout table for every fixed overlay over the map (CIV-1136), kept in mapOverlayLayout.ts.
 export {
   MAP_TOP_BAR_SLOT, MAP_FOOTER_ROW_SLOT, MAP_FOOTER_ROW_COMPARE_SLOT, MAP_COUNTS_COMPARE_SLOT, MAP_FOOTER_RIGHT_SLOT, MAP_FOOTER_NOTICE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT, MAP_FOOTER_PILLS_PHONE_SLOT_CLEAR_CONTROLS, MAP_COUNTS_PHONE_SLOT, MAP_LEGEND_SLOT, MAP_CONTROLS_SLOT, MAP_APP_SIDEBAR_SLOT,
-  MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_CONSENT_SLOT, MAP_STATUS_SLOT,
+  MAP_NOTICE_SLOT, MAP_NOTICE_SLOT_RAISED, MAP_FOOTER_HEIGHT_FALLBACK, mapFooterStyle, MAP_PROMPT_SLOT, MAP_STATUS_SLOT,
 } from './mapOverlayLayout';
 import { SIDEBAR_CARD_BOTTOM_LIMIT, SIDEBAR_CARD_TOP_BELOW_CONSENT, SIDEBAR_CARD_MAX_H_BELOW_CONSENT } from './mapOverlayLayout';
 

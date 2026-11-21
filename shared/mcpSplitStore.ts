@@ -11,7 +11,7 @@
 import type { DayType } from './rules/days';
 import type { StudioBeforeAfterFile } from './studioBeforeAfter';
 import type { StudioVehiclesFile } from './studioVehicles';
-import type { AtlasStore, McpAgency, McpAgencyMeta, McpHistoryRoute, McpStop, RankAgency, RouteLabel, RouteSummary } from './mcpStore';
+import type { AtlasStore, McpAgency, McpAgencyMeta, McpHistoryRoute, McpStop, RankAgency, RankWait, RouteLabel, RouteSummary } from './mcpStore';
 
 export type SplitRead = (path: string) => Promise<unknown | null>;
 
@@ -81,7 +81,7 @@ export function splitStore(read: SplitRead): AtlasStore {
     async stopNames(slug, day, key) { return (await get<SplitRows>(splitPaths.rows(slug, day, key)))?.names ?? null; },
     async routeNames(slug) { return get<Array<[string, string, string | null, string]>>(splitPaths.routeNames(slug)); },
     async rankAgencies() { return get<RankAgency[]>(splitPaths.rankAgencies); },
-    async rankWaits(day) { return get<Record<string, Array<Array<number | null>>>>(splitPaths.rankWaits(day)); },
+    async rankWaits(day) { return get<Record<string, Array<Array<RankWait>>>>(splitPaths.rankWaits(day)); },
     async rankLabels(slug) { return get<Partial<Record<DayType, RouteLabel[]>>>(splitPaths.rankLabels(slug)); },
     async routeNameText() { return get<Record<string, string>>(splitPaths.routeNameText); },
     evict(slug) { for (const k of [...memo.keys()]) if (k.startsWith(`agencies/${slug}/`)) memo.delete(k); },

@@ -70,6 +70,8 @@ interface SearchResultsListProps {
   onShowMoreResults?: () => void;
   /** Index results for agencies not loaded are still coming: hold the no-matches line until they are in. */
   searchPending?: boolean;
+  /** The line when nothing matches; the map's says the search covers the networks near it (CIV-2001: Studio's doesn't). */
+  emptyText?: string;
 }
 
 export const SearchResultsList: React.FC<SearchResultsListProps> = ({
@@ -100,6 +102,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   hasMoreResults = false,
   onShowMoreResults,
   searchPending = false,
+  emptyText = NO_SEARCH_MATCHES_NEAR_MAP,
 }) => {
   const areaBlock = areaResults.length > 0 && onSelectArea ? (
     <SearchSplitList
@@ -243,7 +246,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
       {noResults ? (
         // Stops and agencies are searched everywhere, so with nothing found the only miss can be a route outside the
         // loaded map area (CIV-959 gap 6).
-        searchPending ? null : <PanelEmpty>{NO_SEARCH_MATCHES_NEAR_MAP}</PanelEmpty>
+        searchPending ? null : <PanelEmpty>{emptyText}</PanelEmpty>
       ) : routesFirst ? (
         <>
           {areaBlock}

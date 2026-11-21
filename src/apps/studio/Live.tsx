@@ -3,7 +3,8 @@ import { MAP_COLOURS_LABEL, MEASURE_LABEL, ROUTE_MENU_LABEL, SEARCH_ROUTES_PLACE
 import ViewLoadingPanel from '../../components/ViewLoadingPanel';
 import { RouteTitleName } from '../../components/RouteRowName';
 import { PanelBody } from '../../components/ui/Panel';
-import StudioPanel from './StudioPanel';
+import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
+import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
 import { MapLegendCard } from '../../components/ui/MapLegendCard';
 import { MapNote } from '../../components/ui/MapNote';
@@ -16,7 +17,7 @@ import WidgetPanel from '../../components/Live/tool/WidgetPanel';
 import { useLiveBody } from '../../components/Live/tool/useLiveBody';
 import { SidebarCardHeader, SidebarCardHeaderBlock, SidebarCardShell } from '../../components/Interval/cardUi';
 import { usePageMapOverlay, type MapPick } from '../../context/PageMapOverlay';
-import { useStudioMapFrame } from './StudioMapFrame';
+import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { useAgencies } from '../../hooks/useAgencies';
 import { useLiveAgencyName } from '../../hooks/useLiveAgencyName';
 import { useLiveAgency } from '../../LiveAgencyPage';
@@ -29,7 +30,7 @@ import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
 import StudioChips, { type StudioMenu } from './StudioChips';
-import { CutoffFigures, cutoffsMenu, type SetCutoffs } from './StudioCutoffs';
+import { CutoffFigures, cutoffsSection, type SetCutoffs } from './StudioCutoffs';
 
 /**
  * Live, the first page of Atlas Studio on the main map (CIV-1828 step 2): where vehicles lose time, stop to stop, from the
@@ -108,7 +109,6 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
     { key: 'route', label: ROUTE_MENU_LABEL, value: route ?? '', options: m.routeOptions, searchPlaceholder: SEARCH_ROUTES_PLACEHOLDER, onPick: r => (r ? m.openRoute(r) : m.backToNetwork()), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' },
     directionMenu,
     { key: 'band', label: TIME_LABEL, value: band, options: periodMenuOptions(PERIOD_BANDS_ONLY.map(([k]) => k)), onPick: k => setBand(k as DashboardBand), panelClassName: 'w-56' },
-    route ? cutoffsMenu(cutoffs, setCutoffs) : null,
   ];
 
   // CIV-1828 (Ryan picked option A with B's chart: "in A the chart is bad in B the chart is good"): Right now first with
@@ -116,13 +116,18 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
   const routeWidgets = byKey(['loading', 'held', 'falls-behind', 'week', 'late-hours', 'problems']);
 
+  // CIV-2001: the top bar's search finds this page's routes; its results take the panel's place while it's open.
+  const searchOpen = useStudioSearchOpen();
+  const searchRoutes = useMemo(() => s.routes.map(r => ({ route: r.route, longName: r.longName ?? null, routeType: r.mode ?? null })), [s.routes]);
   const routeRow = route ? s.routes.find(r => r.route === route) ?? s.held.find(r => r.route === route) : null;
   const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
 
   return (
     <>
-      <StudioChips container={headerPortal} menus={menus} />
-      {route && label ? (
+      <StudioChips container={headerPortal} menus={menus} settings={route ? cutoffsSection(cutoffs, setCutoffs) : undefined} />
+      {searchOpen ? (
+        <StudioRouteSearch agencySlug={slug} agencyName={agencyName} routes={searchRoutes} onPick={r => m.openRoute(r)} frameStyle={frameStyle} />
+      ) : route && label ? (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={label.text}>
           <PanelBody className="px-4 pt-4 pb-2">
             <SidebarCardShell>

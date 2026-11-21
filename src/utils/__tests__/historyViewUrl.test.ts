@@ -7,14 +7,14 @@ const at = (hour: number) => new Date(2026, 9, 28, hour, 30);
 
 describe('History view in the link (map params h, p)', () => {
   it('reads the map format: h minutes or all, p a period key', () => {
-    expect(parseHistoryView('?h=15&p=amPeak')).toEqual({ maxHeadway: 15, period: 'amPeak', day: 'Weekday' });
-    expect(parseHistoryView('?h=all&p=midday')).toEqual({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' });
+    expect(parseHistoryView('?h=15&p=amPeak', undefined, false)).toEqual({ maxHeadway: 15, period: 'amPeak', day: 'Weekday' });
+    expect(parseHistoryView('?h=all&p=midday', undefined, false)).toEqual({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' });
   });
 
   it('an older History link without p, or with the retired all-day p, opens on the default period (CIV-1097)', () => {
-    expect(parseHistoryView('?agency=marta&hroute=6', at(12))).toEqual({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' });
-    expect(parseHistoryView('?h=all&p=all', at(8))).toEqual({ maxHeadway: Infinity, period: 'amPeak', day: 'Weekday' });
-    expect(parseHistoryView('?h=-3&p=brunch', at(17))).toEqual({ maxHeadway: Infinity, period: 'pmPeak', day: 'Weekday' });
+    expect(parseHistoryView('?agency=marta&hroute=6', at(12), false)).toEqual({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' });
+    expect(parseHistoryView('?h=all&p=all', at(8), false)).toEqual({ maxHeadway: Infinity, period: 'amPeak', day: 'Weekday' });
+    expect(parseHistoryView('?h=-3&p=brunch', at(17), false)).toEqual({ maxHeadway: Infinity, period: 'pmPeak', day: 'Weekday' });
   });
 
   it('writes h and p always (picker off), so the map reads neither as its own default', () => {
@@ -24,8 +24,8 @@ describe('History view in the link (map params h, p)', () => {
 
   it('round-trips', () => {
     const view = { maxHeadway: 20, period: 'evening' as const, day: 'Weekday' as const };
-    const { h, p } = encodeHistoryView(view);
-    expect(parseHistoryView(`?h=${h}&p=${p}`)).toEqual(view);
+    const { h, p } = encodeHistoryView(view, false);
+    expect(parseHistoryView(`?h=${h}&p=${p}`, undefined, false)).toEqual(view);
   });
 });
 
@@ -44,7 +44,7 @@ describe('the period History opens on (CIV-1097)', () => {
   });
 
   it('starts Frequency at All', () => {
-    expect(historyDefaultView(at(13))).toEqual({ period: 'midday', maxHeadway: Infinity, day: 'Weekday' });
+    expect(historyDefaultView(at(13), false)).toEqual({ period: 'midday', maxHeadway: Infinity, day: 'Weekday' });
   });
 });
 

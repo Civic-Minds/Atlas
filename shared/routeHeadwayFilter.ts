@@ -21,6 +21,7 @@ import { TRUNK_FILTER_ENABLED, type PeriodKey } from './config.js';
 import { flattenPeriodHeadwayProps, NO_PERIOD_SERVICE_TILE_VALUE } from './pmtilesProps.js';
 import { buildTileHeadwayFilterClause, tileEffectiveHeadwayExpr } from './tileFilterExprs.js';
 import { stampWorstDirectionHeadways } from './worstDirection.js';
+import { edgeWaitBit, PUBLIC_TIER_MAXES } from './rules/frequency.js';
 
 export type HeadwayFilterPeriod = PeriodKey | 'all';
 
@@ -207,4 +208,40 @@ export function routePassesHeadwayFilter(
     if (day != null && featureDay != null && featureDay !== day) return false;
     return featurePassesHeadwayFilter(props, period, maxHeadway, trunk);
   });
+}
+
+/**
+ * CIV-2014: a route's filter reading for one period, kept as two numbers so a list that holds no rows (the Atlas Studio
+ * MCP's route summaries and ranking) decides "every N or better" exactly as routePassesHeadwayFilter does for the map:
+ * `wait` is the lowest value the filter compares (null where the route has none), and `breaks` holds the edgeWaitBit of
+ * each public grade the route's wait meets but its first or last wait in the period breaks (CIV-238), so it fails that grade.
+ */
+export interface RouteFilterReading { wait: number | null; breaks: number }
+
+export function routeFilterReading(
+  features: ReadonlyArray<object>,
+  period: PeriodKey,
+  day?: string,
+  trunk: boolean = TRUNK_FILTER_ENABLED,
+): RouteFilterReading {
+  const onDay = features.filter(props => { const d = (props as Props).day; return day == null || d == null || d === day; });
+  let wait: number | null = null;
+  for (const props of onDay) {
+    const value = routeFilterHeadway(props, period, trunk);
+    if (value != null && (wait == null || value < wait)) wait = value;
+  }
+  let breaks = 0;
+  if (wait != null) {
+    for (const grade of PUBLIC_TIER_MAXES) {
+      if (wait <= grade && !routePassesHeadwayFilter(onDay, period, undefined, grade, trunk)) breaks |= edgeWaitBit(grade)!;
+    }
+  }
+  return { wait, breaks };
+}
+
+/** Whether a reading passes "every N min or less": routePassesHeadwayFilter's answer for the features it was read from. */
+export function readingPassesHeadwayFilter(reading: RouteFilterReading, maxHeadway: number): boolean {
+  if (reading.wait == null || reading.wait > maxHeadway) return false;
+  const bit = edgeWaitBit(maxHeadway);
+  return bit == null || (reading.breaks & bit) === 0;
 }

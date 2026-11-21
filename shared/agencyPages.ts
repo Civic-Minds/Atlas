@@ -630,7 +630,7 @@ export function bestRoute<R extends Pick<AgencyPageRoute, 'midday' | 'name'>>(ro
 
 /** "3 subway · 2 light rail · 209 bus" */
 export function modesText(byMode: ReadonlyArray<{ label: string; routes: number }>, separator = ' · '): string {
-  return byMode.map(m => `${m.routes} ${m.label.toLowerCase()}`).join(separator);
+  return byMode.map(m => `${countText(m.routes)} ${m.label.toLowerCase()}`).join(separator);
 }
 
 /** One sentence that stands alone: "210 weekday routes." */

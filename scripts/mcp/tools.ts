@@ -101,7 +101,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
     const counted = await Promise.all(pool.map(async a => {
       if (a.members.length === 1) {
         const routes = waits[a.slug] ?? [];
-        const meeting = routes.map((w, i) => ({ slug: a.slug, i, wait: w[at] })).filter(r => r.wait != null && r.wait <= minutes).sort((x, y) => x.wait! - y.wait!);
+        const meeting = routes.map((w, i) => ({ slug: a.slug, i, w: w[at], wait: data.rankWaitValue(w[at]) })).filter(r => data.rankWaitPasses(r.w, minutes)).map(({ slug, i, wait }) => ({ slug, i, wait })).sort((x, y) => x.wait! - y.wait!);
         return { a, routesOnDay: routes.length, meeting };
       }
       const seen = new Set<string>();
@@ -114,7 +114,7 @@ export const handlers: Record<string, (args: Args) => unknown | Promise<unknown>
           if (seen.has(k)) return;
           seen.add(k);
           routesOnDay++;
-          if (w[at] != null && w[at]! <= minutes) meeting.push({ slug: m.slug, i, wait: w[at] });
+          if (data.rankWaitPasses(w[at], minutes)) meeting.push({ slug: m.slug, i, wait: data.rankWaitValue(w[at]) });
         });
       }
       return { a, routesOnDay, meeting: meeting.sort((x, y) => x.wait! - y.wait!) };

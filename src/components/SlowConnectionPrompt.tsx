@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import { Z_HEADER, MAP_CONSENT_SLOT } from '../styles';
-import { setSlowPrompt, useConsentPrompt } from '../lib/consentPrompt';
+import { Z_HEADER, MAP_PROMPT_SLOT } from '../styles';
 import { MapPromptPill } from './AnalyticsConsent';
+import { usePromptFlag } from '../hooks/usePromptFlag';
 import { SLOW_CONNECTION_ACCEPT, SLOW_CONNECTION_DECLINE, SLOW_CONNECTION_PROMPT } from '../content/noticeCopy';
 
 const ANSWERED_KEY = 'atlas_slow_connection_answered';
@@ -14,7 +13,7 @@ export function rememberSlowPromptAnswered(): void {
   try { sessionStorage.setItem(ANSWERED_KEY, 'true'); } catch { /* the answer lasts only for this page then */ }
 }
 
-/** The prompt's pill: the fixed copy below, and a last pill of the map's bottom-left row (MapAttribution). */
+/** The prompt's pill (the analytics prompt's shared MapPromptPill). */
 export function SlowConnectionPill({ className = '', onAccept, onDecline }: { className?: string; onAccept: () => void; onDecline: () => void }) {
   return (
     <MapPromptPill
@@ -29,15 +28,10 @@ export function SlowConnectionPill({ className = '', onAccept, onDecline }: { cl
 }
 
 /**
- * CIV-98: offered, never applied silently. While it shows, the map already loads like Data saver. It sits where the
- * analytics prompt does (Ryan, 2026-11-20: "The same lace the analytics one goes right"): on sm and up the map's
- * bottom-left pill row draws it as a last pill; this fixed copy shows only on phones and on pages without that row.
+ * CIV-98: offered, never applied silently. While it shows, the map already loads like Data saver.
+ * CIV-2004 (Ryan chose 1): in the prompts' one centred slot (MAP_PROMPT_SLOT), as the analytics prompt and the update notice.
  */
 export default function SlowConnectionPrompt({ onAccept, onDecline }: { onAccept: () => void; onDecline: () => void }) {
-  const { rows } = useConsentPrompt();
-  useEffect(() => {
-    setSlowPrompt(true, onAccept, onDecline);
-    return () => setSlowPrompt(false, () => {}, () => {});
-  }, [onAccept, onDecline]);
-  return <SlowConnectionPill className={`${MAP_CONSENT_SLOT} ${rows > 0 ? 'sm:hidden' : ''} max-w-[calc(100vw-2rem)] ${Z_HEADER}`} onAccept={onAccept} onDecline={onDecline} />;
+  usePromptFlag(true);
+  return <SlowConnectionPill className={`${MAP_PROMPT_SLOT} ${Z_HEADER}`} onAccept={onAccept} onDecline={onDecline} />;
 }

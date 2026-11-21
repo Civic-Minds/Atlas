@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Card from '../../components/ui/Card';
+import { FIGURE_HEAD, FIGURE_ROW_HEAD, FIGURE_MAIN, FIGURE_ROW_LABEL, FigureFootnote, FigureNotes, FiguresCard } from '../../components/Live/FiguresCard';
 import DataTable from '../../components/ui/DataTable';
 import { STUDIO_NOW_PENDING as W, STUDIO_ROUTE_NOW_PENDING as T } from '../../../shared/liveWording';
 import { countText } from '../../../shared/numberText';
@@ -50,28 +50,22 @@ export default function RouteNow({ agency, route }: { agency: string; route: str
     ...(closest ? [T.bunchedAt(betweenLabel(closest.fromStop, closest.toStop), closest.minutes)] : []),
     ...(longest ? [T.gappedAt(betweenLabel(longest.fromStop, longest.toStop), longest.minutes, longest.scheduledGapMin)] : []),
   ];
-  const num = 'text-right text-sm font-black tracking-tight';
-  const head = (s: string) => <span className="block whitespace-nowrap text-right font-normal text-[var(--text-dim)]">{s}</span>;
+  // CIV-2003: the week table's card and classes (FiguresCard), titled since its first column is the direction.
   return (
-    <Card as="section" tone="surface" aria-label={W.title} className="min-w-0 px-2.5 py-1.5">
-      <h3 className="m-0 pt-0.5 text-sm font-bold text-[var(--text-primary)]">{W.title}</h3>
+    <FiguresCard label={W.title} title={W.title}>
       <DataTable
         caption={W.title}
         rows={answer.directions}
         rowKey={d => d.direction}
         columns={[
-          { key: 'direction', header: <span className="font-normal text-[var(--text-dim)]">{T.columns.direction}</span>, rowHeader: true, className: 'whitespace-nowrap font-bold text-[var(--text-muted)]', cell: d => d.direction },
-          { key: 'vehicles', header: head(T.columns.vehicles), className: num, cell: d => countText(d.vehiclesNow + d.standingNow) },
-          { key: 'bunched', header: head(T.columns.bunched), className: num, cell: d => countText(d.bunchedNow.length) },
-          { key: 'gapped', header: head(T.columns.gapped), className: num, cell: d => countText(d.gappedNow.length) },
+          { key: 'direction', header: <span className={FIGURE_ROW_HEAD}>{T.columns.direction}</span>, rowHeader: true, className: `whitespace-nowrap ${FIGURE_ROW_LABEL}`, cell: d => d.direction },
+          { key: 'vehicles', header: <span className={FIGURE_HEAD}>{T.columns.vehicles}</span>, className: FIGURE_MAIN, cell: d => countText(d.vehiclesNow + d.standingNow) },
+          { key: 'bunched', header: <span className={FIGURE_HEAD}>{T.columns.bunched}</span>, className: FIGURE_MAIN, cell: d => countText(d.bunchedNow.length) },
+          { key: 'gapped', header: <span className={FIGURE_HEAD}>{T.columns.gapped}</span>, className: FIGURE_MAIN, cell: d => countText(d.gappedNow.length) },
         ]}
       />
-      {lines.length > 0 && (
-        <ul className="m-0 mt-1 list-none border-t border-[var(--border-primary)] p-0 pt-1">
-          {lines.map(l => <li key={l} className="text-xs leading-4 text-[var(--text-secondary)]">{l}</li>)}
-        </ul>
-      )}
-      {answer.asOf != null && answer.dataAgeMin != null && <p className="m-0 mt-0.5 text-xs leading-4 text-[var(--text-dim)] opacity-75">{W.reading(answer.asOf, answer.dataAgeMin)}</p>}
-    </Card>
+      {lines.length > 0 && <FigureNotes lines={lines} tone="secondary" />}
+      {answer.asOf != null && answer.dataAgeMin != null && <FigureFootnote>{W.reading(answer.asOf, answer.dataAgeMin)}</FigureFootnote>}
+    </FiguresCard>
   );
 }

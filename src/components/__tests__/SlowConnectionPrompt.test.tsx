@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import SlowConnectionPrompt, { readSlowPromptAnswered, rememberSlowPromptAnswered } from '../SlowConnectionPrompt';
 import { isSlowConnection, useSlowConnection } from '../../utils/slowConnection';
+import { MAP_PROMPT_SLOT } from '../../styles';
 import { SLOW_CONNECTION_ACCEPT, SLOW_CONNECTION_DECLINE, SLOW_CONNECTION_PROMPT } from '../../content/noticeCopy';
 
 describe('isSlowConnection', () => {
@@ -40,7 +41,11 @@ describe('SlowConnectionPrompt', () => {
   it('offers the choice with the agreed words and answers each way', () => {
     const accept = vi.fn(); const decline = vi.fn();
     render(<SlowConnectionPrompt onAccept={accept} onDecline={decline} />);
-    expect(screen.getByRole('status')).toHaveTextContent(SLOW_CONNECTION_PROMPT);
+    // CIV-2004: one pill in the prompts' centred slot, as the analytics prompt and the update notice.
+    const pill = screen.getByRole('status');
+    expect(pill).toHaveTextContent(SLOW_CONNECTION_PROMPT);
+    expect(pill.className).toContain(MAP_PROMPT_SLOT);
+    expect(document.documentElement.dataset.consentPrompt).toBe('');
     fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_ACCEPT }));
     fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_DECLINE }));
     expect(accept).toHaveBeenCalledTimes(1);

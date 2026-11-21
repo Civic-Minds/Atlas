@@ -78,3 +78,26 @@ describe('Studio route groups (CIV-1693)', () => {
     expect(rows.flatMap(r => r.routes).sort()).toEqual(['A', 'B', 'C']);
   });
 });
+
+// CIV-2005: at a target headway the whole route runs every N on its full pattern; a short turn adds nothing.
+describe('Studio targets leave short turns out (CIV-2005)', () => {
+  const stops = ['S0', 'S1', 'S2', 'S3'];
+  const shortStops = ['S0', 'S1', 'S2'];
+  const coords: Places = { coords: new Map(stops.map((s, i) => [s, { lat: 45 + i * 0.05, lon: -80 }])) };
+  function line(): TripRun[] {
+    const runs: TripRun[] = [];
+    // Full pattern every 30 (run 30, layover 5: a 70-minute cycle), short turn every 10 (run 20, layover 5: 50 minutes).
+    for (let b = 0; b < 3; b++) for (let t = 7 * 60 + b * 30, n = 0; t < 17 * 60; n += 2) { const [trips, next] = roundTrip('L', stops, `f${b}`, t, 30, 5, n); runs.push(...trips); t = next + 20; }
+    for (let b = 0; b < 5; b++) for (let t = 7 * 60 + b * 10, n = 0; t < 17 * 60; n += 2) { const [trips, next] = roundTrip('L', shortStops, `s${b}`, t, 20, 5, n); runs.push(...trips); t = next; }
+    return runs;
+  }
+  const analysis = periodPatterns(line(), MIDDAY, coords);
+  const [row] = vehicleGroupRows([{ routeId: 'L', analysis }], id => id);
+  it('finds the short turn, and counts only the full pattern at every 60', () => {
+    expect(analysis.patterns.some(p => p.role === 'short turn')).toBe(true);
+    const full = analysis.patterns.find(p => p.role === 'main')!;
+    expect(row.atTarget[60]).toBe(Math.ceil((full.runningMin + (full.layoverMin ?? 0)) / 60 - 1e-9));
+    expect(row.atTarget[60]).toBeLessThan(row.implied);
+  });
+});
+

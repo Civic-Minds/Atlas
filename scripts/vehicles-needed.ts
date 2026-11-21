@@ -38,6 +38,7 @@ import { tripRunsForDay } from '../pipeline/vehiclesNeeded.js';
 import { PRODUCT_FOCUS } from '../shared/rules/focus.js';
 import { cycleMin, needVehicles, unevenLegs, parseRecovery, periodPatterns, recoveryMin, targetVehicles, type Places, type TargetOptions } from '../pipeline/vehiclePatterns.js';
 import { vehicleGroupRows } from '../pipeline/vehicleGroups.js';
+import { effectiveMode } from '../shared/modes.js';
 import type { StudioVehiclesFile } from '../shared/studioVehicles.js';
 import { PERIOD_KEYS, PERIOD_LABELS, PERIOD_MINUTES, type HeadwayByPeriod, type PeriodKey } from '../shared/config.js';
 import { WEEKDAYS, type DayName, type GtfsData } from '../types/gtfs.js';
@@ -131,6 +132,9 @@ const places: Places = {
 const stopName = new Map(gtfs.stops.map(s => [s.stop_id, s.stop_name]));
 const shortNameOf = new Map((gtfs.routes ?? []).map(r => [r.route_id, r.route_short_name || r.route_long_name || r.route_id]));
 const nameOf = (routeId: string) => shortNameOf.get(routeId) ?? routeId;
+// The map's mode for each route (its listed corrections and light-rail rules too), for the Studio file's wording (CIV-2002).
+const modeById = new Map((gtfs.routes ?? []).map(r => [r.route_id, effectiveMode({ routeType: r.route_type, routeShortName: r.route_short_name, routeLongName: r.route_long_name, agencySlug: slug ?? undefined })]));
+const modeOf = (routeId: string) => modeById.get(routeId);
 const fmt = (v: number | null | undefined) => (v == null ? '-' : String(Math.round(v)));
 
 type Analysis = ReturnType<typeof periodPatterns>;
@@ -236,7 +240,7 @@ if (jsonOut) {
       const index = pickRepresentativeWeekday(countsByRoute.get(routeId)!, true);
       return index == null ? [] : [{ routeId, analysis: analysis(WEEKDAYS[index], period) }];
     });
-    file.periods[period] = vehicleGroupRows(routes, nameOf);
+    file.periods[period] = vehicleGroupRows(routes, nameOf, modeOf);
   }
   mkdirSync(dirname(resolve(jsonOut)), { recursive: true });
   writeFileSync(resolve(jsonOut), `${JSON.stringify(file, null, 1)}\n`);

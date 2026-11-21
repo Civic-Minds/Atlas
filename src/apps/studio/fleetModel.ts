@@ -117,6 +117,18 @@ export function rowFigure(c: StudioRouteChange, period: PeriodKey): RowFigure {
   return pick ? { key: pick.key, label: pick.key === period ? null : pick.label, before: pick.before, after: pick.after } : { key: period, label: null, ...here };
 }
 
+/** How many routes the agency's figures cover at the time of day (CIV-2002: "is this network-wide?"). */
+export function agencyRouteCount(vehicles: StudioVehiclesFile, period: PeriodKey): number {
+  return (vehicles.periods[period] ?? []).reduce((n, g) => n + g.routes.length, 0);
+}
+
+/** The modes a route, or the whole agency, runs at any time of day: for the no-service line when the time picked has none (CIV-2002). */
+export function modesFor(vehicles: StudioVehiclesFile, route: string | null): number[] | undefined {
+  const groups = Object.values(vehicles.periods).flatMap(gs => gs ?? []).filter(g => route == null || g.routes.includes(route));
+  if (!groups.length || groups.some(g => !g.modes)) return undefined;
+  return [...new Set(groups.flatMap(g => g.modes ?? []))].sort((x, y) => x - y);
+}
+
 /** The group of routes that share buses with this route, at the time of day. */
 export function groupFor(vehicles: StudioVehiclesFile, route: string, period: PeriodKey): StudioVehicleGroup | null {
   return vehicles.periods[period]?.find(g => g.routes.includes(route)) ?? null;
@@ -135,5 +147,7 @@ export function agencyFleet(vehicles: StudioVehiclesFile, period: PeriodKey): St
     const figures = groups.map(g => g.atTarget[hw]);
     if (figures.every((n): n is number => typeof n === 'number')) atTarget[hw] = figures.reduce((x, n) => x + n, 0);
   }
-  return { routes: [], scheduled: groups.reduce((x, g) => x + g.scheduled, 0), implied: groups.reduce((x, g) => x + g.implied, 0), runningMin: 0, layoverMin: null, atTarget };
+  // CIV-2002: every mode the groups run, so the page says trains, streetcars or buses, and vehicles when mixed.
+  const modes = [...new Set(groups.flatMap(g => g.modes ?? []))].sort((x, y) => x - y);
+  return { routes: [], ...(groups.every(g => g.modes) ? { modes } : {}), scheduled: groups.reduce((x, g) => x + g.scheduled, 0), implied: groups.reduce((x, g) => x + g.implied, 0), runningMin: 0, layoverMin: null, atTarget };
 }

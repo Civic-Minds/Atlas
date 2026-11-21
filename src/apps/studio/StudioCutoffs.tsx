@@ -1,19 +1,19 @@
 import type { ReactNode } from 'react';
-import Card from '../../components/ui/Card';
+import { FIGURE_HEAD, FIGURE_MAIN, FIGURE_OTHER, FIGURE_ROW_LABEL, FIGURE_SCOPE_HEAD, FigureNotes, FiguresCard } from '../../components/Live/FiguresCard';
 import DataTable from '../../components/ui/DataTable';
 import Pill from '../../components/ui/Pill';
 import { PickerSection } from '../../components/Interval/pickers';
-import { chipRowClass } from '../../components/Interval/ChipMenu';
+import ArrowLink from '../../components/ui/ArrowLink';
+import { PAGE_NAMES } from '../../../shared/pageNames';
 import { LAST_WEEK_COLUMN, THIS_WEEK_COLUMN } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
 import { percentText } from '../../../shared/numberText';
 import { weekForBand, type DashboardBand, type LiveV3 } from '../../../shared/liveDashboard';
 import { DEFAULT_CUTOFFS, cutoffFactorText, cutoffMinutesText, figuresAtCutoffs, type CustomFigure, type Cutoffs } from '../../../shared/liveCutoffs';
 import { STUDIO_SETTINGS_TEXT as S } from '../../../shared/liveWording';
-import type { StudioMenu } from './StudioChips';
 
 /**
- * Planners' own cut-offs in Studio's Live view (CIV-1886, the Studio half of CIV-1869): a Settings chip in the top bar (the chip and its rows in Ryan's approved words, STUDIO_SETTINGS_TEXT)
+ * Planners' own cut-offs in Studio's Live view (CIV-1886, the Studio half of CIV-1869): a Studio section in the main app's Settings menu (CIV-2006; its rows in Ryan's approved words, STUDIO_SETTINGS_TEXT)
  * and, in a picked route's card, the week's figures at those cut-offs beside the standard week table. The calculation is
  * the MCP's own (shared/liveCutoffs.ts figuresAtCutoffs); rankings and the standard figures stay on the standard cut-offs.
  */
@@ -52,9 +52,12 @@ const settingNumber = (v: number): string => { const w = Math.floor(v); return v
 
 const isSet = (set: SetCutoffs) => ORDER.some(k => set[k] != null);
 
-/** The chip's menu: four rows of choices and a way back to the standard. Its chip is filled while any cut-off is set. */
-export function cutoffsMenu(set: SetCutoffs, onChange: (next: SetCutoffs) => void): StudioMenu {
-  const content = (close: () => void): ReactNode => (
+/**
+ * CIV-2006 (Ryan chose the main app's Settings menu): the cut-offs' section in Studio's Settings, four rows of choices
+ * and a way back to the standard. `active` fills the gear's dot while any cut-off is set.
+ */
+export function cutoffsSection(set: SetCutoffs, onChange: (next: SetCutoffs) => void): { title: string; content: ReactNode; active: boolean } {
+  const content = (
     <div className="flex flex-col gap-3">
       {ORDER.map(k => {
         const current = set[k] ?? DEFAULT_CUTOFFS[k];
@@ -76,10 +79,10 @@ export function cutoffsMenu(set: SetCutoffs, onChange: (next: SetCutoffs) => voi
           </div>
         );
       })}
-      {isSet(set) && <button type="button" className={chipRowClass(false)} onClick={() => { onChange({}); close(); }}>{W.reset}</button>}
+      {isSet(set) && <ArrowLink as="button" tone="inline" size="xs" onClick={() => onChange({})}>{W.reset}</ArrowLink>}
     </div>
   );
-  return { key: 'cutoffs', label: S.chip, value: '', options: [], onPick: () => {}, content, active: isSet(set), panelClassName: 'w-80' };
+  return { title: PAGE_NAMES.studio, content, active: isSet(set) };
 }
 
 interface Row { key: keyof Cutoffs; label: string; now: CustomFigure | undefined; last: CustomFigure | undefined }
@@ -97,20 +100,18 @@ export function CutoffFigures({ v3, band, set }: { v3: LiveV3; band: DashboardBa
   const noCounts = rows.some(r => r.now?.note);
   const notes = [W.standardNote, ...(set.bunchedWithinMin != null || set.gappedFactor != null ? [W.bothNote] : []), ...(noCounts ? [W.noCounts] : [])];
   return (
-    <Card as="section" tone="surface" aria-label={W.title} className="min-w-0 px-2.5 py-1.5">
+    <FiguresCard label={W.title}>
       <DataTable
         caption={W.title}
         rows={rows}
         rowKey={r => r.key}
         columns={[
-          { key: 'measure', header: <span className="font-bold text-[var(--text-primary)]">{W.title}</span>, rowHeader: true, className: 'font-bold text-[var(--text-muted)]', cell: r => r.label },
-          { key: 'now', header: <span className="block text-right font-normal text-[var(--text-dim)]">{THIS_WEEK_COLUMN}</span>, className: 'text-right text-sm font-black tracking-tight', cell: r => value(r.now) },
-          { key: 'last', header: <span className="block text-right font-normal text-[var(--text-dim)]">{LAST_WEEK_COLUMN}</span>, className: 'text-right text-sm text-[var(--text-muted)]', cell: r => value(r.last) },
+          { key: 'measure', header: <span className={FIGURE_SCOPE_HEAD}>{W.title}</span>, rowHeader: true, className: FIGURE_ROW_LABEL, cell: r => r.label },
+          { key: 'now', header: <span className={FIGURE_HEAD}>{THIS_WEEK_COLUMN}</span>, className: FIGURE_MAIN, cell: r => value(r.now) },
+          { key: 'last', header: <span className={FIGURE_HEAD}>{LAST_WEEK_COLUMN}</span>, className: FIGURE_OTHER, cell: r => value(r.last) },
         ]}
       />
-      <ul className="m-0 mt-1 list-none border-t border-[var(--border-primary)] p-0 pt-1 text-pretty">
-        {notes.map(n => <li key={n} className="text-xs leading-4 text-[var(--text-dim)] opacity-75">{n}</li>)}
-      </ul>
-    </Card>
+      <FigureNotes lines={notes} />
+    </FiguresCard>
   );
 }

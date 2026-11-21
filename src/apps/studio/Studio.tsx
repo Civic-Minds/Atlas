@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { StudioSettingsProvider, type StudioGeneralSettings } from './StudioSettings';
 import { useLocation, useNavigate } from 'react-router';
 import { Activity, Bus, GitCompare } from 'lucide-react';
 import type { Agency } from '../../App';
@@ -16,11 +17,12 @@ import Fleet from './Fleet';
 import Live from './Live';
 import StudioNoData from './StudioNoData';
 import { type StudioMenu } from './StudioChips';
+import { STUDIO_NO_SEARCH, StudioSearchProvider, type StudioSearchState } from './StudioSearch';
 import { AgencyDataSourceLink } from '../../components/Interval/cardUi';
 import { useDevFile } from './useDevFile';
 import { MODE_EASE, useModeLeaving } from '../../components/ModeTransition';
 import { FEATURES } from '../../../shared/config';
-import { StudioMapFrameProvider, studioFrameKey } from './StudioMapFrame';
+import { StudioMapFrameProvider, studioFrameKey } from '../../context/StudioMapFrame';
 
 /**
  * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its view tabs (Studio's pages in place of
@@ -38,11 +40,15 @@ export interface StudioProps {
   headerPortal: Element | null;
   /** App's view-tab row slot, where Studio's pages show as tabs. */
   tabsPortal: Element | null;
+  /** App's general settings, for the Settings menu in Studio's top bar (CIV-2006). */
+  settings?: StudioGeneralSettings;
   /** False while App is leaving Studio: the open page fades out, as the main map's modes do (CIV-1921). */
   active?: boolean;
+  /** The top bar's search box, App's (CIV-2001). */
+  searchBox?: StudioSearchState;
 }
 
-export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active = true }: StudioProps) {
+export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settings, active = true, searchBox }: StudioProps) {
   // The address is the frame's (CIV-1924): /studio, /studio/<page>/<agency>/<route>. Pages never read or write it.
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -116,6 +122,8 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
   const chips = open ? headerPortal : null;
 
   return (
+    <StudioSettingsProvider value={settings ?? null}>
+    <StudioSearchProvider value={searchBox ?? STUDIO_NO_SEARCH}>
     <StudioMapFrameProvider value={mapFrame}>
       {active && tabsPortal && page && createPortal(
         STUDIO_PAGES.map(k => {
@@ -145,5 +153,7 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, active
         </div>
       )}
     </StudioMapFrameProvider>
+    </StudioSearchProvider>
+    </StudioSettingsProvider>
   );
 }

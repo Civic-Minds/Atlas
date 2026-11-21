@@ -15,6 +15,7 @@ vi.mock('../../shared/config', async (importOriginal) => {
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
 const { StudioGroupFigures } = await import('../apps/studio/StudioGroupFigures');
+const { vehiclesNeededTitle } = await import('../../shared/studioWording');
 const { groupFor } = await import('../apps/studio/fleetModel');
 
 describe('Studio link in the header (CIV-1694)', () => {
@@ -53,20 +54,21 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
   it('gives the picked route\'s group: its routes, buses needed at each frequency with now marked, then running time and layover (CIV-1827)', () => {
     render(<StudioGroupFigures group={GROUPS[0]} />);
     expect(screen.getAllByRole('columnheader').map(c => c.textContent)).toEqual(['Frequency', 'Needed']);
-    // Now (7 buses) sits by its count, between every 20 min (8) and every 30 min (5); its own frequency needs 8.
-    expect(screen.getAllByRole('rowheader').map(c => c.textContent)).toEqual(['every 10 min', 'every 15 min', 'every 20 min', 'Scheduled nowNeeded 8', 'every 30 min', 'every 60 min']);
-    const now = screen.getByRole('rowheader', { name: 'Scheduled nowNeeded 8' }).closest('tr')!;
+    // CIV-2002: one number for the schedule, the 8 its own frequency needs (not the 7 on the road), placed by it.
+    expect(screen.getAllByRole('rowheader').map(c => c.textContent)).toEqual(['every 10 min', 'every 15 min', 'every 20 min', 'As scheduled', 'every 30 min', 'every 60 min']);
+    const now = screen.getByRole('rowheader', { name: 'As scheduled' }).closest('tr')!;
     expect(now.getAttribute('aria-current')).toBe('true');
-    expect(now.querySelector('td')!.textContent).toBe('7');
+    expect(now.querySelector('td')!.textContent).toBe('8');
     expect(cells('every 15 min')).toEqual(['every 15 min', '10']);
     expect(cells('every 60 min')).toEqual(['every 60 min', '—']);
     expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time, all directions and branches 112 min · Layover 29 min');
     expect(screen.queryByText('Midday')).toBeNull();
   });
 
-  it('leaves out the second line where the buses on the road match the frequency', () => {
+  it('marks the schedule row with one number, never a second line (CIV-2002)', () => {
     render(<StudioGroupFigures group={GROUPS[1]} />);
-    expect(screen.getByRole('rowheader', { name: 'Scheduled now' }).closest('tr')!.getAttribute('aria-current')).toBe('true');
+    expect(screen.getByRole('rowheader', { name: 'As scheduled' }).closest('tr')!.getAttribute('aria-current')).toBe('true');
+    expect(screen.queryByText(/Needed \d/)).toBeNull();
     expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time, all directions and branches 113 min · Layover —');
   });
 
@@ -80,14 +82,30 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
   });
 
   it('says why other routes count where they share the open route’s buses, and offers no split choice (CIV-1827)', () => {
-    render(<StudioGroupFigures group={{ ...GROUPS[0], atTargetEven: { 10: 17 } }} />);
+    render(<StudioGroupFigures group={{ ...GROUPS[0], modes: [3], atTargetEven: { 10: 17 } }} />);
     expect(screen.getByText('[Placeholder: 701, 702, 801 and 802 share buses, so these numbers cover all 4.]')).toBeTruthy();
     expect(screen.queryByRole('group')).toBeNull();
     expect(cells('every 10 min')).toEqual(['every 10 min', '15']);
   });
 
-  it('says so when a time of day has no buses', () => {
-    render(<StudioGroupFigures group={null} />);
+  it('names the vehicles by mode: trains on a train line, vehicles when modes mix or a file has none (CIV-2002)', () => {
+    expect([[1], [3], [0], [100], [0, 3], undefined].map(m => vehiclesNeededTitle(m))).toEqual(['Trains Needed', 'Buses Needed', 'Streetcars Needed', 'Trains Needed', 'Vehicles Needed', 'Vehicles Needed']);
+    render(<StudioGroupFigures group={{ ...GROUPS[0], modes: [1] }} />);
+    expect(screen.getByText(/share trains/)).toBeTruthy();
+  });
+
+  it('reads the network table as "If every route ran …", with one number for the schedule (CIV-2002)', () => {
+    render(<StudioGroupFigures group={{ ...GROUPS[0], routes: [], modes: [0, 3] }} showRunning={false} network />);
+    expect(screen.getAllByRole('columnheader').map(h => h.textContent)).toEqual(['If every route ran', 'Vehicles']);
+    expect(cells('As scheduled')).toEqual(['As scheduled', String(GROUPS[0].implied)]);
+    expect(screen.queryByText(/Needed \d/)).toBeNull();
+  });
+
+  it('says so when a time of day has no service, in the mode\'s word (CIV-2002)', () => {
+    const { unmount } = render(<StudioGroupFigures group={null} modes={[1]} />);
+    expect(screen.getByText('No trains at this time of day.')).toBeTruthy();
+    unmount();
+    render(<StudioGroupFigures group={null} modes={[3]} />);
     expect(screen.getByText('No buses at this time of day.')).toBeTruthy();
   });
 

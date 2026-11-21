@@ -50,6 +50,7 @@ describe('agency page text', () => {
 
   it('writes the modes line', () => {
     expect(modesText([{ label: 'Subway/Metro', routes: 3 }, { label: 'Light rail', routes: 2 }, { label: 'Bus', routes: 209 }])).toBe('3 subway/metro · 2 light rail · 209 bus');
+    expect(modesText([{ label: 'Light rail', routes: 6 }, { label: 'Bus', routes: 1287 }], ', ')).toBe('6 light rail, 1,287 bus');
     expect(modesText([])).toBe('');
   });
 

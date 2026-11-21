@@ -547,6 +547,29 @@ export function searchIndexRouteResults(
   return out.sort(compareRouteResults).slice(0, INDEX_RESULT_LIMIT);
 }
 
+/**
+ * Routes from a page's own route list (CIV-2001: Studio's search finds only the routes its page has), ranked and labelled
+ * as the map's search ranks and labels them, so the shared results list shows them the same way.
+ */
+export function routeListResults(
+  routes: ReadonlyArray<{ agencySlug: string; agencyName: string; route: string; longName?: string | null; routeType?: number | null }>,
+  query: string,
+): RouteSearchResult[] {
+  if (!query.trim()) return [];
+  const out: RouteSearchResult[] = [];
+  for (const r of routes) {
+    const p = {
+      agencySlug: r.agencySlug, agencyName: r.agencyName, routeId: r.route,
+      routeShortName: r.route, routeLongName: r.longName || undefined, routeType: r.routeType ?? undefined,
+    } as unknown as ShapeProperties;
+    const matchRank = routeQueryMatchRank(p, query);
+    if (matchRank > 6) continue;
+    const facts = buildRouteFacts(p);
+    out.push({ key: facts.key, routeShortName: facts.shortName, label: facts.label, routeLongName: facts.longName, agencyName: facts.agencyName, routeType: facts.routeType, matchRank, inView: true, distanceM: 0 });
+  }
+  return out.sort(compareRouteResults).slice(0, INDEX_RESULT_LIMIT);
+}
+
 /** Stops from one split of the search index, for agencies the map has not loaded. */
 export function searchIndexStopResults(
   file: SearchStopsFile,
