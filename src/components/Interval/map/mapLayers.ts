@@ -3,7 +3,7 @@ import { nightServiceTierColorExpression, type ColorVisionMode } from '../../../
 import { getAtlasPmtilesUrl, getAtlasOverviewPmtilesUrl } from '../../../lib/mapStyle';
 import { tileRouteKeyExpr } from '../../../../shared/tileFilterExprs';
 import { buildFocusCase, FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
-import { ROUTE_LINE_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
+import { ROUTE_LINE_WIDTH_BY_ZOOM, SELECTED_ROUTE_WIDTH_BY_ZOOM, NIGHT_SERVICE_WIDTH_BY_ZOOM, FREQUENT_SERVICE_WIDTH_BY_ZOOM, OVERLAY_ROUTE_OPACITY, frequentServiceColorExpression, contextLinePaint } from './routeStyle';
 import { ON_DEMAND_FOCUSED_PROP } from './onDemandFocus';
 import { stopDotPaint } from './stopStyle';
 import { MAP_HALO, ON_DEMAND_AREA_COLOR, ROUTE_LINE_PLACEHOLDER } from '../../../../shared/rules/colours';
@@ -326,7 +326,7 @@ function addSelectedRouteLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': ROUTE_LINE_PLACEHOLDER,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+      'line-width': SELECTED_ROUTE_WIDTH_BY_ZOOM as any,
       'line-opacity': 1,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -338,7 +338,7 @@ function addSelectedRouteLayers(map: maplibregl.Map) {
     source: 'local-routes',
     paint: {
       'line-color': ['get', 'localHeadwayColor'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+      'line-width': SELECTED_ROUTE_WIDTH_BY_ZOOM as any,
       'line-opacity': 1,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -351,7 +351,7 @@ function addSelectedRouteLayers(map: maplibregl.Map) {
     minzoom: 8,
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 3.5, 11, 3.5, 14, 3.5, 17, 3.5],
+      'line-width': SELECTED_ROUTE_WIDTH_BY_ZOOM as any,
       'line-opacity': 1,
     },
     layout: { 'line-cap': 'round', 'line-join': 'round' },

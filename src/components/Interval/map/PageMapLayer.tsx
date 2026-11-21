@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import { FloatingMapCard, MapHoverTip, type MapCardAt } from '../../Live/MapCard';
 import { stopDotPaint } from './stopStyle';
+import { SELECTED_ROUTE_WIDTH_PX } from './routeStyle';
 import { MAP_STEP_LIMITS, mapStep, type MapMeasure, type RouteMapModel } from '../../Live/routeMapModel';
 import { frameRoute, routeFramePadding } from './routeFraming';
 import { FOCUS_DIM_OPACITY } from '../../../utils/routeFocus';
@@ -143,9 +144,11 @@ export default function PageMapLayer({ map, light, prefix = '', layer, selected,
     map.addLayer({ id: id('line-sel'), type: 'line', source: id('lines'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': lineWidth(2.2), 'line-opacity': 0.35 } });
     map.addSource(id('segments'), empty);
     map.addSource(id('stops'), empty);
-    map.addLayer({ id: id('seg-halo'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12] } });
-    map.addLayer({ id: id('seg'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 8] } });
-    map.addLayer({ id: id('seg-sel'), type: 'line', source: id('segments'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 7, 15, 15], 'line-opacity': 0.35 } });
+    // #1661: segments are the main map's picked-route width (they were 3 to 8 px, with a 5 to 12 px halo), so
+    // Studio Live's lines match regular Live's; the halo adds 1 px each side.
+    map.addLayer({ id: id('seg-halo'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': halo, 'line-offset': ['get', 'off'], 'line-width': SELECTED_ROUTE_WIDTH_PX + 2 } });
+    map.addLayer({ id: id('seg'), type: 'line', source: id('segments'), layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-offset': ['get', 'off'], 'line-opacity': ['case', ['==', ['get', 'dim'], 1], FOCUS_DIM_OPACITY, 1], 'line-width': SELECTED_ROUTE_WIDTH_PX } });
+    map.addLayer({ id: id('seg-sel'), type: 'line', source: id('segments'), filter: ['==', ['get', 'sel'], 1], layout: { 'line-cap': 'round' }, paint: { 'line-color': ['get', 'color'], 'line-width': SELECTED_ROUTE_WIDTH_PX * 2, 'line-opacity': 0.35 } });
     // The heat: one soft dot per stop in its own step colour, bigger the more it adds (never summed with its neighbours,
     // so the colour is always the stop's own figure and matches the key). Hottest drawn on top.
     const [, top] = MAP_STEP_LIMITS.delayStarts;
