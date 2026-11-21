@@ -60,6 +60,9 @@ export const FREQUENCY_PATH = '/apps/frequency';
 export const HISTORY_PATH = '/apps/history';
 export const COMPARE_PATH = '/apps/compare';
 export const LIVE_PATH = '/apps/live';
+/** CIV-2008: History and the Live map open on an agency from its slug (the map's own ?operator= address). */
+export const historyAgencyPath = (slug: string) => `${HISTORY_PATH}?${AGENCY_CARD_PARAM}=${encodeURIComponent(slug)}`;
+export const liveMapAgencyPath = (slug: string) => `${LIVE_PATH}?${AGENCY_CARD_PARAM}=${encodeURIComponent(slug)}`;
 export const RESEARCH_PATH = '/research';
 /** Atlas Studio (CIV-1693), local only: the section opens its first page, the buses-needed calculator. */
 export const STUDIO_PATH = '/studio';

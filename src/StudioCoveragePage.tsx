@@ -13,7 +13,9 @@ import { FEATURES } from '../shared/config';
 import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { LIVE_ARCHIVE_SLUGS, type LiveCoverage } from '../shared/liveCoverage';
 import { STUDIO_COVERAGE_DEV_URL } from '../shared/studioAgencies';
-import { agencyPagePath, LIVE_PATH } from '../shared/pagePaths';
+import { agencyPagePath, historyAgencyPath, liveMapAgencyPath } from '../shared/pagePaths';
+import { liveAgencyPath } from './hooks/useLiveDashboard';
+import { studioPath } from '../shared/studioAgencies';
 import { coverageRows, MCP_COVERAGE_API_URL, type CoverageRow } from '../shared/coverageRows';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import { COVERAGE_COLUMNS as H, COVERAGE_HISTORY as HY, COVERAGE_LIVE_TAGS as L, COVERAGE_MCP_TAGS as M, COVERAGE_STUDIO_TAGS as S, COVERAGE_TEXT as T, loadingText } from './content/noticeCopy';
@@ -23,37 +25,49 @@ interface LocalFacts { historyYears?: Record<string, number>; studio: string[]; 
 
 const WIDE = PAGE_FIGURE_COLUMN_REM + 2;
 
-/** A cell that lists what applies as the agencies page's small tags; a dash when nothing does. */
-function TagCell({ tags, link }: { tags: readonly string[]; /** A tag that is a link (a Live report). */ link?: { label: string; to: string } }) {
-  return tags.length === 0 && !link
+/** A pill that opens its view for the agency (pointer and hover as the shared pills), or a plain tag where there is no page to open. */
+interface CoveragePill { label: string; to?: string }
+
+/** A cell that lists what applies as the agencies page's small tags, all on one line; a dash when nothing does. */
+function TagCell({ pills }: { pills: readonly CoveragePill[] }) {
+  return pills.length === 0
     ? <>{MISSING_VALUE}</>
-    : <span className="inline-flex flex-wrap justify-end gap-1">
-        {tags.map(t => <Tag key={t} size="inline">{t}</Tag>)}
-        {link && <AppLink to={link.to}><Tag size="inline">{link.label}</Tag></AppLink>}
+    : <span className="inline-flex flex-nowrap justify-end gap-1 whitespace-nowrap">
+        {pills.map(p => p.to
+          ? <AppLink key={p.label} to={p.to}><Tag size="inline" className="hover:border-[var(--accent-border)] hover:text-[var(--text-primary)] transition-colors">{p.label}</Tag></AppLink>
+          : <Tag key={p.label} size="inline">{p.label}</Tag>)}
       </span>;
 }
 
-const liveTags = (r: CoverageRow) => [
-  ...(r.liveRecorded ? [L.recorded] : []),
-  ...(r.liveRealtime ? [L.realtime] : []),
+const historyPills = (r: CoverageRow): CoveragePill[] => {
+  const to = historyAgencyPath(r.slug);
+  return r.history ? [{ label: HY.public, to }] : r.historyYears > 0 ? [{ label: HY.years(r.historyYears), to }] : [];
+};
+const livePills = (r: CoverageRow): CoveragePill[] => [
+  ...(r.liveRecorded ? [{ label: L.recorded, to: liveMapAgencyPath(r.slug) }] : []),
+  ...(r.liveRealtime ? [{ label: L.realtime, to: liveMapAgencyPath(r.slug) }] : []),
+  ...(r.liveReport ? [{ label: L.report, to: liveAgencyPath(r.slug) }] : []),
 ];
-const studioTags = (r: CoverageRow) => [...(r.studioSchedule ? [S.schedule] : []), ...(r.studioVehicles ? [S.vehicles] : [])];
+const studioPills = (r: CoverageRow): CoveragePill[] => [
+  ...(r.studioSchedule ? [{ label: S.schedule, to: studioPath({ page: 'schedules', agency: r.slug, route: null }) }] : []),
+  ...(r.studioVehicles ? [{ label: S.vehicles, to: studioPath({ page: 'fleet', agency: r.slug, route: null }) }] : []),
+];
 // Schedule answers are universal, like the map, so they aren't listed; real-time answers are none today (CIV-1870).
 // CIV-1993: "Live" only once the MCP answers Live questions; before that the cell is the table's dash, no "Live from" date.
-const mcpTags = (r: CoverageRow) => (r.mcpLive === 'ready' ? [M.live] : []);
+const mcpPills = (r: CoverageRow): CoveragePill[] => (r.mcpLive === 'ready' ? [{ label: M.live }] : []);
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
-  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? <TagCell tags={[HY.public]} /> : r.historyYears > 0 ? HY.years(r.historyYears) : MISSING_VALUE) },
-  { key: 'live', header: H.live, width: WIDE + 4, cell: r => <TagCell tags={liveTags(r)} link={r.liveReport ? { label: L.report, to: `${LIVE_PATH}/${r.slug}` } : undefined} /> },
-  { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell tags={studioTags(r)} /> },
-  { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagCell tags={mcpTags(r)} /> },
+  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => <TagCell pills={historyPills(r)} /> },
+  { key: 'live', header: H.live, width: WIDE + 6, cell: r => <TagCell pills={livePills(r)} /> },
+  { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell pills={studioPills(r)} /> },
+  { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagCell pills={mcpPills(r)} /> },
 ];
 
 function CoverageTable({ rows, caption }: { rows: CoverageRow[]; caption: string }) {
   return (
-    <PageTable linkedRows>
-      <DataTable caption={caption} layout="page" rowHref={r => agencyPagePath(r.slug)} rows={rows} rowKey={r => r.slug} columns={COLUMNS} />
+    <PageTable>
+      <DataTable caption={caption} layout="page" rows={rows} rowKey={r => r.slug} columns={COLUMNS} />
     </PageTable>
   );
 }
