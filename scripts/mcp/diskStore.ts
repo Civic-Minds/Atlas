@@ -40,15 +40,18 @@ export function studioFile(name: string): string | null {
 
 type RouteFile = { features: Array<{ geometry: { type: string; coordinates?: [number, number] } | null; properties: Record<string, unknown> }> };
 
-/** Each agency with a route file on disk, and where it is. */
-export function routeFiles(): Map<string, string> {
+/**
+ * Each agency with a route file on disk, and where it is. `releaseCache: false` leaves out the release cache
+ * (tmp/agency-pages-cache), for the local server's cloud-first store: published data comes from the cloud (CIV-2014).
+ */
+export function routeFiles({ releaseCache = true }: { releaseCache?: boolean } = {}): Map<string, string> {
   const out = new Map<string, string>();
   const add = (slug: string, file: string) => { if (!out.has(slug) && existsSync(file)) out.set(slug, file); };
   const override = process.env.ATLAS_MCP_DATA_DIR;
   const dirs: Array<{ dir: string; nested: boolean }> = [];
   if (override) dirs.push({ dir: resolve(override), nested: false }, { dir: resolve(override), nested: true });
   const cache = join(ATLAS_ROOT, 'tmp/agency-pages-cache');
-  if (existsSync(cache)) {
+  if (releaseCache && existsSync(cache)) {
     const newest = readdirSync(cache).map(d => join(cache, d)).filter(d => statSync(d).isDirectory()).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
     if (newest) dirs.push({ dir: newest, nested: false });
   }
@@ -72,10 +75,10 @@ export function cachedReleaseId(): string | null {
 }
 
 /**
- * CIV-2014: a note when the release cache this server reads is older than the newest release the checkout knows
- * (shared/data/agency-pages.json, which the release bot commits per release): the cache is refreshed only by
- * build-agency-page-summaries.ts, so a cloud publish leaves it behind and the tools answer from old schedules (#1643).
- * Null when the cache is current, newer, absent, or ATLAS_MCP_DATA_DIR points elsewhere. Read from disk only.
+ * CIV-2014: the local server reads published data from the cloud; it falls back to the release cache on this Mac only
+ * when the cloud can't be reached. Then this note says when that cache is older than the newest release the checkout
+ * knows (shared/data/agency-pages.json, which the release bot commits per release). Null when the cache is current,
+ * newer, absent, or ATLAS_MCP_DATA_DIR points elsewhere. Read from disk only.
  */
 export function staleCacheNote(): string | null {
   if (process.env.ATLAS_MCP_DATA_DIR) return null;
@@ -85,7 +88,8 @@ export function staleCacheNote(): string | null {
   try { known = JSON.parse(readFileSync(join(ATLAS_ROOT, 'shared/data/agency-pages.json'), 'utf8')); } catch { return null; }
   if (!known.releaseId || known.releaseId === cached || !known.generatedAt) return null;
   if (Date.parse(known.generatedAt) <= statSync(join(ATLAS_ROOT, 'tmp/agency-pages-cache', cached)).mtimeMs) return null;
-  return `These figures come from an older copy of Atlas's data (${cached}) than the latest release (${known.releaseId}), so they may not match the map.`; // PENDING RYAN'S OK (CIV-2014)
+  // Ryan's wording, 2026-11-21 (CIV-2014: "1"; no "so").
+  return `These figures come from an older copy of Atlas's data (${cached}) than the latest release (${known.releaseId}) and may not match the map.`;
 }
 
 /** Where the ranking index sits: next to the route files it was built from, so a new release gets a new index. */
@@ -101,7 +105,7 @@ export function writeIndexFile(index: IndexedAgency[]): string | null {
   return file;
 }
 
-export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgency[] | null> } {
+export function diskStore({ releaseCache = true }: { releaseCache?: boolean } = {}): AtlasStore & { allHistory(): Promise<McpHistoryAgency[] | null> } {
   let catalog: McpAgency[] | null = null;
   let meta: Map<string, McpAgencyMeta> | null = null;
   let index: IndexedAgency[] | null = null;
@@ -118,7 +122,7 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
   /** A route file read once. Features and stops come from one read, as before. */
   const read = (slug: string): RouteFile['features'] | null => {
     if (!features.has(slug)) {
-      const file = routeFiles().get(slug);
+      const file = routeFiles({ releaseCache }).get(slug);
       if (!file) return null;
       features.set(slug, (JSON.parse(readFileSync(file, 'utf8')) as RouteFile).features);
     }
@@ -129,7 +133,7 @@ export function diskStore(): AtlasStore & { allHistory(): Promise<McpHistoryAgen
       catalog ??= (JSON.parse(readFileSync(join(ATLAS_ROOT, 'public/data/catalog-public.json'), 'utf8')) as { agencies: McpAgency[] }).agencies.filter(a => !a.betaOnly);
       return catalog;
     },
-    async available() { return new Set(routeFiles().keys()); },
+    async available() { return new Set(routeFiles({ releaseCache }).keys()); },
     async meta() {
       if (!meta) {
         meta = new Map();

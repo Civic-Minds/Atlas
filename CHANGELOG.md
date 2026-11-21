@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **The Studio assistant answers from the same data as the map (local only)**: it reads the published release straight from the cloud instead of a copy on this Mac that a publish could leave behind, and says so when it has to fall back to an older copy
 - **The analytics, Data saver and update notices sit in one place**: each is centred, under the header on phones and just above the map’s bottom row on desktop; the analytics notice was at the end of the bottom-left pills
 - **Studio has the main map’s search box (local only)**: it finds the open page’s routes by number or name and opens the one you pick, with results in the map’s own list
 - **Beta’s Data saver prompt is centred above the map’s bottom row on desktop**: it sits where the update notice does, instead of at the end of the bottom-left pills; phones still show it under the header

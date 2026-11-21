@@ -10,6 +10,7 @@ import * as data from '../../../scripts/mcp/atlasData';
 import { TOOLS, handlers, INSTRUCTIONS, SERVER_VERSION, LIVE_TOOLS } from '../../../scripts/mcp/tools';
 import { linkToken } from './linkToken';
 import { jsonOrNull, splitStore, urlReader } from '../../../shared/mcpSplitStore';
+import { checkMcpRelease } from '../../../shared/mcpRelease';
 import { initializeResult, runTool, toolCallResult } from '../../../scripts/mcp/rpc';
 import { splitLiveReader, useLiveReader } from '../../../scripts/mcp/liveData';
 
@@ -74,23 +75,20 @@ async function useCurrentRelease(env: TestEnv): Promise<string> {
   }
   const now = Date.now();
   if (activeRelease && now - activeRelease.checkedAt < POINTER_TTL_SECONDS * 1000) return activeRelease.id;
-  const res = await fetch(`${env.DATA_ORIGIN}/atlas/release.json`, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
-  if (!res.ok) throw new Error(`The release pointer could not be read (${res.status}).`);
-  const { releaseId } = await res.json<{ releaseId: string }>();
-  if (activeRelease?.id !== releaseId) {
+  // shared/mcpRelease.ts: the pointer, then the release's manifest (the same check the local server makes).
+  const check = await checkMcpRelease(env.DATA_ORIGIN, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
+  if (activeRelease?.id !== check.releaseId) {
     // A new release counts only once its MCP files are up (the pointer can move before they are uploaded): until then the
     // release already loaded keeps answering. With none loaded yet there is nothing to answer from.
-    const base = `${env.DATA_ORIGIN}/atlas/releases/${releaseId}/mcp`;
-    const ready = await fetch(`${base}/manifest.json`, { cf: { cacheTtl: POINTER_TTL_SECONDS, cacheEverything: true } });
-    if (!ready.ok) {
+    if (check.kind === 'notReady') {
       if (activeRelease) { activeRelease = { ...activeRelease, checkedAt: now }; return activeRelease.id; }
       throw new Error('Atlas Studio has no schedule files for the current release yet. Try again later.');
     }
     // Files of one release never change, so they cache for a long time at the edge.
-    data.useStore(splitStore(urlReader(base, { cf: { cacheTtl: 86_400, cacheEverything: true } })));
+    data.useStore(splitStore(urlReader(check.base, { cf: { cacheTtl: 86_400, cacheEverything: true } })));
   }
-  activeRelease = { id: releaseId, checkedAt: now };
-  return releaseId;
+  activeRelease = { id: check.releaseId, checkedAt: now };
+  return check.releaseId;
 }
 
 /** A tester behind a link, with their calls in the last 24 hours. */

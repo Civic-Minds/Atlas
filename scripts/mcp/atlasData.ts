@@ -122,11 +122,12 @@ const daySummaries = new Map<string, RouteSummary[]>();
 /** Each route on a day as a summary: read ready-made where the store has them, else made from its rows. */
 export async function routeList(agency: CatalogAgency, day: DayType): Promise<RouteSummary[]> {
   const id = `${agency.slug}|${day}`;
+  // A store with ready-made summaries gives null for an agency it doesn't have them for (the local server's agencies on
+  // this Mac only, CIV-2014): those are made from the route rows, as for a store without them.
   if (store.summaries) {
     if (!summaries.has(id)) summaries.set(id, store.summaries(agency.slug, day));
     const ready = await summaries.get(id)!;
-    if (!ready) throw new Error(`No route data for ${agency.slug}.`);
-    return ready;
+    if (ready) return ready;
   }
   if (!daySummaries.has(id)) daySummaries.set(id, (await routesOn(agency, day)).map(summarize));
   return daySummaries.get(id)!;
@@ -136,8 +137,7 @@ export async function routeList(agency: CatalogAgency, day: DayType): Promise<Ro
 export async function routeWithRows(agency: CatalogAgency, day: DayType, s: RouteSummary): Promise<RouteRows> {
   if (store.routeRows) {
     const rows = await store.routeRows(agency.slug, day, s.key);
-    if (!rows) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
-    return { key: s.key, name: s.name, shortName: s.shortName, longName: s.longName, mode: s.mode, rows: rows as unknown as ShapeProperties[] };
+    if (rows) return { key: s.key, name: s.name, shortName: s.shortName, longName: s.longName, mode: s.mode, rows: rows as unknown as ShapeProperties[] };
   }
   const r = (await routesOn(agency, day)).find(x => x.key === s.key);
   if (!r) throw new Error(`No rows for route ${s.name} of ${agency.slug}.`);
@@ -478,8 +478,7 @@ export async function stopsOf(agency: CatalogAgency): Promise<Stop[]> {
 async function stopNamesFor(agency: CatalogAgency, day: DayType, r: RouteRows): Promise<Map<string, string>> {
   if (store.stopNames) {
     const names = await store.stopNames(agency.slug, day, r.key);
-    if (!names) throw new Error(`No stop names for route ${r.name} of ${agency.slug}.`);
-    return new Map(Object.entries(names));
+    if (names) return new Map(Object.entries(names));
   }
   return new Map((await stopsOf(agency)).map(s => [s.id, s.name]));
 }
@@ -575,9 +574,10 @@ async function routeIdNames(agency: CatalogAgency): Promise<Map<string, { name: 
   const out = new Map<string, { name: string; longName: string | null; mode: string }>();
   if (store.routeNames) {
     const list = await store.routeNames(agency.slug);
-    if (!list) throw new Error(`No route data for ${agency.slug}.`);
-    for (const [id, name, longName, mode] of list) out.set(id, { name, longName, mode });
-    return out;
+    if (list) {
+      for (const [id, name, longName, mode] of list) out.set(id, { name, longName, mode });
+      return out;
+    }
   }
   for (const d of DAY_TYPES) for (const r of await routesOn(agency, d)) for (const row of r.rows) out.set(String(row.routeId), { name: r.name, longName: r.longName, mode: r.mode });
   return out;
