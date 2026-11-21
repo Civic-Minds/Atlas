@@ -8,11 +8,11 @@ import { ATLAS_COVERAGE, coverageAgenciesText, coverageCountriesText } from '../
  */
 describe('what Atlas says it covers (rules audit move 11)', () => {
   it('keeps this build\'s coverage', () => {
-    expect(ATLAS_COVERAGE).toEqual({ agencies: 532, countries: ['Canada', 'United States'] });
+    expect(ATLAS_COVERAGE).toEqual({ agencies: 535, countries: ['Canada', 'United States'] });
   });
 
   it('keeps the wording', () => {
-    expect(coverageAgenciesText()).toBe('532');
+    expect(coverageAgenciesText()).toBe('535');
     expect(coverageCountriesText()).toBe('Canada and the US');
     expect(coverageAgenciesText({ agencies: 1238, countries: [] })).toBe('1,238');
     expect(coverageCountriesText({ agencies: 1, countries: ['Canada', 'France', 'United States'] })).toBe('Canada, France and the US');
