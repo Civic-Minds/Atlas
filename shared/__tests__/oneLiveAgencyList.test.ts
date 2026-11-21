@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LIVE_AGENCY_SLUGS, LIVE_POLLING_ROUTES } from '../livePollingConfig';
+import { LIVE_MAP_ARCHIVE_FEEDS } from '../liveArchiveFeeds';
 
 /**
  * CIV-1691 (Ryan: "Do we need to refactor this shit", then "1"): which agencies are live is said in one place,
@@ -26,9 +27,9 @@ const code = ['src', 'shared', 'local-api'].flatMap(files).filter(f => f !== SOU
 const quoted = (slug: string) => new RegExp(`['"\`]${slug}['"\`]`);
 
 describe('one list of live agencies (CIV-1691)', () => {
-  it('derives the list from the polled routes', () => {
+  it('derives the list from the polled routes and the archiver\'s Live map feeds (CIV-2046)', () => {
     expect(LIVE_AGENCY_SLUGS.length).toBeGreaterThan(0);
-    for (const slug of LIVE_AGENCY_SLUGS) expect(LIVE_POLLING_ROUTES.some(r => r.slug === slug)).toBe(true);
+    for (const slug of LIVE_AGENCY_SLUGS) expect(LIVE_POLLING_ROUTES.some(r => r.slug === slug) || LIVE_MAP_ARCHIVE_FEEDS.some(f => f.slug === slug), slug).toBe(true);
   });
 
   it('has no second list named for live agencies', () => {

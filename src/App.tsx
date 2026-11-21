@@ -13,7 +13,7 @@ import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/c
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
 import AtlasLogo from './components/AtlasLogo';
 import { isAgencyVisibleInBrowser } from '../shared/agencyVisibility';
-import { isLiveEligibleSlug, LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
+import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { findSeoRoute } from '../shared/seo';
 import { PageTitle } from './components/ui/PageTitle';
 const Interval = React.lazy(() => import('./apps/Interval'));
@@ -517,7 +517,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const showLiveControl = FEATURES.live && !inStudio;
   // "Here" is the city at the map's centre right now: not every layer ever loaded, and not every agency whose wide area
   // touches the screen. Panning from a city with data to one without dims the tabs again, and back.
-  const liveHere = inLive || centreAgencySlugs.some(slug => isLiveEligibleSlug(slug));
+  const liveHere = inLive || centreAgencySlugs.some(slug => LIVE_AGENCY_SLUGS.includes(slug));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
   const showHistoryControl = historyOn && !inStudio;
   const historyHere = inHistory || (historyAgencySlugs != null && (

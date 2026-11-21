@@ -30,6 +30,11 @@ export interface LiveArchivePositionFeed {
   apiKeyHeader?: 'STM_API_KEY';
   /** Recorded for analysis only (not in LIVE_POLLING_ROUTES, so it never shows in Live). */
   archiveOnly?: true;
+  /**
+   * CIV-2046: also on the main app's Live map (and so Studio's Live list), read from this same entry: its URL, its route
+   * filter, and the trip feed of the same slug when there is one (Ryan: Live in Studio and the main app list the same cities).
+   */
+  liveMap?: true;
 }
 
 /**
@@ -131,6 +136,7 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     url: 'https://api.cityofkingston.ca/gtfs-realtime/vehicleupdates.pb',
     routeFilterSource: '.+',
     archiveOnly: true,
+    liveMap: true,
   },
   // Green Line (B, C, D, E), Mattapan Line, Silver Line (SL1 741, SL2 742, SL3 743, SL5 749, SLW 746, SL4 751) and buses
   // 23, 57, 66 and 111: route_ids from MBTA GTFS routes.txt, 2026-11-19, anchored so 57A, 230 and the like stay out. The
@@ -140,5 +146,9 @@ export const LIVE_ARCHIVE_POSITION_FEEDS: readonly LiveArchivePositionFeed[] = [
     url: 'https://cdn.mbta.com/realtime/VehiclePositions.pb',
     routeFilterSource: '^(Green-[BCDE]|Mattapan|741|742|743|746|749|751|111|57|66|23)$',
     archiveOnly: true,
+    liveMap: true,
   },
 ] as const;
+
+/** CIV-2046: the recorded feeds the main Live map also shows (whole feed, by its route filter). */
+export const LIVE_MAP_ARCHIVE_FEEDS: readonly LiveArchivePositionFeed[] = LIVE_ARCHIVE_POSITION_FEEDS.filter(f => f.liveMap);
