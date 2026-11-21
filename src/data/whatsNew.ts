@@ -71,7 +71,7 @@ export const RELEASES: { version: string; date: string }[] = [
 
 export const WHATS_NEW: WhatsNewFeature[] = [
   { lead: 'Clearer branches', isNew: true, public: { version: '3.5.0', text: "a slow branch no longer hides a frequent route, and each branch shows its own frequency on the route card" } },
-  { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York's subway, buses and railroads" } },
+  { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York’s subway, buses and railroads" } },
   { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday' } },
   { lead: 'Frequent filter', public: { version: '3.5.0', text: 'counts the wait for the first and last bus in each time of day, so a route that starts late or ends early no longer passes' } },
   { lead: 'Faster pages', public: { version: '3.5.0', text: 'switching between Atlas pages is instant, without reloading the site' } },

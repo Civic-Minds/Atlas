@@ -13,7 +13,7 @@ describe('card wording (CIV-1251): Docs text, word for word', () => {
     'Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap',
     'Consistent service: Service whose gaps stay within a small allowance across the whole time period, not only in a short burst.',
     'A range such as “every 8–25 min” means your wait is between the two: on a card it’s one row’s waits, and in a list it runs from the shared stretch to the least frequent branch.',
-    'The card shows it as “Shared stretch”. It never makes the whole route pass the filter.',
+    'The card shows it as “Shared stretch”. It sets the route’s colour and filter result, and each branch is read on its own.',
     'Part-timeOnly at rush hour, evenings or some days.',
     'Routes with only a few trips in a period read “Irregular” instead of a frequency',
   ])('%s', text => {
