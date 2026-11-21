@@ -74,8 +74,8 @@ describe('Try it links (CIV-1999)', () => {
     expect(closed).toBe(1);
   });
 
-  it('shows Try it on Compare mode and Explore on Agency and area pages in the real list', () => {
-    render(<WhatsNewPanel onClose={() => {}} includeBeta={false} />);
+  it('shows Try it on Compare mode and Explore on Agency and area pages in the real 3.4.0 list', () => {
+    render(<WhatsNewPanel onClose={() => {}} includeBeta={false} releases={APP_RELEASES.filter(r => r.version === '3.4.0')} />);
     expect(screen.getByRole('link', { name: 'Try it' })).toHaveAttribute('href', '/apps/compare');
     expect(screen.getByRole('link', { name: 'Explore' })).toHaveAttribute('href', '/agencies');
   });

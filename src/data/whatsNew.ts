@@ -64,11 +64,19 @@ export interface WhatsNewRelease {
 
 /** App releases, newest first. */
 export const RELEASES: { version: string; date: string }[] = [
+  { version: '3.5.0', date: '2026-11-21' },
   { version: '3.4.0', date: '2026-11-09' },
   { version: '3.3.0', date: '2026-10-12' },
 ];
 
 export const WHATS_NEW: WhatsNewFeature[] = [
+  { lead: 'Route branches', isNew: true, public: { version: '3.5.0', text: "a route's colour and filter result come from the stretch all its branches share, and each branch has its own line on the route card" } },
+  { lead: 'MTA New York', isNew: true, public: { version: '3.5.0', text: 'now one agency everywhere, not one row per subway, bus and railroad feed' } },
+  { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday' } },
+  { lead: 'Frequent filter', public: { version: '3.5.0', text: 'a route whose first bus comes late or whose last bus leaves early no longer passes for that time of day' } },
+  { lead: 'Page changes', public: { version: '3.5.0', text: 'moving between Atlas pages no longer reloads the page' } },
+  { lead: 'Data saver', beta: { version: '3.5.0', text: 'a prompt offers it on slow connections' } },
+  { lead: 'Broward County Transit', public: { version: '3.5.0', text: 'shows its own 44 bus routes, not a Fort Lauderdale shuttle' } },
   {
     lead: 'Compare mode', isNew: true,
     beta: { version: '3.3.0', text: 'put any two days, times or frequencies side by side' },
