@@ -71,6 +71,23 @@ export function cachedReleaseId(): string | null {
   return newest ? newest.split('/').pop()! : null;
 }
 
+/**
+ * CIV-2014: a note when the release cache this server reads is older than the newest release the checkout knows
+ * (shared/data/agency-pages.json, which the release bot commits per release): the cache is refreshed only by
+ * build-agency-page-summaries.ts, so a cloud publish leaves it behind and the tools answer from old schedules (#1643).
+ * Null when the cache is current, newer, absent, or ATLAS_MCP_DATA_DIR points elsewhere. Read from disk only.
+ */
+export function staleCacheNote(): string | null {
+  if (process.env.ATLAS_MCP_DATA_DIR) return null;
+  const cached = cachedReleaseId();
+  if (!cached) return null;
+  let known: { releaseId?: string; generatedAt?: string };
+  try { known = JSON.parse(readFileSync(join(ATLAS_ROOT, 'shared/data/agency-pages.json'), 'utf8')); } catch { return null; }
+  if (!known.releaseId || known.releaseId === cached || !known.generatedAt) return null;
+  if (Date.parse(known.generatedAt) <= statSync(join(ATLAS_ROOT, 'tmp/agency-pages-cache', cached)).mtimeMs) return null;
+  return `These figures come from an older copy of Atlas's data (${cached}) than the latest release (${known.releaseId}), so they may not match the map.`; // PENDING RYAN'S OK (CIV-2014)
+}
+
 /** Where the ranking index sits: next to the route files it was built from, so a new release gets a new index. */
 export function indexFile(): string | null {
   const any = [...routeFiles().values()][0];

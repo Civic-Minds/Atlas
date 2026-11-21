@@ -25,6 +25,9 @@ if (splitDir) {
   const { splitStore } = await import('../../shared/mcpSplitStore');
   data.useStore(splitStore(folderReader(splitDir)));
 } else data.useStore(diskStore());
+// CIV-2014: say so on every answer when the release cache is older than the newest release (#1643).
+const staleNote = splitDir ? null : (await import('./diskStore')).staleCacheNote();
+if (staleNote) console.error(`${staleNote} Refresh the cache with scripts/build-agency-page-summaries.ts (it also rewrites shared/data/agency-pages.json: restore that file afterwards).`);
 // Testing only (CIV-1860): ATLAS_MCP_LIVE_DIR points the Live tools at a folder laid out like the private Live bucket
 // (scripts/mcp/releaseLivePrivate.ts --dry-run writes one under <work>/dry-run).
 const liveDir = process.env.ATLAS_MCP_LIVE_DIR;
@@ -55,6 +58,8 @@ for await (const line of createInterface({ input: process.stdin })) {
   else if (method === 'tools/call') {
     const handler = handlers[params?.name ?? ''];
     if (!handler) { fail(id, -32602, `Unknown tool ${params?.name}`); continue; }
-    reply(id, toolCallResult(await runTool(handler, params?.arguments ?? {})));
+    const result = toolCallResult(await runTool(handler, params?.arguments ?? {}));
+    if (staleNote) result.content.push({ type: 'text', text: staleNote });
+    reply(id, result);
   } else fail(id, -32601, `Method not found: ${method}`);
 }

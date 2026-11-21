@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { featurePassesHeadwayFilter, normalizeRouteFilterFeatures, routeFilterHeadway, routePassesHeadwayFilter } from '../../../shared/routeHeadwayFilter';
+import { featurePassesHeadwayFilter, normalizeRouteFilterFeatures, routeFilterHeadway, routePassesHeadwayFilter, routeFilterReading, readingPassesHeadwayFilter } from '../../../shared/routeHeadwayFilter';
 import { passesRouteFilter, type ShapeProperties } from '../../hooks/useIntervalStats';
 
 const fixture = JSON.parse(readFileSync(path.join(__dirname, '../../../scripts/__fixtures__/headway-filter-routes.json'), 'utf8')) as {
@@ -283,5 +283,28 @@ describe('CIV-238: a period fails a grade its first or last wait breaks (routeEd
   it('a 16-minute boundary wait breaks every 10 only (bit 1)', () => {
     expect(featurePassesHeadwayFilter(row({ amPeak: 1 }), 'amPeak', 10)).toBe(false);
     expect(featurePassesHeadwayFilter(row({ amPeak: 1 }), 'amPeak', 15)).toBe(true);
+  });
+});
+
+describe('CIV-2014: a filter reading decides "every N or better" exactly as routePassesHeadwayFilter does', () => {
+  const row = (amPeak: number, ewf?: number, extra: Record<string, unknown> = {}) => ({
+    routeId: '121', day: 'Weekday', tier: '10',
+    routeFilterHeadwayByPeriod: { amPeak }, routeRunsByPeriod: { amPeak: true }, headwayByPeriod: { amPeak },
+    ...(ewf != null ? { routeEdgeWaitFailByPeriod: { amPeak: ewf } } : {}), ...extra,
+  });
+  const routes = [[row(8, 15)], [row(8)], [row(8, 1)], [row(12)], [row(25, 8)], [row(8, 15), row(12, undefined, { directionId: 1 })], [row(8, undefined, { day: 'Saturday' })]];
+
+  it('agrees for every threshold, the public grades and any other number', () => {
+    for (const features of routes) {
+      const reading = routeFilterReading(features, 'amPeak', 'Weekday');
+      for (const n of [5, 8, 9, 10, 12, 15, 20, 25, 30, 45, 60, 90]) {
+        expect(readingPassesHeadwayFilter(reading, n), JSON.stringify({ features, n })).toBe(routePassesHeadwayFilter(features, 'amPeak', 'Weekday', n));
+      }
+    }
+  });
+
+  it('keeps the broken grades: every 8 with its first wait breaking 10-30 passes only 60', () => {
+    expect(routeFilterReading([row(8, 15)], 'amPeak')).toEqual({ wait: 8, breaks: 15 });
+    expect(routeFilterReading([row(8)], 'amPeak')).toEqual({ wait: 8, breaks: 0 });
   });
 });
