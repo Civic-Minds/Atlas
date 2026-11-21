@@ -45,7 +45,7 @@ const mcpTags = (r: CoverageRow) => [
 
 const COLUMNS: DataTableColumn<CoverageRow>[] = [
   { key: 'name', header: H.agency, rowHeader: true, width: 11, className: 'font-normal', cell: r => <><AppLink className={LINK} to={agencyPagePath(r.slug)}>{r.name}</AppLink>{r.place && <span className="text-[var(--text-muted)]">{' · '}{r.place}</span>}</> },
-  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? <Pill as="span" tone="outline" size="option">{HY.public}</Pill> : r.historyYears > 0 ? HY.years(r.historyYears) : MISSING_VALUE) },
+  { key: 'history', header: H.history, width: PAGE_FIGURE_COLUMN_REM, cell: r => (r.history ? <TagCell tags={[HY.public]} /> : r.historyYears > 0 ? HY.years(r.historyYears) : MISSING_VALUE) },
   { key: 'live', header: H.live, width: WIDE + 4, cell: r => <TagCell tags={liveTags(r)} link={r.liveReport ? { label: L.report, to: `${LIVE_PATH}/${r.slug}` } : undefined} /> },
   { key: 'studio', header: H.studio, width: WIDE + 2, cell: r => <TagCell tags={studioTags(r)} /> },
   { key: 'mcp', header: H.mcp, width: WIDE + 6, cell: r => <TagCell tags={mcpTags(r)} /> },
