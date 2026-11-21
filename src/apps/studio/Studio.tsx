@@ -21,7 +21,7 @@ import { AgencyDataSourceLink } from '../../components/Interval/cardUi';
 import { useDevFile } from './useDevFile';
 import { MODE_EASE, useModeLeaving } from '../../components/ModeTransition';
 import { FEATURES } from '../../../shared/config';
-import { StudioMapFrameProvider, studioFrameKey } from './StudioMapFrame';
+import { StudioMapFrameProvider, studioFrameKey } from '../../context/StudioMapFrame';
 
 /**
  * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its view tabs (Studio's pages in place of

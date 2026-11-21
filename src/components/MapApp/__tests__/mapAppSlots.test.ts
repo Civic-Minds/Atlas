@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
  */
 const ROOT = join(import.meta.dirname, '..', '..', '..', '..');
 const read = (f: string) => readFileSync(join(ROOT, f), 'utf8');
-const FILES = ['src/components/MapApp/MapAppLayout.tsx', 'src/components/MapApp/MapAppFooter.tsx', 'src/components/MapApp/MapAppMap.tsx', 'src/apps/studio/Fleet.tsx', 'src/LiveToolPage.tsx'];
+const FILES = ['src/components/MapApp/MapAppLayout.tsx', 'src/components/MapApp/MapAppFooter.tsx', 'src/components/MapApp/MapAppMap.tsx', 'src/apps/studio/Fleet.tsx', 'src/apps/studio/Live.tsx', 'src/LiveToolPage.tsx'];
 
 describe('map apps use the regular map\'s overlay slots (CIV-1821)', () => {
   it('puts the footer, credit, controls, key and sidebar in the shared slots and components', () => {
