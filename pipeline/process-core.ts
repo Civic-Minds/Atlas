@@ -61,7 +61,7 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, pooledDaytimeWindow, pooledMiddayWorstWait, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
-import { periodEdge, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { periodEdge, periodOneGap, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
 import { branchReadingsFromEnv, headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
@@ -3787,6 +3787,7 @@ export async function processGtfsBuffer(
     // CIV-1411, #934) on the same list its coverage wait reads, so a row that starts or stops inside a period can say when.
     const rowEdgeTimes = terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [];
     const rowEdges: Partial<Record<PeriodKey, ReturnType<typeof periodEdge>>> = {};
+    const rowGaps: Partial<Record<PeriodKey, ReturnType<typeof periodOneGap>>> = {};
     const periodCoverage: HeadwayByPeriod = {};
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
@@ -3866,6 +3867,11 @@ export async function processGtfsBuffer(
         const edgeValue = period.sustained === true && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
         const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
         if (edge) rowEdges[pk] = edge;
+        else {
+          // D6 (settled): steady service with one gap in it reads "every N min, with one M min gap", the row's own wait being that gap.
+          const gap = periodOneGap(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end);
+          if (gap && Math.ceil(gap.gap) === edgeValue) rowGaps[pk] = gap;
+        }
       }
       periodMaxGaps[pk] = period.maxGap;
       if (period.headway != null || period.withheld != null) periodSustained[pk] = period.sustained;
@@ -3876,6 +3882,7 @@ export async function processGtfsBuffer(
     }
     feature.properties.headwayByPeriod = periodMedians;
     if (Object.keys(rowEdges).length > 0) feature.properties.rowPeriodEdge = rowEdges;
+    if (Object.keys(rowGaps).length > 0) feature.properties.rowPeriodGap = rowGaps;
     feature.properties.periodCoverageHeadway = periodCoverage;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;

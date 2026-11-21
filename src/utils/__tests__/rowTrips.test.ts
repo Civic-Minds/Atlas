@@ -221,10 +221,31 @@ describe('a row that starts or stops inside the period says when (CIV-1959 follo
     expect(rowTrips(w, 'midday', { branchReadings: true })).toMatchObject({ value: 58, partPeriod: 'every 58 min from 10:07 AM', partPeriodEvery: 58 });
     expect(rowTrips(w, 'midday').partPeriod).toBeUndefined();
   });
+  it('a row with steady service and one gap keeps the card\'s usual words, never the gap as its number (GO 21C: every 28, one 55 gap)', () => {
+    const g = row({ headsign: '21C', stretchRole: 'tail', stretchIndex: 3, headwayByPeriod: { evening: 30 }, headwayByPeriodSustained: { evening: false }, periodCoverageHeadway: { evening: 55 }, maxGapByPeriod: { evening: 55 }, rowPeriodGap: { evening: { every: 28, gap: 55 } } } as Partial<ShapeProperties>);
+    expect(rowTrips(g, 'evening', { branchReadings: true })).toMatchObject({ value: 55, partPeriod: 'every 28 min, with one 55 min gap', partPeriodEvery: 28 });
+    expect(rowTrips(g, 'evening').partPeriod).toBeUndefined();
+  });
   it('with the switch off (or on data without the field) the row reads exactly what it read before', () => {
     expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: 77, partPeriod: undefined });
     expect(rowTrips(b35, 'amPeak', { branchReadings: false }).partPeriod).toBeUndefined();
     const noField = row({ ...b35, rowPeriodEdge: undefined } as Partial<ShapeProperties>);
     expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: 77, partPeriod: undefined });
+  });
+});
+
+describe('rowOwnTreatment (Ryan: 3 or more evenly spaced trips get a number; a branch\'s own trips decide it)', () => {
+  const even = row({ headsign: 'Forest Hills', stretchRole: 'tail', stretchIndex: 0, headwayByPeriod: { evening: 27 }, headwayByPeriodSustained: { evening: true }, periodCoverageHeadway: { evening: 42 }, maxGapByPeriod: { evening: 42 }, departuresByHour: { 19: 2, 20: 2, 21: 2, 22: 2 } } as Partial<ShapeProperties>);
+  it('even own trips read their spacing (steady, within an hour), or their wait when unsteady, with from / until when they start or stop inside', async () => {
+    const { rowOwnTreatment } = await import('../rowTrips');
+    expect(rowOwnTreatment(even, 'evening')).toEqual({ t: 'reading', v: 27 });
+    expect(rowOwnTreatment({ ...even, headwayByPeriodSustained: { evening: false } } as ShapeProperties, 'evening')).toEqual({ t: 'reading', v: 42 });
+    expect(rowOwnTreatment({ ...even, rowPeriodEdge: { evening: { until: 1300, every: 27 } } } as ShapeProperties, 'evening')).toEqual({ t: 'tail', v: 27, every: 27, until: 1300 });
+  });
+  it('under 3 trips, an uneven list or no service of its own give nothing', async () => {
+    const { rowOwnTreatment } = await import('../rowTrips');
+    expect(rowOwnTreatment({ ...even, departuresByHour: { 19: 1, 20: 1 } } as ShapeProperties, 'evening')).toBeNull();
+    expect(rowOwnTreatment({ ...even, maxGapByPeriod: { evening: 120 } } as ShapeProperties, 'evening')).toBeNull();
+    expect(rowOwnTreatment({ ...even, noOwnServiceByPeriod: ['evening'] } as ShapeProperties, 'evening')).toBeNull();
   });
 });

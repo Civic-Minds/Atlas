@@ -138,6 +138,8 @@ export interface RouteProperties {
   stretchPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number; stretch?: 'main' | number }>>;
   /** CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own late start or early end, read from its own departures like stretchPeriodEdge (CIV-1241, CIV-1411, #934). Card wording only, behind the branch-readings switch. */
   rowPeriodEdge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
+  /** CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own steady service with one gap in it (D6, like stretchPeriodGap), read from its own departures. Card wording only, behind the branch-readings switch. */
+  rowPeriodGap?: Partial<Record<PeriodKey, { every: number; gap: number }>>;
   /** Narrow D6: periods the main stretch runs through, steady but for one gap inside: the median gap and the longest. Card wording only. */
   stretchPeriodGap?: Partial<Record<PeriodKey, { every: number; gap: number }>>;
   /** CIV-321 S4: display-only full-length line of the row's slot (a longer rated pattern serving every stop the row draws), with its stops and positions; read only by the beta section colours. */

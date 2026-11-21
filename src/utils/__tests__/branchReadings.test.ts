@@ -70,8 +70,8 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     const r = readings({ t: 'reading', v: 120 });
     const m = card([withReadings(r, 'main'), withReadings(r, 'tail')], 'midday', true);
     const row = m.groups[0].rows.find(x => x.feature.stretchRole === 'tail')!;
-    expect(reportRowValueText(row)).toBe('every 120 min');
-    expect(HEADWAY_TIERS.find(t => (row.display(null).value.colorHeadway ?? 0) <= t.max)?.label).toBe('Infrequent');
+    // The row keeps the wording and value rule the card's rows always had; a piece's reading never replaces them.
+    expect(reportRowValueText(row)).toBe('every 20 min');
   });
   it('a tail whose full-window wait is over 60 prints its own spacing and colours Infrequent at the wait', () => {
     const r = readings({ t: 'tail', v: 164, every: 30, until: 736 });
@@ -118,9 +118,9 @@ describe('route card branch lines (CIV-1959 B3)', () => {
       periodCoverageHeadway: { midday: 178 }, maxGapByPeriod: { midday: 28 }, rowPeriodEdge: { midday: { until: 722, every: 27 } },
     } as unknown as ShapeProperties;
     expect(lines(card([withReadings(r, 'main'), early], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 27 min until 12:02 PM']);
-    // With no words of its own the piece's slower reading still stands (a destination never reads better than its stretch's wait).
+    // With no words of its own the row keeps its usual wording; the piece's slower reading (its stretch's longest wait) never replaces it.
     const plain = { ...early, rowPeriodEdge: undefined, headwayByPeriodSustained: { midday: true } } as unknown as ShapeProperties;
-    expect(lines(card([withReadings(r, 'main'), plain], 'midday', true))[1]).toBe('to Pearson Airport: every 55 min');
+    expect(lines(card([withReadings(r, 'main'), plain], 'midday', true))[1]).toBe('to Pearson Airport: every 27 min');
   });
   it('the switch off, or data without the field, leaves the card exactly as it was', () => {
     const r = readings({ t: 'limited' });

@@ -1841,6 +1841,7 @@ export const STRETCH_SHADOW_KEYS = [
   'stretchCovers',
   'pieceReadings',
   'rowPeriodEdge',
+  'rowPeriodGap',
   'headwayByPeriodSustainedMid',
 ] as const;
 

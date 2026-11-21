@@ -5,7 +5,7 @@ import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
-import { rowOwnTripsEven, rowTrips } from './rowTrips';
+import { rowOwnTreatment, rowOwnTripsEven, rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
 import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
@@ -340,21 +340,24 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). A piece with no number
         // holds either way: the row's trips are a part of the piece's.
         const stands = d.stretchRowPeriods?.includes(period as PeriodKey) ?? false;
-        const existed = rows.some(r => r.feature === d);
         return [{ ...row, display: (hoveredHour: number | null): CardRowDisplay => {
           const shown = row.display(hoveredHour);
           const today = shown.value.isLimited || shown.value.rowNoRegular ? null : shown.value.shownHeadway ?? shown.value.headway ?? null;
           if (t.t !== 'limited') {
             if (!stands) return shown;
-            // CIV-1241 / CIV-1411: a row that already says when it starts or stops ("every 27 min until 8:02 PM") keeps those words; the
-            // piece's plain reading is its stretch's trips, which other destinations' later buses can slow (SEPTA 37 to Broad-Snyder).
-            if (t.t === 'reading' && existed && /\b(from|until) \d/.test(shown.value.edgeText ?? '')) return shown;
-            if (t.t === 'reading' && (!existed || today == null || t.v < today)) return shown;
+            // Atlas Issue Response (CIV-1251, CIV-1411): a branch row keeps the wording and value rule the card's rows always had (its typical spacing,
+            // the range, the gap form, its own from / until words); a piece's reading is its stretch's longest wait and never replaces them. Only the
+            // source of the trips changes (the branch's own departures), not the words.
+            if (t.t === 'reading') return shown;
             if (t.t === 'tail' && today != null && t.v < today) return shown;
           }
           // CIV-1959 (Ryan: any 3 or more evenly spaced trips get a number; Atlas Issue Response: a branch's own trips decide it, not the
           // piece's pooled list): a row whose own trips pass rule D keeps its own reading, with its from / until words, under a piece with no number.
-          if (t.t === 'limited' && existed && !shown.value.isLimited && !shown.value.rowNoRegular && rowOwnTripsEven(d, period)) return shown;
+          if (t.t === 'limited') {
+            if (!shown.value.isLimited && !shown.value.rowNoRegular && rowOwnTripsEven(d, period)) return shown;
+            const ownT = rowOwnTreatment(d, period);
+            if (ownT) { const own = branchRowValue(shown.value, ownT, ''); return { ...shown, value: own.value, limitedLabel: undefined, singleLine: true, valueEnd: false }; }
+          }
           // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';

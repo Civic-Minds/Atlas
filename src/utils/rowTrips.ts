@@ -142,6 +142,9 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
   if (opts.branchReadings && !opts.ownTrips && !partPeriod && !filterReading && value != null) {
     const own = d.rowPeriodEdge?.[key];
     if (own && (own.from != null || own.until != null)) { partPeriod = periodEdgeText(own); partPeriodEvery = own.every; }
+    // D6 (settled): the row's own steady service with one gap in it keeps the card's usual words, "every 28 min, with one 55 min gap".
+    const gap = !partPeriod ? d.rowPeriodGap?.[key] : undefined;
+    if (gap && gap.gap >= gap.every * ROW_GAP_WORDS_RATIO) { partPeriod = headwayPeriodShape(gap); partPeriodEvery = gap.every; }
   }
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
@@ -184,4 +187,19 @@ export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean
   const hw = d.headwayByPeriod?.[period];
   const gap = d.maxGapByPeriod?.[period];
   return trips >= 3 && typeof hw === 'number' && typeof gap === 'number' && gap <= Math.max(1.75 * hw, Math.round(hw) + 5);
+}
+
+/**
+ * The piece treatment a row's own even trips give (rowOwnTripsEven): the filter's own value for them (a steady period within
+ * PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, any other its full-window wait, as stretchFilterValue), with its from / until words
+ * when it starts or stops inside the period (rowPeriodEdge). Null when the row's own trips do not pass rule D.
+ */
+export function rowOwnTreatment(d: ShapeProperties, period: TimePeriod): { t: 'reading'; v: number } | { t: 'tail'; v: number; every: number; from?: number; until?: number } | null {
+  if (period === 'all' || period === 'overnight' || d.noOwnServiceByPeriod?.includes(period) || !rowOwnTripsEven(d, period)) return null;
+  const hw = d.headwayByPeriod?.[period] as number, cov = d.periodCoverageHeadway?.[period];
+  const steady = d.headwayByPeriodSustained?.[period] === true && typeof cov === 'number' && cov <= PERIOD_COVERAGE_MAX_HEADWAY;
+  const v = steady || typeof cov !== 'number' ? hw : cov;
+  const edge = d.rowPeriodEdge?.[period];
+  if (edge && (edge.from != null || edge.until != null)) return { t: 'tail', v, every: edge.every, ...(edge.from != null ? { from: edge.from } : {}), ...(edge.until != null ? { until: edge.until } : {}) };
+  return { t: 'reading', v };
 }
