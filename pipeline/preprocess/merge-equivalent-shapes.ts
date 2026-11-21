@@ -1,6 +1,5 @@
 import type { GtfsData, GtfsShape } from '../../types/gtfs.js';
 import { haversineDistance } from '../utils.js';
-import { ROUTE_TYPE } from '../../shared/rules/modes.js';
 
 const SAMPLE_COUNT = 24;
 const MAX_SAMPLE_DISTANCE_METERS = 25;
@@ -59,10 +58,9 @@ function equivalentGeometry(a: GtfsShape, b: GtfsShape): boolean {
  * are separate GTFS shapes, but they are one rider-facing service pattern and must
  * be combined before calculating headways.
  *
- * Light rail only by default. `allModes` is an agency opt-in for feeds that give
- * other routes one shape per trip: SamTrans 120 on weekdays has 142 trips on 142
- * shape IDs with identical geometry, so every phase 1 group had one departure and
- * the route had no Weekday features (#775).
+ * Every mode, for an agency that opts in (CIV-2025: it read light rail only by default). `allModes` is the older
+ * name for the same opt-in: SamTrans 120 on weekdays has 142 trips on 142 shape IDs with identical geometry, so every
+ * phase 1 group had one departure and the route had no Weekday features (#775).
  *
  * `routeTypes` is the same opt-in for the listed route types only: CapMetro gives each pair of bus
  * trips its own shape (201 northbound: 31 trips on 16 identical shapes), but its Red Line keeps its
@@ -79,7 +77,7 @@ export function mergeEquivalentShapeVariants(gtfs: GtfsData, options: { allModes
     if (!trip.shape_id || !shapeById.has(trip.shape_id)) continue;
     const route = routeById.get(trip.route_id);
     if (!route) continue;
-    const merges = options.routeTypes ? options.routeTypes.includes(route.route_type) : options.allModes || route.route_type === String(ROUTE_TYPE.TRAM);
+    const merges = options.routeTypes ? options.routeTypes.includes(route.route_type) : true;
     if (!merges) continue;
     const groupKey = `${trip.route_id}::${trip.direction_id ?? '0'}::${trip.trip_headsign ?? ''}`;
     let shapeIds = groups.get(groupKey);

@@ -146,7 +146,7 @@ export async function routeWithRows(agency: CatalogAgency, day: DayType, s: Rout
 
 /**
  * A route by short name, long name or id. An exact name wins, then a line named by the words ("Blue" is the Blue Line,
- * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01), rail first on a tie.
+ * not the 60 Blue Island bus), then the map's route-search rule ("1" finds route 01). No mode wins a tie (CIV-2025).
  */
 /**
  * The other routes whose name matches a query exactly, besides the one findRoute picked (#1623: GO's "Lakeshore West" is
@@ -162,22 +162,21 @@ export function otherExactMatches<R extends Pick<RouteRows, 'shortName' | 'name'
 export function findRoute<R extends Pick<RouteRows, 'shortName' | 'name' | 'longName' | 'mode'>>(routes: R[], query: string): R | null {
   const q = query.trim().toLowerCase();
   const names = (r: R) => [r.shortName, r.name, r.longName ?? ''].map(n => n.toLowerCase());
-  const rail = (r: R) => RAIL_MODE_LABELS.has(r.mode) ? 0 : 1;
-  // Exact matches: a short-name match first, then rail before bus (#1623: GO's "Lakeshore West" is the LW train, not bus 18
-  // with the same long name), then a daytime route before a night-only one (TTC "King" is the 504, not the 304), else the list's order.
+  // Exact matches: a short-name match first, then a daytime route before a night-only one (TTC "King" is the 504, not the
+  // 304), else the list's order. CIV-2025: trains no longer win a tie over buses (#1623 had GO's "Lakeshore West" pick the
+  // LW train over bus 18 with the same long name; otherExactMatches still names the other).
   const night = (r: R) => { const f = (r as { figures?: RouteSummary['figures'] }).figures; return f && isNightRoute({ figures: f }) ? 1 : 0; };
   const exact = routes.filter(r => names(r).includes(q)).map((r, i) => ({ r, i, short: r.shortName.toLowerCase() === q ? 0 : 1 }))
-    .sort((a, b) => a.short - b.short || rail(a.r) - rail(b.r) || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
+    .sort((a, b) => a.short - b.short || night(a.r) - night(b.r) || a.i - b.i)[0]?.r;
   if (exact) return exact;
-  const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `))).sort((a, b) => rail(a) - rail(b));
+  const line = routes.filter(r => names(r).some(n => n === `${q} line` || n.startsWith(`${q} line`) || n === `line ${q}` || n.startsWith(`line ${q} `)));
   if (line.length) return line[0];
   // Otherwise the map's route-search rule (shared/routeMatch.ts): best match first, then, among routes matched only by
-  // name, one holding the words typed as whole words ("E Line" is METRO E Line, not METRO Blue Line, "bluE LINE"),
-  // then rail before bus.
+  // name, one holding the words typed as whole words ("E Line" is METRO E Line, not METRO Blue Line, "bluE LINE").
   const words = new RegExp(`(^|[^a-z0-9])${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^a-z0-9])`);
   const whole = (r: R) => (names(r).some(n => words.test(n)) ? 0 : 1);
   const ranked = routes.map(r => ({ r, rank: routeTextMatchRank({ shortName: r.shortName, longName: r.longName }, q) }))
-    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || whole(a.r) - whole(b.r) || rail(a.r) - rail(b.r));
+    .filter(x => x.rank <= ROUTE_TEXT_MATCH_MAX).sort((a, b) => a.rank - b.rank || whole(a.r) - whole(b.r));
   return ranked[0]?.r ?? null;
 }
 
@@ -419,10 +418,14 @@ export async function agencyIndex(): Promise<IndexedAgency[] | null> {
 }
 
 const FERRY = modeLabel(ROUTE_TYPE.FERRY);
-/** What an agency runs, for the bus, rail and ferry filters: rail when it has rail routes, ferry when every weekday route is a ferry, else bus. */
+/**
+ * What an agency runs, for the bus, rail and ferry filters: rail when every weekday route is rail, ferry when every weekday
+ * route is a ferry, else bus. CIV-2025: one train route no longer files an agency under rail (rail is read as ferry is).
+ */
 export function kindOfAgency(a: Pick<IndexedAgency, 'railRoutes' | 'days'>): 'bus' | 'rail' | 'ferry' {
   const weekday = a.days.Weekday ?? [];
-  return a.railRoutes > 0 ? 'rail' : weekday.length > 0 && weekday.every(r => r.mode === FERRY) ? 'ferry' : 'bus';
+  if (weekday.length === 0) return 'bus';
+  return weekday.every(r => r.mode != null && RAIL_MODE_LABELS.has(r.mode)) ? 'rail' : weekday.every(r => r.mode === FERRY) ? 'ferry' : 'bus';
 }
 /** The ranking list's row for an indexed agency. */
 export const rankAgencyOf = (a: IndexedAgency): RankAgency => ({ slug: a.slug, name: a.name, region: a.region, country: a.country, partOf: a.partOf, railRoutes: a.railRoutes, weekdayRoutes: a.days.Weekday?.length ?? 0, kind: kindOfAgency(a) });

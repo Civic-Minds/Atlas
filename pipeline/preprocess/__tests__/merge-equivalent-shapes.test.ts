@@ -77,7 +77,8 @@ describe('mergeEquivalentShapeVariants', () => {
       ],
     } as unknown as GtfsData;
 
-    expect(mergeEquivalentShapeVariants(gtfs).mergedTrips).toBe(0);
+    // CIV-2025: an agency's opt-in merges every mode, so the default and allModes agree.
+    expect(mergeEquivalentShapeVariants(gtfs).mergedTrips).toBe(1);
     const result = mergeEquivalentShapeVariants(gtfs, { allModes: true });
     expect(result.mergedTrips).toBe(1);
     // A different path under the same headsign stays its own shape.

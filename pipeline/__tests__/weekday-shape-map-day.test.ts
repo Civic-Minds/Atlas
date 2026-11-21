@@ -161,13 +161,13 @@ describe('scopedTerminalHeadline', () => {
       650, 666, 682, 698, 714, 730, 746, 762, 778, 794, 810, 826, 842, 858, 874, 890, 906, 922, 938,
       962, 979, 996, 1013, 1032, 1049, 1066, 1083, 1100, 1117, 1134, 1139, 1159, 1179, 1199, 1219,
       1239, 1269, 1299, 1329, 1359, 1389, 1419, 1449, 1479];
-    expect(scopedTerminalHeadline(times, 'Weekday', '3', false)).toEqual({ headway: 16, tier: '30' });
-    // Rail keeps phase 2's midday-window grade.
-    expect(scopedTerminalHeadline(times, 'Weekday', '2', true)).toEqual({ headway: 16, tier: null });
+    expect(scopedTerminalHeadline(times, 'Weekday', '3')).toEqual({ headway: 16, tier: '30' });
+    // A train is graded as a bus is (CIV-2025).
+    expect(scopedTerminalHeadline(times, 'Weekday', '2')).toEqual({ headway: 16, tier: '30' });
     // No midday or PM-peak service: no scoped value (night routes' early trips).
-    expect(scopedTerminalHeadline([300, 310, 320, 330], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([300, 310, 320, 330], 'Weekday', '3')).toBeNull();
     // A burst of its own is not all-day service either (cta 82 Homan & Congress PM short turns).
-    expect(scopedTerminalHeadline([960, 968, 976], 'Weekday', '3', false)).toBeNull();
-    expect(scopedTerminalHeadline([960, 968, 976, 984, 992], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([960, 968, 976], 'Weekday', '3')).toBeNull();
+    expect(scopedTerminalHeadline([960, 968, 976, 984, 992], 'Weekday', '3')).toBeNull();
   });
 });

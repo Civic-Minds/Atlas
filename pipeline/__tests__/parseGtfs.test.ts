@@ -606,9 +606,9 @@ describe('parseGtfsZip keepLongShapeJumps (#776)', () => {
     expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
   });
 
-  it('keeps a rail shape whole even with a reversal at the step', async () => {
+  it('cuts a rail shape at a reversal as it cuts a bus shape (CIV-2025: no rail exemption)', async () => {
     const gtfs = await parseGtfsZip(await feed(-1, 2));
-    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(20);
+    expect(gtfs.shapes.find(s => s.id === 'trunk')!.points).toHaveLength(10);
   });
 });
 

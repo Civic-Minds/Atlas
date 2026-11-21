@@ -75,5 +75,31 @@
   "feedObtainedAt": "20261113",
   "lastFeedStart": "20260607",
   "lastRawArchiveKey": "20261212-cb1a2283abecc0af",
-  "lastFeedContentKey": "d8c2060fa7403749"
+  "lastFeedContentKey": "d8c2060fa7403749",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeLongName": "Metro A Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "Metro C Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "Metro E Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeLongName": "Metro K Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    }
+  ]
 }

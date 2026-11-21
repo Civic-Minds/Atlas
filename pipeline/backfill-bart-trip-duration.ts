@@ -4,7 +4,7 @@
  *
  * Re-parses every archived BART GTFS zip in atlas-archive (gtfs/archive/bart/),
  * computes a representative weekday trip's duration + stop sequence per rail
- * route/period via computeRailTripDurations, and reports each period's
+ * route/period via computeTripDurations, and reports each period's
  * stability against the previous one (raw and parent-normalized stop
  * sequence match).
  *
@@ -23,7 +23,7 @@ import { r2ListArchive, r2GetArchiveBuffer, r2PutArchiveJson } from './r2.js';
 import { parseGtfsZip } from './parseGtfs.js';
 import { normalizeGtfs, type GtfsTransformOptions } from './preprocess/run.js';
 import { effectiveFeedExpiry } from './feedFreshness.js';
-import { computeRailTripDurations, type RouteTripDuration } from './trip-duration.js';
+import { computeTripDurations, type RouteTripDuration } from './trip-duration.js';
 import { readFeedEvidence } from './historyWeekend.js';
 import { readQualityRows } from './historyRefQuality.js';
 import { firstFullWeekAnchor } from './serviceDays.js';
@@ -83,7 +83,7 @@ async function main() {
         calendarDates: gtfs.calendarDates,
       }) ?? gtfs.feedInfo?.[0]?.feed_version ?? fallbackPeriodKeyFromFilename(key);
 
-      const routes = computeRailTripDurations(gtfs, SLUG);
+      const routes = computeTripDurations(gtfs);
       // CIV-1101 Part B: an archived zip is read at its own first full week in force, not the run date.
       const { refDate } = await readFeedEvidence(buf, { anchor: firstFullWeekAnchor(await readQualityRows(buf)) ?? undefined });
       periods.push({ periodKey: sanitizeLabel(periodKey), refDate, key, routes });

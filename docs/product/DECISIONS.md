@@ -23,6 +23,10 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: bus, rail and streetcar are all graded on one scale, 5, 8, 10, 15, 20, 30 and 60 minutes; no mode has bands of its own. Riders see 10, 15, 20, 30 and 60: the internal 5 and 8 count as 10.
   - Why: Ryan, "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". Rail had no 20 and graded a train every 16-20 minutes 30.
   - Source: [decision log](#decision-log) (2026-11-17)
+- **Trains are read like buses**
+  - What: no rule rates, grades, filters, counts, draws or names a route differently because it is a train (or subway, light rail or ferry); the 25 train-only rules found in CIV-2025 are removed, and no mode is guessed from agency or route names (an agency's listed modeOverrides still correct a feed's route_type).
+  - Why: Ryan, "This is like the 6th way in which trains are fucking different - i was never told this, i never asked for them to be different".
+  - Source: Ryan, 2026-11-21, "1", answering "Remove them all, so trains are read like buses (Recommended). It would be one data rebuild, with a full before-and-after comparison first. If the comparison shows a rule was actually protecting something, that one comes back to you instead of being removed."; [decision log](#decision-log) (2026-11-21)
 - **Every direction must pass**
   - What: a route's value is its worst direction's; a direction with stray trips but no real service voids the route.
   - Why: a route that is frequent one way only is not frequent.
@@ -279,6 +283,11 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 ## Decision log
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
+
+### 2026-11-21 — Trains are read like buses: the 25 train-only rules are removed (CIV-2025)
+Ryan, 2026-11-21: "1", answering "Remove them all, so trains are read like buses (Recommended). It would be one data rebuild, with a full before-and-after comparison first. If the comparison shows a rule was actually protecting something, that one comes back to you instead of being removed." Earlier the same day: "This is like the 6th way in which trains are fucking different - i was never told this, i never asked for them to be different".
+- Removed (CIV-2025's list): the 09:30-14:30 midday window for a train's grade, class, Weekday pick and stop grades; light rail guessed from agency and route names; no backup grade for a thin train sample; the rail pool lift; trains skipping the worst-stop rule, the worst-stop headline fallback and the limited mark; trains reading same-destination trips before their shape, the terminal's destination list, the headsign-and-origin stop split and destination-grouped shared stretches; the bus-only same-destination terminal pool, rush-hour pool and drop-off and sibling-terminal rules (now every mode); one-off event trips dropped from trains only; trains drawing only their longest shape; train shapes never cut at long jumps; the light-rail-only default of the equivalent-shape merge; no corridors for rail-only feeds; trip times for trains only; the MCP's rail tie-breaks and "one train route makes a rail agency"; rail stops shown at regional zoom and winning stop merges; rail, subway and ferry hiding numbers of three or more digits; the "Rail replacement bus" label.
+- A rule the before-and-after shows was protecting something goes back to Ryan instead of being removed.
 
 ### 2026-11-21 — Two trips of one name leaving together count once, where that repeats (CIV-1098)
 Ryan, 2026-11-21 (Atlas Questions chat): "CIV-1098 1". He was answering: "1. Ship it as built (Recommended). You'd be approving the rule as written: more than half paired, at least 3 pairs."

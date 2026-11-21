@@ -499,35 +499,33 @@ describe('scopedTerminalHeadline', () => {
   };
 
   it('reads the sustained headway of a daytime-serving terminal sample', () => {
-    const result = scopedTerminalHeadline(every(20), 'Weekday', '3', false);
+    const result = scopedTerminalHeadline(every(20), 'Weekday', '3');
     expect(result?.headway).toBe(20);
     expect(result?.tier).not.toBeNull();
   });
 
   it('returns null for a night-only sample so early trips never become the headline', () => {
-    expect(scopedTerminalHeadline([60, 90, 120, 150, 180, 210], 'Weekday', '3', false)).toBeNull();
-    expect(scopedTerminalHeadline(undefined, 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([60, 90, 120, 150, 180, 210], 'Weekday', '3')).toBeNull();
+    expect(scopedTerminalHeadline(undefined, 'Weekday', '3')).toBeNull();
   });
 
   it('returns null for a short burst that is not all-day service', () => {
     // Four PM short turns minutes apart: daytime exists but it is a burst, not a headline.
-    expect(scopedTerminalHeadline([1000, 1004, 1008, 1012], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([1000, 1004, 1008, 1012], 'Weekday', '3')).toBeNull();
   });
 
   it('returns null with fewer than four distinct daytime departures', () => {
-    expect(scopedTerminalHeadline([600, 660, 720], 'Weekday', '3', false)).toBeNull();
+    expect(scopedTerminalHeadline([600, 660, 720], 'Weekday', '3')).toBeNull();
   });
 
-  it('gives a headline but no tier for rail, which phase 2 grades on its own window', () => {
-    const result = scopedTerminalHeadline(every(30), 'Weekday', '2', true);
-    expect(result?.headway).toBe(30);
-    expect(result?.tier).toBeNull();
+  it('grades a train as it grades a bus (CIV-2025)', () => {
+    expect(scopedTerminalHeadline(every(30), 'Weekday', '2')).toEqual(scopedTerminalHeadline(every(30), 'Weekday', '3'));
   });
 
   it('does not depend on input order', () => {
     const times = every(20);
-    expect(scopedTerminalHeadline([...times].reverse(), 'Weekday', '3', false))
-      .toEqual(scopedTerminalHeadline(times, 'Weekday', '3', false));
+    expect(scopedTerminalHeadline([...times].reverse(), 'Weekday', '3'))
+      .toEqual(scopedTerminalHeadline(times, 'Weekday', '3'));
   });
 });
 

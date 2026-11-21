@@ -15,7 +15,6 @@ import Panel, { PanelBody } from '../ui/Panel';
 import RouteRowName from '../RouteRowName';
 import Pill from '../ui/Pill';
 import ModeFilterPillRow from '../ui/ModeFilterPillRow';
-import { isRailReplacementBus } from '../../../shared/modes';
 import { hiddenAgencyNoteFor } from '../../../shared/hiddenAgencyNote';
 import { buildRouteModeFilters, routeMatchesModeFilter, type RouteModeFilter, type RouteModeFilterKey, type RouteModeFilterRoute } from '../../utils/routeModeFilters';
 import { headwayEveryRange } from '../../utils/headwayText';
@@ -386,7 +385,6 @@ function RouteListSection({
     headwayLabel: r.headway != null ? r.edgeText ?? (r.sharedHeadway != null ? headwayEveryRange(r.sharedHeadway, r.headway) : undefined) : undefined,
     limited: r.limited || r.noRegular === true,
     limitedLabel: r.noRegular ? IRREGULAR_PERIOD_SHORT_LABEL : undefined,
-    subLabel: isRailReplacementBus({ routeType: r.routeType, routeLongName: r.longName }) ? 'Rail replacement bus' : undefined,
     live: FEATURES.live && liveShortNames.has(r.shortName),
   }));
   return <CardRouteList rows={rows} onSelect={onRouteSelect} dimmed={dimmed} />;

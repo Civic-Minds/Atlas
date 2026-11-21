@@ -23,7 +23,8 @@ describe('rail tier scale end to end', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
 
-  it('TTC Line 1 weekday, every 4, reaches tier 5 in both directions (settleTier on the rail scale, not 10)', async () => {
+  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
+  it.skip('TTC Line 1 weekday, every 4, reaches tier 5 in both directions (settleTier on the rail scale, not 10)', async () => {
     const result = await processGtfsBuffer(await zipDir(resolve(__dirname, 'fixtures', 'ttc-line1-weekday')), undefined, { slug: 'ttc' });
     const weekday = lines(result.geojson, 'Weekday');
     expect(weekday.length).toBeGreaterThan(0);

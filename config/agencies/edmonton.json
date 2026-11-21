@@ -72,5 +72,25 @@
   "lastPeekedExpiry": "20261212",
   "lastServiceWeek": "9e1435a54d91bc16",
   "feedObtainedAt": "20261109",
-  "lastFeedStart": "20261023"
+  "lastFeedStart": "20261023",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "Capital",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Metro",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "Valley",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    }
+  ]
 }

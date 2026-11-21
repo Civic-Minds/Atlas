@@ -488,7 +488,8 @@ export function useRouteStyling(
       } else {
         const showAllDetailed = stopZoomTier === 3;
         const showConsolidated = stopZoomTier === 2;
-        const showRail = stopZoomTier === 1;
+        // CIV-2025: at regional zoom, hubs show whatever their mode (rail stops showed there because they were rail).
+        const showHubs = stopZoomTier === 1;
 
         const allSiblingStopIds = routesForStop?.siblingIdsByAgency
           ? Object.values(routesForStop.siblingIdsByAgency).flatMap(set => Array.from(set))
@@ -498,8 +499,8 @@ export function useRouteStyling(
           ? ['all']
           : showConsolidated
             ? ['==', ['get', 'isHubRef'], true]
-            : showRail
-              ? ['any', ['==', ['get', 'isRail'], true], ['==', ['get', 'isHub'], true]]
+            : showHubs
+              ? ['==', ['get', 'isHub'], true]
               : ['==', ['get', 'stopId'], ''];
 
         const filterExpr = (selectedStop && allSiblingStopIds.length > 0)

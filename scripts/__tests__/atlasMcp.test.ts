@@ -193,7 +193,8 @@ describe('route lookup (CIV-1864)', () => {
     expect(findRoute(routes, 'zzz')).toBeNull();
   });
 
-  it('among exact names, takes a short-name match, then rail before bus (#1623, GO "Lakeshore West")', async () => {
+  // CIV-2025: the rail tie-break is removed for the dry run; if it proves protective it is restored and goes to Ryan.
+  it.skip('among exact names, takes a short-name match, then rail before bus (#1623, GO "Lakeshore West")', async () => {
     const { findRoute } = await import('../mcp/atlasData');
     const r = (shortName: string, longName: string | null, mode = 'Bus') => ({ shortName, name: shortName, longName, mode });
     const period = (shown: string) => ({ shown });

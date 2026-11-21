@@ -53,9 +53,9 @@ function shareTokens(tokens1: string[], tokens2: string[]): boolean {
   return tokens1.some(t => tokens2.includes(t));
 }
 
-/** How strongly a stop stands for a place: rail first, then a hub, then the number of routes. */
+/** How strongly a stop stands for a place: a hub, then the number of routes, whatever the mode (CIV-2025). */
 function anchorScore(p: Record<string, any>): number {
-  return (p.isRail ? 1000 : 0) + (p.isHub ? 100 : 0) + (Array.isArray(p.routeIds) ? p.routeIds.length : 0);
+  return (p.isHub ? 100 : 0) + (Array.isArray(p.routeIds) ? p.routeIds.length : 0);
 }
 
 /** Sets hubId on every stop and isHubRef on each group's anchor. Returns the number of groups. */

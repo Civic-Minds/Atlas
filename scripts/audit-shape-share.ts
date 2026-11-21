@@ -10,7 +10,6 @@
  * 2. GTFS: for each such row, the headsign's trips on the day are counted by shape, and the
  *    drawn shape is the one whose stops match the row's stopOrder. Its share decides the flag.
  *
- * Rail rows are left out: their headline reads the headsign's pool, never the drawn shape alone.
  *
  * The feed is <feeds-dir>/<slug>.zip when given, else the agency's feedUrl. A feed whose
  * feed_version differs from the version the registry recorded is skipped (it is not the feed the
@@ -39,7 +38,6 @@ import {
 } from '../pipeline/shapeShareCheck.js';
 
 type Obj = Record<string, any>;
-const RAIL_ROUTE_TYPES = new Set([0, 1, 2, 12]);
 const argv = process.argv.slice(2);
 const many = (name: string) => argv.flatMap((a, i) => (a === name && argv[i + 1] ? [argv[i + 1]] : []));
 const one = (name: string) => many(name)[0];
@@ -96,8 +94,6 @@ async function main() {
     if (!geo?.features) continue;
     const rows = (geo.features as Obj[]).map(f => f.properties as Obj)
       .filter(p => p && !p.isCorridor && Array.isArray(p.stopOrder) && p.stopOrder.length > 1
-        // Rail rows read the headsign pool, not the drawn shape (process-core ownMetricStopMap).
-        && !RAIL_ROUTE_TYPES.has(Number(p.routeType))
         && headlineSlowerThanPeriods(p.headway, p.headwayByPeriod));
     if (rows.length === 0) continue;
     candidates += rows.length;

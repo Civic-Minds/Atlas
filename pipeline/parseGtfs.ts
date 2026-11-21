@@ -3,7 +3,6 @@ import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { GtfsData, GtfsShape, GtfsCalendar, GtfsCalendarDate, ShapeAnomaly } from '../types/gtfs';
 import { haversineDistance, bearing, bearingDiff } from './utils.js';
-import { isRailRoute } from './routeMode.js';
 import { EARTH_RADIUS_M } from '../shared/rules/limits.js';
 
 /**
@@ -108,8 +107,7 @@ function teleportsOntoEarlierPath(points: [number, number][], i: number): boolea
  * A candidate that passes none of these is a real rural stretch with sparse points and is
  * kept; scanning goes on, so a later step can still cut. This never draws less than the old
  * rule (which cut at the first candidate), but a shape the old rule cut early may now be
- * cut at a later step. Rail shapes are exempt upstream (the keepLongShapeJumps option and
- * the rail exemption).
+ * cut at a later step. Shapes of an agency that opts out (keepLongShapeJumps) are exempt upstream.
  */
 export function truncateAtImplausibleJump(points: [number, number][]): [number, number][] {
     if (points.length < 4) return points;
@@ -356,7 +354,7 @@ export function repairClusteredJumps(points: [number, number][]): { points: [num
  */
 export const groupShapes = (
     parsed: any[],
-    railShapeIds: ReadonlySet<string> = new Set(),
+    exemptShapeIds: ReadonlySet<string> = new Set(),
     options: { skipClusteredJumpRepair?: boolean } = {},
 ): { shapes: GtfsShape[]; anomalies: ShapeAnomaly[] } => {
     const grouped = new Map<string, { seq: number; lat: number; lon: number }[]>();
@@ -376,10 +374,8 @@ export const groupShapes = (
     const shapes = Array.from(grouped.entries()).map(([id, pts]) => {
         const hadDuplicateSequences = new Set(pts.map(p => p.seq)).size < pts.length;
         const deinterleaved = deinterleaveDuplicateSequences(pts);
-        // Rail feeds commonly leave multi-kilometre gaps between shape points along a
-        // continuous corridor. The generic corruption guard is intended for dense street
-        // shapes and would otherwise cut valid rail lines in half (UP Express, for example).
-        const truncated = railShapeIds.has(id)
+        // CIV-2025: every mode takes the corruption guard; only an agency's keepLongShapeJumps opt-out exempts a shape.
+        const truncated = exemptShapeIds.has(id)
             ? deinterleaved
             : truncateAtImplausibleJump(deinterleaved);
         const wasTruncated = truncated.length < deinterleaved.length;
@@ -591,22 +587,17 @@ export const parseGtfsZip = async (
     }
 
     if (rawShapes) {
-        const railRouteIds = new Set(
-            (gtfsData.routes ?? [])
-                .filter(route => isRailRoute(route, options.agencySlug))
-                .map(route => route.route_id),
-        );
         // Agency opt-in: rural highway shapes can have several multi-kilometre steps between
         // town sections, which the jump guard reads as corruption. Redwood Coast Transit 20
         // (Eureka-Crescent City, median step ~40 m, steps up to 2.7-3 km on US 101) was cut
         // to its first 2-3 km, so the trunk had no route line (#776). Such agencies exempt
-        // every shape, like rail.
-        const railShapeIds = new Set(
+        // every shape (CIV-2025: no mode is exempt by itself).
+        const exemptShapeIds = new Set(
             (gtfsData.trips ?? [])
-                .filter(trip => (options.keepLongShapeJumps || railRouteIds.has(trip.route_id)) && trip.shape_id)
+                .filter(trip => options.keepLongShapeJumps && trip.shape_id)
                 .map(trip => trip.shape_id as string),
         );
-        const { shapes, anomalies } = groupShapes(rawShapes, railShapeIds, { skipClusteredJumpRepair: options.skipClusteredJumpRepair });
+        const { shapes, anomalies } = groupShapes(rawShapes, exemptShapeIds, { skipClusteredJumpRepair: options.skipClusteredJumpRepair });
         gtfsData.shapes = shapes;
         if (anomalies.length > 0) gtfsData.shapeAnomalies = anomalies;
     }

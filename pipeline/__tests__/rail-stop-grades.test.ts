@@ -20,7 +20,8 @@ async function fixtureZip(name: string): Promise<Buffer> {
 describe('rail stop grades (#756)', () => {
   beforeAll(() => { vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-10-14T12:00:00') }); });
   afterAll(() => { vi.useRealTimers(); });
-  it('WMATA Yellow northbound on Saturday and Sunday: the shared trunk grades 8 and 10 on both rows, the Greenbelt branch keeps its own', async () => {
+  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
+  it.skip('WMATA Yellow northbound on Saturday and Sunday: the shared trunk grades 8 and 10 on both rows, the Greenbelt branch keeps its own', async () => {
     const result = await processGtfsBuffer(await fixtureZip('wmata-yellow-weekend'), undefined, { slug: 'wmata' });
     const rows = JSON.parse(result.geojson).features.map((f: any) => f.properties).filter((p: any) => p.stopId == null && p.directionId === 0);
     // The stop grade is the rail rule's every-gap grade of the midday window, never better than
@@ -42,7 +43,8 @@ describe('rail stop grades (#756)', () => {
     }
   });
 
-  it('WMATA Yellow southbound to Huntington on weekends: the tier reads the pooled sample its headline reads (#898)', async () => {
+  // CIV-2025: skipped, not deleted. This expectation pins a train-only rule Ryan had removed; the cloud dry run measures it, and if the rule proves protective it is restored and goes to him.
+  it.skip('WMATA Yellow southbound to Huntington on weekends: the tier reads the pooled sample its headline reads (#898)', async () => {
     // Trains to Huntington start at Greenbelt and at Mt Vernon Square under one headsign, every
     // 16 each and every 8 together at every stop of the drawn pattern. The headline reads the
     // pooled terminal sample (8); the tier used to be phase 2's grade of one pattern (16: tier
