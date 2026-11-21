@@ -14,5 +14,9 @@
     "20241007": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202410070004/mdb-360-202410070004.zip",
     "20250920": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202509200102/mdb-360-202509200102.zip",
     "20261001": "https://files.mobilitydatabase.org/mdb-360/mdb-360-202610010139/mdb-360-202610010139.zip"
+  },
+  "kingston": {
+    "_note": "CIV-1863: the 2016 period only (the other Kingston periods are already v2 sidecars, CIV-437). Mobility Database mdb-733 = the OpenMobilityData city-of-kingston/779 archive; dataset 20161102 holds the Sep 6 - Dec 30, 2016 timetable. No anchor month: Sep's first full week starts before the zip, so the vote picks the week of 2016-09-12.",
+    "20161102": "https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/city-of-kingston/779/20161102/gtfs.zip"
   }
 }
