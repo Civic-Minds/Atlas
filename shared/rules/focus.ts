@@ -32,15 +32,21 @@ export const isFocusAgency = (slug: string): boolean => FOCUS_SET.has(slug);
 export const STUDIO_DEFAULT_AGENCY = 'kingston';
 
 /**
+ * Studio's agencies, for its Schedules and vehicles-needed files: the four focus agencies plus TTC, YRT and the MBTA (Ryan,
+ * 2026-11-21, option 1, CIV-2046). A product focus list, not a list of live agencies (the Live map's is LIVE_AGENCY_SLUGS).
+ */
+export const STUDIO_FOCUS_AGENCIES = ['kingston', 'hamilton', 'rtd-denver', 'guelph', 'ttc', 'yrt', 'mbta'] as const;
+
+/**
  * Where each deeper product should go next (the strategy page's "Per product" table). A product may hold an agency only
  * from here, or when an agency or consultant asks for it; the main map and History have no such limit.
  */
 export const PRODUCT_FOCUS = {
   /** Recorded every minute (TTC, Hamilton and the MBTA, plus Kingston for Studio only): the archive shards marked `recording`. */
   live: RECORDING_SLUGS,
-  /** Agencies with a Schedules file: the four focus agencies plus TTC, YRT and the MBTA (Ryan, 2026-11-21, option 1, CIV-2046). */
-  studio: ['kingston', 'hamilton', 'rtd-denver', 'guelph', 'ttc', 'yrt', 'mbta'],
+  /** Agencies with a Schedules file. */
+  studio: STUDIO_FOCUS_AGENCIES,
   /** Agencies with a buses-needed file: the same seven (CIV-2046). Local and regional bus only. */
-  vehiclesNeeded: ['kingston', 'hamilton', 'rtd-denver', 'guelph', 'ttc', 'yrt', 'mbta'],
+  vehiclesNeeded: STUDIO_FOCUS_AGENCIES,
 } as const satisfies Record<string, readonly string[]>;
 
