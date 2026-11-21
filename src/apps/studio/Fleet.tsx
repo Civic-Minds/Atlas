@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MAP_COLOURS_LABEL, TIME_LABEL } from '../../content/noticeCopy';
-import RouteRowName, { RouteTitleName } from '../../components/RouteRowName';
+import { RouteTitleName } from '../../components/RouteRowName';
 import MapKey from '../../components/ui/MapKey';
 import { PanelBody, PanelTitleBar } from '../../components/ui/Panel';
 import { StudioRouteSearch, useStudioSearchOpen } from './StudioSearch';
@@ -120,12 +120,9 @@ export default function Fleet({ view = 'fleet', slug, agency, route, setRoute, a
   // The times of day either file has figures for.
   const periods = PERIOD_KEYS.filter(k => (vehicles && vehicles !== 'missing' && vehicles.periods[k]?.length)
     || (ready && ready.changes.some(c => c.before?.headway[k] != null || c.after?.headway[k] != null)));
-  const routeOptions = useMemo(() => (ready ? [['', T.allRoutes] as const, ...[...new Set([...Object.keys(ready.lines?.after ?? {}), ...Object.keys(ready.lines?.before ?? {})])]
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-    .map(r => { const l = routeTitle({ route: r, name: ready.changes.find(c => c.route === r)?.name ?? null }); return [r, <RouteRowName key={r} shortName={l.primary} name={l.secondary} />, l.text] as const; })] : []), [ready]);
   const menus: (StudioMenu | null)[] = [
     agencyMenu,
-    ready ? { key: 'route', label: T.route, value: route ?? '', options: routeOptions, onPick: r => setRoute(r || null), active: route != null, panelClassName: 'w-64 max-h-[70vh] overflow-y-auto' } : null,
+    // CIV-2001 (Ryan chose 1): no Route chip; the top bar's search box finds a route (StudioSearch.tsx).
     periods.length ? { key: 'period', label: TIME_LABEL, value: period, options: periodMenuOptions(periods), onPick: k => setPeriod(k as PeriodKey), panelClassName: 'w-56' } : null,
   ];
   return (
