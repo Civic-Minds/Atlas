@@ -4,7 +4,8 @@ import { FEATURES } from '../../../../shared/config';
 import { SidebarCardSection } from '../cardUi';
 import { cleanRouteShortName } from '../../../utils/format';
 import { delayAmount, headwayAbout } from '../../../utils/headwayText';
-import { LIVE_AT_STOP_LABEL, RECENTLY_SEEN_HERE } from '../../../content/noticeCopy';
+import { LIVE_AT_STOP_LABEL, LIVE_STOP_ARRIVALS_UNAVAILABLE, RECENTLY_SEEN_HERE } from '../../../content/noticeCopy';
+import PanelEmpty from '../../ui/PanelEmpty';
 
 const POLL_MS = 20_000;
 
@@ -18,17 +19,23 @@ interface LiveStopData {
 /** Live next-arrivals section for the stop card ("504 in 3 min · every ~7 min right now"). */
 export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: string; stopId: string; lat: number; lon: number }) {
   const [data, setData] = useState<LiveStopData | null>(null);
+  // The request failed and nothing has loaded yet: say so instead of leaving the section out (CIV-959 gap 13).
+  const [failed, setFailed] = useState(false);
   const eligible = FEATURES.live && isLiveEligibleSlug(slug);
 
   useEffect(() => {
     if (!eligible) return;
     setData(null);
+    setFailed(false);
     let cancelled = false;
     const load = () =>
       fetch(`/api/live-stop?agency=${encodeURIComponent(slug)}&stop=${encodeURIComponent(stopId)}&lat=${lat}&lon=${lon}`)
-        .then(r => (r.ok ? (r.json() as Promise<LiveStopData>) : null))
-        .then(d => { if (!cancelled && d) setData(d); })
-        .catch(() => {});
+        .then(r => {
+          if (!r.ok) throw new Error(`live-stop ${r.status}`);
+          return r.json() as Promise<LiveStopData>;
+        })
+        .then(d => { if (!cancelled) { setData(d); setFailed(false); } })
+        .catch(() => { if (!cancelled) setFailed(true); });
     load();
     const id = setInterval(load, POLL_MS);
     return () => { cancelled = true; clearInterval(id); };
@@ -36,6 +43,13 @@ export default function LiveStopArrivals({ slug, stopId, lat, lon }: { slug: str
 
   const hasPredicted = (data?.arrivals.length ?? 0) > 0;
   const hasMeasured = (data?.measuredArrivals?.length ?? 0) > 0;
+  if (eligible && !data && failed) {
+    return (
+      <SidebarCardSection label={LIVE_AT_STOP_LABEL}>
+        <PanelEmpty>{LIVE_STOP_ARRIVALS_UNAVAILABLE}</PanelEmpty>
+      </SidebarCardSection>
+    );
+  }
   if (!eligible || !data || (!hasPredicted && !hasMeasured)) return null;
 
   const nowSec = data.now;
