@@ -1,11 +1,12 @@
 import { RefreshCw } from 'lucide-react';
-import { MAP_BADGE, Z_HEADER } from '../styles';
-import { MAP_BANNER_SLOT } from '../mapOverlayLayout';
+import { MAP_BADGE, MAP_PROMPT_SLOT, Z_HEADER } from '../styles';
 import { useAppUpdate } from '../utils/appUpdate';
+import { usePromptFlag } from '../hooks/usePromptFlag';
 import { UPDATE_AVAILABLE_NOTICE } from '../content/noticeCopy';
 
 export default function AppUpdateBanner() {
   const updateAvailable = useAppUpdate(true);
+  usePromptFlag(updateAvailable);
   if (!updateAvailable) return null;
 
   return (
@@ -13,7 +14,7 @@ export default function AppUpdateBanner() {
       role="status"
       aria-live="polite"
       data-map-overlay="update-banner"
-      className={`${MAP_BANNER_SLOT} h-8 max-sm:h-[32px] max-w-[calc(100vw-2rem)] ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
+      className={`${MAP_PROMPT_SLOT} h-8 max-sm:h-[32px] ${Z_HEADER} ${MAP_BADGE} gap-3 text-xs font-bold text-[var(--text-muted)]`}
     >
       <span>{UPDATE_AVAILABLE_NOTICE}</span>
       <button

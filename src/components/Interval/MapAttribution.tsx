@@ -6,8 +6,6 @@ import { version as appVersion } from '../../../package.json';
 import { shortVersion } from '../../data/whatsNew';
 import { WhatsNewPanel } from '../WhatsNewPanel';
 import { trackEvent, withoutMapPosition } from '../../lib/analytics';
-import { ConsentPill } from '../AnalyticsConsent';
-import { registerConsentRow, useConsentPrompt } from '../../lib/consentPrompt';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
@@ -33,10 +31,6 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
     markWhatsNewSeen(appVersion);
     setUnseen(false);
   }, [whatsNewOpen]);
-  // The analytics prompt is this row's last pill on sm and up, so it shares the row's baseline
-  // and wraps above it (flex-wrap-reverse) only when the row is out of width (#999).
-  const consent = useConsentPrompt();
-  useEffect(() => registerConsentRow(), []);
   const closeWhatsNew = useCallback(() => setWhatsNewOpen(false), []);
   // Phones fold About, What's new and Feedback into one "About" pill with a small card.
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -135,7 +129,6 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
           ) : undefined}
         />
       </div>
-      {consent.open && <ConsentPill className="max-sm:hidden" choose={consent.choose} />}
     </div>
     {whatsNewOpen && (
       // The map's bottom row turns pointer events off; the panel's backdrop needs them back.

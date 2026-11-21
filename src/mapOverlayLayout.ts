@@ -97,8 +97,6 @@ export const MAP_APP_SIDEBAR_SLOT = `absolute top-3 ${E.left} bottom-[calc(2rem+
 /** History's year scrubber: the bottom-right corner beside the controls (the overlap check covers it with the footer). */
 export const MAP_SCRUBBER_SLOT = `absolute ${R.edge} ${E.scrubberRight}`;
 export const MAP_SCRUBBER_WIDTH = 'w-[260px]';
-/** The update banner: centred one row above the notice pill, so it never sits on the footer pills or the notice. */
-export const MAP_BANNER_SLOT = `fixed left-1/2 -translate-x-1/2 ${R.noticeRaised}`;
 /** The locate, export and zoom stack in the bottom-right corner. */
 export const MAP_CONTROLS_SLOT = `absolute ${R.edge} ${E.controlsRight}`;
 /** A centred notice pill one row above the bottom-left pills, clear of the controls; `raised` sits one row higher
@@ -124,7 +122,12 @@ export const MAP_FOOTER_HEIGHT_FALLBACK = '2rem';
 export function mapFooterStyle(footerHeight?: number | null): CSSProperties {
   return { '--map-footer-h': footerHeight ? `${footerHeight}px` : MAP_FOOTER_HEIGHT_FALLBACK } as CSSProperties;
 }
-/** The analytics prompt where the footer row doesn't draw it: under the header on phones, at the bottom edge otherwise. */
-export const MAP_CONSENT_SLOT = 'fixed inset-x-0 top-[4.25rem] mx-auto sm:top-auto sm:bottom-6';
+/**
+ * The one place for the site's prompts: the analytics prompt, Data saver and the update notice (CIV-2004, Ryan chose 1:
+ * "I thought the other ones were centered"). Centred; under the header on phones, clear of the map controls and footer
+ * links, and one row above the notice pill on sm and up, so it never sits on the footer pills or the notice. inset-x-0 +
+ * mx-auto + w-fit centres without the left-1/2 shrink-to-fit squeeze that wrapped the text on phones.
+ */
+export const MAP_PROMPT_SLOT = 'fixed inset-x-0 mx-auto w-fit max-w-[calc(100vw-2rem)] top-[4.25rem] sm:top-auto sm:bottom-[calc(4.5rem+var(--map-footer-h,2rem)+var(--map-key-h,0px))]';
 /** App-level status pills (loading the map, a load error), centred along the bottom. */
 export const MAP_STATUS_SLOT = `absolute left-1/2 ${R.status} -translate-x-1/2`;
