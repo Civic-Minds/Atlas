@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
-## [Unreleased]
+## [3.5.0] - 2026-11-21
 
 - **Studio’s Live moves the map to the agency when a route has no Live data (local only)**: opening such a [Kingston route](https://github.com/Civic-Minds/Atlas/issues/1648) left the map on Toronto with nothing drawn
 - **The Studio assistant answers from the same data as the map (local only)**: it reads the published release straight from the cloud instead of a copy on this Mac that a publish could leave behind, and says so when it has to fall back to an older copy
