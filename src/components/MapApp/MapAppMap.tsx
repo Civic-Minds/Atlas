@@ -9,7 +9,7 @@ import { getMapStyle } from '../../lib/mapStyle';
 import PageMapLayer from '../Interval/map/PageMapLayer';
 import type { PageMapOverlay } from '../../context/PageMapOverlay';
 
-export type { MapPick, MapLine, MapLayer } from '../../context/PageMapOverlay';
+export type { MapPick } from '../../context/PageMapOverlay';
 
 interface Props extends PageMapOverlay {
   className?: string;
