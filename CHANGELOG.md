@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **What’s New links to the features it announces**: Compare mode has a “Try it” link and Agency and area pages an “Explore” link
+- **What’s New lists each feature once per site**: beta sees Compare mode under 3.3, when it arrived there, and the public site sees it under 3.4 as a launch, instead of “now on the public map”
 - **Barrie’s on-demand card says its stops come from official data**: a notice at the foot of the card says the stops are from the agency’s official data and their accuracy can’t be confirmed, with a Learn more explainer
 - **The Docs page explains state and province pages, release checks and part-period routes**: it described area pages only, said nothing about what holds an update back, and didn't say how a route that runs for part of a period reads; beta builds also explain section colours and how History treats unchanged years
 - **Beta suggests Data saver on slow connections, in the analytics prompt’s spot**: the prompt now reads “Data saver loads better on slow connections.” with a “Turn on?” button, and sits where the analytics consent prompt does
