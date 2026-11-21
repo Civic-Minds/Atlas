@@ -288,6 +288,12 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
 
 Dated, newest first. The rules above are the short form; this is the reasoning.
 
+### 2026-11-21 — Vehicles needed counts every route except intercity coach (CIV-2053)
+Ryan, 2026-11-21 (relayed by Atlas Questions): "1". He was answering CIV-2053: keep the "local and regional bus only" wording and hide non-bus routes, or reword the rule to "no intercity coach" so rail and streetcars count. He picked the second; the bus-only option is rejected.
+- The rule: Studio's vehicles-needed figures count every route of the seven Studio agencies except intercity coach (Bustang stays out, CIV-1806). Buses and streetcars count as vehicles; subway and light rail are shown in trains.
+- Why it came up: Studio's list widened to TTC and the MBTA (CIV-2046), whose files include streetcars, subway and light rail, while shared/rules/focus.ts and STRATEGY.md still said "Local and regional bus only".
+- Wording only: both now say "no intercity coach". The figures already counted every route of the seven agencies.
+
 ### 2026-11-21 — Two trips of one name leaving together count once, where that repeats (CIV-1098)
 Ryan, 2026-11-21 (Atlas Questions chat): "CIV-1098 1". He was answering: "1. Ship it as built (Recommended). You'd be approving the rule as written: more than half paired, at least 3 pairs."
 - The rule: within one route, direction and service, a trip that leaves the same first stop in the same minute as a trip of the same headsign, serving a strict subset of its stops, is left out, only when more than 50% of the group's departure slots hold such a pair and at least 3 slots do (`PAIRED_SLOT_SHARE_MIN`, `PAIRED_SLOTS_MIN` in pipeline/transforms/same-slot-subset-trips.ts).

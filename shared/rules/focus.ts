@@ -46,7 +46,10 @@ export const PRODUCT_FOCUS = {
   live: RECORDING_SLUGS,
   /** Agencies with a Schedules file. */
   studio: STUDIO_FOCUS_AGENCIES,
-  /** Agencies with a buses-needed file: the same seven (CIV-2046). Local and regional bus only. */
+  /**
+   * Agencies with a vehicles-needed file: the same seven (CIV-2046). Every route counts except intercity coach (Ryan,
+   * 2026-11-21, CIV-2053): buses and streetcars as vehicles, subway and light rail in trains.
+   */
   vehiclesNeeded: STUDIO_FOCUS_AGENCIES,
 } as const satisfies Record<string, readonly string[]>;
 
