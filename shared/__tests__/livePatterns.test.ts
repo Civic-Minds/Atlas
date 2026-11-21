@@ -1,27 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { lineEnd, patternOf, vehiclesByPattern } from '../livePatterns';
+import { branchOnlyStops, patternOf, vehiclesByPattern } from '../livePatterns';
 
-// 510 Spadina southbound: one branch ends at Union Station, the short turn at Queens Quay & Spadina.
-const union: [number, number] = [-79.3806, 43.6453];
-const queensQuay: [number, number] = [-79.3936, 43.6385];
-const rows = [{ key: 'union', end: union }, { key: 'qq', end: queensQuay }, { key: 'shared', end: null }];
+const s = (id: string, name = id) => ({ stopId: id, name });
+// 501 westbound-style: a trunk shared by both patterns, then each pattern's own end.
+const patterns = [
+  { stops: [s('a'), s('b'), s('c'), s('n1'), s('n2', 'Queen St East at Neville Park Blvd')] },
+  { stops: [s('a'), s('b'), s('c'), s('k1', 'Queen St East at Kingston Rd')] },
+];
+const rows = [{ key: 'shared', headsign: null }, { key: 'neville', headsign: 'Neville Park' }, { key: 'kingston', headsign: 'Kingston Rd' }];
 
 describe('which service pattern a live vehicle runs (CIV-2047)', () => {
-  it('picks the row whose shape ends nearest the trip end, within the match distance', () => {
-    expect(patternOf([-79.3808, 43.6455], rows)).toBe('union');
-    expect(patternOf([-79.3934, 43.6387], rows)).toBe('qq');
+  const only = branchOnlyStops(patterns, rows);
+  it('ties each row to the pattern whose last stop names it, keeping only that pattern\'s own stops', () => {
+    expect([...only.get('neville')!]).toEqual(['n1', 'n2']);
+    expect([...only.get('kingston')!]).toEqual(['k1']);
+    expect(only.has('shared')).toBe(false);
   });
-  it('gives none with no trip end or nothing near a row end', () => {
-    expect(patternOf(null, rows)).toBeNull();
-    expect(patternOf([-79.42, 43.66], rows)).toBeNull();
+  it('places a vehicle once a branch-only stop is ahead of it, else nowhere', () => {
+    expect(patternOf(['c', 'n1', 'n2'], only)).toBe('neville');
+    expect(patternOf(['b', 'c'], only)).toBeNull();
+    expect(patternOf([], only)).toBeNull();
   });
-  it('groups vehicles by pattern, leaving the unmatched out', () => {
-    const g = vehiclesByPattern([{ id: 'a', tripEnd: union }, { id: 'b', tripEnd: queensQuay }, { id: 'c', tripEnd: null }, { id: 'd', tripEnd: union }], rows);
-    expect(g.get('union')?.map(v => v.id)).toEqual(['a', 'd']);
-    expect(g.get('qq')?.map(v => v.id)).toEqual(['b']);
-  });
-  it('reads a shape end from a line or a multi-line', () => {
-    expect(lineEnd({ type: 'LineString', coordinates: [[0, 0], [1, 1]] })).toEqual([1, 1]);
-    expect(lineEnd({ type: 'MultiLineString', coordinates: [[[0, 0]], [[2, 2], [3, 3]]] })).toEqual([3, 3]);
+  it('groups vehicles by pattern, leaving the not-yet-known out', () => {
+    const g = vehiclesByPattern([{ id: 'x', upcomingStops: ['k1'] }, { id: 'y', upcomingStops: ['a'] }, { id: 'z', upcomingStops: ['n2'] }], only);
+    expect(g.get('kingston')?.map(v => v.id)).toEqual(['x']);
+    expect(g.get('neville')?.map(v => v.id)).toEqual(['z']);
   });
 });

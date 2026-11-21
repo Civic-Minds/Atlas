@@ -51,11 +51,6 @@ export const LIVE_WINDOW_DAYS = 7;
 
 /** A gap under this many seconds is bunched. */
 export const BUNCHED_GAP_SEC = 120;
-/**
- * CIV-2047: a live vehicle runs a route card row's pattern when its trip's last stop lies within this many metres of
- * that row's shape end. A matching tolerance, not a frequency rule (listed under Not asked for on CIV-2047).
- */
-export const LIVE_PATTERN_END_M = 300;
 /** A gap over this many times the scheduled gap is too long. */
 export const GAPPED_FACTOR = 2;
 /** A rise counts as a step (bunching "forms" there) when the bad share jumps by at least this much (0.10 = 10 points)... */

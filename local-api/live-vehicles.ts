@@ -9,7 +9,7 @@ import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicl
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
-import { stopNames, stopPlace } from './stopNames.js';
+import { stopNames } from './stopNames.js';
 import { routeNames } from './routeNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
@@ -166,14 +166,9 @@ export function nextStopName(
   return null;
 }
 
-/** Where a trip ends (CIV-2047): its update's last stop with a place in the agency's stops file. */
-export function tripEndPlace(agency: string, stops: readonly { stopId?: string | null }[] | null | undefined): [number, number] | null {
-  for (let i = (stops?.length ?? 0) - 1; i >= 0; i--) {
-    const id = stops![i].stopId;
-    const at = id ? stopPlace(agency, String(id)) : undefined;
-    if (at) return at;
-  }
-  return null;
+/** The stops a trip update lists still ahead of now (CIV-2047), in order. */
+export function upcomingStopIds(stops: readonly StopUpdate[] | null | undefined, nowSec: number): string[] {
+  return (stops ?? []).filter(st => st.stopId && !(Number(st.arrival?.time ?? st.departure?.time) < nowSec)).map(st => String(st.stopId));
 }
 
 async function fetchHandler(request: Request): Promise<Response> {
@@ -317,8 +312,8 @@ async function fetchHandler(request: Request): Promise<Response> {
         const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec) : null;
         return { nextStop: stop?.name ?? null, ...(stop?.at ? { atStop: true } : {}) };
       })(),
-      // CIV-2047: where its trip ends (its trip update's last stop, placed from the stops file), to tell its service pattern.
-      tripEnd: tripId ? tripEndPlace(agency, update?.stopTimeUpdate) : null,
+      // CIV-2047: the stops its trip update lists ahead (stop ids), to tell its service pattern.
+      upcomingStops: tripId ? upcomingStopIds(update?.stopTimeUpdate, Date.now() / 1000) : [],
       status: statusForDelay(delayMin),
       statusLabel: null,
       headwayGapMin: null,

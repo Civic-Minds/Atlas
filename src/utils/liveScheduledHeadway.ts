@@ -2,8 +2,6 @@ import type { DayType, TimePeriod } from '../hooks/useIntervalStats';
 import { buildCurrentRoute } from './routeCardRoute';
 import { buildDirectionGroups, type RouteDirectionOverrides } from './routeCardDirectionGroups';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
-import type { ShapeProperties } from '../hooks/useIntervalStats';
-import { lineEnd } from '../../shared/livePatterns';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
 function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: DayType, period: TimePeriod, overrides: RouteDirectionOverrides): RouteCardModel | null {
@@ -47,8 +45,10 @@ export interface LiveScheduledRow {
   key: string;
   label: string;
   value: string;
-  /** The row's shape end ([lon, lat]), to tell which vehicles run it (CIV-2047); null for the shared stretch and span rows. */
-  end: [number, number] | null;
+  /** The row's destination (its headsign), to tie it to the Live pattern ending there (CIV-2047); null for the shared stretch. */
+  headsign: string | null;
+  /** The row's own scheduled gap in minutes, what its gaps are judged against (CIV-2047); null when it gives no number. */
+  headwayMin: number | null;
 }
 
 export function liveScheduledRows(
@@ -69,16 +69,13 @@ export function liveScheduledRows(
   const lines = cardGroupLines(group, gi, model.limitedWord, false);
   const shared = lines.filter(l => l.shared);
   const rest = lines.filter(l => !l.shared);
-  // The card's lines come shared first, then one per row in order, then span rows: each row's shape from the route file.
-  const shapeEnd = (p: ShapeProperties) => lineEnd(fc.features.find(f => {
-    const q = f.properties as Partial<ShapeProperties> | null;
-    return !!q && q.routeShortName === p.routeShortName && q.directionId === p.directionId && q.headsign === p.headsign && (q.routeVariant ?? '') === (p.routeVariant ?? '');
-  })?.geometry);
+  // The card's lines come shared first, then one per row in order, then span rows.
   return [
-    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, end: null })),
+    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, headsign: null, headwayMin: group.shared?.headway ?? null })),
     ...rest.map((l, i) => {
       const row = group.rows[i];
-      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, end: row ? shapeEnd(row.feature) : null };
+      const v = row && !row.night ? row.display(null).value : null;
+      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, headsign: row?.feature.headsign ?? null, headwayMin: v && !v.isLimited ? v.headway ?? null : null };
     }),
   ];
 }

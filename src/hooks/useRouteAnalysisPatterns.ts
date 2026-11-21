@@ -7,6 +7,8 @@ export interface RouteAnalysisPatterns {
   patterns: NonNullable<NonNullable<LiveV3['runningTime']>['patterns']>;
   /** Every stop name the analysis has for the route. */
   stopNames: string[];
+  /** CIV-2047: each direction's trip patterns with their stop ids, for which pattern a live vehicle runs. */
+  stopPatterns?: LiveV3['patterns'];
 }
 
 /**
@@ -23,7 +25,7 @@ export function useRouteAnalysis(slug: string | null, route: string | null, enab
     let live = true;
     fetchLiveDashboard(slug, route)
       .then(d => {
-        if (live) setLoaded({ key, value: d.status === 'ready' && d.v3.runningTime?.patterns ? { patterns: d.v3.runningTime.patterns, stopNames: d.v3.stops.map(s => s.name) } : null });
+        if (live) setLoaded({ key, value: d.status === 'ready' && d.v3.runningTime?.patterns ? { patterns: d.v3.runningTime.patterns, stopNames: d.v3.stops.map(s => s.name), stopPatterns: d.v3.patterns } : null });
       })
       .catch(() => { if (live) setLoaded({ key, value: null }); });
     return () => { live = false; };

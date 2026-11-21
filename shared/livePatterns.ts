@@ -1,39 +1,47 @@
-import { metresBetween } from './geoDistance.js';
-import { LIVE_PATTERN_END_M } from './rules/live.js';
-
 /**
  * Which service pattern each live vehicle runs (CIV-2047, Ryan: "should we group vehicles by what part/service pattern
- * theyre running on"): the route card row whose shape ends nearest the vehicle's trip end, within LIVE_PATTERN_END_M.
- * One shared calculation for the Live route card in the main app and Studio (CIV-2021), and later the MCP (CIV-2055).
- * A vehicle with no trip end, or none near a row's end, belongs to no pattern: it counts only in the route's total.
+ * theyre running on"). A vehicle runs a card row's pattern once its trip update lists a stop only that pattern serves
+ * (past the split); until then it counts only in the shared stretch. No distance rule: the stops are the route's own
+ * Live analysis patterns (their stop ids), each tied to the card row whose destination its last stop names. One shared
+ * calculation for the Live route card in the main app and Studio (CIV-2021), and later the MCP (CIV-2055).
  */
-export interface PatternEnd { key: string; end: [number, number] | null }
+export interface StopPattern { stops: ReadonlyArray<{ stopId: string; name: string }> }
+export interface PatternRow { key: string; headsign: string | null }
 
-export function patternOf(tripEnd: [number, number] | null | undefined, rows: readonly PatternEnd[]): string | null {
-  if (!tripEnd) return null;
-  let best: { key: string; d: number } | null = null;
+const norm = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * Each card row's branch-only stops: the stops of the direction's pattern whose last stop names the row's destination
+ * ("Neville Park" in "Queen St East at Neville Park Blvd"), less every stop another pattern of the direction serves.
+ * A row no pattern ends at gets none (its vehicles stay in the shared stretch).
+ */
+export function branchOnlyStops(patterns: readonly StopPattern[], rows: readonly PatternRow[]): Map<string, Set<string>> {
+  const out = new Map<string, Set<string>>();
   for (const r of rows) {
-    if (!r.end) continue;
-    const d = metresBetween({ lon: tripEnd[0], lat: tripEnd[1] }, { lon: r.end[0], lat: r.end[1] });
-    if (d <= LIVE_PATTERN_END_M && (!best || d < best.d)) best = { key: r.key, d };
-  }
-  return best?.key ?? null;
-}
-
-/** Vehicle ids by pattern key, every vehicle once at most (the unmatched ones are left out). */
-export function vehiclesByPattern<V extends { id: string; tripEnd?: [number, number] | null }>(vehicles: readonly V[], rows: readonly PatternEnd[]): Map<string, V[]> {
-  const out = new Map<string, V[]>();
-  for (const v of vehicles) {
-    const k = patternOf(v.tripEnd, rows);
-    if (k) (out.get(k) ?? out.set(k, []).get(k)!).push(v);
+    const h = r.headsign ? norm(r.headsign) : '';
+    if (!h) continue;
+    const mine = patterns.filter(p => p.stops.length && norm(p.stops[p.stops.length - 1].name).includes(h));
+    if (mine.length !== 1) continue;
+    const others = new Set(patterns.filter(p => p !== mine[0]).flatMap(p => p.stops.map(s => s.stopId)));
+    const only = new Set(mine[0].stops.map(s => s.stopId).filter(id => !others.has(id)));
+    if (only.size) out.set(r.key, only);
   }
   return out;
 }
 
-/** A line's last point: a shape's end, the stop its trips finish at. */
-export function lineEnd(g: GeoJSON.Geometry | null | undefined): [number, number] | null {
-  if (!g) return null;
-  if (g.type === 'LineString') return (g.coordinates.at(-1) as [number, number]) ?? null;
-  if (g.type === 'MultiLineString') return (g.coordinates.at(-1)?.at(-1) as [number, number]) ?? null;
-  return null;
+/** The row whose branch-only stops the vehicle's upcoming stops reach; null when none, or more than one, do. */
+export function patternOf(upcoming: readonly string[] | null | undefined, only: ReadonlyMap<string, ReadonlySet<string>>): string | null {
+  if (!upcoming?.length) return null;
+  const hits = [...only].filter(([, set]) => upcoming.some(id => set.has(id))).map(([k]) => k);
+  return hits.length === 1 ? hits[0] : null;
+}
+
+/** Vehicles by pattern row; a vehicle with no branch-only stop ahead is left out (it counts in the shared stretch only). */
+export function vehiclesByPattern<V extends { upcomingStops?: readonly string[] | null }>(vehicles: readonly V[], only: ReadonlyMap<string, ReadonlySet<string>>): Map<string, V[]> {
+  const out = new Map<string, V[]>();
+  for (const v of vehicles) {
+    const k = patternOf(v.upcomingStops, only);
+    if (k) (out.get(k) ?? out.set(k, []).get(k)!).push(v);
+  }
+  return out;
 }

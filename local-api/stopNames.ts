@@ -8,25 +8,16 @@ import { getAgencyDataUrl } from '../shared/config.js';
 const KEEP_MS = 6 * 60 * 60 * 1000;
 const RETRY_MS = 5 * 60 * 1000;
 const cache = new Map<string, { at: number; ok: boolean; names: Promise<Map<string, string>> }>();
-/** CIV-2047: each stop's place ([lon, lat]), read in the same pass, for where a trip ends. */
-const places = new Map<string, Map<string, [number, number]>>();
 
 async function load(slug: string): Promise<Map<string, string>> {
   const res = await fetch(getAgencyDataUrl(slug, '-stops'));
   if (!res.ok) throw new Error(`stops file ${res.status}`);
-  const stops = await res.json() as Record<string, { name?: string; lat?: number; lon?: number } | undefined>;
+  const stops = await res.json() as Record<string, { name?: string } | undefined>;
   const names = new Map<string, string>();
-  const at = new Map<string, [number, number]>();
-  for (const [id, s] of Object.entries(stops)) {
-    if (s?.name) names.set(id, s.name);
-    if (s && Number.isFinite(s.lat) && Number.isFinite(s.lon)) at.set(id, [s.lon!, s.lat!]);
-  }
-  places.set(slug, at);
+  for (const [id, s] of Object.entries(stops)) if (s?.name) names.set(id, s.name);
   return names;
 }
 
-/** A stop's place once the agency's file is read (stopNames first), else undefined. */
-export const stopPlace = (slug: string, stopId: string): [number, number] | undefined => places.get(slug)?.get(stopId);
 
 export function stopNames(slug: string, now = Date.now()): Promise<Map<string, string>> {
   const hit = cache.get(slug);
