@@ -263,7 +263,7 @@ export const gapsTrusted = (f: QualityFail): boolean => f.kind === 'swaps' || f.
 export function heldRouteLine(v3: LiveV3): string | null {
   const f = qualityFail(v3);
   if (!f) return null;
-  return gapsTrusted(f) ? `Gaps and bunching only: its delays are hidden because ${f.fact}.` : `No figures: ${f.fact}.`;
+  return gapsTrusted(f) ? `Its delays are hidden because ${f.fact}.` : `No figures: ${f.fact}.`;
 }
 
 const emptyCounts = (): AdherenceCounts => ({ n: 0, early: 0, onTime: 0, late: 0, earlyShare: 0, onTimeShare: 0, lateShare: 0, notLateShare: 0 });

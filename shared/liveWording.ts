@@ -4,7 +4,7 @@ import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
-import { minutesText } from './liveFormat';
+import { gapText, minutesText } from './liveFormat';
 import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
 
 /**
@@ -341,8 +341,8 @@ export const STUDIO_NOW_PENDING = {
  */
 export const STUDIO_ROUTE_NOW_PENDING = {
   columns: { direction: 'Direction', vehicles: 'Vehicles', bunched: 'Bunched', gapped: 'Long gaps' },
-  /** "Bunched between Beverley St and Shaw St: 0.9 min apart". `place` is betweenLabel's. */
-  bunchedAt: (place: string, min: number): string => `Bunched ${place}: ${minutesText(min)} apart`,
+  /** "Bunched between Beverley St and Shaw St: 54 sec apart" (under a minute in seconds, CIV-2021). `place` is betweenLabel's. */
+  bunchedAt: (place: string, min: number): string => `Bunched ${place}: ${gapText(min)} apart`,
   /** "Long gap between Mountstephen St and Wolfrey Ave: 24 min wait, scheduled every 7 min". */
   gappedAt: (place: string, waitMin: number, scheduledMin: number | null): string =>
     `Long gap ${place}: ${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
