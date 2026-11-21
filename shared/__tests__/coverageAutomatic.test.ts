@@ -23,7 +23,7 @@ describe('the coverage page reads its columns from their sources (CIV-1871)', ()
 
   it('reads each column from its shared source', () => {
     const rows = readFileSync('shared/coverageRows.ts', 'utf8');
-    for (const source of ['isFocusAgency', 'FOCUS_AGENCY_SLUGS', 'PRODUCT_FOCUS', 'earliestFiguresDay']) expect(rows, source).toContain(source);
+    for (const source of ['isFocusAgency', 'FOCUS_AGENCY_SLUGS', 'liveFeedStatus', 'earliestFiguresDay']) expect(rows, source).toContain(source);
     const page = readFileSync('src/StudioCoveragePage.tsx', 'utf8');
     for (const source of ['history-agencies.json', 'LIVE_ARCHIVE_SLUGS', 'LIVE_AGENCY_SLUGS', 'STUDIO_COVERAGE_DEV_URL', 'MCP_COVERAGE_API_URL']) expect(page, source).toContain(source);
     expect(readFileSync('local-api/mcp-coverage.ts', 'utf8')).toContain('PRODUCT_FOCUS.live');
