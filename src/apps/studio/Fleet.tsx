@@ -206,11 +206,12 @@ function Body({ view, slug, file, vehicles, agency, period, route, setRoute, fra
         // CIV-1922: Fleet opens on the fleet itself, the vehicles the whole agency needs at the time of day. CIV-2002 (Ryan:
         // "This panel looks different than any other panel in Atlas"): Live's agency panel, a plain body and one Widget card.
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(agencyModes)}>
-          <PanelBody className="custom-scrollbar overflow-y-auto px-4 pt-3 pb-3">
-            {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
+          {/* CIV-2003: PanelBody is the shared scroll area; an empty panel says so in the shared line, a lead line is card body text. */}
+          <PanelBody className={vehicles === 'missing' ? undefined : 'px-4 pt-3 pb-3'}>
+            {vehicles === 'missing' ? <PanelEmpty>{C.noData}</PanelEmpty>
               : vehicles ? (
                 <>
-                  {fleet && <p className="m-0 mb-3 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</p>}
+                  {fleet && <CardBodyText className="!mt-0 mb-3">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</CardBodyText>}
                   <Widget title={vehiclesNeededTitle(agencyModes)}>
                     <StudioGroupFigures group={fleet} showRunning={false} network modes={agencyModes} />
                   </Widget>
