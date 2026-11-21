@@ -1,5 +1,6 @@
 import DataTable from '../../components/ui/DataTable';
 import ScrollX from '../../components/ui/ScrollX';
+import { CardBodyText } from '../../components/Interval/cardUi';
 import { PAGE_NAMES } from '../../../shared/pageNames';
 import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
 import { FREQUENCY_LABEL } from '../../content/noticeCopy';
@@ -43,11 +44,12 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
  * words were never approved and read as nothing to a planner).
  */
 export function StudioGroupFigures({ group, showRunning = true, network = false, modes }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[] }) {
-  if (!group) return <p className="m-0 text-sm text-[var(--text-muted)]">{noServiceText(modes)}</p>;
+  // CIV-2003: lines in the card are the shared card body text, as the route card's no-data line.
+  if (!group) return <CardBodyText className="!mt-0">{noServiceText(modes)}</CardBodyText>;
   const N = fleetNetworkText(group.modes);
   return (
     <>
-    {group.routes.length > 1 && <p className="m-0 mb-2 text-sm text-[var(--text-secondary)]">{groupSharesText(group.routes, group.modes)}</p>}
+    {group.routes.length > 1 && <CardBodyText className="!mt-0 mb-2">{groupSharesText(group.routes, group.modes)}</CardBodyText>}
     {/* -mx-2: the marked row's tint reaches past the text while the words line up with the lines above and below. */}
     <ScrollX className="-mx-2">
       <DataTable

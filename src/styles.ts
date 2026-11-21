@@ -146,7 +146,9 @@ export const PANEL_SECTION_HEAD = 'px-4 py-2 text-xs font-black text-[var(--text
 export const PANEL_BODY = 'flex-1 overflow-y-auto custom-scrollbar min-h-0';
 
 /** Empty / loading copy inside a panel row */
-export const PANEL_EMPTY = 'px-4 py-3 text-xs text-[var(--text-muted)] font-bold';
+/** Its text alone, for the same line inside a card that already has its own padding (PanelEmpty inline). */
+export const PANEL_EMPTY_TEXT = 'text-xs text-[var(--text-muted)] font-bold';
+export const PANEL_EMPTY = `px-4 py-3 ${PANEL_EMPTY_TEXT}`;
 
 /**
  * Inline notice / warning (outdated schedule, corrected data, outside filters).

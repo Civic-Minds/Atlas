@@ -27,10 +27,7 @@ const RULES: { name: string; pattern: RegExp; use: string }[] = [
 ];
 
 /** File -> rules it may still break, with why. Each entry is a debt with an owner, not a pattern to copy. */
-const ALLOWED: Record<string, { rules: string[]; why: string }> = {
-  'src/apps/studio/Fleet.tsx': { rules: ['own scroll area', 'own text line'], why: "the Buses Needed panel, UX's rebuild (CIV-2002)" },
-  'src/apps/studio/StudioGroupFigures.tsx': { rules: ['own text line'], why: "the Buses Needed panel's figures, UX's rebuild (CIV-2002)" },
-};
+const ALLOWED: Record<string, { rules: string[]; why: string }> = {};
 
 describe('Studio builds on the shared pieces (CIV-2003)', () => {
   it('has no hand-built panels, lists, headings, tables or text lines outside the listed exceptions', () => {

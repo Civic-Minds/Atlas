@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { PANEL_EMPTY } from '../../styles';
+import { PANEL_EMPTY, PANEL_EMPTY_TEXT } from '../../styles';
 import Spinner from './Spinner';
 
 interface PanelEmptyProps {
@@ -9,14 +9,16 @@ interface PanelEmptyProps {
   action?: ReactNode;
   /** A second line under it that explains what to do (usually a CardHelpNotice). */
   detail?: ReactNode;
+  /** Inside a card section that has its own padding: the same line without the panel row's padding (CIV-2003). */
+  inline?: boolean;
   children: ReactNode;
 }
 
 /** The one "nothing here / loading / could not load" line inside a panel. Left aligned, muted, bold. */
-export default function PanelEmpty({ kind = 'empty', action, detail, children }: PanelEmptyProps) {
+export default function PanelEmpty({ kind = 'empty', action, detail, inline = false, children }: PanelEmptyProps) {
   const row = kind === 'loading' || action;
   const line = (
-    <div className={`${PANEL_EMPTY}${row ? ' flex items-center gap-2' : ''}${action ? ' justify-between gap-3' : ''}`} role={kind === 'loading' ? 'status' : undefined}>
+    <div className={`${inline ? PANEL_EMPTY_TEXT : PANEL_EMPTY}${row ? ' flex items-center gap-2' : ''}${action ? ' justify-between gap-3' : ''}`} role={kind === 'loading' ? 'status' : undefined}>
       {kind === 'loading' && <Spinner />}
       <span className="min-w-0">{children}</span>
       {action}
