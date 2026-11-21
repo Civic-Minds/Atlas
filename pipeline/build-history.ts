@@ -29,6 +29,7 @@ import { holidayDropFor, repickedFor, type HolidayPeriodDrop, type RepickedPerio
 import { historyV2FromEnv } from './historyV2Flag.js';
 import { splitKey, splitRouteHistory, terminiOf } from './historyRouteIdentity.js';
 import { compileAgencyShapes, formatShapeGap, shapeGaps, type ShapeRouteYear } from './historyShapes.js';
+import { yearsAvailable } from '../shared/historyV2Reader.js';
 import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
@@ -827,7 +828,11 @@ async function main() {
     // shapes.txt). Only agencies with shape files are checked; one without any has no lines to lose.
     for (const slug of Object.keys(shapeRouteYears).sort()) {
       const periods = shapePeriods[slug];
-      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug]));
+      // #1659: History draws the agency's newest year on today's map lines, never from the shapes file (yearsAvailable,
+      // the reader's own rule for that year), so that year is not checked.
+      const published = historyData.find(a => a.slug === slug);
+      const latestYear = published ? yearsAvailable(published).at(-1) : undefined;
+      if (periods?.size) buildReport.shapeGaps.push(...shapeGaps(slug, periods, shapeRouteYears[slug], { latestYear }));
     }
     // Build report: every dropped snapshot (slug, route, label, reason) and the year rules' effects.
     const reportPath = resolve('tmp/history-build-report.json');
