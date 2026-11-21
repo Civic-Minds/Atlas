@@ -2,6 +2,8 @@ import type { DayType, TimePeriod } from '../hooks/useIntervalStats';
 import { buildCurrentRoute } from './routeCardRoute';
 import { buildDirectionGroups, type RouteDirectionOverrides } from './routeCardDirectionGroups';
 import { buildRouteCardModel, cardGroupLines, type RouteCardModel } from './routeCardRows';
+import type { ShapeProperties } from '../hooks/useIntervalStats';
+import { lineEnd } from '../../shared/livePatterns';
 
 /** The main map's route card model for a route now, the one source Live reads its scheduled figures from (#1234, CIV-2045). */
 function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: DayType, period: TimePeriod, overrides: RouteDirectionOverrides): RouteCardModel | null {
@@ -40,6 +42,15 @@ function cardGroupIndex(model: RouteCardModel, directionId: number | null, direc
  * short turn), read with the card's one reading (cardGroupLines), never a range of its own across stops. With no
  * direction picked, the first direction the card shows. Empty when the card shows nothing.
  */
+export interface LiveScheduledRow {
+  /** Stable within the card: "shared", or the card row's own id. */
+  key: string;
+  label: string;
+  value: string;
+  /** The row's shape end ([lon, lat]), to tell which vehicles run it (CIV-2047); null for the shared stretch and span rows. */
+  end: [number, number] | null;
+}
+
 export function liveScheduledRows(
   fc: GeoJSON.FeatureCollection,
   routeKey: string,
@@ -49,12 +60,27 @@ export function liveScheduledRows(
   overrides: RouteDirectionOverrides = {},
   /** The direction's name as Live shows it ("Westbound"): it picks the card's direction first (#1664). */
   directionLabel: string | null = null,
-): { label: string; value: string }[] {
+): LiveScheduledRow[] {
   const model = liveCardModel(fc, routeKey, day, period, overrides);
   if (!model) return [];
   const gi = cardGroupIndex(model, directionId, directionLabel);
   const group = model.groups[gi];
-  return group ? cardGroupLines(group, gi, model.limitedWord, false).map(({ label, value }) => ({ label, value })) : [];
+  if (!group) return [];
+  const lines = cardGroupLines(group, gi, model.limitedWord, false);
+  const shared = lines.filter(l => l.shared);
+  const rest = lines.filter(l => !l.shared);
+  // The card's lines come shared first, then one per row in order, then span rows: each row's shape from the route file.
+  const shapeEnd = (p: ShapeProperties) => lineEnd(fc.features.find(f => {
+    const q = f.properties as Partial<ShapeProperties> | null;
+    return !!q && q.routeShortName === p.routeShortName && q.directionId === p.directionId && q.headsign === p.headsign && (q.routeVariant ?? '') === (p.routeVariant ?? '');
+  })?.geometry);
+  return [
+    ...shared.map(l => ({ key: 'shared', label: l.label, value: l.value, end: null })),
+    ...rest.map((l, i) => {
+      const row = group.rows[i];
+      return { key: row?.id ?? `span-${i}`, label: l.label, value: l.value, end: row ? shapeEnd(row.feature) : null };
+    }),
+  ];
 }
 
 /**

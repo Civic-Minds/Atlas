@@ -9,7 +9,7 @@ import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicl
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
-import { stopNames } from './stopNames.js';
+import { stopNames, stopPlace } from './stopNames.js';
 import { routeNames } from './routeNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
@@ -166,6 +166,16 @@ export function nextStopName(
   return null;
 }
 
+/** Where a trip ends (CIV-2047): its update's last stop with a place in the agency's stops file. */
+export function tripEndPlace(agency: string, stops: readonly { stopId?: string | null }[] | null | undefined): [number, number] | null {
+  for (let i = (stops?.length ?? 0) - 1; i >= 0; i--) {
+    const id = stops![i].stopId;
+    const at = id ? stopPlace(agency, String(id)) : undefined;
+    if (at) return at;
+  }
+  return null;
+}
+
 async function fetchHandler(request: Request): Promise<Response> {
   const agency = requestAgency(request);
   if (!agency) return json({ error: 'A single valid agency slug is required' }, 400);
@@ -279,6 +289,8 @@ async function fetchHandler(request: Request): Promise<Response> {
 
     const tripId = String(vehicle.trip?.tripId ?? '');
     const update = tripId ? updatesByTrip.get(tripId) : undefined;
+    // CIV-2024 (#1653): the trip update by trip id, else by the update's vehicle id.
+    const tripUpdate = update ?? (vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined);
     const delaySeconds = update ? explicitTripDelaySec(update) : null;
     const delayMin = delaySeconds == null ? null : delayMinFromDelaySec(delaySeconds);
     const lastStop = update?.stopTimeUpdate?.at(-1);
@@ -305,6 +317,8 @@ async function fetchHandler(request: Request): Promise<Response> {
         const stop = tripId ? vehicleNextStop(vehicle, update, vehicle.vehicle?.id ? updatesByVehicle.get(String(vehicle.vehicle.id)) : undefined, names, feedNowSec) : null;
         return { nextStop: stop?.name ?? null, ...(stop?.at ? { atStop: true } : {}) };
       })(),
+      // CIV-2047: where its trip ends (its trip update's last stop, placed from the stops file), to tell its service pattern.
+      tripEnd: tripId ? tripEndPlace(agency, update?.stopTimeUpdate) : null,
       status: statusForDelay(delayMin),
       statusLabel: null,
       headwayGapMin: null,

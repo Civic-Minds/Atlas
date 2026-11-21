@@ -19,6 +19,8 @@ export interface LiveVehicle {
   nextStop?: string | null;
   /** CIV-2034: nextStop is the stop it stands at ("At <stop>"), not the next one. */
   atStop?: boolean;
+  /** CIV-2047: where its trip ends ([lon, lat], its trip update's last stop), to tell which service pattern it runs. */
+  tripEnd?: [number, number] | null;
   status: 'no_data' | 'early' | 'late' | 'on_time';
   statusLabel?: string | null;
   headwayGapMin?: number | null;
