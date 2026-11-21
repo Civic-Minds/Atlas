@@ -165,6 +165,20 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     const twin: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: { t: 'reading', v: 15 } }), to: 'King at Greenhill' }, { ...piece('branch', 1, { midday: { t: 'reading', v: 14 } }), to: 'King at Greenhill' }] };
     expect(lines(card([withReadings(twin, 'main')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to King at Greenhill: every 15 min']);
   });
+  it('CIV-2030: a branch the card hid for the period that gets its line back is told apart from a row to the same place', () => {
+    // GO 15 Saturday midday: 15B (hidden at midday, #1115) and 15 both end at Aldershot GO; both rows read "to Aldershot GO", every 59 and every 60.
+    const r: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), piece('branch', 0, { midday: { t: 'reading', v: 20 } })] };
+    const main = { ...withReadings(r, 'main'), headsign: 'Pearson Airport', routeVariant: '52' } as ShapeProperties;
+    const tail = { ...withReadings(r, 'tail'), routeVariant: '52A' } as ShapeProperties;
+    const route = { routeShortName: '52', routeLongName: null as string | null, directions: [main, tail] };
+    // The period's shown rows leave the hidden branch out; the direction's features still have it.
+    const groups = buildDirectionGroups(route, 'midday').map(g => ({ ...g, realTier: g.realTier.filter(d => d !== tail), directionFeatures: [main, tail] }));
+    const m = buildRouteCardModel({ ...route, directionGroups: groups, agencyFeatures: undefined, period: 'midday', maxHeadway: Infinity, nightView: false, stableColors: false, hideSpan: false, branchReadings: true });
+    const labels = m.groups.flatMap(g => g.rows.map(row => row.label));
+    expect(labels).toHaveLength(2);
+    expect(new Set(labels).size).toBe(2);
+    expect(labels).toContain('52A · to Pearson Airport');
+  });
   void trunkStops; void branchStops;
 });
 
