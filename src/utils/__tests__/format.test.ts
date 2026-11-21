@@ -202,6 +202,12 @@ describe('titleCase and accented first letters', () => {
 });
 
 describe('routeLabels case', () => {
+  // #1647: Hamilton's "20 A-LINE EXPRESS" read "20 a-Line Express"; the article "a" stays small.
+  it('capitalises a one-letter code joined by a hyphen, and keeps the article small', () => {
+    expect(routeLabelCase('20 A-LINE EXPRESS')).toBe('20 A-Line Express');
+    expect(routeLabelCase('10 B-LINE EXPRESS')).toBe('10 B-Line Express');
+    expect(routeLabelCase('ROUTE TO A STATION')).toBe('Route to a Station');
+  });
   it('title-cases a shouting feed, and leaves a feed\'s own mixed-case spelling and short codes alone', () => {
     expect(routeLabelCase('STAMFORD/CT STATE')).toBe('Stamford/Ct State');
     expect(routeLabelCase('Kendall/MIT Station')).toBe('Kendall/MIT Station');
