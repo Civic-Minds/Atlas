@@ -14,7 +14,7 @@ import { ATLAS_MODE, FEATURES } from '../shared/config';
 import { plural } from '../shared/overflowText';
 import historyAgencies from '../shared/data/history-agencies.json';
 import type { HistoryAgencyList } from '../shared/historyEligibility';
-import { isLiveEligibleSlug } from '../shared/livePollingConfig';
+import { LIVE_AGENCY_SLUGS } from '../shared/livePollingConfig';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { LINK, UNDERLINED_LINK } from './pageStyles';
@@ -101,7 +101,7 @@ export default function AgenciesIndexPage({ data: dataProp }: { data?: AgencyInd
                       // A parent agency's row (CIV-1277) links its own page and carries no member's tags. Links are built from
                       // slugs, never read from the embedded JSON's text (CodeQL js/xss-through-dom).
                       const href = a.parent ? parentAgencyPagePath(a.slug) : agencyPagePath(a.slug);
-                      const live = !a.parent && FEATURES.live && isLiveEligibleSlug(a.slug);
+                      const live = !a.parent && FEATURES.live && LIVE_AGENCY_SLUGS.includes(a.slug);
                       const history = !a.parent && FEATURES.history && HISTORY_SLUGS.has(a.slug);
                       if (live || history) {
                         // Tagged rows stay on one line: a name too long for the column shows its short name ("CDTA"), with

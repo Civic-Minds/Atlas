@@ -9,7 +9,7 @@ import { trackEvent, withoutMapPosition } from '../../lib/analytics';
 import { BASEMAP_ATTRIBUTION } from '../../lib/basemap';
 import { BasemapCredit, BASEMAP_CREDIT_LINK } from '../BasemapCredit';
 import { OutboundLink } from '../OutboundLink';
-import { CONTEXT_CREDIT_SHORT, contextCreditTitle, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
+import { CONTEXT_CREDIT_SHORT, contextCreditTitle, MASSDOT_CREDIT_SHORT, MASSDOT_CREDIT_URL, MBTA_VEHICLES_CREDIT, ABOUT_ATLAS, WHATS_NEW_TITLE, FEEDBACK_LABEL } from '../../content/noticeCopy';
 import { acsWindow } from '../../utils/contextLayer';
 import { ABOUT_PATH } from '../../../shared/pagePaths';
 import { mailto } from '../../../shared/contact';
@@ -22,7 +22,7 @@ function UnseenDot() {
 
 
 /** Basemap credit — linked names satisfy OSM + CARTO attribution requirements. */
-export function MapAttribution({ contextLayerOn = false, contextYear = null }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null } = {}) {
+export function MapAttribution({ contextLayerOn = false, contextYear = null, massDotOn = false }: { /** The population / income shading is on: add its data credit to the OpenStreetMap pill. */ contextLayerOn?: boolean; contextYear?: number | null; /** CIV-2046: MBTA vehicles are on the map: credit MassDOT in the same pill. */ massDotOn?: boolean } = {}) {
   const [whatsNewOpen, setWhatsNewOpen] = useState(false);
   // The dot shows until What's New is opened, and returns with the next release.
   const [unseen, setUnseen] = useState(() => whatsNewUnseen(appVersion));
@@ -117,15 +117,25 @@ export function MapAttribution({ contextLayerOn = false, contextYear = null }: {
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px] ${contextLayerOn ? 'max-w-full min-w-0' : ''}`}>
         <BasemapCredit
           className={contextLayerOn ? 'min-w-0 truncate' : ''}
-          extra={contextLayerOn ? (
-            <OutboundLink
-              href="https://www.census.gov/programs-surveys/acs"
-              kind="attribution"
-              className={BASEMAP_CREDIT_LINK}
-              title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
-            >
-              {CONTEXT_CREDIT_SHORT}
-            </OutboundLink>
+          extra={contextLayerOn || massDotOn ? (
+            <>
+              {contextLayerOn && (
+                <OutboundLink
+                  href="https://www.census.gov/programs-surveys/acs"
+                  kind="attribution"
+                  className={BASEMAP_CREDIT_LINK}
+                  title={contextYear ? contextCreditTitle(acsWindow(contextYear)) : undefined}
+                >
+                  {CONTEXT_CREDIT_SHORT}
+                </OutboundLink>
+              )}
+              {contextLayerOn && massDotOn && <span className={MAP_BADGE_LABEL}> · </span>}
+              {massDotOn && (
+                <OutboundLink href={MASSDOT_CREDIT_URL} kind="attribution" className={BASEMAP_CREDIT_LINK} title={MBTA_VEHICLES_CREDIT}>
+                  {MASSDOT_CREDIT_SHORT}
+                </OutboundLink>
+              )}
+            </>
           ) : undefined}
         />
       </div>

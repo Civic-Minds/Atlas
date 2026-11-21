@@ -391,6 +391,11 @@ export const CONTEXT_LEGEND_TITLE_INCOME = 'Typical household income';
 export const CONTEXT_NO_DATA_LABEL = 'No reliable figure';
 // The short credit after "OpenStreetMap · CARTO" while the shading is on, and its hover text with the survey years.
 export const CONTEXT_CREDIT_SHORT = 'U.S. Census Bureau';
+// CIV-2046: MBTA vehicle data is MassDOT's (Developers License Agreement). Ryan picked both places: the map pill while MBTA
+// vehicles are on screen, and About's schedule sources.
+export const MASSDOT_CREDIT_SHORT = 'MassDOT';
+export const MASSDOT_CREDIT_URL = 'https://www.mass.gov/massdot-developers-data-sources';
+export const MBTA_VEHICLES_CREDIT = `MBTA vehicle locations are provided by ${MASSDOT_CREDIT_SHORT}.`;
 export const contextCreditTitle = (years: readonly [number, number]) =>
   `Source: U.S. Census Bureau, American Community Survey 5-year estimates (${years[0]}–${years[1]}) and TIGER/Line boundaries`;
 // The tap card's lines: "1,240 people per square kilometre", "$62,000 a year", "Could be off by about 18%".

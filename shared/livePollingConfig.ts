@@ -1,3 +1,4 @@
+import { LIVE_ARCHIVE_TRIP_FEEDS, LIVE_MAP_ARCHIVE_FEEDS } from './liveArchiveFeeds.js';
 /**
  * Shared GTFS-RT schedule-adherence config for on-demand API, POC scripts, and the UI.
  *
@@ -48,6 +49,9 @@ export const LIVE_AGENCY_BBOXES: Record<string, [number, number, number, number]
   translink:  [-123.50, 49.00, -122.20, 49.50],
   stm:        [-74.07, 45.10, -73.07, 45.90],
   sfmta:      [-122.56, 37.65, -122.30, 37.90],
+  // CIV-2046: shown from the archiver's feeds (LIVE_MAP_ARCHIVE_FEEDS).
+  kingston:   [-76.70, 44.15, -76.30, 44.35],
+  mbta:       [-71.25, 42.20, -70.90, 42.50],
   lacmta:     [-118.70, 33.65, -117.60, 34.40],
 };
 
@@ -63,6 +67,8 @@ export const LIVE_AGENCY_PLACES: Record<string, string> = {
   stm: 'Montréal',
   sfmta: 'San Francisco',
   lacmta: 'Los Angeles',
+  kingston: 'Kingston',
+  mbta: 'Boston',
 };
 
 /** IANA timezone per live-polling agency (History hourly bucketing). */
@@ -404,9 +410,17 @@ export function liveEligibleRoutes(slug: string): LiveRouteConfig[] {
   return LIVE_POLLING_ROUTES.filter(r => r.slug === slug && isLiveEligibleRoute(r));
 }
 
-export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set(
-  LIVE_POLLING_ROUTES.filter(isLiveEligibleRoute).map(r => r.slug),
-)];
+/** CIV-2046: an agency the Live map shows from the archiver's own feed entry (no polled-route config of its own). */
+export function liveMapArchiveFeed(slug: string) {
+  const positions = LIVE_MAP_ARCHIVE_FEEDS.find(f => f.slug === slug);
+  return positions ? { positions, tripUpdatesUrl: LIVE_ARCHIVE_TRIP_FEEDS.find(f => f.slug === slug)?.url ?? null } : null;
+}
+
+/** Every city on the Live map, the one list Studio's Live reads too (CIV-2046): polled routes plus the archiver's map feeds. */
+export const LIVE_AGENCY_SLUGS: readonly string[] = [...new Set([
+  ...LIVE_POLLING_ROUTES.filter(isLiveEligibleRoute).map(r => r.slug),
+  ...LIVE_MAP_ARCHIVE_FEEDS.map(f => f.slug),
+])];
 
 /** True when an agency's live feeds are usable in the UI (no API key needed, or marked active). */
 export function isLiveEligibleSlug(slug: string): boolean {
@@ -419,6 +433,7 @@ export function isLiveEligibleSlug(slug: string): boolean {
  * (In-memory rate limits still apply separately — multi-instance gap is known.)
  */
 export function isLiveApiServable(slug: string): boolean {
+  if (liveMapArchiveFeed(slug) && !LIVE_POLLING_ROUTES.some(r => r.slug === slug)) return true;
   if (!isLiveEligibleSlug(slug)) return false;
   const cfg = LIVE_POLLING_ROUTES.find(r => r.slug === slug);
   if (!cfg) return false;

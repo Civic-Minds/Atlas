@@ -2,12 +2,14 @@ import GtfsRealtimeBindings from 'gtfs-realtime-bindings';
 import {
   LIVE_POLLING_ROUTES,
   isLiveApiServable,
+  liveMapArchiveFeed,
 } from '../shared/livePollingConfig.js';
 import { delayMinFromDelaySec, explicitTripDelaySec } from '../shared/liveVehicleDelay.js';
 import { delayStatus } from '../shared/liveDelayStatus.js';
 import { MovementSpeeds } from './movementSpeed.js';
 import { LIVE_POLL_SEC } from '../shared/rules/live.js';
 import { stopNames } from './stopNames.js';
+import { routeNames } from './routeNames.js';
 
 const FEED_TIMEOUT_MS = 15_000;
 /** CIV-1770: speeds from movement between polls, across requests. */
@@ -139,17 +141,23 @@ async function fetchHandler(request: Request): Promise<Response> {
   }
 
   const configs = LIVE_POLLING_ROUTES.filter(route => route.slug === agency);
+  // CIV-2046: an agency the map shows from the archiver's own feed entry (Kingston, the MBTA): its URLs and route filter.
+  const archive = configs.length === 0 ? liveMapArchiveFeed(agency) : null;
   const config = configs[0];
-  const fetchOptions = {
+  const fetchOptions = config ? {
     apiKeyParam: config.apiKeyParamEnvVar ? process.env[config.apiKeyParamEnvVar] : undefined,
     apiKeyParamName: config.apiKeyParamName,
     apiKeyHeader: config.apiKeyHeaderEnvVar ? process.env[config.apiKeyHeaderEnvVar] : undefined,
-  };
+  } : {};
+  const positionsUrl = config?.vehiclePositionsUrl ?? archive?.positions.url;
+  const tripsUrl = config?.tripUpdatesUrl ?? archive?.tripUpdatesUrl ?? null;
+  if (!positionsUrl) return json({ error: 'Unknown, inactive, or unconfigured agency' }, 404);
 
-  const [positions, updates, names] = await Promise.all([
-    fetchFeed(config.vehiclePositionsUrl, fetchOptions),
-    fetchFeed(config.tripUpdatesUrl, fetchOptions),
+  const [positions, updates, names, archiveRoutes] = await Promise.all([
+    fetchFeed(positionsUrl, fetchOptions),
+    tripsUrl ? fetchFeed(tripsUrl, fetchOptions) : Promise.resolve({ ok: false as const, reason: 'http-error' as const, detail: 'no trip feed' }),
     stopNames(agency),
+    archive ? routeNames(agency) : Promise.resolve(null),
   ]);
 
   if (!positions.ok) {
@@ -164,6 +172,11 @@ async function fetchHandler(request: Request): Promise<Response> {
         displayName: route.displayName ?? '',
       });
     }
+  }
+  if (archive && archiveRoutes) {
+    // The archiver's own route filter, so the map shows the routes it records (the MBTA's full feed carries every mode).
+    const filter = new RegExp(archive.positions.routeFilterSource);
+    for (const [routeId, name] of archiveRoutes) if (filter.test(routeId)) routeById.set(routeId, name);
   }
 
   const updatesByTrip = new Map<string, any>();

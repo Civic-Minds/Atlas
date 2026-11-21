@@ -56,4 +56,14 @@ describe('MapAttribution', () => {
     expect(container.querySelector('p.truncate')).toBeNull();
     expect(container.innerHTML).not.toContain('5.75rem');
   });
+
+  it('credits MassDOT only while MBTA vehicles are on the map (CIV-2046)', () => {
+    const { rerender } = render(<MapAttribution />);
+    expect(screen.queryByRole('link', { name: 'MassDOT' })).toBeNull();
+    rerender(<MapAttribution massDotOn />);
+    expect(screen.getByRole('link', { name: 'MassDOT' })).toHaveAttribute('href', 'https://www.mass.gov/massdot-developers-data-sources');
+    rerender(<MapAttribution massDotOn contextLayerOn contextYear={2023} />);
+    expect(screen.getByRole('link', { name: 'U.S. Census Bureau' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'MassDOT' })).toBeInTheDocument();
+  });
 });

@@ -11,7 +11,7 @@ import { getSavedStudioAgency, saveStudioAgency, studioAgencyInView } from '../.
 import { useSidebarFrame } from '../../context/SidebarFrame';
 import { PAGE_NAMES, tabTitle } from '../../../shared/pageNames';
 import { STUDIO_LEGACY_PARAMS, STUDIO_MANIFEST_DEV_URL, STUDIO_PAGES, parseStudioPath, studioAgencyFrom, studioAgencyListFrom, studioLegacyLocation, studioPageFor, studioPath, type StudioLocation, type StudioPageKey } from '../../../shared/studioAgencies';
-import { LIVE_STUDIO_AGENCIES_URL } from '../../../shared/liveStudioAgencies';
+import { LIVE_AGENCY_SLUGS } from '../../../shared/livePollingConfig';
 import { STUDIO_PAGE_NAMES } from '../../../shared/studioWording';
 import Fleet from './Fleet';
 import Live from './Live';
@@ -28,7 +28,7 @@ import { StudioMapFrameProvider, studioFrameKey } from '../../context/StudioMapF
  * Atlas Studio (CIV-1828), a view of the main map as History is: App's top bar, its view tabs (Studio's pages in place of
  * the map's), the main map's chips, sidebar card, map, key and footer. The view owns the page, the agency and the route, in its
  * path (/studio/<page>/<agency>/<route>, CIV-1924); a page owns the rest. Each page lists only the agencies it has data for: Live's from
- * the recordings (LIVE_STUDIO_AGENCIES_URL), Fleet's from the built Studio files (STUDIO_MANIFEST_DEV_URL).
+ * the Live map's own list (LIVE_AGENCY_SLUGS, CIV-2046), Fleet's from the built Studio files (STUDIO_MANIFEST_DEV_URL).
  * Local only (FEATURES.studio).
  */
 
@@ -69,7 +69,9 @@ export default function Studio({ agencyCatalog, headerPortal, tabsPortal, settin
     const qs = rest.toString();
     navigate({ pathname: studioPath(legacy), search: qs ? `?${qs}` : '' }, { replace: true });
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
-  const liveList = useDevFile<{ agencies: string[] }>(LIVE_STUDIO_AGENCIES_URL);
+  // CIV-2046 (Ryan: "I think Live in Studio and Live in main app should have the same cities available"): the Live map's
+  // own list; a city without recordings opens with the no-data note (CIV-1883).
+  const liveList = useMemo(() => ({ agencies: [...LIVE_AGENCY_SLUGS] }), []);
   const fleetList = useDevFile<{ agencies: string[] }>(STUDIO_MANIFEST_DEV_URL);
   // One reading and one default for both pages (CIV-1898): the same list rule, the same default agency.
   const listOf = studioAgencyListFrom;
