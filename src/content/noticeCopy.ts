@@ -1118,7 +1118,7 @@ export const COVERAGE_TEXT = {
   factsFailed: 'The dev server didn’t list the Studio and Live files, so those columns are empty.',
 } as const;
 
-/** CIV-1890 (Ryan, 2026-11-18, word for word): the About menu inside Studio, in place of the public atlas's text. */
+/** CIV-1890: the About menu inside Studio, in place of the public atlas's text. Ryan OK'd it as written on 2026-11-21: "1 for now" (provisional). */
 export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
 
 /** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
