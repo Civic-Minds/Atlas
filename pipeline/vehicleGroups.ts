@@ -22,6 +22,8 @@ const up = (v: number) => Math.ceil(v - 1e-9);
 export function vehicleGroupRows(
   routes: ReadonlyArray<{ routeId: string; analysis: PeriodPatterns }>,
   nameOf: (routeId: string) => string,
+  /** A route_id's mode (effectiveMode), for the group's `modes` (CIV-2002). */
+  modeOf?: (routeId: string) => number | undefined,
 ): StudioVehicleGroup[] {
   const rows: StudioVehicleGroup[] = [];
   const seen = new Set<string>();
@@ -37,6 +39,7 @@ export function vehicleGroupRows(
     const layovers = regular.map(p => p.layoverMin).filter((v): v is number => v != null);
     rows.push({
       routes: memberIds.map(nameOf).sort((x, y) => x.localeCompare(y, undefined, { numeric: true })),
+      ...(modeOf ? { modes: [...new Set(memberIds.map(modeOf).filter((m): m is number => m != null))].sort((x, y) => x - y) } : {}),
       scheduled: group ? group.scheduledVehicles : patterns.reduce((s, p) => s + p.scheduledVehicles, 0),
       implied: group ? group.impliedVehicles : up(regular.reduce((s, p) => s + needVehicles(p, SCHEDULE), 0)),
       runningMin: Math.round(regular.reduce((s, p) => s + p.runningMin, 0)),

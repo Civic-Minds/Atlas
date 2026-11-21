@@ -5,7 +5,7 @@ import { headwayEvery, runTimeAmount } from '../../../shared/headwayText';
 import { FREQUENCY_LABEL } from '../../content/noticeCopy';
 import { MISSING_VALUE } from '../../../shared/missingValue';
 import { groupAtTarget, STUDIO_TARGETS, type StudioBranchSplit, type StudioVehicleGroup } from '../../../shared/studioVehicles';
-import { STUDIO_VEHICLES_TEXT, groupSharesText } from '../../../shared/studioWording';
+import { STUDIO_VEHICLES_TEXT, fleetNetworkText, groupSharesText, noServiceText } from '../../../shared/studioWording';
 
 /**
  * Atlas Studio's buses-needed figures (CIV-1693), now in Fleet's route card (CIV-1828, Fleet.tsx): the picked route's
@@ -19,7 +19,7 @@ import { STUDIO_VEHICLES_TEXT, groupSharesText } from '../../../shared/studioWor
 const T = STUDIO_VEHICLES_TEXT;
 
 /** A row of the buses table: a frequency (or the schedule now) and the buses it needs. */
-interface BusRow { key: string; label: string; value: string | number; now?: boolean; note?: string }
+interface BusRow { key: string; label: string; value: string | number; now?: boolean }
 
 /**
  * The buses table's rows (CIV-1827): buses needed at each target frequency, best first, with the schedule now as a marked
@@ -28,10 +28,12 @@ interface BusRow { key: string; label: string; value: string | number; now?: boo
  */
 export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'current'): BusRow[] {
   const atTarget = groupAtTarget(g, split);
-  const now: BusRow = { key: 'now', label: T.scheduled, value: g.scheduled, now: true, ...(g.implied !== g.scheduled ? { note: `${T.needed} ${g.implied}` } : {}) };
+  // CIV-2002 (Ryan: "is this network-wide?"): one number for the schedule, the buses its own frequencies need, worked out
+  // as the target rows are, so the rows compare straight down; the route card reads the same as the network table.
+  const now: BusRow = { key: 'now', label: fleetNetworkText(g.modes).asScheduled, value: g.implied, now: true };
   const targets: BusRow[] = STUDIO_TARGETS.map(hw => ({ key: `at-${hw}`, label: headwayEvery(hw), value: atTarget[hw] ?? MISSING_VALUE }));
   // The now row goes before the first target needing fewer buses (after any needing the same).
-  const at = targets.findIndex(r => typeof r.value === 'number' && r.value < g.scheduled);
+  const at = targets.findIndex(r => typeof r.value === 'number' && r.value < g.implied);
   return at < 0 ? [...targets, now] : [...targets.slice(0, at), now, ...targets.slice(at)];
 }
 
@@ -40,11 +42,12 @@ export function busRows(g: StudioVehicleGroup, split: StudioBranchSplit = 'curre
  * time and layover in one line. A shared middle's trips keep the branches' current mix (CIV-1712's choice is gone: its
  * words were never approved and read as nothing to a planner).
  */
-export function StudioGroupFigures({ group, showRunning = true }: { group: StudioVehicleGroup | null; showRunning?: boolean }) {
-  if (!group) return <p className="m-0 text-sm text-[var(--text-muted)]">{T.noService}</p>;
+export function StudioGroupFigures({ group, showRunning = true, network = false, modes }: { group: StudioVehicleGroup | null; showRunning?: boolean; /** The whole agency's table (CIV-2002): its rows read "If every route ran every 15 min". */ network?: boolean; /** The modes for the no-service line, when there is no group to read them from. */ modes?: readonly number[] }) {
+  if (!group) return <p className="m-0 text-sm text-[var(--text-muted)]">{noServiceText(modes)}</p>;
+  const N = fleetNetworkText(group.modes);
   return (
     <>
-    {group.routes.length > 1 && <p className="m-0 mb-2 text-sm text-[var(--text-secondary)]">{groupSharesText(group.routes)}</p>}
+    {group.routes.length > 1 && <p className="m-0 mb-2 text-sm text-[var(--text-secondary)]">{groupSharesText(group.routes, group.modes)}</p>}
     {/* -mx-2: the marked row's tint reaches past the text while the words line up with the lines above and below. */}
     <ScrollX className="-mx-2">
       <DataTable
@@ -54,12 +57,10 @@ export function StudioGroupFigures({ group, showRunning = true }: { group: Studi
         rowKey={r => r.key}
         rowCurrent={r => !!r.now}
         columns={[
-          { key: 'label', header: FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => (
-            <>{r.label}{r.note && <span className="block text-[var(--text-muted)]">{r.note}</span>}</>
-          ) },
+          { key: 'label', header: network ? N.ifEveryRouteRan : FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => r.label },
           // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
           // and Schedules' tables (layout fill).
-          { key: 'value', header: <span className="block text-right">{T.needed}</span>, className: 'text-right', cell: r => r.value },
+          { key: 'value', header: <span className="block text-right">{network ? N.count : T.needed}</span>, className: 'text-right', cell: r => r.value },
         ]}
       />
     </ScrollX>

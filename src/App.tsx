@@ -272,10 +272,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
       return true;
     });
   }, []);
-  // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
-  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
-    window.location.pathname.startsWith(HISTORY_PATH) ? null : parseAgencyCardParam(window.location.search)
-  ));
+  // The agency card opens from a link's ?operator= (CIV-919); in History the same address opens History on that agency (CIV-2008).
+  const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => parseAgencyCardParam(window.location.search));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
   const [pendingNightRoute, setPendingNightRoute] = useState<{ slug: string; routeId: string; frequency: NightServiceFrequency } | null>(null);
