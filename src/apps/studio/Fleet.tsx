@@ -19,10 +19,11 @@ import { dayInSentence, dayPlural } from '../../../shared/dayTypes';
 import { joinList } from '../../../shared/overflowText';
 import { pairedStudioFile, studioBeforeAfterDevUrl, type StudioBeforeAfterFile } from '../../../shared/studioBeforeAfter';
 import { studioVehiclesDevUrl, type StudioVehiclesFile } from '../../../shared/studioVehicles';
-import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesTitleText } from '../../../shared/studioWording';
+import { STUDIO_CHANGES_TEXT, STUDIO_MAP_TEXT, fleetIntroText, vehiclesNeededTitle, vehiclesTitleText } from '../../../shared/studioWording';
+import Widget from '../../components/Live/tool/Widget';
 import { StudioRouteTable, periodCell, routeTitle } from './StudioRouteTable';
 import { StudioGroupFigures } from './StudioGroupFigures';
-import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
+import { CHANGE_COLOR, DEFAULT_PERIOD, agencyFleet, agencyRouteCount, changeGroups, groupFor, routeChangeAt, rowFigure, studioMapLines } from './fleetModel';
 import StudioChips, { type StudioMenu } from './StudioChips';
 import { useDevFile } from './useDevFile';
 
@@ -167,6 +168,8 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
   view: FleetView; file: StudioBeforeAfterFile; vehicles: StudioVehiclesFile | null | 'missing'; agency: string; period: PeriodKey; route: string | null; setRoute: (r: string | null) => void; frameStyle: React.CSSProperties;
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const fleet = useMemo(() => (vehicles && vehicles !== 'missing' ? agencyFleet(vehicles, period) : null), [vehicles, period]);
+  const routeGroup = route && vehicles && vehicles !== 'missing' ? groupFor(vehicles, route, period) : null;
   // Fleet's map has no change story: the newer schedule's lines in one colour (its route list is Schedules').
   const lines = useMemo(() => {
     const all = studioMapLines(file, period, route);
@@ -209,23 +212,29 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
                 </SidebarCardSection>
               )}
               {view === 'fleet' && (
-                <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date)) || PAGE_NAMES.studioVehicles}>
+                <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeGroup?.modes) || vehiclesNeededTitle(routeGroup?.modes)}>
                   {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-                    : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} /> : null}
+                    : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} /> : null}
                 </SidebarCardSection>
               )}
             </SidebarCardShell>
           </PanelBody>
         </StudioPanel>
       ) : view === 'fleet' ? (
-        // CIV-1922: Fleet opens on the fleet itself, the buses the whole agency needs at the time of day.
-        <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioVehicles}>
-          <PanelTitleBar title={PAGE_NAMES.studioVehicles} />
-          <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-3">
-            <p className="m-0 mb-2 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date)}</p>
+        // CIV-1922: Fleet opens on the fleet itself, the vehicles the whole agency needs at the time of day. CIV-2002 (Ryan:
+        // "This panel looks different than any other panel in Atlas"): Live's agency panel, a plain body and one Widget card.
+        <StudioPanel ref={cardRef} style={frameStyle} aria-label={vehiclesNeededTitle(fleet?.modes)}>
+          <PanelBody className="custom-scrollbar overflow-y-auto px-4 pt-3 pb-3">
             {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
-              : vehicles ? <StudioGroupFigures group={agencyFleet(vehicles, period)} showRunning={false} /> : null}
-          </div>
+              : vehicles ? (
+                <>
+                  {fleet && <p className="m-0 mb-3 text-sm">{fleetIntroText(agency, shortDate(file.after.date) ?? file.after.date, agencyRouteCount(vehicles, period), fleet.modes)}</p>}
+                  <Widget title={vehiclesNeededTitle(fleet?.modes)}>
+                    <StudioGroupFigures group={fleet} showRunning={false} network />
+                  </Widget>
+                </>
+              ) : null}
+          </PanelBody>
         </StudioPanel>
       ) : (
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={PAGE_NAMES.studioSchedules}>

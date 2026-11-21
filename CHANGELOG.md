@@ -6,6 +6,8 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio’s Fleet panel matches Studio’s other panels and says it covers the whole network (local only)**: it now opens like Live’s panel, says it counts every route at once, reads each row as “If every route ran every 15 min”, and shows one number for the schedule
+- **Studio’s Fleet says trains, streetcars or buses by the route’s mode (local only)**: a train line said “Buses Needed”; it now says “Trains Needed”, and “Vehicles” where an agency runs more than one mode
 - **What’s New links to the features it announces**: Compare mode has a “Try it” link and Agency and area pages an “Explore” link
 - **What’s New lists each feature once per site**: beta sees Compare mode under 3.3, when it arrived there, and the public site sees it under 3.4 as a launch, instead of “now on the public map”
 - **Barrie’s on-demand card says its stops come from official data**: a notice at the foot of the card says the stops are from the agency’s official data and their accuracy can’t be confirmed, with a Learn more explainer

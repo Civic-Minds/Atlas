@@ -7,6 +7,7 @@ import { noDataText } from './noDataText';
 import { joinList, plural } from './overflowText';
 import { devPlaceholder } from './devPlaceholder';
 import { PAGE_NAMES } from './pageNames';
+import { vehiclesWord } from './modeVehicles';
 
 /** "Routes": the route list's heading on the map page and the group's routes row under Buses Needed. */
 const ROUTES = 'Routes';
@@ -50,6 +51,21 @@ export const STUDIO_CHANGES_TEXT = {
   noDay: 'These two schedules couldn’t be compared.',
 } as const;
 
+/** "Trains Needed", "Buses Needed" (the page's name), "Vehicles Needed" when modes mix (CIV-2002: Ryan, "This is a train line so why does it say buses"). */
+export function vehiclesNeededTitle(modes: readonly number[] | undefined): string {
+  const word = vehiclesWord(modes);
+  return word === 'buses' ? PAGE_NAMES.studioVehicles : `${word.replace(/\b\p{Ll}/gu, c => c.toUpperCase())} Needed`;
+}
+
+/**
+ * Fleet's network table (CIV-2002: Ryan, "is this network-wide?"). Proposed words, waiting on his OK: each row reads as a
+ * sentence, "If every route ran every 15 min → 1185", and the schedule's own row is "As scheduled".
+ */
+export const fleetNetworkText = (modes: readonly number[] | undefined) => {
+  const word = vehiclesWord(modes);
+  return { ifEveryRouteRan: 'If every route ran', asScheduled: 'As scheduled', count: word.charAt(0).toUpperCase() + word.slice(1) };
+};
+
 export const STUDIO_VEHICLES_TEXT = {
   routes: ROUTES,
   scheduled: 'Scheduled now',
@@ -65,9 +81,14 @@ export const STUDIO_VEHICLES_TEXT = {
  */
 /** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). */
 export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder(`${ends[0]} – ${ends[1]}`);
-/** Fleet's line under its title: what the buses table covers (CIV-1922; the words wait on Ryan). */
-export const fleetIntroText = (agency: string, date: string) => devPlaceholder(`Buses ${agency} needs across all its routes, ${date} schedule.`);
+/**
+ * Fleet's line above its table: network-wide, every route at once (CIV-1922; CIV-2002, Ryan: "is this network-wide?").
+ * Proposed words, waiting on his OK: "All 194 TTC routes at once, on the Nov 25, 2026 schedule: the vehicles they need as
+ * scheduled, and if every route ran at each frequency."
+ */
+export const fleetIntroText = (agency: string, date: string, routes: number, modes?: readonly number[]) =>
+  `All ${routes} ${agency} ${plural(routes, 'route')} at once, on the ${date} schedule: the ${vehiclesWord(modes)} they need as scheduled, and if every route ran at each frequency.`;
 /** Why the buses cover more than the open route: "12, 31, 601 and 602 share buses, so these numbers cover all four." */
-export const groupSharesText = (routes: readonly string[]) => devPlaceholder(`${joinList([...routes])} share buses, so these numbers cover all ${routes.length}.`);
-/** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17". */
-export const vehiclesTitleText = (date: string) => devPlaceholder(`${PAGE_NAMES.studioVehicles} · ${date}`);
+export const groupSharesText = (routes: readonly string[], modes?: readonly number[]) => devPlaceholder(`${joinList([...routes])} share ${vehiclesWord(modes)}, so these numbers cover all ${routes.length}.`);
+/** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17" ("Trains Needed" on a train line, CIV-2002). */
+export const vehiclesTitleText = (date: string, modes?: readonly number[]) => devPlaceholder(`${vehiclesNeededTitle(modes)} · ${date}`);

@@ -17,6 +17,11 @@ export const STUDIO_TARGETS: readonly number[] = PUBLIC_TIER_MAXES;
 export interface StudioVehicleGroup {
   /** Member routes' short names, in route order. */
   routes: string[];
+  /**
+   * The map's mode (shared/modes.ts effectiveMode) of the group's routes, each once (CIV-2002: Ryan, "This is a train line so why does it say
+   * buses"), so the page says trains, streetcars or buses, and vehicles when mixed. Absent from files written before it.
+   */
+  modes?: number[];
   /** Buses on the group's patterns at the period's midpoint (the engine's "scheduled now"). */
   scheduled: number;
   /** Buses the group's regular patterns need at the schedule's own frequency, rounded up once. */
