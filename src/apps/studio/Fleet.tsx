@@ -190,7 +190,8 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
               )}
               {view === 'fleet' && (
                 <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date), routeModes) || vehiclesNeededTitle(routeModes)}>
-                  {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
+                  {/* CIV-2003: a line inside the card is the card's body text. */}
+                  {vehicles === 'missing' ? <CardBodyText className="!mt-0">{C.noData}</CardBodyText>
                     : routeGroup ? <StudioGroupFigures group={routeGroup} /> : vehicles ? <StudioGroupFigures group={null} modes={routeModes} /> : null}
                 </SidebarCardSection>
               )}
