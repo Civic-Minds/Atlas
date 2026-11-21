@@ -83,7 +83,7 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
 
   it('says why other routes count where they share the open route’s buses, and offers no split choice (CIV-1827)', () => {
     render(<StudioGroupFigures group={{ ...GROUPS[0], modes: [3], atTargetEven: { 10: 17 } }} />);
-    expect(screen.getByText('[Placeholder: 701, 702, 801 and 802 share buses, so these numbers cover all 4.]')).toBeTruthy();
+    expect(screen.getByText('701, 702, 801 and 802 share buses. These numbers cover all 4.')).toBeTruthy();
     expect(screen.queryByRole('group')).toBeNull();
     expect(cells('every 10 min')).toEqual(['every 10 min', '15']);
   });

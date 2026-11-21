@@ -76,12 +76,8 @@ export const STUDIO_VEHICLES_TEXT = {
   layover: 'Layover',
 } as const;
 
-/**
- * CIV-1827's three new strings, waiting on Ryan's word-for-word OK (sent via Atlas Questions). Until then each shows as a
- * dev-only placeholder with the proposed words; once he answers, the approved text goes here.
- */
-/** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). */
-export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder(`${ends[0]} – ${ends[1]}`);
+/** A route's two end stops, "Downtown – Cambrai" (the Route row of the open route's table). Ryan's OK as is (CIV-1834, 2026-11-21: "1"). */
+export const routeEndsText = (ends: readonly [string, string]) => `${ends[0]} – ${ends[1]}`;
 /**
  * Fleet's line above its table: network-wide, every route at once (CIV-1922; CIV-2002, Ryan: "is this network-wide?").
  * Proposed words, waiting on his OK: "All 194 TTC routes at once, on the Nov 25, 2026 schedule: the vehicles they need as
@@ -89,7 +85,7 @@ export const routeEndsText = (ends: readonly [string, string]) => devPlaceholder
  */
 export const fleetIntroText = (agency: string, date: string, routes: number, modes?: readonly number[]) =>
   `All ${routes} ${agency} ${plural(routes, 'route')} at once, on the ${date} schedule: the ${vehiclesWord(modes)} they need as scheduled, and if every route ran at each frequency.`;
-/** Why the buses cover more than the open route: "12, 31, 601 and 602 share buses, so these numbers cover all four." */
-export const groupSharesText = (routes: readonly string[], modes?: readonly number[]) => devPlaceholder(`${joinList([...routes])} share ${vehiclesWord(modes)}, so these numbers cover all ${routes.length}.`);
+/** Why the figures cover more than the open route: "12, 31, 601 and 602 share buses. These numbers cover all 4." Ryan's pick (CIV-1834, 2026-11-21: "1"), exact. */
+export const groupSharesText = (routes: readonly string[], modes?: readonly number[]) => `${joinList([...routes])} share ${vehiclesWord(modes)}. These numbers cover all ${routes.length}.`;
 /** The buses section's title with the newer schedule's date: "Buses Needed · Sep 17" ("Trains Needed" on a train line, CIV-2002). */
 export const vehiclesTitleText = (date: string, modes?: readonly number[]) => devPlaceholder(`${vehiclesNeededTitle(modes)} · ${date}`);
