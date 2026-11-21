@@ -1,10 +1,11 @@
 import type { ShapeProperties, TimePeriod } from '../hooks/useIntervalStats';
 import { PERIOD_COVERAGE_MAX_HEADWAY } from '../../shared/periodEligibility';
-import { routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
+import { periodEdgeText, routeCardDisplayHeadway, routeCardPeriodShapeEvery, routeCardPeriodShapeText, rowReadsPeriodEdge } from './effectiveHeadway';
 import { headwayPeriodShape } from './headwayText';
 import { isOneGapRow, rowStretchReading, SHARED_STRETCH_RATIO, type StretchRowReading } from './stretchCard';
 import { pairedTripSafeHeadway } from './pairedTripFloor';
 import { periodKeyForHour } from '../../shared/config';
+import { isHourInPeriod } from '../../shared/rules/periods';
 
 type PeriodKey = Exclude<TimePeriod, 'all'>;
 
@@ -100,7 +101,7 @@ export function rowStretchHourValue(d: ShapeProperties, hour: number): number | 
  *   faster or slower than its stretch (NYCT R late; Phoenix 35's branch rows), keeps its own trips' gap.
  * - Otherwise the row's own value and its own longest gap (maxGapByPeriod follows the value's source, #281).
  */
-export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean } = {}): RowTrips {
+export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrips?: boolean; stretch?: boolean; branchReadings?: boolean } = {}): RowTrips {
   if (period === 'all') return { ...NONE, value: routeCardDisplayHeadway(d, period) };
   const key = period as PeriodKey;
   if (d.noOwnServiceByPeriod?.includes(key)) return { ...NONE, noOwnService: true };
@@ -135,6 +136,13 @@ export function rowTrips(d: ShapeProperties, period: TimePeriod, opts: { ownTrip
     // 74th-95th; TTC 25: 6 and 5).
     if (slotValue > value! * SHARED_STRETCH_RATIO) value = slotValue;
   } else if (unsteady && typeof wait === 'number' && wait > value!) value = wait;
+  // CIV-1959 follow-up (CIV-1241, CIV-1411, #934): a row that starts late, stops early or starts slowly on its own trips (rowPeriodEdge, read
+  // from its own departures with the test stretches use) says when, with its in-service spacing, never the bare wait or a number that
+  // hides the edge. The value stays what it was, so the colour and the filter are unchanged (CIV-1411: card wording only).
+  if (opts.branchReadings && !opts.ownTrips && !partPeriod && !filterReading && value != null) {
+    const own = d.rowPeriodEdge?.[key];
+    if (own && (own.from != null || own.until != null)) { partPeriod = periodEdgeText(own); partPeriodEvery = own.every; }
+  }
   // The stretch's gap goes with the stretch's value: a row with a value of its own, faster (NYCT R late: 13 beside the
   // stretch's 165, CIV-1074 2c) or slower (Phoenix 35: 30 on a shared 15), keeps its own trips' gap. A row with no value of its
   // own, or on data without the slot's period (public tails: it lives in the sections file), takes its stretch's gap.
@@ -163,4 +171,17 @@ export function unsteadyDirectionFallback(d: ShapeProperties, period: TimePeriod
   const key = period as PeriodKey;
   const value = d.directionFilterHeadwayByPeriod?.[key];
   return typeof value === 'number' && value > PERIOD_COVERAGE_MAX_HEADWAY && d.stretchPeriodSustained?.[key] === false;
+}
+
+/**
+ * CIV-1959 (Ryan: "any piece with 3 or more evenly spaced trips gets a number"): whether a row's own trips in a period pass rule D: 3 or
+ * more departures, evenly spaced (the longest gap within 1.75 x the spacing, or the spacing plus 5 minutes). A row that passes keeps its own
+ * reading even where the piece it sits on has no number (the piece's list is thin or bunched at its reference stop by other destinations' trips).
+ */
+export function rowOwnTripsEven(d: ShapeProperties, period: TimePeriod): boolean {
+  if (period === 'all' || period === 'overnight') return false;
+  const trips = Object.entries(d.departuresByHour ?? {}).filter(([h]) => isHourInPeriod(Number(h), period)).reduce((sum, [, n]) => sum + n, 0);
+  const hw = d.headwayByPeriod?.[period];
+  const gap = d.maxGapByPeriod?.[period];
+  return trips >= 3 && typeof hw === 'number' && typeof gap === 'number' && gap <= Math.max(1.75 * hw, Math.round(hw) + 5);
 }

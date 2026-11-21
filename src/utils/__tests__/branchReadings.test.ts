@@ -97,6 +97,31 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     const shared = { ...withReadings(r, 'tail'), stretchRowPeriods: [] } as unknown as ShapeProperties;
     expect(lines(card([withReadings(r, 'main'), shared], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 20 min']);
   });
+  it('B35-like (CIV-1241, CIV-1411): a branch row that starts at 7:17 on a stretch that runs all period reads "from 7:17", not its 77-minute wait', () => {
+    // The row's own trips are not all of the stretch's (stretchRowPeriods leaves the period out), so the card keeps the row's own reading.
+    const r = readings({ t: 'reading', v: 12 });
+    const late = {
+      ...withReadings(r, 'tail'), stretchRowPeriods: [], headwayByPeriod: { midday: 8 }, headwayByPeriodSustained: { midday: false },
+      periodCoverageHeadway: { midday: 77 }, maxGapByPeriod: { midday: 13 }, rowPeriodEdge: { midday: { from: 617, every: 8 } },
+    } as unknown as ShapeProperties;
+    const text = lines(card([withReadings(r, 'main'), late], 'midday', true));
+    expect(text).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 8 min from 10:17 AM']);
+    const v = card([withReadings(r, 'main'), late], 'midday', true).groups[0].rows.find(x => x.feature.stretchRole === 'tail')!.display(null).value;
+    expect(v.headway).toBe(77);
+    // The card switch off: today's words, whatever the data carries.
+    expect(lines(card([withReadings(r, 'main'), late], 'midday', false)).join()).not.toMatch(/from 10:17/);
+  });
+  it('SEPTA 37-like: a row that stops early keeps "until HH:MM" over a plain piece reading its stretch\'s other buses make slower', () => {
+    const r = readings({ t: 'reading', v: 55 });
+    const early = {
+      ...withReadings(r, 'tail'), headwayByPeriod: { midday: 27 }, headwayByPeriodSustained: { midday: false },
+      periodCoverageHeadway: { midday: 178 }, maxGapByPeriod: { midday: 28 }, rowPeriodEdge: { midday: { until: 722, every: 27 } },
+    } as unknown as ShapeProperties;
+    expect(lines(card([withReadings(r, 'main'), early], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Pearson Airport: every 27 min until 12:02 PM']);
+    // With no words of its own the piece's slower reading still stands (a destination never reads better than its stretch's wait).
+    const plain = { ...early, rowPeriodEdge: undefined, headwayByPeriodSustained: { midday: true } } as unknown as ShapeProperties;
+    expect(lines(card([withReadings(r, 'main'), plain], 'midday', true))[1]).toBe('to Pearson Airport: every 55 min');
+  });
   it('the switch off, or data without the field, leaves the card exactly as it was', () => {
     const r = readings({ t: 'limited' });
     const plain = [withReadings(undefined, 'main'), withReadings(undefined, 'tail')];

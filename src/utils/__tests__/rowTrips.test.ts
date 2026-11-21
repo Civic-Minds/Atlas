@@ -195,3 +195,36 @@ describe('rowTrips reads the stretch\'s own values where it publishes them (CIV-
     expect(rowTrips(old, 'midday').value).toBe(10);
   });
 });
+
+describe('a row that starts or stops inside the period says when (CIV-1959 follow-up; CIV-1241, CIV-1411, #934)', () => {
+  // Brooklyn B35 to McDonald Av, weekday AM peak: nothing 6-7 AM, then every 8-11 from 7:17. Its full-window wait is 77.
+  const b35 = row({
+    headsign: 'McDONALD AV via CHURCH AV', stretchRole: 'tail', stretchIndex: 1, headwayByPeriod: { amPeak: 8 }, headwayByPeriodSustained: { amPeak: false },
+    periodCoverageHeadway: { amPeak: 77 }, maxGapByPeriod: { amPeak: 13 }, rowPeriodEdge: { amPeak: { from: 437, every: 11 } },
+  } as Partial<ShapeProperties>);
+  const ctx = { period: 'amPeak' as const, hoveredHour: null, stretchMode: true, noRegularService: false, maxHeadway: Infinity };
+
+  it('with the branch readings on, the row reads "every 11 min from 7:17 AM", never "every 77"', () => {
+    expect(rowTrips(b35, 'amPeak', { branchReadings: true })).toMatchObject({ value: 77, partPeriod: 'every 11 min from 7:17 AM', partPeriodEvery: 11 });
+    const v = routeCardRowValue(b35, { ...ctx, branchReadings: true });
+    expect(v.headwayLabel).toBe('every 11 min from 7:17 AM');
+    expect(v.shownHeadway).toBe(11);
+    // CIV-1411: card wording only. The row's wait (the colour and the filter's number) is unchanged.
+    expect(v.headway).toBe(77);
+  });
+  it('a branch that stops at 12:16 reads "every 30 min until 12:16 PM"', () => {
+    const stops = row({ ...b35, headwayByPeriod: { midday: 30 }, headwayByPeriodSustained: { midday: false }, periodCoverageHeadway: { midday: 164 }, rowPeriodEdge: { midday: { until: 736, every: 30 } } } as Partial<ShapeProperties>);
+    expect(rowTrips(stops, 'midday', { branchReadings: true }).partPeriod).toBe('every 30 min until 12:16 PM');
+  });
+  it('a steady row that starts late reads "from" too (SEPTA 22 to Warminster, weekday midday: every 58 from 10:07, wait 67), the wait stays its colour', () => {
+    const w = row({ headsign: 'Warminster', stretchRole: 'tail', stretchIndex: 0, headwayByPeriod: { midday: 58 }, headwayByPeriodSustained: { midday: true }, periodCoverageHeadway: { midday: 67 }, maxGapByPeriod: { midday: 67 }, rowPeriodEdge: { midday: { from: 607, every: 58 } } } as Partial<ShapeProperties>);
+    expect(rowTrips(w, 'midday', { branchReadings: true })).toMatchObject({ value: 58, partPeriod: 'every 58 min from 10:07 AM', partPeriodEvery: 58 });
+    expect(rowTrips(w, 'midday').partPeriod).toBeUndefined();
+  });
+  it('with the switch off (or on data without the field) the row reads exactly what it read before', () => {
+    expect(rowTrips(b35, 'amPeak')).toMatchObject({ value: 77, partPeriod: undefined });
+    expect(rowTrips(b35, 'amPeak', { branchReadings: false }).partPeriod).toBeUndefined();
+    const noField = row({ ...b35, rowPeriodEdge: undefined } as Partial<ShapeProperties>);
+    expect(rowTrips(noField, 'amPeak', { branchReadings: true })).toMatchObject({ value: 77, partPeriod: undefined });
+  });
+});

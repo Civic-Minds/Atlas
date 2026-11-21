@@ -62,6 +62,30 @@ describe('classifyPiecePeriod (rule D, then the part-period tail)', () => {
   });
 });
 
+describe('classifyPiecePeriod with the stretch value: a piece that starts or stops inside the period says when (CIV-1241, CIV-1411)', () => {
+  const am = PERIOD_MINUTES.amPeak; // 360 to 540
+  it('B35-like: nothing 6-7 AM, then every 11 from 7:17: "from 7:17" with its spacing, the 77-minute wait stays the value', () => {
+    const times = every(437, 539, 11); // 7:17, 7:28 ... 8:59
+    expect(classifyPiecePeriod(times, am.start, am.end, 77)).toEqual({ t: 'tail', v: 77, every: 11, from: 437 });
+  });
+  it('a lead inside the 1.75 x spacing allowance is still a late start when it is the value (MARTA 140: every 39 from 7:07, wait 67)', () => {
+    const times = [427, 466, 505];
+    expect(classifyPiecePeriod(times, am.start, am.end, 67)).toEqual({ t: 'tail', v: 67, every: 39, from: 427 });
+  });
+  it('a branch that stops at 12:16 reads "until 12:16" with its spacing (RTD 15, wait 164)', () => {
+    const times = every(736 - 150, 736, 30);
+    expect(classifyPiecePeriod(times, start, end, 164)).toEqual({ t: 'tail', v: 164, every: 30, until: 736 });
+  });
+  it('CIV-1411: a slow start (every 20 at the start, then every 4) reads "from" the time steady service starts, N the longest wait from then', () => {
+    const times = [366, 386, 406, 426, 447, 451, 455, 459, 463, 467, 471, 475, 479, 483, 487, 491, 495, 499, 503, 507, 511, 515, 519, 523, 527, 531, 535];
+    expect(classifyPiecePeriod(times, am.start, am.end, 21)).toMatchObject({ t: 'tail', v: 21, from: 447 });
+  });
+  it('a real hole inside the period is no edge: the piece keeps the rule D answer (uneven, no number)', () => {
+    const times = [...every(360, 420, 15), ...every(480, 539, 15)];
+    expect(classifyPiecePeriod(times, am.start, am.end, 60)).toEqual({ t: 'limited' });
+  });
+});
+
 describe('directionPieceReadings on real stretches (a TTC 52-like direction and an RTD 15-like one)', () => {
   const coords = new Map<string, [number, number]>();
   const trunk = Array.from({ length: 10 }, (_, i) => `t${i}`);

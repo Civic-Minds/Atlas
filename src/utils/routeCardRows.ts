@@ -5,7 +5,7 @@ import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
-import { rowTrips } from './rowTrips';
+import { rowOwnTripsEven, rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
 import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
@@ -206,7 +206,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noFilterValue = contract != null && contract.filterValue == null && !contract.runs;
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues }).partPeriod != null), span: [] }))
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues, branchReadings }).partPeriod != null), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
@@ -224,7 +224,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   });
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
     rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours };
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {
@@ -346,9 +346,15 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           const today = shown.value.isLimited || shown.value.rowNoRegular ? null : shown.value.shownHeadway ?? shown.value.headway ?? null;
           if (t.t !== 'limited') {
             if (!stands) return shown;
+            // CIV-1241 / CIV-1411: a row that already says when it starts or stops ("every 27 min until 8:02 PM") keeps those words; the
+            // piece's plain reading is its stretch's trips, which other destinations' later buses can slow (SEPTA 37 to Broad-Snyder).
+            if (t.t === 'reading' && existed && /\b(from|until) \d/.test(shown.value.edgeText ?? '')) return shown;
             if (t.t === 'reading' && (!existed || today == null || t.v < today)) return shown;
             if (t.t === 'tail' && today != null && t.v < today) return shown;
           }
+          // CIV-1959 (Ryan: any 3 or more evenly spaced trips get a number; Atlas Issue Response: a branch's own trips decide it, not the
+          // piece's pooled list): a row whose own trips pass rule D keeps its own reading, with its from / until words, under a piece with no number.
+          if (t.t === 'limited' && existed && !shown.value.isLimited && !shown.value.rowNoRegular && rowOwnTripsEven(d, period)) return shown;
           // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
           const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
           const noNumber = t.t === 'limited';

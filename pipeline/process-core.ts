@@ -61,9 +61,10 @@ import { decideDedupe, runsInDay, type DedupePattern } from './featureDedupe.js'
 import { decideHeadline, decidePeriod, liftTierOnDestinationPool, OVERSTATED_HEADLINE_MARGIN, pooledDaytimeWindow, pooledMiddayWorstWait, pooledStepOneHeadway, settleTier, terminalReading, type PeriodValue } from './routeGrading.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { applyBranchReadCorrections, correctionsFor, type BranchReadCorrection } from './branchReadCorrections.js';
-import { directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
+import { periodEdge, directionStretches, gatedRiderWait, nightOnlyTrips, nightServicePasses, periodSustainedMid, NIGHT_HANDOVER_MAX_WAIT_MIN, NIGHT_ONLY_MAX_DAY_DEPARTURES, NIGHT_ONLY_DAY_START_MIN, NIGHT_ONLY_DAY_END_MIN, NIGHT_HANDOVER_RADIUS_M, type NightHandover, type NextMorning, rollupDirection, runsAcrossNightMidpoint, runsThroughPeriod, stampStretchShadow, type DirectionStretches, type TripVisit } from './tripSets.js';
 import { buildPooledStopMap, pooledHeadwayInWindow, pooledReadingInWindow, type StopSharers } from './stopPools.js';
-import { headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
+import { PERIOD_COVERAGE_MAX_HEADWAY } from '../shared/periodEligibility.js';
+import { branchReadingsFromEnv, headlineFromTrunkFromEnv, patternPools, pieceReadingFromEnv, pieceReadingOverlay, readFeaturePieces } from './pieces.js';
 import { runNow } from '../shared/runClock.js';
 import { WEEKDAY_CALENDAR_FIELDS } from '../shared/rules/days.js';
 
@@ -3782,6 +3783,10 @@ export async function processGtfsBuffer(
       terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [],
     );
     const branchCoverage = feature.properties.periodCoverageHeadway as HeadwayByPeriod;
+    // CIV-1959 follow-up (ATLAS_BRANCH_READINGS=1): the row's own late start or early end, read like a stretch's (periodEdge: CIV-1241,
+    // CIV-1411, #934) on the same list its coverage wait reads, so a row that starts or stops inside a period can say when.
+    const rowEdgeTimes = terminalScopedTimes ?? terminalReadTimes(terminalStopId) ?? [];
+    const rowEdges: Partial<Record<PeriodKey, ReturnType<typeof periodEdge>>> = {};
     const periodCoverage: HeadwayByPeriod = {};
     const periodMedians: HeadwayByPeriod = {};
     const periodMaxGaps: HeadwayByPeriodMaxGap = {};
@@ -3855,6 +3860,13 @@ export async function processGtfsBuffer(
       if (pk === 'overnight' && period.withheld != null && period.headway == null) withheldOvernightFeatures.add(feature);
       periodMedians[pk] = period.headway;
       periodCoverage[pk] = period.coverage;
+      if (branchReadingsFromEnv() && pk !== 'overnight' && period.headway != null && period.coverage != null) {
+        // The filter's own value for the row (stretchFilterValue): a steady period within PERIOD_COVERAGE_MAX_HEADWAY reads its spacing, never its wait,
+        // so it has no edge; any other period reads its full-window wait, and an edge that sets it is worded.
+        const edgeValue = period.sustained === true && period.coverage <= PERIOD_COVERAGE_MAX_HEADWAY ? period.headway : period.coverage;
+        const edge = periodEdge(rowEdgeTimes, PERIODS[pk].start, PERIODS[pk].end, edgeValue);
+        if (edge) rowEdges[pk] = edge;
+      }
       periodMaxGaps[pk] = period.maxGap;
       if (period.headway != null || period.withheld != null) periodSustained[pk] = period.sustained;
       const allVals = onShape
@@ -3863,6 +3875,7 @@ export async function processGtfsBuffer(
       if (allVals.length > 0) periodMins[pk] = Math.min(...allVals);
     }
     feature.properties.headwayByPeriod = periodMedians;
+    if (Object.keys(rowEdges).length > 0) feature.properties.rowPeriodEdge = rowEdges;
     feature.properties.periodCoverageHeadway = periodCoverage;
     feature.properties.maxGapByPeriod = periodMaxGaps;
     feature.properties.headwayByPeriodSustained = periodSustained;
