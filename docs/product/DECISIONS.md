@@ -83,10 +83,6 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: with section colours, a row whose line has a slower end under the tail minimum (FREQUENCY_RULES rule 3, D1: 5 stops and 1 km) reads the route's own number, as the route list and chooser do; the map's section colours show the slow end. It replaces CIV-1595's range ("every 10–20 min") and single slow number (TTC 927 midday "every 306").
   - Why: one calculation per fact, so card, list and chooser agree, and one big slow number doesn't read as the whole route.
   - Source: Ryan, CIV-1579 (2026-11-15, option 1)
-- **A slower end stop colours only its own end piece**
-  - What: on the filtered map, an end stop of a drawn stretch that is a public tier worse than every other stop on the stretch colours only its own end piece; the rest of the stretch takes the worst of the remaining stops. Needs 3 or more stops; map periods only. No published value, stop card or filter result changes.
-  - Why: one slightly slower end stop was recolouring a whole stretch. Each piece stays at least as bad as the worse of its own two stops, so nothing shows better service than the stops' published values.
-  - Source: Ryan, CIV-845 (2026-11-19, option 1: "1"); [#1093](https://github.com/Civic-Minds/Atlas/issues/1093) V0, ungated
 - **A selected route obeys the map's filters**
   - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
   - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
@@ -306,9 +302,6 @@ A direction's headline (its value, coverage and filter value, and so the route's
 
 ### 2026-11-19 — One entry per agency or region, everywhere
 CIV-1963 (#1610): Studio Coverage listed MTA New York's feeds as separate rows while the agency index and the map's picker showed one MTA New York. The rule is now one entry per agency or region on every screen and tool that lists, counts, ranks or compares agencies, with a route in two of a parent's feeds counted once (as its own page already counted them). Feeds are not merged in the pipeline; `shared/agencyGroups.ts` groups them at read time for the site and the MCP tools alike.
-
-### 2026-11-19 — A slower end stop colours only its own end piece
-Ryan, 2026-11-19 (CIV-845), choosing between #1093's options for a shared stretch whose end stop is one tier slower: "1" (V0, ungated, over the gated version and over keeping today's colouring). On a drawn stretch of 3 or more stops, an end stop strictly worse in public tier than every other stop colours only the piece between it and its neighbour; the rest of the stretch takes the worst of the remaining stops. Only one end can be peeled by this test, since it must be worse than the other end too. The all-day value keeps the one-colour rule. Display only: no published value, stop card, filter result or pipeline gate changes, and no piece is ever better than the worse of its own two stops.
 
 ### 2026-11-19 — A period's first and last waits count like any other gap
 Ryan, 2026-11-19 (CIV-238), approving the counts: "1". The wait from a period's start to its first bus, and from its last bus to the period's end, counts like any gap between buses, under the settled near-miss allowance. A true start or end of service keeps its approved 10 minutes over the grade. This restores Ryan's #507 ruling (2026-09-12: the full wait counts). The 60-minute and 8× edge allowance (33758d8b, `PERIOD_COVERAGE_MAX_HEADWAY` read as an allowance) was never approved and no longer lets a period pass. Night Service keeps its own 60 (CIV-1198). Route cards keep their numbers; only the filter changes. Counts (cloud dry run 44448813459, route × day type × period cells that passed before): every 10, 121 of 3,045 no longer pass; every 15, 582 of 9,473; every 20, 831 of 15,351; every 30, 2,260 of 38,650. Hand-checked against CTA's timetable: 121 AM (first bus at the stretch about 6:53), 143 AM, 26 PM.
