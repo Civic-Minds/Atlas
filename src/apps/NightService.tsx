@@ -83,8 +83,6 @@ interface NightServiceIndexFile {
 
 interface Props {
   active?: boolean;
-  sidebarLeft?: number;
-  searchBarWidth?: number;
   layers: Record<string, GeoJSON.FeatureCollection>;
   query?: string;
   frequency: NightServiceFrequency;
@@ -97,7 +95,7 @@ interface Props {
   agencyCatalog?: ReadonlyArray<{ slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string; parentAgency?: string }>;
 }
 
-export default function NightService({ active, sidebarLeft, searchBarWidth, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
+export default function NightService({ active, layers, query = '', frequency, onRouteSelect, onBackToMap, selectionActive = false, agencyCatalog = [] }: Props) {
   const [data, setData] = useState<NightServiceIndexFile | null>(null);
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const { bounds, zoom } = useViewport();
@@ -205,7 +203,7 @@ export default function NightService({ active, sidebarLeft, searchBarWidth, laye
   if (!active) return null;
 
   return (
-    <ResearchInfo heading={NIGHT_INFO_HEADING} onBack={onBackToMap} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
+    <ResearchInfo heading={NIGHT_INFO_HEADING} onBack={onBackToMap} hidden={selectionActive} below={
       <Panel sidebarSurface data-report-anchor="true" className="min-h-0 flex-1">
         {/* The list shows data, so it has the report flag (CIV-932). */}
         <PanelTitleBar

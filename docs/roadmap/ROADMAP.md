@@ -13,7 +13,8 @@ Atlas is a regional transit atlas for understanding where transit runs frequentl
 
 The planner toolkit, local only for now (DECISIONS.md, 2026-11-15).
 - **First page: Live** (CIV-1828): the Live tool's route performance views, in the Studio shell (page menu, agency menu, address). Ryan, 2026-11-17: "1 but second page is to be determined later".
-- **Second page: open.** Candidates are in the Studio plan; Schedule Changes isn't a page of its own.
+- **Second page: Schedules** (CIV-1828): the before/after schedule changes are their own Studio page, off Fleet. Ryan, 2026-11-20: "Should Schedule be another page instead", and he chose 1.
+- **Fleet** (placeholder name, CIV-1828): shows the buses the whole agency needs, for Kingston, HSR and RTD. Ryan, 2026-11-17: "We can add Fleet as a placeholder perhaps".
 
 ### Future (not now)
 

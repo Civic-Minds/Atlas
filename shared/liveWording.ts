@@ -1,9 +1,11 @@
+import { noDataText } from './noDataText';
 import { agencyInSentence } from './agencyArticle';
 import { dateRange } from './dateText';
 import { clockTime } from './timeText';
 import { countOf, plural } from './overflowText';
 import { countText, percentText } from './numberText';
 import { minutesText } from './liveFormat';
+import { BUNCHED_GAP_SEC, GAPPED_FACTOR } from './rules/live';
 
 /**
  * Approved Live wording used in more than one place (tiles, page subtitles, link previews), kept here so the copies
@@ -185,7 +187,7 @@ export const METHOD_GROUPS = {
 } as const;
 
 /** A Live route page with no measured day, in its subtitle where "data up to Oct 14" would be (Ryan, CIV-1795 question 4, option a). */
-export const NO_DATA_YET = 'No data yet.';
+export const NO_DATA_YET = noDataText();
 /** The method line on trips close to the late or ahead cutoff (Ryan, CIV-1795 question 12, option a; was "Near a limit"). */
 export const NEAR_CUTOFF_TERM = 'Close to the cutoff';
 /** The agency page's method term for its combined figures, and its glossary term (Ryan, CIV-1795 question 13, option a; was "Network figures"). */
@@ -221,6 +223,17 @@ export function bunchTotalParts(share: number, bunched?: number | null, gapped?:
   const close = Math.min(total, Math.round(bunched * 100));
   return { total, bunched: close, tooLong: total - close };
 }
+
+/** Under a table whose Bunching row shows two figures: what each is, from the rules' own thresholds (Ryan's wording, 2026-11-18; CIV-1878). */
+export const bunchingSplitNote = (): string =>
+  `Bunching: the first figure is gaps under ${minutesText(BUNCHED_GAP_SEC / 60)} between vehicles, the second gaps more than ${GAPPED_FACTOR === 2 ? 'twice' : `${GAPPED_FACTOR} times`} the scheduled gap.`;
+
+/** The same note short, beside the Learn more link that opens Studio's About panel at the Live part (Ryan, 2026-11-19). The map key says the same in its own words. */
+export const bunchingShortNote = (): string =>
+  `Bunching: gaps under ${minutesText(BUNCHED_GAP_SEC / 60)} or over ${GAPPED_FACTOR}× scheduled.`;
+
+/** The window event the Learn more link fires; the app opens the About panel at its Live part. */
+export const OPEN_ABOUT_LIVE_EVENT = 'atlas:open-about-live';
 
 /** "14% · 8%": the two parts, adding up to the total shown anywhere else. */
 export const bunchPartsText = (share: number, bunched: number, gapped: number): string => { const p = bunchTotalParts(share, bunched, gapped); return `${p.bunched}% · ${p.tooLong}%`; };
@@ -261,3 +274,79 @@ export function excludingWeeksText(thisWeek: readonly string[], lastWeek: readon
   if (!days.length) return null;
   return `Excluding ${days.length === 1 ? days[0] : `${days.slice(0, -1).join(', ')} and ${days[days.length - 1]}`}`;
 }
+
+/**
+ * CIV-1828, Studio's Live page: wording pending Ryan's OK, all in one place until he approves or changes it (Studio is
+ * local only). The card lines are the glossary's ("## Live" card wording, docs/GLOSSARY.md), shown on screen for the
+ * first time; the pill's name is new. The list has no heading (Ryan, 2026-11-17: the menu already says "Live" and the map
+ * shows the rest).
+ */
+export const STUDIO_LIVE_PENDING = {
+  /** The measure pill. */
+  fallsBehindPill: 'Falls behind',
+  /** A stop pair's lines: its time lost (timeLostLine, the Delays start cards' own), then the sample. */
+  sample: (trips: number, days: number): string => `${countText(trips)} trips, ${countText(days)} days`,
+  /** The collapsed list of stop pairs whose schedule allows more than vehicles need. */
+  looserTitle: 'Where the schedule is looser than needed',
+  looserLine: (min: number): string => `The schedule allows ${minutesText(min)} more than vehicles need`,
+} as const;
+
+/**
+ * CIV-1878, Studio Live's at-a-glance lines (Ryan chose the mockup's words, 2026-11-19: "1"): how much data there is and
+ * how departures split this week between on time and more than 5½ min late.
+ */
+export const STUDIO_GLANCE = {
+  /** After the bold count: "9 routes recorded", alone (Ryan, 2026-11-20, CIV-1966: "The 3 days of data and the Nov 16-18 seems almost not needed"). */
+  routes: 'routes recorded',
+  barTitle: 'Departures this week',
+  onTime: 'On time',
+  late: LATE_THRESHOLD.charAt(0).toUpperCase() + LATE_THRESHOLD.slice(1),
+} as const;
+
+/**
+ * CIV-1886 / CIV-1893: Studio Live's Settings chip, the planner's own late, early, bunched and gapped settings. Ryan approved
+ * these rows word for word ("Sure for now", 2026-11-19). The standard value is shown in bold, with no "(standard)" tag. A
+ * row's choices are numbers in a row, with its unit once after them.
+ */
+export const STUDIO_SETTINGS_TEXT = {
+  chip: 'Settings',
+  rows: {
+    lateAfterMin: 'Counts as late after',
+    earlyBeforeMin: 'Counts as early from',
+    bunchedWithinMin: 'Counts as bunched under',
+    gappedFactor: 'Counts as a long gap over',
+  },
+  units: {
+    lateAfterMin: 'min',
+    earlyBeforeMin: 'min ahead',
+    bunchedWithinMin: 'min apart',
+    gappedFactor: '× the scheduled wait',
+  },
+} as const;
+
+/**
+ * CIV-1893, Studio's "right now" view of a route: wording pending Ryan's OK. The figures and the definitions under them
+ * come from shared/liveNow.ts, the same as the MCP's route_now.
+ */
+export const STUDIO_NOW_PENDING = {
+  title: 'Right now',
+  /** The reading's time and how old it is: "Reading from 8:26 PM, 0.7 min ago". */
+  reading: (clock: string, ageMin: number): string => `Reading from ${clock}, ${minutesText(ageMin)} ago`,
+} as const;
+
+/**
+ * CIV-1828, the route panel redesign's two options (2026-11-20): wording pending Ryan's pick. "Right now" as one table row
+ * per direction, so a direction, a stretch and a stop each read as what they are (Ryan: "Is this destinations or parts of
+ * the route or what?"). Option A also names the worst stretches under the table, each as "between X and Y".
+ */
+export const STUDIO_ROUTE_NOW_PENDING = {
+  columns: { direction: 'Direction', vehicles: 'Vehicles', bunched: 'Bunched', gapped: 'Long gaps' },
+  /** "Bunched between Beverley St and Shaw St: 0.9 min apart". `place` is betweenLabel's. */
+  bunchedAt: (place: string, min: number): string => `Bunched ${place}: ${minutesText(min)} apart`,
+  /** "Long gap between Mountstephen St and Wolfrey Ave: 24 min wait, scheduled every 7 min". */
+  gappedAt: (place: string, waitMin: number, scheduledMin: number | null): string =>
+    `Long gap ${place}: ${minutesText(waitMin)} wait${scheduledMin != null ? `, scheduled every ${minutesText(scheduledMin)}` : ''}`,
+} as const;
+
+/** "Last 17 service days, Sep 30 – Oct 16": the days a route's figures cover (the method note's own words, CIV-910). */
+export const serviceDaysText = (days: number, first: string, last: string): string => `Last ${days} service days, ${dateRange(first, last)}`;

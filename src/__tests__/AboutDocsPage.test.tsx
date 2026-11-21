@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import AboutDocsPage from '../AboutDocsPage';
 
 describe('Docs page Notices section (CIV-1236)', () => {
@@ -42,5 +42,41 @@ describe('Docs page Notices section (CIV-1236)', () => {
     const glossary = container.querySelector('#glossary')!.textContent!;
     expect(glossary).toContain('Irregular: Shown for a time period when a route runs but its trips don’t come at a consistent gap, so there is no frequency to give. Route cards say “Runs irregularly in this period”; tables and lists say “Irregular”.');
     expect(glossary).toContain('Occasional: School runs, a few trips a day, on-demand. “Hide occasional routes” hides them.');
+  });
+});
+
+// CIV-1440: Ryan's approved Docs picks 3 and 5-8 (2026-11-20, word for word). Pick 3 (section colours) and pick 6
+// (History) show only where those features are on. Ryan: "the Docs page should only mention Studio when on the local site".
+describe('Docs page in the public build (CIV-1440)', () => {
+  const PICK3 = 'The shared stretch, where all branches run, gets its own colour, and each branch gets its own.';
+  const PICK5 = 'State and province pages do the same for every agency in one state or province, and link to its main area pages.';
+  const PICK6 = 'It never fills in a year Atlas has no schedule for.';
+  const PICK7 = 'Before new data goes live, Atlas compares each agency with what is live.';
+  const PICK8 = 'A route that runs for only part of a period shows the hours it runs, and says when it has no trips or runs less often the rest of the time.';
+
+  /** The page rendered with only the named switches on (every other FEATURES switch off, as in the public build). */
+  async function renderWith(on: readonly string[]) {
+    const real = (await vi.importActual<typeof import('../../shared/config')>('../../shared/config')).FEATURES;
+    const features = Object.fromEntries(Object.keys(real).map(k => [k, on.includes(k)]));
+    vi.resetModules();
+    vi.doMock('../../shared/config', async importOriginal => ({ ...(await importOriginal<typeof import('../../shared/config')>()), FEATURES: features }));
+    const { default: Page } = await import('../AboutDocsPage');
+    const { container } = render(<Page />);
+    vi.doUnmock('../../shared/config');
+    return container.textContent ?? '';
+  }
+
+  it('with the public build\'s switches (modeTransitions only, rules-flagRules.test.ts) never names Studio, shows picks 5, 7 and 8, and leaves out the beta-only picks 3 and 6', async () => {
+    const text = await renderWith(['modeTransitions']);
+    expect(text).not.toMatch(/Studio/);
+    for (const pick of [PICK5, PICK7, PICK8]) expect(text).toContain(pick);
+    expect(text).not.toContain(PICK3);
+    expect(text).not.toContain(PICK6);
+  });
+
+  it('shows picks 3 and 6 where section colours and History are on', async () => {
+    const text = await renderWith(['segmentColours', 'history']);
+    expect(text).toContain(PICK3);
+    expect(text).toContain(PICK6);
   });
 });

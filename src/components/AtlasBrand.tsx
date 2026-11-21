@@ -1,4 +1,5 @@
 import { ATLAS_MODE } from '../../shared/config';
+import ModeTag from './ModeTag';
 import { siteModeLabel } from '../../shared/siteMode';
 
 const MODE_TAG = siteModeLabel(ATLAS_MODE);
@@ -14,7 +15,7 @@ export default function AtlasBrand({ size = 'compact', hideByline = false }: { s
         <span className={`${page ? 'text-lg' : 'text-sm'} leading-none font-black text-[var(--text-primary)] whitespace-nowrap`}>
           Atlas
           {/* CIV-1692 (Ryan, option 1): the word on the wordmark's line, same font and size, lighter weight and muted. */}
-          {MODE_TAG && <span className="font-medium text-[var(--text-muted)]"> {MODE_TAG}</span>}
+          {MODE_TAG && <ModeTag word={MODE_TAG} />}
         </span>
         <span className={`${page ? 'text-[13px] leading-none text-[var(--text-muted)]' : 'text-2xs leading-none text-[var(--text-dim)]'} ${hideByline ? 'hidden sm:block' : ''}`}>by Civic Minds</span>
       </span>

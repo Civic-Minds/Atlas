@@ -11,14 +11,20 @@ import { stretchLabel } from '../../utils/stopLabel';
 import { delayHeatPoints } from './delayHeatModel';
 import { BUNCHING_STEP_LIMITS } from './routeStripModel';
 import { BUNCHING_LABEL, EXTRA_WAIT_LABEL, LATE_LABEL, TRIP_TIME_LABEL } from '../../../shared/liveWording';
-import { DELAY_STARTS_LABEL } from '../../../shared/liveWording';
+import { DELAY_STARTS_LABEL, STUDIO_LIVE_PENDING } from '../../../shared/liveWording';
+import { TIME_LOSS_LIST_FROM_SEC, TIME_LOSS_RED_FROM_SEC } from '../../utils/timeLossReport';
 
-export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayStarts';
+/** `fallsBehind` (CIV-1828, Studio's Live page): each stop pair by how much longer it takes than scheduled (the time-loss report's rows). */
+export type MapMeasure = 'late' | 'runTime' | 'extraWait' | 'bunching' | 'delayStarts' | 'fallsBehind';
 /** The measure switch, in order, with the labels the tiles already use. */
 export const MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['late', LATE_LABEL], ['runTime', TRIP_TIME_LABEL], ['extraWait', EXTRA_WAIT_LABEL], ['bunching', BUNCHING_LABEL]];
 /** "Delays start" is the CIV-942 heatmap: its own toggle on the map, not in the switch (the top bar has no room for a fifth pill). Its name is DELAY_STARTS_LABEL (CIV-1602). */
 export { DELAY_STARTS_LABEL };
-export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : MEASURES.find(([k]) => k === m)![1]);
+/** The Live tool's measure switch: the four measures, then Delays start. */
+export const MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [...MEASURES, ['delayStarts', DELAY_STARTS_LABEL]];
+/** CIV-1828: Studio's Live page leads with "Falls behind" (where vehicles fall behind the schedule, stop to stop). */
+export const STUDIO_MAP_MEASURES: ReadonlyArray<readonly [MapMeasure, string]> = [['fallsBehind', STUDIO_LIVE_PENDING.fallsBehindPill], ...MAP_MEASURES];
+export const measureLabel = (m: MapMeasure): string => (m === 'delayStarts' ? DELAY_STARTS_LABEL : m === 'fallsBehind' ? STUDIO_LIVE_PENDING.fallsBehindPill : MEASURES.find(([k]) => k === m)![1]);
 
 /** Step cutoffs per measure: below the first is step 0, below the second step 1, else step 2. Late and bunching are shares; run time and extra wait are minutes. */
 export const MAP_STEP_LIMITS: Record<MapMeasure, readonly [number, number]> = {
@@ -29,6 +35,8 @@ export const MAP_STEP_LIMITS: Record<MapMeasure, readonly [number, number]> = {
   extraWait: [1, 2],
   // Minutes added since the previous stop: across the analysed routes 90% of stretches add under 0.3 min, 95% under 0.5.
   delayStarts: [0.25, 0.5],
+  // The time-loss report's own steps: listed (amber) from 30 s, red from 60 s, in minutes.
+  fallsBehind: [TIME_LOSS_LIST_FROM_SEC / 60, TIME_LOSS_RED_FROM_SEC / 60],
 };
 
 export type MapStep = 0 | 1 | 2;
@@ -54,7 +62,8 @@ function stopPairs(v3: LiveV3, directionId: number, mainOrder: string[]): Array<
   return out;
 }
 
-export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBand, measure: MapMeasure, uncertain: readonly UncertainStart[] = []): RouteMapModel {
+/** `timeLoss`: for `fallsBehind`, each measured stop pair's typical extra running time in seconds, keyed "from>to" (timeLossBySegment). */
+export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBand, measure: MapMeasure, uncertain: readonly UncertainStart[] = [], timeLoss?: ReadonlyMap<string, number>): RouteMapModel {
   const bandData = v3.bands[band];
   const stopsHere = bandData.stops.filter(s => s.directionId === directionId);
   const byId = new Map(stopsHere.map(s => [s.stopId, s]));
@@ -78,12 +87,13 @@ export function routeMapModel(v3: LiveV3, directionId: number, band: DashboardBa
   };
   const segmentValue = (from: string, to: string): number | null => {
     if (measure === 'runTime') { const s = stretchBy.get(key(from, to)); return s && s.n > 0 ? Math.max(0, s.medianAddedMin) : null; }
+    if (measure === 'fallsBehind') { const sec = timeLoss?.get(key(from, to)); return sec == null ? null : Math.max(0, sec) / 60; }
     // Delay starts colours the stops only; the lines stay neutral (the heat is the map's one colour scale).
     return measure === 'delayStarts' ? null : stopValue(from);
   };
 
   const stops: MapStop[] = stopsHere.filter(s => s.lonLat && (mainOrder.includes(s.stopId) || v3.patterns?.[String(directionId)]?.some(p => p.stops.some(x => x.stopId === s.stopId)))).map(s => {
-    const value = measure === 'runTime' ? null : stopValue(s.stopId);
+    const value = measure === 'runTime' || measure === 'fallsBehind' ? null : stopValue(s.stopId);
     return { stopId: s.stopId, name: nameCase(s.name, 'liveStop'), lonLat: s.lonLat as [number, number], value, step: mapStep(measure, value), n: s.n };
   });
   const segments: MapSegment[] = [];

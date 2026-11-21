@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 // FEATURES.beta gave in every build until someone changes it on purpose.
 const STAND_IN_FLAGS = [
   'persistedSettings',
+  // CIV-98: back on where beta is, off on public, once Ryan picked the analytics prompt's place.
+  'slowConnectionPrompt',
   'updateBanner',
   'mapContext',
   'matchPercentage',

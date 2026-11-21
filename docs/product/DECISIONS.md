@@ -83,10 +83,6 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - What: with section colours, a row whose line has a slower end under the tail minimum (FREQUENCY_RULES rule 3, D1: 5 stops and 1 km) reads the route's own number, as the route list and chooser do; the map's section colours show the slow end. It replaces CIV-1595's range ("every 10–20 min") and single slow number (TTC 927 midday "every 306").
   - Why: one calculation per fact, so card, list and chooser agree, and one big slow number doesn't read as the whole route.
   - Source: Ryan, CIV-1579 (2026-11-15, option 1)
-- **A slower end stop colours only its own end piece**
-  - What: on the filtered map, an end stop of a drawn stretch that is a public tier worse than every other stop on the stretch colours only its own end piece; the rest of the stretch takes the worst of the remaining stops. Needs 3 or more stops; map periods only. No published value, stop card or filter result changes.
-  - Why: one slightly slower end stop was recolouring a whole stretch. Each piece stays at least as bad as the worse of its own two stops, so nothing shows better service than the stops' published values.
-  - Source: Ryan, CIV-845 (2026-11-19, option 1: "1"); [#1093](https://github.com/Civic-Minds/Atlas/issues/1093) V0, ungated
 - **A selected route obeys the map's filters**
   - What: a selected route is drawn only when it passes the map's filters, the same on every site (useIntervalStats.ts:85, 64db443e2; #1504).
   - Why: beta's section colours drew a selected route the public map hid (GO Barrie and Stouffville at weekday midday, every 60 or less).
@@ -190,13 +186,14 @@ Each rule gives what it does, why, and where it came from. "Linear CIV-nnn, comm
   - Why: their data is not being refreshed, and the design is still in progress.
   - Source: [decision log](#decision-log) (2026-11-15)
 - **Desktop only, one top bar**
-  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar, with the map key as one pill at the map's top left.
+  - What: Live's tool page and Studio are hidden on phones (they fall back to the map, like History and Compare), and every switcher sits in the one top bar (in Studio's Live, Measure sits with the filters: Agency, Route, Time of day; Ryan, 2026-11-19), with the map key as a card floating at the map's bottom left (since CIV-1821).
   - Why: the panels need a desktop's room, and controls in two places read as clutter.
   - Source: [decision log](#decision-log) (2026-11-16)
 - **Math explanations stay visible**
   - What: text that explains a number or threshold stays on screen, not hover-only; text that only restates a label can go.
   - Why: the explanation is what makes the figure trustworthy.
   - Source: Linear CIV-293, comments of 2026-10-17 (14:42 and 14:56 UTC)
+  - Exception (Ryan to the manager in chat, 2026-11-19: "1", then "Might be better actually" when asked "Bunching is XYZ then learn more?"; logged on CIV-1828): in Studio's Live view the week table's two explanation lines (what Bunching's two figures are, and what grey means) live in Studio's About panel, Live part. The side panel keeps the short bunching definition with a Learn more link that opens it, and the map key keeps its short definition.
 - **Understood at a glance, no scrolling or collapsing in sidebars**
   - What: both sidebars show everything at once; if it does not fit, show less rather than cram.
   - Why: Ryan: "I shouldn't need to scroll in the sidebar." (He never asked for collapsible cards.)
@@ -314,9 +311,6 @@ A direction's headline (its value, coverage and filter value, and so the route's
 ### 2026-11-19 — One entry per agency or region, everywhere
 CIV-1963 (#1610): Studio Coverage listed MTA New York's feeds as separate rows while the agency index and the map's picker showed one MTA New York. The rule is now one entry per agency or region on every screen and tool that lists, counts, ranks or compares agencies, with a route in two of a parent's feeds counted once (as its own page already counted them). Feeds are not merged in the pipeline; `shared/agencyGroups.ts` groups them at read time for the site and the MCP tools alike.
 
-### 2026-11-19 — A slower end stop colours only its own end piece
-Ryan, 2026-11-19 (CIV-845), choosing between #1093's options for a shared stretch whose end stop is one tier slower: "1" (V0, ungated, over the gated version and over keeping today's colouring). On a drawn stretch of 3 or more stops, an end stop strictly worse in public tier than every other stop colours only the piece between it and its neighbour; the rest of the stretch takes the worst of the remaining stops. Only one end can be peeled by this test, since it must be worse than the other end too. The all-day value keeps the one-colour rule. Display only: no published value, stop card, filter result or pipeline gate changes, and no piece is ever better than the worse of its own two stops.
-
 ### 2026-11-19 — A period's first and last waits count like any other gap
 Ryan, 2026-11-19 (CIV-238), approving the counts: "1". The wait from a period's start to its first bus, and from its last bus to the period's end, counts like any gap between buses, under the settled near-miss allowance. A true start or end of service keeps its approved 10 minutes over the grade. This restores Ryan's #507 ruling (2026-09-12: the full wait counts). The 60-minute and 8× edge allowance (33758d8b, `PERIOD_COVERAGE_MAX_HEADWAY` read as an allowance) was never approved and no longer lets a period pass. Night Service keeps its own 60 (CIV-1198). Route cards keep their numbers; only the filter changes. Counts (cloud dry run 44448813459, route × day type × period cells that passed before): every 10, 121 of 3,045 no longer pass; every 15, 582 of 9,473; every 20, 831 of 15,351; every 30, 2,260 of 38,650. Hand-checked against CTA's timetable: 121 AM (first bus at the stretch about 6:53), 143 AM, 26 PM.
 
@@ -325,6 +319,11 @@ Ryan, 2026-11-19 (CIV-1142): "learn more is only in the notice at the bottom". H
 
 ### 2026-11-18 — Research chart defaults
 Ryan, 2026-11-18 (CIV-1173): picked 1A, 2A, 3A, 4A and 5A on the chart kit review page. Ranked bars for rankings; columns for spreads along a scale; a split bar for shares of a whole; dot pairs for two values compared; empty steps kept on a fixed scale (a 60-min row at 0 is shown, not dropped). He noted the A/B pairs are different chart types for different jobs, so each kind keeps the design its page already uses. Style rule: [VISUAL.md](../style/VISUAL.md), Charts, graphs and graphics.
+
+### 2026-11-18 — One odd stop doesn't recolour a stretch (superseded)
+Reverted, and so was its replacement, the V0 end-piece rule (Ryan, 2026-11-19, CIV-845, #1093): neither is in the code since the preview branch was merged into main (CIV-1991), and a drawn stretch takes its worst stop's colour. Text kept below for history.
+
+Ryan, 2026-11-18 (#1093), after the "end piece" option (V0): "If it's literally only 1 stop then I think we should figure out a way to make an exception", then "I don't know if the exception should be based on a % of stops the route has or what but 1 single stop seems like an oddity more than anything", then approved the proposal as written: "1". On the filtered map a drawn stretch of at least 3 stops (`LONE_STOP_MIN_STRETCH_STOPS`) normally takes its worst stop's colour. When exactly one stop is one public tier worse (`LONE_STOP_TIERS_WORSE`) than every other stop, the whole stretch, that stop's own segment included, takes the worst of the others. Two guards keep it from hiding real slower service: a lone end stop whose neighbour past the stretch is as slow is the start of a slower section; a lone stop whose longest gap is 2 or more tiers (`LONE_STOP_GAP_GUARD_TIERS`) worse than the others' is a real hole. A fixed one stop was chosen over a share of the stretch's stops because several separate slow stops could be real slow spots. Measured on release-mwl8qwjk (every cached agency, weekday, Saturday and Sunday, AM peak to evening, every public threshold): 696 stretches and 17,722 stop-to-stop segments get a better colour, about 1% of drawn stretches, none worse; most are one-minute differences (16 among 15s). Hand-checks: TTC 96 and TTC 52 recolour; Hamilton 35 (a slower section past the end) and LA Metro 33 (a 54-minute gap at the last stop) don't.
 
 ### 2026-11-18 — The MCP answers bunching and gaps right now
 Ryan, 2026-11-18 (CIV-1870): "I would like us to have Live added with real-time information available (like being able to ask about bunching for example, or gaps in service on a specific route)". route_now (local MCP first; Studio's view CIV-1893 calls the same shared/liveNow.ts) reads the Live recorder's last half hour of vehicle readings. Gaps are measured where vehicles pass stops, as the weekly figures count them, never guessed from speed. Each stop is judged against its own scheduled gap for the period (Atlas's figure for that stop, branches together), with the shared bunched and gapped cut-offs. A stop no vehicle passed in the half hour is named apart, not called a gap, since a diversion looks the same. Every answer gives the time of the reading; a reading older than 3 minutes means no current figures. The manager settled the plan and the one tool.
@@ -341,11 +340,11 @@ Ryan, 2026-11-17: "I think the MCP would be part of that right?", of Atlas Studi
 ### 2026-11-17 — One frequency scale for every mode
 Ryan, 2026-11-17 (CIV-1813): "Fix it now then omfg why the fuck are there any separate freqeucnies between buses and rail", then "like we can have 5 mins or 8 mins or 12 mins or whatever and not expose it to th epublic and put it under the next highest one if we want but this is much different than that", then "I do not know why I am repeating myself when I ask why there are any separate frequency bands between modes". There are no mode-specific scales: every mode, bus, rail and streetcar, is graded on one scale, 5, 8, 10, 15, 20, 30, 60 (`TIER_MAXES`). The public scale is 10, 15, 20, 30, 60 (`PUBLIC_TIER_MAXES`); the internal 5 and 8 count as 10 (`publicTierOf`). Before this, buses graded on 10-60 and rail on 5-8-10-15-30-60, with no 20 since 75c2d8422 (2026-10-06, never approved). `modeTierOverrides` and `RAIL_TIER_MAXES` are gone, and `frequencyScales.test.ts` fails if a mode-specific scale or tier list appears.
 
+### 2026-11-16 — Live and Studio are desktop only, with one top bar for every switcher
+Ryan, 2026-11-16 (CIV-1732, through the manager, answering "1" twice): Live and Studio are desktop only and hidden on phones, the same way as History and Compare; a phone visiting one falls back to the map. Of three redesign options for the shared map-and-sidebar layout, he picked A, "one bar": the measures join the other switchers in the top bar, the map key is one pill with its definition (it floats at the bottom left of the map since CIV-1821), and the route list ends after its last row. Live's tool page and Studio share this layout (`src/components/MapApp/`).
+
 ### 2026-11-16 — The For Transit Planners page is at /planners
 Ryan, 2026-11-16 (CIV-1744): "should it rlly be at /about/planners or should it be at another url", then picked "1": `/planners`, and later `/researchers` for the researchers page (CIV-1709). Audience pages get their own top-level address instead of sitting under About. The page had never been public, so the old address has no redirect.
-
-### 2026-11-16 — Live and Studio are desktop only, with one top bar for every switcher
-Ryan, 2026-11-16 (CIV-1732, through the manager, answering "1" twice): Live and Studio are desktop only and hidden on phones, the same way as History and Compare; a phone visiting one falls back to the map. Of three redesign options for the shared map-and-sidebar layout, he picked A, "one bar": the measures join the other switchers in the top bar, the map key is one pill at the map's top left with its definition, and the route list ends after its last row. Live's tool page and Studio share this layout (`src/components/MapApp/`).
 
 ### 2026-11-15 — The For Transit Planners page is local only
 Ryan, 2026-11-15 (CIV-1704): asked "should we make a card for live mode too on the for transit plannres", heard that Live is local only, then: "then make the for planners page local only". The page, its footer link and its prerendered page are on only on the local dev server, off on beta and public; see [FEATURE_FLAGS.md](../FEATURE_FLAGS.md). It gets a Live card (CIV-1705).

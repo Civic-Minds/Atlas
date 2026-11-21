@@ -28,12 +28,18 @@ async function loadHandlers() {
   const { default: liveStrings } = await import('./local-api/live-strings.js');
   handlers['/api/live-strings'] = liveStrings.fetch;
   handlers['/api/live-agency'] = liveAgency.fetch;
+  const { default: liveStudioAgencies } = await import('./local-api/live-studio-agencies.js');
+  handlers['/api/live-studio-agencies'] = liveStudioAgencies.fetch;
   const { default: liveGaps } = await import('./local-api/live-gaps.js');
   handlers['/api/live-gaps'] = liveGaps.fetch;
   handlers['/api/live-vehicles'] = liveVehicles.fetch;
   handlers['/api/history-adherence'] = historyAdherence.fetch;
   handlers['/api/live-stop'] = liveStop.fetch;
   handlers['/api/carto-tiles'] = cartoTiles.fetch;
+  const { default: mcpCoverage } = await import('./local-api/mcp-coverage.js');
+  handlers['/api/mcp-coverage'] = mcpCoverage.fetch;
+  const { default: routeNow } = await import('./local-api/route-now.js');
+  handlers['/api/route-now'] = routeNow.fetch;
   handlers['/api/privacy-region'] = privacyRegionResponse;
 }
 
@@ -72,5 +78,5 @@ createServer(async (req, res) => {
   }
 }).listen(API_PORT, () => {
   console.log(`API dev server listening on http://localhost:${API_PORT}`);
-  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/live-dashboard, /api/live-agency, /api/live-gaps, /api/live-strings, /api/live-recent, /api/history-adherence, /api/live-stop, /api/carto-tiles (dev basemap), /api/privacy-region');
+  console.log('Routes: /api/live-vehicles, /api/live-segments, /api/live-dashboard, /api/live-agency, /api/live-studio-agencies, /api/live-gaps, /api/live-strings, /api/live-recent, /api/history-adherence, /api/live-stop, /api/carto-tiles (dev basemap), /api/privacy-region');
 });

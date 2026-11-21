@@ -11,7 +11,7 @@ import RankedBars from '../components/charts/RankedBars';
 import ResearchMethod from '../components/research/ResearchMethod';
 import ResearchHeader from '../components/research/ResearchHeader';
 import { frequentCoverageCountries, frequentServiceCoverageInterpretation, frequentServiceCoverageStats, frequentServiceCoverageUpdated, frequentServiceDefinitionSample, frequentServiceStoryResearchRecord, frequentServiceStoryStats, frequentWeekendCities } from '../data/frequentServiceStory';
-import FrequentServicePublishedMapMontage from '../components/FrequentServicePublishedMapMontage';
+import FrequentServiceMapPile from '../components/FrequentServiceMapPile';
 import FrequentServiceStoryMap from '../components/FrequentServiceStoryMap';
 import PageShell from '../components/ui/PageShell';
 import { STORY_CHART_PANEL, STORY_HEADING, STORY_PARAGRAPH, UNDERLINED_LINK } from '../pageStyles';
@@ -165,7 +165,7 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           intro={<>{FREQUENT_SERVICE_STORY.intro!({ agencies: frequentServiceDefinitionSample.agencies }).map(text => <p key={text}>{text}</p>)}</>}
         >
           <div className="w-full max-w-5xl text-left">
-            <FrequentServicePublishedMapMontage />
+            <FrequentServiceMapPile />
           </div>
           {/* Ryan, 2026-11-14: a second button jumps to the story's own Method section at the bottom. */}
           <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -178,12 +178,12 @@ export default function FrequentServiceStory({ onExploreMap, agencies }: Props) 
           </div>
         </ResearchHeader>
 
-        {/* CIV-1169 (Ryan's pick 6): a text break between the montage and the first map. */}
+        {/* CIV-1169 (Ryan's pick 6): a text break between the map pile and the first map. */}
         <section id="story" aria-labelledby="story-break-heading" className="scroll-mt-16 mx-auto mt-24 w-full max-w-[48rem] sm:mt-32">
           <h2 id="story-break-heading" className={STORY_HEADING}>Every map tells it differently.</h2>
           {/* CIV-1168 bridge, Ryan approved version A word for word on 2026-11-02 (_review/frequent-bridge); its Toronto
               sentences are Ryan's CIV-1495 #6 wording (2026-11-15), with the TTC's Sunday start and the map's own test.
-              with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the montage's own
+              with its times and wait in Atlas's style ("6 AM", "every 10 min") from the shared helpers. Every claim is from the pile's own
               maps, linked under each frame; Toronto's hours are its Ten-Minute Network definition (definition-quotes-2026-10-11.json, ttc). */}
           <p className={STORY_PARAGRAPH}>
             Each agency decides what its map shows, so one map is hard to compare with the next. The TTC’s own 10-minute network runs {headwayOrBetter(10)} from {hourTime(6)} to {hourTime(25)} (from {hourTime(8)} on Sundays). The map below uses a broader test: {headwayOrBetter(15)} on weekday daytimes. Vancouver and Los Angeles both draw the line at 15 minutes, but Vancouver checks it until {hourTime(21)} every day of the week, and Los Angeles only on weekdays until {hourTime(18)}. Washington, DC has two levels, one at 12 minutes and one at 20. Miami-Dade’s map doesn’t use the word frequent at all. It colours every route by how often the bus comes at weekday midday.

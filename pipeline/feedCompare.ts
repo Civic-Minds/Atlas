@@ -43,6 +43,12 @@ export interface RouteDay {
    * 15 min from 10:12 AM" (CIV-1806). Labels only; not compared.
    */
   edge?: Partial<Record<PeriodKey, { from?: number; until?: number; every: number }>>;
+  /**
+   * The route's length that day (CIV-1827, display only, not compared): the fewest and most stops on its patterns
+   * (short turns left out), and the end stops' names of its longest pattern in the first direction.
+   */
+  stops?: [min: number, max: number];
+  ends?: [first: string, last: string];
   /** Headsigns drawn, by direction id (labels only). */
   headsigns: Record<string, string[]>;
   /** The route's drawn lines that day, one per distinct pattern shape (for the Studio map; not compared). */
@@ -259,6 +265,9 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     tripsOn.set(dayType, counts);
   }
 
+  const stopName = new Map((gtfs.stops ?? []).map(s => [String(s.stop_id), String(s.stop_name ?? '')]));
+  /** Each route day's patterns, for its length (CIV-1827): stop count, direction, card role and end stops. */
+  const patterns = new Map<RouteDay, Array<{ n: number; dir: string; tail: boolean; ends: [string, string] }>>();
   // Each trip's departure from its first stop, for a route's first trip where the hours bar has none (#1582).
   const firstDeparture = new Map<string, number>();
   const seqOf = new Map<string, number>();
@@ -311,6 +320,11 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
         (day.edge ??= {})[k] = { ...(e.from != null ? { from: e.from } : {}), ...(e.until != null ? { until: e.until } : {}), every: e.every };
       }
     }
+    const order = Array.isArray(p.stopOrder) ? (p.stopOrder as unknown[]).map(String) : [];
+    if (order.length >= 2 && p.stretchRole !== 'variant') {
+      const name = (id: string) => stopName.get(id) ?? id;
+      (patterns.get(day) ?? patterns.set(day, []).get(day)!).push({ n: order.length, dir: String(p.directionId ?? '0'), tail: p.stretchRole === 'tail', ends: [name(order[0]), name(order[order.length - 1])] });
+    }
     const dir = String(p.directionId ?? '0');
     const span = p.departureSpan as { first?: number; last?: number } | undefined;
     // The map's hours bar leaves "first" out when a trip leaves before 5 AM (no same-day 4 AM hour, by design for the
@@ -321,6 +335,16 @@ export async function readFeedSide(buf: Buffer, date: string, options: ProcessOp
     if (p.headsign && !(day.headsigns[dir] ??= []).includes(p.headsign)) day.headsigns[dir].push(p.headsign);
     const run = runMinutesOf(parsed.runningTimes?.[`${routeId}::${dir}::${dayType}`]);
     if (run != null && day.runMinutes[dir] == null) day.runMinutes[dir] = run;
+  }
+  // The route's length (CIV-1827): where it has branches, their full patterns (the tails; the main row is the shared
+  // stretch alone), else its patterns; short turns left out. The fewest and most stops, and the ends of the longest
+  // pattern in the lowest direction id, so both sides of a comparison read the same way round.
+  for (const [day, list] of patterns) {
+    const use = list.some(x => x.tail) ? list.filter(x => x.tail) : list;
+    const ns = use.map(x => x.n);
+    day.stops = [Math.min(...ns), Math.max(...ns)];
+    const dir = use.map(x => x.dir).sort()[0];
+    day.ends = use.filter(x => x.dir === dir).reduce((a, b) => (b.n > a.n ? b : a)).ends;
   }
   for (const side of Object.values(routes)) {
     for (const dayType of DAY_TYPES) {

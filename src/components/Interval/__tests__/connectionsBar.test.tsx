@@ -18,7 +18,7 @@ describe('connections top bar (CIV-1353)', () => {
   it('shows Day, the wait, the walk, the side and the picked departure in place of the filters', () => {
     const { container } = render(<FilterChips {...props} connectionsBar={bar()} />);
     const labels = within(container).getAllByRole('button').map(b => b.textContent?.trim());
-    expect(labels).toEqual(['Day', '15 min', '30 min', '60 min', '200 m', '400 m', '600 m', '[Placeholder: arriving]', '[Placeholder: leaving]', '5:55 AM']);
+    expect(labels).toEqual(['Day', '15 min', '30 min', '60 min', '200 m', '400 m', '600 m', 'Arriving', 'Leaving', '5:55 AM']);
     expect(within(container).queryByText('Frequency')).toBeNull();
   });
 
@@ -33,6 +33,6 @@ describe('connections top bar (CIV-1353)', () => {
 
   it('has no departure dropdown until a route with connection data is picked', () => {
     const { container } = render(<FilterChips {...props} connectionsBar={bar({ trips: [], tripId: null })} />);
-    expect(within(container).getAllByRole('button').map(b => b.textContent?.trim()).at(-1)).toBe('[Placeholder: leaving]');
+    expect(within(container).getAllByRole('button').map(b => b.textContent?.trim()).at(-1)).toBe('Leaving');
   });
 });

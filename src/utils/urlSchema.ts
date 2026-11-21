@@ -133,6 +133,8 @@ export const HISTORY_VIEW_URL = {
 export const APP_URL = {
   /** Low-quality feeds hidden: written as 1 when on, left out when off. */
   hideLowQuality: { key: 'quality', presence: 'any', parse: raw => raw === '1', serialize: value => (value ? '1' : null) } satisfies UrlParam<boolean>,
+  /** CIV-98: `?slowconnection=1` pretends the connection is slow, so the Data saver prompt can be tried on any browser. Read only. */
+  forceSlowConnection: { key: 'slowconnection', presence: 'nonEmpty', parse: raw => raw === '1', serialize: () => null } satisfies UrlParam<boolean>,
 } as const;
 
 /** Night Service (/research/night). Written while Night is open; 60 is the default and left out. */

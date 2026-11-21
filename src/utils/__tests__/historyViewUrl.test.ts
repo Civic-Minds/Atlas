@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { encodeHistoryView, historyDefaultPeriod, historyDefaultView, parseHistoryView } from '../historyViewUrl';
+import { encodeHistoryView, historyDayPickerShown, historyDefaultPeriod, historyDefaultView, historyEffectiveView, parseHistoryView } from '../historyViewUrl';
+import { agencyHasWeekendValues } from '../historyYearMap';
 import { DAY_PREF_KEY, openingDay, saveDayPref } from '../openingDay';
 
 const at = (hour: number) => new Date(2026, 9, 28, hour, 30);
@@ -16,9 +17,9 @@ describe('History view in the link (map params h, p)', () => {
     expect(parseHistoryView('?h=-3&p=brunch', at(17))).toEqual({ maxHeadway: Infinity, period: 'pmPeak', day: 'Weekday' });
   });
 
-  it('writes h and p always, so the map reads neither as its own default', () => {
-    expect(encodeHistoryView({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' })).toEqual({ h: 'all', p: 'midday' });
-    expect(encodeHistoryView({ maxHeadway: 60, period: 'pmPeak', day: 'Weekday' })).toEqual({ h: '60', p: 'pmPeak' });
+  it('writes h and p always (picker off), so the map reads neither as its own default', () => {
+    expect(encodeHistoryView({ maxHeadway: Infinity, period: 'midday', day: 'Weekday' }, false)).toEqual({ h: 'all', p: 'midday' });
+    expect(encodeHistoryView({ maxHeadway: 60, period: 'pmPeak', day: 'Weekday' }, false)).toEqual({ h: '60', p: 'pmPeak' });
   });
 
   it('round-trips', () => {
@@ -98,5 +99,33 @@ describe('the day History opens on (CIV-1433: the map\'s own logic, openingDay)'
   it('saveDayPref stores the day the map reads', () => {
     saveDayPref('Sunday');
     expect(openingDay(null)).toBe('Sunday');
+  });
+});
+
+describe('Day chip follows the open agency\'s weekend values (CIV-1646)', () => {
+  const snap = (v2: Record<string, unknown>) => ({ label: '2026', year: 2026, weekdayHeadwayMin: 10, v2: { refDate: '20261110', key: 'k', rep: { h: 10 }, ...v2 } });
+  const agency = (...snapshots: ReturnType<typeof snap>[]) => ({ routes: [{ snapshots }] }) as unknown as Parameters<typeof agencyHasWeekendValues>[0];
+
+  it('data with weekend period values shows the chip; without (or only no-service days) hides it', () => {
+    expect(agencyHasWeekendValues(agency(snap({ sat: { h: 20, p: { midday: 20 } } })))).toBe(true);
+    expect(agencyHasWeekendValues(agency(snap({ sun: { h: 30, p: { evening: 30 } } })))).toBe(true);
+    expect(agencyHasWeekendValues(agency(snap({ sat: { h: 20 }, sun: { none: true } })))).toBe(false);
+    expect(agencyHasWeekendValues(agency(snap({})))).toBe(false);
+    expect(agencyHasWeekendValues(agency())).toBe(false);
+  });
+
+  it('the picker shows with the flag unless the open agency has no weekend values', () => {
+    expect(historyDayPickerShown(true, true)).toBe(true);
+    expect(historyDayPickerShown(null, true)).toBe(true);
+    expect(historyDayPickerShown(false, true)).toBe(false);
+    expect(historyDayPickerShown(true, false)).toBe(false);
+  });
+
+  it('hides hday: the view stays Weekday and the link carries none, while the pick is kept for the next agency', () => {
+    const view = { maxHeadway: Infinity, period: 'midday' as const, day: 'Saturday' as const };
+    expect(historyEffectiveView(view, false).day).toBe('Weekday');
+    expect(historyEffectiveView(view, true)).toBe(view);
+    expect(encodeHistoryView(historyEffectiveView(view, false), false)).toEqual({ h: 'all', p: 'midday' });
+    expect(parseHistoryView('?h=all&p=midday&hday=Saturday', undefined, false).day).toBe('Weekday');
   });
 });

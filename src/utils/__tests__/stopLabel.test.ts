@@ -78,6 +78,11 @@ describe('stretchEnds', () => {
 });
 
 describe('stretchLabel', () => {
+  it('names one place once when both ends read the same (TTC 504 at Front and Cherry, Studio Right now)', () => {
+    expect(stretchLabel('Cherry St at Front St East North Side', 'Cherry St at Front St East South Side')).toBe('Front St East (Cherry St)');
+    expect(stretchLabel('Queen St West at King St West', 'Queen St West at King St West')).toBe('King St West (Queen St West)');
+    expect(stretchLabel('Queen St West at Spadina Ave', 'Queen St West at Bathurst St')).toBe('Spadina Ave to Bathurst St');
+  });
   it('names a stretch the same way on every page (CIV-910)', () => {
     expect(stretchLabel('Dundas St East at Church St', 'Dundas St East at Yonge St - Dundas Station')).toBe('Church St to Dundas Station');
     expect(stretchLabel('Dundas St West at McCaul St', 'Dundas St West at University Ave - St Patrick Station')).toBe('McCaul St to St Patrick Station');

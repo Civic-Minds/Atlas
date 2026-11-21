@@ -11,7 +11,7 @@ import { ATLAS_MAP_CLAUSE, ATLAS_MAP_SUMMARY, PAGE_NAMES, SITE_NAME, tabTitle } 
 import { FEATURE_ROUTES } from './config';
 import { titleCase } from './titleCase';
 import { siteModeLabel } from './siteMode';
-import { ABOUT_PATH, CHANGELOG_PATH, DOCS_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, RESEARCHERS_PATH, TERMS_PATH } from './pagePaths';
+import { ABOUT_PATH, CHANGELOG_PATH, COMPARE_PATH, DOCS_PATH, FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH, PLANNERS_PATH, PRIVACY_PATH, RESEARCH_PATH, RESEARCHERS_PATH, TERMS_PATH } from './pagePaths';
 import { FREE_CHILD_FARES_STORY, FREQUENT_SERVICE_STORY, OVERNIGHT_STORY } from './researchStories';
 
 // The site's origins are in shared/rules/paths.ts (rules audit, move 6).
@@ -72,7 +72,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/apps/frequency',
+    path: FREQUENCY_PATH,
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: true,
@@ -130,7 +130,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
     includeInSitemap: true,
   },
   {
-    path: '/apps/history',
+    path: HISTORY_PATH,
     title: tabTitle(PAGE_NAMES.serviceHistory),
     description: 'See how scheduled transit service changed over time, using dated snapshots of agency schedules.',
     indexable: false,
@@ -138,7 +138,7 @@ export const SEO_ROUTES: readonly SeoRoute[] = [
   },
   {
     // Compare's own address: the frequency map split in two, so it keeps the map's title and points at the map.
-    path: '/apps/compare',
+    path: COMPARE_PATH,
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     indexable: false,

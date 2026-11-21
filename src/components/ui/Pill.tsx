@@ -36,3 +36,7 @@ export default function Pill({ as: Tag = 'button', submit = false, selected = fa
     />
   );
 }
+
+/** A row in a top-bar chip's dropdown (ChipMenu), filled where it is the current choice: the control option's colours. */
+export const chipRowClass = (active: boolean) =>
+  `w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all border text-left min-w-0 ${active ? CONTROL_ACTIVE : CONTROL_INACTIVE}`;
