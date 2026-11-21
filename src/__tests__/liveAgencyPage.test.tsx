@@ -23,12 +23,12 @@ describe('Live agency page', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} }));
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, headers: new Headers(), json: async () => ({ status: 'ready', summary }) })));
   });
-  it('shows each stretch\'s bunched share before and after (CIV-1805), and the rise in points from an older summary', async () => {
+  it('shows each stretch\'s bunched share before and after (CIV-1805), and nothing for an older summary without the shares (CIV-1814 item 41)', async () => {
     render(<MemoryRouter initialEntries={['/apps/live/ttc']}><Routes><Route path="/apps/live/:agency" element={<LiveAgencyPage />} /></Routes></MemoryRouter>);
     const bunching = within(await screen.findByRole('region', { name: 'Where Bunching Forms' }));
     expect(bunching.getByRole('columnheader', { name: /Increase/ })).toBeTruthy();
-    expect(bunching.getByText('10% to 41%')).toBeTruthy();
-    expect(bunching.getByText('+33 pt')).toBeTruthy();
+    expect(bunching.getByText('10% → 41%')).toBeTruthy();
+    expect(bunching.queryByText('+33 pt')).toBeNull();
     const delays = within(screen.getByRole('region', { name: 'Where Delays Start' }));
     expect(delays.getByText('2.4 min')).toBeTruthy();
   });

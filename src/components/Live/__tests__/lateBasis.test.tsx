@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardBandData, LiveV3 } from '../../../../shared/liveDashboard';
 import { healthyCounts, healthyLateByHour } from '../../../../shared/liveDashboard';
-import { excludingText, excludingWeeksText, leftOutReason, risePointsText, runTimeDiffText } from '../../../../shared/liveWording';
+import { excludingText, excludingWeeksText, leftOutReason, runTimeDiffText, shareRiseText } from '../../../../shared/liveWording';
 import LateByHourSection, { isThin, leftOutOf, rowMax, lateByHourModel, routeLateDays, routeLateHours, routeLateOverall } from '../sections/LateByHourSection';
 
 // 2026-10-10 and 2026-10-11 are a Saturday and a Sunday. 2026-10-11 has gaps in the recordings (not a good day).
@@ -83,8 +83,9 @@ describe('visible days, peak label and run time wording', () => {
     expect(peaks).toHaveLength(1);
     expect(peaks[0].textContent).toBe('9%'); // the 20% hour has only 5 departures: not the peak
   });
-  it('writes a rise in a share in points', () => {
-    expect([risePointsText(0.31), risePointsText(0.045), risePointsText(0)]).toEqual(['+31 pt', '+5 pt', '0 pt']);
+  it('writes a share before and after with the arrow, and nothing without both shares (CIV-1814 item 41)', () => {
+    expect(shareRiseText({ value: 0.31, fromShare: 0.1, toShare: 0.41 })).toBe('10% → 41%');
+    expect(shareRiseText({ value: 0.31 })).toBe('');
   });
   it('writes run time against the timetable in minutes', () => {
     expect(runTimeDiffText(-2)).toBe('2 min faster than the schedule');
