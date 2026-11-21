@@ -74,7 +74,7 @@ export const WHATS_NEW: WhatsNewFeature[] = [
   { lead: 'Agencies with several feeds', isNew: true, public: { version: '3.5.0', text: "now one agency everywhere, like MTA New York's subway, buses and railroads" } },
   { lead: 'History by day', isNew: true, beta: { version: '3.5.0', text: 'switch between Weekday, Saturday and Sunday' } },
   { lead: 'Frequent filter', public: { version: '3.5.0', text: 'counts the wait for the first and last bus in each time of day, so a route that starts late or ends early no longer passes' } },
-  { lead: 'Page changes', public: { version: '3.5.0', text: 'moving between Atlas pages no longer reloads the page' } },
+  { lead: 'Faster pages', public: { version: '3.5.0', text: 'switching between Atlas pages is instant, without reloading the site' } },
   { lead: 'Data saver', beta: { version: '3.5.0', text: 'a prompt offers it on slow connections' } },
   {
     lead: 'Compare mode', isNew: true,
