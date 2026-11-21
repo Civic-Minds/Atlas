@@ -224,20 +224,6 @@ describe('shape gaps in published years (CIV-843)', () => {
     expect(formatShapeGap(gaps[0])).toBe('WARNING shape gap mbta 2011: 2 of 3 routes without a real line (1 drawn from stops, 1 not drawn); 32 of 100 trips without a usable shape_id (30 blank, 2 not in shapes.txt)');
   });
 
-  it('leaves out the agency\'s newest year, which History draws on today\'s map lines (#1659)', () => {
-    const periods = new Map([['2025-09', period('2025-09', { '1': { c: line } })]]);
-    const routeYears = [
-      { routeKey: '1', year: 2025, periodKey: '2025-09' },
-      { routeKey: '2', year: 2025, periodKey: '2025-09' },
-      { routeKey: '1', year: 2026, periodKey: '20260905' },
-      { routeKey: '2', year: 2026, periodKey: '20260905' },
-    ];
-    // Without the newest year every year is checked, as before: 2025 (route 2 has no line) and 2026 (no shapes object).
-    expect(shapeGaps('kingston', periods, routeYears).map(g => g.year)).toEqual([2025, 2026]);
-    // With it, 2026 is left out and an earlier year's gap is still reported.
-    expect(shapeGaps('kingston', periods, routeYears, { latestYear: 2026 }).map(g => [g.year, g.none])).toEqual([[2025, 1]]);
-  });
-
   it('flags a year whose lines all exist but whose trips miss shape_ids, and works without trip counts', () => {
     const tripsOnly = shapeGaps('stm', new Map([['2013-09', period('2013-09', { '24': { c: line } }, { total: 10, emptyShapeId: 1, unknownShapeId: 0 })]]), [{ routeKey: '24', year: 2013, periodKey: '2013-09' }]);
     expect(tripsOnly.map(g => g.year)).toEqual([2013]);

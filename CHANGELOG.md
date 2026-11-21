@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Live's route card shows the same schedule as the map's route card**: it gave its own range across all stops (TTC 510 "every 5–10 min"), hiding branches and short turns; it now lists the shared stretch and each branch
 - **Studio Live's route lines are as thin as Live's**: they were drawn about twice as thick as the same route on the regular Live map
 - **Studio opens on the city the map is showing**: opening Live with the map on Toronto jumped to the agency Studio was last on, such as Hamilton
 - **A picked vehicle on Live keeps its normal dot, just darker**: the bigger dot with a white halo stood out from the rest of the map

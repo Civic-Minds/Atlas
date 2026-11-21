@@ -74,6 +74,8 @@ function Stats({ items }: { items: [string, string][] }) {
 }
 
 interface Props {
+  /** CIV-2045: the main map card's own Scheduled lines for the picked direction (liveScheduledRows); none shows nothing. */
+  scheduledRows?: ReadonlyArray<{ label: string; value: string }> | null;
   slug: string;
   routeShortName: string;
   /** The route's vehicles as the map shows them (every poll); "Right now" is built from these. */
@@ -100,7 +102,7 @@ function useRecentPositions(vehicles: readonly LiveVehicle[]): RecentSnapshot[] 
 }
 
 /** The Live route card: only what is live now ("Right now"), per direction. */
-export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted }: Props) {
+export default function LiveRoutePerformance({ slug, routeShortName, vehicles, feedDegraded, onCounted, scheduledRows }: Props) {
   const { data: loaded, settled } = useSegmentDelayStatus(slug, routeShortName);
   const data = loaded as (SegmentDelayData & { tripDirections?: Record<string, string[]> }) | null;
   // The direction lives in the URL (dir) so a shared link reopens it.
@@ -151,8 +153,6 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
     : null;
 
-  const range = live?.scheduledRangeSec;
-  const schedLabel = range ? schedText({ scheduledMedianGapSec: range[0], scheduledP10Sec: range[0], scheduledP90Sec: range[1] }) : live?.scheduledSec ? schedText({ scheduledMedianGapSec: live.scheduledSec }) : MISSING_VALUE;
   // A gap is late at twice the timetable gap where the car behind is.
   const late = (g: number, i: number) => {
     if (!period) return false;
@@ -188,8 +188,20 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
               <Stats items={[
                 [VEHICLES_LABEL, String(live.cars)],
                 ...(onTime != null ? [[ON_TIME_LABEL, String(onTime)] as [string, string]] : []),
-                ...(period ? [[SCHEDULED_COLUMN, schedLabel] as [string, string]] : []),
               ]} />
+              {/* CIV-2045 (Ryan: "1"): Scheduled is the main map card's own lines for this direction (shared stretch, branches,
+                  short turns), from the same reading, never a range of its own across the line's stops. */}
+              {period && scheduledRows && scheduledRows.length > 0 && (
+                <div className="flex flex-col gap-0.5">
+                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">{SCHEDULED_COLUMN}</div>
+                  {scheduledRows.map(r => (
+                    <div key={r.label} className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 flex-1 text-xs text-[var(--text-muted)]">{r.label}</span>
+                      <span className="shrink-0 text-sm font-black text-[var(--text-primary)] text-right">{r.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
               {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
               {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
               {live.gapsMin.some(g => g != null) && (
