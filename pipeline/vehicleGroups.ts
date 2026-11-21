@@ -6,7 +6,9 @@
  *   sum of needVehicles over its regular patterns, rounded up once (the CLI's route totals).
  * Running time and layover are one trip on each regular pattern of the group (partial trips left out),
  * summed. At a target headway each regular pattern runs at the headway targetVehicles gives it (trunk
- * split by current share, short turns kept), and the group's cycle / headway is summed and rounded up once.
+ * split by current share), and the group's cycle / headway is summed and rounded up once. Short turns are left out at a
+ * target (CIV-2005): "if every route ran every N" is the whole route every N, which the full pattern already gives, and
+ * keeping them at today's headway counted most of a frequent line's fleet at every 60 (TTC Line 1: 15 where ~5 run it).
  */
 import type { PeriodPatterns, Pattern } from './vehiclePatterns.js';
 import { cycleMin, needVehicles, targetVehicles } from './vehiclePatterns.js';
@@ -61,6 +63,7 @@ function atTarget(memberIds: readonly string[], patterns: readonly Pattern[], a:
     const targets = targetVehicles(own, a.trunks, { headwayMin, appliesTo: 'trunk', branchSplit, shortTurnHeadwayMin: null, recovery: SCHEDULE });
     for (const t of targets) {
       if (t.headwayMin == null || t.vehicles == null) continue;
+      if (own.find(p => p.id === t.id)!.role === 'short turn') continue;
       buses += cycleMin(own.find(p => p.id === t.id)!, SCHEDULE) / t.headwayMin;
     }
   }
