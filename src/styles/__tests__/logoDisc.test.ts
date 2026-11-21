@@ -7,7 +7,7 @@ const SRC = resolve(__dirname, '../..');
 const read = (f: string) => readFileSync(resolve(SRC, f), 'utf8');
 const LOGO = read('components/AtlasLogo.tsx');
 const BRAND = read('components/AtlasBrand.tsx');
-const USERS = ['App.tsx', 'DiagnosticsUnevenPage.tsx', 'DiagnosticsPerformancePage.tsx', 'LiveToolPage.tsx', 'components/SiteHeader.tsx', 'components/SiteFooter.tsx'];
+const USERS = ['App.tsx', 'LiveToolPage.tsx', 'components/SiteHeader.tsx', 'components/SiteFooter.tsx'];
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {

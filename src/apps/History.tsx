@@ -113,8 +113,6 @@ interface Props {
   view?: HistoryView;
   /** The app's agency catalog: History names agencies from it, as the agency card and About list do. */
   agencyCatalog?: readonly { slug: string; name: string; cities?: string[]; displayArea?: string; nameQualifier?: string; parentAgency?: string }[];
-  /** The search bar's width on desktop: History's panels match it, as the regular cards do. */
-  searchBarWidth?: number;
   /** The open agency's short name, or null (the top search bar then searches its routes). */
   onOpenAgencyChange?: (name: string | null) => void;
   /** CIV-1646: whether the open agency's History data has weekend values (null: none open), which decides if the Day chip shows. */

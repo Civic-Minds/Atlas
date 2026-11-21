@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MAP_BADGE, MAP_BADGE_LABEL } from './styles';
+import { MAP_BADGE, MAP_BADGE_LABEL, MAP_BADGE_LABEL_CAUTION } from './styles';
 import { dateRange } from '../shared/dateText';
 import { useParams } from 'react-router';
 import { useLiveAgencyName } from './hooks/useLiveAgencyName';
@@ -114,7 +114,7 @@ export function DataUpTo({ dates, route = '', pill = false }: { dates: readonly 
   if (pill) {
     return (
       <div className={`${MAP_BADGE} h-8 max-sm:h-[32px]`} {...(f.stale ? { role: 'status', title: f.text } : {})}>
-        <span className={`${MAP_BADGE_LABEL} ${f.stale ? '!font-bold !text-[var(--status-caution-text)]' : ''}`}>{text}</span>
+        <span className={f.stale ? MAP_BADGE_LABEL_CAUTION : MAP_BADGE_LABEL}>{text}</span>
       </div>
     );
   }
