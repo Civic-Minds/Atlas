@@ -653,8 +653,8 @@ export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren�
 export const LIVE_UNABLE_TO_LOAD = 'Unable to load';
 export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`;
 export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
-/** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
-export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
+/** Some feeds in view failed while others work: "Live vehicles from TTC and YRT can't be shown right now." (CIV-941 #57; "vehicles", as Live tracks streetcars too). */
+export const liveUnreachableText = (agencyNames: readonly string[]) => `Live vehicles from ${joinList(agencyNames)} can’t be shown right now.`;
 /** CIV-1795: as the approved "Delay not measured" (CIV-1601). */
 export const LIVE_GAP_NOT_SEEN = 'Gap not measured';
 
