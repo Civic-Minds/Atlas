@@ -68,6 +68,7 @@ Tools: routes_near, combined_frequency, trip_time.
 | P7 | At Kipling Station, how long is the wait from the TTC subway to a MiWay bus? | planner | Each MiWay route's frequency. A typical wait (half the gap) is labelled as its own arithmetic. |
 | P8 | Which routes are near Bathurst and Bloor? | planner | Line 2, 511, 7, 300 and 307, from routes_near, with each route's weekday hours. Night routes are marked from the tool, not from memory. |
 | P9 | Between Dufferin Station and Wilson Station, are there other routes that make service effectively more frequent? | planner | The 929 (the 329 has no daytime trips). Combined figure from combined_frequency for the day and window asked, e.g. weekday every 4–6, Saturday every 3. |
+| P10 | How often does the 16 come at Columbia Rd @ Seaver St (MBTA) on weekdays? And the 63 at Oregon Av & 16th St (SEPTA)? | planner | Not yet supported: no tool gives the wait at one stop. Until one exists, says so and gives the route-wide figure as route-wide, never as the stop's. Once it exists: the stop's own wait per part of the day, from the published schedule (the check CIV-53 needs). |
 
 ## Buses needed
 
