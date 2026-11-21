@@ -2,7 +2,7 @@ import { RefreshCw } from 'lucide-react';
 import { MAP_BADGE, MAP_PROMPT_SLOT, Z_HEADER } from '../styles';
 import { useAppUpdate } from '../utils/appUpdate';
 import { usePromptFlag } from '../hooks/usePromptFlag';
-import { UPDATE_AVAILABLE_NOTICE } from '../content/noticeCopy';
+import { UPDATE_AVAILABLE_NOTICE, UPDATE_RELOAD_ACTION } from '../content/noticeCopy';
 
 export default function AppUpdateBanner() {
   const updateAvailable = useAppUpdate(true);
@@ -23,7 +23,7 @@ export default function AppUpdateBanner() {
         className="flex shrink-0 items-center gap-1 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]"
       >
         <RefreshCw className="h-3 w-3" aria-hidden="true" />
-        Refresh
+        {UPDATE_RELOAD_ACTION}
       </button>
     </div>
   );
