@@ -74,6 +74,40 @@ describe('Docs page in the public build (CIV-1440)', () => {
     expect(text).not.toContain(PICK6);
   });
 
+  // Docs audit before 3.5.0: the headline reads the shared stretch, branches by trips, edge waits count (CIV-1959, CIV-238).
+  it('rates a route from its shared stretch and never says a branch decides, on every site', async () => {
+    for (const on of [['modeTransitions'], ['segmentColours']]) {
+      const text = await renderWith(on);
+      expect(text).not.toMatch(/never makes the whole route pass|and each branch are checked on their own/);
+      expect(text).toContain('The wait from the start of a time period to its first trip, and from its last trip to the period’s end, counts like any other gap.');
+    }
+    expect(await renderWith(['modeTransitions'])).toContain('come from the shared stretch, where all of a direction’s branches run');
+  });
+
+  it('describes the card’s branch lines and History’s day chip only where those are on', async () => {
+    const off = await renderWith(['modeTransitions']);
+    expect(off).not.toContain('each branch is its own');
+    expect(off).not.toContain('History shows Weekday, Saturday or Sunday');
+    const on = await renderWith(['modeTransitions', 'branchReadings', 'history', 'historyDayPicker']);
+    expect(on).toContain('each branch is its own');
+    expect(on).toContain('History shows Weekday, Saturday or Sunday');
+  });
+
+  it('words the train window, rush-hour routes and Night Service levels from the rules', async () => {
+    const text = await renderWith(['modeTransitions', 'researchApps']);
+    expect(text).toContain('Trains are graded on their midday trips, from 9:30 AM–2:30 PM, where midday has enough of them');
+    expect(text).toContain('passes the filter for a time period only when its trips run the whole period');
+    expect(text).toContain('grades routes at every 30, 60 and 90 min or better, 2–5 AM. The main map’s Overnight view stops at every 60 min.');
+  });
+
+  it('has a Studio section and contents link only where the studio switch is on', async () => {
+    const on = await renderWith(['modeTransitions', 'studio']);
+    expect(on).toContain('Studio is Atlas’s workspace for planners');
+    expect(on).toContain('Fleet: how many vehicles a route needs.');
+    const off = await renderWith(['modeTransitions']);
+    expect(off).not.toMatch(/Studio/);
+  });
+
   it('shows picks 3 and 6 where section colours and History are on', async () => {
     const text = await renderWith(['segmentColours', 'history']);
     expect(text).toContain(PICK3);
