@@ -413,7 +413,13 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
       }) : [];
       // CIV-2018: a line whose words the card already has is left out, whatever it reads. Two rows "to X" with different numbers contradict each
       // other (RTD 31's "to Front Range Community College" read 61 and 67), so the row already there, or the first of two pieces, stands.
-      const kept = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];
+      // CIV-2030: a branch the card hid for the period (#1115) and that gets its line back here was left out of the period's rows when every
+      // label was made, so a row to the same place didn't lead with its branch ID or origin (GO 15: "to Aldershot GO" twice, every 59 and every 60).
+      // The labels are made again against the rows the card now shows.
+      const restored = tailRows.map(r => r.feature).filter(d => !group.realTier.includes(d));
+      const shownTier = restored.length > 0 ? { ...group, realTier: [...group.realTier, ...restored] } : null;
+      const relabel = (r: CardRow): CardRow => (shownTier ? { ...r, label: branchLabel(shownTier, r.feature, gi) } : r);
+      const kept = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows].map(relabel);
       const seen = new Set(kept.map(r => r.label));
       finalRows = [...kept, ...unnamedRows.filter(r => { if (seen.has(r.label)) return false; seen.add(r.label); return true; })];
     }
