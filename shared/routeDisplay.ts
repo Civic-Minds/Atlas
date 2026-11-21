@@ -7,7 +7,6 @@
  * Returns plain strings; the caller applies title case (`routeLabels` in src/utils/format.ts does).
  */
 import { effectiveMode } from './modes.js';
-import { ROUTE_TYPE } from './rules/modes.js';
 
 // The card title's naming rules (moved here from cleanHeadsign.ts, CIV-984 #3), so every route-name rule lives in this file.
 
@@ -147,13 +146,9 @@ export interface RouteDisplay {
 }
 
 /**
- * Hide a numeric internal id when the route has a useful public name. `mode` is the route's effective mode (shared/modes.ts:
- * the feed's route_type with the agency's listed corrections), the same value the agency pages use, so a route hides or shows
- * its number the same way on every surface. Rail, subway, ferry and the other non-bus modes hide an id of three or more
- * digits (internal: "30053" for the Expo Line, "701" for UTA's Blue Line) and keep a short one, which is the public name (NYC
- * subway "2", O-Train "1"); "1" with "Line 1 (Yonge-University)" is handled by routeDisplay. A streetcar keeps its number (TTC 501 Queen), and so does a
- * bus ("108 Metro Local Line", "99 B-Line"); only a bus with a long internal id (5 or more digits) and a name ending in Line or
- * SeaBus loses it. Demand-responsive services (extended types 15xx) follow the bus rule. With no mode known the bus rule applies.
+ * Hide a numeric internal id when the route has a useful public name: only a long internal id (5 or more digits) with a name
+ * ending in Line or SeaBus loses it ("30053" for the Expo Line); "1" with "Line 1 (Yonge-University)" is handled by
+ * routeDisplay. One rule for every mode (CIV-2025): a train, subway or ferry keeps a three- or four-digit number as a bus does.
  */
 export function shouldHideNumericRouteShortName(
   shortName: string | null | undefined,
@@ -163,12 +158,10 @@ export function shouldHideNumericRouteShortName(
   if (!shortName || !longName || !/^\d+$/.test(shortName.trim())) return false;
   const named = /(?:line|seabus)$/i.test(longName.trim());
   const internalId = shortName.trim().length >= 5;
-  if (mode === ROUTE_TYPE.TRAM) return false;
-  // Demand-responsive extended types (15xx) are named like buses: their zone numbers are public (exo-laurentides 303).
-  if (mode === undefined || mode === ROUTE_TYPE.BUS || mode === ROUTE_TYPE.TROLLEYBUS || (mode >= 1500 && mode < 1600)) return internalId && named;
-  // Rail, subway and ferry: a short number is the public name (NYC subway 1-7, O-Train 1, 2 and 4); a number of three or
-  // more digits is an internal id (UTA 701 Blue Line, Calgary 201 Red Line, HRT 800 Light Rail Tide, HRT 090 ferry).
-  return shortName.trim().length >= 3;
+  // CIV-2025 (Ryan, 2026-11-21): every mode follows the bus rule (rail, subway and ferry hid any number of three or more
+  // digits). `mode` is kept for callers; it no longer changes the answer.
+  void mode;
+  return internalId && named;
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
  * Computes a representative weekday trip's end-to-end duration and stop
- * sequence for each rail route in a parsed GTFS feed.
+ * sequence for each route in a parsed GTFS feed.
  *
  * Used to compare "how long does this trip take now vs. in past years" —
  * see docs/roadmap/EXPERIMENT_IDEAS.md's trip-time-over-years entry. Only
@@ -8,7 +8,6 @@
  * across the years being compared) done by the caller.
  */
 import type { GtfsData, GtfsStopTime, GtfsTrip } from '../types/gtfs.js';
-import { isRailRoute } from './routeMode.js';
 import { t2m } from './transit-utils.js';
 
 export interface RouteTripDuration {
@@ -52,7 +51,7 @@ function dominant<T>(counts: Map<T, number>): T | null {
   return best;
 }
 
-export function computeRailTripDurations(gtfs: GtfsData, agencySlug: string): RouteTripDuration[] {
+export function computeTripDurations(gtfs: GtfsData): RouteTripDuration[] {
   // A single feed-wide "reference date" (as process-core.ts uses for live
   // processing) assumes one current schedule window shared by every route.
   // An archived point-in-time snapshot doesn't need that: it's already one
@@ -66,7 +65,8 @@ export function computeRailTripDurations(gtfs: GtfsData, agencySlug: string): Ro
     (gtfs.calendar ?? []).filter(c => c.monday === '1').map(c => c.service_id),
   );
 
-  const railRoutes = (gtfs.routes ?? []).filter(r => isRailRoute(r, agencySlug));
+  // CIV-2025: every route, whatever its mode (it read rail routes only).
+  const routes = gtfs.routes ?? [];
 
   const childToParent = new Map<string, string>();
   for (const stop of gtfs.stops ?? []) {
@@ -76,7 +76,7 @@ export function computeRailTripDurations(gtfs: GtfsData, agencySlug: string): Ro
   const stopTimesByTrip = stopTimesByTripId(gtfs);
   const results: RouteTripDuration[] = [];
 
-  for (const route of railRoutes) {
+  for (const route of routes) {
     const allRouteTrips = (gtfs.trips ?? []).filter(t => t.route_id === route.route_id);
     let routeTrips = allRouteTrips.filter(t => weekdayCalendarServiceIds.has(t.service_id));
 

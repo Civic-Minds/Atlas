@@ -95,44 +95,6 @@ export interface EffectiveModeInput {
   bookingRequired?: boolean | null;
 }
 
-/** Agency feeds whose route_type=0 entries are rail rather than streetcars. */
-export const VIRTUAL_LRT_AGENCIES = ['calgary', 'edmonton', 'gcrta', 'rem', 'octranspo', 'sacrt'] as const;
-
-/**
- * The light-rail name rules (CIV-993): one table that both isVirtualLrt and the map expression are built from, written
- * only with tests a MapLibre expression can do exactly (lower-cased prefix, suffix and substring checks), so the two never
- * drift. A route_type 0 route is light rail when its long name:
- * - starts "Line " and a digit (TTC "Line 5 Eglinton"),
- * - contains one of LRT_NAME_PHRASES, or
- * - is "Metro <one word> Line" (LA "Metro A Line", Minneapolis "METRO Blue Line").
- * A route_type 2 route is light rail when ION is a word of its long name (GRT "ION light rail").
- * All comparisons ignore case.
- */
-const LRT_NAME_PHRASES = ['ctrain', 'capital line', 'metro line', 'valley line', 'valley metro rail'] as const;
-const LRT_LINE_PREFIX = 'line ';
-const LRT_METRO_PREFIX = 'metro ';
-const LRT_METRO_SUFFIX = ' line';
-const LRT_RAIL_WORD = 'ion';
-const DIGITS = '0123456789';
-
-function isLightRailName(longName: string): boolean {
-  const n = longName.toLowerCase();
-  const afterLine = n.charAt(LRT_LINE_PREFIX.length);
-  if (n.startsWith(LRT_LINE_PREFIX) && afterLine !== '' && DIGITS.includes(afterLine)) return true;
-  if (LRT_NAME_PHRASES.some(phrase => n.includes(phrase))) return true;
-  if (n.startsWith(LRT_METRO_PREFIX) && n.endsWith(LRT_METRO_SUFFIX)) {
-    const word = n.slice(LRT_METRO_PREFIX.length, n.length - LRT_METRO_SUFFIX.length);
-    return word.length > 0 && !word.includes(' ');
-  }
-  return false;
-}
-
-function isLightRailRegionalName(longName: string): boolean {
-  const n = longName.toLowerCase();
-  const w = LRT_RAIL_WORD;
-  return n === w || n.startsWith(`${w} `) || n.endsWith(` ${w}`) || n.includes(` ${w} `);
-}
-
 /** Coerce GeoJSON / MVT routeType to a GTFS base type (defaults to bus). */
 export function normalizeRouteType(routeType: unknown): number {
   if (routeType === undefined || routeType === null || routeType === '') return ROUTE_TYPE.BUS;
@@ -140,15 +102,6 @@ export function normalizeRouteType(routeType: unknown): number {
   if (!Number.isFinite(n)) return ROUTE_TYPE.BUS;
   if (n >= EXTENDED_BUS_RANGE[0] && n < EXTENDED_BUS_RANGE[1]) return ROUTE_TYPE.BUS;
   return n;
-}
-
-export function isVirtualLrt(p: EffectiveModeInput): boolean {
-  const rt = normalizeRouteType(p.routeType);
-  const longName = p.routeLongName ?? '';
-  if (rt === ROUTE_TYPE.TRAM && VIRTUAL_LRT_AGENCIES.includes(p.agencySlug as typeof VIRTUAL_LRT_AGENCIES[number])) return true;
-  if (rt === ROUTE_TYPE.TRAM && isLightRailName(longName)) return true;
-  if (rt === ROUTE_TYPE.RAIL && isLightRailRegionalName(longName)) return true;
-  return false;
 }
 
 /** True for subway, commuter rail, monorail, and explicitly identified LRT routes. */
@@ -165,16 +118,15 @@ export function effectiveMode(p: EffectiveModeInput): number {
   return publishedMode(p);
 }
 
-/** The mode before any listed per-route correction. */
+/**
+ * The mode before any listed per-route correction: the feed's own route_type. CIV-2025 (Ryan, 2026-11-21): no mode is
+ * guessed from agency or route names ("Modes are never guessed from names", 2026-10-13); a light-rail line a feed
+ * publishes as a streetcar is corrected by the agency's listed modeOverrides only.
+ */
 function publishedMode(p: EffectiveModeInput): number {
-  const rt = normalizeRouteType(p.routeType);
-  return isVirtualLrt(p) ? VIRTUAL_LRT_MODE : rt;
+  return normalizeRouteType(p.routeType);
 }
 
-/** True when a bus route is explicitly published as replacing rail service. */
-export function isRailReplacementBus(p: EffectiveModeInput): boolean {
-  return normalizeRouteType(p.routeType) === ROUTE_TYPE.BUS && /replacement\s+bus/i.test(p.routeLongName ?? '');
-}
 
 /** Mode filter chip options (Frequency Map), in the shared order. On-demand is added by the menus that offer it. */
 export const FILTER_MODES = MODE_DEFINITIONS.filter(m => FILTER_MODE_IDS.includes(m.id));
@@ -194,30 +146,6 @@ export function getGtfsModeName(routeType: string | number): string {
   return GTFS_EXTENDED_MODE_LABELS.find(([from, to]) => n >= from && n < to)?.[2] ?? GTFS_OTHER_MODE_LABEL;
 }
 
-const startsWith = (s: unknown[], prefix: string): unknown[] => ['==', ['slice', s, 0, prefix.length], prefix];
-const endsWith = (s: unknown[], suffix: string): unknown[] =>
-  ['all', ['>=', ['length', s], suffix.length], ['==', ['slice', s, ['-', ['length', s], suffix.length]], suffix]];
-const contains = (s: unknown[], part: string): unknown[] => ['>=', ['index-of', part, s], 0];
-
-/** isLightRailName as a MapLibre expression over the lower-cased long name (same table, same tests). */
-function lightRailNameExpression(n: unknown[]): unknown[] {
-  const metroWord: unknown[] = ['slice', n, LRT_METRO_PREFIX.length, ['-', ['length', n], LRT_METRO_SUFFIX.length]];
-  return ['any',
-    ['all', startsWith(n, LRT_LINE_PREFIX), ['>', ['length', n], LRT_LINE_PREFIX.length],
-      ['in', ['slice', n, LRT_LINE_PREFIX.length, LRT_LINE_PREFIX.length + 1], DIGITS]],
-    ...LRT_NAME_PHRASES.map(phrase => contains(n, phrase)),
-    ['all', startsWith(n, LRT_METRO_PREFIX), endsWith(n, LRT_METRO_SUFFIX),
-      ['>', ['length', n], LRT_METRO_PREFIX.length + LRT_METRO_SUFFIX.length],
-      ['!', ['in', ' ', metroWord]]],
-  ];
-}
-
-/** isLightRailRegionalName as a MapLibre expression over the lower-cased long name. */
-function lightRailRegionalNameExpression(n: unknown[]): unknown[] {
-  const w = LRT_RAIL_WORD;
-  return ['any', ['==', n, w], startsWith(n, `${w} `), endsWith(n, ` ${w}`), contains(n, ` ${w} `)];
-}
-
 /** MapLibre expression: compute effective mode from feature properties. */
 export function buildEffectiveModeExpression(): unknown[] {
   const routeType: unknown[] = ['to-number', ['coalesce', ['get', 'routeType'], ROUTE_TYPE.BUS]];
@@ -226,7 +154,6 @@ export function buildEffectiveModeExpression(): unknown[] {
     routeType,
   ];
   const longName: unknown[] = ['coalesce', ['get', 'routeLongName'], ''];
-  const lowerName: unknown[] = ['downcase', longName];
   const shortName: unknown[] = ['coalesce', ['get', 'routeShortName'], ''];
   const agency: unknown[] = ['coalesce', ['get', 'agencySlug'], ''];
   // Listed per-route corrections come first, grouped by agency and target mode to keep the expression short.
@@ -250,12 +177,6 @@ export function buildEffectiveModeExpression(): unknown[] {
     'case',
     ['==', ['get', 'bookingRequired'], true], ON_DEMAND_MODE,
     ...overrideBranches,
-    ['any',
-      ['all', ['==', routeType, ROUTE_TYPE.TRAM], ['any', ...VIRTUAL_LRT_AGENCIES.map(slug => ['==', agency, slug])]],
-      ['all', ['==', routeType, ROUTE_TYPE.TRAM], lightRailNameExpression(lowerName)],
-      ['all', ['==', routeType, ROUTE_TYPE.RAIL], lightRailRegionalNameExpression(lowerName)],
-    ],
-    VIRTUAL_LRT_MODE,
     normalizedRouteType,
   ];
 }

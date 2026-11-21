@@ -79,6 +79,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **Live's route and vehicle cards go "← Back to Live"**: the link named the route's agency but led to the Live list, which shows whatever agencies are on screen
 - **Live's route card shows the longest and shortest gap between vehicles**: the row of dashes and zeros it replaced was hard to read; a gap that's too long or too short shows in amber
 - **Live's bunching table reads each change as "10% → 41%" and the figures' build time moved to About**: the "+31 pt" fallback read as jargon, and the build time now sits where the schedule's own update date is shown
+- **Trains are read the same way as buses**: train lines were graded on midday trips only and handled by two dozen other train-only rules nobody asked for, so some train frequencies, route numbers and regional-zoom stops change once the next data release publishes
 - **A stop's Overnight number matches the route card and Night Service**: it counted the stop's own 2–6 AM buses, so a TTC 301 stop said every 71 where the route runs every 30 all night
 - **Two buses of one route leaving together no longer read as extra service**: where a route always sends a short trip out with a full one, the pair counts as one departure, so CyRide 812 on Saturdays no longer reads buses every minute at its shared stops
 - **Live's vehicle card says which vehicle it is, its next stop and how fresh the reading is**: it showed only a bare number and a direction, so it wasn't clear what the number meant or how current the position was

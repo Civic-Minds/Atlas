@@ -66,5 +66,25 @@
   "feedRefreshRetryCount": 0,
   "lastServiceWeek": "ade0672c5a779bd6",
   "feedObtainedAt": "20260525",
-  "lastFeedStart": "20260519"
+  "lastFeedStart": "20260519",
+  "modeOverrides": [
+    {
+      "routeType": 0,
+      "routeShortName": "A4-A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "routeType": 0,
+      "routeShortName": "A3-A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    }
+  ]
 }

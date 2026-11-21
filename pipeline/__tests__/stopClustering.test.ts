@@ -39,10 +39,10 @@ describe('stop groups (#1147)', () => {
     expect(groups(stops).length).toBe(1);
   });
 
-  it('puts the dot on the strongest stop: rail, then hub, then most routes', () => {
+  it('puts the dot on the strongest stop: a hub, then most routes, whatever the mode (CIV-2025)', () => {
     const stops = [stop('Union', 0, 0), stop('Union', 80, 0, { isRail: true }), stop('Union', 40, 0, { isHub: true, routeIds: ['1', '2', '3'] })];
     runStopClustering(stops);
-    expect(stops.filter(s => s.properties.isHubRef).map(s => s.properties.isRail)).toEqual([true]);
+    expect(stops.filter(s => s.properties.isHubRef).map(s => s.properties.isHub)).toEqual([true]);
   });
 
   it('never takes a same-named stop farther than the radius', () => {

@@ -8,6 +8,104 @@
       "reason": "ION is light rail; the Region's feed publishes it as route_type 0 (tram) while the earlier GRT feed had it as 2"
     },
     {
+      "agencySlug": "grt",
+      "routeType": 2,
+      "routeShortName": "301",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 2; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "octranspo",
+      "routeType": 0,
+      "routeShortName": "1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "octranspo",
+      "routeType": 0,
+      "routeShortName": "2",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "octranspo",
+      "routeType": 0,
+      "routeShortName": "4",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "ttc",
+      "routeType": 0,
+      "routeShortName": "5",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "ttc",
+      "routeType": 0,
+      "routeShortName": "6",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "rem",
+      "routeType": 0,
+      "routeShortName": "A4-A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "rem",
+      "routeType": 0,
+      "routeShortName": "A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "rem",
+      "routeType": 0,
+      "routeShortName": "A3-A1",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "calgary",
+      "routeType": 0,
+      "routeShortName": "201",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "calgary",
+      "routeType": 0,
+      "routeShortName": "202",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "edmonton",
+      "routeType": 0,
+      "routeShortName": "Capital",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "edmonton",
+      "routeType": 0,
+      "routeShortName": "Metro",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "edmonton",
+      "routeType": 0,
+      "routeShortName": "Valley",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
       "agencySlug": "nfta",
       "routeType": 0,
       "routeLongName": "Metro Rail",
@@ -27,6 +125,27 @@
       "routeShortName": "ML",
       "mode": 0,
       "reason": "QLine is a streetcar, published as route_type 2 (commuter rail)"
+    },
+    {
+      "agencySlug": "gcrta",
+      "routeType": 0,
+      "routeShortName": "BL",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "gcrta",
+      "routeType": 0,
+      "routeShortName": "GL",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "gcrta",
+      "routeType": 0,
+      "routeShortName": "WL",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     },
     {
       "agencySlug": "mbta",
@@ -183,6 +302,55 @@
       "reason": "VTA light rail is published as route_type 0 (tram)"
     },
     {
+      "agencySlug": "sacrt",
+      "routeType": 0,
+      "routeShortName": "Blue",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "sacrt",
+      "routeType": 0,
+      "routeShortName": "Gold",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "sacrt",
+      "routeType": 0,
+      "routeShortName": "Green",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "lacmta",
+      "routeType": 0,
+      "routeLongName": "Metro A Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "lacmta",
+      "routeType": 0,
+      "routeLongName": "Metro C Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "lacmta",
+      "routeType": 0,
+      "routeLongName": "Metro E Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "lacmta",
+      "routeType": 0,
+      "routeLongName": "Metro K Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
       "agencySlug": "sdmts",
       "routeType": 0,
       "routeShortName": "Blue",
@@ -216,6 +384,20 @@
       "routeLongName": "SPRINTER",
       "mode": 100,
       "reason": "SPRINTER is diesel light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "valleymetro",
+      "routeType": 0,
+      "routeShortName": "A",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "valleymetro",
+      "routeType": 0,
+      "routeShortName": "B",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     },
     {
       "agencySlug": "rtd-denver",
@@ -461,6 +643,20 @@
       "routeShortName": "RVLN",
       "mode": 100,
       "reason": "Hudson-Bergen, Newark and River LINE are light rail, published as route_type 0 (tram)"
+    },
+    {
+      "agencySlug": "metro-transit",
+      "routeType": 0,
+      "routeLongName": "METRO Blue Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
+    },
+    {
+      "agencySlug": "metro-transit",
+      "routeType": 0,
+      "routeLongName": "METRO Green Line",
+      "mode": 100,
+      "reason": "Light rail the feed publishes as route_type 0; listed here because modes are no longer guessed from agency or route names (CIV-2025)"
     },
     {
       "agencySlug": "port-authority-pa",

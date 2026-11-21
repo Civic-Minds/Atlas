@@ -21,9 +21,10 @@ describe('splitDesignator', () => {
 });
 
 describe('shouldHideNumericRouteShortName', () => {
-  it('hides internal (3+ digit) ids on rail, subway and ferry, keeps short public numbers, never on trams or buses', () => {
+  it('one rule for every mode (CIV-2025): only a long internal id (5+ digits) on a "... Line" name is hidden', () => {
     expect(shouldHideNumericRouteShortName('30053', 'Expo Line', 1)).toBe(true);
-    expect(shouldHideNumericRouteShortName('090', 'Elizabeth River Ferry', 4)).toBe(true);
+    expect(shouldHideNumericRouteShortName('090', 'Elizabeth River Ferry', 4)).toBe(false);
+    expect(shouldHideNumericRouteShortName('701', 'Blue Line', 0)).toBe(false);
     // NYC subway 2 and 3 share "7 Avenue Express"; O-Train 1: the number is the public name.
     expect(shouldHideNumericRouteShortName('2', '7 Avenue Express', 1)).toBe(false);
     expect(shouldHideNumericRouteShortName('1', "Blair <> Tunney's Pasture", 12)).toBe(false);
@@ -81,10 +82,10 @@ describe('routeDisplay', () => {
     const bySlug = routeDisplay({ shortName: 'SMART', longName: 'Main Line', routeType: 2, agencySlug: 'smart-ca' });
     expect(bySlug.text).toBe(byName.text);
   });
-  it('hides numeric ids on light rail and ferry from the raw route_type and slug (UTA 701, Calgary 201, HRT 800/090)', () => {
-    expect(routeDisplay({ shortName: '701', longName: 'Blue Line', routeType: 0, agencySlug: 'uta' }).text).toBe('Blue Line');
-    expect(routeDisplay({ shortName: '201', longName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain', routeType: 0, agencySlug: 'calgary' }).primary).not.toBe('201');
-    expect(routeDisplay({ shortName: '090', longName: 'ELIZABETH RIVER FERRY', routeType: 4, agencySlug: 'hrt' }).text).toBe('ELIZABETH RIVER FERRY');
+  it('a train or ferry keeps its three-digit number, as a bus does (CIV-2025: UTA 701, Calgary 201, HRT 090)', () => {
+    expect(routeDisplay({ shortName: '701', longName: 'Blue Line', routeType: 0, agencySlug: 'uta' }).text).toBe('701 — Blue Line');
+    expect(routeDisplay({ shortName: '201', longName: 'Red Line - Somerset - Bridlewood/Tuscany CTrain', routeType: 0, agencySlug: 'calgary' }).primary).toBe('201');
+    expect(routeDisplay({ shortName: '090', longName: 'ELIZABETH RIVER FERRY', routeType: 4, agencySlug: 'hrt' }).primary).toBe('90');
     expect(routeDisplay({ shortName: '501', longName: 'Queen', routeType: 0, agencySlug: 'ttc' }).text).toBe('501 — Queen');
     expect(routeDisplay({ shortName: '303', longName: 'Saint-Jérôme (Saint-Camille) (sur réservation)', routeType: 1501, agencySlug: 'exo-laurentides' }).primary).toBe('303');
   });
