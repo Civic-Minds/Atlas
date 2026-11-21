@@ -662,9 +662,6 @@ export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`
 export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
 /** Some feeds in view failed while others work: "Live vehicles from TTC and YRT can't be shown right now." (CIV-941 #57; "vehicles", as Live tracks streetcars too). */
 export const liveUnreachableText = (agencyNames: readonly string[]) => `Live vehicles from ${joinList(agencyNames)} can’t be shown right now.`;
-/** CIV-1795: as the approved "Delay not measured" (CIV-1601). */
-export const LIVE_GAP_NOT_SEEN = 'Gap not measured';
-
 export const LIVE_NO_WEEK_COMPARISON = 'No comparison with last week';
 export const LIVE_NO_STOPS_MEASURED = 'No stops were measured.';
 export const LIVE_NO_STOP_TO_RANK = 'No stop has enough departures to rank.';
@@ -1082,7 +1079,6 @@ export const LIVE_NOISE_CAPTION = 'Grey = within normal day-to-day change';
 /** The Live route card's "Right now" figures. */
 export const RIGHT_NOW_LABEL = 'Right now';
 export const VEHICLES_LABEL = 'Vehicles';
-export const LIVE_GAPS_FRONT_TO_BACK = 'Gaps, front to back (min)';
 /** The Live map's link to the agency list filtered to Live agencies, and a stop card's recent arrivals. */
 export const BROWSE_LIVE_AGENCIES_LINK = 'Browse all live agencies';
 export const RECENTLY_SEEN_HERE = 'Recently seen here';

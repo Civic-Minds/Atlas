@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
+import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, RECENT_WINDOW_SEC, sharedSummary, placeOnLine, runningTimeTally, stretchBetween, stripStops, withStats } from '../livePerformance';
 import type { SegmentDelayData, SegmentDelaySegment } from '../segmentDelayView';
 
 // Five stops along latitude 43.65, ~800 m apart, westbound (direction 0).
@@ -277,5 +277,18 @@ describe('directions for trips the analysis doesn\'t list (CIV-899)', () => {
   it('pairs nothing when the map\'s directions don\'t line up with the analysis\'s', () => {
     const vs = [{ tripId: 't1', directionId: 1 }, { tripId: 'other', directionId: 1 }, { tripId: 'new1', directionId: 1 }];
     expect(liveTripDirections(vs, { 0: ['t1'], 1: ['other'] }).size).toBe(0);
+  });
+});
+
+describe('the route card\'s longest and shortest gap (CIV-2045)', () => {
+  it('judges the longest gap by the timetable where it is, and the shortest by the bunched rule', () => {
+    // Downtown (sched 4 min): a 9 min gap is over 2× 4 min, too far; at an end (sched 10 min) it would not be.
+    expect(gapExtremes({ gapsMin: [9, 3, 1.5], gapsSchedSec: [240, 240, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: true }, shortest: { min: 1.5, tooClose: true } });
+    expect(gapExtremes({ gapsMin: [9, 3], gapsSchedSec: [600, 600], scheduledSec: 600 })).toEqual({ longest: { min: 9, tooFar: false }, shortest: { min: 3, tooClose: false } });
+  });
+  it('shows nothing unless more than half the gaps were measured', () => {
+    expect(gapExtremes({ gapsMin: [5, null], scheduledSec: 600 })).toBeNull();
+    expect(gapExtremes({ gapsMin: [5, null, 6], scheduledSec: 600 })).not.toBeNull();
+    expect(gapExtremes({ gapsMin: [], scheduledSec: 600 })).toBeNull();
   });
 });

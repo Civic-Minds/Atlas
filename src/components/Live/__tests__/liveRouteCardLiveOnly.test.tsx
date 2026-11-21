@@ -60,8 +60,11 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     expect(screen.getByText('Right now')).toBeTruthy();
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('2')).toBeTruthy();
-    expect(screen.getByText('Gaps, front to back (min)')).toBeTruthy();
-    expect(screen.getByText('1')).toBeTruthy();
+    // CIV-2045: the one gap measured is both the longest and the shortest; at 1 min it is too close (amber).
+    expect(screen.getByText('Longest gap').nextElementSibling?.textContent).toBe('1 min');
+    const shortest = screen.getByText('Shortest gap').nextElementSibling as HTMLElement;
+    expect(shortest.textContent).toBe('1 min');
+    expect(shortest.style.color).toBe('var(--status-caution-text)');
     // The direction pills show with "Right now".
     expect(screen.getByRole('button', { name: 'Westbound' })).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
@@ -80,7 +83,7 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
     card([car('a', 't1', 2, T0)]);
     expect(screen.getByText('Vehicles')).toBeTruthy();
     expect(screen.getByText('1')).toBeTruthy();
-    expect(screen.queryByText('Gaps, front to back (min)')).toBeNull();
+    expect(screen.queryByText('Longest gap')).toBeNull();
     expect(screen.getByRole('button', { name: 'Eastbound' })).toBeTruthy();
     expect(screen.queryByText(/Fewer than 2 cars/)).toBeNull();
   });
@@ -108,7 +111,7 @@ describe('"Right now" from the map\'s live positions (CIV-893)', () => {
   it('shows no gaps line while no gap is known yet (cars just seen, no track of the car ahead)', () => {
     card([car('a', 't1', 3, T0), car('b', 't2', 1.5, T0)]);
     expect(screen.getByText('2')).toBeTruthy();
-    expect(screen.queryByText('Gaps, front to back (min)')).toBeNull();
+    expect(screen.queryByText('Longest gap')).toBeNull();
   });
 
   it('skips a car on a trip the timetable does not list until it has been seen moving', () => {

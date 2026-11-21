@@ -5,7 +5,7 @@
  */
 import { MIN_DAYS, MIN_SEGMENT_TRIPS, stopNameParts, type HeadwayBandStat, type HeadwayStop, type SegmentBand, type SegmentDelayData, type SegmentDelaySegment } from './segmentDelayView';
 import { lonLatPoint, metresBetween, projectOntoSegment } from '../../shared/geoDistance';
-import { LIVE_MIN_SAMPLE, LIVE_STALE_SEC } from '../../shared/rules/live';
+import { BUNCHED_GAP_SEC, GAPPED_FACTOR, LIVE_MIN_SAMPLE, LIVE_STALE_SEC } from '../../shared/rules/live';
 
 /** A stop needs this many gaps (over MIN_DAYS days) to appear in the strip. */
 export const MIN_STRIP_GAPS = LIVE_MIN_SAMPLE;
@@ -235,6 +235,24 @@ export interface LiveGaps {
   gapsSchedSec?: (number | null)[];
   /** wholeLine: the stops' typical timetable gaps along the line in this period, lowest to highest. */
   scheduledRangeSec?: [number, number] | null;
+}
+
+/**
+ * The route card's longest and shortest gap right now (CIV-2045, Ryan: "1"), each with whether it breaks the shared
+ * too-far / too-close rule (shared/rules/live.ts): too far is over GAPPED_FACTOR times the timetable gap where that gap's
+ * car behind is (so a downtown gap on an overlapped route is judged by the downtown timetable, not the route's widest),
+ * too close is under BUNCHED_GAP_SEC. Null unless more than half the gaps were measured.
+ */
+export function gapExtremes(live: Pick<LiveGaps, 'gapsMin' | 'gapsSchedSec' | 'scheduledSec'>): { longest: { min: number; tooFar: boolean }; shortest: { min: number; tooClose: boolean } } | null {
+  const measured = live.gapsMin.map((g, i) => ({ g, i })).filter((x): x is { g: number; i: number } => x.g != null);
+  if (measured.length * 2 <= live.gapsMin.length || measured.length === 0) return null;
+  const long = measured.reduce((a, b) => (b.g > a.g ? b : a));
+  const short = measured.reduce((a, b) => (b.g < a.g ? b : a));
+  const sched = live.gapsSchedSec?.[long.i] ?? live.scheduledSec;
+  return {
+    longest: { min: long.g, tooFar: sched != null && long.g * 60 > GAPPED_FACTOR * sched },
+    shortest: { min: short.g, tooClose: short.g * 60 < BUNCHED_GAP_SEC },
+  };
 }
 
 /** Metres along the line to the start of each stop pair, and each pair's length. */

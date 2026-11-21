@@ -75,6 +75,9 @@ export const updatedAgoText = (ageSec: number): string => {
   const sec = Math.max(0, Math.round(ageSec));
   return sec < 60 ? `${sec} sec ago` : `${minutesText(Math.floor(sec / 60))} ago`;
 };
+/** The Live route card's gap rows, under Scheduled (CIV-2045, Ryan's words; replaced "Gaps, front to back (min)"). */
+export const LONGEST_GAP_LABEL = 'Longest gap';
+export const SHORTEST_GAP_LABEL = 'Shortest gap';
 /** The period picker's label. */
 export const TIME_OF_DAY_LABEL = 'Time of day';
 /** The heading over what else was measured in a stretch, and its glossary term (Ryan, CIV-1795 question 8, option a; was "Linked to"). */

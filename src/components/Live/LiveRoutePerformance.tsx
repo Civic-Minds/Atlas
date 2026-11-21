@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import { MISSING_VALUE } from '../../../shared/missingValue';
 import PillGroup from '../ui/PillGroup';
 import { CardHelpNotice, SidebarCardSection } from '../Interval/cardUi';
 import { useSegmentDelayStatus } from '../../hooks/useSegmentDelay';
@@ -10,11 +9,12 @@ import { LIVE_AGENCY_TIMEZONES } from '../../../shared/livePollingConfig';
 import { clockTime } from '../../../shared/timeText';
 import { type SegmentBand, type SegmentDelayData } from '../../utils/segmentDelayView';
 import { headwayEvery, headwayEveryRange } from '../../../shared/headwayText';
-import { addSnapshot, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
+import { addSnapshot, gapExtremes, lineModel, liveGaps, liveTripDirections, positionsSnapshot, type RecentSnapshot, withStats, type LineModel } from '../../utils/livePerformance';
 import type { LiveVehicle } from '../../context/LiveVehiclesMapOverlay';
 import { getVehicleStatus } from '../../utils/colors';
-import { LIVE_FEED_INCOMPLETE, LIVE_GAP_NOT_SEEN, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN, LIVE_GAPS_FRONT_TO_BACK } from '../../content/noticeCopy';
-import { DIRECTION_LABEL, ON_TIME_LABEL } from '../../../shared/liveWording';
+import { LIVE_FEED_INCOMPLETE, LIVE_REPLACEMENT_BUSES, LIVE_ROUTE_FIGURES_UNAVAILABLE, RIGHT_NOW_LABEL, VEHICLES_LABEL, SCHEDULED_COLUMN } from '../../content/noticeCopy';
+import { DIRECTION_LABEL, LONGEST_GAP_LABEL, ON_TIME_LABEL, SHORTEST_GAP_LABEL } from '../../../shared/liveWording';
+import { delayAmount } from '../../../shared/headwayText';
 import { RIGHT_NOW_STALE_SEC } from '../../../shared/rules/live';
 
 /** Seconds to minutes at the shared format's precision (a tenth), so two ends that print the same read as one value. */
@@ -60,13 +60,13 @@ export function livePeriodAt(data: Pick<SegmentDelayData, 'headways'>, hour: num
  * A row of small labelled figures. Labels wrap rather than cut off on a narrow card; labels
  * share the first grid row and figures the second, so the figures stay level when one label takes two lines.
  */
-function Stats({ items }: { items: [string, string][] }) {
+function Stats({ items }: { items: [string, string, /** A colour for the figure (amber when a gap breaks the rule). */ string?][] }) {
   return (
     <div className="grid grid-cols-3 grid-rows-[auto_auto] grid-flow-col gap-x-2">
-      {items.map(([label, value]) => (
+      {items.map(([label, value, color]) => (
         <Fragment key={label}>
           <div className="min-w-0 self-end text-xs font-bold text-[var(--text-dim)] leading-snug break-words">{label}</div>
-          <div className="min-w-0 text-sm font-black text-[var(--text-primary)] whitespace-nowrap">{value}</div>
+          <div style={color ? { color } : undefined} className={`min-w-0 text-sm font-black whitespace-nowrap${color ? '' : ' text-[var(--text-primary)]'}`}>{value}</div>
         </Fragment>
       ))}
     </div>
@@ -153,12 +153,7 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
     ? <div className="text-xs font-black text-[var(--status-caution-text)]">{LIVE_REPLACEMENT_BUSES}</div>
     : null;
 
-  // A gap is late at twice the timetable gap where the car behind is.
-  const late = (g: number, i: number) => {
-    if (!period) return false;
-    const s = live?.gapsSchedSec?.[i] ?? live?.scheduledSec;
-    return !!s && g * 60 >= 2 * s;
-  };
+  const extremes = live && !live.incomplete ? gapExtremes(live) : null;
 
   // On time by the same standard as each vehicle's own label (getVehicleStatus), over the cars counted above.
   // Left out where none of them reports how late it is (TTC streetcars today): the count would only say 0.
@@ -203,19 +198,13 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   ))}
                 </div>
               )}
-              {/* Only once a gap is known: right after the card opens the map has no track of the cars ahead yet. */}
-              {/* Label above, figures below, as in Stats, so a long row wraps among its figures and never leaves one stranded under the label (CIV-1163). */}
-              {live.gapsMin.some(g => g != null) && (
-                <div className="flex flex-col">
-                  <div className="text-xs font-bold text-[var(--text-dim)] leading-snug">{LIVE_GAPS_FRONT_TO_BACK}</div>
-                  <div className="flex flex-wrap items-baseline gap-x-2 text-sm font-black">
-                    {live.gapsMin.map((g, i) => (
-                      g == null
-                        ? <span key={i} className="text-[var(--text-dim)]" title={LIVE_GAP_NOT_SEEN}>{MISSING_VALUE}</span>
-                        : <span key={i} style={late(g, i) ? { color: AMBER } : undefined} className={late(g, i) ? undefined : 'text-[var(--text-primary)]'}>{g}</span>
-                    ))}
-                  </div>
-                </div>
+              {/* CIV-2045 (Ryan: "This is confusing", then "1"): the longest and shortest gap under Scheduled, amber when one
+                  breaks the shared too-far / too-close rule; only once more than half the gaps were measured. */}
+              {extremes && (
+                <Stats items={[
+                  [LONGEST_GAP_LABEL, delayAmount(extremes.longest.min), extremes.longest.tooFar ? AMBER : undefined],
+                  [SHORTEST_GAP_LABEL, delayAmount(extremes.shortest.min), extremes.shortest.tooClose ? AMBER : undefined],
+                ]} />
               )}
             </>
           )}
