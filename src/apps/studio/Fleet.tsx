@@ -184,7 +184,8 @@ function Body({ view, file, vehicles, agency, period, route, setRoute, frameStyl
               )}
               {view === 'fleet' && (
                 <SidebarCardSection label={vehiclesTitleText(dateRange(file.after.date, file.after.date)) || PAGE_NAMES.studioVehicles}>
-                  {vehicles === 'missing' ? <p className="m-0 text-sm text-[var(--text-muted)]">{C.noData}</p>
+                  {/* CIV-2003: a line inside the card is the card's body text. */}
+                  {vehicles === 'missing' ? <CardBodyText className="!mt-0">{C.noData}</CardBodyText>
                     : vehicles ? <StudioGroupFigures group={groupFor(vehicles, route, period)} /> : null}
                 </SidebarCardSection>
               )}
