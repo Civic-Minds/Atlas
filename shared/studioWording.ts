@@ -54,7 +54,7 @@ export const STUDIO_VEHICLES_TEXT = {
   routes: ROUTES,
   scheduled: 'Scheduled now',
   needed: 'Needed',
-  running: 'Running time',
+  running: 'Running time, all directions and branches',
   layover: 'Layover',
   noService: 'No buses at this time of day.',
 } as const;

@@ -60,14 +60,14 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
     expect(now.querySelector('td')!.textContent).toBe('7');
     expect(cells('every 15 min')).toEqual(['every 15 min', '10']);
     expect(cells('every 60 min')).toEqual(['every 60 min', '—']);
-    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time 112 min · Layover 29 min');
+    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time, all directions and branches 112 min · Layover 29 min');
     expect(screen.queryByText('Midday')).toBeNull();
   });
 
   it('leaves out the second line where the buses on the road match the frequency', () => {
     render(<StudioGroupFigures group={GROUPS[1]} />);
     expect(screen.getByRole('rowheader', { name: 'Scheduled now' }).closest('tr')!.getAttribute('aria-current')).toBe('true');
-    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time 113 min · Layover —');
+    expect(screen.getByText(/Running time/).closest('p')!.textContent).toBe('Running time, all directions and branches 113 min · Layover —');
   });
 
   it('never shows rail’s internal 5 or 8, even from an older file that has them', () => {

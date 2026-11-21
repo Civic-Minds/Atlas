@@ -138,7 +138,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
         <StudioPanel ref={cardRef} style={frameStyle} aria-label={agencyName}>
           <PanelBody className="px-4 pt-3 pb-3">
             {/* CIV-1878 (Ryan, "1"): one route selector, the top bar's Route chip (its list scrolls inside the chip); the panel opens with the at-a-glance lines and the week table. */}
-            <LiveGlance s={s} days={m.networkDates} />
+            <LiveGlance s={s} />
             <WidgetPanel widgets={m.summary} />
           </PanelBody>
         </StudioPanel>

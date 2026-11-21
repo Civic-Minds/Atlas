@@ -1,16 +1,15 @@
 import Card from '../../components/ui/Card';
 import SplitBar from '../../components/charts/SplitBar';
 import { STUDIO_GLANCE as G } from '../../../shared/liveWording';
-import { dateRange } from '../../../shared/dateText';
 import { countText, percentText } from '../../../shared/numberText';
 import type { AgencySummary } from '../../../shared/liveAgency';
 
 /**
- * CIV-1878: Studio Live's opening lines, from the Live data (Ryan's pick, the mockup's words): how many routes are recorded, how
- * many days of data and which, and this week's departures split between on time and more than 5½ min late (the shared late
+ * CIV-1878: Studio Live's opening lines, from the Live data (Ryan's pick, the mockup's words): how many routes are recorded
+ * (CIV-1966: the days of data are left out), and this week's departures split between on time and more than 5½ min late (the shared late
  * definition) in the split bar the research pages use.
  */
-export default function LiveGlance({ s, days }: { s: AgencySummary; days: readonly string[] }) {
+export default function LiveGlance({ s }: { s: AgencySummary }) {
   const late = s.weekly?.thisWeek.late;
   const lateShare = late && late.n > 0 ? late.share : null;
   const lateText = lateShare != null ? percentText(lateShare) : null;
@@ -24,7 +23,6 @@ export default function LiveGlance({ s, days }: { s: AgencySummary; days: readon
     <Card as="section" tone="surface" aria-label={G.barTitle} className="mb-3 px-3 py-2.5 text-sm">
       <p className="m-0">
         <span className="font-black">{countText(s.covered.length)}</span> {G.routes}
-        {days.length > 0 && <>{G.join}<span className="font-black">{countText(days.length)}</span> {G.days(dateRange(days[0], days[days.length - 1]))}</>}
       </p>
       {bar && (
         <div className="mt-2">
