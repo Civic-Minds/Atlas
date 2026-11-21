@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **History opens on the agency a link names**: a History link with an agency in it now opens on that agency instead of the agency list
 - **The “Data up to” date is always plain grey**: it turned red when the data was a few days old, which read like an error; the date itself says how old it is
 - **What’s New links to the features it announces**: Compare mode has a “Try it” link and Agency and area pages an “Explore” link
 - **What’s New lists each feature once per site**: beta sees Compare mode under 3.3, when it arrived there, and the public site sees it under 3.4 as a launch, instead of “now on the public map”
