@@ -197,7 +197,8 @@ export default function LiveRoutePerformance({ slug, routeShortName, vehicles, f
                   {scheduledRows.map(r => (
                     <div key={r.label} className="flex items-baseline justify-between gap-3">
                       <span className="min-w-0 flex-1 text-xs text-[var(--text-muted)]">{r.label}</span>
-                      <span className="shrink-0 text-sm font-black text-[var(--text-primary)] text-right">{r.value}</span>
+                      {/* A long value ("Runs irregularly in this period") wraps on its side instead of squeezing the label. */}
+                      <span className="max-w-[60%] text-sm font-black text-[var(--text-primary)] text-right">{r.value}</span>
                     </div>
                   ))}
                 </div>

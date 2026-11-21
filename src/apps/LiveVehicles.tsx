@@ -652,14 +652,14 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const scheduled = fc && routeKey
       ? liveScheduledHeadway(
         fc, routeKey, getNowDay(), periodKeyForHour(new Date().getHours()) ?? 'all', counted?.directionId ?? null,
-        routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName),
+        routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName), counted?.label ?? null,
       )
       : null;
 
     return scheduled != null
       ? `${capitalizeFirst(headwayAbout(gap))} · scheduled ${headwayEvery(Math.round(scheduled))}`
       : capitalizeFirst(headwayAbout(gap));
-  }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, agencies]);
+  }, [selectedGroup, headwaysBySlug, routeLayer, counted?.directionId, counted?.label, agencies]);
 
   // CIV-2045: the card's own Scheduled lines for the picked direction, shown in Live's Right now (no range of its own).
   const selectedScheduledRows = useMemo(() => {
@@ -670,8 +670,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
     const period = periodKeyForHour(new Date().getHours());
     if (!period) return null;
     return liveScheduledRows(fc, routeKey, getNowDay(), period, counted?.directionId ?? null,
-      routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName));
-  }, [selectedGroup, routeLayer, counted?.directionId, agencies]);
+      routeDirectionOverrides(agencies, selectedGroup.agencySlug, selectedGroup.routeShortName), counted?.label ?? null);
+  }, [selectedGroup, routeLayer, counted?.directionId, counted?.label, agencies]);
 
   // A route picked (from a link or the address) that has no card: say why, never show nothing.
   const requestedRouteNote = useMemo((): string | null => {
