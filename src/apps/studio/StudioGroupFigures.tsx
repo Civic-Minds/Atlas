@@ -59,7 +59,7 @@ export function StudioGroupFigures({ group, showRunning = true }: { group: Studi
           ) },
           // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
           // and Schedules' tables (layout fill).
-          { key: 'value', header: T.needed, cell: r => r.value },
+          { key: 'value', header: <span className="block text-right">{T.needed}</span>, className: 'text-right', cell: r => r.value },
         ]}
       />
     </ScrollX>
