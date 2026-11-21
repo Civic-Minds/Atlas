@@ -42,7 +42,8 @@ export function unevenPeriodMaxGap(
   directionGroups: readonly DirectionGroupLike[],
   period: TimePeriod,
 ): number {
-  if (period === 'all') return 0;
+  // CIV-1764 (DECISIONS 2026-10-31): Overnight shows one number, with no gap wording (gaps read 2-6 AM, not the night verdict).
+  if (period === 'all' || period === 'overnight') return 0;
 
   const combinedGroups = directionGroups.filter(group => shouldShowTrunkSummary(group.realTier, period));
   return Math.max(0, ...directionGroups.flatMap(group => {

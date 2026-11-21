@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **A stop's Overnight number matches the route card and Night Service**: it counted the stop's own 2–6 AM buses, so a TTC 301 stop said every 71 where the route runs every 30 all night
 - **Two buses of one route leaving together no longer read as extra service**: where a route always sends a short trip out with a full one, the pair counts as one departure, so CyRide 812 on Saturdays no longer reads buses every minute at its shared stops
 - **Route cards tell apart two branches to the same place**: a branch that only appears for part of the day could sit beside another row with the same words and a different number (GO 15: “to Aldershot GO” twice); each row now leads with its branch or where it starts
 - **Eugene's EmX card names both eastbound routes round the Gateway loop**: the feed gives both one destination, so the card read “to Eugene Station” beside a garbled “to RB)”; they now read “via RiverBend Station” and “via Pheasant Station”

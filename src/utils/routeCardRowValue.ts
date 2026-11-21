@@ -62,6 +62,16 @@ export interface RouteCardRowValue {
   dimmed: boolean;
 }
 
+/**
+ * #1267 (DECISIONS 2026-10-31): the number a row shows for Overnight, the route's Night Service number (`contract`, the route's
+ * Overnight filter value) on a row the Night view lights, of a direction that passes; null on any other row. Never the row's own
+ * 2-6 AM trips. The route card and the stop card (CIV-1764) both read it, so the two never disagree.
+ */
+export function overnightRowNumber(d: ShapeProperties, contract: Pick<RouteContract, 'filterValue'> | undefined): number | null {
+  const own = d.directionFilterHeadwayByPeriod?.overnight;
+  return typeof own === 'number' && rowRunsThroughNight(d) ? contract?.filterValue ?? null : null;
+}
+
 export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext): RouteCardRowValue {
   const { period, hoveredHour, stretchMode, allDay, contract, noRegularService, maxHeadway } = ctx;
   // Dimming and colour follow the one frequency rule (worst direction decides),
@@ -99,8 +109,7 @@ export function routeCardRowValue(d: ShapeProperties, ctx: RouteCardRowContext):
   // while its other pieces run). Never the row's own 2-6 AM trips, a range or part-period words, so a card cannot say
   // "every 71" beside Night Service 30 (TTC 301).
   const nightRow = period === 'overnight' && stretchMode && hoveredHour == null && d.directionFilterHeadwayByPeriod !== undefined;
-  const nightOwn = nightRow ? d.directionFilterHeadwayByPeriod?.overnight : undefined;
-  const nightH = nightRow ? (typeof nightOwn === 'number' && rowRunsThroughNight(d) ? contract?.filterValue ?? null : null) : undefined;
+  const nightH = nightRow ? overnightRowNumber(d, contract) : undefined;
   const displayH = nightRow ? nightH! : variantH !== undefined ? variantH : pooledH ?? uneven?.worst ?? directionFallback ?? ownH;
   // #934 and D6: the main stretch's row names a late start, an early end or one gap inside
   // steady service, in place of a long wait or "limited"; the dot keeps the filter's colour.

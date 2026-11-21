@@ -37,6 +37,13 @@ const trunkBranches: ShapeProperties[] = [
 ] as ShapeProperties[];
 
 describe('unevenPeriodMaxGap', () => {
+  it('gives no gap line for Overnight, which shows one number (CIV-1764, DECISIONS 2026-10-31; TTC 116 weekday read "gap 195")', () => {
+    const night = { ...branch(30, 195), headwayByPeriod: { overnight: 30 }, headwayByPeriodSustained: { overnight: false }, maxGapByPeriod: { overnight: 195 } } as ShapeProperties;
+    expect(unevenPeriodMaxGap([{ realTier: [night] }], 'overnight')).toBe(0);
+    // The same gap in another period still warns.
+    const day = { ...branch(30, 195) } as ShapeProperties;
+    expect(unevenPeriodMaxGap([{ realTier: [day] }], 'midday')).toBe(195);
+  });
   it('suppresses a branch warning when combined service is materially more frequent', () => {
     expect(unevenPeriodMaxGap([
       { realTier: [branch(30, 32), branch(30, 60)] },
