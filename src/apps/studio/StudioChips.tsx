@@ -1,8 +1,7 @@
-import { Fragment, useState, type ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { StudioSettingsGear } from './StudioSettings';
-import { ChipMenu, chipRowClass, useChipRow } from '../../components/Interval/ChipMenu';
-import SearchBox from '../../components/ui/SearchBox';
+import { ChipMenu, ChipOptions, useChipRow, type ChipOption } from '../../components/Interval/ChipMenu';
 
 /** One of Studio's menus in the top bar: what its chip shows, its choices and the current one. */
 export interface StudioMenu {
@@ -43,8 +42,8 @@ export default function StudioChips({ container, menus, settings }: { container:
         <ChipMenu key={m.key} label={m.label} active={m.active ?? true} width={m.width} arrow={m.arrow}
           open={openChip === m.key} onToggle={() => toggle(m.key)} panelClassName={m.panelClassName ?? 'w-56 max-h-[70vh] overflow-y-auto'}>
           {m.content ? m.content(() => setOpenChip(null))
-            : m.searchPlaceholder ? <SearchableOptions menu={m} close={() => setOpenChip(null)} />
-            : m.options.map(o => <OptionRow key={o[0]} menu={m} option={o} close={() => setOpenChip(null)} />)}
+            : <ChipOptions value={m.value} onPick={k => { m.onPick(k); setOpenChip(null); }} options={chipOptions(m)}
+                search={m.searchPlaceholder ? { placeholder: m.searchPlaceholder, text: o => o.ariaLabel ?? o.key } : undefined} />}
         </ChipMenu>
         {m.after}
         </Fragment>
@@ -56,29 +55,5 @@ export default function StudioChips({ container, menus, settings }: { container:
   );
 }
 
-type Option = StudioMenu['options'][number];
-
-function OptionRow({ menu, option, close }: { menu: StudioMenu; option: Option; close: () => void }) {
-  const k = option[0], text = option[1], plain = option.length === 3 ? option[2] : undefined;
-  return (
-    <button type="button" aria-pressed={k === menu.value} aria-label={plain}
-      onClick={() => { menu.onPick(k); close(); }} className={chipRowClass(k === menu.value)}>
-      {text}
-    </button>
-  );
-}
-
-/** The map's agency selector's shape for routes: the shared search box, then the matching rows in a list that scrolls inside the dropdown. */
-function SearchableOptions({ menu, close }: { menu: StudioMenu; close: () => void }) {
-  const [query, setQuery] = useState('');
-  const q = query.trim().toLowerCase();
-  const shown = q ? menu.options.filter(o => (o.length === 3 ? o[2] : o[0]).toLowerCase().includes(q)) : menu.options;
-  return (
-    <>
-      <SearchBox value={query} onChange={setQuery} placeholder={menu.searchPlaceholder!} autoFocus />
-      <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-1">
-        {shown.map(o => <OptionRow key={o[0]} menu={menu} option={o} close={close} />)}
-      </div>
-    </>
-  );
-}
+/** A menu's choices as the shared dropdown rows (CIV-2003): a row's plain-text name is its spoken name and what search finds. */
+const chipOptions = (m: StudioMenu): ChipOption[] => m.options.map(o => ({ key: o[0], label: o[1], ariaLabel: o.length === 3 ? o[2] : undefined }));

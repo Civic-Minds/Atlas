@@ -4,6 +4,8 @@ import { FLOATING_CARD, PANEL_ENTER_TOP } from '../../styles';
 import ActiveDot from '../ui/ActiveDot';
 import { FEATURES } from '../../../shared/config';
 import { topBarChipClass } from '../ui/topBarChip';
+import { chipRowClass } from '../ui/Pill';
+import SearchBox from '../ui/SearchBox';
 
 /**
  * The top bar's chip with its dropdown, one for every map view (CIV-1828): the main map's Frequency, Day, Time and Mode
@@ -70,5 +72,37 @@ export function ChipMenu({ label, active, open, onToggle, panelClassName, classN
       </button>
       {open && <div className={`${CHIP_PANEL} ${panelClassName} ${width ? 'left-0 w-full' : ''}`}>{children}</div>}
     </div>
+  );
+}
+
+/** One choice in a chip's dropdown: its key, what its row shows, and its spoken name where the row isn't plain text. */
+export interface ChipOption { key: string; label: ReactNode; ariaLabel?: string }
+
+/**
+ * CIV-2003: a chip's dropdown rows, one for the main map's Frequency, Day and Time chips and Studio's menus: the shared row
+ * style, the current one pressed. `search` puts the shared search box on top and scrolls the matching rows inside the
+ * dropdown (the map's agency selector's shape), for a long list such as routes; `text` is what a row is found by.
+ */
+export function ChipOptions({ options, value, onPick, search }: {
+  options: readonly ChipOption[];
+  value: string;
+  onPick: (key: string) => void;
+  search?: { placeholder: string; text: (o: ChipOption) => string };
+}) {
+  const [query, setQuery] = useState('');
+  const rows = (list: readonly ChipOption[]) => list.map(o => (
+    <button key={o.key} type="button" onClick={() => onPick(o.key)} className={chipRowClass(o.key === value)} aria-pressed={o.key === value} aria-label={o.ariaLabel}>
+      {o.label}
+    </button>
+  ));
+  if (!search) return <>{rows(options)}</>;
+  const q = query.trim().toLowerCase();
+  return (
+    <>
+      <SearchBox value={query} onChange={setQuery} placeholder={search.placeholder} autoFocus />
+      <div className="max-h-64 overflow-y-auto custom-scrollbar flex flex-col gap-1">
+        {rows(q ? options.filter(o => search.text(o).toLowerCase().includes(q)) : options)}
+      </div>
+    </>
   );
 }

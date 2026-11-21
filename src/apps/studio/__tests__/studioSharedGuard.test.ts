@@ -16,7 +16,8 @@ const walk = (dir: string): string[] => readdirSync(dir).flatMap(n => {
 const FILES = [...walk(join(ROOT, 'src/apps/studio')), 'src/StudioCoveragePage.tsx'];
 
 const RULES: { name: string; pattern: RegExp; use: string }[] = [
-  { name: 'own scroll area', pattern: /custom-scrollbar|overflow-y-auto/, use: 'PanelBody' },
+  // A scroll area in markup; a chip's dropdown size (ChipMenu's panelClassName) is the shared menu's own.
+  { name: 'own scroll area', pattern: /className=["{`][^>]*(custom-scrollbar|overflow-y-auto)/, use: 'PanelBody' },
   { name: 'own list markup', pattern: /<(ul|ol|li)\b/, use: 'RouteListRow / CardRouteList / FigureNotes' },
   { name: 'own heading', pattern: /<h[1-6]\b/, use: 'PanelTitleBar / CardSectionLabel / AgencyGroupHeader / FiguresCard title' },
   { name: 'own table', pattern: /<table\b/, use: 'DataTable' },
@@ -27,10 +28,8 @@ const RULES: { name: string; pattern: RegExp; use: string }[] = [
 
 /** File -> rules it may still break, with why. Each entry is a debt with an owner, not a pattern to copy. */
 const ALLOWED: Record<string, { rules: string[]; why: string }> = {
-  'src/apps/studio/Fleet.tsx': { rules: ['own scroll area', 'own text line'], why: "the Buses Needed panel, UX's rebuild (CIV-2002), and the route chip's panel size (step 4)" },
-  'src/apps/studio/Live.tsx': { rules: ['own scroll area'], why: "the route chip's panel size, which ChipMenu's options list takes over with step 4" },
+  'src/apps/studio/Fleet.tsx': { rules: ['own scroll area', 'own text line'], why: "the Buses Needed panel, UX's rebuild (CIV-2002)" },
   'src/apps/studio/StudioGroupFigures.tsx': { rules: ['own text line'], why: "the Buses Needed panel's figures, UX's rebuild (CIV-2002)" },
-  'src/apps/studio/StudioChips.tsx': { rules: ['own scroll area', 'own option button'], why: "the top bar's option lists move into ChipMenu with step 4 (after UX's CIV-2001)" },
 };
 
 describe('Studio builds on the shared pieces (CIV-2003)', () => {
