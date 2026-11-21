@@ -39,10 +39,16 @@ describe('useSlowConnection', () => {
 describe('SlowConnectionPrompt', () => {
   it('offers the choice with the agreed words and answers each way', () => {
     const accept = vi.fn(); const decline = vi.fn();
-    render(<SlowConnectionPrompt onAccept={accept} onDecline={decline} />);
-    expect(screen.getByRole('status')).toHaveTextContent(SLOW_CONNECTION_PROMPT);
-    fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_ACCEPT }));
-    fireEvent.click(screen.getByRole('button', { name: SLOW_CONNECTION_DECLINE }));
+    const { container } = render(<SlowConnectionPrompt onAccept={accept} onDecline={decline} />);
+    // CIV-2004: centred in the update banner's slot on sm and up; under the header on phones (CSS shows one of the two).
+    const [wide, phone] = screen.getAllByRole('status');
+    expect(wide).toHaveTextContent(SLOW_CONNECTION_PROMPT);
+    expect(wide.className).toContain('left-1/2');
+    expect(wide.className).toContain('max-sm:hidden');
+    expect(phone.className).toContain('sm:hidden');
+    expect(container.querySelectorAll('[role="status"]').length).toBe(2);
+    fireEvent.click(screen.getAllByRole('button', { name: SLOW_CONNECTION_ACCEPT })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: SLOW_CONNECTION_DECLINE })[0]);
     expect(accept).toHaveBeenCalledTimes(1);
     expect(decline).toHaveBeenCalledTimes(1);
   });

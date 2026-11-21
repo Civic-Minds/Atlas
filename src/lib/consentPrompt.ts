@@ -11,24 +11,15 @@ interface ConsentPromptState {
   open: boolean;
   rows: number;
   choose: (consent: AnalyticsConsent) => void;
-  /** CIV-98: the slow-connection prompt, drawn in the same place (Ryan: "The same lace the analytics one goes right"). */
-  slow: { open: boolean; accept: () => void; decline: () => void };
 }
 
-let state: ConsentPromptState = { open: false, rows: 0, choose: () => {}, slow: { open: false, accept: () => {}, decline: () => {} } };
+let state: ConsentPromptState = { open: false, rows: 0, choose: () => {} };
 const listeners = new Set<() => void>();
 const emit = () => { for (const listener of listeners) listener(); };
 
 export function setConsentPrompt(open: boolean, choose: (consent: AnalyticsConsent) => void): void {
   if (state.open === open && state.choose === choose) return;
   state = { ...state, open, choose };
-  emit();
-}
-
-/** CIV-98: the slow-connection prompt's state, for the same pill row. */
-export function setSlowPrompt(open: boolean, accept: () => void, decline: () => void): void {
-  if (state.slow.open === open && state.slow.accept === accept && state.slow.decline === decline) return;
-  state = { ...state, slow: { open, accept, decline } };
   emit();
 }
 
