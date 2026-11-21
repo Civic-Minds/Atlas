@@ -93,6 +93,21 @@ describe('Docs page in the public build (CIV-1440)', () => {
     expect(on).toContain('History shows Weekday, Saturday or Sunday');
   });
 
+  it('words the train window, rush-hour routes and Night Service levels from the rules', async () => {
+    const text = await renderWith(['modeTransitions', 'researchApps']);
+    expect(text).toContain('Trains are graded on their midday trips, from 9:30 AM–2:30 PM, where midday has enough of them');
+    expect(text).toContain('passes the filter for a time period only when its trips run the whole period');
+    expect(text).toContain('grades routes at every 30, 60 and 90 min or better, 2–5 AM. The main map’s Overnight view stops at every 60 min.');
+  });
+
+  it('has a Studio section and contents link only where the studio switch is on', async () => {
+    const on = await renderWith(['modeTransitions', 'studio']);
+    expect(on).toContain('Studio is Atlas’s workspace for planners');
+    expect(on).toContain('Fleet: how many vehicles a route needs.');
+    const off = await renderWith(['modeTransitions']);
+    expect(off).not.toMatch(/Studio/);
+  });
+
   it('shows picks 3 and 6 where section colours and History are on', async () => {
     const text = await renderWith(['segmentColours', 'history']);
     expect(text).toContain(PICK3);
