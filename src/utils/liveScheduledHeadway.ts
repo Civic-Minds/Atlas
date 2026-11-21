@@ -23,6 +23,18 @@ function liveCardModel(fc: GeoJSON.FeatureCollection, routeKey: string, day: Day
 }
 
 /**
+ * The card's direction for Live's picked one (#1664): by its name first, since Live's direction numbers come from the
+ * route's Live analysis and can be the other way round from the schedule's (TTC 501: Live's 0 is westbound, the
+ * schedule's 0 eastbound); by number when the name matches no direction; the first direction with neither.
+ */
+function cardGroupIndex(model: RouteCardModel, directionId: number | null, directionLabel: string | null): number {
+  const norm = (t: string | undefined | null) => (t ?? '').trim().toLowerCase();
+  const byLabel = directionLabel ? model.groups.findIndex(g => norm(g.boundLabel) === norm(directionLabel)) : -1;
+  if (byLabel >= 0) return byLabel;
+  return directionId == null ? 0 : model.groups.findIndex(g => g.dirId === directionId);
+}
+
+/**
  * Live's Scheduled rows (CIV-2045, Ryan: "1"; "510 Spadina ... Scheduled every 5–10 min ... doesnt reflect that half them
  * turn back at queens qya"): the route card's own lines for the picked direction (its shared stretch, each branch and
  * short turn), read with the card's one reading (cardGroupLines), never a range of its own across stops. With no
@@ -35,10 +47,12 @@ export function liveScheduledRows(
   period: TimePeriod,
   directionId: number | null,
   overrides: RouteDirectionOverrides = {},
+  /** The direction's name as Live shows it ("Westbound"): it picks the card's direction first (#1664). */
+  directionLabel: string | null = null,
 ): { label: string; value: string }[] {
   const model = liveCardModel(fc, routeKey, day, period, overrides);
   if (!model) return [];
-  const gi = directionId == null ? 0 : model.groups.findIndex(g => g.dirId === directionId);
+  const gi = cardGroupIndex(model, directionId, directionLabel);
   const group = model.groups[gi];
   return group ? cardGroupLines(group, gi, model.limitedWord, false).map(({ label, value }) => ({ label, value })) : [];
 }
@@ -56,12 +70,15 @@ export function liveScheduledHeadway(
   period: TimePeriod,
   directionId: number | null,
   overrides: RouteDirectionOverrides = {},
+  /** The direction's name as Live shows it: picks the card's direction first (#1664). */
+  directionLabel: string | null = null,
 ): number | null {
   const model = liveCardModel(fc, routeKey, day, period, overrides);
   if (!model) return null;
+  const picked = directionId != null || directionLabel ? cardGroupIndex(model, directionId, directionLabel) : -1;
   let best: number | null = null;
-  for (const group of model.groups) {
-    if (directionId != null && group.dirId !== directionId) continue;
+  for (const [gi, group] of model.groups.entries()) {
+    if (picked >= 0 ? gi !== picked : directionId != null) continue;
     const rowValues = group.rows
       .map(row => row.display(null).value)
       .filter(value => !value.isLimited && value.headway != null)
