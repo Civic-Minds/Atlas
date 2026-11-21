@@ -24,6 +24,7 @@ import { DataUpTo } from '../../LiveRoutePage';
 import { routeLabels } from '../../utils/format';
 import type { DashboardBand } from '../../../shared/liveDashboard';
 import { DIRECTION_LABEL } from '../../../shared/liveWording';
+import { GAP_MEASURES } from '../../../shared/liveDashboard';
 import LiveGlance from './LiveGlance';
 import RouteNow from './RouteNow';
 import type { PanelWidget } from '../../components/Live/tool/WidgetPanel';
@@ -97,7 +98,9 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   const directionMenu: StudioMenu | null = route && m.v3 && m.ids.length > 1
     ? { key: 'direction', label: DIRECTION_LABEL, value: String(m.shown), options: m.ids.map(id => [String(id), m.v3!.directionLabels[String(id)]] as const), onPick: d => { setDir(Number(d)); setPick(null); }, panelClassName: 'w-56' }
     : null;
-  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: measure ?? '', options: STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === measure ? null : k as MapMeasure), active: measure != null, panelClassName: '', width: 'w-36' };
+  // CIV-2000: a held route has only the measures read from gaps between vehicles.
+  const shownMeasure = m.held && measure && !GAP_MEASURES.has(measure) ? null : measure;
+  const measureMenu: StudioMenu = { key: 'measure', label: MEASURE_LABEL, value: shownMeasure ?? '', options: m.held ? STUDIO_MAP_MEASURES.filter(([k]) => GAP_MEASURES.has(k)) : STUDIO_MAP_MEASURES, onPick: k => setMeasure(k === shownMeasure ? null : k as MapMeasure), active: shownMeasure != null, panelClassName: '', width: 'w-36' };
   const menus: (StudioMenu | null)[] = [
     // CIV-1960 (Ryan: "Measure should be on the left side of the filters"; "And no need for the drop down arrow beside the word Measure").
     measureMenu,
@@ -111,9 +114,9 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
   // CIV-1828 (Ryan picked option A with B's chart: "in A the chart is bad in B the chart is good"): Right now first with
   // its places named, then the week, late departures by hour and the late stops. No trip time card.
   const byKey = (keys: readonly string[]): PanelWidget[] => keys.flatMap(k => m.routeBody?.filter(w => w.key === k) ?? []);
-  const routeWidgets = byKey(['loading', 'falls-behind', 'week', 'late-hours', 'problems']);
+  const routeWidgets = byKey(['loading', 'held', 'falls-behind', 'week', 'late-hours', 'problems']);
 
-  const routeRow = route ? s.routes.find(r => r.route === route) : null;
+  const routeRow = route ? s.routes.find(r => r.route === route) ?? s.held.find(r => r.route === route) : null;
   const label = route ? routeLabels({ shortName: route, longName: routeRow?.longName ?? null, mode: routeRow?.mode ?? 3, agencyName: s.agency }) : null;
 
   return (
@@ -143,7 +146,7 @@ function Ready({ slug, agencyName, s, route, setRoute, band, setBand, agencyMenu
           </PanelBody>
         </StudioPanel>
       )}
-      {measure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={measure} variant="card" /></MapLegendCard>}
+      {shownMeasure && <MapLegendCard label={MAP_COLOURS_LABEL}><LiveMapKey measure={shownMeasure} variant="card" /></MapLegendCard>}
       {m.note && <MapNote>{m.note}</MapNote>}
     </>
   );

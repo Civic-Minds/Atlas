@@ -60,4 +60,11 @@ describe('agencySummary on the good-days basis', () => {
     const same = agencySummary({ agency: 'ttc', totalRoutes: 2, routes: [{ route: '1', label: '1', v3 }, { route: '2', label: '2', v3 }] });
     expect(same.weekly?.leftOutEverywhere?.thisWeek).toEqual(['c']);
   });
+  // CIV-2000: each route's swap rate is in the summary, and a held route is listed with its name and swap rate, never counted.
+  it('writes each route\'s swap rate and lists held routes with theirs', () => {
+    const s = agencySummary({ agency: 'ttc', totalRoutes: 2, routes: [{ route: '1', label: '1', v3: { ...v3, swaps: { rate: 0.04, reassigned: 4, dropped: 0 } } as LiveV3 }], held: [{ route: '512', mode: 0, longName: 'St Clair', swapRate: 0.15 }] });
+    expect(s.routes[0].swapRate).toBe(0.04);
+    expect(s.held).toEqual([{ route: '512', mode: 0, longName: 'St Clair', swapRate: 0.15 }]);
+    expect(s.covered).toEqual(['1']);
+  });
 });

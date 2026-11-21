@@ -44,9 +44,14 @@ export interface AgencyRouteRow {
   bunchedShare?: number | null;
   gappedShare?: number | null;
   deliveredShare: number | null;
+  /** CIV-2000: share of trips under a trip number 15+ min off its own slot (the quality check's swap rate). Older files: absent. */
+  swapRate?: number;
   /** Late share by hour of day, all days, at timepoints. */
   lateByHour: Array<{ hour: number; value: number; n: number }>;
 }
+
+/** A route the quality check holds back (CIV-2000): listed, never counted in the network's figures. */
+export interface AgencyHeldRoute { route: string; mode?: number; longName?: string | null; swapRate?: number }
 
 export interface AgencyHotspotStop { route: string; routeLabel: string; stopId: string; name: string; directionId: number; direction: string; lateShare: number; medianMin: number; p90Min: number; n: number; lat?: number; lon?: number }
 export interface AgencyHotspotStretch { route: string; routeLabel: string; directionId: number; direction: string; fromStopId: string; toStopId: string; fromName: string; toName: string; value: number; n: number; from?: [number, number]; to?: [number, number];
@@ -60,7 +65,8 @@ export interface AgencySummary {
   /** Routes in the agency's timetable, and the routes this page covers (held routes are listed, not counted). */
   totalRoutes: number;
   covered: string[];
-  held: Array<{ route: string }>;
+  /** CIV-2000: held routes with their name and swap rate, so Studio can list them. Older files: route only. */
+  held: AgencyHeldRoute[];
   weekly: {
     thisWeek: WeekMetrics; lastWeek: WeekMetrics; comparable: boolean; minHealthyDays: number;
     /** The days every route left out (the footer names only these; each route page lists its own). Older files: absent. */
@@ -147,7 +153,7 @@ export function agencySummary(input: {
   agency: string;
   totalRoutes: number;
   routes: readonly AgencyRouteInput[];
-  held?: ReadonlyArray<{ route: string }>;
+  held?: ReadonlyArray<AgencyHeldRoute>;
   generatedAt?: string;
   top?: { stops?: number; stretches?: number };
 }): AgencySummary {
@@ -190,6 +196,7 @@ export function agencySummary(input: {
       bunchingShare: t?.bunching?.share ?? null,
       ...(t?.bunching?.bunched != null && t.bunching.gapped != null ? { bunchedShare: t.bunching.bunched, gappedShare: t.bunching.gapped } : {}),
       deliveredShare: t?.delivered?.share ?? null,
+      ...(v3.swaps ? { swapRate: v3.swaps.rate } : {}),
       // The route's good days only, like its tiles (the all-days hours when the file has no per-day figures).
       lateByHour: (healthyLateByHour(v3, 'all') ?? block.byHour).filter(h => h.n > 0).map(h => ({ hour: h.hour, value: h.lateShare, n: h.n })),
     };
@@ -228,7 +235,7 @@ export function agencySummary(input: {
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     totalRoutes: input.totalRoutes,
     covered: routes.map(r => r.route),
-    held: (input.held ?? []).map(h => ({ route: h.route })),
+    held: (input.held ?? []).map(h => ({ route: h.route, ...(h.mode != null ? { mode: h.mode, longName: h.longName ?? null } : {}), ...(h.swapRate != null ? { swapRate: h.swapRate } : {}) })),
     weekly,
     daily: weekly ? networkDaily(routes, weekly.thisWeek.healthyDates) : { late: [], delivered: [], tripTime: [], extraWait: [], bunching: [] },
     routes: rows,

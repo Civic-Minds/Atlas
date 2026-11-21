@@ -4,9 +4,9 @@ import { runningTimeSentence, freshness, LIVE_DASHBOARD_HOLD, LINK_LABELS, bunch
 const stop = (id: string, dir: number, late: number, n = 100, ranked = true): DashboardStop => ({ stopId: id, name: id, directionId: dir, order: 0, n, medianMin: 0, p90Min: 5, lateShare: late, earlyShare: 0, ranked });
 
 describe('dashboardUnavailable', () => {
-  it('holds routes with a known problem, with the reason', () => {
-    expect(dashboardUnavailable('ttc', '512')).toMatchObject({ status: 'held' });
-    expect(dashboardUnavailable('ttc', '512')!.reason).toBe(LIVE_DASHBOARD_HOLD['ttc::512']);
+  it('holds no route by hand: the 512 is judged by the quality check on every build (CIV-2000)', () => {
+    expect(LIVE_DASHBOARD_HOLD).toEqual({});
+    expect(dashboardUnavailable('ttc', '512')).toBeNull();
   });
   it('says how to build a route that has no analysis, and nothing for one that has it', () => {
     expect(dashboardUnavailable('burlington', '1')!.reason).not.toMatch(/npm run/);
@@ -135,5 +135,46 @@ describe('qualityHold', () => {
     expect(qualityHold(v3(0, 120))).toMatch(/Only 120 departures/);
     expect(qualityHold(v3(0, 0))).toMatch(/gives no stop times/);
     expect(qualityHold(v3(0, 900, 60))).toMatch(/60% of its vehicles/);
+  });
+});
+
+describe('a held route in Studio (CIV-2000)', () => {
+  const week = { days: 7, dates: [], healthyDates: [], late: { share: 0.3, n: 900 }, tripTime: { n: 50, scheduledMin: 30, typicalMin: 34, overMin: 4 }, extraWait: { minutes: 1.2, gaps: 400 }, bunching: { share: 0.2, gaps: 400 }, delivered: { share: 0.98, seen: 98, notSeen: 2, unknown: 0 }, cutoffCounts: { lateness: { start: 0, counts: [5] }, gaps: { start: 0, counts: [7] }, gapRatio: { start: 0, counts: [3] } } };
+  const band = { stops: [{ stopId: 's' }], buildup: [{ directionId: 0 }], adherence: { timepoints: { all: { overall: { n: 900 } } } } };
+  const file = (swap: number, n: number, unlisted = 0) => ({
+    schema: 3, swaps: { rate: swap, reassigned: 0, dropped: 0 }, leftOut: { kept: 100 - unlisted, noTimetableTrip: unlisted, excluded: 0, excludedLabel: null },
+    adherence: { timepoints: { all: { overall: { n } } } }, stops: [{ stopId: 's' }], buildup: [{ directionId: 0 }], bands: { all: band, amPeak: band },
+    runningTime: { bands: {} }, serviceDelivered: { byDay: [] }, extraWait: { all: [{ stopId: 's' }] }, bunching: [{ directionId: 0, bands: {} }],
+    stopHours: { '0': { s: [[10, 0.4, 8, 0.1, 0.2, 1.5], null] } },
+    daily: { '2026-11-19': { healthy: true, late: { share: 0.3, n: 9 }, tripTime: null, extraWait: { minutes: 1, gaps: 9 }, bunching: { share: 0.1, gaps: 9 }, delivered: null, lateByHour: [{ hour: 7, n: 9, lateShare: 0.3 }] } },
+    weekly: { minHealthyDays: 3, health: [], comparable: true, thisWeek: week, lastWeek: week, bands: { amPeak: { thisWeek: week, lastWeek: week } } },
+  }) as unknown as LiveV3;
+  it('keeps gaps and bunching and empties every delay figure for a swapped-trip route', async () => {
+    const { gapsOnlyV3, heldRouteLine } = await import('../liveDashboard');
+    const g = gapsOnlyV3(file(0.15, 1500));
+    expect(heldRouteLine(file(0.15, 1500))).toBe('Gaps and bunching only: its delays are hidden because about 15% of its trips ran under a trip number that does not match the schedule.');
+    expect([g.stops, g.buildup, g.bands.all.stops, g.bands.amPeak.buildup]).toEqual([[], [], [], []]);
+    expect(g.adherence.timepoints.all.overall.n).toBe(0);
+    expect(g.runningTime).toBeUndefined();
+    expect(g.serviceDelivered).toBeUndefined();
+    for (const w of [g.weekly!.thisWeek, g.weekly!.lastWeek, g.weekly!.bands!.amPeak!.thisWeek]) {
+      expect([w.late, w.tripTime, w.delivered]).toEqual([null, null, null]);
+      expect([w.extraWait, w.bunching]).toEqual([week.extraWait, week.bunching]);
+      expect(w.cutoffCounts!.lateness.counts).toEqual([]);
+      expect(w.cutoffCounts!.gaps.counts).toEqual([7]);
+    }
+    expect(g.daily!['2026-11-19']).toMatchObject({ late: null, lateByHour: undefined, bunching: { share: 0.1 } });
+    expect(g.stopHours!['0'].s[0]).toEqual([10, null, 8, 0.1, 0.2, 1.5]);
+    expect(g.bunching).toHaveLength(1);
+  });
+  it('shows no figures when gaps cannot be trusted either', async () => {
+    const { gapsOnlyV3, heldRouteLine } = await import('../liveDashboard');
+    const g = gapsOnlyV3(file(0, 900, 60));
+    expect(heldRouteLine(file(0, 900, 60))).toBe('No figures: 60% of its vehicles ran under trip numbers that are not on the schedule.');
+    expect(heldRouteLine(file(0, 0))).toBe('No figures: its schedule gives no stop times to compare with.');
+    expect(g.bunching).toEqual([]);
+    expect([g.weekly!.thisWeek.extraWait, g.weekly!.thisWeek.bunching, g.weekly!.thisWeek.late]).toEqual([null, null, null]);
+    expect(g.stopHours).toBeUndefined();
+    expect(heldRouteLine(file(0.05, 1500))).toBeNull();
   });
 });

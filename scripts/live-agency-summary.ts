@@ -4,7 +4,7 @@
  *   npx tsx scripts/live-agency-summary.ts [agency=ttc]
  *
  * Reads ../_live-data/out/<agency>-<route>-segments.json for every route with Live analysis (shared/livePollingConfig
- * LIVE_ANALYSIS_ROUTES), leaves held routes out (LIVE_DASHBOARD_HOLD) and lists them, counts the agency's routes in its
+ * LIVE_ANALYSIS_ROUTES), leaves held routes out (LIVE_DASHBOARD_HOLD, or failing qualityHold) and lists them, counts the agency's routes in its
  * timetable (gtfs/candidates/surface, or the newest feed under surface-feeds/) and adds stop positions for the map. Writes
  * ../_live-data/out/<agency>-agency.json, which /api/live-agency serves. Light: it reads a few small files, no analysis.
  * Set LIVE_DATA to use another data folder.
@@ -13,7 +13,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { LIVE_ANALYSIS_ROUTES } from '../shared/livePollingConfig';
 import { LIVE_DASHBOARD_HOLD, LIVE_DASHBOARD_UNCERTAIN_START, qualityHold, type LiveV3 } from '../shared/liveDashboard';
-import { agencySummary, type AgencyRouteInput } from '../shared/liveAgency';
+import { agencySummary, type AgencyHeldRoute, type AgencyRouteInput } from '../shared/liveAgency';
 import { getRouteLabel, routeLabelParts } from '../shared/routeDisplay';
 import { nameCase } from '../src/utils/format';
 
@@ -54,7 +54,7 @@ export function writeAgencySummary(agency: string, gtfs: string, out: string): s
   const analysed = readdirSync(out).filter(f => f.startsWith(prefix) && f.endsWith(suffix)).map(f => f.slice(prefix.length, -suffix.length)).filter(r => /^[A-Za-z0-9]+$/.test(r));
   const keys = [...new Set([...LIVE_ANALYSIS_ROUTES.filter(k => k.startsWith(`${agency}::`)).map(k => k.slice(agency.length + 2)), ...analysed])]
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const held = Object.entries(LIVE_DASHBOARD_HOLD).filter(([k]) => k.startsWith(`${agency}::`)).map(([k, reason]) => ({ route: k.slice(agency.length + 2), reason }));
+  const held: AgencyHeldRoute[] = Object.keys(LIVE_DASHBOARD_HOLD).filter(k => k.startsWith(`${agency}::`)).map(k => ({ route: k.slice(agency.length + 2) }));
   const routes: AgencyRouteInput[] = [];
   const missing: string[] = [];
   for (const route of keys) {
@@ -63,9 +63,9 @@ export function writeAgencySummary(agency: string, gtfs: string, out: string): s
     if (!existsSync(file)) { missing.push(route); continue; }
     const v3 = (JSON.parse(readFileSync(file, 'utf8')) as { v3?: LiveV3 }).v3;
     if (!v3 || v3.schema !== 3) { missing.push(route); continue; }
-    const quality = qualityHold(v3);
-    if (quality) { held.push({ route, reason: quality }); continue; }
     const r = byShort.get(route) ?? byId.get(route);
+    // CIV-2000: the quality check runs on every build; a held route is listed with its name and swap rate (Studio lists it).
+    if (qualityHold(v3)) { held.push({ route, mode: Number(r?.route_type ?? 3), longName: r?.route_long_name || null, swapRate: v3.swaps.rate }); continue; }
     // The route card's title rule (until the one route-label helper, UI step 9, reaches this branch).
     const label = nameCase(getRouteLabel(route, r?.route_long_name || null), 'route');
     const parts = routeLabelParts(route, r?.route_long_name || null);

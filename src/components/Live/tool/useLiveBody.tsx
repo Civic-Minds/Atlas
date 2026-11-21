@@ -3,7 +3,7 @@ import { LOADING_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from '../../../co
 import RouteRowName from '../../RouteRowName';
 import { routeLabels } from '../../../utils/format';
 import type { AgencySummary } from '../../../../shared/liveAgency';
-import { NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
+import { GAP_MEASURES, NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { useLiveDashboard } from '../../../hooks/useLiveDashboard';
 import { excludingDays, kpiTiles } from '../../../utils/liveKpi';
 import { agencyKpiTiles } from '../../../utils/liveAgencyKpi';
@@ -32,6 +32,8 @@ import { percentText, countText } from '../../../../shared/numberText';
 import { rankedTimeLoss, timeLossBySegment, timeLossReport, type TimeLossListRow, type TimeLossReport } from '../../../utils/timeLossReport';
 import { useTimeLossData } from './useTimeLossReports';
 import FallsBehindWidget from './FallsBehindWidget';
+import { CardHelpNotice } from '../../Interval/cardUi';
+import type { LiveDashboardResponse } from '../../../../shared/liveDashboard';
 import type { MapPick } from '../../MapApp';
 
 /**
@@ -139,8 +141,17 @@ export interface LiveBodyInput {
   /** Studio: the week table's explanation lines live in its About panel, with a Learn more link (Ryan, 2026-11-19). */ inStudio?: boolean;
 }
 
+/** CIV-2000: a held route's file as Studio reads it: its gaps-only figures, with why its delays are hidden. */
+function heldAsReady(d: LiveDashboardResponse, agency: string): ReadyRoute | null {
+  if (d.status === 'ready') return d;
+  if (d.status !== 'held' || !d.v3 || !d.route) return null;
+  return { status: 'ready', agency: d.agency ?? agency, route: d.route, routeTitle: null, generatedAt: d.generatedAt ?? '', replacementBuses: false, v3: d.v3, note: null, uncertainStart: [], held: d.line ?? d.reason };
+}
+
 export interface LiveBodyModel {
   routes: string[];
+  /** CIV-2000: the picked route is held (Studio): only the gap measures and figures, with the line saying why. */
+  held: boolean;
   /** The picked route's loaded figures (the previous route's until the new one's arrive), or null. */
   ready: ReadyRoute | null;
   v3: LiveV3 | null;
@@ -178,19 +189,24 @@ export interface LiveBodyModel {
   openRoute: (r: string) => void;
 }
 
-export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure: chosen, pick, setPick, inStudio = false }: LiveBodyInput): LiveBodyModel {
-  // The computations below need a measure; with none chosen the map draws every segment grey and the list shows names only.
-  const measure: MapMeasure = chosen ?? 'late';
+export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDir, band, measure: picked0, pick, setPick, inStudio = false }: LiveBodyInput): LiveBodyModel {
   const routes = useMemo(() => s.routes.map(r => r.route), [s]);
   const network = useNetworkData(agency, routes, route);
   // A route whose file was already fetched with the network opens at once; otherwise it is fetched. Until the new route's
   // data is there the previous route's stays on screen and is swapped in place (no blank panel, no map jump).
   const own = useLiveDashboard(route && !network.has(route) ? agency : null, route);
-  const fetched = route && own.kind === 'done' && own.data.status === 'ready' && own.data.route === route ? own.data : null;
+  // CIV-2000: Studio also opens a held route, on its gaps-only figures.
+  const ownReady = own.kind === 'done' ? (inStudio ? heldAsReady(own.data, agency) : own.data.status === 'ready' ? own.data : null) : null;
+  const fetched = route && ownReady && ownReady.route === route ? ownReady : null;
   const fresh: ReadyRoute | null = route ? network.get(route) ?? fetched : null;
   const last = useRef<ReadyRoute | null>(null);
   if (fresh) last.current = fresh;
   const ready: ReadyRoute | null = route ? fresh ?? last.current : null;
+  const held = !!ready?.held;
+  // The computations below need a measure; with none chosen the map draws every segment grey and the list shows names only.
+  // A held route has only the measures read from gaps (CIV-2000).
+  const chosen = held && picked0 && !GAP_MEASURES.has(picked0) ? null : picked0;
+  const measure: MapMeasure = chosen ?? 'late';
   const v3 = useMemo(() => { if (!ready) return null; try { return withNiceNames(ready.v3); } catch { return ready.v3; } }, [ready]);
   const networkV3 = useMemo(() => new Map([...network].map(([r, b]) => [r, b.v3])), [network]);
   // CIV-1828 "Falls behind": every route's stop pairs (the time-loss report), loaded only for that measure.
@@ -241,7 +257,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   // CIV-1821: the main map's way back from a route (CardBackLink: small and muted, not a big link over the map).
   const back: PanelWidget = { key: 'back', size: 'medium', node: <CardBackLink onClick={backToNetwork}>{agencyName}</CardBackLink> };
   const routeBody: PanelWidget[] | null = !route ? null
-    : v3 && ready ? [...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio })]
+    : v3 && ready ? [...(ready.held ? [{ key: 'held', size: 'medium' as const, node: <CardHelpNotice message={ready.held} /> }] : []), ...(routeLossWidget ? [routeLossWidget] : []), ...routeWidgets({ data: ready, v3, dir: shown, band, setPick, route: ready.route, inStudio })]
     : own.kind === 'loading' ? [{ key: 'loading', size: 'medium' as const, node: <LoadingWidget /> }] : [];
   const routePanel = routeBody && [back, ...routeBody];
 
@@ -250,12 +266,17 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, chosen ?? 'fallsBehind', band).map(({ r }) => {
     const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
-  })], [s, networkV3, chosen, band]);
+  }),
+  // CIV-2000 (Ryan: Studio always lists held routes): after the ranked ones, by number.
+  ...(inStudio ? [...s.held].sort((a, b) => a.route.localeCompare(b.route, undefined, { numeric: true })).map(h => {
+    const l = routeLabels({ shortName: h.route, longName: h.longName ?? null, mode: h.mode ?? 3, agencyName: s.agency });
+    return [h.route, <RouteRowName key={h.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
+  }) : [])], [s, networkV3, chosen, band, inStudio]);
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
   const overview = <OverviewList s={s} measure={chosen} band={band} route={route} network={networkV3} onPick={openRoute} />;
   const onMapPick = (p: MapPick | null) => { if (!route && p?.kind === 'segment' && p.route) setRoute(p.route); else setPick(p); };
   return {
-    routes, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
+    routes, held, ready, v3, ids, shown, model, heat, anchor, card, routePanel, routeBody, networkLossWidget, summary, overview, routeOptions,
     networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),
     dataDates: v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? [], dataRoute: v3 ? ready?.route ?? '' : '',
     note: showNote ? ready!.note : undefined,

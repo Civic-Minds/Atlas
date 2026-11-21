@@ -501,10 +501,10 @@ export const LIVE_VEHICLE_POSITIONS_FEEDS: Record<string, string> = Object.fromE
  * buses running together, not duplicates). 501 and 506 joined once the analysis could separate
  * what it can measure: the 501's runs under trip numbers missing from the timetable (unscheduled
  * buses) and the 506's replacement buses (506B) are left out and counted on the page, and the
- * remaining departures were hand-checked. Left out on purpose: 512 (its trip numbers do not match
- * the timetable; see LIVE_DASHBOARD_HOLD).
+ * remaining departures were hand-checked. 512 joined with CIV-2000: its hand-set hold became the quality check
+ * (qualityHold) run on every build, which holds back its delays only while its trip numbers fail to match the timetable.
  */
-export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::501', 'ttc::503', 'ttc::504', 'ttc::505', 'ttc::506', 'ttc::507', 'ttc::509', 'ttc::510', 'ttc::511'];
+export const LIVE_ANALYSIS_ROUTES: readonly string[] = ['ttc::501', 'ttc::503', 'ttc::504', 'ttc::505', 'ttc::506', 'ttc::507', 'ttc::509', 'ttc::510', 'ttc::511', 'ttc::512'];
 
 export function hasLiveAnalysis(slug: string | null | undefined, routeShortName: string | null | undefined): boolean {
   return !!slug && !!routeShortName && LIVE_ANALYSIS_ROUTES.includes(`${slug}::${routeShortName}`);
