@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 // FEATURES.beta gave in every build until someone changes it on purpose.
 const STAND_IN_FLAGS = [
   'persistedSettings',
+  // CIV-98: back on where beta is, off on public, once Ryan picked the analytics prompt's place.
+  'slowConnectionPrompt',
   'updateBanner',
   'mapContext',
   'matchPercentage',
@@ -41,10 +43,6 @@ describe('named flags that stand in for FEATURES.beta', () => {
       const features = await configFor(build.env, build.dev);
       expect(features.beta).toBe(build.beta);
       for (const flag of STAND_IN_FLAGS) expect([flag, features[flag]]).toEqual([flag, build.beta]);
-    });
-    // CIV-98: held off everywhere until Ryan picks the prompt's placement.
-    it(`${build.name}: the slow-connection prompt is off`, async () => {
-      expect((await configFor(build.env, build.dev)).slowConnectionPrompt).toBe(false);
     });
   }
 });

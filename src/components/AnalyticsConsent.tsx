@@ -70,7 +70,15 @@ export default function AnalyticsConsent() {
   return <>{showPrompt && <ConsentPill className={`${position} max-w-[calc(100vw-2rem)] ${Z_HEADER}`} choose={choose} />}{showSettings && <Controls onClose={() => setShowSettings(false)} />}</>;
 }
 
+const PROMPT_BUTTON = 'shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]';
+
+/** A map prompt as one pill: its sentence, then its buttons. The analytics prompt and the slow-connection prompt (CIV-98) share it. */
+export function MapPromptPill({ className = '', label, message, actions, role = 'dialog', wrapOnPhones = false }: { className?: string; label: string; message: string; actions: ReadonlyArray<{ label: string; onClick: () => void }>; role?: 'dialog' | 'status'; /** A sentence too long for one line on a phone wraps there, its buttons on the last line. */ wrapOnPhones?: boolean }) {
+  const fit = wrapOnPhones ? 'min-h-8 sm:h-8 sm:whitespace-nowrap max-sm:flex-wrap max-sm:py-1.5' : 'h-8 max-sm:h-[32px] whitespace-nowrap';
+  return <div role={role} aria-label={label} className={`${className} ${fit} w-fit ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>{message}</span>{actions.map(a => <button key={a.label} type="button" onClick={a.onClick} className={PROMPT_BUTTON}>{a.label}</button>)}</div>;
+}
+
 /** The prompt's pill: the fixed copy above, and the last pill of the map's bottom-left row. */
 export function ConsentPill({ className = '', choose }: { className?: string; choose: (consent: AnalyticsConsent) => void }) {
-  return <div role="dialog" aria-label={ANALYTICS_CONSENT_LABEL} className={`${className} h-8 max-sm:h-[32px] w-fit whitespace-nowrap ${MAP_BADGE} gap-3 max-[370px]:gap-2 max-[370px]:px-2 text-xs font-bold text-[var(--text-muted)]`}><span>{ANALYTICS_CONSENT_PROMPT}</span><button type="button" onClick={() => choose('granted')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Allow</button><button type="button" onClick={() => choose('denied')} className="shrink-0 text-[var(--text-primary)] transition-colors hover:text-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-border)]">Decline</button></div>;
+  return <MapPromptPill className={className} label={ANALYTICS_CONSENT_LABEL} message={ANALYTICS_CONSENT_PROMPT} actions={[{ label: 'Allow', onClick: () => choose('granted') }, { label: 'Decline', onClick: () => choose('denied') }]} />;
 }
