@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { fitAgencyName } from './utils/agencyName';
 import AppLink from './components/ui/AppLink';
 import { MISSING_VALUE } from '../shared/missingValue';
@@ -47,13 +48,14 @@ function agencyNameLink(a: AreaAgencyRow, narrow: boolean) {
  * The agencies section of an area page, and of a state or province page (CIV-976): the frequency bar, its note and the
  * agency table by mode.
  */
-export default function AgencyGroupSection({ data, barNote, place }: { data: AgencyGroupData; barNote: string; /** A state or province page's name, for an agency's "N routes in <place> · M total" line (CIV-1786). */ place?: string }) {
+export default function AgencyGroupSection({ data, barNote, place, extra }: { data: AgencyGroupData; /** Dev-only mock-up slot after the frequency bar's note. */ extra?: ReactNode; barNote: string; /** A state or province page's name, for an agency's "N routes in <place> · M total" line (CIV-1786). */ place?: string }) {
   // CIV-1297: the page's one map link is at its top; "See all agencies" follows the table, as on agency pages.
   return (
     <PageSection id="agencies-heading" title={AGENCIES_FREQUENCY_HEADING}>
       <p className="mt-3 text-base font-bold">Weekday midday frequency, by route</p>
       <FrequencyBar counts={data.bands} />
       <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{barNote}</p>
+      {extra}
       <AgencyModeTable data={data} place={place} />
       {/* CIV-1814 item 15 (Ryan's words): agencies that only run at rush hour, each linking to its page. */}
       {data.rushHourOnly && <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">

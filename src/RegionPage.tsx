@@ -17,6 +17,7 @@ import { areaPagePath } from '../shared/pagePaths';
 import { applySeoToDocument, seoOrigin } from './lib/seoDom';
 import { readEmbeddedJson } from './lib/embeddedData';
 import { UNDERLINED_LINK } from './pageStyles';
+import { ModeBar } from './pageParts';
 import AgencyGroupSection from './AgencyGroupSection';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import ArrowLink from './components/ui/ArrowLink';
@@ -75,7 +76,8 @@ export default function RegionPage({ data: dataProp }: { data?: RegionPageData }
             {areas && <>{' '}{areas.lead}{areas.named.map((a, i) => <span key={a.slug}><AppLink className={UNDERLINED_LINK} to={areaPagePath(a.slug)}>{a.name}</AppLink>{areas.separators[i]}</span>)}{areas.tail}</>}
           </p>
 
-          <AgencyGroupSection data={data} barNote={regionBarNote(data)} place={data.region.name} />
+          <AgencyGroupSection data={data} barNote={regionBarNote(data)} place={data.region.name}
+            extra={import.meta.env.DEV && data.region.slug === 'ontario' ? <><p className="mt-8 text-base font-bold">Routes by mode</p><ModeBar byMode={data.byMode} /></> : undefined} />
 
           <p className="mt-12 text-sm leading-6 text-[var(--text-dim)]">{areaDatesText(data)}</p>
     </DocsPageLayout>

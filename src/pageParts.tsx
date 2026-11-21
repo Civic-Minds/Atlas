@@ -38,6 +38,28 @@ export function FrequencyBar({ counts }: { counts: number[] }) {
   );
 }
 
+/** Greys for the mode bar, darkest first, as the research charts' split bars (the map has no mode colours). */
+const MODE_GREYS = [100, 78, 60, 46, 34, 24, 16];
+
+/**
+ * Mock-up (CIV-2009): the frequency bar's design (the same SplitBar) for route counts by mode, on pages that combine agencies.
+ * Takes the page's byMode counts, the ones the intro sentence prints.
+ */
+export function ModeBar({ byMode }: { byMode: ReadonlyArray<{ label: string; routes: number }> }) {
+  return (
+    <SplitBar
+      label="Routes by mode"
+      segments={byMode.map((m, i) => ({
+        key: m.label,
+        value: m.routes,
+        fill: `color-mix(in srgb, var(--text-muted) ${MODE_GREYS[Math.min(i, MODE_GREYS.length - 1)]}%, transparent)`,
+        sentence: `${m.routes} ${m.label.toLowerCase()} ${plural(m.routes, 'route')}`,
+        legend: <span><span className={CHART_COUNT}>{m.routes}</span> {m.label.toLowerCase()}</span>,
+      }))}
+    />
+  );
+}
+
 /** A route's name cell in a routes table: the same cleaned names the map's lists show (bold part, then the lighter name). */
 export function RouteNameCell({ shortName, feedShortName, longName, mode, agencyName }: {
   shortName: string;
