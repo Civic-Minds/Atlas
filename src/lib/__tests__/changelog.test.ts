@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildChangelog } from '../changelog';
-import { WHATS_NEW } from '../../data/whatsNew';
+import { RELEASES as APP_RELEASES, visibleWhatsNew } from '../../data/whatsNew';
 import type { WhatsNewRelease } from '../../data/whatsNew';
 
 const RELEASES: WhatsNewRelease[] = [
@@ -17,6 +17,6 @@ describe('buildChangelog', () => {
   });
 
   it('has the real releases', () => {
-    expect(buildChangelog(WHATS_NEW).length).toBe(WHATS_NEW.length);
+    expect(buildChangelog(visibleWhatsNew(true)).length).toBe(APP_RELEASES.length);
   });
 });

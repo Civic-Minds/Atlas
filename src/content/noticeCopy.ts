@@ -985,6 +985,8 @@ export const CLEAR_LABEL = 'Clear';
 /** A card's link to more about it: the agency card's link to its agency page (CIV-1780, Ryan: "Details", as the stop card's; was "About") and an on-demand service's source. */
 export const DETAILS_LABEL = 'Details';
 export const SEE_ALL_CHANGES_LABEL = 'See all changes';
+/** What's new: the link after an item that opens the feature (CIV-1999, Ryan: "a 'Try it' with an arrow text button next to things like Compare mode"). */
+export const TRY_IT_LABEL = 'Try it';
 /** About's link to the research (CIV-1780, Ryan: title case, as its heading). */
 export const EXPLORE_RESEARCH_LABEL = 'Explore Research';
 export const WHAT_ATLAS_SHOWS_LABEL = 'What Atlas shows';
