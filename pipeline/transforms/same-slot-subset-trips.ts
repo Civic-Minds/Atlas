@@ -15,20 +15,20 @@ import type { GtfsData } from '../../types/gtfs.js';
  * last stop, so a short turn leaving with a full-length trip is a different name and stays.
  * Trips expanded from frequencies.txt are templates and are never compared.
  *
- * DRY-RUN NARROWING (CIV-1098): the held version fired on one-off pairs and failed its criteria at
- * rtc, port-authority-pa, pvpta, petaluma and mtd-champaign. A pair is now left out only when the
- * pairing repeats across most of the route's departures: within one route, direction and service,
- * the share of departure slots that hold a subset pair must exceed PAIRED_SLOT_SHARE_MIN and at least PAIRED_SLOTS_MIN slots must be paired.
+ * Narrowed (CIV-1098): the first version fired on one-off pairs and failed its criteria at rtc,
+ * port-authority-pa, pvpta, petaluma and mtd-champaign. A pair is left out only when the pairing
+ * repeats across most of the route's departures: within one route, direction and service, the share
+ * of departure slots that hold a subset pair must exceed PAIRED_SLOT_SHARE_MIN and at least
+ * PAIRED_SLOTS_MIN slots must be paired. Both numbers: docs/product/DECISIONS.md, 2026-11-21.
  */
 
-// DRY-RUN PROPOSAL, NOT APPROVED (CIV-1098): "most of a route's departures" read as more than half
-// of its departure slots. Ryan has not signed off on this number; it exists only so a dry run can
-// test the rule.
+// "Most of a route's departures": more than half of its departure slots. Ryan, 2026-11-21, "CIV-1098 1"
+// (DECISIONS.md: "more than half paired, at least 3 pairs").
 export const PAIRED_SLOT_SHARE_MIN = 0.5;
 
-// DRY-RUN PROPOSAL, NOT APPROVED (CIV-1098): a group needs at least this many paired slots before
-// any pair is left out, so a one-off pair on a one-departure group (mtd-champaign, 10 groups in the
-// first dry run) is never treated as repeating. Ryan has not signed off on this number.
+// A group needs at least this many paired slots before any pair is left out, so a one-off pair on a
+// one-departure group (mtd-champaign, 10 groups in the first dry run) is never treated as repeating.
+// Ryan, 2026-11-21, "CIV-1098 1" (DECISIONS.md).
 export const PAIRED_SLOTS_MIN = 3;
 
 export function dropSameSlotSubsetTrips(gtfs: GtfsData): { gtfs: GtfsData; dropped: number; routes: Set<string> } {

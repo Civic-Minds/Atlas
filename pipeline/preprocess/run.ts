@@ -217,7 +217,7 @@ export function normalizeGtfs(
   if (bays.mergedTrips > 0) onStatus?.(`Terminal bays: ${bays.mergedTrips} trips of ${bays.mergedPatterns} pattern(s) end at the other bay of their terminal (#754)`);
   gtfs = synthesizeTripHeadsigns(gtfs);
   {
-    // CIV-1098 dry run: after the headsigns are filled, so a short turn leaving with a full-length
+    // CIV-1098: after the headsigns are filled, so a short turn leaving with a full-length
     // trip is another name and stays (see same-slot-subset-trips.ts).
     const pairs = dropSameSlotSubsetTrips(gtfs);
     gtfs = pairs.gtfs;
