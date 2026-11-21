@@ -15,6 +15,7 @@ vi.mock('../../shared/config', async (importOriginal) => {
 
 const { default: SiteHeader } = await import('../components/SiteHeader');
 const { StudioGroupFigures } = await import('../apps/studio/StudioGroupFigures');
+const { vehiclesNeededTitle } = await import('../../shared/studioWording');
 const { groupFor } = await import('../apps/studio/fleetModel');
 
 describe('Studio link in the header (CIV-1694)', () => {
@@ -80,10 +81,23 @@ describe('Studio buses-needed panel (CIV-1693, a sidebar panel since CIV-1731)',
   });
 
   it('says why other routes count where they share the open route’s buses, and offers no split choice (CIV-1827)', () => {
-    render(<StudioGroupFigures group={{ ...GROUPS[0], atTargetEven: { 10: 17 } }} />);
+    render(<StudioGroupFigures group={{ ...GROUPS[0], modes: [3], atTargetEven: { 10: 17 } }} />);
     expect(screen.getByText('[Placeholder: 701, 702, 801 and 802 share buses, so these numbers cover all 4.]')).toBeTruthy();
     expect(screen.queryByRole('group')).toBeNull();
     expect(cells('every 10 min')).toEqual(['every 10 min', '15']);
+  });
+
+  it('names the vehicles by mode: trains on a train line, vehicles when modes mix or a file has none (CIV-2002)', () => {
+    expect([[1], [3], [0], [100], [0, 3], undefined].map(m => vehiclesNeededTitle(m))).toEqual(['Trains Needed', 'Buses Needed', 'Streetcars Needed', 'Trains Needed', 'Vehicles Needed', 'Vehicles Needed']);
+    render(<StudioGroupFigures group={{ ...GROUPS[0], modes: [1] }} />);
+    expect(screen.getByText(/share trains/)).toBeTruthy();
+  });
+
+  it('reads the network table as "If every route ran …", with one number for the schedule (CIV-2002)', () => {
+    render(<StudioGroupFigures group={{ ...GROUPS[0], routes: [], modes: [0, 3] }} showRunning={false} network />);
+    expect(screen.getAllByRole('columnheader').map(h => h.textContent)).toEqual(['If every route ran', 'Vehicles']);
+    expect(cells('As scheduled')).toEqual(['As scheduled', String(GROUPS[0].implied)]);
+    expect(screen.queryByText(/Needed \d/)).toBeNull();
   });
 
   it('says so when a time of day has no buses', () => {

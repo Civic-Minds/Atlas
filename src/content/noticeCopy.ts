@@ -7,9 +7,9 @@
  * review page (_review/notices). A new text takes the next free number; numbers are never reused. Every notice with
  * Learn more names its explainer in NOTICE_EXPLAINERS, so the two can be checked against each other.
  */
+import { MODE_VEHICLES } from '../../shared/modeVehicles';
 import { PAGE_NAMES } from '../../shared/pageNames';
 import { PERIOD_LABELS, PUBLIC_TIER_MAXES, type PeriodKey } from '../../shared/config';
-import { PEOPLE_MOVER_MODE, ROUTE_TYPE, VIRTUAL_LRT_MODE } from '../../shared/rules/modes';
 import { BACK_PLACES, backLinkLabel } from './backLinks';
 import { FREQUENT_SERVICE_TITLE } from '../../shared/frequentService';
 import { shortDate } from '../../shared/dateText';
@@ -491,20 +491,7 @@ export const HISTORY_NO_TRIPS_LABEL = 'no trips';
  * year ran no trip at all in the chosen period. The period is its shared name in lower sentence case (AM and PM stay
  * capitals); the vehicle word is by the route's effective mode. A mode with no word here gets none: its row stays blank.
  */
-const NO_TRIPS_VEHICLES: Record<number, string> = {
-  [ROUTE_TYPE.BUS]: 'buses',
-  [ROUTE_TYPE.SUBWAY]: 'trains',
-  [ROUTE_TYPE.RAIL]: 'trains',
-  [VIRTUAL_LRT_MODE]: 'trains',
-  [ROUTE_TYPE.FERRY]: 'ferries',
-  [ROUTE_TYPE.TRAM]: 'streetcars',
-  [ROUTE_TYPE.TROLLEYBUS]: 'trolleybuses',
-  [ROUTE_TYPE.MONORAIL]: 'monorail trains',
-  [PEOPLE_MOVER_MODE]: 'people movers',
-  [ROUTE_TYPE.CABLE_TRAM]: 'cable cars',
-  [ROUTE_TYPE.GONDOLA]: 'gondolas',
-  [ROUTE_TYPE.FUNICULAR]: 'funiculars',
-};
+const NO_TRIPS_VEHICLES = MODE_VEHICLES;
 export function noTripsInPeriodText(period: string, mode: number | null): string | null {
   const vehicles = mode == null ? undefined : NO_TRIPS_VEHICLES[mode];
   const name = PERIOD_LABELS[period as PeriodKey];
