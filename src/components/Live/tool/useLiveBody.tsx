@@ -190,7 +190,10 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const fresh: ReadyRoute | null = route ? network.get(route) ?? fetched : null;
   const last = useRef<ReadyRoute | null>(null);
   if (fresh) last.current = fresh;
-  const ready: ReadyRoute | null = route ? fresh ?? last.current : null;
+  // #1648: the open route's own load finished with nothing to draw (no Live analysis, or held): the map shows the network
+  // and frames it, never the previous route's lines, and never waits for data that isn't coming.
+  const noRouteData = !!route && !fresh && !network.has(route) && (own.kind === 'error' || (own.kind === 'done' && own.data.status !== 'ready'));
+  const ready: ReadyRoute | null = route && !noRouteData ? fresh ?? last.current : null;
   const v3 = useMemo(() => { if (!ready) return null; try { return withNiceNames(ready.v3); } catch { return ready.v3; } }, [ready]);
   const networkV3 = useMemo(() => new Map([...network].map(([r, b]) => [r, b.v3])), [network]);
   // CIV-1828 "Falls behind": every route's stop pairs (the time-loss report), loaded only for that measure.
@@ -259,7 +262,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
     networkDates: [...new Set([...networkV3.values()].flatMap(b => b.window.dates))].sort(),
     dataDates: v3 ? v3.window.dates : route ? [] : s.weekly?.thisWeek.dates ?? [], dataRoute: v3 ? ready?.route ?? '' : '',
     note: showNote ? ready!.note : undefined,
-    frameKey: ready && route ? `route-${ready.route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`,
+    frameKey: ready && route ? `route-${ready.route}` : noRouteData && network.size === routes.length ? `route-${route}` : `network-${network.size === routes.length ? 'all' : 'loading'}`,
     onMapPick, loadingRoute: own.kind === 'loading', backToNetwork, openRoute,
   };
 }
