@@ -49,7 +49,7 @@ export function StudioGroupFigures({ group, showRunning = true }: { group: Studi
     <ScrollX className="-mx-2">
       <DataTable
         caption={PAGE_NAMES.studioVehicles}
-        layout="fixed"
+        layout="fill"
         rows={busRows(group)}
         rowKey={r => r.key}
         rowCurrent={r => !!r.now}
@@ -57,7 +57,9 @@ export function StudioGroupFigures({ group, showRunning = true }: { group: Studi
           { key: 'label', header: FREQUENCY_LABEL, rowHeader: true, width: 9, className: 'font-normal', cell: r => (
             <>{r.label}{r.note && <span className="block text-[var(--text-muted)]">{r.note}</span>}</>
           ) },
-          { key: 'value', header: T.needed, width: 4.5, cell: r => r.value },
+          // CIV-1925 (Ryan: Fleet's spacing "looks odd"): the full panel width with the figures at its right edge, as Live's
+          // and Schedules' tables (layout fill).
+          { key: 'value', header: T.needed, cell: r => r.value },
         ]}
       />
     </ScrollX>
