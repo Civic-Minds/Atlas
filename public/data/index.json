@@ -36992,7 +36992,6 @@
         "Craig, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
       "lastFeedCheckAt": "20261116",
@@ -37058,7 +37057,6 @@
         "Mt. Crested Butte, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://mjcaction.com/MJC_GTFS_Public/gunnisonrta_google_transit.zip",
       "lastFeedCheckAt": "20261116",
@@ -37121,7 +37119,6 @@
         "Sterling, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip",
       "lastFeedCheckAt": "20261116",
