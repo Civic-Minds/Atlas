@@ -721,8 +721,9 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
         {/* Same header as the Live route card, with the report flag beside it as on the static route card (CIV-932). */}
         <div className="flex items-start gap-2">
           <div className="flex-1 min-w-0">
+            {/* CIV-2041: back to the list, titled "Live" whatever agencies are on screen. */}
             <CardBackLink onClick={() => { setVehicleCard(null); setSelectedRoute(null); setFocusedVehicle(null); }}>
-              {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
+              {LIVE_TAB_LABEL}
             </CardBackLink>
             <RouteCardTitle
               routeShortName={selectedGroup.routeShortName}
@@ -776,7 +777,8 @@ export default function LiveVehicles({ agencies, lightMode, setLightMode, active
                 ? () => setSelectedDirection(null)
                 : () => { setSelectedRoute(null); setFocusedVehicle(null); }}
             >
-              {agencyShortNameBySlug(agencies, selectedGroup.agencySlug)}
+              {/* CIV-2041 (Ryan: "1", "← Back to Live"): the list's own title, not the route's agency. */}
+              {destination ? agencyShortNameBySlug(agencies, selectedGroup.agencySlug) : LIVE_TAB_LABEL}
             </CardBackLink>
             <RouteCardTitle
               routeShortName={selectedGroup.routeShortName}
