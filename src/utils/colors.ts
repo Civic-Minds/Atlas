@@ -59,8 +59,8 @@ export function getVehicleColors(status: 'early' | 'late' | 'on_time' | 'no_data
 }
 
 /** A vehicle dot's fill as [r, g, b] (for WebGL layers): the same status colour as the cards, in the given mode. */
-export function getVehicleRgb(status: 'early' | 'late' | 'on_time' | 'no_data', mode: ColorVisionMode = 'default'): [number, number, number] {
-  const hex = getVehicleColors(status, mode).bg.replace('#', '');
+export function getVehicleRgb(status: 'early' | 'late' | 'on_time' | 'no_data', mode: ColorVisionMode = 'default', /** 'border': the same colour's darker shade, a picked vehicle's dot (CIV-2043). */ shade: 'bg' | 'border' = 'bg'): [number, number, number] {
+  const hex = getVehicleColors(status, mode)[shade].replace('#', '');
   return [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
 }
 

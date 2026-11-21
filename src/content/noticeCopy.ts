@@ -946,6 +946,8 @@ export const MORE_VIEWS_LABEL = 'More Atlas views';
 /** The phone views menu's name when no named view is on. */
 export const MORE_LABEL = 'More';
 export const LIVE_TAB_LABEL = 'Live';
+/** The Live list's title with one agency in view: "Live · TTC" (CIV-2042, Ryan's wording as written). */
+export const liveListTitle = (agency: string | null): string => (agency ? `${LIVE_TAB_LABEL} · ${agency}` : LIVE_TAB_LABEL);
 /** Tags beside an agency or a What's New item. */
 export const LIVE_TAG = 'Live';
 export const HISTORY_TAG = 'History';

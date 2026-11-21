@@ -103,21 +103,13 @@ export function useLiveVehiclesLayer(
       deck.setProps({
         layers: [
           new ScatterplotLayer({
-            id: 'vehicles-focus-ring',
-            data: vehicles.filter(v => v.id === focusedId),
-            getPosition: (v: LiveVehicle) => [v.lon, v.lat],
-            getRadius: 11,
-            getFillColor: [255, 255, 255, 80],
-            stroked: false,
-            radiusUnits: 'pixels',
-            updateTriggers: { data: focusedId },
-          }),
-          new ScatterplotLayer({
             id: 'vehicles-dots',
             data: vehicles,
             getPosition: (v: LiveVehicle) => [v.lon, v.lat],
-            getRadius: (v: LiveVehicle) => (v.id === focusedId ? 6 : 4.5),
-            getFillColor: (v: LiveVehicle) => [...getVehicleRgb(v.status ?? 'no_data', colorMode), Math.round(255 * alpha(v))] as [number, number, number, number],
+            // CIV-2043 (Ryan: "look the same as when not clicked but maybe darker"): the picked vehicle keeps its dot's
+            // size and ring, filled with its colour's darker shade (both palettes' border shade), with no halo.
+            getRadius: 4.5,
+            getFillColor: (v: LiveVehicle) => [...getVehicleRgb(v.status ?? 'no_data', colorMode, v.id === focusedId ? 'border' : 'bg'), Math.round(255 * alpha(v))] as [number, number, number, number],
             stroked: true,
             getLineColor: (v: LiveVehicle) => [255, 255, 255, Math.round(200 * alpha(v))],
             getLineWidth: 1.25,
@@ -125,7 +117,6 @@ export function useLiveVehiclesLayer(
             radiusUnits: 'pixels',
             pickable: true,
             updateTriggers: {
-              getRadius: focusedId,
               getFillColor: fp,
               getLineColor: fp,
               data: fp,
