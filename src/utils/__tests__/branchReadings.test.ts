@@ -139,6 +139,21 @@ describe('route card branch lines (CIV-1959 B3)', () => {
     const r = readings({ t: 'limited' });
     expect(lines(card([withReadings(r, 'main')], 'midday', true))).toEqual(lines(card([withReadings(undefined, 'main')], 'midday', false)));
   });
+  it('#1636: a branch with no feature of its own is a line named from its terminus (the pipeline\'s `to`), in the words every branch row has', () => {
+    const named = (t: NonNullable<PieceReadings['pieces'][number]['periods'][keyof PieceReadings['pieces'][number]['periods']]>) =>
+      ({ pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: t }), to: 'Tower Rd' }] }) as PieceReadings;
+    expect(lines(card([withReadings(named({ t: 'reading', v: 30 }), 'main')], 'midday', true))).toEqual(['to Lawrence West Station: every 5 min', 'to Tower Rd: every 30 min']);
+    expect(lines(card([withReadings(named({ t: 'tail', v: 164, every: 30, until: 736 }), 'main')], 'midday', true)).at(-1)).toBe('to Tower Rd: every 30 min until 12:16 PM');
+    expect(lines(card([withReadings(named({ t: 'limited' }), 'main')], 'midday', true)).at(-1)).toBe('to Tower Rd: Runs irregularly in this period');
+    // An origin leg is named from where it starts, in the existing "from A to B" form, and left out when the direction has a named branch row (its row speaks for the starting legs).
+    const leg = (t: NonNullable<PieceReadings['pieces'][number]['periods'][keyof PieceReadings['pieces'][number]['periods']]>) =>
+      ({ pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), { ...piece('branch', 0, { midday: t }), from: 'Colfax Ave & Tower Rd' }] }) as PieceReadings;
+    expect(lines(card([withReadings(leg({ t: 'tail', v: 164, every: 30, until: 736 }), 'main')], 'midday', true)).at(-1)).toBe('from Colfax Ave & Tower Rd to Lawrence West Station: every 30 min until 12:16 PM');
+    const twoLegs: PieceReadings = { pieces: [piece('trunk', 0, { midday: { t: 'reading', v: 5 } }), piece('branch', 0, { midday: { t: 'reading', v: 24 } }), { ...piece('branch', 1, { midday: { t: 'reading', v: 24 } }), from: 'Pickering Parkway' }] };
+    expect(lines(card([withReadings(twoLegs, 'main'), { ...withReadings(twoLegs, 'tail'), stretchIndex: 0 }], 'midday', true)).some(l => l.includes('Pickering'))).toBe(false);
+    // Switch off, or no `to` (an origin leg the pipeline left unnamed): no new line.
+    expect(lines(card([withReadings(named({ t: 'reading', v: 30 }), 'main')], 'midday', false))).toEqual(['to Lawrence West Station: every 5 min']);
+  });
   void trunkStops; void branchStops;
 });
 

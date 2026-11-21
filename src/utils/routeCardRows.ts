@@ -332,9 +332,11 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     // a reading, "every N until HH:MM" for a tail, or the no-number words (noNumberRowLabel) for a piece with too few or uneven trips. A branch the card hid for the period (#1115)
     // gets its line back. The main stretch's own row stays (it names a destination) and the trunk line is left out only when that row already reads the same number.
     const slotFeatures = branchReadings && stretchMode && !nightView ? stretchRowFeatures(group.directionFeatures ?? [], period).filter(d => d.stretchRole === 'tail') : [];
-    // A branch with no feature of its own has no destination to name: it has no line, as today. With none that can be named, the card keeps today's rows.
+    // A branch with a feature of its own is named by it. One with none (#1636) is named by the pipeline's `to` (its terminus: a headsign, else a stop
+    // name), the same "to <place>" row; a branch with neither (an origin leg, say) has no line, as today. With none that can be named, the card keeps today's rows.
     const treatments = branchReadings && stretchMode && !nightView ? directionPieceTreatments(group.directionFeatures, period) : null;
-    const named = treatments && new Map([...treatments.branches].filter(([index]) => slotFeatures.some(d => (d.stretchIndex ?? 0) === index)));
+    const hasSlot = (index: number) => slotFeatures.some(d => (d.stretchIndex ?? 0) === index);
+    const named = treatments && new Map([...treatments.branches].filter(([index]) => hasSlot(index) || treatments.names.has(index)));
     const pieces = treatments && named && named.size > 0 ? { ...treatments, branches: named } : null;
     if (pieces) {
       const trunkValue = pieces.trunk.v;
@@ -390,7 +392,30 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
           return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
         } }];
       });
-      finalRows = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];
+      // #1636: a branch with no feature of its own gets a row named from where it ends ("to Tower Rd"), the words every branch row has. An origin leg
+      // (one that comes before the trunk) is named from where it starts, in the existing "from A to B" form, and only when the direction has no named branch row:
+      // a named row already speaks for the starting legs (DRT 900 eastbound: "to Ritson every 13-24 min" reads both of its starting legs, so the second gets no row).
+      const mainFeature = rows.find(r => r.feature.stretchRole === 'main')?.feature ?? group.directionFeatures?.[0] ?? rows[0]?.feature;
+      const unnamedRows = mainFeature ? [...pieces.branches].filter(([index]) => !hasSlot(index)).sort(([a], [b]) => a - b).flatMap(([index, t]): CardRow[] => {
+        const name = pieces.names.get(index);
+        if (!name) return [];
+        if (name.from && [...pieces.branches].some(([other]) => hasSlot(other))) return [];
+        const d: ShapeProperties = { ...mainFeature, headsign: name.to ?? mainFeature.headsign, routeVariant: name.from ? `from ${name.from}` : undefined, stopOrder: [`piece${index}`], stretchRole: 'tail', stretchIndex: index };
+        const base = rowOf(d, index);
+        // The existing origin form needs a row that starts elsewhere to count as a different origin.
+        const label = name.from ? rowLabelWithOrigin(destinationLabel(group, d, gi), d, [d, { ...d, stopOrder: ['other'] }]) : base.label;
+        return [{ ...base, label, id: `${group.dirId}:piece${index}:${(d.headsign ?? '').trim().toLowerCase()}`, display: (hoveredHour: number | null): CardRowDisplay => {
+          const shown = base.display(hoveredHour);
+          const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
+          const noNumber = t.t === 'limited';
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
+        } }];
+      }) : [];
+      // A line that reads exactly as one the card already has (same words, same reading) adds nothing and is left out.
+      const kept = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];
+      const readsAs = (r: CardRow) => `${r.label}\u0000${reportRowValueText(r)}`;
+      const seen = new Set(kept.map(readsAs));
+      finalRows = [...kept, ...unnamedRows.filter(r => { const k = readsAs(r); if (seen.has(k)) return false; seen.add(k); return true; })];
     }
 
     const realHeadsignKeys = new Set(

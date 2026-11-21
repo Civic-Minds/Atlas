@@ -15,6 +15,8 @@ import { noNumberRowLabel } from '../content/noticeCopy';
 export interface DirectionPieceTreatments {
   trunk: Extract<PieceTreatment, { t: 'reading' | 'tail' }>;
   branches: ReadonlyMap<number, PieceTreatment>;
+  /** CIV-1959 #1636: the name of each branch no feature of its own stands for, by branch index: where it goes (`to`, the pipeline's terminus) or, for an origin leg, where it starts (`from`). */
+  names: ReadonlyMap<number, { to?: string; from?: string }>;
 }
 
 const readingsOf = (features: readonly ShapeProperties[] | undefined): PieceReadings | undefined =>
@@ -28,11 +30,13 @@ export function directionPieceTreatments(features: readonly ShapeProperties[] | 
   const trunk = readings.pieces.find(p => p.kind === 'trunk')?.periods[key];
   if (!trunk || trunk.t === 'limited') return null;
   const branches = new Map<number, PieceTreatment>();
+  const names = new Map<number, { to?: string; from?: string }>();
   for (const p of readings.pieces) {
     const t = p.kind === 'branch' ? p.periods[key] : undefined;
     if (t) branches.set(p.index, t);
+    if (t && (p.to || p.from)) names.set(p.index, { ...(p.to ? { to: p.to } : {}), ...(p.from ? { from: p.from } : {}) });
   }
-  return branches.size > 0 ? { trunk, branches } : null;
+  return branches.size > 0 ? { trunk, branches, names } : null;
 }
 
 /** The words after "every N" for a tail: "every 30 min until 12:16 PM" (headwayPeriodShape, as every other part-period row). */

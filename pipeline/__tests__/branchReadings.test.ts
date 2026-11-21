@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { branchReadingsEnabled } from '../../shared/rules/flags';
 import { pieceAtStop } from '../../shared/pieceReadings';
 import { PERIOD_MINUTES } from '../../shared/rules/periods';
-import { classifyPiecePeriod, directionPieceReadings, pieceReadingsForFeature } from '../pieces';
+import { classifyPiecePeriod, directionPieceReadings, nameUnnamedPiece, pieceReadingsForFeature } from '../pieces';
 import { directionStretches, stampStretchShadow, stretchFilterValue, stretchPeriods, type DirectionTrip } from '../tripSets';
 
 // CIV-1959 B3 (#1620, #1086): what each piece of a direction shows in a period. Precedence, first match wins:
@@ -177,5 +177,30 @@ describe('the switch (ATLAS_BRANCH_READINGS=1, exactly)', () => {
     expect(on.every(p => p.pieceReadings !== undefined)).toBe(true);
     const strip = (p: Record<string, unknown>) => { const { pieceReadings: _omit, ...rest } = p; return rest; };
     expect(on.map(strip)).toEqual(off.map(strip));
+  });
+});
+
+describe('nameUnnamedPiece (#1636): a branch no feature stands for is named by where it goes, or where an origin leg starts', () => {
+  const trunk = ['a', 'b', 'c', 'd'];
+  const features = [
+    { headsign: 'Billings', stopOrder: [...trunk, 'e'] },
+    { headsign: 'Picadilly', stopOrder: [...trunk, 'e', 'f', 'g', 'h', 'lisbon'] },
+    { headsign: 'Tower Rd', stopOrder: [...trunk, 'e', 'f', 'g'] },
+  ];
+  it('a piece after the trunk is named from the pattern that ends inside it (RTD 15 Tower Rd, not the longer Picadilly that runs past it)', () => {
+    expect(nameUnnamedPiece(['e', 'f', 'g'], 'after', trunk, features)).toEqual({ to: 'Tower Rd' });
+  });
+  it('with no pattern ending in it, it takes the last stop\'s name, or has no line when that has none', () => {
+    expect(nameUnnamedPiece(['x', 'y'], 'after', trunk, features, id => (id === 'y' ? 'Colfax & Tower' : undefined))).toEqual({ to: 'Colfax & Tower' });
+    expect(nameUnnamedPiece(['x', 'y'], 'after', trunk, features)).toHaveProperty('why');
+  });
+  it('an origin leg is named by where it starts, never as a destination (DRT 900, RTD 15 westbound)', () => {
+    expect(nameUnnamedPiece(['o1', 'o2'], 'before', trunk, features, id => (id === 'o1' ? 'Colfax & Tower' : undefined))).toEqual({ from: 'Colfax & Tower' });
+    expect(nameUnnamedPiece(['o1', 'o2'], 'before', trunk, features)).toHaveProperty('why');
+  });
+  it('a piece between trunk stops, one with no position, or a direction with no trunk has no line, with a reason', () => {
+    expect(nameUnnamedPiece(['z'], 'between', trunk, features)).toHaveProperty('why');
+    expect(nameUnnamedPiece(['z'], undefined, trunk, features)).toHaveProperty('why');
+    expect(nameUnnamedPiece(['e'], 'after', null, features)).toHaveProperty('why');
   });
 });
