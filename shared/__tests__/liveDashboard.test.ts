@@ -152,7 +152,7 @@ describe('a held route in Studio (CIV-2000)', () => {
   it('keeps gaps and bunching and empties every delay figure for a swapped-trip route', async () => {
     const { gapsOnlyV3, heldRouteLine } = await import('../liveDashboard');
     const g = gapsOnlyV3(file(0.15, 1500));
-    expect(heldRouteLine(file(0.15, 1500))).toBe('Gaps and bunching only: its delays are hidden because about 15% of its trips ran under a trip number that does not match the schedule.');
+    expect(heldRouteLine(file(0.15, 1500))).toBe('Its delays are hidden because about 15% of its trips ran under a trip number that does not match the schedule.');
     expect([g.stops, g.buildup, g.bands.all.stops, g.bands.amPeak.buildup]).toEqual([[], [], [], []]);
     expect(g.adherence.timepoints.all.overall.n).toBe(0);
     expect(g.runningTime).toBeUndefined();

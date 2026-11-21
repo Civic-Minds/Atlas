@@ -23,7 +23,7 @@ describe('Studio right-now view (CIV-1893, CIV-2021)', () => {
     expect(screen.getByText('0 bunched, 1 long gap')).toBeTruthy();
     // No box inside the panel and no "Right now" heading (CIV-2021).
     expect(screen.queryByText('Right now')).toBeNull();
-    expect(screen.getByText('Bunched between C St and D St: 0.5 min apart')).toBeTruthy();
+    expect(screen.getByText('Bunched between C St and D St: 30 sec apart')).toBeTruthy();
     expect(screen.getByText('Long gap between E St and F St: 20 min wait, scheduled every 6 min')).toBeTruthy();
     expect(screen.queryByText(/A St/)).toBeNull();
   });

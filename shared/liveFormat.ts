@@ -9,3 +9,6 @@ export const tenth = (x: number): string => (Math.round(x * 10) / 10).toString()
  * forced ".0" (Ryan, CIV-1160 question 5, 2026-11-13).
  */
 export const minutesText = (x: number): string => delayAmount(Math.round(x * 10) / 10 || 0).replace('-', '−');
+
+/** A gap between two vehicles: under a minute in whole seconds ("12 sec"), else minutesText (CIV-2021: "0.2 min apart" read as a glitch). */
+export const gapText = (min: number): string => (min < 1 ? `${Math.max(1, Math.round(min * 60))} sec` : minutesText(min));

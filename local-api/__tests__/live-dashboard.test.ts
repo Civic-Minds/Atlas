@@ -62,7 +62,7 @@ describe('live-dashboard API: always a status and a reason, never a bare 404 or 
     expect(held.body).toMatchObject({ route: '35', v3: { schema: 3, stops: [], buildup: [] } });
     expect((held.body.v3 as { adherence: { timepoints: { all: { overall: { n: number } } } } }).adherence.timepoints.all.overall.n).toBe(0);
     // Its line is judged on the full file, not on the gaps-only copy (which would read as having no stop times).
-    expect(String(held.body.line)).toMatch(/^Gaps and bunching only: its delays are hidden because about 20% of its trips/);
+    expect(String(held.body.line)).toMatch(/^Its delays are hidden because about 20% of its trips/);
     expect((await get('agency=ttc&route=36')).body.status).toBe('unknown_route');
   });
 });
