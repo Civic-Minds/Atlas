@@ -37,7 +37,7 @@ export interface MapLine {
  */
 export type MapLayer =
   | { kind: 'segments'; model: RouteMapModel; measure: MapMeasure; heat?: HeatPoint[] | null }
-  | { kind: 'lines'; lines: readonly MapLine[] };
+  | { kind: 'lines'; lines: readonly MapLine[]; /** Points to frame when there are no lines (CIV-2054: a city's Live bounds under the no-data note). */ frameTo?: readonly [number, number][] };
 
 export interface PageMapOverlay {
   layer: MapLayer;

@@ -1,4 +1,6 @@
-import type { CSSProperties } from 'react';
+import { useEffect, type CSSProperties } from 'react';
+import { usePageMapOverlay } from '../../context/PageMapOverlay';
+import { useStudioMapFrame } from '../../context/StudioMapFrame';
 import { PanelBody } from '../../components/ui/Panel';
 import StudioPanel from '../../components/ui/WidePanel';
 import PanelEmpty from '../../components/ui/PanelEmpty';
@@ -13,7 +15,7 @@ import StudioChips, { type StudioMenu } from './StudioChips';
  * CIV-2054 (Ryan: "This design is not used anywhere else in the app"): the list is the app's agency list rows, under
  * "Live has:", with each agency's full name and place from the shared name source.
  */
-export default function StudioNoData({ pageName, agencyName, rows, onPick, agencyMenu, headerPortal, frameStyle }: {
+export default function StudioNoData({ pageName, agencyName, rows, onPick, agencyMenu, headerPortal, frameStyle, frameTo }: {
   pageName: string;
   /** The chosen agency's full name. */
   agencyName: string;
@@ -22,8 +24,18 @@ export default function StudioNoData({ pageName, agencyName, rows, onPick, agenc
   agencyMenu: StudioMenu | null;
   headerPortal: Element | null;
   frameStyle: CSSProperties;
+  /** CIV-2054: the city's corners (longitude, latitude), so the map moves to it though the note draws nothing. */
+  frameTo?: readonly [number, number][] | null;
 }) {
   const line = studioNoPageDataText(pageName, agencyName);
+  // The map goes to the city as on every other page, through the page overlay's own framing (frameKey per agency).
+  const { setOverlay } = usePageMapOverlay();
+  const { frameKey, framedMemory } = useStudioMapFrame();
+  useEffect(() => {
+    if (!frameTo?.length) return;
+    setOverlay({ layer: { kind: 'lines', lines: [], frameTo }, selected: null, onPick: () => {}, frameKey, framedMemory });
+  }, [setOverlay, frameTo, frameKey, framedMemory]);
+  useEffect(() => () => setOverlay(null), [setOverlay]);
   return (
     <>
       <StudioChips container={headerPortal} menus={[agencyMenu]} />
