@@ -13,6 +13,7 @@ import SiteContact from './components/SiteContact';
 import DocsPageLayout from './components/ui/DocsPageLayout';
 import DataTable, { type DataTableColumn } from './components/ui/DataTable';
 import { PageTitle, SectionTitle, SubsectionTitle } from './components/ui/PageTitle';
+import { SCROLL_BELOW_HEADER } from './styles';
 import {
   BETA_ROLLOUT_NOTICE,
   BOOKING_REQUIRED_NOTICE,
@@ -47,7 +48,10 @@ const AGENCY_TABLE_PERIODS = joinList([PERIOD_LABELS.amPeak, PERIOD_LABELS.midda
 /** The research pages, counted and named from RESEARCH so the page can't drift from the /research index (CIV-1610, CIV-1440). */
 const RESEARCH_VIEWS = `${countText(RESEARCH.length)} focused ${plural(RESEARCH.length, 'view')}, ${joinList(RESEARCH.map(entry => entry.title.toLowerCase()))}`;
 /** How a route is rated (FREQUENCY_RULES rules 2-4, D1): the Frequency section and the glossary's "Route rating" both read this (CIV-1440). */
-const ROUTE_RATING = 'A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.';
+const ROUTE_RATING_SLOWEST = 'A route’s line colour and filter result come from its slowest direction. Within each direction, the part its regular trips all share and each branch are checked on their own, and the slowest one counts.';
+/** CIV-1440 pick 3 (Ryan, 2026-11-20, word for word): where section colours are on (FEATURES.segmentColours). */
+const ROUTE_RATING_SECTIONS = 'A route’s line is coloured section by section. The shared stretch, where all branches run, gets its own colour, and each branch gets its own. The frequency filter reads the shared stretch, so a slow branch doesn’t hide the route.';
+const ROUTE_RATING = FEATURES.segmentColours ? ROUTE_RATING_SECTIONS : ROUTE_RATING_SLOWEST;
 
 const LiveGlossaryTerms = lazy(() => import('./components/LiveGlossaryTerms'));
 
@@ -74,7 +78,7 @@ const DOCS_SECTION_LABELS = Object.fromEntries(DOCS_CONTENTS) as Record<DocsSect
 function Section({ id, children }: { id: DocsSectionId; children: ReactNode }) {
   const title = DOCS_SECTION_LABELS[id];
   return (
-    <section id={id} className="scroll-mt-24">
+    <section id={id} className={SCROLL_BELOW_HEADER}>
       <SectionTitle className="mb-2">{title}</SectionTitle>
       <div className="space-y-2 text-sm leading-relaxed text-[var(--text-dim)]">{children}</div>
     </section>
@@ -177,7 +181,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Shared data:</strong> every Atlas tool works from the same route, stop and freshness data. History and real-time data show up only where those features are turned on.</li>
               <li><strong className="text-[var(--text-primary)]">Honest numbers:</strong> when a period does not have enough consistent service to give a real frequency, Atlas says so instead of adjusting the calculation until it shows a believable number.</li>
-              {showHistory && <li><strong className="text-[var(--text-primary)]">Kept history:</strong> each past schedule is kept as a dated snapshot. A period that is missing or unusable stays empty. Atlas never copies or guesses it from another period.</li>}
+              {showHistory && <li><strong className="text-[var(--text-primary)]">Kept history:</strong> each past schedule is kept as a dated snapshot. If a route’s service didn’t change between years, History shows the same number for those years. It never fills in a year Atlas has no schedule for. If two schedules fall in one year, History uses the later one.</li>}
               <li><strong className="text-[var(--text-primary)]">Stable data:</strong> new information is added alongside existing fields, never in place of them, so anything built on published data keeps its meaning.</li>
             </ul>
           </Section>
@@ -216,7 +220,7 @@ export default function AboutDocsPage() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-[var(--text-primary)]">Frequency:</strong> current scheduled cadence, period filters, route variants, stop-level metrics and map colouring.</li>
               {showHistory && <li><strong className="text-[var(--text-primary)]">History:</strong> selected agencies with usable archived GTFS periods, showing documented service changes without fabricating missing years.</li>}
-              <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with {AGENCY_TABLE_PERIODS} waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within {metresText(150)} of one of its stops, and counts its stops as unique places (stops with the same name within {metresText(150)} count once). Area pages do the same for every agency in an area, such as the Greater Toronto and Hamilton Area.</li>
+              <li><strong className="text-[var(--text-primary)]">Agency and area pages:</strong> each agency has a page with a bar showing how many of its routes fall in each weekday-midday frequency band, a route table by mode with {AGENCY_TABLE_PERIODS} waits, and nearby agencies. The first sentence names the agencies it connects with, meaning agencies with a stop within {metresText(150)} of one of its stops, and counts its stops as unique places (stops with the same name within {metresText(150)} count once). Area pages do the same for every agency in an area, such as the Greater Toronto and Hamilton Area. State and province pages do the same for every agency in one state or province, and link to its main area pages. An area with only one agency goes straight to that agency’s page.</li>
               {FEATURES.onDemand && <li><strong className="text-[var(--text-primary)]">On-demand service:</strong> GTFS-Flex and source-backed service areas represented separately from fixed-route frequency so booking-based service is not misread as a normal route.</li>}
               {showResearch && <li><strong className="text-[var(--text-primary)]">Research:</strong> {RESEARCH_VIEWS}, built on source-reviewed data before anything becomes a general map feature.</li>}
             </ul>
@@ -275,7 +279,7 @@ export default function AboutDocsPage() {
             <Subsection title="Directions, Branches and Route Qualification">
               <p>Atlas calculates each scheduled direction separately before deciding whether a route qualifies. It uses the feed’s <code className="text-xs text-[var(--text-primary)]">direction_id</code> when present. If that field is missing, trips fall into the default direction group, Atlas records a warning and the resulting headway may be understated because opposite directions may have been merged.</p>
               <p>Within a direction, Atlas also separates different headsigns and physical shapes so branches and short turns do not get mixed into one artificially frequent series. One exception: when two patterns take turns running trips to the same end of the line, and neither runs consistently on its own but together they do, Atlas reads them as one service on the stops they share. Surface routes keep the longest meaningful shape groups for analysis, with a trip-volume fallback when length alone would discard most of the service; rail-like routes use their longest available shape. These are analysis choices, not claims that the feed’s direction labels are always correct.</p>
-              <p>The frequency filter and the map colours are direction-aware. For a period threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. A rush-hour-only route with consistent trips is rated by its own spacing, so it can pass the filter during its rush hour. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked occasional as a whole and hidden by the default occasional-service filter.</p>
+              <p>The frequency filter and the map colours are direction-aware. For a period threshold, every direction must meet the threshold, and the worst direction decides, so a route does not pass solely because one direction is frequent while the other is materially slower. A rush-hour-only route with consistent trips is rated by its own spacing, so it can pass the filter during its rush hour. A route that runs for only part of a period shows the hours it runs, and says when it has no trips or runs less often the rest of the time. Occasional extra trips, such as a short turn or an extension with only a few runs, are set aside when the same direction has a consistent main pattern, and a direction is never dropped from the check. For example, a direction {headwayEvery(10)} paired with one {headwayEvery(30)} does not pass ≤10 min; it can pass ≤30 min if the other route-level checks also pass. The separate “All” service view is broader by design: it can show service in only one direction or service that has not qualified for a numeric tier. A route/day with a direction that has no sustained, real-tier pattern can also be marked occasional as a whole and hidden by the default occasional-service filter.</p>
             </Subsection>
             <SubsectionTitle>Band Qualification and Tolerance</SubsectionTitle>
             <p>This band test decides whether a pattern counts as consistent service, as opposed to infrequent or occasional service. Atlas tests the tightest band first and requires enough departures to cover the analysed span at that band. For a target of <code className="text-xs text-[var(--text-primary)]">T</code> minutes, the minimum trip count is based on <code className="text-xs text-[var(--text-primary)]">ceil(span ÷ T)</code>.</p>
@@ -430,6 +434,7 @@ export default function AboutDocsPage() {
               <li><strong className="text-[var(--text-primary)]">Annotate:</strong> publish a quality note when the source problem is real but removing it would hide information Atlas users may need to interpret the result.</li>
               <li><strong className="text-[var(--text-primary)]">Hold for review:</strong> keep a feature in beta, research or an audit queue when the evidence is not strong enough for the public map.</li>
             </ul>
+            <p>Before new data goes live, Atlas compares each agency with what is live. If routes, stops or service days drop sharply (more than a fifth), service is missing or copied from another agency, or the schedule has ended, that agency’s update is held back and its current data stays. Smaller changes are flagged for review.</p>
             <p>These checks do not make the underlying agency data perfect. They make the limits visible, prevent known errors from being amplified, and give each correction or research claim a traceable reason for existing.</p>
           </Section>
 

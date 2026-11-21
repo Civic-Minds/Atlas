@@ -11,14 +11,15 @@ import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { TIME_LOSS_BANDS, timeLossReport, type TimeLossReport, type TimeLossRow } from '../src/utils/timeLossReport';
 import type { SegmentBand, SegmentDelayData } from '../src/utils/segmentDelayView';
-import { minutesText, tenth } from '../shared/liveFormat';
+import { minutesText } from '../shared/liveFormat';
+import { timeLostLine } from '../shared/liveWording';
 
 /** The Live card's band names (GLOSSARY "## Live"). */
 const BAND_NAMES: Record<SegmentBand, string> = { all: 'All day', amPeak: 'AM Peak', midday: 'Midday', pmPeak: 'PM Peak', evening: 'Evening' };
 
 const sample = (r: TimeLossRow) => `${r.passes} trips, ${r.days} days`;
-/** Card wording: "Takes {X} longer than scheduled", "1 in 10 take {X}+ min longer". */
-const slowerText = (r: TimeLossRow) => `Takes ${minutesText(r.typicalMin)} longer than scheduled${r.showP90 ? `; 1 in 10 take ${tenth(r.p90MinDown)}+ min longer` : ''}`;
+/** Card wording: "Time lost: {X}" (timeLostLine, the Delays start cards' own). */
+const slowerText = (r: TimeLossRow) => timeLostLine(r.typicalMin);
 /** Card wording: "The schedule allows {X} more than vehicles need". */
 const looserText = (r: TimeLossRow) => `The schedule allows ${minutesText(-r.typicalMin)} more than vehicles need`;
 

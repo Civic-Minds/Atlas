@@ -2,11 +2,12 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMe
 import { useNavigate, useLocation } from 'react-router';
 import { Search, Info, History as HistoryIcon, ChevronDown, Radio } from 'lucide-react';
 import { CompareTab } from './components/Interval/CompareControl';
-import { MODE_EASE, ModeCrossFadeText, ModeFadeInOnMount, useModeEasing, useModeEntering } from './components/ModeTransition';
+import { MODE_EASE, ModeCrossFadeText, useModeEasing, useModeEntering, useModeLeaving } from './components/ModeTransition';
 import { useUrlPathname } from './hooks/useUrlPathname';
 import ModeTab from './components/ModeTab';
+import ModeUnavailableNote from './components/ModeUnavailableNote';
 import SearchClearButton from './components/ui/SearchClearButton';
-import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, sidebarFrameStyle, SEARCH_ICON, CARD_NOTE } from './styles';
+import { MAP_TOP_BAR_SLOT, MAP_STATUS_SLOT, TOP_BAR_PILL_SURFACE, TOP_BAR_ICON_BTN, FLOATING_CARD, SEARCH_BAR_WIDTH, TRANSITION_BASE, TRANSITION_SLOW, Z_MAP_OVERLAY, Z_PANEL, Z_HEADER, Z_MODAL_TOP, SIDEBAR_LEFT_FALLBACK, SEARCH_ICON, CARD_NOTE } from './styles';
 import { compareSearchMaxWidth } from './mapOverlayLayout';
 import { R2_PUBLIC_URL, FEATURES, FEATURE_ROUTES, ATLAS_MODE } from '../shared/config';
 import { loadAgencyCatalog, withArtifactUrls } from './hooks/useAgencies';
@@ -24,10 +25,15 @@ const BustangConnections = React.lazy(() => import('./apps/BustangConnections'))
 // of what main's build actually fetches, not just hidden behind a runtime check.
 const History = React.lazy(() => import('./apps/History'));
 const LiveVehicles = React.lazy(() => import('./apps/LiveVehicles'));
+// Atlas Studio is local only (FEATURES.studio is the dev server); the DEV check keeps it out of deployed bundles entirely.
+const Studio = import.meta.env.DEV ? React.lazy(() => import('./apps/studio/Studio')) : () => null;
 import { COMPARE_PATH, isAppGated, isCompareGated, type AppId } from './utils/appGate';
+import { parseStudioPath } from '../shared/studioAgencies';
 import { ModeTabsProvider } from './components/ModeTabLabel';
 import { HistoryMapOverlayProvider } from './context/HistoryMapOverlay';
 import { LiveVehiclesMapOverlayProvider } from './context/LiveVehiclesMapOverlay';
+import { PageMapOverlayProvider } from './context/PageMapOverlay';
+import { SidebarFrameProvider } from './context/SidebarFrame';
 import { ViewportProvider } from './context/ViewportContext';
 const InfoPanel = React.lazy(() => import('./components/InfoPanel'));
 import type { Tab, InfoFeatureFilter, OpenInfoOptions, HelpContext } from './components/InfoPanel';
@@ -37,7 +43,7 @@ import { preloadHistory } from './utils/historyConfig';
 import { historyAgencyToOpen, historyRouteSearchPlaceholder } from './utils/historyOpen';
 import { useHistoryRouteLink } from './hooks/useHistoryRouteLink';
 import { type HistoryView } from './utils/historyYearMap';
-import { encodeHistoryView, historyDefaultView, parseHistoryView } from './utils/historyViewUrl';
+import { encodeHistoryView, historyDayPickerShown, historyDefaultView, historyEffectiveView, parseHistoryView } from './utils/historyViewUrl';
 import { openingDay, saveDayPref } from './utils/openingDay';
 import historyAgencyList from '../shared/data/history-agencies.json';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -49,6 +55,8 @@ import { syncUrlParams } from './utils/syncUrlParams';
 import { APP_URL, FREQUENT_URL, MAP_URL, NIGHT_URL, currentSearch, linkUpdate, readLink, readUrlParam, urlParamUpdate } from './utils/urlSchema';
 import { AGENCY_CARD_PARAM, parseAgencyCardParam } from './utils/shareUrlState';
 import AppUpdateBanner from './components/AppUpdateBanner';
+import SlowConnectionPrompt, { readSlowPromptAnswered, rememberSlowPromptAnswered } from './components/SlowConnectionPrompt';
+import { useSlowConnection } from './utils/slowConnection';
 import { withFeedQualityToday, type FeedQuality } from '../shared/feedQuality';
 import { trackEvent } from './lib/analytics';
 import { markAtlasOnce } from './lib/performance';
@@ -59,15 +67,15 @@ import { applyOnDemand } from './lib/onDemandLoader';
 import { OnDemandStatusProvider, OnDemandViewportLoader, useOnDemandData } from './hooks/useOnDemandData';
 import type { OnDemandAvailability, OnDemandPickup, OnDemandZoneDetails } from '../shared/onDemandAvailability';
 import { SEARCH_BUSTANG_PLACEHOLDER, SEARCH_NIGHT_PLACEHOLDER, SEARCH_SHORT_PLACEHOLDER, SEARCH_VEHICLES_PLACEHOLDER, HISTORY_AGENCY_SEARCH_PLACEHOLDER, HISTORY_BUTTON_ACTIVE_LABEL, HISTORY_BUTTON_LABEL, loadErrorText, loadingText, MAP_ERROR_TEXT, RETRY_LABEL, SEARCH_ROUTES_PLACEHOLDER, MAP_EXPORT_TITLES, ABOUT_ATLAS, ATLAS_HOME_LABEL, LIVE_TAB_LABEL, MORE_VIEWS_LABEL, COMPARE_LABEL, MORE_LABEL } from './content/noticeCopy';
-import Panel from './components/ui/Panel';
-import PanelEmpty from './components/ui/PanelEmpty';
+import ViewLoadingPanel from './components/ViewLoadingPanel';
+import { PAGE_NAMES } from '../shared/pageNames';
 import { BustangRouteDepartures, BustangStopConnections } from './components/research/BustangCardSections';
 import { BUSTANG_MAP_BOUNDS, BUSTANG_WITHIN_PARAM, bustangMapSlugs, bustangStopFor, useBustangData } from './utils/bustangConnections';
 import { NEARBY_METERS, parseNearbyChoice, type NearbyChoice } from '../shared/connections';
 import { splitRouteKey } from './utils/routeKey';
-import { LIVE_MAP_TITLE } from '../shared/liveWording';
+import { LIVE_MAP_TITLE, OPEN_ABOUT_LIVE_EVENT } from '../shared/liveWording';
 import type { StopCardExtraInput } from './components/Interval/SidebarControls';
-import { LIVE_PATH } from '../shared/pagePaths';
+import { FREQUENCY_PATH, HISTORY_PATH, LIVE_PATH } from '../shared/rules/paths';
 import type { AgencyCatalogEntry } from '../shared/agencyCatalog';
 
 /**
@@ -118,21 +126,29 @@ export interface Agency extends Omit<AgencyCatalogEntry, 'url' | 'feedQuality'> 
 
 const PATH_TO_APP: Record<string, AppId> = {
   '/': 'frequency',
-  '/apps/frequency': 'frequency',
-  '/apps/history': 'history',
+  [FREQUENCY_PATH]: 'frequency',
+  [HISTORY_PATH]: 'history',
   [LIVE_PATH]: 'live',
   // Compare's own address shows the frequency map, split in two (Interval turns Compare on from the path).
-  '/apps/compare': 'frequency',
+  [COMPARE_PATH]: 'frequency',
   [FEATURE_ROUTES.nightService]: 'night',
   [FEATURE_ROUTES.bustangConnections]: 'bustang',
+  // Atlas Studio (CIV-1828): a view of the map, as History is; local only.
+  [FEATURE_ROUTES.studio]: 'studio',
 };
+
+/** The view an address opens: its own path, or Studio's for any of Studio's paths (/studio/<page>/…, CIV-1924). */
+function appForPath(pathname: string): AppId {
+  return PATH_TO_APP[pathname] ?? (parseStudioPath(pathname) ? 'studio' : 'frequency');
+}
 
 const APP_TO_PATH: Record<AppId, string> = {
   frequency: '/',
-  history: '/apps/history',
+  history: HISTORY_PATH,
   live: LIVE_PATH,
   night: FEATURE_ROUTES.nightService,
   bustang: FEATURE_ROUTES.bustangConnections,
+  studio: FEATURE_ROUTES.studio,
 };
 
 export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
@@ -157,18 +173,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const phoneModes = phoneModeFlags(isPhone);
   const historyOn = FEATURES.history && phoneModes.history;
   const compareOn = phoneModes.compareMode;
-  const routedApp: AppId = PATH_TO_APP[pathname] ?? 'frequency';
+  const studioOn = FEATURES.studio && phoneModes.mapApps;
+  const routedApp: AppId = appForPath(pathname);
   const pageHeading = findSeoRoute(pathname)?.title;
   // Direct URL access (e.g. /apps/live) would otherwise bypass the LIVE_ENABLED / HISTORY_ENABLED
   // gate below -- fall back to the frequency map, and correct the URL so it
   // doesn't lie about what's actually showing.
-  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn })
+  const gated = isAppGated(routedApp, { ...FEATURES, history: historyOn, studio: studioOn })
     || isCompareGated(pathname, compareOn)
     || (isFrequentServiceMapRoute && !FEATURES.frequentService);
   const activeApp: AppId = gated ? 'frequency' : routedApp;
   // The router's view of the address lags the address bar while the next mode renders (a
   // transition). Follow the bar urgently so a mode never stays on screen after its URL is gone.
-  const urlApp: AppId = PATH_TO_APP[useUrlPathname()] ?? 'frequency';
+  const urlApp: AppId = appForPath(useUrlPathname());
   const modeCatchingUp = urlApp !== routedApp;
 
   // In a local copy, a switched-off Live says so instead of silently redirecting. Deployments keep the redirect.
@@ -238,6 +255,12 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     setInfoOpen(false);
     setInfoHelpContext(null);
   }, []);
+  // Studio's Live view: Learn more opens About at its Live part.
+  useEffect(() => {
+    const on = () => openInfo('about');
+    window.addEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+    return () => window.removeEventListener(OPEN_ABOUT_LIVE_EVENT, on);
+  }, [openInfo]);
   const toggleInfo = useCallback(() => {
     setInfoOpen(isOpen => {
       if (isOpen) {
@@ -251,7 +274,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   }, []);
   // The agency card opens from a link's ?operator= (CIV-919). History keeps its own `agency` param.
   const [selectedAgencySlug, setSelectedAgencySlug] = useState<string | null>(() => (
-    window.location.pathname.startsWith('/apps/history') ? null : parseAgencyCardParam(window.location.search)
+    window.location.pathname.startsWith(HISTORY_PATH) ? null : parseAgencyCardParam(window.location.search)
   ));
   const [selectedMapAgencySlug, setSelectedMapAgencySlug] = useState<string | null>(null);
   const [pendingLiveRoute, setPendingLiveRoute] = useState<{ slug: string; routeShortName: string } | null>(null);
@@ -337,6 +360,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (FEATURES.persistedSettings) localStorage.setItem('atlas_pref_data_saver', String(dataSaver));
   }, [dataSaver]);
 
+  // CIV-98: a slow connection loads like Data saver until the visitor answers; the answer is kept for the session.
+  const slowConnection = useSlowConnection(FEATURES.slowConnectionPrompt);
+  const [slowAnswered, setSlowAnswered] = useState(readSlowPromptAnswered);
+  const showSlowPrompt = slowConnection && !dataSaver && !slowAnswered;
+
   const visibleAgencies = useMemo(
     () => hideLowQuality
       ? agencies.filter(a => a.feedQuality?.status !== 'degraded' && a.feedQuality?.status !== 'unusable')
@@ -374,6 +402,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const [layers, setLayers] = useState<Record<string, GeoJSON.FeatureCollection>>({});
   const [viewportAgencySlugs, setViewportAgencySlugs] = useState<string[]>([]);
+  const [centreAgencySlugs, setCentreAgencySlugs] = useState<string[]>([]);
   const [userMovedMap, setUserMovedMap] = useState(false);
   // History with an agency open: the top search bar searches that agency's routes (#1015).
   // The History agency open, by its short name: the top search bar then searches its routes (#1015, CIV-402).
@@ -385,7 +414,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   // History's own Frequency and Time (CIV-389, CIV-392), separate from the map's: All, and the current period
   // (CIV-1097). Read from the link's h/p (the map's params) when the app opens on History.
   const [historyView, setHistoryView] = useState<HistoryView>(() => (
-    window.location.pathname.startsWith('/apps/history') ? parseHistoryView(window.location.search) : historyDefaultView()
+    window.location.pathname.startsWith(HISTORY_PATH) ? parseHistoryView(window.location.search) : historyDefaultView()
   ));
 
   // CIV-1433: with the day picker on, a day the viewer picks in History is saved as their day, as the map saves it.
@@ -393,7 +422,11 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     if (FEATURES.historyDayPicker && next.day !== historyView.day) saveDayPref(next.day);
     setHistoryView(next);
   }, [historyView.day]);
-  const historyViewControl = useMemo(() => ({ view: historyView, setView: setHistoryViewSavingDay }), [historyView, setHistoryViewSavingDay]);
+  // CIV-1646: an open agency whose History data has no weekend values hides the Day chip and keeps History on Weekday.
+  const [historyOpenAgencyWeekend, setHistoryOpenAgencyWeekend] = useState<boolean | null>(null);
+  const historyDayShown = historyDayPickerShown(historyOpenAgencyWeekend);
+  const historyViewShown = useMemo(() => historyEffectiveView(historyView, historyDayShown), [historyView, historyDayShown]);
+  const historyViewControl = useMemo(() => ({ view: historyViewShown, setView: setHistoryViewSavingDay, dayShown: historyDayShown }), [historyViewShown, setHistoryViewSavingDay, historyDayShown]);
   const handleUserMoveMap = useCallback(() => setUserMovedMap(true), []);
   const [frequentLink] = useState(() => readLink(currentSearch(), FREQUENT_URL));
   const [frequentServiceDays, setFrequentServiceDays] = useState<DayType[]>(() => frequentLink.days ?? ['Weekday']);
@@ -406,6 +439,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
 
   const inFrequency = activeApp === 'frequency';
   const inHistory = activeApp === 'history';
+  // Atlas Studio (CIV-1828): its pages draw on the map through PageMapOverlay; the map's own routes, tabs and chips step aside.
+  const inStudio = activeApp === 'studio';
+  // Leaving Studio fades its page out the way it came in, as the main map's modes do (CIV-1921).
+  const studioLeaving = useModeLeaving(inStudio, FEATURES.modeTransitions);
   // CIV-1567 (beta): History's agency filter reaches the map once the top bar has finished folding (about 0.35 s):
   // the map re-lays out its route tiles for the filter in one long frame, which would otherwise freeze the fold midway.
   const historyEntering = useModeEntering(inHistory, FEATURES.modeTransitions);
@@ -413,8 +450,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   const historyMapFilterOn = inHistory && !historyEasing;
   // History's Frequency and Time live in the link as the map's h/p while History is open (historyViewUrl).
   useEffect(() => {
-    if (inHistory) syncUrlParams(encodeHistoryView(historyView));
-  }, [inHistory, historyView]);
+    if (inHistory) syncUrlParams(encodeHistoryView(historyView, historyDayShown));
+  }, [inHistory, historyView, historyDayShown]);
   // The open agency card in the link (CIV-919); History never carries it.
   useEffect(() => {
     syncUrlParams({ [AGENCY_CARD_PARAM]: inHistory ? null : selectedAgencySlug });
@@ -468,30 +505,29 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     const found = bustangData ? bustangStopFor(bustangData, stop) : null;
     return found && bustangData ? <BustangStopConnections data={bustangData} day={day} within={bustangWithin} stop={found} /> : null;
   }, [bustangData, day, bustangWithin]);
-  const loadedAgencySlugs = useMemo(
-    () => new Set([
-      ...Object.keys(layers).map(slug => slug.endsWith('-corridors') ? slug.slice(0, -10) : slug),
-      // In-view agencies count before their data arrives, so the Live and History controls do not wait for it.
-      ...viewportAgencySlugs,
-    ]),
-    [layers, viewportAgencySlugs],
-  );
   // One rule for the desktop mode tabs (beta): while any non-map view is on, the unselected tabs
   // shrink to icons. ModeTab applies it, so views and future views never decide this themselves.
   const nonMapViewActive = FEATURES.collapseModeTabs
     && (inLive || inHistory || inNight || inBustang || inFrequentService || compareActive);
   const showCompareControl = compareOn && inFrequency;
-  const showLiveControl = FEATURES.live && (inLive || [...loadedAgencySlugs].some(slug =>
-    isLiveEligibleSlug(slug),
-  ));
+  // CIV-1861: the Live and History tabs always show when the view is on (never in Studio); over a city without data they
+  // are dimmed and tapping one lists the cities that have it.
+  const showLiveControl = FEATURES.live && !inStudio;
+  // "Here" is the city at the map's centre right now: not every layer ever loaded, and not every agency whose wide area
+  // touches the screen. Panning from a city with data to one without dims the tabs again, and back.
+  const liveHere = inLive || centreAgencySlugs.some(slug => isLiveEligibleSlug(slug));
   const liveAgencyCount = LIVE_AGENCY_SLUGS.length;
-  const showHistoryControl = historyOn && (inHistory || (historyAgencySlugs != null && (
+  const showHistoryControl = historyOn && !inStudio;
+  const historyHere = inHistory || (historyAgencySlugs != null && (
     (selectedMapAgencySlug != null && historyAgencySlugs.has(selectedMapAgencySlug)) ||
-    [...loadedAgencySlugs].some(slug => historyAgencySlugs.has(slug))
-  )));
+    centreAgencySlugs.some(slug => historyAgencySlugs.has(slug))
+  ));
+  const [modeNote, setModeNote] = useState<'Live' | 'History' | null>(null);
+  const closeModeNote = useCallback(() => setModeNote(null), []);
+  const noteFor = (mode: 'Live' | 'History') => setModeNote(open => open === mode ? null : mode);
   // On the plain map (not in Live, where the extra download isn't worth it), warm History in idle time once its
   // tab is on offer, so the first open doesn't wait on the code or the multi-megabyte config.
-  const warmHistory = showHistoryControl && inFrequency && agenciesLoadState === 'ready';
+  const warmHistory = showHistoryControl && historyHere && inFrequency && agenciesLoadState === 'ready';
   useEffect(() => {
     if (!warmHistory) return;
     const w = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
@@ -517,6 +553,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     : inHistory ? (historyOpenAgencyName ? historyRouteSearchPlaceholder(historyOpenAgencyName) : HISTORY_AGENCY_SEARCH_PLACEHOLDER)
     : inNight ? SEARCH_NIGHT_PLACEHOLDER
     : inBustang ? SEARCH_BUSTANG_PLACEHOLDER
+    : inStudio ? SEARCH_ROUTES_PLACEHOLDER
     : SEARCH_VEHICLES_PLACEHOLDER;
 
   function handleSearchClear() {
@@ -526,12 +563,18 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
   useEffect(() => {
     const measure = () => {
       const search = searchBarRef.current?.getBoundingClientRect();
-      if (search) {
+      // A hidden box (Studio) measures zero: the cards keep their own width, left where the box would start.
+      if (search && search.width > 0) {
         setSidebarLeft(search.left);
         setSearchBarWidth(search.width);
         return;
       }
-      const header = headerLeftRef.current?.getBoundingClientRect();
+      setSearchBarWidth(undefined);
+      // Where the search box would start: just right of the logo, by the row's own gap.
+      const row = headerLeftRef.current;
+      const logo = row?.firstElementChild?.getBoundingClientRect();
+      if (row && logo && logo.width > 0) { setSidebarLeft(logo.right + (parseFloat(getComputedStyle(row).columnGap) || 0)); return; }
+      const header = row?.getBoundingClientRect();
       if (header) setSidebarLeft(header.left + 138);
     };
     measure();
@@ -636,8 +679,19 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
     <ModeTabsProvider nonMapViewActive={nonMapViewActive}>
     <OnDemandStatusProvider data={onDemandData}>
     <OnDemandViewportLoader data={onDemandData} linkedSlug={linkedOnDemandSlug} />
+    {modeNote && (
+      <ModeUnavailableNote
+        mode={modeNote}
+        slugs={modeNote === 'Live' ? LIVE_AGENCY_SLUGS : [...(historyAgencySlugs ?? [])]}
+        agencies={agencies}
+        onJump={slug => { setModeNote(null); handleLiveAgencyClick(slug); }}
+        onClose={closeModeNote}
+      />
+    )}
     <HistoryMapOverlayProvider>
     <LiveVehiclesMapOverlayProvider>
+    <PageMapOverlayProvider>
+    <SidebarFrameProvider sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth}>
     <div className={`relative h-dvh w-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans overflow-hidden transition-colors ${TRANSITION_BASE}`}>
       {/* The page's heading for screen readers, in the page's own title words (#1195). */}
       {!inResearch && pageHeading && <PageTitle level="hidden">{pageHeading}</PageTitle>}
@@ -649,7 +703,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           hideByline
           hideWordmark={phoneSearchExpanded}
           onClick={() => {
-            if (inLive || inHistory || inNight) {
+            if (inLive || inHistory || inNight || inStudio) {
               // Leaving a mode: switch in place like the mode's own tab, so the map isn't torn down and rebuilt.
               setActiveApp('frequency');
             } else if (onGoHome) {
@@ -665,7 +719,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         <div className="flex-1 min-w-0 sm:flex">
         {/* The outer box keeps the search slot's width, which the side cards measure; in Compare only the pill inside
             stops short of the divider, so the cards keep their width (CIV-844). */}
-        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed ? 'hidden' : ''}`}>
+        {/* Studio (CIV-1828) searches nothing yet: the box is left out, as the phone's resting search is, and the tabs close up. */}
+        <div ref={searchBarRef} className={`${SEARCH_BAR_WIDTH} min-w-0 relative ${phoneSearchCollapsed || inStudio ? 'hidden' : ''}`}>
         <div data-focus-ring className={`relative w-full min-w-0 ${TOP_BAR_PILL_SURFACE} pl-1 pr-3 ${FEATURES.modeTransitions ? `transition-[max-width] ${MODE_EASE}` : ''}`} style={compareActive && !isPhone ? { maxWidth: compareSearchMaxWidth(sidebarLeft) } : FEATURES.modeTransitions ? { maxWidth: '100%' } : undefined}>
           <Search className={`absolute left-2 top-1/2 -translate-y-1/2 ${SEARCH_ICON} pointer-events-none`} />
           <input
@@ -709,8 +764,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           <ModeTab
             icon={<Radio className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={LIVE_TAB_LABEL} extra={liveAgencyCount} ariaLabel={LIVE_MAP_TITLE}
-            active={liveTabOn}
-            onClick={() => setActiveApp(liveTabOn ? 'frequency' : 'live')}
+            active={liveTabOn} dimmed={!liveHere}
+            onClick={() => liveHere ? setActiveApp(liveTabOn ? 'frequency' : 'live') : noteFor('Live')}
           />
         )}
 
@@ -719,9 +774,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
             icon={<HistoryIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
             label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
             ariaLabel={inHistory ? HISTORY_BUTTON_ACTIVE_LABEL : HISTORY_BUTTON_LABEL}
-            active={inHistory}
-            onClick={() => setActiveApp(inHistory ? 'frequency' : 'history')}
-            onWarm={preloadHistory}
+            active={inHistory} dimmed={!historyHere}
+            onClick={() => historyHere ? setActiveApp(inHistory ? 'frequency' : 'history') : noteFor('History')}
+            onWarm={historyHere ? preloadHistory : undefined}
           />
         )}
 
@@ -758,17 +813,17 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                   {showLiveControl && (
                     <ModeTab
                       variant="menu" icon={<Radio className="w-3.5 h-3.5" aria-hidden="true" />}
-                      label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn}
-                      onClick={() => { setActiveApp(liveTabOn ? 'frequency' : 'live'); setAppLinksOpen(false); }}
+                      label={LIVE_TAB_LABEL} extra={liveAgencyCount} active={liveTabOn} dimmed={!liveHere}
+                      onClick={() => { if (liveHere) setActiveApp(liveTabOn ? 'frequency' : 'live'); else noteFor('Live'); setAppLinksOpen(false); }}
                     />
                   )}
                   {showHistoryControl && (
                     <ModeTab
-                      onWarm={preloadHistory}
+                      onWarm={historyHere ? preloadHistory : undefined}
                       variant="menu" icon={<HistoryIcon className="w-3.5 h-3.5" aria-hidden="true" />}
                       label={HISTORY_BUTTON_LABEL} extra={historyExploreAgencyCount != null ? `${historyExploreAgencyCount}+` : undefined}
-                      active={inHistory}
-                      onClick={() => { setActiveApp(inHistory ? 'frequency' : 'history'); setAppLinksOpen(false); }}
+                      active={inHistory} dimmed={!historyHere}
+                      onClick={() => { if (historyHere) setActiveApp(inHistory ? 'frequency' : 'history'); else noteFor('History'); setAppLinksOpen(false); }}
                     />
                   )}
                   <div ref={moreMenuPortalRef} className="contents" />
@@ -809,7 +864,13 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
         </button>
       </div>
       </div>
-      {FEATURES.updateBanner && <AppUpdateBanner />}
+      {showSlowPrompt && (
+        <SlowConnectionPrompt
+          onAccept={() => { setDataSaver(true); setSlowAnswered(true); rememberSlowPromptAnswered(); }}
+          onDecline={() => { setSlowAnswered(true); rememberSlowPromptAnswered(); }}
+        />
+      )}
+      {FEATURES.updateBanner && !showSlowPrompt && <AppUpdateBanner />}
 
       <main className="absolute inset-0 overflow-hidden">
         <ErrorBoundary label={MAP_ERROR_TEXT}>
@@ -822,7 +883,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               allAgencies={agencies}
               lightMode={lightMode}
               setLightMode={setLightMode}
-              query={deferredQuery}
+              query={inStudio ? '' : deferredQuery}
               setQuery={setQuery}
               showUi={inFrequency || inFrequentService}
               showSelectionUi={inLive || inNight || inBustang}
@@ -845,7 +906,8 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               filterToAgencies={historyMapFilterOn || inBustang}
               agencyFilterSlugs={historyMapFilterOn ? historyFilterSlugs : inBustang ? bustangSlugs : null}
               onHistoryRouteClick={inHistory ? handleHistoryRouteClick : undefined}
-              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService}
+              hideFilterPanel={inLive || inHistory || inNight || inBustang || inFrequentService || inStudio}
+              pageView={inStudio}
               onInfoOpen={openInfo}
               selectedAgencySlug={selectedAgencySlug}
               setSelectedAgencySlug={setSelectedAgencySlug}
@@ -868,6 +930,7 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               setDay={setDay}
               onLayersChange={setLayers}
               onViewportAgencySlugsChange={setViewportAgencySlugs}
+              onCentreAgencySlugsChange={setCentreAgencySlugs}
               onUserMoveMap={handleUserMoveMap}
               onMapDismiss={inHistory ? handleMapDismiss : undefined}
               historyView={inHistory ? historyViewControl : undefined}
@@ -877,9 +940,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               onLiveRouteSelected={inLive ? handleLiveRouteSelected : undefined}
               onCompareActiveChange={setCompareActive}
               compareTabElsewhere={FEATURES.modeTransitions && compareOn && (inLive || inHistory) ? () => setActiveApp('frequency', COMPARE_PATH) : undefined}
-              headerPortalContainer={headerPortalEl}
-              viewTabsPortalContainer={viewTabsPortalEl}
-              moreMenuPortalContainer={moreMenuPortalEl}
+              // Studio puts its own chips and tabs in these slots (CIV-1828).
+              headerPortalContainer={inStudio ? null : headerPortalEl}
+              viewTabsPortalContainer={inStudio ? null : viewTabsPortalEl}
+              moreMenuPortalContainer={inStudio ? null : moreMenuPortalEl}
               onMoreMenuDone={() => setAppLinksOpen(false)}
               sidebarLeft={sidebarLeft}
               searchBarWidth={isPhone ? undefined : searchBarWidth}
@@ -891,35 +955,32 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
               showMapLegend={showMapLegend}
               setShowMapLegend={setShowMapLegend}
               dataSaver={dataSaver}
+              slowConnectionActive={showSlowPrompt}
               setDataSaver={setDataSaver}
             />
             {historyOn && (historyOpened || inHistory) && (
-              <React.Suspense fallback={inHistory ? (
-                // The shared loading panel, where History's panels open (#1028 item 20).
-                // CIV-1567 (beta): it fades in from its first painted frame rather than appearing in one frame.
-                <ModeFadeInOnMount enabled={FEATURES.modeTransitions}>
-                  {fade => (
-                    <Panel sidebar style={sidebarFrameStyle(sidebarLeft, isPhone ? undefined : searchBarWidth)} className={fade || undefined}>
-                      <PanelEmpty kind="loading">{loadingText('history')}</PanelEmpty>
-                    </Panel>
-                  )}
-                </ModeFadeInOnMount>
-              ) : null}>
-                <History active={inHistory} view={historyView} agencyCatalog={agencies} searchBarWidth={isPhone ? undefined : searchBarWidth} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} sidebarLeft={sidebarLeft} />
+              // The shared loading panel, where History's panels open (#1028 item 20, CIV-1925).
+              <React.Suspense fallback={inHistory ? <ViewLoadingPanel what="history" /> : null}>
+                <History active={inHistory} view={historyViewShown} agencyCatalog={agencies} initialAgencySlug={historyAgencyForView} inViewAgencySlugs={viewportAgencySlugs} onOpenAgencyChange={setHistoryOpenAgencyName} onOpenAgencyWeekendChange={setHistoryOpenAgencyWeekend} dismissKey={historyDismissKey} onPanelOpenChange={setHistoryPanelOpen} onInfoOpen={openInfo} query={deferredQuery} searchFocused={searchFocused} setQuery={setQuery} pendingRouteClick={pendingHistoryRoute} onPendingRouteHandled={() => setPendingHistoryRoute(null)} />
+              </React.Suspense>
+            )}
+            {studioOn && (inStudio || studioLeaving) && (
+              <React.Suspense fallback={inStudio ? <ViewLoadingPanel what={PAGE_NAMES.studio} /> : null}>
+                <Studio active={inStudio} agencyCatalog={agencies} headerPortal={headerPortalEl} tabsPortal={viewTabsPortalEl} />
               </React.Suspense>
             )}
             {FEATURES.beta && (nightOpened || inNight) && (
               <React.Suspense fallback={null}>
-                <NightService active={inNight} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
+                <NightService active={inNight} layers={layers} query={deferredQuery} frequency={nightServiceFrequency} onRouteSelect={handleNightRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} agencyCatalog={agencies} />
               </React.Suspense>
             )}
             {FEATURES.researchApps && inBustang && (
               <React.Suspense fallback={null}>
-                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
+                <BustangConnections active={inBustang} data={bustangData} day={day} setDay={setDay} within={bustangWithin} setWithin={setBustangWithin} onRouteSelect={handleBustangRouteClick} onBackToMap={() => setActiveApp('frequency')} selectionActive={intervalSelectionActive} />
               </React.Suspense>
             )}
             {inFrequentService && (
-              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} sidebarLeft={sidebarLeft} searchBarWidth={isPhone ? undefined : searchBarWidth} hidden={intervalSelectionActive}>
+              <ResearchInfo heading={FREQUENT_INFO_HEADING} onBack={() => setActiveApp('frequency')} hidden={intervalSelectionActive}>
                 {frequentRuleText({ frequency: frequentServiceFrequency, window: frequentServiceWindow, days: frequentServiceDays })}
               </ResearchInfo>
             )}
@@ -934,11 +995,9 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
                     onInfoOpen={openInfo}
                     query={deferredQuery}
                     layers={layers}
-                    sidebarLeft={sidebarLeft}
                     selectionActive={intervalSelectionActive}
                     routeRequest={liveRouteRequest}
                     onAgencyClick={handleLiveAgencyClick}
-                    searchBarWidth={isPhone ? undefined : searchBarWidth}
                   />
                 </React.Suspense>
               </div>
@@ -964,8 +1023,10 @@ export default function App({ onGoHome }: { onGoHome?: () => void } = {}) {
           </div>
         )}
       </main>
-      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} />
+      <InfoPanel open={infoOpen} onClose={closeInfo} agencies={visibleAgencies} defaultTab={infoTab} featureFilter={infoFeatureFilter} helpContext={infoHelpContext} feedRefreshMeta={feedRefreshMeta} onAgencySelect={handleAgencySelect} onLiveRouteClick={handleLiveRouteClick} layers={layers} inStudio={inStudio} />
     </div>
+    </SidebarFrameProvider>
+    </PageMapOverlayProvider>
     </LiveVehiclesMapOverlayProvider>
     </HistoryMapOverlayProvider>
     </OnDemandStatusProvider>

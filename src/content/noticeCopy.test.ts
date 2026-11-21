@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CARD_NOTICE, CARD_NOTICE_FOOTER } from '../styles';
-import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, officialDataOnlyNotice } from './noticeCopy';
+import { listingEndedPanelLead, DATA_QUALITY_AGENCIES_TITLE, HIDE_DEGRADED_FEEDS_SETTING, HIDE_ONE_OFF_SETTING, HIDE_PART_TIME_SETTING, LIMITED_SERVICE_LABEL, IRREGULAR_PERIOD_LABEL, IRREGULAR_PERIOD_SHORT_LABEL, HIDDEN_ROUTES_UNAVAILABLE, NO_DEGRADED_FEEDS, NO_FEED_MATCHES, NO_LIMITED_ROUTES_IN_VIEW, NO_MATCHING_AGENCIES, NO_MATCHING_ROUTES, noSearchMatchText, storyMapFailedText, storyMapLoadingText, NEW_SCHEDULE_DATA_NOTICE, expiredFeedCheckHistory, expiredFeedNotice, nightNoRoutesNotice, noServiceOnDayNotice, selectedRouteFilterNotice, selectedRouteOutsideFilterNotice, stopNoRoutesNotice, liveUnreachableText, clearAgencyFiltersTitle, liveRouteEmptyNotice, liveReportFlagTitle, frequentNoRoutesNotice, NO_SEARCH_MATCHES_NEAR_MAP, LIVE_STOP_ARRIVALS_UNAVAILABLE, officialDataOnlyNotice } from './noticeCopy';
 import { timeLostLine } from '../../shared/liveWording';
 
 describe('expiredFeedNotice', () => {
@@ -74,6 +74,13 @@ describe('approved notice wording (CIV-1045)', () => {
     expect(nightNoRoutesNotice(30)).toBe('No routes here run every 30 min or better from 2–5 AM.');
   });
 
+  it('N129, N130, N128: the last missing notices (CIV-959)', () => {
+    expect(frequentNoRoutesNotice(15, '7 AM–7 PM', ['Weekday'])).toBe('No routes here run every 15 min or better from 7 AM–7 PM on weekdays.');
+    expect(frequentNoRoutesNotice(30, '7 AM–12 AM', ['Saturday', 'Sunday'])).toBe('No routes here run every 30 min or better from 7 AM–12 AM on Saturdays and Sundays.');
+    expect(NO_SEARCH_MATCHES_NEAR_MAP).toBe('No routes in this map area match. Open the agency to see all its routes.');
+    expect(LIVE_STOP_ARRIVALS_UNAVAILABLE).toBe('Live arrivals for this stop can’t be shown right now.');
+  });
+
   it('N17 and N26: no trips on the day (CIV-1077, CIV-1251)', () => {
     expect(noServiceOnDayNotice('route', 'Sunday')).toBe('This route has no trips on Sundays.');
     expect(noServiceOnDayNotice('agency', 'Weekday')).toBe('This agency has no trips on weekdays.');
@@ -117,8 +124,8 @@ describe('route labels and setting definitions (CIV-957)', () => {
 
 describe('Live feed notices (CIV-941 #55, #57)', () => {
   it('reads as approved', () => {
-    expect(liveUnreachableText(['TTC', 'YRT'])).toBe("Live buses from TTC and YRT can’t be shown right now.");
-    expect(liveUnreachableText(['TTC', 'YRT', 'MiWay'])).toBe("Live buses from TTC, YRT and MiWay can’t be shown right now.");
+    expect(liveUnreachableText(['TTC', 'YRT'])).toBe("Live vehicles from TTC and YRT can’t be shown right now.");
+    expect(liveUnreachableText(['TTC', 'YRT', 'MiWay'])).toBe("Live vehicles from TTC, YRT and MiWay can’t be shown right now.");
   });
 });
 
@@ -151,7 +158,7 @@ describe('CIV-1795 plain words', () => {
   });
 });
 
-describe('N127 official data only (CIV-1978)', () => {
+describe('N131 official data only (CIV-1978)', () => {
   it('reads as Ryan approved it, word for word, with the agency named', () => {
     expect(officialDataOnlyNotice('Barrie Transit')).toBe('This on-demand service’s stops are from Barrie Transit’s official data, and their accuracy can’t be confirmed.');
   });

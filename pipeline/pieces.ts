@@ -17,11 +17,11 @@
 import { branchReadingsEnabled, headlineFromTrunkEnabled, pieceReadingEnabled } from '../shared/rules/flags.js';
 import type { PieceReadingEntry, PieceReadings, PieceTreatment } from '../shared/pieceReadings.js';
 import { PERIOD_MINUTES, type PeriodKey } from '../shared/rules/periods.js';
-import { PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
+import { headwayGradeOn, PUBLIC_TIER_MAXES } from '../shared/rules/frequency.js';
 import { departuresInWindow, HEADLINE_MIN_DEPARTURES, isSteadyPeriodGaps, medianHeadwayInWindow } from './headway-utils.js';
 import type { SharedStretchPattern } from './sharedStretch.js';
 import { collapseBunched, computeStopSharers, POOLED_MAX_GAP_GRACE_MINUTES, POOLED_MAX_GAP_RATIO, POOLED_MAX_GAP_TYPICAL_RATIO, type StopSharers } from './stopPools.js';
-import type { DirectionStretches, Stretch } from './tripSets.js';
+import { periodEdge, type DirectionStretches, type Stretch } from './tripSets.js';
 
 export { PIECE_PARAMS, pieceMinimum, piecesByTripsFromEnv } from './pieceParams.js';
 import { PIECE_PARAMS } from './pieceParams.js';
@@ -105,7 +105,7 @@ export function pieceReadingFromEnv(): boolean {
 // read from the stops' own pooled lists (the ladder below; the median of the stops' own readings). Arm A (Ryan: "Then we should ignore the 16"):
 // a stop takes the piece reading only if (i) its own reading, read the same way with that stop as the reference, is at most
 // one public tier worse than the piece value and (ii) its own list passes the evenness test against the piece value; every
-// other stop breaks off with its own reading. A stop that takes the piece reading although its own reading differs is
+// other stop breaks off with its own reading. A stop whose own value is in the Infrequent grade (past the last public tier) never takes a faster piece reading. A stop that takes the piece reading although its own reading differs is
 // IGNORED for the piece, never overwritten (Ryan: "Not overwrite it but ignore it"): its own published value stays.
 // Overnight is not read (CIV-1764 is not landed).
 // ---------------------------------------------------------------------------------------------------------------------
@@ -118,6 +118,13 @@ const publicTierIndex = (value: number): number => {
   const i = PUBLIC_TIER_MAXES.findIndex(max => value <= max);
   return i < 0 ? PUBLIC_TIER_MAXES.length : i;
 };
+
+/** Infrequent: past the last public tier (Ryan: "if it is less than hourly then it is infrequent"). */
+const isInfrequent = (value: number): boolean => headwayGradeOn(value, PUBLIC_TIER_MAXES) === null;
+
+/** Arm A's grade tests on one own value against the piece value: at most one public tier worse, and a stop in the Infrequent grade never takes a faster piece reading. */
+export const withinArmATiers = (ownValue: number, pieceValue: number): boolean =>
+  publicTierIndex(ownValue) - publicTierIndex(pieceValue) <= 1 && !(isInfrequent(ownValue) && !isInfrequent(pieceValue));
 
 const gapsOf = (list: readonly number[]): number[] => list.slice(1).map((t, i) => t - list[i]);
 
@@ -209,7 +216,7 @@ export function readPieceAt(ctx: PieceReadContext, stops: readonly string[], ref
  */
 export function armAKeeps(own: PieceRead, pieceValue: number): boolean {
   return own.step !== 0 && own.value != null && own.list.length >= 3
-    && publicTierIndex(own.value) - publicTierIndex(pieceValue) <= 1
+    && withinArmATiers(own.value, pieceValue)
     && listIsEvenAgainst(own.list, pieceValue);
 }
 
@@ -273,7 +280,8 @@ export function readFeaturePieces(ctx: PieceReadContext): PieceCell[] {
 
 /**
  * The piece readings to publish (`piecePeriodHeadways`): per stop and period, the piece reading where the stop takes it and
- * its published own value differs. A stop that breaks off, has no published value, or already reads the piece value gets no
+ * its published own value differs. A stop whose published own value is more than one public tier worse than the piece reading
+ * breaks off too (the tier test is also run on the published value, not only on the stop's re-read). A stop that breaks off, has no published value, or already reads the piece value gets no
  * entry, so the map reads its own published value there. Never changes a stop's own published value.
  */
 export function pieceReadingOverlay(
@@ -284,6 +292,8 @@ export function pieceReadingOverlay(
   for (const c of cells) {
     const own = published[c.stop]?.[c.period];
     if (!c.kept || own == null || own === c.pieceValue) continue;
+    // Arm A's tier test is on the value a rider sees: the re-read at the stop can differ from its published value (DRT 905: read 30, published 90).
+    if (!withinArmATiers(own, c.pieceValue)) continue;
     (out[c.stop] ??= {})[c.period] = c.pieceValue;
   }
   return out;
@@ -293,25 +303,22 @@ export function pieceReadingOverlay(
 // CIV-1959 B3: what each piece of a direction shows in each period (behind ATLAS_BRANCH_READINGS=1, off by default).
 //
 // Rule D (the #1086 branch-definition investigation, comment 7022580375), read on today's trunk and branches (B4 changes the
-// boundaries): a piece reads in a period when its own trips are at least HEADLINE_MIN_DEPARTURES, evenly spaced, and cover at
-// least half the period. The order of the treatments, first match wins:
+// boundaries): a piece reads in a period when its own trips are at least HEADLINE_MIN_DEPARTURES and evenly spaced. There is no
+// coverage floor (Ryan: "You decide but an arbitrary number like 2 hours seems not ideal"). The order, first match wins:
 //   1. no trips in the period                          -> no entry
-//   2. under 3 trips, or not evenly spaced             -> limited trips (no number, never sets a headline)
-//   3. covers under half the period                    -> limited trips
-//   4. 3+ even trips, covers half or more, but one edge wait is long (it stops or starts inside the period) -> tail:
-//      "every N until HH:MM" with its full-window wait as the value (RTD 15 Saturday midday: every 30 until 12:16, wait 164)
-//   5. everything passes                               -> reading (trunk or branch)
-// "Covers" counts the period from its start (or to its end) when the wait to the first (or from the last) trip is within the
-// evenness allowance, so a run that begins a little after the period starts still covers it from the start.
+//   2. under 3 trips, or not evenly spaced             -> no number (never sets a headline)
+//   3. 3+ even trips, but an edge wait is long (it starts or stops inside the period) -> tail:
+//      "every N until HH:MM" / "from HH:MM" (both when it does both), with its full-window wait as the value (RTD 15 Saturday
+//      midday: every 30 until 12:16, wait 164); the full-window wait is what colours and what any headline would read
+//   4. everything passes                               -> reading (trunk or branch)
+// An edge is "inside the period" when the wait to the first (or from the last) trip is beyond the evenness allowance, so a run
+// that begins a little after the period starts still reads as a plain reading.
 // ---------------------------------------------------------------------------------------------------------------------
 
 /** True when this process was started with ATLAS_BRANCH_READINGS=1 (CIV-1959 B3). Off by default. */
 export function branchReadingsFromEnv(): boolean {
   return branchReadingsEnabled(process.env.ATLAS_BRANCH_READINGS);
 }
-
-/** Rule D's coverage floor: the share of the period a piece's trips must cover. Not yet approved by Ryan (needs his word-for-word OK before the flag goes on). */
-export const PIECE_MIN_PERIOD_COVER = 0.5;
 
 /**
  * One piece's treatment in one period window, from its departures at its reference stop (GTFS minutes). Null when it has no trip
@@ -322,6 +329,11 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   const t = departuresInWindow(times, start, end, false);
   if (t.length === 0) return null;
   if (t.length < HEADLINE_MIN_DEPARTURES) return { t: 'limited' };
+  // CIV-1241 / CIV-1411 / #934 (settled): a piece whose published value is its own full-window wait because it starts late, stops early
+  // or starts slowly says when, with its in-service spacing, never the bare wait (periodEdge is the settled test, the one stretches use).
+  // Its value stays the wait: colour and the filter are unchanged (CIV-1411: card wording only).
+  const settled = readingValue != null ? periodEdge(times, start, end, readingValue) : null;
+  if (settled) return { t: 'tail', v: readingValue!, every: settled.every, ...(settled.from != null ? { from: settled.from } : {}), ...(settled.until != null ? { until: settled.until } : {}) };
   const typical = medianHeadwayInWindow(t, start, end, HEADLINE_MIN_DEPARTURES, true);
   if (typical == null || typical <= 0) return { t: 'limited' };
   const gaps = gapsOf(t);
@@ -336,8 +348,6 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   const trail = end - t[t.length - 1];
   const leadOk = lead <= allowance;
   const trailOk = trail <= allowance;
-  const covered = ((trailOk ? end : t[t.length - 1]) - (leadOk ? start : t[0])) / (end - start);
-  if (covered < PIECE_MIN_PERIOD_COVER) return { t: 'limited' };
   if (leadOk && trailOk) return { t: 'reading', v: readingValue ?? every };
   return {
     t: 'tail',
@@ -348,10 +358,14 @@ export function classifyPiecePeriod(times: readonly number[], start: number, end
   };
 }
 
-/** Rule D's test: the piece is regular in a period when it has a reading or a part-period tail there (3+ even trips covering half), not limited trips. */
+/**
+ * B4's boundary test: a pattern is regular in a period when its 3+ evenly spaced trips run the whole period (a plain reading). A
+ * part-period burst (a tail on the card, even with a number) is not a boundary, or M101's short-turn bursts split its one piece
+ * into 12-15 (dropping the 0.5 floor with tails counting did exactly that).
+ */
 export function isRegularPieceInPeriod(times: readonly number[], start: number, end: number): boolean {
   const t = classifyPiecePeriod(times, start, end);
-  return t != null && t.t !== 'limited';
+  return t != null && t.t === 'reading';
 }
 
 /**

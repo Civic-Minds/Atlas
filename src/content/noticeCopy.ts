@@ -22,7 +22,7 @@ import { agencyNames } from '../utils/agencyName';
 import { agencyPossessive, agencyPossessiveSentenceStart, agencySentenceStart } from '../../shared/agencyArticle';
 import { delayAmount, headwayAbout, headwayOrBetter } from '../utils/headwayText';
 import { onDemandStopZoneNames, resolveOnDemandZone, type OnDemandPickupStop, type OnDemandServiceDetails } from '../../shared/onDemandAvailability';
-import { DAY_TYPES, dayInSentence, dayPlural, isDayType } from '../../shared/dayTypes';
+import { DAY_TYPES, dayInSentence, dayPlural, isDayType, type DayType } from '../../shared/dayTypes';
 import { LIVE_PATH } from '../../shared/pagePaths';
 import { OVERNIGHT_STORY } from '../../shared/researchStories';
 
@@ -150,6 +150,8 @@ export const NO_ROUTES_LOADED = 'No routes loaded yet.';
 export const noRoutesMatchText = (modeLabel?: string | null) => `No ${modeLabel ? `${modeLabel.toLowerCase()} ` : ''}routes match.`;
 // N38 no-search-matches
 export const NO_SEARCH_MATCHES = 'No matches found.';
+// N130 route-search-area (CIV-959 gap 6): route search covers only the networks near the map.
+export const NO_SEARCH_MATCHES_NEAR_MAP = 'No routes in this map area match. Open the agency to see all its routes.';
 // N40 no-agencies-match
 export const NO_AGENCIES_MATCH = 'No agencies match.';
 // N41 in-view-no-agencies: the same words as N40, from one place.
@@ -186,11 +188,6 @@ export const NO_FEED_MATCHES = 'No feeds match your search or filter.';
 // ---- Route labels and setting definitions (CIV-957 item 2): each written once, used by every card, list and setting ----
 // D1 route-limited: a list value with no steady frequency ("limited" in place of a number).
 export const LIMITED_SERVICE_LABEL = 'limited';
-/**
- * CIV-1959 B3 (DRAFT wording, not approved; behind BRANCH_READINGS_ENABLED): a branch or tail with some trips in the period but
- * too few, too uneven or too short a run to read. No number; it never sets a headline. Needs Ryan's word-for-word OK.
- */
-export const LIMITED_TRIPS_LABEL = 'limited trips';
 /**
  * CIV-1251: the one word a card row with no number reads, whichever check found it. The Night card: "Runs irregularly
  * overnight"; a time period: D2. The card has no All day row (CIV-1279: the map has no All day, so no rider reaches one).
@@ -566,6 +563,11 @@ export const MAP_EXPORT_WAITING = `${MAP_STILL_LOADING} The image will save once
 // ---- Site ----
 // N62 update-available
 export const UPDATE_AVAILABLE_NOTICE = 'A newer version of this page is available.';
+// CIV-98 slow-connection prompt. Proposed wording, waiting on Ryan's word-for-word OK.
+// CIV-98 (Ryan, 2026-11-20, word for word): the prompt and its button.
+export const SLOW_CONNECTION_PROMPT = 'Data saver loads better on slow connections.';
+export const SLOW_CONNECTION_ACCEPT = 'Turn on?';
+export const SLOW_CONNECTION_DECLINE = 'Not now';
 // N63 analytics-prompt
 export const ANALYTICS_CONSENT_PROMPT = 'Optional analytics help improve Atlas.';
 // N64 analytics-setting
@@ -599,6 +601,9 @@ export const STOP_NOT_FOUND = "This stop couldn’t be found. It may have been m
 export const NIGHT_LOAD_FAILED = loadErrorText('overnight service');
 /** N52 night-empty (Ryan): the Night view's own rule, fixed at 2-5 AM (FREQUENCY_RULES rule 10), at its 30 or 60. A real search with no match keeps N52's old text. */
 export const nightNoRoutesNotice = (frequency: number) => `No routes here run ${headwayOrBetter(frequency)} from 2–5 AM.`;
+/** N129 frequent-empty (CIV-959 gap 11): the Frequent Service view's own rule, as N52 for Night ("…from 7 AM–7 PM on weekdays."). */
+export const frequentNoRoutesNotice = (frequency: number, windowLabel: string, days: readonly DayType[]) =>
+  `No routes here run ${headwayOrBetter(frequency)} from ${windowLabel}${days.length ? ` on ${joinList(days.map(dayPlural))}` : ''}.`;
 // N54 history-failed (Ryan; with RETRY_HINT in the sidebar)
 export const HISTORY_LOAD_FAILED = loadErrorText('history');
 // N55 history-route-not-covered (Ryan)
@@ -654,8 +659,8 @@ export const LIVE_ROUTE_FIGURES_UNAVAILABLE = 'Live figures for this route aren�
 export const LIVE_UNABLE_TO_LOAD = 'Unable to load';
 export const liveRetryCountdown = (seconds: number) => `Retrying in ${seconds}s`;
 export const liveUnableToLoadPill = (seconds: number) => `${LIVE_UNABLE_TO_LOAD} · ${liveRetryCountdown(seconds)}`;
-/** Some feeds in view failed while others work: "Live buses from TTC and YRT can't be shown right now." (approved, CIV-941 #57). */
-export const liveUnreachableText = (agencyNames: readonly string[]) => `Live buses from ${joinList(agencyNames)} can’t be shown right now.`;
+/** Some feeds in view failed while others work: "Live vehicles from TTC and YRT can't be shown right now." (CIV-941 #57; "vehicles", as Live tracks streetcars too). */
+export const liveUnreachableText = (agencyNames: readonly string[]) => `Live vehicles from ${joinList(agencyNames)} can’t be shown right now.`;
 /** CIV-1795: as the approved "Delay not measured" (CIV-1601). */
 export const LIVE_GAP_NOT_SEEN = 'Gap not measured';
 
@@ -811,7 +816,7 @@ export const NOTICE_EXPLAINERS = {
   N14: 'edge-gap-allowance',
   /** CIV-1199 case 1: only when every row meets the filter but a part of the route doesn't (routeCardNotices learnMore). */
   N12: 'route-rating',
-  N127: 'official-data',
+  N131: 'official-data',
   /** An agency's own rollout note from its config (none set today); the beta-only notices link to beta instead. */
   N19: 'beta-rollout',
   N21: 'new-schedule-data',
@@ -828,7 +833,7 @@ export const ON_DEMAND_SHADED_AREA = 'The shaded map area shows where this on-de
 // the map key's last line and under On-demand in the Mode menu (CIV-23; Ryan's word-for-word OK, 2026-11-11).
 export const ON_DEMAND_PARTIAL_COVERAGE = 'Some on-demand zones aren\u2019t on the map yet.';
 
-// N127 official-data-only (CIV-1978; Ryan, 2026-11-20, word for word: "Actually 2 but as one sentence with a comma and the
+// N131 official-data-only (CIV-1978; Ryan, 2026-11-20, word for word: "Actually 2 but as one sentence with a comma and the
 // Learn More link"): an on-demand service whose stops come only from the agency's official data, which can't be checked
 // against another source. Shown at the foot of the on-demand card for the services in ON_DEMAND_OFFICIAL_DATA_ONLY.
 export const officialDataOnlyNotice = (agencyName: string): string =>
@@ -890,6 +895,8 @@ export function onDemandPickupSentence(service: OnDemandServiceDetails, areaName
 export const GO_TO_ATLAS_LABEL = 'Go to Atlas';
 /** The page header's nav, for screen readers. */
 export const SITE_NAV_LABEL = 'Site navigation';
+/** CIV-1872: the local-only links beside it, for screen readers. */
+export const INTERNAL_NAV_LABEL = 'Internal pages';
 export const SITE_FOOTER_LABEL = 'Site footer';
 export const FOOTER_LINKS_LABEL = 'Footer links';
 export const LEGAL_LINKS_LABEL = 'Legal links';
@@ -931,6 +938,9 @@ export const TOGGLE_DATA_SAVER_LABEL = 'Toggle data saver';
 export const WAIT_LABEL = 'Wait';
 export const WALK_LABEL = 'Walk';
 export const SIDE_LABEL = 'Side';
+/** The two sides (CIV-1766): you arrive on the picked trip, or you leave on it. */
+export const CONNECTION_ARRIVING_LABEL = 'Arriving';
+export const CONNECTION_LEAVING_LABEL = 'Leaving';
 export const OVERNIGHT_FREQUENCY_LABEL = 'Overnight frequency';
 export const TIME_WINDOW_LABEL = 'Time window';
 /** The map's agency filter chip and its two bulk buttons. */
@@ -999,6 +1009,8 @@ export const MEASURE_LABEL = 'Measure';
 export const LOADING_LABEL = 'Loading…';
 export const ROUTE_MENU_LABEL = 'Route';
 export const LIVE_AT_STOP_LABEL = 'Live at this stop';
+/** N128 live-stop-unavailable (CIV-959 gap 13): as Live's other "can’t be shown right now" lines. */
+export const LIVE_STOP_ARRIVALS_UNAVAILABLE = 'Live arrivals for this stop can’t be shown right now.';
 export const NOTE_COLUMN = 'Note';
 export const DELIVERED_BY_DAY_LABEL = 'Share of scheduled trips that ran, day by day';
 export const STOP_COLUMN = 'Stop';
@@ -1012,6 +1024,8 @@ export const STARTS_AT_COLUMN = 'Starts at';
 export const SCHEDULED_COLUMN = 'Scheduled';
 export const USUALLY_COLUMN = 'Usually';
 export const TRIPS_COLUMN = 'Trips';
+/** A chart table's range column (the profile bars' thin line), unchanged wording moved out of ProfileBars (CIV-1986). */
+export const RANGE_COLUMN = 'Most trips between';
 /** A Live route page's three views (CIV-1795: "Full report", as the page calls itself; Ryan, question 3, option b: "Overview"). */
 export const LIVE_SUMMARY_VIEW = 'Summary';
 export const LIVE_OVERVIEW_VIEW = 'Overview';
@@ -1071,3 +1085,51 @@ export const RECENTLY_SEEN_HERE = 'Recently seen here';
 /** CIV-1786 (Ryan picked 1): a region page's line under an agency that only partly serves it, "1 route in West Virginia · 68 total". */
 export const partOfAgencyRoutesNote = (here: number, place: string, total: number): string =>
   `${countOf(here, 'route', 'routes')} in ${place} · ${countText(total)} total`;
+
+// ---- Coverage page (CIV-1871, local only; new UI text, waiting on Ryan's OK) ----
+
+/**
+ * The coverage table's column headings. Live, Studio and MCP are each one column that lists what applies as small tags
+ * (Ryan: "one column for Live then have Recorded and or Real Time under it", "same with mcp"). Headings and tags are
+ * suggestions until Ryan approves them.
+ */
+export const COVERAGE_COLUMNS = {
+  agency: AGENCY_COLUMN,
+  history: 'History',
+  live: 'Live',
+  studio: 'Studio',
+  mcp: 'MCP',
+} as const;
+
+/** The History cell: the pill for agencies in public History (10 years or more), and the count for those with fewer archived years. */
+export const COVERAGE_HISTORY = {
+  public: '10+ years',
+  years: (n: number) => (n === 1 ? '1 year' : `${n} years`),
+} as const;
+
+/** What a Live cell lists, as small tags in the agencies-page style. */
+export const COVERAGE_LIVE_TAGS = { recorded: 'Recorded', realtime: 'Real-time', report: 'Report' } as const;
+
+/**
+ * Studio's views in the Studio column. Studio's settled menu names (CIV-1834, CIV-1807) are Schedule and Vehicles; the
+ * menu doesn't carry them on main yet, so they are named here until it does, and then this reads them from there.
+ */
+export const COVERAGE_STUDIO_TAGS = { schedule: 'Schedule', vehicles: 'Vehicles' } as const;
+
+/** What an MCP cell lists: Live, once the MCP answers Live questions (CIV-1993: nothing before then). Schedule answers are universal, so they aren't listed. */
+export const COVERAGE_MCP_TAGS = {
+  live: 'Live',
+} as const;
+
+export const COVERAGE_TEXT = {
+  focusHeading: 'Focus Agencies',
+  othersHeading: 'Other Agencies',
+  factsFailed: 'The dev server didn’t list the Studio and Live files, so those columns are empty.',
+} as const;
+
+/** CIV-1890 (Ryan, 2026-11-18, word for word): the About menu inside Studio, in place of the public atlas's text. */
+export const STUDIO_ABOUT_LEAD = 'Studio is Atlas’s workspace for planners: see how routes ran against their schedule, how many vehicles a route needs, and what changed between schedules.';
+
+/** Studio's About panel, Live part (Ryan, 2026-11-19): the heading, and the two explanation lines moved out of the side panel (bunching's is bunchingSplitNote). */
+export const STUDIO_ABOUT_LIVE_HEADING = 'Live';
+export const LEARN_MORE_LABEL = 'Learn more';

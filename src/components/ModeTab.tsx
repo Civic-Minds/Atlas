@@ -23,7 +23,7 @@ const MODE_TAB_PEEK = 'hover:gap-1.5 focus-visible:gap-1.5 hover:pr-3 focus-visi
  * menu: it names the current mode, takes `expanded` and a `trailing` chevron, and is not a toggle.
  */
 export default function ModeTab({
-  icon, label, extra, active, onClick, onWarm, ariaLabel, variant = 'bar', expanded, trailing,
+  icon, label, extra, active, onClick, onWarm, ariaLabel, variant = 'bar', expanded, trailing, dimmed = false,
 }: {
   icon?: React.ReactNode;
   label: string;
@@ -39,12 +39,15 @@ export default function ModeTab({
   expanded?: boolean;
   /** menu-trigger only: shown after the label (the chevron). */
   trailing?: React.ReactNode;
+  /** CIV-1861: this view has no data over the map's city. The tab stays, dimmed, and tapping it says where it does. */
+  dimmed?: boolean;
 }) {
   // CIV-1567 (beta): folding, the gap and padding wait for the label to fade (FOLD_SHUT), so the word fades in place.
   // Shrinks to its icon while a non-map view is on, or on a narrow top bar, and this tab is not the selected one; on a compact top bar the selected one shrinks too.
   const collapsed = modeTabCollapsed(true, useModeTabsCollapseOthers(), active, useMediaQuery(NARROW_TOP_BAR_QUERY), useMediaQuery(COMPACT_TOP_BAR_QUERY));
   // On the bar an unselected tab takes the top bar's outline (CIV-1020); the phone menu's items sit in a panel and keep the panel border.
   const state = active ? APP_TAB_ACTIVE : variant === 'menu' ? APP_TAB_INACTIVE : TOP_BAR_TAB_INACTIVE;
+  const dim = dimmed && !active ? ' opacity-50' : '';
   const extraEl = extra != null && extra !== '' ? <span className="font-normal text-[var(--text-dim)]">{extra}</span> : null;
   if (variant === 'menu-trigger') {
     return (
@@ -70,8 +73,9 @@ export default function ModeTab({
         onFocus={onWarm}
         onTouchStart={onWarm}
         aria-pressed={active}
+        data-mode-tab
         aria-label={ariaLabel}
-        className={`sm:hidden ${PHONE_PILL} ${FOCUS} ${state}`}
+        className={`sm:hidden ${PHONE_PILL} ${FOCUS} ${state}${dim}`}
       >
         {icon}
         <span>{label}</span>
@@ -88,8 +92,9 @@ export default function ModeTab({
       onTouchStart={onWarm}
       aria-pressed={active}
       aria-label={ariaLabel}
+      data-mode-tab
       title={collapsed ? label : undefined}
-      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-[color,background-color,border-color,padding,gap] duration-200 ease-out motion-reduce:transition-none ${FEATURES.modeTransitions && collapsed ? 'delay-100' : ''} text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}`}
+      className={`group/tab hidden sm:flex h-8 ${modeTabSpacing(collapsed)} items-center rounded-full shrink-0 transition-[color,background-color,border-color,padding,gap] duration-200 ease-out motion-reduce:transition-none ${FEATURES.modeTransitions && collapsed ? 'delay-100' : ''} text-xs font-bold border ${FOCUS} ${state} ${collapsed ? MODE_TAB_PEEK : ''}${dim}`}
     >
       {icon}
       <ModeTabLabel collapsed={collapsed}>

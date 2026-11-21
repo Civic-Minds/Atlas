@@ -554,9 +554,9 @@
         -77.5
       ],
       "feedUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
-      "lastFeedExpiry": "20261127",
-      "lastFeedVersion": "20261104201520",
-      "lastRefreshedAt": "2026-11-16",
+      "lastFeedExpiry": "20270101",
+      "lastFeedVersion": "20261117113605",
+      "lastRefreshedAt": "2026-11-20",
       "cities": [
         "Mississauga, Ontario",
         "Brampton, Ontario",
@@ -576,10 +576,10 @@
           "1": "Westbound"
         }
       },
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261120",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261127",
+      "expiredFeedCheckExpiry": "20270101",
       "feedQuality": {
         "status": "review",
         "score": 82,
@@ -591,8 +591,8 @@
           "validationWarnings": 0,
           "shapeAnomalies": 0,
           "routeHeadwayMismatches": 15,
-          "featureCount": 412,
-          "feedExpiry": "20261127",
+          "featureCount": 413,
+          "feedExpiry": "20270101",
           "routeCount": 44,
           "problemShapes": 0,
           "problemShapeRoutes": 0,
@@ -607,10 +607,10 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
-      "lastPeekedExpiry": "20261127",
-      "lastServiceWeek": "419407fc24c60061",
-      "feedObtainedAt": "20261109",
-      "lastFeedStart": "20261104",
+      "lastPeekedExpiry": "20270101",
+      "lastServiceWeek": "309e5b0cc3c4d5cc",
+      "feedObtainedAt": "20261120",
+      "lastFeedStart": "20261117",
       "branchReadCorrections": [
         {
           "routeShortName": "KI",
@@ -621,8 +621,8 @@
           "reason": "Kitchener line westbound: beyond Bramalea the Kitchener branch runs far less often than the every-30 trunk to Bramalea in the PM peak; its trains skip different stops, so the branch was never read."
         }
       ],
-      "lastRawArchiveKey": "20261127-da94c09d960e9301",
-      "lastFeedContentKey": "3c3e5554fb64b470"
+      "lastRawArchiveKey": "20270101-90c18eeccd35aaa2",
+      "lastFeedContentKey": "2eb673691784dcb7"
     },
     {
       "slug": "grt",
@@ -7455,10 +7455,10 @@
         "Portland, Maine"
       ],
       "mdbFeedUrl": "https://files.mobilitydatabase.org/mdb-2642/latest.zip",
-      "lastFeedCheckAt": "20261119",
+      "lastFeedCheckAt": "20261120",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261219",
+      "expiredFeedCheckExpiry": "20261220",
       "feedQuality": {
         "status": "degraded",
         "score": 65,
@@ -7474,7 +7474,7 @@
           "feedExpiry": "20261105"
         },
         "checkedAt": "2026-10-07",
-        "scoredAt": "2026-11-19"
+        "scoredAt": "2026-11-20"
       },
       "timezone": "America/New_York",
       "feedRefreshStatus": "current",
@@ -7483,7 +7483,7 @@
       "feedRefreshRetryCount": 0,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://gtfs.gptd.cadavl.com/GPTD/GTFS/GTFS_GPTD.zip",
-      "refusedFeedSha256": "2e444f9d73ae595306e251f3362b5ebce948d660829d922fb8553994a55c774e"
+      "refusedFeedSha256": "973567e469bee5444ab83075ab7d5aff3dd49742f40ccb27c682a4ef64a57eac"
     },
     {
       "slug": "hocts",
@@ -11520,7 +11520,7 @@
       "lastFeedExpiry": "20270401",
       "lastFeedVersion": "",
       "region": "California",
-      "lastRefreshedAt": "2026-11-19",
+      "lastRefreshedAt": "2026-11-20",
       "supplementalFeedUrls": [
         "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
       ],
@@ -11539,7 +11539,7 @@
         "North Hills, California",
         "North Hollywood, California"
       ],
-      "lastFeedCheckAt": "20261119",
+      "lastFeedCheckAt": "20261120",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
       "expiredFeedCheckExpiry": "20270401",
@@ -11573,9 +11573,9 @@
       "lastFeedSourceUrl": "https://files.mobilitydatabase.org/mdb-29/latest.zip",
       "lastSupplementalFeeds": [
         {
-          "feedExpiry": "20261203",
+          "feedExpiry": "20261204",
           "feedVersion": null,
-          "rawArchiveKey": "20261203-f2650903df04ad7a"
+          "rawArchiveKey": "20261204-9819fc0bd52c6a85"
         }
       ],
       "lastPeekedExpiry": "20270401",
@@ -23988,10 +23988,10 @@
       "lastFeedExpiry": "20261122",
       "lastFeedVersion": "S1000166",
       "lastRefreshedAt": "2026-11-16",
-      "lastFeedCheckAt": "20261116",
+      "lastFeedCheckAt": "20261120",
       "expiredFeedCheckCount": 0,
       "expiredFeedCheckSince": null,
-      "expiredFeedCheckExpiry": "20261122",
+      "expiredFeedCheckExpiry": "20270418",
       "timezone": "America/Denver",
       "directionLabels": {
         "BG": {
@@ -24025,7 +24025,8 @@
           "mismatchRoutes": 0,
           "resumesOn": null
         },
-        "checkedAt": "2026-11-20"
+        "checkedAt": "2026-11-20",
+        "scoredAt": "2026-11-20"
       },
       "feedRefreshStatus": "current",
       "feedRefreshError": null,
@@ -24038,7 +24039,8 @@
       "feedObtainedAt": "20260915",
       "lastFeedStart": "20260921",
       "lastRawArchiveKey": "20261122-19556f98e4fd099c",
-      "lastFeedContentKey": "f92bf1d4e3834ca2"
+      "lastFeedContentKey": "f92bf1d4e3834ca2",
+      "heldFeedStart": "20261123"
     },
     {
       "slug": "durango-transit",
@@ -36990,7 +36992,6 @@
         "Craig, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/steamboatsprings-co-us/steamboatsprings-co-us.zip",
       "lastFeedCheckAt": "20261116",
@@ -37056,7 +37057,6 @@
         "Mt. Crested Butte, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "http://mjcaction.com/MJC_GTFS_Public/gunnisonrta_google_transit.zip",
       "lastFeedCheckAt": "20261116",
@@ -37119,7 +37119,6 @@
         "Sterling, Colorado"
       ],
       "timezone": "America/Denver",
-      "hiddenInProduction": true,
       "lastFeedSourceKind": "configured",
       "lastFeedSourceUrl": "https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip",
       "lastFeedCheckAt": "20261116",

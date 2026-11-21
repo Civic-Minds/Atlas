@@ -32,14 +32,12 @@ interface Props {
   setDay: (day: DayType) => void;
   within: NearbyChoice;
   setWithin: (within: NearbyChoice) => void;
-  sidebarLeft?: number;
-  searchBarWidth?: number;
   onRouteSelect: (agencySlug: string, routeId: string) => void;
   onBackToMap: () => void;
   selectionActive?: boolean;
 }
 
-export default function BustangConnections({ active, data, day, setDay, within, setWithin, sidebarLeft, searchBarWidth, onRouteSelect, onBackToMap, selectionActive = false }: Props) {
+export default function BustangConnections({ active, data, day, setDay, within, setWithin, onRouteSelect, onBackToMap, selectionActive = false }: Props) {
   const routes = useMemo(() => {
     if (!data) return [];
     const byRoute = new Map<string, { routeId: string; routeName: string; trips: number }>();
@@ -54,7 +52,7 @@ export default function BustangConnections({ active, data, day, setDay, within, 
 
   if (!active) return null;
   return (
-    <ResearchInfo heading={BUSTANG_INFO_HEADING} onBack={onBackToMap} sidebarLeft={sidebarLeft} searchBarWidth={searchBarWidth} hidden={selectionActive} below={
+    <ResearchInfo heading={BUSTANG_INFO_HEADING} onBack={onBackToMap} hidden={selectionActive} below={
       <Panel sidebarSurface className="min-h-0 flex-1">
         <PanelTitleBar icon={<Bus className="w-3 h-3 text-[var(--text-dim)] shrink-0" />} title={BUSTANG_LIST_TITLE} />
         <PanelBody>

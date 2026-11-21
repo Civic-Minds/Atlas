@@ -30,6 +30,8 @@ export function bandFigure(v3: LiveV3 | undefined, measure: 'late' | 'runTime' |
 
 /** A route's figure for the chosen measure, as a number to sort by and the text to show. Null when it has none. */
 export function figure(r: AgencyRouteRow, v3: LiveV3 | undefined, measure: MapMeasure, band: DashboardBand = 'all'): { value: number; text: string } | null {
+  // CIV-1828: "Falls behind" has no one figure per route; its list ranks stop pairs instead.
+  if (measure === 'fallsBehind') return null;
   // A time of day reads that period's own figure (#1150, CIV-1459).
   if (band !== 'all' && measure !== 'delayStarts') return bandFigure(v3, measure, band);
   switch (measure) {

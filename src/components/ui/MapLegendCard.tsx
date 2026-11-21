@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { FLOATING_CARD, MAP_LEGEND_SLOT, Z_MAP_OVERLAY } from '../../styles';
+import { FLOATING_CARD, MAP_LEGEND_SLOT, Z_MAP_OVERLAY, sidebarFrameStyle } from '../../styles';
+import { useSidebarFrame } from '../../context/SidebarFrame';
 import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
 
 /**
@@ -9,6 +10,9 @@ import { MAP_OVERLAY_VARS, publishMapOverlayVar } from '../../mapOverlayLayout';
  */
 export function MapLegendCard({ label, className = 'w-72', children }: { label: string; /** Width; the regular map's is w-72. */ className?: string; children: ReactNode }) {
   const ref = useRef<HTMLElement>(null);
+  // The sidebar cards' left edge where the map has one (App's SidebarFrame), for MAP_LEGEND_SLOT (CIV-1922); only the edge,
+  // never the cards' width.
+  const { sidebarLeft } = useSidebarFrame();
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
@@ -23,6 +27,7 @@ export function MapLegendCard({ label, className = 'w-72', children }: { label: 
       ref={ref}
       aria-label={label}
       data-map-overlay="legend"
+      style={sidebarLeft != null ? sidebarFrameStyle(sidebarLeft) : undefined}
       className={`${FLOATING_CARD} ${MAP_LEGEND_SLOT} ${Z_MAP_OVERLAY} ${className} max-w-[calc(100vw-2.5rem)] p-3 pointer-events-auto`}
     >
       {children}

@@ -33,7 +33,7 @@ import type { HistoryPeriodShapes } from '../shared/historyV2.js';
 import { parsePeriodKey, getPeriodKeySortValue, isRefreshRunPeriodKey, labelFromRefDate, afterBuildMonth, yearMonthOf } from './historyPeriods.js';
 import { writeHistoryAgencyList } from '../scripts/build-history-agency-list.js';
 import { historyGeometryForRoute } from './historyGeometry.js';
-import { identitySplitApplies, isPeriodExcluded, type HistoryIdentityKeys, type HistoryPeriodExcludes, type HistoryPeriodRemaps, remapKeysByPeriod } from './historyRouteConfig.js';
+import { identitySplitApplies, isPeriodExcluded, type HistoryIdentityKeys, type HistoryPeriodExcludes, type HistoryPeriodRemaps, remapKeysByPeriod, seedSidecarOnlyKeys } from './historyRouteConfig.js';
 import { isDrawableLineCoordinates, lineStringCoordinatesOrNull } from '../shared/routeGeometry.js';
 import type { HeadwayByPeriod, PeriodKey } from '../shared/config.js';
 
@@ -545,6 +545,8 @@ async function main() {
     if (archiveRoutes[slug]) { const r = remapKeysByPeriod(archiveRoutes[slug], periodRemaps[slug], c => c.periodKey); archiveRoutes[slug] = r.routes; remapped += r.moved; }
     if (sidecarRoutes[slug]) sidecarRoutes[slug] = remapKeysByPeriod(sidecarRoutes[slug], periodRemaps[slug], e => e.periodKey).routes;
     if (tripDurationRoutes[slug]) tripDurationRoutes[slug] = remapKeysByPeriod(tripDurationRoutes[slug], periodRemaps[slug], e => e.periodKey).routes;
+    // A key the remap created only in the sidecars (L Gold) needs its entry here too, or the build never lists it.
+    if (archiveRoutes[slug] && sidecarRoutes[slug]) seedSidecarOnlyKeys(archiveRoutes[slug], sidecarRoutes[slug]);
   }
   if (remapped > 0) console.log(`Re-filed ${remapped} route snapshots by period.`);
   // #1431: trip time files under the halves' old keys fold into the merged key too, or the merged line has none.

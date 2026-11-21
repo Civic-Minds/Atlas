@@ -6,8 +6,9 @@ import { classifyPiecePeriod, directionPieceReadings, pieceReadingsForFeature } 
 import { directionStretches, stampStretchShadow, stretchFilterValue, stretchPeriods, type DirectionTrip } from '../tripSets';
 
 // CIV-1959 B3 (#1620, #1086): what each piece of a direction shows in a period. Precedence, first match wins:
-// no trips -> nothing; under 3 trips or uneven -> limited; covers under half the period -> limited; 3+ even trips covering half
-// or more that stop or start inside the period -> tail (every N until HH:MM, full-window wait); else a reading.
+// no trips -> nothing; under 3 trips or uneven -> limited (no number); 3+ even trips that stop or start inside the period -> tail
+// (every N until HH:MM / from HH:MM, full-window wait); else a reading. No coverage floor (Ryan: "You decide but an arbitrary
+// number like 2 hours seems not ideal").
 
 const every = (from: number, to: number, step: number) => { const out: number[] = []; for (let m = from; m <= to; m += step) out.push(m); return out; };
 const { start, end } = PERIOD_MINUTES.midday; // 540 to 900
@@ -30,9 +31,14 @@ describe('classifyPiecePeriod (rule D, then the part-period tail)', () => {
   it('3 trips with a hole between them is limited (uneven)', () => {
     expect(classifyPiecePeriod([545, 550, 880], start, end)).toEqual({ t: 'limited' });
   });
-  it('even trips in a short burst (under half the period) are limited, never a reading', () => {
-    // 5 trips every 10 from 12:00 to 12:40: even, but 40 of 360 minutes.
-    expect(classifyPiecePeriod(every(720, 760, 10), start, end)).toEqual({ t: 'limited' });
+  it('even trips in a short burst get a number and a time-bounded line, never a plain reading', () => {
+    // 5 trips every 10 from 12:00 to 12:40: even, 40 of 360 minutes. Colours at its full-window wait (the 180-minute lead).
+    expect(classifyPiecePeriod(every(720, 760, 10), start, end)).toEqual({ t: 'tail', v: 180, every: 10, from: 720, until: 760 });
+  });
+  it('a 3-trip even burst is a tail with from and until; 2 trips and an uneven 3 are still limited', () => {
+    expect(classifyPiecePeriod([700, 720, 740], start, end)).toEqual({ t: 'tail', v: 160, every: 20, from: 700, until: 740 });
+    expect(classifyPiecePeriod([700, 720], start, end)).toEqual({ t: 'limited' });
+    expect(classifyPiecePeriod([700, 705, 780], start, end)).toEqual({ t: 'limited' });
   });
   it('RTD 15 Saturday midday: every 30 until 12:16 is a tail with its full-window wait 164, not limited', () => {
     const tail = every(736 - 150, 736, 30); // 9:46 to 12:16, six trips
@@ -53,6 +59,30 @@ describe('classifyPiecePeriod (rule D, then the part-period tail)', () => {
   it('a run that starts a little after the period begins still covers it from the start', () => {
     // First trip 46 minutes in, every 30 (allowance 52.5): runs to the end of the period, so a full reading.
     expect(classifyPiecePeriod(every(586, 899, 30), start, end)).toEqual({ t: 'reading', v: 30 });
+  });
+});
+
+describe('classifyPiecePeriod with the stretch value: a piece that starts or stops inside the period says when (CIV-1241, CIV-1411)', () => {
+  const am = PERIOD_MINUTES.amPeak; // 360 to 540
+  it('B35-like: nothing 6-7 AM, then every 11 from 7:17: "from 7:17" with its spacing, the 77-minute wait stays the value', () => {
+    const times = every(437, 539, 11); // 7:17, 7:28 ... 8:59
+    expect(classifyPiecePeriod(times, am.start, am.end, 77)).toEqual({ t: 'tail', v: 77, every: 11, from: 437 });
+  });
+  it('a lead inside the 1.75 x spacing allowance is still a late start when it is the value (MARTA 140: every 39 from 7:07, wait 67)', () => {
+    const times = [427, 466, 505];
+    expect(classifyPiecePeriod(times, am.start, am.end, 67)).toEqual({ t: 'tail', v: 67, every: 39, from: 427 });
+  });
+  it('a branch that stops at 12:16 reads "until 12:16" with its spacing (RTD 15, wait 164)', () => {
+    const times = every(736 - 150, 736, 30);
+    expect(classifyPiecePeriod(times, start, end, 164)).toEqual({ t: 'tail', v: 164, every: 30, until: 736 });
+  });
+  it('CIV-1411: a slow start (every 20 at the start, then every 4) reads "from" the time steady service starts, N the longest wait from then', () => {
+    const times = [366, 386, 406, 426, 447, 451, 455, 459, 463, 467, 471, 475, 479, 483, 487, 491, 495, 499, 503, 507, 511, 515, 519, 523, 527, 531, 535];
+    expect(classifyPiecePeriod(times, am.start, am.end, 21)).toMatchObject({ t: 'tail', v: 21, from: 447 });
+  });
+  it('a real hole inside the period is no edge: the piece keeps the rule D answer (uneven, no number)', () => {
+    const times = [...every(360, 420, 15), ...every(480, 539, 15)];
+    expect(classifyPiecePeriod(times, am.start, am.end, 60)).toEqual({ t: 'limited' });
   });
 });
 
@@ -90,7 +120,7 @@ describe('directionPieceReadings on real stretches (a TTC 52-like direction and 
     expect(r.pieces[0].periods.midday).toMatchObject({ t: 'reading' });
   });
 
-  it('a branch with two trips in the period is limited trips; the trunk is untouched', () => {
+  it('a branch with two trips in the period gets no number; the trunk is untouched', () => {
     const trips: DirectionTrip[] = [];
     for (const m of every(360, 1320, 10)) trips.push(trip(`a${m}`, trunk, m));
     // A real branch (a share of the day's trips) that runs almost nothing at midday: two trips between 9:00 and 15:00.

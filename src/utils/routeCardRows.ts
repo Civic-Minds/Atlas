@@ -5,11 +5,12 @@ import { directionBranchFallback } from '../../shared/headsignDisplay';
 import { hasDirectionPeriodService, mainStretchEdge, periodEdgeText } from './effectiveHeadway';
 import { buildRouteServiceSummary } from './routeFacts';
 import { unevenPeriodMaxGap } from './routeCardUneven';
-import { rowTrips } from './rowTrips';
+import { rowOwnTreatment, rowOwnTripsEven, rowTrips } from './rowTrips';
 import { routeCardRowValue, type RouteCardRowValue } from './routeCardRowValue';
 import { dirIdNum, groupTrunkHeadway, oneRowMainStretchHeadway, sharedStopIdsForBranches, sharedStretchHeadway, shouldShowTrunkSummary, sparklineSourceDirections, stretchSharedHeadway } from './routeCardTrunk';
 import { shouldShowDirectionSections } from './routeCardDirectionLayout';
 import { rowLabelWithOrigin } from './rowOriginLabel';
+import { branchBase, branchCodeOf } from '../../shared/branchCode';
 import { hasStretchRoles, routeFilterAllDayContract, routeFilterContract, stretchRowFeatures, type RouteContract } from './stretchCard';
 import { branchRowValue, directionPieceTreatments, tailText } from './branchReadings';
 import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
@@ -100,7 +101,7 @@ export interface RouteCardModelInput {
   stretchValues?: boolean;
   /** #1506: the map colours lines section by section (beta, FEATURES.segmentColours); see RouteCardRowContext.sectionColours. */
   sectionColours?: boolean;
-  /** CIV-1959 B3: the trunk line and each branch's own reading or limited trips, from the pieceReadings data. Off until Ryan approves the wording (BRANCH_READINGS_ENABLED). */
+  /** CIV-1959 B3: the trunk line and each branch's own reading or no number, from the pieceReadings data. Behind BRANCH_READINGS_ENABLED. */
   branchReadings?: boolean;
 }
 
@@ -145,6 +146,18 @@ export function rowIsHovered(hoveredBranch: HoveredBranch | null, row: { dirId: 
 /** The Shared stretch / Combined row of this group is hovered. */
 export function sharedIsHovered(hoveredBranch: HoveredBranch | null, dirId: number): boolean {
   return hoveredBranch?.isCore === true && dirIdNum(hoveredBranch.directionId) === dirIdNum(dirId);
+}
+
+/** CIV-1456: the row's branch ID, from processing's headsign code, the route_variant or a lettered short name, in that order. */
+export function rowBranchCode(row: Pick<ShapeProperties, 'branchCode' | 'routeVariant' | 'routeShortName'>, base: string): string | null {
+  return branchCodeOf(row.branchCode, base) ?? branchCodeOf(row.routeVariant, base) ?? branchCodeOf(row.routeShortName, base);
+}
+
+/** A row label led by its branch ID, in the card's "variant · label" form; unchanged with no ID or one it already shows. */
+export function withBranchCode(label: string, code: string | null): string {
+  if (!code) return label;
+  if (!label) return code;
+  return label.toUpperCase().startsWith(code.toUpperCase()) ? label : `${code} · ${label}`;
 }
 
 function rowHover(dirId: number, headsign: string | null | undefined, routeVariant?: string | null): HoveredBranch | null {
@@ -206,7 +219,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
   const noFilterValue = contract != null && contract.filterValue == null && !contract.runs;
   const partPeriodGroups = noFilterValue && period !== 'all'
     ? directionGroups
-      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues }).partPeriod != null), span: [] }))
+      .map(group => ({ ...group, realTier: group.realTier.filter(direction => rowTrips(direction, period, { stretch: stretchValues, branchReadings }).partPeriod != null), span: [] }))
       .filter(group => group.realTier.length > 0 || sharedStretchEdge(group, period, stretchMode) != null)
     : [];
   const doesNotRun = noFilterValue && partPeriodGroups.length === 0;
@@ -222,9 +235,22 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     multipleDirections: showDirectionSections,
     sectionBoundLabel: showDirectionSections ? group.boundLabel : undefined,
   });
+  // CIV-1456: a branch row leads with the branch ID the agency's data names (TTC 52A, GO 41G, Halifax 10B); no ID, no change.
+  const base = branchBase(input.routeShortName ?? '');
+  // A row speaks for one branch only when nothing else to its destination in that direction carries another ID (or none):
+  // a row that stands for 10A, 10B and 10C to one stop, or a stretch row several variants share, gets no ID.
+  const destinationKey = (d: ShapeProperties) => (d.headsign ?? '').trim().toLowerCase();
+  const rowCode = (group: RouteCardDirectionGroup, d: ShapeProperties): string | null => {
+    const code = rowBranchCode(d, base);
+    if (!code) return null;
+    const key = destinationKey(d);
+    if (group.realTier.filter(r => destinationKey(r) === key).length > 1) return code;
+    const peers = (group.directionFeatures ?? directions.filter(x => dirIdNum(x.directionId) === dirIdNum(group.dirId))).filter(x => destinationKey(x) === key);
+    return peers.every(p => rowBranchCode(p, base) === code) ? code : null;
+  };
   const branchLabel = (group: RouteCardDirectionGroup, direction: ShapeProperties, gi: number) =>
-    rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier);
-  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours };
+    withBranchCode(rowLabelWithOrigin(destinationLabel(group, direction, gi), direction, group.realTier), rowCode(group, direction));
+  const rowContext = { period, hoveredHour: null, stretchMode, allDay, contract, noRegularService, maxHeadway, stretchValues, sectionColours: input.sectionColours, branchReadings };
   const rowDisplay = (d: ShapeProperties, pooledMainH?: number, sharedRowShown?: boolean, oneRowMainH?: number) => (hoveredHour: number | null): CardRowDisplay => {
     const value = routeCardRowValue(d, { ...rowContext, hoveredHour, pooledMainH, sharedRowShown, oneRowMainH });
     return {
@@ -303,7 +329,7 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
     let finalRows = rows;
     // CIV-1959 B3 (BRANCH_READINGS_ENABLED, data from ATLAS_BRANCH_READINGS=1): with the headline from the trunk, the branch wait
     // must be visible. The trunk is one line, always shown (no 0.65 rule), and each branch is its own line from its piece:
-    // a reading, "every N until HH:MM" for a tail, or limited trips (no number). A branch the card hid for the period (#1115)
+    // a reading, "every N until HH:MM" for a tail, or the no-number words (noNumberRowLabel) for a piece with too few or uneven trips. A branch the card hid for the period (#1115)
     // gets its line back. The main stretch's own row stays (it names a destination) and the trunk line is left out only when that row already reads the same number.
     const slotFeatures = branchReadings && stretchMode && !nightView ? stretchRowFeatures(group.directionFeatures ?? [], period).filter(d => d.stretchRole === 'tail') : [];
     // A branch with no feature of its own has no destination to name: it has no line, as today. With none that can be named, the card keeps today's rows.
@@ -337,20 +363,31 @@ export function buildRouteCardModel(input: RouteCardModelInput): RouteCardModel 
         const row = rowOf(d, i);
         // A piece's reading counts every trip on that stretch, so it stands for the row only where all of the row's own trips run it
         // (stretchRowPeriods, as rowStretchReading has it), and never reads better than the row's own number today: a destination
-        // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). Limited
-        // trips holds either way: the row's trips are a part of the piece's.
+        // that shares the stretch with another keeps its own wait, never the pooled one (overstating service is worse). A piece with no number
+        // holds either way: the row's trips are a part of the piece's.
         const stands = d.stretchRowPeriods?.includes(period as PeriodKey) ?? false;
-        const existed = rows.some(r => r.feature === d);
         return [{ ...row, display: (hoveredHour: number | null): CardRowDisplay => {
           const shown = row.display(hoveredHour);
           const today = shown.value.isLimited || shown.value.rowNoRegular ? null : shown.value.shownHeadway ?? shown.value.headway ?? null;
           if (t.t !== 'limited') {
             if (!stands) return shown;
-            if (t.t === 'reading' && (!existed || today == null || t.v < today)) return shown;
+            // Atlas Issue Response (CIV-1251, CIV-1411): a branch row keeps the wording and value rule the card's rows always had (its typical spacing,
+            // the range, the gap form, its own from / until words); a piece's reading is its stretch's longest wait and never replaces them. Only the
+            // source of the trips changes (the branch's own departures), not the words.
+            if (t.t === 'reading') return shown;
             if (t.t === 'tail' && today != null && t.v < today) return shown;
           }
-          const own = branchRowValue(shown.value, t);
-          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: true, valueEnd: false };
+          // CIV-1959 (Ryan: any 3 or more evenly spaced trips get a number; Atlas Issue Response: a branch's own trips decide it, not the
+          // piece's pooled list): a row whose own trips pass rule D keeps its own reading, with its from / until words, under a piece with no number.
+          if (t.t === 'limited') {
+            if (!shown.value.isLimited && !shown.value.rowNoRegular && rowOwnTripsEven(d, period)) return shown;
+            const ownT = rowOwnTreatment(d, period);
+            if (ownT) { const own = branchRowValue(shown.value, ownT, ''); return { ...shown, value: own.value, limitedLabel: undefined, singleLine: true, valueEnd: false }; }
+          }
+          // A piece with no number reads and sits as any row with no number does (as rowDisplay has it).
+          const own = branchRowValue(shown.value, t, stableColors ? keepLastWordsTogether(noRegularLabel) : noRegularLabel);
+          const noNumber = t.t === 'limited';
+          return { ...shown, value: own.value, limitedLabel: own.limitedLabel, singleLine: !(stableColors && noNumber), valueEnd: stableColors && noNumber };
         } }];
       });
       finalRows = [...rows.filter(r => r.feature.stretchRole !== 'tail'), ...tailRows];

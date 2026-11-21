@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import SiteHeader from '../SiteHeader';
 import SiteFooter from '../SiteFooter';
 
@@ -16,10 +16,22 @@ const GUTTER = {
 } as const;
 
 export default function PageShell({ variant = 'docs', footer = true, maxWidth = 'max-w-5xl', method, children }: { variant?: keyof typeof GUTTER; footer?: boolean; /** Tailwind max-width class for the column (default max-w-5xl). */ maxWidth?: string; method?: ReactNode; children: ReactNode }) {
+  // CIV-1897: the pinned header's height (taller with the internal row) as --page-header-h, so a sticky side menu sits the same gap below it.
+  const mainRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const main = mainRef.current, header = headerRef.current;
+    if (!main || !header || typeof ResizeObserver === 'undefined') return;
+    const set = () => main.style.setProperty('--page-header-h', `${header.getBoundingClientRect().height}px`);
+    set();
+    const ro = new ResizeObserver(set);
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, []);
   return (
-    <main className={`flex min-h-screen flex-col overflow-x-clip bg-[var(--bg-app)] text-[var(--text-primary)] ${GUTTER[variant]}`}>
+    <main ref={mainRef} className={`flex min-h-screen flex-col overflow-x-clip bg-[var(--bg-app)] text-[var(--text-primary)] ${GUTTER[variant]}`}>
       <div className={`mx-auto flex w-full ${maxWidth} flex-1 flex-col`}>
-        <div data-page-header className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
+        <div ref={headerRef} data-page-header className="sticky top-0 z-30 -my-3 bg-[var(--bg-app)] py-3">
           <SiteHeader />
         </div>
         <div className="flex-1">{children}</div>

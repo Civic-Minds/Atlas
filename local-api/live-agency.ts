@@ -20,9 +20,11 @@ function json(body: LiveAgencyResponse, status = 200): Response {
 async function handler(req: Request): Promise<Response> {
   const agency = new URL(req.url, 'http://localhost').searchParams.get('agency')?.trim().toLowerCase();
   if (!agency) return json({ status: 'unknown_agency', reason: 'Give an agency, for example ?agency=ttc.' }, 400);
-  // Whitelist: only agencies with Live analysis map to a file name (no path input reaches the filesystem).
-  if (!/^[a-z0-9-]+$/.test(agency) || !agencyHasLiveAnalysis(agency)) return json({ status: 'unknown_agency', reason: liveNoAgencyAnalysis(await liveAgencyName(agency)) }, 404);
+  // Whitelist: an agency with Live analysis, or one whose summary file is in the folder listing (CIV-1828: Studio's
+  // agencies, Kingston). Only a name found in the listing reaches the filesystem, never the request's text.
   const dir = process.env.LIVE_SEGMENTS_DIR ?? resolve('../_live-data/out');
+  const listed = /^[a-z0-9-]+$/.test(agency) && (await readdir(dir).catch(() => [] as string[])).includes(`${agency}-agency.json`);
+  if (!/^[a-z0-9-]+$/.test(agency) || !(agencyHasLiveAnalysis(agency) || listed)) return json({ status: 'unknown_agency', reason: liveNoAgencyAnalysis(await liveAgencyName(agency)) }, 404);
   try {
     const file = resolve(dir, `${agency}-agency.json`);
     const summary = JSON.parse(await readFile(file, 'utf8')) as AgencySummary;

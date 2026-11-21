@@ -53,3 +53,14 @@ export function remapKeysByPeriod<T>(
   }
   return { routes: out, moved };
 }
+
+/**
+ * CIV-437: a remap can create a key only the sidecars have (LA Metro "L Gold": 804's pre-2023 sidecar entries). The
+ * build lists only keys in the archive map, so each such key gets an empty change list, as sidecar-only keys do
+ * before the remap. Returns the keys added. Mutates `archive`.
+ */
+export function seedSidecarOnlyKeys(archive: Record<string, unknown[]>, sidecar: Record<string, unknown[]> | undefined): string[] {
+  const added: string[] = [];
+  for (const key of Object.keys(sidecar ?? {})) if (!(key in archive)) { archive[key] = []; added.push(key); }
+  return added;
+}

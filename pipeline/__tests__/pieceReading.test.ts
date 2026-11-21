@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { pieceReadingEnabled } from '../../shared/rules/flags';
-import { armAKeeps, listIsEvenAgainst, pieceReadingOverlay, readFeaturePieces, sharerPieces, type PieceReadContext } from '../pieces';
+import { armAKeeps, listIsEvenAgainst, pieceReadingOverlay, readFeaturePieces, sharerPieces, withinArmATiers, type PieceReadContext } from '../pieces';
 
 // CIV-1959 B2 (#1620, #1086): one reading per piece, with Arm A. A drifting stop is ignored for the piece, never overwritten.
 
@@ -52,6 +52,33 @@ describe('one reading per piece, Arm A (CIV-1959 B2)', () => {
     const c = cell(piece(lists), 's2')!;
     expect(c.ownReading).toBe(20);
     expect(c.kept).toBe(true);
+  });
+
+  it('a stop whose published value is two or more tiers worse than the piece breaks off, even if its re-read is close (DRT 905-like)', () => {
+    const ctx = piece(fifteens());
+    const cells = readFeaturePieces(ctx);
+    expect(cell(ctx, 's2')!.kept).toBe(true); // its re-read is 15
+    const published = { s2: { midday: 90 }, s3: { midday: 20 } };
+    expect(pieceReadingOverlay(cells, published)).toEqual({ s3: { midday: 15 } }); // 90 is 5 tiers worse: own value and colour stay; 20 is one tier worse: ignored for the piece
+  });
+
+  it('SEPTA 124-like: piece 36, stop 88 (Infrequent): the stop breaks off and keeps its own value', () => {
+    const ctx = piece(Array.from({ length: 9 }, () => every(1140, 1380, 36)));
+    expect(cell(ctx, 's2', 'evening')!.pieceValue).toBe(36);
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { evening: 88 } })).toEqual({});
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { evening: 36 } })).toEqual({});
+  });
+
+  it('the Infrequent boundary: own 60 vs piece 45 is ignored for the piece; own 61 vs piece 60 breaks off; both Infrequent follows the usual rule', () => {
+    expect(withinArmATiers(60, 45)).toBe(true);
+    expect(withinArmATiers(61, 60)).toBe(false);
+    expect(withinArmATiers(61, 61)).toBe(true);
+    expect(withinArmATiers(90, 75)).toBe(true);
+    expect(withinArmATiers(61, 45)).toBe(false);
+    expect(withinArmATiers(45, 61)).toBe(true); // a stop better than the piece is not worse
+    const ctx = piece(Array.from({ length: 9 }, () => every(540, 900, 45)));
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { midday: 60 } })).toEqual({ s2: { midday: 45 } });
+    expect(pieceReadingOverlay(readFeaturePieces(ctx), { s2: { midday: 61 } })).toEqual({});
   });
 
   it('a stop that fails the evenness test breaks off even within one tier', () => {

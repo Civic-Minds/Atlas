@@ -19,6 +19,8 @@ import { RETIRED_APP_PATHS } from './utils/appGate';
 import RouteTracker from './components/RouteTracker';
 import RouteSeo from './components/RouteSeo';
 import ScrollToTop from './components/ScrollToTop';
+import { parseStudioPath } from '../shared/studioAgencies';
+import { STUDIO_SCHEDULES_PATH } from '../shared/rules/paths';
 import HomeRemount from './components/HomeRemount';
 import { isInternalTestSession } from './lib/internalTest';
 import { withoutMapPosition } from './lib/analytics';
@@ -38,8 +40,9 @@ const AreaPage = React.lazy(() => import('./AreaPage'));
 const RegionPage = React.lazy(() => import('./RegionPage'));
 const AgenciesIndexPage = React.lazy(() => import('./AgenciesIndexPage'));
 // Studio is local only (FEATURES.studio is the dev server); the DEV check keeps its page out of deployed bundles entirely.
-const StudioPage = import.meta.env.DEV ? React.lazy(() => import('./StudioPage')) : () => null;
+const InternalHomePage = import.meta.env.DEV ? React.lazy(() => import('./InternalHomePage')) : () => null;
 const StudioCoveragePage = import.meta.env.DEV ? React.lazy(() => import('./StudioCoveragePage')) : () => null;
+const McpDocsPage = import.meta.env.DEV ? React.lazy(() => import('./McpDocsPage')) : () => null;
 // The diagnostics pages are maintainer-only (#1518): the same DEV check as Studio keeps them out of built bundles entirely.
 const DiagnosticsUnevenPage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsUnevenPage')) : () => null;
 const DiagnosticsPerformancePage = import.meta.env.DEV ? React.lazy(() => import('./DiagnosticsPerformancePage')) : () => null;
@@ -50,10 +53,20 @@ function NightServiceRedirect() {
   return <Navigate to={`${FEATURE_ROUTES.nightService}${search}${hash}`} replace />;
 }
 
+/** CIV-1922: Studio's Schedule Changes page is now Schedules; its old addresses (/studio/changes/…) open the same place. */
+function StudioChangesRedirect() {
+  const { pathname, search, hash } = useLocation();
+  const rest = pathname.slice(FEATURE_ROUTES.studioChanges.length);
+  return <Navigate to={`${STUDIO_SCHEDULES_PATH}${rest}${search}${hash}`} replace />;
+}
+
 /** The map answers only the addresses the site knows; anything else gets the not-found page. */
 function MapOrNotFound() {
   const { pathname } = useLocation();
-  return findSeoRoute(pathname)
+  // Atlas Studio (CIV-1828) is a view of the map, as History is, and local only, so it has no page entry of its own.
+  // Its own addresses (/studio, /studio/live/…, /studio/fleet/…, CIV-1924); any other /studio/… stays not-found.
+  const studio = FEATURES.studio && parseStudioPath(pathname) != null;
+  return findSeoRoute(pathname) || studio
     ? <HomeRemount>{goHome => <App onGoHome={goHome} />}</HomeRemount>
     : <NotFoundPage />;
 }
@@ -98,17 +111,20 @@ ReactDOM.createRoot(rootElement).render(
               {RESEARCH_DRAFTS.map(({ href, Component }) => <Route key={href} path={href} element={<Component />} />)}
             </>
           )}
-          {/* Live report pages: on where FEATURES.liveReports is, and on the dev server (docs/FEATURE_FLAGS.md). */}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
-          {(FEATURES.liveReports || import.meta.env.DEV) && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
-          {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). */}
-          {/* CIV-1731: one map page; the two earlier pages' addresses open it. */}
-          {FEATURES.studio && <Route path={FEATURE_ROUTES.studio} element={<StudioPage />} />}
+          {/* Live report pages: on where FEATURES.liveReports is, which includes the dev server (docs/FEATURE_FLAGS.md). */}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency/tool`} element={<LiveToolPage />} />}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency/:route`} element={<LiveRoutePage />} />}
+          {FEATURES.liveReports && <Route path={`${LIVE_PATH}/:agency`} element={<LiveAgencyPage />} />}
+          {/* Atlas Studio (CIV-1693): local only, on where FEATURES.studio is (docs/FEATURE_FLAGS.md). It is a view of the
+              map (App, CIV-1828), so its own address falls through to the map below; the two earlier pages' addresses open it. */}
           {/* CIV-1871: what each agency has, local only; its address only, no link to it yet. */}
+          {/* CIV-1872: the local-only home page; its "Internal" tag link and the header's internal links are dev only too. */}
+          {FEATURES.internal && <Route path={FEATURE_ROUTES.internal} element={<InternalHomePage />} />}
+          {/* CIV-1900: the MCP's internal docs page, linked from /internal. */}
+          {FEATURES.internal && <Route path={FEATURE_ROUTES.mcpDocs} element={<McpDocsPage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioCoverage} element={<StudioCoveragePage />} />}
           {FEATURES.studio && <Route path={FEATURE_ROUTES.studioVehicles} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
-          {FEATURES.studio && <Route path={FEATURE_ROUTES.studioChanges} element={<Navigate to={FEATURE_ROUTES.studio} replace />} />}
+          {FEATURES.studio && <Route path={`${FEATURE_ROUTES.studioChanges}/*`} element={<StudioChangesRedirect />} />}
           <Route path="/apps/night" element={<NightServiceRedirect />} />
           <Route path="/docs" element={<DocsRedirect />} />
           {RETIRED_APP_PATHS.map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}

@@ -82,6 +82,21 @@ export function viewportAgencySlugs(agencies: Agency[], bounds: ViewportBounds |
   return agencies.filter(a => bboxIntersects(getAgencyBbox(a), vp)).map(a => a.slug);
 }
 
+/**
+ * Slugs of the agencies whose area (getAgencyBbox) holds the map's centre: "the city you are looking at", for the Live and
+ * History tabs. Not the viewport's overlap, which reaches any agency whose wide area touches the edge of the screen, and
+ * not gated on zoom, so it reads the same zoomed out over a region. It changes only when the centre crosses an area's edge.
+ */
+export function centreAgencySlugs(agencies: Agency[], bounds: ViewportBounds | null): string[] {
+  const vp = bounds ?? INITIAL_BOUNDS;
+  const lat = (vp.s + vp.n) / 2;
+  const lon = (vp.w + vp.e) / 2;
+  return agencies.filter(a => {
+    const [s, w, n, e] = getAgencyBbox(a);
+    return lat >= s && lat <= n && lon >= w && lon <= e;
+  }).map(a => a.slug);
+}
+
 function bboxIntersects(
   bbox: [number, number, number, number],
   vp: ViewportBounds

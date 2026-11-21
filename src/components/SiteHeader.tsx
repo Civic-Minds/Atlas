@@ -2,9 +2,11 @@ import ArrowLink from './ui/ArrowLink';
 import AppLink from './ui/AppLink';
 import { FEATURE_ROUTES, FEATURES } from '../../shared/config';
 import AtlasLogo from './AtlasLogo';
-import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
+import { ATLAS_BYLINE, DOCS_PAGE_TITLE, GO_TO_ATLAS_LABEL, INTERNAL_NAV_LABEL, SITE_NAV_LABEL } from '../content/noticeCopy';
 import { ABOUT_PATH, DOCS_PATH } from '../../shared/pagePaths';
 import { PAGE_NAMES } from '../../shared/pageNames';
+import { HEADER_TAG_INTERNAL } from '../../shared/siteMode';
+import { INTERNAL_HEADER_LINKS } from '../../shared/internalPages';
 
 /** Where the shared header's and footer's logo goes: the About home page (#1509). */
 export const ABOUT_HOME_PATH = ABOUT_PATH;
@@ -16,17 +18,31 @@ export const ABOUT_HOME_PATH = ABOUT_PATH;
  */
 export default function SiteHeader({ showWordmark = true }: { showWordmark?: boolean }) {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-      {showWordmark ? (
-        <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" hideByline />
-      ) : <span aria-hidden="true" />}
-      <nav aria-label={SITE_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
-        {FEATURES.researchApps && <AppLink to={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</AppLink>}
-        {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
-        <AppLink to={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</AppLink>
-        {FEATURES.studio && <AppLink to={FEATURE_ROUTES.studio} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.studio}</AppLink>}
-        <ArrowLink tone="quiet" href="/">{GO_TO_ATLAS_LABEL}</ArrowLink>
-      </nav>
+    <header className="flex flex-col gap-y-3">
+      {/* CIV-1872 : the local-only links, in the same text style, on their
+          own row above the public ones; dev server only. */}
+      {FEATURES.internal && (
+        <nav aria-label={INTERNAL_NAV_LABEL} className="-mx-3 flex items-center justify-between gap-4 rounded-lg bg-[var(--control-active-bg)] px-3 py-1.5 text-sm font-bold text-[var(--text-muted)]">
+          {/* The word on the left lines up with the Atlas wordmark below (the band's padding sits outside it). */}
+          <span className="text-[var(--control-active-fg)]">{HEADER_TAG_INTERNAL}</span>
+          <span className="flex items-center gap-3 whitespace-nowrap sm:gap-4">
+            {INTERNAL_HEADER_LINKS.map(link => link.arrow
+              ? <ArrowLink key={link.path} tone="quiet" href={link.path}>{link.label}</ArrowLink>
+              : <AppLink key={link.path} to={link.path} className="hover:text-[var(--text-primary)]">{link.label}</AppLink>)}
+          </span>
+        </nav>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        {showWordmark ? (
+          <AtlasLogo href={ABOUT_HOME_PATH} ariaLabel={ATLAS_BYLINE} showMark={false} size="page" hideByline />
+        ) : <span aria-hidden="true" />}
+        <nav aria-label={SITE_NAV_LABEL} className="flex items-center gap-3 sm:gap-4 whitespace-nowrap text-sm font-bold text-[var(--text-muted)]">
+          {FEATURES.researchApps && <AppLink to={FEATURE_ROUTES.research} className="hover:text-[var(--text-primary)]">{PAGE_NAMES.research}</AppLink>}
+          {/* CIV-1301: phones drop Docs (it is in the footer) so the other links fit on one line. */}
+          <AppLink to={DOCS_PATH} className="hidden hover:text-[var(--text-primary)] sm:inline">{DOCS_PAGE_TITLE}</AppLink>
+          <ArrowLink tone="quiet" href="/">{GO_TO_ATLAS_LABEL}</ArrowLink>
+        </nav>
+      </div>
     </header>
   );
 }

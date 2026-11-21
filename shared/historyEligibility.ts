@@ -62,6 +62,19 @@ export function agencyQualifiesForHistory(agency: HistoryAgencyLike, options: Hi
   return agencyQualifiesForHistoryExplore(agency, options);
 }
 
+/**
+ * Distinct snapshot years for every archived agency, by slug, counted under the History v2 rule (real years only, the rule
+ * behind the committed list) so a count never disagrees with it. Agencies with no years are left out.
+ */
+export function historyYearCounts(rows: ReadonlyArray<HistoryAgencyLike & { slug: string }>, options: HistoryEligibilityOptions = {}): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const a of rows) {
+    const n = distinctSnapshotYears(a, { realYearsOnly: true, ...options }).length;
+    if (n > 0) counts[a.slug] = n;
+  }
+  return counts;
+}
+
 /** Committed list of History-eligible agency slugs (shared/data/history-agencies.json). */
 export interface HistoryAgencyList {
   /** Distinct-year bar the list was built with (MIN_HISTORY_DISTINCT_YEARS). */
