@@ -5,7 +5,8 @@ import { partPeriodText, periodEdgeText } from './effectiveHeadway';
 import { stopBranchReading } from './branchReadings';
 import { BRANCH_READINGS_ENABLED } from '../../shared/rules/flags';
 import { routeCardSharedStretchEdge } from './routeCardRows';
-import { hasRegularServiceInPeriod } from './stretchCard';
+import { hasRegularServiceInPeriod, hasStretchRoles, routeContract } from './stretchCard';
+import { overnightRowNumber } from './routeCardRowValue';
 import { agencyNames } from './agencyName';
 import { rowTrips, unsteadyDirectionFallback } from './rowTrips';
 import { compareRouteNumber } from './sortCompare';
@@ -34,6 +35,12 @@ export interface StopBranch {
    * stretch starts late or ends early, its own words and spacing for the stop card's Shared stretch row, as the route card.
    */
   sharedEdge?: { text: string; every: number };
+  /**
+   * CIV-1764 (DECISIONS 2026-10-31, #1267): Overnight on data with the night verdict. The row shows exactly what the route card's
+   * Overnight row shows (rowHeadway: the route's Night Service number on a lit row of a passing direction, else none), never the
+   * stop's own 2-6 AM departures, so the stop card cannot say "every 71" beside Night Service 30 (TTC 301).
+   */
+  overnightCard?: true;
 }
 
 export interface StopRoute {
@@ -73,6 +80,7 @@ export function stopBranchHeadway(branch: StopBranch, period: TimePeriod): numbe
  */
 export function stopRowHeadway(branch: StopBranch, period: TimePeriod): number | null {
   if (branch.periodText) return null;
+  if (branch.overnightCard) return branch.rowHeadway ?? null;
   const own = branch.rowHeadway ?? null;
   const atStop = stopBranchHeadway(branch, period);
   if (own == null) return atStop;
@@ -86,14 +94,15 @@ export function stopRowHeadway(branch: StopBranch, period: TimePeriod): number |
  */
 export function stopRouteLineHeadway(branches: readonly StopBranch[], period: TimePeriod): number | null {
   const rows = branches.map(b => stopRowHeadway(b, period)).filter((hw): hw is number => hw != null);
-  const pooledValues = branches.map(b => (b.periodText ? null : stopBranchHeadway(b, period))).filter((hw): hw is number => hw != null);
+  // CIV-1764: Overnight has no Shared stretch number of the stop's own (the route card's Overnight is one number).
+  const pooledValues = branches.map(b => (b.periodText || b.overnightCard ? null : stopBranchHeadway(b, period))).filter((hw): hw is number => hw != null);
   const pooled = pooledValues.length > 0 ? Math.min(...pooledValues) : null;
   return pooled != null && rows.length > 0 && pooled < Math.min(...rows) ? pooled : null;
 }
 
 /** The stop's best value across a route's branches, for ordering the stop card's routes. */
 export function stopRouteBestHeadway(branches: readonly StopBranch[], period: TimePeriod): number | null {
-  const vals = branches.map(b => stopBranchHeadway(b, period)).filter((h): h is number => h != null);
+  const vals = branches.map(b => (b.overnightCard ? b.rowHeadway ?? null : stopBranchHeadway(b, period))).filter((h): h is number => h != null);
   return vals.length ? Math.min(...vals) : null;
 }
 
@@ -109,7 +118,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   /** CIV-1959 B3: a stop on a branch shows its piece's reading, tail words or the no-number words. */
   branchReadings?: boolean;
 }): StopRoute[] {
-  type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number };
+  type Branch = { stopId?: string; rKey: string; headsign: string | null; service: ReturnType<typeof buildRouteStopMetric>; rowHeadway: number | null; directionId: number; periodText?: string; sharedEdge?: { text: string; every: number }; dirKey: string; patterns: number; overnightCard?: true };
 
   const routeMap = new Map<string, { shortName: string; label: RouteLabel; longName: string; agencyName: string; agencySlug: string; routeType?: number; branches: Map<string, Branch> }>();
   // Pooled values at shared stops (CIV-82), so the stop card agrees with the map and route card.
@@ -118,6 +127,16 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
   const headsignsAtStop = new Map<string, Set<string>>();
   // CIV-1251 row 8: each route-direction's features for the day, for the route card's own Shared stretch decision.
   const directionFeaturesByKey = new Map<string, ShapeProperties[]>();
+  // CIV-1764: each route-day's Overnight contract, read only where the route card reads its Overnight row (stretch data).
+  const overnightByRoute = new Map<string, { contract: ReturnType<typeof routeContract> } | null>();
+  const routeOvernight = (slug: string, fc: GeoJSON.FeatureCollection, p: ShapeProperties) => {
+    const key = `${slug}::${p.routeId}::${p.day ?? ''}`;
+    if (!overnightByRoute.has(key)) {
+      const features = fc.features.map(f => f.properties as unknown as ShapeProperties).filter(x => x.routeId === p.routeId && x.day === p.day && (x as { stopId?: unknown }).stopId == null);
+      overnightByRoute.set(key, hasStretchRoles(features) ? { contract: routeContract(features, 'overnight') } : null);
+    }
+    return overnightByRoute.get(key)!;
+  };
 
 
   for (const [slug, fc] of Object.entries(layers)) {
@@ -178,6 +197,8 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       }
       const entry = routeMap.get(routeShortName)!;
       const branchKey = `${dirId}::${p.headsign ?? ''}`;
+      // CIV-1764: Overnight reads the route card's Overnight row (the night verdict) where the data carries it, as the card does.
+      const overnight = period === 'overnight' && p.directionFilterHeadwayByPeriod !== undefined ? routeOvernight(slug, fc, p) : null;
       // Prefer stop-specific headway over feature headway; keep the best (lowest) when deduping.
       const service = buildRouteStopMetric(p, matchingStopId, sharedIndexBySlug.get(slug));
       const standIn = headlineStandIn(p);
@@ -195,9 +216,11 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
           // A destination row says how often that destination comes (CIV-918): the branch's own value, the
           // same number its row on the route card shows. The stop's value counts every trip of the
           // direction (504A and 504B together at King and Bay), so it would overstate a destination.
-          rowHeadway: branchDisplayPeriodHeadway(p, period),
+          rowHeadway: overnight ? overnightRowNumber(p, overnight.contract) : branchDisplayPeriodHeadway(p, period),
           directionId: dirId,
-          ...(periodText ? { periodText } : {}),
+          ...(overnight ? { overnightCard: true as const } : {}),
+          // The card's Overnight row has no part-period words (DECISIONS 2026-10-31), so neither does the stop's.
+          ...(periodText && !overnight ? { periodText } : {}),
           stopId: matchingStopId,
           dirKey,
           patterns,
@@ -216,7 +239,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
         sharedEdgeByKey.set(b.dirKey, (headsignsAtStop.get(b.dirKey)?.size ?? 0) >= 2 ? routeCardSharedStretchEdge(features, b.directionId, period) : undefined);
       }
       const edge = sharedEdgeByKey.get(b.dirKey);
-      if (edge) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
+      if (edge && !b.overnightCard) b.sharedEdge = { text: periodEdgeText(edge), every: edge.every };
     }
   }
   // CIV-1959 B3 (BRANCH_READINGS_ENABLED): a stop on a branch shows its own piece, never the trunk's figure.
@@ -282,7 +305,7 @@ export function buildStopRoutes({ siblingIdsByAgency, routesByAgency, routePerio
       routeType: v.routeType,
       branches: Array.from(v.branches.values())
         .sort((a, b) => a.directionId - b.directionId || (a.service.value ?? Infinity) - (b.service.value ?? Infinity))
-        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}) })),
+        .map(b => ({ rKey: b.rKey, headsign: b.headsign, service: b.service, rowHeadway: b.rowHeadway, directionId: b.directionId, ...(b.periodText ? { periodText: b.periodText } : {}), ...(b.sharedEdge ? { sharedEdge: b.sharedEdge } : {}), ...(b.overnightCard ? { overnightCard: b.overnightCard } : {}) })),
     })), ...[...noNumber.values()].sort((a, b) => compareRouteNumber(a.shortName, b.shortName))];
 }
 
