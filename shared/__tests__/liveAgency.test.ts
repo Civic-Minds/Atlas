@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agencySummary, combineWeeks, runTimeOver } from '../liveAgency';
+import { agencySummary, combineWeeks, liveRouteNumber, runTimeOver } from '../liveAgency';
 import type { LiveV3, WeekMetrics } from '../liveDashboard';
 
 const week = (over: Partial<WeekMetrics>): WeekMetrics => ({
@@ -59,5 +59,12 @@ describe('agencySummary on the good-days basis', () => {
     expect(both.weekly?.leftOutEverywhere?.thisWeek).toEqual([]);
     const same = agencySummary({ agency: 'ttc', totalRoutes: 2, routes: [{ route: '1', label: '1', v3 }, { route: '2', label: '2', v3 }] });
     expect(same.weekly?.leftOutEverywhere?.thisWeek).toEqual(['c']);
+  });
+  // CIV-1896: Hamilton's analysis files are keyed by the feed's route_id (5687); the rows show its number (01).
+  it('keeps a route\'s own number where its key is another id, and shows the key otherwise', () => {
+    const s = agencySummary({ agency: 'hamilton', totalRoutes: 2, routes: [{ route: '5687', shortName: '01', label: '01 King', v3 }, { route: '12', shortName: '12', label: '12', v3 }] });
+    const by = (k: string) => s.routes.find(r => r.route === k)!;
+    expect([by('5687').shortName, by('12').shortName]).toEqual(['01', undefined]);
+    expect([liveRouteNumber(by('5687')), liveRouteNumber(by('12'))]).toEqual(['01', '12']);
   });
 });

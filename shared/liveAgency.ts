@@ -15,6 +15,8 @@ export const STOPS_PER_DIRECTION = 3;
 
 export interface AgencyRouteInput {
   route: string;
+  /** The route's number as riders know it (GTFS route_short_name), where the analysis files are keyed by another id (Hamilton's feed uses route_id 5687 for route 01). */
+  shortName?: string;
   /** Route name as the route page shows it ("504 — King"). */
   label: string;
   /** The route as a page title names it ("504 King"). */
@@ -26,8 +28,13 @@ export interface AgencyRouteInput {
   uncertainStart?: readonly UncertainStart[];
 }
 
+/** The number a route row shows (CIV-1896): its short name where the analysis is keyed by another id, else its key. */
+export const liveRouteNumber = (r: Pick<AgencyRouteRow, 'route' | 'shortName'>): string => r.shortName ?? r.route;
+
 export interface AgencyRouteRow {
   route: string;
+  /** As AgencyRouteInput.shortName; absent when it is the same as route. */
+  shortName?: string;
   label: string;
   titleLabel?: string;
   mode?: number;
@@ -177,11 +184,11 @@ export function agencySummary(input: {
     return { thisWeek, lastWeek, minHealthyDays, comparable: thisWeek.healthyDates.length >= minHealthyDays && lastWeek.healthyDates.length >= minHealthyDays, leftOutEverywhere, ...(periods.length ? { bands } : {}) };
   })() : null;
 
-  const rows: AgencyRouteRow[] = routes.map(({ route, label, titleLabel, mode, longName, v3 }) => {
+  const rows: AgencyRouteRow[] = routes.map(({ route, shortName, label, titleLabel, mode, longName, v3 }) => {
     const t = v3.weekly?.thisWeek, l = v3.weekly?.lastWeek;
     const block = v3.bands.all.adherence.timepoints.all;
     return {
-      route, label, ...(titleLabel ? { titleLabel } : {}), ...(mode != null ? { mode, longName: longName ?? null } : {}),
+      route, ...(shortName && shortName !== route ? { shortName } : {}), label, ...(titleLabel ? { titleLabel } : {}), ...(mode != null ? { mode, longName: longName ?? null } : {}),
       lateShare: t?.late?.share ?? null,
       lateN: t?.late?.n ?? 0,
       lateLastWeek: v3.weekly?.comparable ? l?.late?.share ?? null : null,

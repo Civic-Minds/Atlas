@@ -9,6 +9,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 - **The Studio assistant answers from the same data as the map (local only)**: it reads the published release straight from the cloud instead of a copy on this Mac that a publish could leave behind, and says so when it has to fall back to an older copy
 - **Route names keep a one-letter code capitalised**: Hamilton’s [20 A-Line Express](https://github.com/Civic-Minds/Atlas/issues/1647) read “20 a-Line Express”, mistaking the code for the word “a”
 - **Studio’s top bar drops the Route chip (local only)**: the search box finds and opens routes on Live, Fleet and Schedules instead
+- **Hamilton is in Studio’s Live (local only)**: its routes show their own numbers (1 King, not the feed’s 5828), alongside TTC and Kingston
 - **The analytics, Data saver and update notices sit in one place**: each is centred, under the header on phones and just above the map’s bottom row on desktop; the analytics notice was at the end of the bottom-left pills
 - **Studio has the main map’s search box (local only)**: it finds the open page’s routes by number or name and opens the one you pick, with results in the map’s own list
 - **Beta’s Data saver prompt is centred above the map’s bottom row on desktop**: it sits where the update notice does, instead of at the end of the bottom-left pills; phones still show it under the header

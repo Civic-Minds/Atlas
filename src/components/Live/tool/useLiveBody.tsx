@@ -2,7 +2,7 @@ import { useMemo, useRef, type ReactNode } from 'react';
 import { LOADING_LABEL, ALL_ROUTES_LABEL, LIVE_NOISE_CAPTION } from '../../../content/noticeCopy';
 import RouteRowName from '../../RouteRowName';
 import { routeLabels } from '../../../utils/format';
-import type { AgencySummary } from '../../../../shared/liveAgency';
+import { liveRouteNumber, type AgencySummary } from '../../../../shared/liveAgency';
 import { NOISE_RULE, weekDailyValues, weekForBand, type UncertainStart, type DashboardBand, type DashboardBandData, type LiveV3 } from '../../../../shared/liveDashboard';
 import { useLiveDashboard } from '../../../hooks/useLiveDashboard';
 import { excludingDays, kpiTiles } from '../../../utils/liveKpi';
@@ -248,7 +248,7 @@ export function useLiveBody({ agency, agencyName, s, route, setRoute, dir, setDi
   const showNote = chosen != null && ready?.note && (measure === 'late' || measure === 'runTime' || measure === 'delayStarts');
   // Each route as the list rows show it: the number in bold, the name regular, no dash (Ryan, CIV-1117 row 5).
   const routeOptions = useMemo(() => [['', ALL_ROUTES_LABEL] as const, ...rankRoutes(s, networkV3, chosen ?? 'fallsBehind', band).map(({ r }) => {
-    const l = routeLabels({ shortName: r.route, longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
+    const l = routeLabels({ shortName: liveRouteNumber(r), longName: r.longName ?? null, mode: r.mode ?? 3, agencyName: s.agency });
     return [r.route, <RouteRowName key={r.route} shortName={l.primary} name={l.secondary} />, l.text] as const;
   })], [s, networkV3, chosen, band]);
   const openRoute = (r: string) => { setRoute(r); setPick(null); };
