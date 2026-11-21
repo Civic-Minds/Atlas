@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Studio’s Live moves the map to the agency when a route has no Live data (local only)**: opening such a [Kingston route](https://github.com/Civic-Minds/Atlas/issues/1648) left the map on Toronto with nothing drawn
 - **The Studio assistant answers from the same data as the map (local only)**: it reads the published release straight from the cloud instead of a copy on this Mac that a publish could leave behind, and says so when it has to fall back to an older copy
 - **Route names keep a one-letter code capitalised**: Hamilton’s [20 A-Line Express](https://github.com/Civic-Minds/Atlas/issues/1647) read “20 a-Line Express”, mistaking the code for the word “a”
 - **The analytics, Data saver and update notices sit in one place**: each is centred, under the header on phones and just above the map’s bottom row on desktop; the analytics notice was at the end of the bottom-left pills
