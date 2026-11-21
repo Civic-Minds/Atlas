@@ -6,6 +6,7 @@ See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md) for earlier history.
 
 ## [Unreleased]
 
+- **Route cards list branches that had no row of their own**: RTD 15's Saturday trips to Tower Rd were missing from its card, so it read as if every bus went to Picadilly; such a branch now reads where it goes, or where it starts
 - **Studio has the main map’s search box (local only)**: it finds the open page’s routes by number or name and opens the one you pick, with results in the map’s own list
 - **Beta’s Data saver prompt is centred above the map’s bottom row on desktop**: it sits where the update notice does, instead of at the end of the bottom-left pills; phones still show it under the header
 - **Studio’s Fleet route card shows one number for the schedule, like the network panel (local only)**: “Scheduled now” with a second “Needed” line is now “As scheduled”, and an empty time of day says “No trains…” or “No streetcars…” by mode
