@@ -47,7 +47,11 @@ function getAtlasMode(): AtlasMode {
 export const ATLAS_MODE = getAtlasMode();
 export const BETA_BUILD = ATLAS_MODE !== 'public';
 export const PREVIEW_BUILD = ATLAS_MODE === 'preview';
-export const RESEARCH_APPS_ENABLED = ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev';
+// The research stories (/research and its story pages, the header and footer links, the About page's research section,
+// their prerendered pages and sitemap entries, the Night and Bustang apps). Local only (Ryan, 2026-11-20, CIV-1996: "I wonder
+// if the research stories should all be internal right now", chose "Local only"): on the Vite dev server, as the planners and
+// researchers pages are, never on beta, preview or public builds.
+export const RESEARCH_APPS_ENABLED = typeof import.meta !== 'undefined' && !!import.meta.env && !!import.meta.env.DEV;
 // CIV-1425 / CIV-1646: History's Weekday/Saturday/Sunday picker. On in beta and dev (Boston's weekend values are
 // built); public stays off until Ryan turns it on, which the env var still does anywhere. Needs History on too.
 export const HISTORY_DAY_PICKER_ENABLED = HISTORY_ENABLED && (ATLAS_MODE === 'beta' || ATLAS_MODE === 'dev' || envFlag('VITE_HISTORY_DAY_PICKER_ENABLED'));
