@@ -63,7 +63,7 @@ on:
         required: false
         type: string
       flags:
-        description: 'DRY RUN ONLY (the publish job never reads it). Space-separated feature flags to turn on for a dry run (allowlist: ATLAS_HEADLINE_FROM_TRUNK ATLAS_PIECE_READING ATLAS_BRANCH_READINGS ATLAS_PIECES_BY_TRIPS)'
+        description: 'DRY RUN ONLY (the publish job never reads it). Empty: the same feature flags the publish job reads from the repo variables (#1652). Otherwise an override: "none", or the space-separated flags to turn on (allowlist: ATLAS_HEADLINE_FROM_TRUNK ATLAS_PIECE_READING ATLAS_BRANCH_READINGS ATLAS_PIECES_BY_TRIPS)'
         required: false
         default: ''
         type: string
@@ -107,15 +107,31 @@ jobs:
       AGENCIES_INPUT: ${{ inputs.agencies }}
       RUN_AT_INPUT: ${{ inputs.run_at }}
       NODE_OPTIONS: --max-old-space-size=8192
-    # GUARD: the dry run turns the CIV-1959 switches on only through the `flags` input (step below),
-    # never through vars.ATLAS_*; the publish job reads vars.ATLAS_* and never the `flags` input.
-    # Keep it that way, or a dry run and a publish stop matching what was reviewed.
+    # GUARD (#1652): by default the dry run turns on the same CIV-1959 switches the publish job reads
+    # from vars.ATLAS_*, so its release diff compares like with like. A dry run with them off compared
+    # flag-off output with flag-on live data and reported 32 false headway shifts. The `flags` input
+    # overrides the default ("none", or a list); the publish job never reads it.
     steps:
-      - name: Dry-run feature flags (allowlist, empty = none)
+      - name: Dry-run feature flags (empty = the publish job's repo variables)
         env:
           FLAGS_INPUT: ${{ inputs.flags }}
+          VAR_ATLAS_HEADLINE_FROM_TRUNK: ${{ vars.ATLAS_HEADLINE_FROM_TRUNK }}
+          VAR_ATLAS_PIECE_READING: ${{ vars.ATLAS_PIECE_READING }}
+          VAR_ATLAS_BRANCH_READINGS: ${{ vars.ATLAS_BRANCH_READINGS }}
+          VAR_ATLAS_PIECES_BY_TRIPS: ${{ vars.ATLAS_PIECES_BY_TRIPS }}
         run: |
           allowed=" ATLAS_HEADLINE_FROM_TRUNK ATLAS_PIECE_READING ATLAS_BRANCH_READINGS ATLAS_PIECES_BY_TRIPS "
+          if [ -z "$FLAGS_INPUT" ]; then
+            # Same switches as the publish job: each repo variable set to 1.
+            for flag in $allowed; do
+              var="VAR_$flag"
+              [ "${!var}" = "1" ] && FLAGS_INPUT="$FLAGS_INPUT $flag"
+            done
+            echo "No flags input: using the publish job's repo variables:${FLAGS_INPUT:- none}"
+          elif [ "$FLAGS_INPUT" = "none" ]; then
+            FLAGS_INPUT=""
+            echo "Flags input \"none\": every flag off for this dry run"
+          fi
           for flag in $FLAGS_INPUT; do
             case "$allowed" in
               *" $flag "*) ;;
@@ -126,6 +142,11 @@ jobs:
             echo "$flag=1" >> "$GITHUB_ENV"
             echo "Flag on for this dry run: $flag"
           done
+          # Recorded in build-settings.json and the run summary, so a dry run's flags are on file
+          # even when they came from the repo variables (which can change between runs).
+          flags_on="$(echo $FLAGS_INPUT)"
+          echo "DRYRUN_FLAGS_ON=$flags_on" >> "$GITHUB_ENV"
+          echo "**Feature flags on for this dry run:** ${flags_on:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Check the inputs and the read-only keys
         env:
@@ -219,7 +240,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p tmp/derived-reprocess
-          printf '{"commit":"%s","runAt":"%s"}\n' "$(git rev-parse HEAD)" "$ATLAS_RUN_AT" > tmp/derived-reprocess/build-settings.json
+          printf '{"commit":"%s","runAt":"%s","flags":"%s"}\n' "$(git rev-parse HEAD)" "$ATLAS_RUN_AT" "${DRYRUN_FLAGS_ON:-}" > tmp/derived-reprocess/build-settings.json
 
       # Refused agencies are normal; only a crash (no report) or a "failed" agency is an error.
       - name: Summarize the reprocess
