@@ -368,6 +368,30 @@ export function isRegularPieceInPeriod(times: readonly number[], start: number, 
   return t != null && t.t === 'reading';
 }
 
+/** One piece's treatment in each read period, from its departures at its reference stop. */
+export function piecePeriodTreatments(s: Stretch, stretchValue: (stretch: Stretch, period: PeriodKey) => number | null): PieceReadingEntry['periods'] {
+  const periods: PieceReadingEntry['periods'] = {};
+  for (const key of PIECE_READING_PERIODS) {
+    const { start, end } = PERIOD_MINUTES[key];
+    const treatment = classifyPiecePeriod(s.times, start, end, stretchValue(s, key));
+    if (treatment) periods[key] = treatment;
+  }
+  return periods;
+}
+
+/**
+ * CIV-1959 #1636 (ATLAS_BRANCH_READINGS=1 only, for a piece no feature stands for): the stop its trips pass most, where it is read. A piece's reference
+ * stop is the middle of the stops more than half the direction's trips serve, which can sit past where a short running of the branch turns back
+ * (RTD 15 Saturday: Tower Rd trips run 12 stops until 11:47 AM and 24 after, the reference stop was in the long part and read "from 12:17 PM").
+ * Returns the stop served by most trips (the middle of those when several tie); the reference stop when there is no better one.
+ */
+export function busiestStop(stops: readonly string[], tripsAt: (stop: string) => number, fallback: string): string {
+  let max = 0;
+  for (const stop of stops) max = Math.max(max, tripsAt(stop));
+  const pool = max > 0 ? stops.filter(stop => tripsAt(stop) === max) : [];
+  return pool.length > 0 ? pool[Math.floor(pool.length / 2)] : fallback;
+}
+
 /**
  * A direction's pieces and their treatment in every read period (PIECE_READING_PERIODS; overnight keeps the night verdict).
  * `stretchValue` gives a stretch's own filter value in a period, so a full reading is the number the card already reads.
@@ -377,15 +401,8 @@ export function directionPieceReadings(
   d: Pick<DirectionStretches, 'main' | 'tails'>,
   stretchValue: (stretch: Stretch, period: PeriodKey) => number | null,
 ): PieceReadings | null {
-  const entry = (kind: 'trunk' | 'branch', index: number, s: Stretch): PieceReadingEntry => {
-    const periods: PieceReadingEntry['periods'] = {};
-    for (const key of PIECE_READING_PERIODS) {
-      const { start, end } = PERIOD_MINUTES[key];
-      const treatment = classifyPiecePeriod(s.times, start, end, stretchValue(s, key));
-      if (treatment) periods[key] = treatment;
-    }
-    return { kind, index, stopCount: s.stops.length, refStop: s.refStop, periods };
-  };
+  const entry = (kind: 'trunk' | 'branch', index: number, s: Stretch): PieceReadingEntry =>
+    ({ kind, index, stopCount: s.stops.length, refStop: s.refStop, periods: piecePeriodTreatments(s, stretchValue) });
   const pieces = [
     ...(d.main ? [entry('trunk', 0, d.main)] : []),
     ...d.tails.map((t, i) => entry('branch', i, t)),
@@ -402,4 +419,42 @@ export function pieceReadingsForFeature(readings: PieceReadings, d: Pick<Directi
       return own && stops ? { ...p, stops: [...stops] } : p;
     }),
   };
+}
+
+/** A direction's feature, as far as naming a piece needs it (CIV-1959 #1636). */
+export interface PieceNamingFeature { headsign: string; stopOrder: readonly string[] }
+
+/**
+ * CIV-1959 #1636 (ATLAS_BRANCH_READINGS=1 only): a branch piece no feature of its own stands for has no name for its card line, so it gets one the
+ * way every branch row is named, by where it ends:
+ * - a piece that follows the trunk (`after`) is named "to <place>": the headsign of the direction's pattern that ends inside the piece (RTD 15
+ *   Saturday eastbound: "Tower Rd"), else the name of its last stop;
+ * - a piece that comes before the trunk (`before`: an origin leg, as RTD 15 westbound and DRT 900 have) is not a destination, so it is named by where
+ *   it starts ("from <first stop name>"), the card's existing "from A to B" form;
+ * - a piece between trunk stops, or one with no name to give, has no line.
+ * Returns why when it gets none.
+ */
+export function nameUnnamedPiece(
+  tailStops: readonly string[],
+  position: 'after' | 'before' | 'between' | undefined,
+  mainStops: readonly string[] | null,
+  features: readonly PieceNamingFeature[],
+  stopNameOf?: (stopId: string) => string | undefined,
+): { to: string } | { from: string } | { why: string } {
+  if (!mainStops || mainStops.length === 0) return { why: 'no trunk to place the piece against' };
+  if (tailStops.length === 0) return { why: 'piece has no stops' };
+  const nameOf = (stopId: string) => stopNameOf?.(stopId)?.trim() || undefined;
+  if (position === 'before') {
+    const name = nameOf(tailStops[0]);
+    return name ? { from: name } : { why: 'origin leg with no stop name to say where it starts' };
+  }
+  if (position !== 'after') return { why: 'piece sits between trunk stops (or beside them), not a destination' };
+  const inPiece = new Set(tailStops);
+  // Patterns that end inside the piece say where it goes; the one covering most of it, then the longest, speaks.
+  const ending = features
+    .filter(f => f.headsign.trim().length > 0 && f.stopOrder.length > 0 && inPiece.has(f.stopOrder[f.stopOrder.length - 1]))
+    .sort((a, b) => b.stopOrder.filter(s => inPiece.has(s)).length - a.stopOrder.filter(s => inPiece.has(s)).length || b.stopOrder.length - a.stopOrder.length);
+  if (ending.length > 0) return { to: ending[0].headsign.trim() };
+  const name = nameOf(tailStops[tailStops.length - 1]);
+  return name ? { to: name } : { why: 'no pattern ends in the piece and its last stop has no name' };
 }

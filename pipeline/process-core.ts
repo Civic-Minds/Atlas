@@ -4125,7 +4125,9 @@ export async function processGtfsBuffer(
         return a == null || b == null ? undefined : [a, b];
       };
       return ids ? { ids, span, frequencyTrip: id => frequencyTemplateTripIds.has(id) } : null;
-    });
+    }, stopId => (gtfs.stops ?? []).find(s => s.stop_id === stopId)?.stop_name, process.env.ATLAS_PIECE_NAMING_LOG === '1'
+      ? info => console.log('PIECENAME\t' + JSON.stringify({ agency: options?.slug, ...info }))
+      : undefined);
     // #1514: the named route-periods take the branch-read value, only ever longer (applyBranchReadCorrections' guard).
     for (const change of applyBranchReadCorrections(features, options?.branchReadCorrections, feature => {
       const slot = featureStopHeadwaySlots.get(feature as GeoJsonFeature);

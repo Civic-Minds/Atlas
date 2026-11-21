@@ -26,6 +26,10 @@ export interface PieceReadingEntry {
   refStop: string;
   /** The piece's stops in travel order. Only on the features whose own slot the piece is (as stretchMeta's rows are), so the file carries each list once. */
   stops?: string[];
+  /** CIV-1959 #1636 (ATLAS_BRANCH_READINGS=1): the name of a branch no feature of its own stands for (its terminus: a headsign, else a stop name), on its entry on every feature of the direction. The card names its line from it. */
+  to?: string;
+  /** CIV-1959 #1636: for a branch that comes before the trunk (an origin leg) and has no feature of its own, the name of the stop it starts at; the card words it "from A to B". */
+  from?: string;
   periods: Partial<Record<PeriodKey, PieceTreatment>>;
 }
 
